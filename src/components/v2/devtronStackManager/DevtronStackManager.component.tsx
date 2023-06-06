@@ -38,6 +38,7 @@ import {
     Toggle,
     toastAccessDenied,
     ConfirmationDialog,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
@@ -1082,29 +1083,32 @@ export const ModuleDetailsView = ({
     ) : null
 }
 
+const DiscoverIntegrationsButton = () => {
+    const history: RouteComponentProps['history'] = useHistory()
+    return (
+        <button
+            type="button"
+            className="empty-state__discover-btn flex fs-13 fw-6 br-4"
+            onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
+            >
+            <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
+        </button>
+    )
+}
+
 export const NoIntegrationsInstalledView = (): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
 
     return (
-        <div className="no-integrations__installed-view">
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={NoIntegrations} width="250" height="200" alt="no results" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">No integrations installed</h2>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>Installed integrations will be available here</EmptyState.Subtitle>
-                <EmptyState.Button>
-                    <button
-                        type="button"
-                        className="empty-state__discover-btn flex fs-13 fw-6 br-4"
-                        onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
-                    >
-                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
-                    </button>
-                </EmptyState.Button>
-            </EmptyState>
+        <div className="no-integrations__installed-view dc__position-rel">
+            <GenericEmptyState
+                image={NoIntegrations}
+                classname='fs-16'
+                title={'No integrations installed'}
+                subTitle={'Installed integrations will be available here'}
+                isButtonAvailable={true}
+                renderButton={DiscoverIntegrationsButton}
+            />
         </div>
     )
 }

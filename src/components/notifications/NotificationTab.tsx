@@ -11,6 +11,7 @@ import {
     Checkbox,
     EmptyState,
     Reload,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getNotificationConfigurations,
@@ -381,15 +382,28 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-    renderEmptyState() {
-        return <EmptyState>
-            <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
-            <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
-            <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <div data-testid="add-notification-button" onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
-                <Add className="icon-dim-20 mr-5" />Add Notification
-            </div>
-        </EmptyState>
+    renderGenericState() {
+        const renderGenericStateButton = () => {
+            return (
+                <button
+                    data-testid="add-notification-button"
+                    onClick={this.CreateNewNotification}
+                    className="cta flex dc__no-decor"
+                >
+                    <Add className="icon-dim-20 mr-5" />
+                    Add Notification
+                </button>
+            )
+        }
+        return (
+            <GenericEmptyState
+                image={EmptyImage}
+                title={'Notification'}
+                subTitle={'Receive alerts when a pipeline triggers, completes successfully or fails.'}
+                isButtonAvailable={true}
+                renderButton={renderGenericStateButton}
+            />
+        )
     }
 
     validateAccess = (updateState): void => {
@@ -654,7 +668,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         else if (!this.state.notificationList.length) {
             return <div className="pt-16" style={{ "height": "calc(100vh - 215px)" }}>
                 {this.renderHostErrorMessage()}
-                {this.renderEmptyState()}
+                {this.renderGenericState()}
             </div>
         }
         else return <div className="bcn-0 pt-16" style={{ "minHeight": "calc(100vh - 215px)" }}>

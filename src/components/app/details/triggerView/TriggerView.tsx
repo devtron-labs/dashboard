@@ -1190,7 +1190,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 parentEnvironmentName={node.parentEnvironmentName}
                                 userApprovalConfig={node.userApprovalConfig}
                                 requestedUserId={node.requestedUserId}
-                                isVirtualEnvironment={node.isVirtualEnvironment}
+                                // isVirtualEnvironment={node.isVirtualEnvironment}
                                 isSaveLoading={this.state.isSaveLoading}
                             />
                         )}

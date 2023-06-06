@@ -22,7 +22,7 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 
@@ -54,27 +54,29 @@ export const NoExternalLinksView = ({
     userRole: UserRoleType
     history: any
 }): JSX.Element => {
+    const handleButton = () => {
+        return (
+            <AddLinkButton handleOnClick={handleAddLinkClick} />
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyExternalLinks} alt="Empty external links" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="title">Add external links</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
+        <GenericEmptyState
+            image={EmptyExternalLinks}
+            classname="title dc__position-rel"
+            title={'Add external links'}
+            heightToDeduct={120}
+            subTitle={
                 <>
-                    Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
-                    {isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
-                    page.&nbsp;
-                    <ExternalLinksLearnMore />
+                    {`Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
+                    page. `}
+                    {<ExternalLinksLearnMore />}
                 </>
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <AddLinkButton handleOnClick={handleAddLinkClick} />
-            </EmptyState.Button>
-            {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
-        </EmptyState>
+            }
+            isButtonAvailable={true}
+            renderButton={handleButton}
+            children={isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
+        />
     )
 }
 
@@ -98,15 +100,11 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
 
 export const NoMatchingResults = (): JSX.Element => {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={NoResults} width="250" height="200" alt="No matching results" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn't find any matching external link configuration</EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={NoResults}
+            title={'No matching results'}
+            subTitle={"We couldn't find any matching external link configuration"}
+        />
     )
 }
 

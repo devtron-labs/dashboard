@@ -872,17 +872,11 @@ export default function ClusterForm({
 
     const NoMatchingResults = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={NoResults} width="250" height="200" alt="No matching results" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h2 data-testid="no_matching_result" className="fs-16 fw-4 c-9">
-                        No matching results
-                    </h2>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>We couldn't find any matching cluster</EmptyState.Subtitle>
-            </EmptyState>
+            <GenericEmptyState
+                image={NoResults}
+                title={"No mactching results"}
+                subTitle={"We couldn't find any matching cluster"}
+            />
         )
     }
 

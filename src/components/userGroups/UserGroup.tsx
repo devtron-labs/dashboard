@@ -30,6 +30,7 @@ import {
     not,
     noop,
     useEffectAfterMount,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
@@ -1518,22 +1519,21 @@ export function GroupRow({ name, description, removeRow }) {
 }
 
 function NoUsers({ onClick }) {
+    const handleNoUserButton = () => {
+        return (
+            <button onClick={onClick} className="cta flex">
+                <AddIcon className="mr-5" />
+                Add user
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No users</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Add users and assign group or direct permissions</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={onClick} className="cta flex">
-                    <AddIcon className="mr-5" />
-                    Add user
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            title={'No users'}
+            subTitle={'Add users and assign group or direct permissions'}
+            renderButton={handleNoUserButton}
+        />
     )
 }
 
@@ -1548,70 +1548,71 @@ const renderEmptySSOMessage = (): JSX.Element => {
 
 function SSONotConfiguredState() {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">
-                    {SSO_NOT_CONFIGURED_STATE_TEXTS.title}
-                </h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle className="w-300 fw-400 fs-13">
-                {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
-                <InfoColourBar
-                    message={renderEmptySSOMessage()}
-                    classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
-                    linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
-                    redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
-                    internalLink={true}
-                    Icon={ErrorIcon}
-                />
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            classname="fs-16 dc__align-center lh-24 mb-8-imp mt-20"
+            title={SSO_NOT_CONFIGURED_STATE_TEXTS.title}
+            subTitle={
+                <>
+                    {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
+                    <InfoColourBar
+                        message={renderEmptySSOMessage()}
+                        classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
+                        linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
+                        redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
+                        internalLink={true}
+                        Icon={ErrorIcon}
+                    />
+                </>
+            }
+        />
     )
 }
 
 function NoGroups({ onClick }) {
+    const handleButton = () => {
+        return (
+            <button data-testid="add-first-permission-group-button" onClick={onClick} className="cta flex">
+                <AddIcon className="mr-5" />
+                Add group
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 data-testid="empty-permission-groups-title">No groups</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Groups allow you to combine permissions and easily assign them to users
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button data-testid="add-first-permission-group-button" onClick={onClick} className="cta flex">
-                    <AddIcon className="mr-5" />
-                    Add group
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            title={'No groups'}
+            subTitle={'Groups allow you to combine permissions and easily assign them to users'}
+            isButtonAvailable={true}
+            renderButton={handleButton}
+        />
     )
 }
 
 function SearchEmpty({ searchString, setSearchString }) {
+    const handleSearchEmptyButton = () => {
+        return (
+            <button onClick={(e) => setSearchString('')} className="cta secondary">
+                Clear search
+            </button>
+        )
+    }
+
+    const BoldSearchString = () => {
+        return <b>{searchString}</b>
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptySearch} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No matching results</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                We couldn’t find any result for ”<b>{searchString}</b>”
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={(e) => setSearchString('')} className="cta secondary">
-                    Clear search
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptySearch}
+            title={'No matching results'}
+            subTitle={
+                <>
+                    We couldn’t find any result for {<BoldSearchString/>}
+                </>
+            }
+            isButtonAvailable={true}
+            renderButton={handleSearchEmptyButton}
+        />
     )
 }
 
