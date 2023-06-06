@@ -35,9 +35,11 @@ import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackMana
 export default function DevtronStackManager({
     serverInfo,
     getCurrentServerInfo,
+    isSuperAdmin
 }: {
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
+    isSuperAdmin:boolean
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
         useContext(mainContext)
@@ -65,6 +67,10 @@ export default function DevtronStackManager({
     const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)
     const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
     const [showResourceStatusModal, setShowResourceStatusModal] = useState(false)
+    const [dialog, setDialog] = useState<boolean>(false)
+    const [retryState, setRetryState] = useState<boolean>(false)
+    const [successState, setSuccessState] = useState<boolean>(false) 
+    const [toggled, setToggled] = useState<boolean>(false)
     useEffect(() => {
         getModuleDetails()
         getCurrentServerInfo()
@@ -189,6 +195,8 @@ export default function DevtronStackManager({
                     setSelectedModule({
                         ...currentModule,
                         installationStatus: result.status,
+                        moduleType: result.moduleType,
+                        enabled: result.enabled,
                     })
                     setModuleStatusInContext(result.name, result.status)
                     _stackDetails.discoverModulesList[currentModuleIndex] = currentModule
@@ -242,7 +250,12 @@ export default function DevtronStackManager({
          * - If in full mode then resolve all modules as INSTALLED which has isIncludedInLegacyFullPackage as true
          * - Else create a promise to fetch the details
          */
-        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) => getModuleInfo(module.name))
+        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) =>
+            getModuleInfo(
+                module.name,
+                module.name === ModuleNameMap.SECURITY_CLAIR || module.name === ModuleNameMap.SECURITY_TRIVY,
+            ),
+        )
 
         const _discoverModulesList: ModuleDetails[] = []
         const _installedModulesList: ModuleDetails[] = []
@@ -265,6 +278,8 @@ export default function DevtronStackManager({
                             ...currentModule,
                             installationStatus: result?.status,
                             moduleResourcesStatus: result?.moduleResourcesStatus,
+                            enabled: result?.enabled,
+                            moduleType: result?.moduleType,
                         }
 
                         /**
@@ -399,6 +414,19 @@ export default function DevtronStackManager({
                         history={history}
                         location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
+                        isSuperAdmin={isSuperAdmin}
+                        setSelectedModule={setSelectedModule}
+                        setStackDetails={setStackDetails}
+                        stackDetails={stackDetails}
+                        dialog={dialog}
+                        setDialog={setDialog}
+                        retryState={retryState}
+                        setRetryState={setRetryState}
+                        successState={successState}
+                        setSuccessState={setSuccessState}
+                        setToggled={setToggled}
+                        toggled={toggled}
+                        
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -414,6 +442,18 @@ export default function DevtronStackManager({
                         history={history}
                         location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
+                        setSelectedModule={setSelectedModule}
+                        isSuperAdmin={isSuperAdmin}
+                        setStackDetails={setStackDetails}
+                        stackDetails={stackDetails}
+                        dialog={dialog}
+                        setDialog={setDialog}
+                        retryState={retryState}
+                        setRetryState={setRetryState}
+                        successState={successState}
+                        setSuccessState={setSuccessState}
+                        setToggled={setToggled}
+                        toggled={toggled}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>

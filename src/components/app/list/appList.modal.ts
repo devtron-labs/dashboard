@@ -86,6 +86,7 @@ const environmentModal = (env) => {
         clusterName: env?.clusterName || '',
         namespace: env?.namespace || '',
         appStatus: appStatus,
+        isVirtualEnvironment: env?.isVirtualEnvironment
     }
 }
 
@@ -106,6 +107,7 @@ const getDefaultEnvironment = (envList): Environment => {
         clusterName: env?.clusterName || '',
         namespace: env?.namespace || '',
         appStatus,
+        isVirtualEnvironment: env?.isVirtualEnvironment
     }
 }
 

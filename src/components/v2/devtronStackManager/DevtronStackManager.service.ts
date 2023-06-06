@@ -43,10 +43,47 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     return Promise.resolve(moduleStatusMap)
 }
 
-export const getModuleInfo = async (moduleName: string): Promise<ModuleInfoResponse> => {
+
+
+export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoResponse> => {
+    // getting Security Module Installation status
+    const res: ModuleInfo = {
+        id: null,
+        name: null,
+        status: null,
+    }
+    let installedResponseFlag=false
+    try {
+        const [clairResponse, trivyResponse] = await Promise.all([
+            getModuleInfo(ModuleNameMap.SECURITY_CLAIR),
+            getModuleInfo(ModuleNameMap.SECURITY_TRIVY),
+        ])
+        if (clairResponse && trivyResponse) {
+            if (
+                clairResponse?.result?.status === ModuleStatus.INSTALLED ||
+                trivyResponse?.result?.status === ModuleStatus.INSTALLED
+            ) {
+                installedResponseFlag=true
+            }
+        }
+    } catch {
+        installedResponseFlag=false
+    }
+    finally{
+        if (installedResponseFlag){
+            return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.INSTALLED } })
+        }
+        return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.NOT_INSTALLED } })
+    }
+}
+
+export const getModuleInfo = async (moduleName: string, forceReload?: boolean): Promise<ModuleInfoResponse> => {
     const _savedModuleStatusMap = getSavedModuleStatus()
-    if (_savedModuleStatusMap && _savedModuleStatusMap[moduleName]) {
+    if (!forceReload && _savedModuleStatusMap && _savedModuleStatusMap[moduleName]) {
         return Promise.resolve({ status: '', code: 200, result: _savedModuleStatusMap[moduleName] })
+    }
+    if (moduleName === ModuleNameMap.SECURITY) {
+        return getSecurityModulesInfoInstalledStatus()
     }
     const { result } = await get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
     if (result && result.status === ModuleStatus.INSTALLED) {
@@ -64,6 +101,9 @@ export const getModuleInfo = async (moduleName: string): Promise<ModuleInfoRespo
     return Promise.resolve({ status: '', code: 200, result: result })
 }
 
+export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> => {
+    return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })
+}
 export const executeModuleAction = (
     moduleName: string,
     moduleActionRequest: ModuleActionRequest,

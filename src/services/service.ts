@@ -242,6 +242,7 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
                     policy: cve.permission,
                 }
             }),
+            scanToolId: response.result.scanToolId,
         },
     }
 }

@@ -133,7 +133,7 @@ function AppStatusDetailModal({
                         <div
                             className={` ${
                                 showSeeMore ? 'app-status__message-wrapper' : ''
-                            } bcr-1 cn-9 pt-10 pb-10 pl-20 pr-20`}
+                            } bcn-1 cn-9 pt-10 pb-10 pl-20 pr-20`}
                         >
                             <span className="fw-6 ">Message: </span> {message}
                             {_hasMoreData && renderShowMoreButton()}
