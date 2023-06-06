@@ -15,11 +15,9 @@ import { sortOptionsByLabel } from '../../../../common'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-        if(isResourceBrowserTab) {
+        if (isResourceBrowserTab) {
             return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
-        }
-        else return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
-
+        } else return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
     } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
         return [NodeDetailTab.LOGS]
     } else {
