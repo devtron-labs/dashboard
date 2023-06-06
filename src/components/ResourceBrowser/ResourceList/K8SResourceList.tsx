@@ -297,7 +297,7 @@ export function K8SResourceList({
 
     return (
         <div
-            className={`resource-list-container dc__border-left ${
+            className={`resource-list-container dc__border-left dc__postion-rel${
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >

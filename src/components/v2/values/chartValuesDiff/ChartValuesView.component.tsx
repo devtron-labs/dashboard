@@ -13,7 +13,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
-import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -484,11 +484,6 @@ export const UpdateApplicationButton = ({
 
 export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <ErrorExclamation className="icon-dim-20 mb-10" />
-            </EmptyState.Image>
-            <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState image={ErrorExclamation} classname="icon-dim-20 mb-10" title={''} subTitle={info} />
     )
 }

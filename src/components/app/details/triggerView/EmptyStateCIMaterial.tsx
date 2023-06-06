@@ -7,7 +7,8 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { LoadingText } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -149,29 +150,29 @@ export default function EmptyStateCIMaterial({
         }
     }
 
+    const handleMaterialLoadingButton = () => {
+        return (
+            <span className="dc__link cursor" onClick={toggleWebHookModal}>
+                {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
+            </span>
+        )
+    }
+
     const { title, subtitle, img, cta, link } = getData()
     return isMaterialLoading ? (
-        <EmptyState>
-            <EmptyState.Loading text={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
-        </EmptyState>
+            <GenericEmptyState image={LoadingText} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
-        <EmptyState>
-            <EmptyState.Image>{img}</EmptyState.Image>
-            <EmptyState.Title>{title}</EmptyState.Title>
-            <EmptyState.Subtitle className="mb-0">
+        <GenericEmptyState
+            image={img}
+            title={title}
+            subTitle={
                 <>
                     {subtitle}
                     {link}
                 </>
-            </EmptyState.Subtitle>
-            <EmptyState.Button>{cta}</EmptyState.Button>
-            {isWebHook && (
-                <EmptyState.Button>
-                    <span className="dc__link cursor" onClick={toggleWebHookModal}>
-                        {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
-                    </span>
-                </EmptyState.Button>
-            )}
-        </EmptyState>
+            }
+            isButtonAvailable={isWebHook}
+            renderButton={handleMaterialLoadingButton}
+        />
     )
 }

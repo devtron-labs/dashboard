@@ -37,6 +37,7 @@ import {
     getRandomColor,
     CDModalTab,
     ScanVulnerabilitiesTable,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -1242,21 +1243,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={noartifact} alt="" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                        No image available
-                    </h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    {this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
+           <GenericEmptyState
+                image={noartifact}
+                classname="w-300 dc__text-center lh-1-4"
+                title={'No image available'}
+                subTitle={
+                    this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'
                         : 'Please Trigger CI Pipeline and find the image here for deployment.'}
-                </EmptyState.Subtitle>
-            </EmptyState>
+            />
         )
     }
 

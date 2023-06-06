@@ -17,6 +17,7 @@ import {
     useBreadcrumb,
     DeleteDialog,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SavedValueType } from './types'
 import {
@@ -200,27 +201,25 @@ export default function SavedValuesList() {
         )
     }
 
+    const renderGenericEmptyStateButton = () => {
+        return (
+             <button onClick={clearSearch} className="add-link cta flex">
+                Clear search
+            </button>
+        )
+    }
+
     const renderEmptyState = (title?: string, subTitle?: string, showClearButton?: boolean): JSX.Element => {
         return (
-            <div style={{ height: 'calc(100vh - 235px)' }}>
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={emptyCustomChart} alt={title || 'No values saved for this chart'} />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="title">{title || 'No values saved for this chart'}</h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>
-                        {subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}&nbsp;
-                    </EmptyState.Subtitle>
-                    {showClearButton && (
-                        <EmptyState.Button>
-                            <button onClick={clearSearch} className="add-link cta flex">
-                                Clear search
-                            </button>
-                        </EmptyState.Button>
-                    )}
-                </EmptyState>
+            <div className='dc__position-rel' style={{ height: 'calc(100vh - 235px)' }}>
+                <GenericEmptyState
+                    image={emptyCustomChart}
+                    heightToDeduct={235}
+                    title={title || 'No values saved for this chart'}
+                    subTitle={subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}
+                    isButtonAvailable={showClearButton}
+                    renderButton={renderGenericEmptyStateButton}
+                />
             </div>
         )
     }

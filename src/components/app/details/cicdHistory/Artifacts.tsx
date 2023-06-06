@@ -161,17 +161,11 @@ const CIProgressView = (): JSX.Element => {
         /* TO replace with genericemptystate after incoporating png support */
     }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <MechanicalOperation />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Building artifacts</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Generated artifact(s) will be available here after the pipeline is executed.
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={MechanicalOperation}
+            title={"Building artifacts"}
+            subTitle={"Generated artifact(s) will be available here after the pipeline is executed."}
+        />
     )
 }
 

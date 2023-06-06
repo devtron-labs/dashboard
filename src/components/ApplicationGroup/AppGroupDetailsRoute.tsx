@@ -8,6 +8,7 @@ import {
     stopPropagation,
     DeleteDialog,
     showError,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
@@ -215,8 +216,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const renderEmpty = () => {
         return (
-            <ResourceListEmptyState
-                imgSource={EmptyFolder}
+            <GenericEmptyState
+                image={EmptyFolder}
                 title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
                 subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
             />
