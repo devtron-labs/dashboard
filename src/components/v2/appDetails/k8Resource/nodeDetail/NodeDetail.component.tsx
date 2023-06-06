@@ -7,7 +7,6 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from './nodeDetail.type'
-import { getNodeDetailResourceBrowserTabs } from './nodeDetail.util'
 import { NodeDetailPropsType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
@@ -18,6 +17,7 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
 import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
+import { getNodeDetailTabs } from './nodeDetail.util'
 
 function NodeDetailComponent({
     loadingResources,
@@ -57,7 +57,7 @@ function NodeDetailComponent({
 
     useEffect(() => {
         if (params.nodeType) {
-            const _tabs = getNodeDetailResourceBrowserTabs(params.nodeType as NodeType)
+            const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
             setTabs(_tabs)
         }
     }, [params.nodeType])
