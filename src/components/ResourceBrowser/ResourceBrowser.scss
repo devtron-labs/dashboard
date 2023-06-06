@@ -120,7 +120,7 @@
             }
 
             .scrollable-resource-list {
-                height: calc(100vh - 179.55px);
+                height: calc(100vh - 180px);
                 overflow: auto;
                 width: calc(100vw - 277px);
 
@@ -131,7 +131,7 @@
                 .list-header {
                     width: max-content;
                     min-width: calc(100vw - 277px);
-                    height: calc(100vh - 751px);
+                    height: calc(100vh - 750px);
                     top: 0;
                     z-index: 3;
                 }
