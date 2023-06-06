@@ -184,7 +184,7 @@ export default function Environment({
                             <input
                                 data-testid="nonProduction"
                                 type="radio"
-                                name="isNonProduction"
+                                name="isProduction"
                                 checked={state.isProduction.value === 'false'}
                                 value="false"
                                 onChange={handleOnChange}
