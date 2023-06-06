@@ -20,6 +20,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { BULK_EDIT_HEADER } from './constants'
 
 function PageHeader({
     headerName,
@@ -178,7 +179,7 @@ function PageHeader({
                             </Tippy>
                         </a>
                     )}
-                    {isTippyShown && headerName === "Bulk Edit" && (
+                    {isTippyShown && headerName === BULK_EDIT_HEADER && (
                         <TippyCustomized
                             theme={TippyTheme.white}
                             className="w-300 h-100 fcv-5"
