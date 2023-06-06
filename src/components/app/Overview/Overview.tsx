@@ -22,6 +22,8 @@ import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-succes
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
+import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -281,6 +283,14 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
+    const envIcon = (isVirtualCluster) => {
+        if (isVirtualCluster) {
+            return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
+        } else {
+            return <Database className="icon-dim-20" />
+        }
+    }
+
     const renderDeploymentComponent = () => {
 
         if (otherEnvsResult?.[0]?.result?.length > 0) {
@@ -291,6 +301,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7"
                         data-testid="overview-deployed-environment"
                     >
+                        <span />
                         <span>Environment</span>
                         {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
@@ -304,6 +315,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         key={`${_env.environmentName}-${_env.environmentId}`}
                                         className="env-deployments-info-row display-grid dc__align-items-center"
                                     >
+                                        {envIcon(_env.isVirtualEnvironment)}
                                         <Link
                                             to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
                                             className="fs-13"
@@ -318,6 +330,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                                         ? _env.appStatus
                                                         : StatusConstants.NOT_DEPLOYED.noSpaceLower
                                                 }
+                                                isVirtualEnv={_env.isVirtualEnvironment}
                                             />
                                         )}
                                         <span className="fs-13 fw-4 cn-7" data-testid="overview-deployed-time">

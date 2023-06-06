@@ -105,7 +105,8 @@ const NavigationList = [
         href: URLS.SECURITY,
         iconClass: 'nav-security',
         icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY,
+        moduleName: ModuleNameMap.SECURITY_CLAIR,
+        moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
     },
     {
         title: 'Bulk Edit',
@@ -181,29 +182,48 @@ export default class Navigation extends Component<
     componentDidUpdate(prevProps) {
         if (
             this.props.moduleInInstallingState !== prevProps.moduleInInstallingState &&
-            this.props.moduleInInstallingState === ModuleNameMap.SECURITY
+            (this.props.moduleInInstallingState === ModuleNameMap.SECURITY_CLAIR ||
+                this.props.moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY)
         ) {
             this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
         }
     }
 
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
-        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY] || window._env_.K8S_CLIENT) {
+        if (
+            this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] ||
+            window._env_.K8S_CLIENT ||
+            this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY]
+        ) {
             return
         }
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                this.props.installedModuleMap.current = {
-                    ...this.props.installedModuleMap.current,
-                    [ModuleNameMap.SECURITY]: true,
-                }
-                this.setState({ forceUpdateTime: Date.now() })
-            } else if (result?.status === ModuleStatus.INSTALLING) {
-                this.securityModuleStatusTimer = setTimeout(() => {
-                    this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
-                }, MODULE_STATUS_POLLING_INTERVAL)
-            }
+            Promise.all([getModuleInfo(ModuleNameMap.SECURITY_CLAIR), getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(
+                ([clairResponse, trivyResponse]) => {
+                    if (clairResponse?.result?.status === ModuleStatus.INSTALLED) {
+                        this.props.installedModuleMap.current = {
+                            ...this.props.installedModuleMap.current,
+                            [ModuleNameMap.SECURITY_CLAIR]: true,
+                        }
+                        this.setState({ forceUpdateTime: Date.now() })
+                    } else if (clairResponse?.result?.status === ModuleStatus.INSTALLING) {
+                        this.securityModuleStatusTimer = setTimeout(() => {
+                            this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
+                        }, MODULE_STATUS_POLLING_INTERVAL)
+                    }
+                    if (trivyResponse?.result?.status === ModuleStatus.INSTALLED) {
+                        this.props.installedModuleMap.current = {
+                            ...this.props.installedModuleMap.current,
+                            [ModuleNameMap.SECURITY_TRIVY]: true,
+                        }
+                        this.setState({ forceUpdateTime: Date.now() })
+                    } else if (trivyResponse?.result?.status === ModuleStatus.INSTALLING) {
+                        this.securityModuleStatusTimer = setTimeout(() => {
+                            this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
+                        }, MODULE_STATUS_POLLING_INTERVAL)
+                    }
+                },
+            )
         } catch (error) {
             if (retryOnError >= 0) {
                 this.getSecurityModuleStatus(retryOnError--)
@@ -301,7 +321,8 @@ export default class Navigation extends Component<
             return (
                 (this.props.serverMode === SERVER_MODE.FULL && !item.moduleName) ||
                 (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                this.props.installedModuleMap.current?.[item.moduleName]
+                this.props.installedModuleMap.current?.[item.moduleName] ||
+                this.props.installedModuleMap.current?.[item.moduleNameTrivy]
             )
         }
     }

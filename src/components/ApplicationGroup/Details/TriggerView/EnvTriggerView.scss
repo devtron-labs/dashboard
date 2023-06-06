@@ -57,6 +57,10 @@
             display: grid;
             grid-template-columns: repeat(2, 200px) auto;
             grid-column-gap: 16px;
+
+            &.is-virtual {
+                grid-template-columns: repeat(2, 200px) auto 103px;
+            }
         }
     }
 }

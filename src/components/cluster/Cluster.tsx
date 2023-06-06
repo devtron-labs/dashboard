@@ -21,6 +21,8 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
 import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as VirtualClusterIcon } from '../../assets/icons/ic-virtual-cluster.svg'
+import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environment-temp.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
@@ -139,6 +141,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 config: {},
                 environments: [],
                 insecureSkipTlsVerify: true,
+                isVirtualCluster: false,
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters: clusters })
@@ -181,6 +184,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ browseFile: !this.state.browseFile })
     }
 
+
     render() {
         if (!this.props.isSuperAdmin) {
             return <ErrorScreenNotAuthorized />
@@ -207,7 +211,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         >
                             <Add
                                 data-testid="add_cluster_button"
-                                className="icon-dim-24 fcb-5 dc__vertical-align-middle"
+                                className="icon-dim-16 mr-8 fcb-5 dc__vertical-align-middle"
                             />
                             Add cluster
                         </button>
@@ -247,7 +251,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 server_url={this.state.server_url}
                                 active={true}
                                 config={{}}
-                                toggleEditMode={() => {}}
+                                toggleEditMode={() => { } }
                                 reload={this.initialise}
                                 prometheus_url=""
                                 prometheusAuth={this.state.prometheus}
@@ -259,7 +263,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
-                                toggleClusterDetails={this.toggleClusterDetails}
+                                toggleClusterDetails={this.toggleClusterDetails} 
+                                isVirtualCluster={false}                                
                             />
                         </Drawer>
                     )}
@@ -287,6 +292,7 @@ function Cluster({
     toggleShowAddCluster,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
+    isVirtualCluster
 }) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -297,7 +303,7 @@ function Cluster({
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
-
+    
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
@@ -392,14 +398,9 @@ function Cluster({
 
     const history = useHistory()
     const newEnvs = useMemo(() => {
-        let namespacesInAll = true
-        if (Array.isArray(environments)) {
-            namespacesInAll = !environments.some((env) => !env.namespace)
-        }
-        return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || []
+        return clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
-    const sortedNewEnvs = newEnvs.sort((a, b) => sortCallback('environment_name', a, b))
-
+    
     async function handleEdit(e) {
         try {
             const { result } = await getCluster(clusterId)
@@ -548,9 +549,27 @@ function Cluster({
         }
     }
 
+    const clusterIcon = () => {
+        if (isVirtualCluster) {
+            return <VirtualClusterIcon className="fcb-5 icon-dim-24 dc__vertical-align-middle mr-16" />
+        } else {
+            return <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
+        }
+    }
+
+    const envIcon = () => {
+        if (isVirtualCluster) {
+            return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
+        } else {
+            return <Database className="icon-dim-20" />
+        }
+    }
+
     const DisableEditMode = (): void => {
         toggleEditMode((t) => !t)
     }
+
+    const subTitle: string = isVirtualCluster ? 'Virtual cluster' : server_url
 
     return (
         <>
@@ -567,10 +586,8 @@ function Cluster({
                             </List.Logo>
                         )}
                         <div className="flex left">
-                            {clusterId ? (
-                                <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
-                            ) : null}
-                            <List.Title title={cluster_name || 'Add cluster'} subtitle={server_url} className="fw-6" />
+                            {clusterId ? clusterIcon() : null}
+                            <List.Title title={cluster_name || 'Add cluster'} subtitle={subTitle} className="fw-6 dc__mxw-400 dc__truncate-text" />
                             {clusterId && (
                                 <div className="flex dc__align-right">
                                     <div
@@ -595,7 +612,7 @@ function Cluster({
                             </Tippy>
                         )}
                     </List>
-                    {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
+                    {!isVirtualCluster && serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
                         <ClusterInstallStatus
                             agentInstallationStage={agentInstallationStage}
                             envName={envName}
@@ -655,7 +672,7 @@ function Cluster({
                                                 }
                                             >
                                                 <span className="cursor flex w-100">
-                                                    {environment_name && <Database className="icon-dim-20" />}
+                                                    {environment_name && envIcon()}
                                                 </span>
 
                                                 <div
@@ -746,6 +763,7 @@ function Cluster({
                                 isKubeConfigFile={state.isKubeConfigFile}
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails={true}
+                                isVirtualCluster={isVirtualCluster}
                             />
                         </div>
                     </Drawer>
@@ -759,7 +777,8 @@ function Cluster({
                             cluster_name={cluster_name}
                             {...environment}
                             hideClusterDrawer={hideClusterDrawer}
-                            isNamespaceMandatory={Array.isArray(environments) && environments.length > 0}
+                            isNamespaceMandatory={!isVirtualCluster && Array.isArray(environments) && environments.length > 0}
+                            isVirtual={isVirtualCluster}
                         />
                     </div>
                 </Drawer>

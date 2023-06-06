@@ -41,7 +41,8 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: C
             const { result } = await getClusterListMin()
             setLastDataSync(!lastDataSync)
             if (result) {
-                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name']))
+                const sortedResult = result
+                    .sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
                 if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)
                     setFilteredClusterList(sortedResult)
@@ -61,7 +62,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: C
             completeDataLoadedRef.current = true
             setLastDataSync(!lastDataSync)
             if (result) {
-                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name']))
+                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
                 setClusterList(sortedResult)
                 setFilteredClusterList(sortedResult)
             }
