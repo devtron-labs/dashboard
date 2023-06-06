@@ -512,19 +512,18 @@ function LogsComponent({
                                 </div>
                             </React.Fragment>
                         )}
-                        <div
-                            className="cn-2 ml-8 mr-12 "
-                            style={{ width: '1px', height: '16px', background: '#0b0f22' }}
-                        ></div>
-                        <Checkbox
-                            dataTestId="prev-container-logs"
-                            isChecked={prevContainer}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={getPrevContainerLogs}
-                            rootClassName="fs-12 cn-9 mt-4"
-                        >
-                            <span className="fs-12">Prev. container</span>                
-                        </Checkbox>
+                            <div
+                                className="cn-2 ml-8 mr-12 line_separator"
+                            ></div>
+                            <Checkbox
+                                dataTestId="prev-container-logs"
+                                isChecked={prevContainer}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={getPrevContainerLogs}
+                                rootClassName="fs-12 cn-9 mt-4"
+                            >
+                                <span className="fs-12">Prev. container</span>
+                            </Checkbox>
                     </div>
 
                     <form
