@@ -1,4 +1,4 @@
-FROM node:16 AS builder
+FROM node:16.20.0-alpine3.18 AS builder
 
 WORKDIR /app
 COPY package.json .
@@ -17,7 +17,7 @@ RUN npm run build
 #RUN apt update -y && apt install jq -y
 #RUN python linter.py | jq -C --tab .
 
-FROM nginx:stable
+FROM nginx:1.25
 
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/build/ /usr/share/nginx/html
