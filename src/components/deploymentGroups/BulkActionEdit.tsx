@@ -9,6 +9,7 @@ import {
     OpaqueModal,
     ConfirmationDialog,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect } from 'react';
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg';
@@ -262,13 +263,15 @@ export function BulkActionEdit() {
                             <>
                                 {state.pipelines.map(p => <PipelineSelect key={p.ciPipelineId} {...p} isActive={p.ciPipelineId === state.ciPipelineId} select={Number(id) === 0 ? e => dispatch({ type: 'selectPipeline', value: p.ciPipelineId }) : () => { }} />)}
                                 {state.pipelines.length === 0 &&
-                                <EmptyState>
-                                    <div style={{height:'400px'}} className="flex column empty-pipelines">
-                                        <EmptyState.Image><Error style={{width:'32px', height:'32px'}}/></EmptyState.Image>
-                                        <EmptyState.Title><h3>No Linked pipelines created</h3></EmptyState.Title>
-                                        <EmptyState.Subtitle>Deployment groups can only be created for applications and environments using Linked CI Pipelines.</EmptyState.Subtitle>
-                                    </div>
-                                </EmptyState>}
+                                <GenericEmptyState
+                                    classname="flex column empty-pipelines w-32 h-32"
+                                    image={Error}
+                                    title={'No Linked pipelines created'}
+                                    heightToDeduct={500}
+                                    subTitle={
+                                        'Deployment groups can only be created for applications and environments using Linked CI Pipelines.'
+                                }
+                            />}
                             </>}
                         </div>}
 

@@ -12,6 +12,7 @@ import {
     Progressing,
     ErrorScreenManager as ErrorScreen,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
@@ -380,31 +381,34 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     }
     else if ((this.state.view === ViewType.FORM && this.state.size === 0) && (this.state.searchApplied || this.state.filtersApplied.severity.length
       || this.state.filtersApplied.environments.length || this.state.filtersApplied.clusters.length)) {
-      return <div style={{ height: 'calc(100vh - 200px)' }}>
-        <EmptyState >
-          <EmptyState.Image><img src={NoResults} alt="" /></EmptyState.Image>
-          <EmptyState.Title><h4>No Matching Results</h4></EmptyState.Title>
-          <EmptyState.Subtitle>No results found for the applied filters.</EmptyState.Subtitle>
-          <EmptyState.Button>
-            <button type="button" className="cta ghosted" onClick={this.removeFiltersAndSearch}>Clear all Filters</button>
-          </EmptyState.Button>
-        </EmptyState>
-      </div>
+        const handleButton = () => {
+            return (
+                <button type="button" className="cta ghosted" onClick={this.removeFiltersAndSearch}>
+                    Clear all Filters
+                </button>
+            )
+        }
+        return (
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
+                <GenericEmptyState
+                    image={NoResults}
+                    title={'No Matching Results'}
+                    subTitle={'No results found for the applied filters.'}
+                    isButtonAvailable={true}
+                    renderButton={handleButton}
+                />
+            </div>
+        )
     }
     else if (this.state.view === ViewType.FORM && this.state.size === 0) {
       return (
-          <div style={{ height: 'calc(100vh - 175px)' }}>
-              <EmptyState>
-                  <EmptyState.Image>
-                      <img src={AppNotDeployed} data-testid="no-scan-performed-image" alt="" />
-                  </EmptyState.Image>
-                  <EmptyState.Title>
-                      <h4>No Scans Performed</h4>
-                  </EmptyState.Title>
-                  <EmptyState.Subtitle>
-                      <span></span>
-                  </EmptyState.Subtitle>
-              </EmptyState>
+          <div className='dc__position-rel' style={{ height: 'calc(100vh - 175px)' }}>
+              <GenericEmptyState
+                image={AppNotDeployed}
+                title={"No Scans Performed"}
+                subTitle={<span></span>}
+              />
+
           </div>
       )
     }
