@@ -83,6 +83,7 @@ export interface CDNodeProps{
     deploymentAppCreated?: boolean
     match: RouteComponentProps['match']
     description: string
+    isVirtualEnvironment?: boolean
 }
 
 export interface WebhookNodeProps {

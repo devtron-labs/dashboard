@@ -6,7 +6,12 @@ import Tippy from '@tippyjs/react'
 import { triggerStatus } from './details/cicdHistory/History.components'
 import { YET_TO_RUN } from '../Jobs/Constants'
 
-export default function AppStatus({ appStatus, isDeploymentStatus = false, isJobView = false }: AppStatusType) {
+export default function AppStatus({
+    appStatus,
+    isDeploymentStatus = false,
+    isJobView = false,
+    isVirtualEnv,
+}: AppStatusType) {
     let status = appStatus
     if (isDeploymentStatus) {
         status = triggerStatus(appStatus)
@@ -14,12 +19,20 @@ export default function AppStatus({ appStatus, isDeploymentStatus = false, isJob
     const appStatusLowerCase = status?.toLowerCase()
     const isNotDeployed = appStatusLowerCase === StatusConstants.NOT_DEPLOYED.noSpaceLower
     const iconClass = isNotDeployed ? StatusConstants.NOT_DEPLOYED.lowerCase : appStatusLowerCase
+    const statusMessage = status || (isVirtualEnv ? StatusConstants.NOT_AVILABLE.normalCase :  '-')
+    const notDeployed = isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase
 
-    return (
-        <div className="flex left">
-            {iconClass ? (
-                <span className={`dc__app-summary__icon icon-dim-16 mr-6 ${iconClass} ${iconClass}--node`} />
-            ) : (
+    const renderIcon = () => {
+        if (iconClass) {
+            return <span className={`dc__app-summary__icon icon-dim-16 mr-6 ${iconClass} ${iconClass}--node`} />
+        } else if (isVirtualEnv) {
+            return (
+                <span
+                    className={`dc__app-summary__icon icon-dim-16 mr-6 ${StatusConstants.NOT_DEPLOYED.lowerCase} ${StatusConstants.NOT_DEPLOYED.lowerCase}--node`}
+                />
+            )
+        } else {
+            return (
                 <Tippy
                     className="default-tt w-200"
                     arrow={false}
@@ -28,12 +41,18 @@ export default function AppStatus({ appStatus, isDeploymentStatus = false, isJob
                 >
                     <InfoIcon className="icon-dim-16 mr-6 fcn-6" />
                 </Tippy>
-            )}
-            <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize  m-0">
+            )
+        }
+    }
+
+    return (
+        <div className="flex left">
+            {renderIcon()}
+            <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize cn-6 m-0">
                 {isNotDeployed ? (
-                    <span className="cn-6">{isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase}</span>
+                    notDeployed
                 ) : (
-                    status || '-'
+                    statusMessage
                 )}
             </p>
         </div>

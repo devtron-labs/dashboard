@@ -13,11 +13,12 @@ import {
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import { AppType, Options, TerminalComponentProps } from '../../../appDetails.type'
+import { AppDetails, AppType, DeploymentAppType, Options, TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getAppId, getDevtronAppId } from '../nodeDetail.api'
 
 let clusterTimeOut
 
@@ -50,17 +51,27 @@ function TerminalComponent({
     const nodeName = isResourceBrowserView ? params.node : params.podName
 
     const generateSessionURL = () => {
-        let url
+        const appId =
+            appDetails.appType == AppType.DEVTRON_APP
+                ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+                : getAppId(
+                      appDetails.clusterId,
+                      appDetails.namespace,
+                      appDetails.appName,
+                  )
+
+        let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
-            url = `k8s/pod/exec/session/${selectedResource.clusterId}`
-        } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            url = `k8s/pod/exec/session/${appDetails.appId}`
+            url += `${selectedResource.clusterId}`
         } else {
-            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
+            url += `${appId}`
         }
         url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
+        if (!isResourceBrowserView) { 
+            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
+        }
         return url
     }
 

@@ -38,7 +38,8 @@ export interface AppEnvironmentDetail {
     environmentId: number,
     namespace: string,
     clusterName: string,
-    clusterId: number
+    clusterId: number,
+    isVirtualEnvironment?: boolean
 }
 
 async function commonAppFilters(serverMode) {
@@ -244,7 +245,7 @@ const _buildNamespaces = (namespaceListRes : EnvironmentListHelmResponse, cluste
             if(!_namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
                 _namespaces.push({
                     key: _clusterId + "_" + _namespace,
-                    label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n"> cluster: '+_clusterName+'</div></div>',
+                    label: '<div><div class="dc__truncate-text">'+_namespace+'</div><div class="cn-6 fs-11 fw-n dc__truncate-text"> cluster: '+_clusterName+'</div></div>',
                     isSaved: true,
                     isChecked: _isClusterSelected && clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
                     clusterId : _clusterId,

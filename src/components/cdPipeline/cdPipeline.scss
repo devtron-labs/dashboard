@@ -141,3 +141,26 @@
     align-items: center;
     margin-left: 0px;
 }
+
+.cd-pipeline-body {
+    .form__radio-item.disabled {
+        background-color: var(--N000) !important;
+        opacity: 0.5;
+    }
+
+    .form__radio-group.chartrepo-type__radio-group .form__radio-item .form__radio-item-content {
+        padding: 4px 16px 4px 0;
+    }
+}
+
+.form__row {
+    .deployment-strategy-dropdown {
+        border: 0;
+    }
+    .deployment-strategy-dropdown:hover {
+        border: 0px;
+    }
+    .deployment-strategy-dropdown:active {
+        border: 0px;
+    }
+}
