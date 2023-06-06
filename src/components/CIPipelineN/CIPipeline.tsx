@@ -250,17 +250,9 @@ export default function CIPipeline({
                 for (let i = 0; i < pluginListLength; i++) {
                     const pluginData = response.result[i]
                     if (pluginData.type === 'PRESET') {
-                        _presetPlugin.push({
-                            ...pluginData.metadata,
-                            inputVariables: pluginData.inputVariables,
-                            outputVariables: pluginData.outputVariables,
-                        })
+                        _presetPlugin.push(pluginData)
                     } else {
-                        _sharedPlugin.push({
-                            ...pluginData.metadata,
-                            inputVariables: pluginData.inputVariables,
-                            outputVariables: pluginData.outputVariables,
-                        })
+                        _sharedPlugin.push(pluginData)
                     }
                 }
                 setPresetPlugins(_presetPlugin)
