@@ -62,7 +62,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             updatedTemplate: [],
             readmeResult: [],
             showExamples: true,
-            showHeaderDescription: true,
             showOutputData: true,
             showImpactedtData: false,
             codeEditorPayload: undefined,
@@ -107,32 +106,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showError(error)
                 this.setState({ view: ViewType.FORM, statusCode: error.code })
             })
-    }
-
-    renderBulkHeaderDescription = () => {
-        return (
-            <div className="deployment-group-list-page ">
-                <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
-                    <Question className="icon-dim-16 mr-13 fcv-5" />
-                    <div data-testid="run-scripts-text">
-                        Run scripts to bulk edit configurations for multiple devtron components.
-                        <a
-                            className="dc__link"
-                            href={DOCUMENTATION.BULK_UPDATE}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                        >
-                            Learn more
-                        </a>
-                    </div>
-                    <Close
-                        style={{ margin: 'auto', marginRight: '0' }}
-                        className="icon-dim-20 cursor"
-                        onClick={() => this.setState({ showHeaderDescription: false })}
-                    />
-                </div>
-            </div>
-        )
     }
 
     handleRunButton = (e) => {
@@ -276,10 +249,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         return (
-            <div>
+            <div className="code-editor-body">
                 <CodeEditor
                     theme="vs-gray--dt"
-                    height={400}
+                    height="calc(60vh - 97px)"
                     value={this.state.codeEditorPayload}
                     mode="yaml"
                     onChange={(event) => {
@@ -698,7 +671,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="dc__border-right">
                 {this.renderCodeEditorHeader()}
-                <div className="code-editor-body">{this.renderCodeEditorBody()}</div>
+                {this.renderCodeEditorBody()}
             </div>
         )
     }
@@ -737,7 +710,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderBulkEditBody = () => {
         return (
             <div>
-                {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
                 {!this.state.showExamples ? (
                     <div> {this.renderBulkCodeEditor()}</div>
                 ) : (
@@ -772,12 +744,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
 
         return (
-            <div className="fs-13">
+            <div className="fs-13" >
                 <PageHeader
                     headerName="Bulk Edit"
                     isTippyShown={true}
                     TippyIcon={Question}
-                    tippyMessage={'Learn more'}
+                    tippyMessage="Run scripts to bulk edit configurations for multiple devtron components."
                     tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
                 />
                 {this.props.serverMode == SERVER_MODE.EA_ONLY
