@@ -161,7 +161,7 @@ function PageHeader({
                     </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
-                    {isTippyShown && headerName != "Bulk Edit" && (
+                    {isTippyShown && headerName != BULK_EDIT_HEADER && (
                         <a
                             data-testid="learn-more-symbol"
                             className="dc__link flex"
@@ -191,7 +191,7 @@ function PageHeader({
                             trigger="click"
                             interactive={true}
                             documentationLink={tippyRedirectLink}
-                            documentationLinkText={"Learn More"}
+                            documentationLinkText="Learn More"
                         >
                             <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
                         </TippyCustomized>
