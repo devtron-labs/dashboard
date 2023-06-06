@@ -242,7 +242,7 @@ const _buildNamespaces = (namespaceListRes : EnvironmentListHelmResponse, cluste
         namespaceObj.environments.forEach((environment : EnvironmentHelmResult) => {
             let _namespace = environment.namespace;
             // avoid pushing same namespace for same cluster multiple times (can be data bug in backend)
-            if(!_namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
+            if(_namespace && !_namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
                 _namespaces.push({
                     key: _clusterId + "_" + _namespace,
                     label: '<div><div class="dc__truncate-text">'+_namespace+'</div><div class="cn-6 fs-11 fw-n dc__truncate-text"> cluster: '+_clusterName+'</div></div>',
