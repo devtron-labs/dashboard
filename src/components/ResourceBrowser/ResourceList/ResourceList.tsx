@@ -232,8 +232,9 @@ export default function ResourceList() {
             setClusterLoader(true)
             const { result } = await getClusterList()
             if (result) {
+                const _clusterList = result.filter((resource) => !resource?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
-                    sortObjectArrayAlphabetically(result, 'cluster_name'),
+                    sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
                     'cluster_name',
                     'id',
                     'errorInConnecting',

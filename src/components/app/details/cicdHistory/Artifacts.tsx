@@ -17,7 +17,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
-const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
+const ApprovedArtifact = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifact')
 
 export default function Artifacts({
     status,
@@ -28,7 +28,10 @@ export default function Artifacts({
     isJobView,
     type,
 }: ArtifactType) {
-    const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
+    const { triggerId, buildId } = useParams<{
+        triggerId: string
+        buildId: string
+    }>()
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
@@ -61,7 +64,9 @@ export default function Artifacts({
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
                     <Question className="icon-dim-20 fcv-5" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">{EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
+                    <span className="fs-13 fw-4 mr-8 ml-8">
+                        {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
+                    </span>
                     <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
@@ -152,7 +157,9 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 }
 
 const CIProgressView = (): JSX.Element => {
-   {/* TO replace with genericemptystate after incoporating png support */}
+    {
+        /* TO replace with genericemptystate after incoporating png support */
+    }
     return (
         <EmptyState>
             <EmptyState.Image>
