@@ -106,7 +106,6 @@ export interface BulkEditsState {
     readmeResult: string[];
     outputResult: BulkOutput;
     showExamples: boolean;
-    showHeaderDescription: boolean;
     showImpactedtData: boolean;
     showOutputData: boolean;
     bulkConfig: BulkConfiguration[];

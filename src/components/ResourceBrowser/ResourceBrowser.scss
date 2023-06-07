@@ -120,7 +120,7 @@
             }
 
             .scrollable-resource-list {
-                height: calc(100vh - 144px);
+                height: calc(100vh - 180px);
                 overflow: auto;
                 width: calc(100vw - 277px);
 
@@ -131,13 +131,14 @@
                 .list-header {
                     width: max-content;
                     min-width: calc(100vw - 277px);
+                    height: calc(100vh - 750px);
                     top: 0;
                     z-index: 3;
                 }
             }
 
             .scrollable-event-list {
-                height: calc(100vh - 198.66px);
+                height: calc(100vh - 247.66px);
                 overflow: hidden auto;
 
                 &.paginated-list-view {
