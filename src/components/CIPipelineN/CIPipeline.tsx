@@ -277,7 +277,7 @@ export default function CIPipeline({
     const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
         if (processPluginData && prepareFormData) {
             let branchName = ''
-            if (formData?.materials?.length) {
+            if (_formData?.materials?.length) {
                 for (const material of formData.materials) {
                     if (!material.isRegex || material.value) {
                         branchName += `${branchName ? ',' : ''}${material.value}`
