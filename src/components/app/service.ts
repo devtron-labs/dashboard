@@ -281,6 +281,8 @@ export function getCDMaterialList(
                 materials: [],
                 userApprovalConfig: null,
                 requestedUserId: 0,
+                tagsEditable: false,
+                appReleaseTagNames: [],
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
@@ -293,6 +295,8 @@ export function getCDMaterialList(
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
+                appReleaseTagNames: response.result.appReleaseTagNames,
+                tagsEditable: response.result.tagsEditable,
             }
         } else {
             return {

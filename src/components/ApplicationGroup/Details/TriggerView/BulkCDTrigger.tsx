@@ -112,6 +112,8 @@ export default function BulkCDTrigger({
                             materials: response.value['materials'],
                             userApprovalConfig: response.value['userApprovalConfig'],
                             requestedUserId: response.value['requestedUserId'],
+                            tagsEditable: response.value['tagsEditable'],
+                            appReleaseTagNames: response.value['appReleaseTagNames']
                         }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
