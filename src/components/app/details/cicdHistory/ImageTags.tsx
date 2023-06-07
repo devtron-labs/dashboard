@@ -41,9 +41,15 @@ export const ImageTagsContainer = ({ description, tagTexts }) => {
         setSelectedTags([...selectedTags, { text: newValue, isSoftDeleted: false }])
     }
 
-    const handleTagDelete = (index) => {
+    const handleTagSoftDelete = (index) => {
         const updatedTags = [...selectedTags]
         updatedTags[index].isSoftDeleted = !updatedTags[index].isSoftDeleted
+        setSelectedTags(updatedTags)
+    }
+
+    const handleTagHardDelete = (index) => {
+        const updatedTags = [...selectedTags]
+        updatedTags.splice(index, 1) // Remove the tag from the array
         setSelectedTags(updatedTags)
     }
 
@@ -70,7 +76,8 @@ export const ImageTagsContainer = ({ description, tagTexts }) => {
                                     text={tag.text}
                                     isSoftDeleted={tag.isSoftDeleted}
                                     isEditing={isEditing}
-                                    onClick={() => handleTagDelete(index)}
+                                    onSoftDeleteClick={() => handleTagSoftDelete(index)}
+                                    onHardDeleteClick={() => handleTagHardDelete(index)}
                                 />
                             ))}
                         </div>
@@ -101,7 +108,8 @@ export const ImageTagsContainer = ({ description, tagTexts }) => {
                                 text={tag.text}
                                 isSoftDeleted={tag.isSoftDeleted}
                                 isEditing={isEditing}
-                                onClick={() => handleTagDelete(index)}
+                                onSoftDeleteClick={() => handleTagSoftDelete(index)}
+                                onHardDeleteClick={() => handleTagHardDelete(index)}
                             />
                         ))}
                     </div>
@@ -127,7 +135,7 @@ export const ImageTagsContainer = ({ description, tagTexts }) => {
     )
 }
 
-const ImageTagButton = ({ text, isSoftDeleted, isEditing, onClick }) => {
+const ImageTagButton = ({ text, isSoftDeleted, isEditing, onSoftDeleteClick, onHardDeleteClick }) => {
     const containerClassName = isSoftDeleted ? 'image-tag-button-soft-deleted mb-8 mr-8' : 'image-tag-button mb-8 mr-8'
     const IconComponent = isSoftDeleted ? Redo : Minus
     const [isHovered, setIsHovered] = useState(false)
@@ -144,9 +152,9 @@ const ImageTagButton = ({ text, isSoftDeleted, isEditing, onClick }) => {
     return (
         <div className={containerClassName} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="mr-8 ml-8 mt-2 mb-2 flex">
-                {isHovered && isEditing && <IconComponent className="icon-dim-14 mr-2" onClick={onClick} />}
+                {isHovered && isEditing && <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />}
                 {text}
-                {isHovered && isEditing && <Close className="icon-dim-14 mr-2 cn-5" />}
+                {isHovered && isEditing && <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />}
             </div>
         </div>
     )
