@@ -64,6 +64,15 @@ export const repositoryOption = (props): JSX.Element => {
         </components.Option>
     )
 }
+export const releaseTagOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
+            {props.value}
+        </components.Option>
+    )
+}
 
 export const checkoutPathOption = (props) : JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()

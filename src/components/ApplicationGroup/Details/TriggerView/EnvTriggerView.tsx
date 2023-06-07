@@ -1434,11 +1434,20 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
         handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
     }
-
-    const createBulkCDTriggerData = (): BulkCDDetailType[] => {
+    interface BulkCDDetailTypeResponse{
+        bulkCDDetailType: BulkCDDetailType[],
+        uniqueReleaseTags: string[],
+    }
+    const createBulkCDTriggerData = (): BulkCDDetailTypeResponse => {
+        let uniqueReleaseTags: string[] = []
+        let uniqueTagsSet = new Set<string>()
         const _selectedAppWorkflowList: BulkCDDetailType[] = []
         filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
+                //extract unique tags for this workflow
+                wf.imageReleaseTags?.forEach((tag)=>{
+                    uniqueTagsSet.add(tag)
+                })
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
@@ -1487,7 +1496,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
         })
-        return _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
+        _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
+        return {
+            bulkCDDetailType:_selectedAppWorkflowList,
+            uniqueReleaseTags:uniqueReleaseTags
+        }
     }
 
     const getWarningMessage = (_ciNode): string => {
@@ -1690,7 +1703,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (!showBulkCDModal) {
             return null
         }
-        const _selectedAppWorkflowList: BulkCDDetailType[] = createBulkCDTriggerData()
+        const bulkCDDetailTypeResponse = createBulkCDTriggerData()
+        const _selectedAppWorkflowList: BulkCDDetailType[] = bulkCDDetailTypeResponse.bulkCDDetailType
+        const uniqueReleaseTags = bulkCDDetailTypeResponse.uniqueReleaseTags
         return (
             <BulkCDTrigger
                 stage={bulkTriggerType}
@@ -1705,6 +1720,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 isLoading={isCDLoading}
                 setLoading={setCDLoading}
                 isVirtualEnv={isVirtualEnv}
+                uniqueReleaseTags={uniqueReleaseTags}
             />
         )
     }

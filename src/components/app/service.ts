@@ -305,6 +305,8 @@ export function getCDMaterialList(
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
+                appReleaseTagNames: response.result.appReleaseTagNames,
+                tagsEditable: response.result.tagsEditable,
             }
         }
     })
