@@ -21,6 +21,9 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
+import ReactSelect, {components} from "react-select";
+import {_customStyles} from "../../../ciConfig/CIConfig.utils";
+import {releaseTagOption} from "../../../ciConfig/CIBuildpackBuildOptions";
 
 export default function BulkCDTrigger({
     stage,
@@ -34,7 +37,8 @@ export default function BulkCDTrigger({
     responseList,
     isLoading,
     setLoading,
-    isVirtualEnv
+    isVirtualEnv,
+    uniqueReleaseTags,
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
@@ -174,12 +178,77 @@ export default function BulkCDTrigger({
             return <Progressing pageLoader />
         }
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
+        let tagsList = ['latest']
+        tagsList.push(...uniqueReleaseTags)
+        const options = tagsList.map((tag) => {
+            return { label: tag, value: tag }
+        })
+        let appWiseTagsToArtifactIdMapMappings = {}
+        appList.forEach((app) => {
+            let tagsToArtifactIdMap = { latest: 0 }
+            for (let i = 0; i < _currentApp.material?.length; i++) {
+                const mat = _currentApp.material?.[i]
+                mat.imageReleaseTags?.forEach((imageTag) => {
+                    tagsToArtifactIdMap[imageTag.tagName] = i
+                })
+            }
+            appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
+        })
+
+        const handleTagChange = (selectedTag) => {
+            for (let i = 0; i < appList?.length ?? 0; i++) {
+                const app = appList[i]
+                const tagsToArtifactIdMap = appWiseTagsToArtifactIdMapMappings[app.appId]
+                if (app.material?.length <= (tagsToArtifactIdMap[selectedTag] ?? 0)) return
+                selectImage(tagsToArtifactIdMap[selectedTag], MATERIAL_TYPE.inputMaterialList, {
+                    id: +app.cdPipelineId,
+                    type: selectedApp.stageType,
+                })
+            }
+        }
+
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
+                    <div className="pb-12"></div>
+                    <span className="pl-16 pr-16">Select image by release tag</span>
+                    <div style={{ zIndex: 1 }}>
+                        <ReactSelect
+                            tabIndex={1}
+                            isSearchable={true}
+                            options={options}
+                            getOptionLabel={(option: any) => `${option?.value}`}
+                            getOptionValue={(option: any) => `${option?.value}`}
+                            value={{ label: 'latest', value: 'latest' }}
+                            styles={{
+                                ..._customStyles,
+                                control: (base) => ({
+                                    ...base,
+                                    borderRadius: '4px',
+                                    borderWidth: '1px',
+                                    marginLeft: '16px',
+                                    marginRight: '16px',
+                                    marginTop: '12px',
+                                }),
+                                dropdownIndicator: (base) => ({
+                                    ...base,
+                                    paddingLeft: '0px',
+                                    paddingRight: '2px',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: releaseTagOption,
+                                Control: components.Control,
+                            }}
+                            onChange={handleTagChange}
+                            isDisabled={false}
+                            classNamePrefix="build-config__select-repository-containing-code"
+                        />
+                    </div>
                     <div
                         className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 pt-12 pr-16 pb-12 pl-16"
-                        style={{ zIndex: 1 }}
+                        style={{ zIndex: 0 }}
                     >
                         Applications
                     </div>

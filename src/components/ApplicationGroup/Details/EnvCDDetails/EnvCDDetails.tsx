@@ -69,13 +69,13 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
-        if (deploymentHistoryResult.result?.length !== pagination.size) {
+        if (deploymentHistoryResult.result?.cdWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
+        const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -126,7 +126,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         return null
     }
 
-    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.length) {
+    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.cdWorkflows?.length) {
         replace(
             generatePath(path, {
                 appId,

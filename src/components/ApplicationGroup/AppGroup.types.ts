@@ -93,6 +93,7 @@ export interface BulkCDTriggerType {
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
+    uniqueReleaseTags: string[]
 }
 
 export interface ProcessWorkFlowStatusType {
