@@ -11,8 +11,13 @@ import {
 import { decode } from '../../../../util/Util'
 
 export interface DeploymentHistoryResult extends ResponseType {
-    result?: History[]
+    result?: DeploymentHistoryResultObject
 }
+
+export interface DeploymentHistoryResultObject {
+    cdWorkflows?: History[]
+}
+
 export async function getTriggerHistory(
     appId: number | string,
     envId: number | string,
