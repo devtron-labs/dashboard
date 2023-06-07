@@ -6,7 +6,7 @@ export interface PaginationProps {
     size: number
     pageSize: number
     offset: number
-    changePage: (pageNo: number) => void
+    changePage: (pageNo: number, pageSize?: number) => void
     changePageSize?: (pageSize: number) => void
     isPageSizeFix?: boolean
     pageSizeOptions?: PageSizeOption[]
