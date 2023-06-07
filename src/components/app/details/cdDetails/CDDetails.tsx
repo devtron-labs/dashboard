@@ -72,29 +72,29 @@ export default function CDDetails() {
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
-        if (deploymentHistoryResult.result?.length !== pagination.size) {
+        if (deploymentHistoryResult.result?.cdWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        let _triggerId = deploymentHistoryResult.result[0]?.id
+        let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
         let queryString = new URLSearchParams(location.search)
         let queryParam = queryString.get('type')
         if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
             let deploymentStageType = queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
-            const requiredResult = deploymentHistoryResult.result.filter((obj) => {
+            const requiredResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
                 return obj.stage === deploymentStageType;
             });
             if(requiredResult?.[0]) {
                 _triggerId = requiredResult[0].id
             }
         }
-        const newTriggerHistory = (deploymentHistoryResult?.cdWorkflows || []).reduce((agg, curr) => {
+        const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
-        if (!triggerId && envId && pipelineId && deploymentHistoryResult.result?.length) {
+        if (!triggerId && envId && pipelineId && deploymentHistoryResult.result?.cdWorkflows?.length) {
             replace(
                 generatePath(path, {
                     appId,
