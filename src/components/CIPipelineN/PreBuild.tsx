@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FormType,
+    PluginType,
+    ScriptType,
+    FormErrorObjectType,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
@@ -29,6 +35,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
+        calculateLastStepDetail,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -40,6 +47,15 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            activeStageName: string,
+            startIndex?: number,
+        ) => {
+            index: number
+            calculatedStageVariables: Map<string, VariableType>[]
+        }
     } = useContext(ciPipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
@@ -53,11 +69,19 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setSelectedTaskIndex(0)
     }, [activeStageName])
 
+    const setVariableStepIndexInPlugin = (variable): VariableType => {
+        variable.variableStepIndexInPlugin = variable.variableStepIndex
+        delete variable.variableStepIndex
+        return variable
+    }
+
     function setPluginType(
         pluginType: PluginType,
         pluginId: number,
         pluginName?: string,
         pluginDescription?: string,
+        inputVariables?: VariableType[],
+        outputVariables?: VariableType[],
     ): void {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
@@ -84,8 +108,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            const isPluginRequired =
-                isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+            const isPluginRequired = isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -93,12 +116,15 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 id: 0,
                 pluginId: pluginId,
                 conditionDetails: [],
-                inputVariables: [],
-                outputVariables: [],
+                inputVariables: inputVariables.map(setVariableStepIndexInPlugin),
+                outputVariables: outputVariables.map(setVariableStepIndexInPlugin),
             }
             _formDataErrorObj[activeStageName].steps[selectedTaskIndex] = {
                 ..._formDataErrorObj[activeStageName].steps[selectedTaskIndex],
                 pluginRefStepDetail: { inputVariables: [] },
+            }
+            if (_form[activeStageName].steps.length > selectedTaskIndex) {
+                calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
             }
         }
         setFormData(_form)
