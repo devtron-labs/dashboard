@@ -471,7 +471,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
-        showPluginWarning: ciPipeline.isCITriggerBlocked,
+        showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
     } as NodeAttr
     return ciNode
 }
