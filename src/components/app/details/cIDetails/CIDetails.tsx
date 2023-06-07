@@ -56,16 +56,16 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
-        if (!triggerHistoryResult) {
+        if (!triggerHistoryResult?.result) {
             return
         }
-        if (triggerHistoryResult.result?.length !== pagination.size) {
+        if (triggerHistoryResult.result.ciWorkflows.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (triggerHistoryResult.result?.ciWorkflows || []).reduce((agg, curr) => {
+        const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -97,7 +97,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             showError(error)
             return
         }
-        setTriggerHistory(mapByKey(result?.result || [], 'id'))
+        setTriggerHistory(mapByKey(result?.result?.ciWorkflows || [], 'id'))
     }
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
