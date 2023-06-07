@@ -484,6 +484,7 @@ function parseCIResponse(
                 postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
                 dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
+                isCITriggerBlocked: ciPipeline.isCITriggerBlocked
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,

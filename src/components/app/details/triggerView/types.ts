@@ -453,6 +453,7 @@ export interface CiPipeline {
     appName?: string
     appId?: string
     componentId?: number
+    isCITriggerBlocked?: boolean
 }
 
 export interface Material {
