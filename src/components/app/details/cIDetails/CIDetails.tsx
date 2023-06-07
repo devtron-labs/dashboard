@@ -56,10 +56,10 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
-        if (!triggerHistoryResult?.result) {
+        if (!triggerHistoryResult?.result?.ciWorkflows) {
             return
         }
-        if (triggerHistoryResult.result.ciWorkflows.length !== pagination.size) {
+        if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
