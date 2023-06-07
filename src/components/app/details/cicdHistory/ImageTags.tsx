@@ -6,6 +6,7 @@ import { ReactComponent as QuestionIcon } from '../../../v2/assets/icons/ic-ques
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Redo } from '../../../../assets/icons/ic-arrow-counter-clockwise.svg'
 import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
+import { ReactComponent as Rectangle } from '../../../../assets/icons/RectangleLine.svg'
 
 export const ImageTagsContainer = ({ description, tagTexts }) => {
     const [newDescription, setNewDescription] = useState(description)
@@ -67,19 +68,22 @@ export const ImageTagsContainer = ({ description, tagTexts }) => {
         <div>
             {!isEditing ? (
                 <div className="top mt-8 br-4 image-tags-container" style={{ display: 'flex' }}>
-                    <div className="ml-10" style={{ width: '734px' }}>
-                        <div className="mb-8 mt-8">{description}</div>
-                        <div className="dc__flex-wrap flex left">
-                            {tagTexts.map((tag, index) => (
-                                <ImageTagButton
-                                    key={index}
-                                    text={tag.text}
-                                    isSoftDeleted={tag.isSoftDeleted}
-                                    isEditing={isEditing}
-                                    onSoftDeleteClick={() => handleTagSoftDelete(index)}
-                                    onHardDeleteClick={() => handleTagHardDelete(index)}
-                                />
-                            ))}
+                    <div className="flex left" style={{ width: '734px' }}>
+                        <Rectangle className="image-tags-container-rectangle__icon" />
+                        <div className="ml-10">
+                            <div className="mb-8 mt-8">{description}</div>
+                            <div className="dc__flex-wrap flex left">
+                                {tagTexts.map((tag, index) => (
+                                    <ImageTagButton
+                                        key={index}
+                                        text={tag.text}
+                                        isSoftDeleted={tag.isSoftDeleted}
+                                        isEditing={isEditing}
+                                        onSoftDeleteClick={() => handleTagSoftDelete(index)}
+                                        onHardDeleteClick={() => handleTagHardDelete(index)}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <EditIcon
@@ -170,3 +174,5 @@ const AddImageButton = ({ onClick }) => {
         </div>
     )
 }
+
+
