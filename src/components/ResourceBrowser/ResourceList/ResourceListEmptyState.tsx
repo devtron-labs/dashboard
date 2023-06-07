@@ -19,7 +19,7 @@ export default function ResourceListEmptyState({
     }
     return (
         <GenericEmptyState
-            classname="title"
+            classname="title dc__position-rel-imp"
             image={imgSource ?? emptyCustomChart}
             title={title ?? 'No resources found'}
             subTitle={subTitle}

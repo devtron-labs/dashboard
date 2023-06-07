@@ -238,7 +238,7 @@ export function K8SResourceList({
                 ref={resourceListRef}
                 className={`scrollable-resource-list ${showPaginatedView ? 'paginated-list-view' : ''}`}
             >
-                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
+                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
