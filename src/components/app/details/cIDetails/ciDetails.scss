@@ -441,6 +441,7 @@
     border-radius: 4px;
     border: 1px solid var(--N200);
     width: fit-content;
+    cursor: pointer;
 }
 
 .image-tag-button-soft-deleted {
@@ -450,4 +451,14 @@
     color: var(--R500); 
     background-color: var(--R100);
     text-decoration: line-through;
+    cursor: pointer;
+}
+
+.add-tag-button {
+    padding: 4px 8px;
+    width: fit-content;
+    height: 24px;
+    border: 1px dashed #B1B7BC;
+    border-radius: 4px; 
+    cursor: pointer;
 }
