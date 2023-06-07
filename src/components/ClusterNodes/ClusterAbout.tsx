@@ -280,7 +280,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
 
     const randerClusterNote = (): JSX.Element => {
         return (
-            <div className="cluster__body-details h-100 mb-16">
+            <div className="cluster__body-details h-100">
                 <div
                     data-testid="cluster-note-wrapper"
                     className="dc__overflow-auto pl-16 pr-16 pt-16 pb-16 h-100 mb-16"

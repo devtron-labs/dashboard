@@ -735,7 +735,7 @@ export default function ClusterForm({
                             <span className="form__label">Authentication Type*</span>
                             <RadioGroup
                                 value={state.authType.value}
-                                name="authType`"
+                                name="authType"
                                 onChange={(e) => OnPrometheusAuthTypeChange(e)}
                             >
                                 <RadioGroupItem value={AuthenticationType.BASIC}> Basic </RadioGroupItem>

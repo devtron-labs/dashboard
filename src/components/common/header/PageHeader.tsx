@@ -15,10 +15,12 @@ import {
 } from '../../onboardingGuide/onboarding.utils'
 import HelpNav from './HelpNav'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as QuestionFilled } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
-import { getLoginInfo, getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
+import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { BULK_EDIT_HEADER } from './constants'
 
 function PageHeader({
     headerName,
@@ -159,7 +161,7 @@ function PageHeader({
                     </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
-                    {isTippyShown && (
+                    {isTippyShown && headerName != BULK_EDIT_HEADER && (
                         <a
                             data-testid="learn-more-symbol"
                             className="dc__link flex"
@@ -176,6 +178,23 @@ function PageHeader({
                                 <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
                             </Tippy>
                         </a>
+                    )}
+                    {isTippyShown && headerName === BULK_EDIT_HEADER && (
+                        <TippyCustomized
+                            theme={TippyTheme.white}
+                            className="w-300 h-100 fcv-5"
+                            placement="bottom"
+                            Icon={QuestionFilled}
+                            heading={headerName}
+                            infoText={tippyMessage}
+                            showCloseButton={true}
+                            trigger="click"
+                            interactive={true}
+                            documentationLink={tippyRedirectLink}
+                            documentationLinkText="Learn More"
+                        >
+                            <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                        </TippyCustomized>
                     )}
                     {markAsBeta && renderBetaTag()}
                 </div>
