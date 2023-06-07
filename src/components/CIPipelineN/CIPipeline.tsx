@@ -275,7 +275,7 @@ export default function CIPipeline({
     }
 
     const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
-        if (processPluginData && prepareFormData) {
+        if (processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
@@ -302,8 +302,8 @@ export default function CIPipeline({
         }
     }
 
-    const getPluginData = (): void => {
-        getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins])
+    const getPluginData = (_formData?: FormType): void => {
+        getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
     const deletePipeline = (): void => {

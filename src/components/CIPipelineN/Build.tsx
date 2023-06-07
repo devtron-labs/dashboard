@@ -60,7 +60,7 @@ export function Build({
     }
 
     const handleOnBlur = (event): void => {
-      getPluginData(event.target.value)
+      getPluginData()
     }
 
 
@@ -114,6 +114,7 @@ export function Build({
             _formData.webhookConditionList = createWebhookConditionList(_material.value)
         }
         setFormData(_formData)
+        getPluginData(_formData)
     }
     const getSelectedWebhookEvent = (material) => {
         const _materialValue = JSON.parse(material.value)
