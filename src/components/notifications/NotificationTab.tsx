@@ -599,16 +599,17 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     renderPagination() {
-        if(this.state.pagination.size) {
-        return (
-            <Pagination offset={this.state.pagination.offset}
-                pageSize={this.state.pagination.pageSize}
-                size={this.state.pagination.size}
-                changePage={this.changePage}
-                changePageSize={this.changePageSize} />
-        )
-        }
-        else return null
+        if (this.state.pagination.size) {
+            return (
+                <Pagination
+                    offset={this.state.pagination.offset}
+                    pageSize={this.state.pagination.pageSize}
+                    size={this.state.pagination.size}
+                    changePage={this.changePage}
+                    changePageSize={this.changePageSize}
+                />
+            )
+        } else return null
     }
 
     renderBody() {
