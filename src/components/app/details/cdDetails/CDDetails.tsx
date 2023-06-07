@@ -90,7 +90,7 @@ export default function CDDetails() {
                 _triggerId = requiredResult[0].id
             }
         }
-        const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
+        const newTriggerHistory = (deploymentHistoryResult?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
