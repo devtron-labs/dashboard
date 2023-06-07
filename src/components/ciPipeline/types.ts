@@ -384,7 +384,7 @@ export interface BuildType {
     isSecurityModuleInstalled: boolean
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
-    getPluginData: (branchName: string) => void
+    getPluginData: (_formData?: FormType) => void
 }
 
 export interface PreBuildType {

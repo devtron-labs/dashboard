@@ -260,8 +260,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 {this.state.showPluginWarning && (
                     <span className="flex left">
                         <Warning className="icon-dim-14 warning-icon-y7 mr-4" />
-                        Some mandatory plugins are not configured for selected CI pipeline. Building image might get
-                        blocked.
+                        Some mandatory plugins are not configured for selected CI pipeline. CI trigger might get blocked.
                     </span>
                 )}
             </div>

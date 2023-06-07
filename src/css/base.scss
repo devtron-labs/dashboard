@@ -2228,6 +2228,22 @@ textarea,
     }
 }
 
+.warning-icon-y5-imp {
+    path {
+        &:nth-child(1) {
+            fill: transparent !important;
+        }
+
+        &:nth-child(2) {
+            fill: var(--Y500) !important;
+        }
+
+        &:nth-child(3) {
+            fill: var(--N900) !important;
+        }
+    }
+}
+
 .alert-icon-r5-imp {
     path {
         &:nth-child(1) {
@@ -2386,6 +2402,10 @@ textarea,
 
 .mw-20 {
     min-width: 20px !important;
+}
+
+.mw-24 {
+    min-width: 24px !important;
 }
 
 .mw-48 {

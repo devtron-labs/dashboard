@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo } from 'react'
+import React, { useState, useEffect, createContext, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
@@ -148,6 +148,8 @@ export default function CIPipeline({
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+    const selectedBranchRef = useRef(null)
+
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
         if (mandatoryPluginData?.pluginData.length) {
@@ -161,7 +163,6 @@ export default function CIPipeline({
     useEffect(() => {
         getInitialData()
         getGlobalVariables()
-        //getAvailablePlugins()
     }, [])
 
     useEffect(() => {
@@ -273,27 +274,36 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[], branchName?: string): void => {
-        if (processPluginData && prepareFormData) {
-            processPluginData(!ciPipelineId, _formData, pluginList, ciPipelineId ?? appId, branchName)
-                .then((response: MandatoryPluginDataType) => {
-                    if (response?.pluginData?.length) {
-                        const _formDataErrorObj = { ...formDataErrorObj }
-                        if (_formData) {
-                            setFormData(prepareFormData(_formData, response.pluginData))
-                        }
-                        setFormDataErrorObj(_formDataErrorObj)
-                        setMandatoryPluginData(response)
+    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
+        if (processPluginData && prepareFormData && pluginList.length) {
+            let branchName = ''
+            if (_formData?.materials?.length) {
+                for (const material of _formData.materials) {
+                    if (!material.isRegex || material.value) {
+                        branchName += `${branchName ? ',' : ''}${material.value}`
                     }
-                })
-                .catch((error: ServerErrors) => {
-                    showError(error)
-                })
+                }
+            }
+            if (selectedBranchRef.current !== branchName) {
+                selectedBranchRef.current = branchName
+                processPluginData(_formData, pluginList, appId, ciPipelineId, branchName)
+                    .then((response: MandatoryPluginDataType) => {
+                        if (response?.pluginData?.length) {
+                            setMandatoryPluginData(response)
+                        }
+                        if (_formData) {
+                            setFormData(prepareFormData(_formData, response?.pluginData ?? []))
+                        }
+                    })
+                    .catch((error: ServerErrors) => {
+                        showError(error)
+                    })
+            }
         }
     }
 
-    const getPluginData = (branchName: string): void => {
-        getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins], branchName)
+    const getPluginData = (_formData?: FormType): void => {
+        getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
     const deletePipeline = (): void => {
