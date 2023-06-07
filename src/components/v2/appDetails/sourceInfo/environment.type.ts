@@ -5,6 +5,8 @@ export interface EnvironmentStatusComponentType {
     loadingDetails: boolean
     loadingResourceTree: boolean
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+    isVirtualEnvironment?: boolean
+
 }
 export interface AppEnvironment {
     environmentName: string

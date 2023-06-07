@@ -46,6 +46,7 @@ export interface Environment {
     ciArtifactId: number;
     clusterName: string;
     namespace: string;
+    isVirtualEnvironment?: boolean
 }
 
 export interface EnvironmentClusterList {

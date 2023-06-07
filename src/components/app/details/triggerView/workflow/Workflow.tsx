@@ -206,6 +206,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentEnvironmentName={node.parentEnvironmentName}
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
+                isVirtualEnvironment={node.isVirtualEnvironment}
             />
         )
     }
