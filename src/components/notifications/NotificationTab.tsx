@@ -197,23 +197,18 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    changePage(pageNo): void {
-        let state = { ...this.state };
-        state.view = ViewType.LOADING;
-        state.pagination.offset = (pageNo - 1) * this.state.pagination.pageSize;
+    changePage(pageNo, pageSize?): void {
+        let state = { ...this.state }
+        state.view = ViewType.LOADING
+        state.pagination.offset = pageSize ? 0 : (pageNo - 1) * this.state.pagination.pageSize
+        state.pagination.pageSize = pageSize ?? state.pagination.pageSize
         this.setState(state, () => {
             this.getAllNotifications();
         });
     }
 
     changePageSize(pageSize): void {
-        let state = { ...this.state };
-        state.view = ViewType.LOADING;
-        state.pagination.pageSize = pageSize;
-        this.changePage(1)
-        this.setState(state, () => {
-            this.getAllNotifications();
-        });
+        this.changePage(1, pageSize)
     }
 
     toggleNotification(id: number): void {
