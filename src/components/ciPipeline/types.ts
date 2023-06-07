@@ -302,6 +302,7 @@ export interface LinkedCIPipelineState {
     loadingData: boolean
     ciPipelines: any[]
     loadingPipelines: boolean
+    showPluginWarning: boolean
     form: {
         parentAppId: number
         parentCIPipelineId: number
