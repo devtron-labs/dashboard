@@ -160,8 +160,8 @@ const CIProgressView = (): JSX.Element => {
     return (
         <GenericEmptyState
             image={MechanicalOperation}
-            title={"Building artifacts"}
-            subTitle={"Generated artifact(s) will be available here after the pipeline is executed."}
+            title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
+            subTitle={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
         />
     )
 }

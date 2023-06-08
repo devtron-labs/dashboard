@@ -37,6 +37,7 @@ import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclam
 import ReactGA from 'react-ga4';
 import './deploymentMetrics.scss';
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types';
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging';
 
 
 export default class DeploymentMetrics extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
@@ -406,8 +407,8 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         return <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
             <GenericEmptyState
                 image={SelectEnvImage}
-                title={"Deployment Metrics"}
-                subTitle={"This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices."}
+                title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
+                subTitle={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.SUBTITLE}
         />
         </div>
     }
@@ -418,8 +419,8 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
                 <GenericEmptyState
                     image={SelectEnvImage}
-                    title={"Select an Environment"}
-                    subTitle={"Please select an Enviroment to view deployment metrics."}
+                    title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.SUBTITLE}
                 />
             </div>
         </div>

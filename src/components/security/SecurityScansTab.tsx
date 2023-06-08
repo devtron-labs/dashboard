@@ -19,6 +19,7 @@ import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
 import ReactSelect from 'react-select';
 import AppNotDeployed from '../../assets/img/app-not-deployed.png';
 import NoResults from '../../assets/img/empty-noresult@2x.png';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 
 export class SecurityScansTab extends Component<RouteComponentProps<{}>, SecurityScansTabState> {
 
@@ -392,7 +393,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
                 <GenericEmptyState
                     image={NoResults}
-                    title={'No Matching Results'}
+                    title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
                     subTitle={'No results found for the applied filters.'}
                     isButtonAvailable={true}
                     renderButton={handleButton}

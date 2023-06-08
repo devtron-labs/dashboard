@@ -1,6 +1,7 @@
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import emptyImage from '../../../assets/img/empty-noresult@2x.png'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 interface EmptyChartType {
     title?: string
@@ -32,7 +33,7 @@ function ChartEmptyState({
         >
             <GenericEmptyState
                 image={emptyImage}
-                title={title || 'No matching charts'}
+                title={title || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
                 subTitle={subTitle || "We couldn't find any matching results"}
                 isButtonAvailable={true}
                 renderButton={renderButton}

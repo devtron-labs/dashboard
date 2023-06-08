@@ -66,6 +66,7 @@ import clair from "../../../assets/icons/ic-trivy-to-clair.svg"
 import warn  from '../../../assets/icons/ic-error-medium.svg';
 import { SuccessModalComponent } from './SuccessModalComponent'
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
     enableStatus: boolean,
@@ -1104,8 +1105,8 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
             <GenericEmptyState
                 image={NoIntegrations}
                 classname='fs-16'
-                title={'No integrations installed'}
-                subTitle={'Installed integrations will be available here'}
+                title={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.TITLE}
+                subTitle={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.SUBTITLE}
                 isButtonAvailable={true}
                 renderButton={DiscoverIntegrationsButton}
             />

@@ -25,6 +25,7 @@ import { UserRoleType } from '../userGroups/userGroups.types'
 import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -102,7 +103,7 @@ export const NoMatchingResults = (): JSX.Element => {
     return (
         <GenericEmptyState
             image={NoResults}
-            title={'No matching results'}
+            title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
             subTitle={"We couldn't find any matching external link configuration"}
         />
     )

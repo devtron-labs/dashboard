@@ -31,6 +31,7 @@ import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
@@ -215,8 +216,8 @@ export default function SavedValuesList() {
                 <GenericEmptyState
                     image={emptyCustomChart}
                     heightToDeduct={235}
-                    title={title || 'No values saved for this chart'}
-                    subTitle={subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}
+                    title={title || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.TITLE}
+                    subTitle={subTitle || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.SUBTITLE}
                     isButtonAvailable={showClearButton}
                     renderButton={renderGenericEmptyStateButton}
                 />

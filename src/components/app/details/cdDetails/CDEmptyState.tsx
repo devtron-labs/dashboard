@@ -1,6 +1,7 @@
 import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React, { CSSProperties } from 'react'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export default function CDEmptyState({
     imgSource,
@@ -45,8 +46,8 @@ export default function CDEmptyState({
           <GenericEmptyState
                 image={imgSource || AppNotDeployed}
                 classname='fs-16'
-                title={title ? title : "Data not available"}
-                subTitle={subtitle ? subtitle : "Deployed configurations is not available for older deployments"}
+                title={title ? title : EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
+                subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
                 renderButton={actionButtonText && handleCDEmptyStateButton}
             />
         </div>

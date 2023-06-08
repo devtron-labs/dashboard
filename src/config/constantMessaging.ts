@@ -251,9 +251,80 @@ export const EMPTY_STATE_STATUS = {
     },
     TRIGGER_URL:{
       TITLE: 'No URLs available',
-      SUBTITLE: 'No URLs found in ingress and service resources'
-    }
+      SUBTITLE: 'No URLs found in ingress and service resources',
+    },
 
+    CD_EMPTY_STATE: {
+        TITLE: 'Data not available',
+        SUBTITLE: 'Deployed configurations is not available for older deployments'
+    },
+
+    CI_PROGRESS_VIEW: {
+        TITLE: 'Building artifacts',
+        SUBTITLE: 'Generated artifact(s) will be available here after the pipeline is executed.',
+    },
+
+    RENDER_EMPTY_STATE: {
+        TITILE: 'No deployments found',
+        SUBTITLE: 'There are no deployments in this period on',
+    },
+
+    RENDER_NO_ENVIORNMENT_STATE: {
+        TITLE: 'Deployment Metrics',
+        SUBTITLE: 'This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.',
+    },
+
+    RENDER_SELECT_ENVIRONMENT_VIEW: {
+        TITLE: 'Select an Environment',
+        SUBTITLE: 'Please select an Enviroment to view deployment metrics.',
+    },
+
+    SAVED_VALUES_EMPTY_STATE: {
+        TITLE: 'No values saved for this chart',
+        SUBTITLE: 'Customize, Dry Run and Save values so they’re ready to be used later.',
+    },
+
+    LOADING_CLUSTER: {
+        TITLE: 'Trying to connect to Cluster',
+        SUBTITLE: 'Please wait while the kubeconfig is verified and cluster details are fetched.',
+    },
+
+    NO_MATCHING_RESULT: {
+        TITLE: 'No mactching results',
+        SUBTITLE: `${"We couldn't find any matching cluster"}`,
+    },
+
+    CLUSTER_NODE_EMPTY_STATE: {
+        TITLE: 'No matching clusters',
+        SUBTITLE: 'We couldn’t find any matching results',
+    },
+
+    CHART_EMPTY_STATE: {
+        TITLE: 'No matching charts',
+    },
+
+    CHART_VALUES_GUIT_VIEW: {
+        SUBTITLE: 'GUI view is not available as values.schema.json file does not exist for the selected version and values.',
+    },
+
+    DEVTRON_STACK_MANAGER: {
+        TITLE: 'No integrations installed',
+        SUBTITLE: 'Installed integrations will be available here.',
+    },
+
+    NO_GROUPS: {
+        TITLE: 'No groups',
+        SUBTITLE: 'Groups allow you to combine permissions and easily assign them to users.',
+    },
+
+    NO_USER: {
+        TITLE: 'No users',
+        SUBTITLE: 'Add users and assign group or direct permissions',
+    },
+
+    RENDER_LIST: {
+        SUBTITLE: 'No results found for the applied filters.',
+    },
 }
 
 export const INVALID_YAML_MSG = "Please provide data in valid YAML format";

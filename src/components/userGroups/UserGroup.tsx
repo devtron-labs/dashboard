@@ -78,11 +78,13 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import {
+    EMPTY_STATE_STATUS,
     ERROR_EMPTY_SCREEN,
     SSO_NOT_CONFIGURED_STATE_TEXTS,
     TOAST_ACCESS_DENIED,
     USER_NOT_EDITABLE,
 } from '../../config/constantMessaging'
+import { EMPTY } from 'rxjs'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
@@ -1530,8 +1532,8 @@ function NoUsers({ onClick }) {
     return (
         <GenericEmptyState
             image={EmptyImage}
-            title={'No users'}
-            subTitle={'Add users and assign group or direct permissions'}
+            title={EMPTY_STATE_STATUS.NO_USER.TITLE}
+            subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
             renderButton={handleNoUserButton}
         />
     )
@@ -1581,8 +1583,8 @@ function NoGroups({ onClick }) {
     return (
         <GenericEmptyState
             image={EmptyImage}
-            title={'No groups'}
-            subTitle={'Groups allow you to combine permissions and easily assign them to users'}
+            title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
+            subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
             isButtonAvailable={true}
             renderButton={handleButton}
         />
@@ -1598,16 +1600,14 @@ function SearchEmpty({ searchString, setSearchString }) {
         )
     }
 
-    const BoldSearchString = () => {
-        return <b>{searchString}</b>
-    }
     return (
         <GenericEmptyState
             image={EmptySearch}
-            title={'No matching results'}
+            title={EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
             subTitle={
                 <>
-                    We couldn’t find any result for {<BoldSearchString/>}
+                    We couldn’t find any result for 
+                    {<b>{searchString}</b>}
                 </>
             }
             isButtonAvailable={true}
