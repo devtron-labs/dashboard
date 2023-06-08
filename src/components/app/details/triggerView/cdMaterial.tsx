@@ -56,6 +56,7 @@ import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
+import { ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -655,6 +656,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 : this.renderVulnerabilities(mat)}
                         </>
                     )}
+                    <ImageTagsContainer ciPipelineId={0} artifactId={0}/>
                     {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
                         <button
                             type="button"

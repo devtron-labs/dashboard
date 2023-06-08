@@ -72,8 +72,8 @@ export interface ArtifactType {
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
     type: HistoryComponentType
-    imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[]
+    ciPipelineId?: number
+    artifactId?: number
 }
 
 export interface CopyTippyWithTextType {
@@ -87,15 +87,15 @@ export interface CIListItemType {
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
     children: any
-    imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[]
+    ciPipelineId?: number
+    artifactId?: number
 }
 
 export interface ReleaseTag {
     id: number
     tagName: string
     appId: number
-    softDeleted: boolean
+    deleted: boolean
     artifactId: number
 }
 
@@ -107,8 +107,8 @@ export interface ImageComment {
 
 
 export interface ImageTagType {
-    imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[]
+    ciPipelineId?: number
+    artifactId?: number
 }
 
 export interface LogsRendererType {

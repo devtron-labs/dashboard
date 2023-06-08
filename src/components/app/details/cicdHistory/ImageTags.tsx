@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState, useEffect } from 'react'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
@@ -7,28 +7,46 @@ import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.s
 import { ReactComponent as Redo } from '../../../../assets/icons/ic-arrow-counter-clockwise.svg'
 import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Rectangle } from '../../../../assets/icons/RectangleLine.svg'
-import { ImageTagType, ReleaseTag, ImageComment } from './types'
-import { setImageTags } from '../../service' 
+import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
+import { ImageTagType, ReleaseTag } from './types'
+import { setImageTags, getImageTags } from '../../service'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
-export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagType) => {
-    const [newDescription, setNewDescription] = useState(imageComment?.comment)
+export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) => {
+    const [initialTags, setInitialTags] = useState<ReleaseTag[]>([])
+    const [initialDescription, setInitialDescription] = useState('')
+    const [existingTags, setExistingTags] = useState([])
+    const [newDescription, setNewDescription] = useState('')
     const [isEditing, setIsEditing] = useState(false)
-    const [selectedTags, setSelectedTags] = useState<ReleaseTag[]>(
-        imageReleaseTags?.map((tag) => ({
-            id: tag.id,
-            tagName: tag.tagName,
-            softDeleted: tag.softDeleted,
-            appId: 0,
-            artifactId: 0,
-        })) ?? [],
-    )
-
+    const [displayedTags, setDisplayedTags] = useState<ReleaseTag[]>([])
+    const [tagErrorMessage, setTagErrorMessage] = useState('')
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getImageTags(ciPipelineId, artifactId)
+                const tags = response.result?.imageReleaseTags?.map((tag) => ({
+                    id: tag.id,
+                    tagName: tag.tagName,
+                    deleted: tag.deleted,
+                    appId: 0,
+                    artifactId: 0,
+                }))
+                const appReleaseTags = response.result?.appReleaseTags
+                setExistingTags(appReleaseTags)
+                setDisplayedTags(tags)
+                setInitialTags(tags)
+                setInitialDescription(response.result?.imageComment?.comment)
+                setNewDescription(response.result?.imageComment?.comment)
+            } catch (error) {
+                // Handle the error if necessary
+                showError(error)
+            }
+        }
+        fetchData()
+    }, [ciPipelineId, artifactId])
     const [createTags, setCreateTags] = useState<ReleaseTag[]>([])
     const [softDeleteTags, setSoftDeleteTags] = useState<ReleaseTag[]>([])
     const [hardDeleteTags, setHardDeleteTags] = useState<ReleaseTag[]>([])
-    const [imageCommentState, setImageComment] = useState<ImageComment>(
-        imageComment ? { ...imageComment } : { id: 0, comment: "", artifactId: 0 },
-    )
 
     const CreatableComponents = useMemo(
         () => ({
@@ -48,132 +66,100 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
     }
 
     const handleCancel = () => {
-        if (imageReleaseTags !== null) {
-            const restoredTags = imageReleaseTags.map((tag) => ({
-                id: tag.id,
-                tagName: tag.tagName,
-                softDeleted: tag.softDeleted,
-                appId: 0,
-                artifactId: 0,
-            }))
-            setSelectedTags(restoredTags)
-        } else {
-            setSelectedTags([])
-        }
-        if (imageComment !== null) {
-          const updatedImageComment: ImageComment = {
-              ...imageCommentState,
-          }
-          setImageComment(updatedImageComment)
-      } else {
-        imageCommentState.comment = ""
-      }
-      setNewDescription(imageCommentState.comment)
+        setDisplayedTags(initialTags)
+        setNewDescription(initialDescription)
         setCreateTags([])
         setSoftDeleteTags([])
         setHardDeleteTags([])
-
         handleEditClick()
     }
 
     const handleTagCreate = (newValue) => {
+        setTagErrorMessage('')
+        const isTagExists = existingTags.includes(newValue)
+        if (isTagExists) {
+            setTagErrorMessage('This tag is already applied on another image in this application')
+            return
+        }
         const newTag: ReleaseTag = {
             id: 0,
             tagName: newValue,
             appId: 0,
-            softDeleted: false,
+            deleted: false,
             artifactId: 0,
         }
-
         setCreateTags([...createTags, newTag])
-        setSelectedTags([...selectedTags, newTag])
+        setDisplayedTags([...displayedTags, newTag])
     }
 
     const handleTagSoftDelete = (index) => {
-        const updatedTags = [...selectedTags]
-        updatedTags[index].softDeleted = !updatedTags[index].softDeleted
-        setSelectedTags(updatedTags)
-
-     
-
-        const tag = imageReleaseTags[index]
-
-  
-        const updatedTag: ReleaseTag = {
-            ...tag,
-            softDeleted: updatedTags[index].softDeleted,
+        const updatedTags = [...displayedTags]
+        updatedTags[index] = {
+            ...updatedTags[index],
+            deleted: !updatedTags[index].deleted,
         }
-        setSoftDeleteTags([...softDeleteTags, updatedTag])
+        setDisplayedTags(updatedTags)
+
+        const updatedTag = {
+            ...displayedTags[index],
+            deleted: updatedTags[index].deleted,
+        }
+        const updatedSoftDeleteTags = [...softDeleteTags, updatedTag]
+        setSoftDeleteTags(updatedSoftDeleteTags)
     }
 
     const handleTagHardDelete = (index) => {
-        const updatedSelectedTags = [...selectedTags]
-        updatedSelectedTags.splice(index, 1) 
-        setSelectedTags(updatedSelectedTags)
-
-        const updatedCreateTags = [...createTags]
-        updatedCreateTags.splice(index, 1) 
+        const deletedTag = displayedTags[index]
+        const updatedCreateTags = createTags.filter((tag) => tag.tagName !== deletedTag.tagName)
         setCreateTags(updatedCreateTags)
-
-        const upadetSoftDeleteTags = [...softDeleteTags]
-        upadetSoftDeleteTags.splice(index, 1)
-        setSoftDeleteTags(upadetSoftDeleteTags)
-
-        if (imageReleaseTags && imageReleaseTags[index]) {
-            const deletedTag = imageReleaseTags[index]
-            setHardDeleteTags([...hardDeleteTags, deletedTag])
+        const updatedDisplayedTags = [...displayedTags]
+        updatedDisplayedTags.splice(index, 1)
+        setDisplayedTags(updatedDisplayedTags)
+        if (deletedTag.id !== 0) {
+            const updatedHardDeleteTags = [...hardDeleteTags, deletedTag]
+            setHardDeleteTags(updatedHardDeleteTags)
         }
     }
 
-    const handleSave = () => {
-        if (imageComment !== null) {
-            const updatedImageComment: ImageComment = {
-                ...imageCommentState,
+    const handleSave = async () => {
+        const payload = {
+            createTags: createTags,
+            softDeleteTags: softDeleteTags,
+            imageComment: {
+                id: 0,
                 comment: newDescription,
-            }
-            setImageComment(updatedImageComment)
-        } else {
-          imageCommentState.comment = newDescription
+                artifactId: 0,
+            },
+            hardDeleteTags: hardDeleteTags,
         }
 
-     
-
-
-        const payload ={
-          createTags: createTags,
-          softDeleteTags: softDeleteTags,
-          imageComment: imageCommentState,
-          hardDeleteTags: hardDeleteTags,
+        try {
+            // set loading state true
+            let response = await setImageTags(payload, ciPipelineId, artifactId)
+            const tags = response.result?.imageReleaseTags?.map((tag) => ({
+                id: tag.id,
+                tagName: tag.tagName,
+                deleted: tag.deleted,
+                appId: 0,
+                artifactId: 0,
+            }))
+            const comment = response.result?.imageComment?.comment
+            setInitialTags(tags)
+            setInitialDescription(comment)
+            setDisplayedTags(tags)
+            setNewDescription(comment)
+            setCreateTags([])
+            setSoftDeleteTags([])
+            setHardDeleteTags([])
+            handleEditClick()
+        } catch (err) {
+            showError(err)
         }
-       
-        setImageTags(payload,1,1)
-
-        
-
-        console.log(createTags)
-        console.log(softDeleteTags)
-        console.log(hardDeleteTags)
-        console.log(imageCommentState)
-
-   
-        
-        setCreateTags([])
-        setSoftDeleteTags([])
-        setHardDeleteTags([])
-
-        handleEditClick()
-    }
-
-    const getPayload = () =>{
-      return{
-        createTags: createTags,
-
-      }
     }
 
     const creatableRef = useRef(null)
 
-    if (imageComment === null && imageReleaseTags === null && !isEditing) {
+    if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
         return (
             <div className="mt-8">
                 <AddImageButton handleEditClick={handleEditClick} />
@@ -188,13 +174,13 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
                     <div className="flex left" style={{ width: '734px' }}>
                         <Rectangle className="image-tags-container-rectangle__icon" />
                         <div className="ml-10">
-                            <div className="mb-8 mt-8">{imageComment?.comment}</div>
+                            <div className="mb-8 mt-8">{initialDescription}</div>
                             <div className="dc__flex-wrap flex left">
-                                {imageReleaseTags?.map((tag, index) => (
+                                {initialTags?.map((tag, index) => (
                                     <ImageTagButton
                                         key={tag?.id}
                                         text={tag?.tagName}
-                                        isSoftDeleted={tag?.softDeleted}
+                                        isSoftDeleted={tag?.deleted}
                                         isEditing={isEditing}
                                         onSoftDeleteClick={() => handleTagSoftDelete(index)}
                                         onHardDeleteClick={() => handleTagHardDelete(index)}
@@ -215,7 +201,7 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
                         Release tags (eg. v1.0)
                         <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
                     </div>
-                    <div className="mb-8 mt-6">
+                    <div className="mt-6">
                         <Creatable
                             placeholder="Type a tag and press enter"
                             onCreateOption={handleTagCreate}
@@ -223,12 +209,19 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
                             components={CreatableComponents}
                         />
                     </div>
-                    <div className="dc__flex-wrap flex left">
-                        {selectedTags?.map((tag, index) => (
+
+                    {tagErrorMessage && (
+                        <div className="flex left">
+                            <Error className="form__icon form__icon--error" />
+                            <div className="form__error">{tagErrorMessage}</div>
+                        </div>
+                    )}
+                    <div className="dc__flex-wrap mt-8 flex left">
+                        {displayedTags?.map((tag, index) => (
                             <ImageTagButton
                                 key={tag.id}
                                 text={tag?.tagName}
-                                isSoftDeleted={tag?.softDeleted}
+                                isSoftDeleted={tag?.deleted}
                                 isEditing={isEditing}
                                 onSoftDeleteClick={() => handleTagSoftDelete(index)}
                                 onHardDeleteClick={() => handleTagHardDelete(index)}
@@ -261,6 +254,7 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
 const ImageTagButton = ({ text, isSoftDeleted, isEditing, onSoftDeleteClick, onHardDeleteClick, tagId }) => {
     const containerClassName = isSoftDeleted ? 'image-tag-button-soft-deleted mb-8 mr-8' : 'image-tag-button mb-8 mr-8'
     const IconComponent = isSoftDeleted ? Redo : Minus
+
     const [isHovered, setIsHovered] = useState(false)
     const handleMouseEnter = () => {
         if (isEditing) {
@@ -272,10 +266,11 @@ const ImageTagButton = ({ text, isSoftDeleted, isEditing, onSoftDeleteClick, onH
             setIsHovered(false)
         }
     }
+
     return (
         <div className={containerClassName} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="mr-8 ml-8 mt-2 mb-2 flex">
-                {isHovered && tagId !== 0 && isEditing && (
+                {isHovered && isEditing && ((tagId === 0 && isSoftDeleted) || (tagId !== 0 && !isSoftDeleted)) && (
                     <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />
                 )}
                 {text}
@@ -299,5 +294,3 @@ const AddImageButton = ({ handleEditClick }) => {
         </div>
     )
 }
-
-

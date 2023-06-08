@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../service';
 import { ViewType } from '../../../config';
 import close from '../../../assets/icons/ic-close.svg';
@@ -86,9 +86,9 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     renderWithBackDrop(headerDescription: string, body) {
         return (
-            <VisibleModal className="">
-                <div data-testid="visible-modal-commit-info" className={`modal__body modal__body--ci-mat-trigger-info`}>
-                    <div className="trigger-modal__header">
+            <Drawer position="right" width="auto" >
+                <div data-testid="visible-modal-commit-info" className={""}>
+                    <div className="trigger-modal__header bcn-0">
                         <div className="">
                             <h1 className="modal__title">{this.state.appName}</h1>
                             <p className="fs-13 cn-7 lh-1-54 m-0">{headerDescription}</p>
@@ -98,13 +98,13 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             type="button"
                             className="dc__transparent"
                             onClick={this.props.close}
-                        >
+                        > 
                             <img src={close} alt="close" />
                         </button>
                     </div>
                     {body}
                 </div>
-            </VisibleModal>
+                </Drawer>
         )
     }
 
@@ -113,7 +113,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
         if (this.state.view === ViewType.LOADING) {
             headerDescription = null;
             body = <div className="m-lr-0 flexbox">
-                <div className="select-material select-material--h450">
+                <div className="select-material" style={{ height: '100vh' }}>
                     <Progressing pageLoader />
                 </div>
             </div>
@@ -123,17 +123,17 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
             body = (
                 <div className="m-lr-0 flexbox">
-                    <div
+                    {/* <div
                         className="material-list dc__overflow-hidden dc__bottom-left-radius-8"
-                        style={{ height: 'calc(100vh - 229px)' }}
+                        style={{ height: '100vh' }}
                     >
                         <MaterialSource
                             material={this.state.materials}
                             selectMaterial={this.selectMaterial}
                             fromTriggerInfo={true}
                         />
-                    </div>
-                    <div className="select-material" style={{ height: 'calc(100vh - 229px)' }}>
+                    </div> */}
+                    <div className="select-material" style={{ height: '100vh' }}>
                         <MaterialHistory
                             material={selectedMaterial}
                             pipelineName=""

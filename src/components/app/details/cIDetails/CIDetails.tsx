@@ -59,7 +59,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         if (!triggerHistoryResult?.result) {
             return
         }
-        if (triggerHistoryResult.result.ciWorkflows.length !== pagination.size) {
+        if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
@@ -368,8 +368,8 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         getArtifactPromise={_getArtifactPromise}
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
-                        imageComment={triggerDetails.imageComment}
-                        imageReleaseTags ={triggerDetails.imageReleaseTags} 
+                        ciPipelineId={triggerDetails.ciPipelineId}
+                        artifactId={triggerDetails.artifactId}
                         type={HistoryComponentType.CI}
                     />
                 </Route>

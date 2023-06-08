@@ -522,8 +522,8 @@ const HistoryLogs: React.FC<{
                                         status={triggerDetails.status}
                                         artifact={triggerDetails.artifact}
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                        imageComment={triggerDetails.imageComment}
-                                        imageReleaseTags={triggerDetails.imageReleaseTags}
+                                        ciPipelineId = {triggerDetails.ciPipelineId}
+                                        artifactId = {triggerDetails.artifactId}
                                         getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
                                         type={HistoryComponentType.CD}
                                     />

@@ -520,6 +520,11 @@ export function setImageTags(request, pipelineId, artifactId){
     return post(URL,request )
 }
 
+export function getImageTags(pipelineId, artifactId){
+    let URL = `${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`
+    return get (URL)
+}
+
 
 function handleTime(ts: string) {
     let timestamp = ''
