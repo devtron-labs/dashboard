@@ -325,6 +325,11 @@ export const EMPTY_STATE_STATUS = {
     RENDER_LIST: {
         SUBTITLE: 'No results found for the applied filters.',
     },
+
+    CUSTOM_CHART_LIST: {
+        TITLE: 'Use custom charts in applications',
+    },
+    
 }
 
 export const INVALID_YAML_MSG = "Please provide data in valid YAML format";
