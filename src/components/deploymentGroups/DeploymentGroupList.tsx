@@ -331,7 +331,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
             <div>
                 <PageHeader headerName="Deployment Groups" renderActionButtons={this.renderActionButtons} />
 
-                <div className="deployment-group-list-page__body">
+                <div className="deployment-group-list-page__body ">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}
                     {this.state.view === ViewType.EMPTY && <NoDeploymentGroups />}
                     {this.state.view === ViewType.ERROR && <ErrorScreenManager code={this.state.code} />}
