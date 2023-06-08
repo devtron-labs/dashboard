@@ -392,7 +392,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         let envName = env ? env.label : "";
         return <div>
             {this.renderInputs()}
-            <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
+            <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
                 <GenericEmptyState
                     image={AppNotDeployed}
                     title={"No deployments found"}
