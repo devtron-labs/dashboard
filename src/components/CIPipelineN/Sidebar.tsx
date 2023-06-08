@@ -31,6 +31,7 @@ export function Sidebar({
         setFormDataErrorObj,
         setSelectedTaskIndex,
         calculateLastStepDetail,
+        validateStage,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -49,6 +50,7 @@ export function Sidebar({
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
+        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(ciPipelineContext)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
@@ -96,6 +98,8 @@ export function Sidebar({
             postBuildStage: postBuildVariable,
         })
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
+        validateStage(BuildStageVariable.PreBuild, _formData)
+        validateStage(BuildStageVariable.PostBuild, _formData)
     }
 
     return (

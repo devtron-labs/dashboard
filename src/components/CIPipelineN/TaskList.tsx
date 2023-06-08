@@ -20,7 +20,11 @@ import { importComponentFromFELibrary } from '../common'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesListFromPrevStep }: TaskListType) {
+export function TaskList({
+    withWarning,
+    mandatoryPluginsMap,
+    setInputVariablesListFromPrevStep,
+}: TaskListType) {
     const {
         formData,
         setFormData,
@@ -32,6 +36,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
+        validateStage
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -51,6 +56,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(ciPipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -98,10 +104,13 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
+        let isMandatoryMissing = false
         if (_taskDetail[0].isMandatory) {
+            isMandatoryMissing = true
             for (const task of newList) {
                 if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
                     task.isMandatory = true
+                    isMandatoryMissing = false
                     break
                 }
             }
@@ -119,7 +128,12 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
-        setFormDataErrorObj(_formDataErrorObj)
+
+        if (isMandatoryMissing) {
+            validateStage(activeStageName, _formData, _formDataErrorObj)
+        } else {
+            setFormDataErrorObj(_formDataErrorObj)
+        }
     }
 
     const moveTaskToOtherStage = (e): void => {
@@ -129,13 +143,16 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
+        let isMandatoryMissing = false
         const isPluginRequired =
             isRequired &&
             isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
         if (_taskDetail[0].isMandatory && !isPluginRequired) {
+            isMandatoryMissing = true
             for (const task of newList) {
                 if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
                     task.isMandatory = true
+                    isMandatoryMissing = false
                     break
                 }
             }
@@ -170,8 +187,12 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
             isValid: true,
             pluginRefStepDetail: { inputVariables: [] },
         })
-        validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
-        setFormDataErrorObj(_formDataErrorObj)
+        if (isMandatoryMissing) {
+            validateStage(activeStageName, _formData, _formDataErrorObj)
+        } else {
+            validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
+            setFormDataErrorObj(_formDataErrorObj)
+        }
     }
 
     const reCalculatePrevStepVar = (_formData: FormType, newTaskIndex: number): void => {
