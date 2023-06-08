@@ -161,7 +161,7 @@ export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) =
 
     if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
         return (
-            <div className="mt-8">
+            <div className="bcn-0">
                 <AddImageButton handleEditClick={handleEditClick} />
             </div>
         )
@@ -170,7 +170,7 @@ export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) =
     return (
         <div>
             {!isEditing ? (
-                <div className="top mt-8 br-4 image-tags-container" style={{ display: 'flex' }}>
+                <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
                     <div className="flex left" style={{ width: '734px' }}>
                         <Rectangle className="image-tags-container-rectangle__icon" />
                         <div className="ml-10">
@@ -196,7 +196,7 @@ export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) =
                     />
                 </div>
             ) : (
-                <div className="mt-12 dc__border-top-n1 ">
+                <div className="bcn-0 dc__border-top-n1 ">
                     <div className="cn-7 mt-12 flex left">
                         Release tags (eg. v1.0)
                         <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />

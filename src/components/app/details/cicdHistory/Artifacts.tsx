@@ -202,7 +202,9 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
                 {children}
             </div>
             {type === 'artifact' && (
-                <ImageTagsContainer  ciPipelineId={ciPipelineId} artifactId={artifactId}/>
+                <div className="pt-12 pr-12">
+                    <ImageTagsContainer ciPipelineId={ciPipelineId} artifactId={artifactId} />
+                </div>
             )}
         </div>
     )
