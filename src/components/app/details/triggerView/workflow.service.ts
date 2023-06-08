@@ -472,6 +472,8 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
+        isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
+        ciBlockState: ciPipeline.ciBlockState,
     } as NodeAttr
     return ciNode
 }
@@ -530,7 +532,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             x: 0,
             y: 0,
             isRoot: false,
-            helmPackageName:  cdPipeline?.helmPackageName || '',
+            helmPackageName: cdPipeline?.helmPackageName || '',
         } as NodeAttr
         stageIndex++
     }
@@ -572,7 +574,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
         userApprovalConfig: cdPipeline.userApprovalConfig,
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
-        helmPackageName:  cdPipeline?.helmPackageName || ''
+        helmPackageName: cdPipeline?.helmPackageName || '',
     } as NodeAttr
     stageIndex++
 
@@ -602,7 +604,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             x: 0,
             y: 0,
             isRoot: false,
-            helmPackageName:  cdPipeline?.helmPackageName || ''
+            helmPackageName: cdPipeline?.helmPackageName || '',
         } as NodeAttr
     }
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {

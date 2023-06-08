@@ -126,10 +126,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderCTAButton = (canTrigger) => {
-        if (AllowedWithWarningTippy && !this.props.isJobView) {
+        if (AllowedWithWarningTippy && this.props.ciBlockState && !this.props.isJobView) {
             return (
                 <AllowedWithWarningTippy
-                    consequence={{}}
+                    consequence={this.props.ciBlockState}
                     onConfigure={this.redirectToCIPipeline}
                     onStart={this.handleStartBuildAction}
                 >
@@ -213,8 +213,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
                         isJobView={this.props.isJobView}
+                        isCITriggerBlocked={this.props.isCITriggerBlocked}
+                        ciBlockState={this.props.ciBlockState}
                     />
-                    {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
+                    {this.props.isCITriggerBlocked || this.props.showWebhookModal
+                        ? null
+                        : this.renderMaterialStartBuild(canTrigger)}
                 </>
             )
         }

@@ -136,6 +136,11 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     fromAppGrouping?: boolean
     appId: string
     isJobView?: boolean
+    isCITriggerBlocked?: boolean
+    ciBlockState?: {
+        action: any,
+        metadataField: string
+    }
 }
 
 export interface RegexValueType {
@@ -454,6 +459,10 @@ export interface CiPipeline {
     appId?: string
     componentId?: number
     isCITriggerBlocked?: boolean
+    ciBlockState?: {
+        action: any,
+        metadataField: string
+    }
     isOffendingMandatoryPlugin?: boolean
 }
 
