@@ -137,7 +137,7 @@ export default function CustomChartList() {
                 title="Use custom charts in applications"
                 subTitle={
                     <>
-                        Import custom charts to use them in apps instead of the default system template.&nbsp;
+                        Import custom charts to use them in apps instead of the default system template.
                         <div>
                             {renderLearnMoreLink()}
                         </div>
