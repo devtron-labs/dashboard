@@ -36,6 +36,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         formDataErrorObj,
         setFormDataErrorObj,
         calculateLastStepDetail,
+        validateStage,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -56,6 +57,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
+        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(ciPipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
@@ -85,6 +87,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
     ): void {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
+        let isPluginRequired = false
         _form[activeStageName].steps[selectedTaskIndex].stepType = pluginType
         if (pluginType === PluginType.INLINE) {
             _form[activeStageName].steps[selectedTaskIndex].inlineStepDetail = {
@@ -108,7 +111,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            const isPluginRequired = isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+            isPluginRequired = isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -128,7 +131,11 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             }
         }
         setFormData(_form)
-        setFormDataErrorObj(_formDataErrorObj)
+        if (isPluginRequired) {
+            validateStage(activeStageName, _form, _formDataErrorObj)
+        } else {
+            setFormDataErrorObj(_formDataErrorObj)
+        }
     }
 
     const handleEditorValueChange = (editorValue: string): void => {
