@@ -94,11 +94,11 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
         updatedTags[index].softDeleted = !updatedTags[index].softDeleted
         setSelectedTags(updatedTags)
 
-        // Get the corresponding tag from imageReleaseTags
+     
 
         const tag = imageReleaseTags[index]
 
-        // Update softDeleted value and add it to softDeleteTags state
+  
         const updatedTag: ReleaseTag = {
             ...tag,
             softDeleted: updatedTags[index].softDeleted,
@@ -108,11 +108,11 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
 
     const handleTagHardDelete = (index) => {
         const updatedSelectedTags = [...selectedTags]
-        updatedSelectedTags.splice(index, 1) // Remove the tag from selectedTags
+        updatedSelectedTags.splice(index, 1) 
         setSelectedTags(updatedSelectedTags)
 
         const updatedCreateTags = [...createTags]
-        updatedCreateTags.splice(index, 1) // Remove the tag from createTags
+        updatedCreateTags.splice(index, 1) 
         setCreateTags(updatedCreateTags)
 
         const upadetSoftDeleteTags = [...softDeleteTags]
@@ -136,8 +136,7 @@ export const ImageTagsContainer = ({ imageComment, imageReleaseTags }: ImageTagT
           imageCommentState.comment = newDescription
         }
 
-        // Perform further actions with createTags, softDeleteTags, hardDeleteTags, and updatedImageComment
-        // For example, you can send them to an API or perform other operations.
+     
 
 
         const payload ={
