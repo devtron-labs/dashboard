@@ -113,7 +113,6 @@ export default function BulkCITrigger({
             appIgnoreCache[_app.ciPipelineId] = false
         }
         getMaterialData()
-        getPolicyEnforcementData()
     }, [])
 
     const getMaterialData = (): void => {
@@ -135,6 +134,7 @@ export default function BulkCITrigger({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
+                    getPolicyEnforcementData(_materialListMap)
                     updateBulkInputMaterial(_materialListMap)
                     if (!selectedApp.isLinkedCI && !selectedApp.isWebhookCI) {
                         setShowRegexModal(
@@ -158,20 +158,22 @@ export default function BulkCITrigger({
         }
     }
 
-    const getPolicyEnforcementData = (): void => {
+    const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
         const policyPromiseList = appList.map((appDetails) => {
-            let branchNames = ''
-            for (const material of appDetails.material) {
-                if (
-                    (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
-                    material.value !== '--'
-                ) {
-                    branchNames += `${branchNames ? ',' : ''}${material.value}`
+            if (appDetails.isWebhookCI || appDetails.isLinkedCI || !_materialListMap[appDetails.appId]) {
+                return null
+            } else {
+                let branchNames = ''
+                for (const material of _materialListMap[appDetails.appId]) {
+                    if (
+                        (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
+                        material.value !== '--'
+                    ) {
+                        branchNames += `${branchNames ? ',' : ''}${material.value}`
+                    }
                 }
+                return !branchNames ? null : getPolicyData(appDetails.appId, appDetails.ciPipelineId, branchNames)
             }
-            return appDetails.isWebhookCI || !branchNames
-                ? null
-                : getPolicyData(appDetails.appId, appDetails.ciPipelineId, branchNames)
         })
         if (policyPromiseList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
