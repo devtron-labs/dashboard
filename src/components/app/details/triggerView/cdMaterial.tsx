@@ -1023,7 +1023,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex h-36 mr-48 ${disableDeployButton ? 'disabled-opacity' : ''}`}
+                        className={`cta flex h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
                         {this.props.isSaveLoading ? (
