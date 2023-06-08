@@ -189,6 +189,7 @@ export const ChartProjectSelector = ({
                     Option,
                 }}
                 placeholder="Select Project"
+                classNamePrefix="select-chart-project"
                 value={selectedProject}
                 styles={getCommonSelectStyle()}
                 onChange={handleProjectSelection}
@@ -396,6 +397,7 @@ export const AppNameInput = ({
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
                 onBlur={() => handleAppNameOnBlur()}
+                data-testid="app-name-input"
             />
             {invalidAppName && renderValidationErrorLabel(invalidAppNameMessage)}
         </label>
