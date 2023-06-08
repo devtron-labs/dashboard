@@ -652,7 +652,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
-        console.log(cdWorkflowType)
         const downloadManifetsDownload = {
             appId: appId,
             envId: envId,
@@ -1122,6 +1121,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isCacheAvailable={nd?.storageConfigured}
                                 appId={this.props.match.params.appId}
                                 isJobView={this.props.isJobView}
+                                isCITriggerBlocked={nd?.isCITriggerBlocked}
+                                ciBlockState={nd?.ciBlockState}
                             />
                         )}
                     </div>
