@@ -14,15 +14,17 @@ import {
     FormErrorObjectType,
     TaskErrorObj,
     BuildStageVariable,
-    DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesListFromPrevStep }: TaskListType) {
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
+export function TaskList({
+    withWarning,
+    mandatoryPluginsMap,
+    setInputVariablesListFromPrevStep,
+}: TaskListType) {
     const {
         formData,
         setFormData,
@@ -34,6 +36,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
+        validateStage
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -53,11 +56,11 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(ciPipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
-    const [clickedIndex, setClickedIndex] = useState<number>(-1)
     const handleDragStart = (index: number): void => {
         setDragItemIndex(index)
         setDragItemStartIndex(index)
@@ -96,14 +99,18 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setDragItemStartIndex(index)
     }
 
-    const deleteTask = (): void => {
+    const deleteTask = (e): void => {
+        const taskIndex = e.currentTarget.dataset.index
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        const _taskDetail = newList.splice(clickedIndex, 1)
+        const _taskDetail = newList.splice(taskIndex, 1)
+        let isMandatoryMissing = false
         if (_taskDetail[0].isMandatory) {
+            isMandatoryMissing = true
             for (const task of newList) {
                 if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
                     task.isMandatory = true
+                    isMandatoryMissing = false
                     break
                 }
             }
@@ -111,7 +118,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
         const newListIndex = newListLength > 1 ? newListLength - 1 : 0
-        const newTaskIndex = clickedIndex >= newListLength ? newListIndex : clickedIndex
+        const newTaskIndex = taskIndex >= newListLength ? newListIndex : taskIndex
         calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
@@ -119,10 +126,14 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
-        newErrorList.splice(clickedIndex, 1)
+        newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
-        setFormDataErrorObj(_formDataErrorObj)
-        closeDeleteConfirmation()
+
+        if (isMandatoryMissing) {
+            validateStage(activeStageName, _formData, _formDataErrorObj)
+        } else {
+            setFormDataErrorObj(_formDataErrorObj)
+        }
     }
 
     const moveTaskToOtherStage = (e): void => {
@@ -132,13 +143,16 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
+        let isMandatoryMissing = false
         const isPluginRequired =
             isRequired &&
             isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
         if (_taskDetail[0].isMandatory && !isPluginRequired) {
+            isMandatoryMissing = true
             for (const task of newList) {
                 if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
                     task.isMandatory = true
+                    isMandatoryMissing = false
                     break
                 }
             }
@@ -173,8 +187,12 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
             isValid: true,
             pluginRefStepDetail: { inputVariables: [] },
         })
-        validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
-        setFormDataErrorObj(_formDataErrorObj)
+        if (isMandatoryMissing) {
+            validateStage(activeStageName, _formData, _formDataErrorObj)
+        } else {
+            validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
+            setFormDataErrorObj(_formDataErrorObj)
+        }
     }
 
     const reCalculatePrevStepVar = (_formData: FormType, newTaskIndex: number): void => {
@@ -224,16 +242,6 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setSelectedTaskIndex(index)
     }
 
-    const openDeleteConfirmation = (e): void => {
-        setClickedIndex(e.currentTarget.dataset.index)
-        setShowDeleteConfirmation(true)
-    }
-
-    const closeDeleteConfirmation = (): void => {
-        setClickedIndex(-1)
-        setShowDeleteConfirmation(false)
-    }
-
     return (
         <>
             <div className={`task-container pr-20 ${withWarning ? 'with-warning' : ''}`}>
@@ -277,7 +285,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
                                     <div
                                         className="flex left p-8 pointer dc__hover-n50"
                                         data-index={index}
-                                        onClick={openDeleteConfirmation}
+                                        onClick={deleteTask}
                                     >
                                         <Trash className="icon-dim-16 mr-10" />
                                         Remove
@@ -321,15 +329,6 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
             >
                 <Add className="add-icon" /> Add task
             </div>
-            {showDeleteConfirmation && (
-                <DeleteDialog
-                    title="Remove plugin"
-                    description="It will remove plugin and clear variables if entered.
-                Do you want to continue to remove?"
-                    closeDelete={closeDeleteConfirmation}
-                    delete={deleteTask}
-                />
-            )}
         </>
     )
 }

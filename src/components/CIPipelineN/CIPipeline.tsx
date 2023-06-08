@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo } from 'react'
+import React, { useState, useEffect, createContext, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
@@ -148,6 +148,8 @@ export default function CIPipeline({
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+    const selectedBranchRef = useRef(null)
+
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
         if (mandatoryPluginData?.pluginData.length) {
@@ -161,7 +163,6 @@ export default function CIPipeline({
     useEffect(() => {
         getInitialData()
         getGlobalVariables()
-        //getAvailablePlugins()
     }, [])
 
     useEffect(() => {
@@ -273,27 +274,36 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[], branchName?: string): void => {
-        if (processPluginData && prepareFormData) {
-            processPluginData(!ciPipelineId, _formData, pluginList, ciPipelineId ?? appId, branchName)
-                .then((response: MandatoryPluginDataType) => {
-                    if (response?.pluginData?.length) {
-                        const _formDataErrorObj = { ...formDataErrorObj }
-                        if (_formData) {
-                            setFormData(prepareFormData(_formData, response.pluginData))
-                        }
-                        setFormDataErrorObj(_formDataErrorObj)
-                        setMandatoryPluginData(response)
+    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
+        if (processPluginData && prepareFormData && pluginList.length) {
+            let branchName = ''
+            if (_formData?.materials?.length) {
+                for (const material of _formData.materials) {
+                    if (!material.isRegex || material.value) {
+                        branchName += `${branchName ? ',' : ''}${material.value}`
                     }
-                })
-                .catch((error: ServerErrors) => {
-                    showError(error)
-                })
+                }
+            }
+            if (selectedBranchRef.current !== branchName) {
+                selectedBranchRef.current = branchName
+                processPluginData(_formData, pluginList, appId, ciPipelineId, branchName)
+                    .then((response: MandatoryPluginDataType) => {
+                        if (response?.pluginData?.length) {
+                            setMandatoryPluginData(response)
+                        }
+                        if (_formData) {
+                            setFormData(prepareFormData(_formData, response?.pluginData ?? []))
+                        }
+                    })
+                    .catch((error: ServerErrors) => {
+                        showError(error)
+                    })
+            }
         }
     }
 
-    const getPluginData = (branchName: string): void => {
-        getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins], branchName)
+    const getPluginData = (_formData?: FormType): void => {
+        getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
     const deletePipeline = (): void => {
@@ -497,40 +507,40 @@ export default function CIPipeline({
             })
     }
 
-    const validateTask = (taskData: StepType, taskErrorobj: TaskErrorObj): void => {
-        if (taskData && taskErrorobj) {
-            taskErrorobj.name = validationRules.requiredField(taskData.name)
-            taskErrorobj.isValid = taskErrorobj.name.isValid
+    const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): void => {
+        if (taskData && taskErrorObj) {
+            taskErrorObj.name = validationRules.requiredField(taskData.name)
+            taskErrorObj.isValid = taskErrorObj.name.isValid
 
             if (taskData.stepType) {
                 const inputVarMap: Map<string, boolean> = new Map()
                 const outputVarMap: Map<string, boolean> = new Map()
                 const currentStepTypeVariable =
                     taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
-                taskErrorobj[currentStepTypeVariable].inputVariables = []
+                taskErrorObj[currentStepTypeVariable].inputVariables = []
                 taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
-                    taskErrorobj[currentStepTypeVariable].inputVariables.push(
+                    taskErrorObj[currentStepTypeVariable].inputVariables.push(
                         validationRules.inputVariable(element, inputVarMap),
                     )
-                    taskErrorobj.isValid =
-                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable].inputVariables[index].isValid
+                    taskErrorObj.isValid =
+                        taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid
                     inputVarMap.set(element.name, true)
                 })
                 if (taskData.stepType === PluginType.INLINE) {
-                    taskErrorobj.inlineStepDetail.outputVariables = []
+                    taskErrorObj.inlineStepDetail.outputVariables = []
                     taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
-                        taskErrorobj.inlineStepDetail.outputVariables.push(
+                        taskErrorObj.inlineStepDetail.outputVariables.push(
                             validationRules.outputVariable(element, outputVarMap),
                         )
-                        taskErrorobj.isValid =
-                            taskErrorobj.isValid && taskErrorobj.inlineStepDetail.outputVariables[index].isValid
+                        taskErrorObj.isValid =
+                            taskErrorObj.isValid && taskErrorObj.inlineStepDetail.outputVariables[index].isValid
                         outputVarMap.set(element.name, true)
                     })
                     if (taskData.inlineStepDetail['scriptType'] === ScriptType.SHELL) {
-                        taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
+                        taskErrorObj.inlineStepDetail['script'] = validationRules.requiredField(
                             taskData.inlineStepDetail['script'],
                         )
-                        taskErrorobj.isValid = taskErrorobj.isValid && taskErrorobj.inlineStepDetail['script'].isValid
+                        taskErrorObj.isValid = taskErrorObj.isValid && taskErrorObj.inlineStepDetail['script'].isValid
                     } else if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
                         // For removing empty mapping from portMap
                         taskData.inlineStepDetail['portMap'] =
@@ -538,41 +548,41 @@ export default function CIPipeline({
                                 (_port) => _port.portOnLocal && _port.portOnContainer,
                             ) || []
                         if (taskData.inlineStepDetail['isMountCustomScript']) {
-                            taskErrorobj.inlineStepDetail['script'] = validationRules.requiredField(
+                            taskErrorObj.inlineStepDetail['script'] = validationRules.requiredField(
                                 taskData.inlineStepDetail['script'],
                             )
-                            taskErrorobj.inlineStepDetail['storeScriptAt'] = validationRules.requiredField(
+                            taskErrorObj.inlineStepDetail['storeScriptAt'] = validationRules.requiredField(
                                 taskData.inlineStepDetail['storeScriptAt'],
                             )
-                            taskErrorobj.isValid =
-                                taskErrorobj.isValid &&
-                                taskErrorobj.inlineStepDetail['script'].isValid &&
-                                taskErrorobj.inlineStepDetail['storeScriptAt'].isValid
+                            taskErrorObj.isValid =
+                                taskErrorObj.isValid &&
+                                taskErrorObj.inlineStepDetail['script'].isValid &&
+                                taskErrorObj.inlineStepDetail['storeScriptAt'].isValid
                         }
 
-                        taskErrorobj.inlineStepDetail['containerImagePath'] = validationRules.requiredField(
+                        taskErrorObj.inlineStepDetail['containerImagePath'] = validationRules.requiredField(
                             taskData.inlineStepDetail['containerImagePath'],
                         )
-                        taskErrorobj.isValid =
-                            taskErrorobj.isValid && taskErrorobj.inlineStepDetail['containerImagePath'].isValid
+                        taskErrorObj.isValid =
+                            taskErrorObj.isValid && taskErrorObj.inlineStepDetail['containerImagePath'].isValid
 
                         if (taskData.inlineStepDetail['mountCodeToContainer']) {
-                            taskErrorobj.inlineStepDetail['mountCodeToContainerPath'] = validationRules.requiredField(
+                            taskErrorObj.inlineStepDetail['mountCodeToContainerPath'] = validationRules.requiredField(
                                 taskData.inlineStepDetail['mountCodeToContainerPath'],
                             )
-                            taskErrorobj.isValid =
-                                taskErrorobj.isValid &&
-                                taskErrorobj.inlineStepDetail['mountCodeToContainerPath'].isValid
+                            taskErrorObj.isValid =
+                                taskErrorObj.isValid &&
+                                taskErrorObj.inlineStepDetail['mountCodeToContainerPath'].isValid
                         }
 
                         if (taskData.inlineStepDetail['mountDirectoryFromHost']) {
-                            taskErrorobj.inlineStepDetail['mountPathMap'] = []
+                            taskErrorObj.inlineStepDetail['mountPathMap'] = []
                             taskData.inlineStepDetail['mountPathMap']?.forEach((element, index) => {
-                                taskErrorobj.inlineStepDetail['mountPathMap'].push(
+                                taskErrorObj.inlineStepDetail['mountPathMap'].push(
                                     validationRules.mountPathMap(element),
                                 )
-                                taskErrorobj.isValid =
-                                    taskErrorobj.isValid && taskErrorobj.inlineStepDetail['mountPathMap'][index].isValid
+                                taskErrorObj.isValid =
+                                    taskErrorObj.isValid && taskErrorObj.inlineStepDetail['mountPathMap'][index].isValid
                             })
                         }
                     }
@@ -582,7 +592,7 @@ export default function CIPipeline({
                     })
                 }
 
-                taskErrorobj[currentStepTypeVariable]['conditionDetails'] = []
+                taskErrorObj[currentStepTypeVariable]['conditionDetails'] = []
                 taskData[currentStepTypeVariable].conditionDetails?.forEach((element, index) => {
                     if (element.conditionOnVariable) {
                         if (
@@ -596,18 +606,21 @@ export default function CIPipeline({
                             element.conditionOnVariable = ''
                         }
                     }
-                    taskErrorobj[currentStepTypeVariable]['conditionDetails'].push(
+                    taskErrorObj[currentStepTypeVariable]['conditionDetails'].push(
                         validationRules.conditionDetail(element),
                     )
-                    taskErrorobj.isValid =
-                        taskErrorobj.isValid && taskErrorobj[currentStepTypeVariable]['conditionDetails'][index].isValid
+                    taskErrorObj.isValid =
+                        taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable]['conditionDetails'][index].isValid
                 })
             }
         }
     }
 
-    const validateStage = (stageName: string, _formData: FormType): void => {
-        const _formDataErrorObj = { ...formDataErrorObj, name: validationRules.name(_formData.name) } // validating name always as it's a mandatory field
+    const validateStage = (stageName: string, _formData: FormType, formDataErrorObject?): void => {
+        const _formDataErrorObj = {
+            ...(formDataErrorObject ?? formDataErrorObj),
+            name: validationRules.name(_formData.name),
+        } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
 
