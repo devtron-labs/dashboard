@@ -135,8 +135,15 @@ export default function CustomChartList() {
             <GenericEmptyState
                 image={emptyCustomChart}
                 title="Use custom charts in applications"
-                subTitle={`Import custom charts to use them in apps instead of the default system template.&nbsp;
-          ${renderLearnMoreLink()}`}
+                subTitle={
+                    <>
+                        Import custom charts to use them in apps instead of the default system template.&nbsp;
+                        <div>
+                            {renderLearnMoreLink()}
+                        </div>
+                        
+                    </>    
+                }
                 isButtonAvailable={true}
                 renderButton={renderUploadButton}
             />
