@@ -32,7 +32,7 @@ export default function TriggerResponseModal({
                 {responseList
                     .sort((a, b) => sortCallback('appName', a, b))
                     .map((response, index) => (
-                        <TriggerModalRow rowData={response} index={index} isVirtualEnv={isVirtualEnv} envName={envName} />
+                        <TriggerModalRow key={response.appId} rowData={response} index={index} isVirtualEnv={isVirtualEnv} envName={envName} />
                     ))}
             </div>
         )
