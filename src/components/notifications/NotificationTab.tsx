@@ -197,22 +197,18 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    changePage(pageNo): void {
-        let state = { ...this.state };
-        state.view = ViewType.LOADING;
-        state.pagination.offset = (pageNo - 1) * this.state.pagination.pageSize;
+    changePage(pageNo, pageSize?): void {
+        let state = { ...this.state }
+        state.view = ViewType.LOADING
+        state.pagination.offset = pageSize ? 0 : (pageNo - 1) * this.state.pagination.pageSize
+        state.pagination.pageSize = pageSize ?? state.pagination.pageSize
         this.setState(state, () => {
             this.getAllNotifications();
         });
     }
 
     changePageSize(pageSize): void {
-        let state = { ...this.state };
-        state.view = ViewType.LOADING;
-        state.pagination.pageSize = pageSize;
-        this.setState(state, () => {
-            this.getAllNotifications();
-        });
+        this.changePage(1, pageSize)
     }
 
     toggleNotification(id: number): void {
@@ -596,6 +592,20 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     }
 
+    renderPagination() {
+        if (this.state.pagination.size) {
+            return (
+                <Pagination
+                    offset={this.state.pagination.offset}
+                    pageSize={this.state.pagination.pageSize}
+                    size={this.state.pagination.size}
+                    changePage={this.changePage}
+                    changePageSize={this.changePageSize}
+                />
+            )
+        } else return null
+    }
+
     renderBody() {
         return <div className="notification-tab">
             <div data-testid="add-new-notification-button" onClick={this.CreateNewNotification} style={{ width: "100px" }}
@@ -604,11 +614,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             </div>
             {this.renderOptions()}
             {this.renderPipelineList()}
-            {this.state.pagination.size > 0 ? <Pagination offset={this.state.pagination.offset}
-                pageSize={this.state.pagination.pageSize}
-                size={this.state.pagination.size}
-                changePage={this.changePage}
-                changePageSize={this.changePageSize} /> : null}
+            {this.renderPagination()}
         </div>
     }
 
