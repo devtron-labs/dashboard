@@ -86,7 +86,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     renderWithBackDrop(headerDescription: string, body) {
         return (
-            <Drawer position="right" width="auto" >
+            <Drawer position="right" width="570px" >
                 <div data-testid="visible-modal-commit-info" className={""}>
                     <div className="trigger-modal__header bcn-0">
                         <div className="">
@@ -123,16 +123,6 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
             body = (
                 <div className="m-lr-0 flexbox">
-                    {/* <div
-                        className="material-list dc__overflow-hidden dc__bottom-left-radius-8"
-                        style={{ height: '100vh' }}
-                    >
-                        <MaterialSource
-                            material={this.state.materials}
-                            selectMaterial={this.selectMaterial}
-                            fromTriggerInfo={true}
-                        />
-                    </div> */}
                     <div className="select-material" style={{ height: '100vh' }}>
                         <MaterialHistory
                             material={selectedMaterial}
