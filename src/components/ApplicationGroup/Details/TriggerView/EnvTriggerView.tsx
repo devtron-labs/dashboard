@@ -1676,6 +1676,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 isCacheAvailable={nd?.storageConfigured}
                                 fromAppGrouping={true}
                                 appId={_appID?.toString()}
+                                isCITriggerBlocked={nd?.isCITriggerBlocked}
+                                ciBlockState={nd?.ciBlockState}
                             />
                         )}
                     </div>
