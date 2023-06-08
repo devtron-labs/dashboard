@@ -290,8 +290,8 @@ export const EMPTY_STATE_STATUS = {
     },
 
     NO_MATCHING_RESULT: {
-        TITLE: 'No mactching results',
-        SUBTITLE: `${"We couldn't find any matching cluster"}`,
+        TITLE: 'No matching results',
+        SUBTITLE: "We couldn't find any matching cluster",
     },
 
     CLUSTER_NODE_EMPTY_STATE: {
