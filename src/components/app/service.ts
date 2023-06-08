@@ -515,6 +515,11 @@ export function getTriggerHistory(pipelineId, params) {
     let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
+export function setImageTags(request, pipelineId, artifactId){
+    let URL = `${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`
+    return post(URL,request )
+}
+
 
 function handleTime(ts: string) {
     let timestamp = ''

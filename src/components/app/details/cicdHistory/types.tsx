@@ -31,6 +31,8 @@ export interface History {
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
 }
 
 export interface CiMaterial {
@@ -70,6 +72,8 @@ export interface ArtifactType {
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
     type: HistoryComponentType
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
 }
 
 export interface CopyTippyWithTextType {
@@ -83,6 +87,28 @@ export interface CIListItemType {
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
     children: any
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+}
+
+export interface ReleaseTag {
+    id: number
+    tagName: string
+    appId: number
+    softDeleted: boolean
+    artifactId: number
+}
+
+export interface ImageComment {
+    id: number
+    comment: string
+    artifactId: number
+}
+
+
+export interface ImageTagType {
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
 }
 
 export interface LogsRendererType {

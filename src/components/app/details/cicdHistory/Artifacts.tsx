@@ -27,6 +27,8 @@ export default function Artifacts({
     blobStorageEnabled,
     isArtifactUploaded,
     getArtifactPromise,
+    imageComment,
+    imageReleaseTags,
     isJobView,
     type,
 }: ArtifactType) {
@@ -98,7 +100,7 @@ export default function Artifacts({
         return (
             <div className="flex left column p-16">
                 {!isJobView && (
-                    <CIListItem type="artifact">
+                    <CIListItem type="artifact" imageComment={imageComment} imageReleaseTags={imageReleaseTags} >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
                                 <CopyTippyWithText
@@ -177,7 +179,7 @@ const CIProgressView = (): JSX.Element => {
     )
 } 
 
-export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
+export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, imageComment, imageReleaseTags }: CIListItemType) => {
     if (type === 'approved-artifact') {
         return ApprovedArtifact ? (
             <ApprovedArtifact
@@ -200,14 +202,9 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }
                 {children}
             </div>
             {type === 'artifact' && (
-                <ImageTagsContainer
-                    description="Hello"
-                    tagTexts={[
-                        { text: 'v4.9.0', isSoftDeleted: false },
-                        { text: 'django', isSoftDeleted: true },
-                    ]}
-                />
+                <ImageTagsContainer imageComment={imageComment} imageReleaseTags={imageReleaseTags} />
             )}
         </div>
     )
 }
+

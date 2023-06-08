@@ -368,6 +368,8 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         getArtifactPromise={_getArtifactPromise}
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
+                        imageComment={triggerDetails.imageComment}
+                        imageReleaseTags ={triggerDetails.imageReleaseTags} 
                         type={HistoryComponentType.CI}
                     />
                 </Route>

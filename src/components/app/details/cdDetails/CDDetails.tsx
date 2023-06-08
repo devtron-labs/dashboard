@@ -453,16 +453,18 @@ const HistoryLogs: React.FC<{
                     <Progressing pageLoader />
                 ) : (
                     <Switch>
-                        {triggerDetails.stage !== 'DEPLOY' ? (!triggerDetails.IsVirtualEnvironment &&
-                            <Route path={`${path}/logs`}>
-                                <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                    <LogsRenderer
-                                        triggerDetails={triggerDetails}
-                                        isBlobStorageConfigured={isBlobStorageConfigured}
-                                        parentType={HistoryComponentType.CD}
-                                    />
-                                </div>
-                            </Route>
+                        {triggerDetails.stage !== 'DEPLOY' ? (
+                            !triggerDetails.IsVirtualEnvironment && (
+                                <Route path={`${path}/logs`}>
+                                    <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
+                                        <LogsRenderer
+                                            triggerDetails={triggerDetails}
+                                            isBlobStorageConfigured={isBlobStorageConfigured}
+                                            parentType={HistoryComponentType.CD}
+                                        />
+                                    </div>
+                                </Route>
+                            )
                         ) : (
                             <Route path={`${path}/deployment-steps`}>
                                 <DeploymentDetailSteps
@@ -520,6 +522,8 @@ const HistoryLogs: React.FC<{
                                         status={triggerDetails.status}
                                         artifact={triggerDetails.artifact}
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        imageComment={triggerDetails.imageComment}
+                                        imageReleaseTags={triggerDetails.imageReleaseTags}
                                         getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
                                         type={HistoryComponentType.CD}
                                     />
@@ -530,7 +534,8 @@ const HistoryLogs: React.FC<{
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'
                                     ? `deployment-steps`
-                                    : (triggerDetails.status.toLowerCase() === 'succeeded' || triggerDetails.IsVirtualEnvironment)
+                                    : triggerDetails.status.toLowerCase() === 'succeeded' ||
+                                      triggerDetails.IsVirtualEnvironment
                                     ? `artifacts`
                                     : `logs`
                             }`}
