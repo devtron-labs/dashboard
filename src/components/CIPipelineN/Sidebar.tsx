@@ -108,7 +108,7 @@ export function Sidebar({
                 <div className="sidebar-action-container sidebar-action-container-border">
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            {MandatoryPluginWarning && showMandatoryWarning() && (
+                            {!isJobView && MandatoryPluginWarning && showMandatoryWarning() && (
                                 <MandatoryPluginWarning
                                     stage={activeStageName}
                                     mandatoryPluginData={mandatoryPluginData}
@@ -125,6 +125,7 @@ export function Sidebar({
                                 withWarning={showMandatoryWarning()}
                                 mandatoryPluginsMap={mandatoryPluginsMap}
                                 setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                isJobView={isJobView}
                             />
                         </>
                     )}
