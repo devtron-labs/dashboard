@@ -75,13 +75,13 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         if (!triggerHistoryResult) {
             return
         }
-        if (triggerHistoryResult.result?.length !== pagination.size) {
+        if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (triggerHistoryResult.result || []).reduce((agg, curr) => {
+        const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
