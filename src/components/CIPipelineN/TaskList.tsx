@@ -14,6 +14,9 @@ import {
     FormErrorObjectType,
     TaskErrorObj,
     BuildStageVariable,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
@@ -24,6 +27,7 @@ export function TaskList({
     withWarning,
     mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
+    isJobView,
 }: TaskListType) {
     const {
         formData,
@@ -36,7 +40,7 @@ export function TaskList({
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-        validateStage
+        validateStage,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -49,6 +53,7 @@ export function TaskList({
             _formData: FormType,
             activeStageName: string,
             startIndex?: number,
+            isFromMoveTask?: boolean,
         ) => {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
@@ -100,7 +105,7 @@ export function TaskList({
     }
 
     const deleteTask = (e): void => {
-        const taskIndex = e.currentTarget.dataset.index
+        const taskIndex = +e.currentTarget.dataset.index
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
@@ -123,8 +128,12 @@ export function TaskList({
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
-        setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, newTaskIndex, _formDataErrorObj)
+        } else {
+            setFormData(_formData)
+        }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
@@ -137,36 +146,39 @@ export function TaskList({
     }
 
     const moveTaskToOtherStage = (e): void => {
-        const taskIndex = e.currentTarget.dataset.index
+        const taskIndex = +e.currentTarget.dataset.index
         const moveToStage =
             activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
         let isMandatoryMissing = false
-        const isPluginRequired =
-            isRequired &&
-            isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
-        if (_taskDetail[0].isMandatory && !isPluginRequired) {
-            isMandatoryMissing = true
-            for (const task of newList) {
-                if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
-                    task.isMandatory = true
-                    isMandatoryMissing = false
-                    break
+        if (_taskDetail[0].pluginRefStepDetail) {
+            const isPluginRequired =
+                !isJobView &&
+                isRequired &&
+                isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
+            if (_taskDetail[0].isMandatory && !isPluginRequired) {
+                isMandatoryMissing = true
+                for (const task of newList) {
+                    if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                        task.isMandatory = true
+                        isMandatoryMissing = false
+                        break
+                    }
                 }
+                _taskDetail[0].isMandatory = false
+            } else {
+                _taskDetail[0].isMandatory = isPluginRequired
             }
-            _taskDetail[0].isMandatory = false
-        } else {
-            _taskDetail[0].isMandatory = isPluginRequired
-        }
 
-        _taskDetail[0].pluginRefStepDetail = {
-            id: 0,
-            pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
-            conditionDetails: [],
-            inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables ?? [],
-            outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables ?? [],
+            _taskDetail[0].pluginRefStepDetail = {
+                id: 0,
+                pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
+                conditionDetails: [],
+                inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables ?? [],
+                outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables ?? [],
+            }
         }
 
         _formData[moveToStage].steps.push(_taskDetail[0])
@@ -177,7 +189,6 @@ export function TaskList({
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
-        setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
@@ -185,14 +196,57 @@ export function TaskList({
         _formDataErrorObj[moveToStage].steps.push({
             name: { isValid: true, message: null },
             isValid: true,
-            pluginRefStepDetail: { inputVariables: [] },
+            [_taskDetail[0].stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail']: {
+                inputVariables: [],
+                outputVariables: [],
+            },
         })
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, newTaskIndex, _formDataErrorObj)
+        } else {
+            setFormData(_formData)
+        }
         if (isMandatoryMissing) {
             validateStage(activeStageName, _formData, _formDataErrorObj)
         } else {
             validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
             setFormDataErrorObj(_formDataErrorObj)
         }
+    }
+
+    const clearDependentPostVariables = (_formData: FormType, deletedTaskIndex: number, _formDataErrorObj): void => {
+        const stepsLength = _formData[BuildStageVariable.PostBuild].steps?.length
+        let reValidateStage = false
+        for (let i = 0; i < stepsLength; i++) {
+            if (!_formData[BuildStageVariable.PostBuild].steps[i].stepType) {
+                continue
+            }
+            const currentStepTypeVariable =
+                _formData[BuildStageVariable.PostBuild].steps[i].stepType === PluginType.INLINE
+                    ? 'inlineStepDetail'
+                    : 'pluginRefStepDetail'
+            if (_formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable].inputVariables) {
+                for (const key in _formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable]
+                    .inputVariables) {
+                    const variableDetail =
+                        _formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable].inputVariables[key]
+                    if (
+                        variableDetail.refVariableStage === RefVariableStageType.PRE_CI &&
+                        variableDetail.refVariableStepIndex === deletedTaskIndex + 1
+                    ) {
+                        variableDetail.refVariableStepIndex = 0
+                        variableDetail.refVariableName = ''
+                        variableDetail.variableType = RefVariableType.NEW
+                        delete variableDetail.refVariableStage
+                        reValidateStage = true
+                    }
+                }
+            }
+        }
+        if (reValidateStage) {
+            validateStage(BuildStageVariable.PostBuild, _formData, _formDataErrorObj)
+        }
+        setFormData(_formData)
     }
 
     const reCalculatePrevStepVar = (_formData: FormType, newTaskIndex: number): void => {
@@ -208,12 +262,16 @@ export function TaskList({
                 true,
                 _formData,
                 BuildStageVariable.PostBuild,
+                0,
             ).calculatedStageVariables
         } else {
+            const preTaskLength = _formData[BuildStageVariable.PreBuild].steps.length
             preBuildVariable = calculateLastStepDetail(
-                true,
+                false,
                 _formData,
                 BuildStageVariable.PreBuild,
+                preTaskLength > 1 ? preTaskLength - 1 : 0,
+                true,
             ).calculatedStageVariables
             postBuildVariable = calculateLastStepDetail(
                 false,
@@ -290,27 +348,29 @@ export function TaskList({
                                         <Trash className="icon-dim-16 mr-10" />
                                         Remove
                                     </div>
-                                    <div
-                                        className="flex left p-8 pointer dc__hover-n50"
-                                        data-index={index}
-                                        onClick={moveTaskToOtherStage}
-                                    >
-                                        {activeStageName === BuildStageVariable.PreBuild ? (
-                                            <>
-                                                <MoveToPre
-                                                    className="rotate icon-dim-16 mr-10"
-                                                    style={{ ['--rotateBy' as any]: '180deg' }}
-                                                />
-                                                Move to post-build stage
-                                            </>
-                                        ) : (
-                                            <>
-                                                <MoveToPre className="icon-dim-16 mr-10" />
-                                                Move to pre-build stage
-                                            </>
-                                        )}
-                                    </div>
-                                    {taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
+                                    {taskDetail.stepType && (
+                                        <div
+                                            className="flex left p-8 pointer dc__hover-n50"
+                                            data-index={index}
+                                            onClick={moveTaskToOtherStage}
+                                        >
+                                            {activeStageName === BuildStageVariable.PreBuild ? (
+                                                <>
+                                                    <MoveToPre
+                                                        className="rotate icon-dim-16 mr-10"
+                                                        style={{ ['--rotateBy' as any]: '180deg' }}
+                                                    />
+                                                    Move to post-build stage
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <MoveToPre className="icon-dim-16 mr-10" />
+                                                    Move to pre-build stage
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                    {!isJobView && taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
                                         <MandatoryPluginMenuOptionTippy
                                             pluginDetail={mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]}
                                         />

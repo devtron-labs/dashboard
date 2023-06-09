@@ -177,12 +177,14 @@ export default function BulkCITrigger({
         })
         if (policyPromiseList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
-            Promise.all(policyPromiseList).then((responses) => {
-                responses.forEach((res, index) => {
-                    policyListMap[appList[index]?.appId] = res?.['result']
+            Promise.all(policyPromiseList)
+                .then((responses) => {
+                    responses.forEach((res, index) => {
+                        policyListMap[appList[index]?.appId] = res?.['result']
+                    })
+                    setAppPolicy(policyListMap)
                 })
-                setAppPolicy(policyListMap)
-            })
+                .catch((error) => {})
         }
     }
 

@@ -5,6 +5,7 @@ import {
     ScriptType,
     FormErrorObjectType,
     VariableType,
+    RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -72,7 +73,10 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
     }, [activeStageName])
 
     const setVariableStepIndexInPlugin = (variable): VariableType => {
-        variable.variableStepIndexInPlugin = variable.variableStepIndex
+        variable.refVariableStepIndex = 0
+        variable.refVariableName = ''
+        variable.variableType = RefVariableType.NEW
+        delete variable.refVariableStage
         delete variable.variableStepIndex
         return variable
     }
@@ -111,7 +115,8 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            isPluginRequired = isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+            isPluginRequired =
+                !isJobView && isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
