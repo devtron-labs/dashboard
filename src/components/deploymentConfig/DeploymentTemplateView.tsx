@@ -771,18 +771,8 @@ export const DeploymentTemplateEditorView = ({
         setBasicFieldValues(_basicFieldValues)
     }
 
-    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
-        <>
-            {showReadme && (
-                <div className="dt-readme dc__border-right">
-                    <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
-                    {chartConfigLoading ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <MarkDown markdown={readme} className="dt-readme-markdown" />
-                    )}
-                </div>
-            )}
+    const renderCodeEditor = (): JSX.Element => {
+        return (
             <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
                     defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
@@ -827,6 +817,28 @@ export const DeploymentTemplateEditorView = ({
                     )}
                 </CodeEditor>
             </div>
+        )
+    }
+
+    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
+        <>
+            {showReadme ? (
+                <>
+                <div className="dt-readme dc__border-right">
+                    <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
+                    {chartConfigLoading ? (
+                        <Progressing pageLoader />
+                    ) : (
+                        <MarkDown markdown={readme} className="dt-readme-markdown" />
+                    )}
+                </div>
+                {renderCodeEditor()}
+                </>
+            )
+                :
+                renderCodeEditor()
+            }
+            
         </>
     ) : (
         <>
@@ -1084,6 +1096,7 @@ export const DeploymentConfigFormCTA = ({
                     <div className="form-app-metrics-cta flex top left">
                         {loading ? (
                             <Progressing
+                                data-testid="app-metrics-checkbox-loading"
                                 styles={{
                                     width: 'auto',
                                     marginRight: '16px',
@@ -1097,6 +1110,7 @@ export const DeploymentConfigFormCTA = ({
                                 isChecked={isAppMetricsEnabled}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={toggleAppMetrics}
+                                dataTestId="app-metrics-checkbox"
                                 disabled={disableCheckbox || !selectedChart.isAppMetricsSupported}
                             />
                         )}
@@ -1106,6 +1120,7 @@ export const DeploymentConfigFormCTA = ({
                                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
                                 </b>
                                 <a
+                                    data-testid="app-metrics-learnmore-link"
                                     href={DOCUMENTATION.APP_METRICS}
                                     target="_blank"
                                     className="fw-4 cb-5 dc__underline-onhover"
@@ -1113,7 +1128,10 @@ export const DeploymentConfigFormCTA = ({
                                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
                                 </a>
                             </div>
-                            <div className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}>
+                            <div
+                                data-testid="app-metrics-info-text"
+                                className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}
+                            >
                                 {!selectedChart.isAppMetricsSupported
                                     ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.notSupported(
                                           selectedChart.name,

@@ -166,7 +166,8 @@ export const DEPLOYMENT_HISTORY_TAB = {
   STEPS: 'Steps',
   SOURCE : 'Source',
   VALUES_YAML: 'values.yaml',
-  HELM_GENERATED_MANIFEST: 'Helm generated manifest'
+  HELM_GENERATED_MANIFEST: 'Helm generated manifest',
+  ARTIFACTS: 'Artifacts'
 }
 
 export const CONFIGMAPS_SECRETS = {
@@ -254,3 +255,5 @@ export const EMPTY_STATE_STATUS = {
     }
 
 }
+
+export const INVALID_YAML_MSG = "Please provide data in valid YAML format";

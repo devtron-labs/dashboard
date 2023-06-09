@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { showError, noop, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, useThrottledEffect, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { OptionType } from '../../app/types'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
@@ -965,9 +964,12 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
         const module = require('@devtron-labs/devtron-fe-lib')
+        if (type === 'function') {
+            return module[componentName] || defaultComponent || null
+        }
         return module[componentName]?.default || defaultComponent || null
     } catch (e) {
         if (e['code'] !== 'MODULE_NOT_FOUND') {
@@ -1062,24 +1064,34 @@ export const processK8SObjects = (
 export function createClusterEnvGroup<T>(
     list: T[],
     propKey: string,
-    isOptionType?: boolean,
-    optionName?: string,
-): { label: string; options: T[] }[] {
+    optionLabel?: string,
+    optionValue?: string,
+): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
         acc[key].push(
-            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+            optionLabel
+                ? {
+                      label: obj[optionLabel],
+                      value: obj[optionValue ? optionValue : optionLabel],
+                      description: obj['description'],
+                      isVirtualEnvironment: obj['isVirtualEnvironment'],
+                  }
+                : obj,
         )
         return acc
     }, {})
 
-    return Object.entries(objList).map(([key, value]) => ({
-        label: key,
-        options: value,
-    }))
+    return Object.entries(objList)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, value]) => ({
+            label: key,
+            options: value,
+            isVirtualEnvironment: value[0]['isVirtualEnvironment'], // All the values will be having similar isVirtualEnvironment
+        }))
 }
 
 export const k8sStyledAgeToSeconds = (duration: string): number => {
@@ -1119,6 +1131,16 @@ export const handleOnFocus = (e): void => {
     if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
         e.target.value = ''
     }
+}
+
+export const highlightSearchedText = (searchText: string, matchString: string): string => {
+    if (!searchText) {
+        return matchString
+    }
+    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+
+    const regex = new RegExp(searchText, 'gi')
+    return matchString.replace(regex, highlightText)
 }
 
 export const trackByGAEvent = (category: string, action: string): void => {

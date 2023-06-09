@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { ConditionalWrap, createGitCommitUrl } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
 import ReactSelect from 'react-select'
@@ -64,7 +64,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     }
 
     const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType()) ?? null
-
+    filterOptions?.sort((a, b) => (a.label > b.label ? 1 : -1))
     const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest)
 
     const selectLabel = () => {
@@ -76,7 +76,6 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
             return HISTORY_LABEL.ENVIRONMENT
         }
     }
-
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
@@ -142,11 +141,12 @@ const HistorySummaryCard = React.memo(
         stage,
         dataTestId,
     }: HistorySummaryCardType): JSX.Element => {
-        const { path } = useRouteMatch()
+        const { path, params } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
         const isCDType: boolean = type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD
+        const targetCardRef = useRef(null);
 
         const getPath = (): string => {
             const _params = {
@@ -157,6 +157,16 @@ const HistorySummaryCard = React.memo(
             return `${generatePath(path, _params)}/${currentTab}`
         }
 
+        useEffect(() => {
+            scrollToElement()
+        }, [targetCardRef])
+
+        const activeTriggerId = params['triggerId']
+        const scrollToElement = () => {
+            if (targetCardRef?.current) {
+                targetCardRef.current.scrollIntoView({ behavior: "smooth" });
+            }
+        }
         return (
             <ConditionalWrap
                 condition={Array.isArray(ciMaterials)}
@@ -184,6 +194,7 @@ const HistorySummaryCard = React.memo(
                     className="w-100 ci-details__build-card-container"
                     data-testid={dataTestId}
                     activeClassName="active"
+                    ref={+activeTriggerId === +id ? targetCardRef : null}
                 >
                     <div className="w-100 ci-details__build-card">
                         <div

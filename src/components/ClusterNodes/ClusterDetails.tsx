@@ -29,9 +29,11 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
+import * as queryString from 'query-string'
+import { URLS } from '../../config'
 import { createTaintsList } from '../cluster/cluster.util'
 
-export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList, clusterId }: ClusterDetailsPropType) {
+export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList, clusterId}: ClusterDetailsPropType) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -57,11 +59,13 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
+   
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
+    
     const pageSize = 15
 
     useEffect(() => {
@@ -79,6 +83,18 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
+  
+    useEffect(() => {
+        const qs=queryString.parse(location.search)
+        const offset=Number(qs["offset"])
+        setNodeListOffset(offset||0)
+    }, [location.search])
+
+    useEffect(() => {
+        const qs=queryString.parse(location.search)
+        const offset=Number(qs["offset"])
+        setNodeListOffset(offset||0)
+    }, [location.search])
 
     useEffect(() => {
         if (filteredFlattenNodeList && imageList && namespaceList) {
@@ -441,7 +457,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                     <div className="flex fw-6 fs-13">
                         <div className="fw-6 fs-14 cn-9 h-20 flex cg-5">
                             <CloudIcon className="icon-dim-16 mr-4" />
-                            <span className="h-20 flex">Connected</span>
+                            <span data-testid="cluster_connected" className="h-20 flex">Connected</span>
                         </div>
                         {isSuperAdmin && (
                             <>
@@ -639,7 +655,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         >
                             <div className="w-100 flex left">
                                 <div className="w-250 pr-4 dc__ellipsis-right">
-                                    <NavLink to={`${match.url}/${nodeData[column.value]}`}>
+                                    <NavLink to={`${match.url}/${nodeData[column.value]}`} >
                                         {nodeData[column.value]}
                                     </NavLink>
                                 </div>
@@ -666,7 +682,20 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             </div>
         )
     }
-
+      const changePage = (pageNo: number): void => {
+          let offset = pageSize * (pageNo - 1)
+          setNodeListOffset(offset)
+          let qs = queryString.parse(location.search)
+          let keys = Object.keys(qs)
+          let query = {}
+          keys.forEach((key) => {
+              query[key] = qs[key]
+          })
+          query['offset'] = offset
+          let queryStr = queryString.stringify(query)
+          let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+          history.push(url)
+      }
     const renderPagination = (): JSX.Element => {
         return (
             filteredFlattenNodeList.length > pageSize && (
@@ -674,7 +703,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                     size={filteredFlattenNodeList.length}
                     pageSize={pageSize}
                     offset={nodeListOffset}
-                    changePage={(pageNo: number) => setNodeListOffset(pageSize * (pageNo - 1))}
+                    changePage={changePage}
                     isPageSizeFix={true}
                 />
             )
@@ -717,9 +746,9 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
 
     return (
         <>
-            <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
+            <div data-testid="cluster_name_info_page" className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
                 {renderClusterSummary()}
-                <div
+                <div 
                     className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
                         clusterErrorList?.length ? 'with-error-bar' : ''
                     }`}

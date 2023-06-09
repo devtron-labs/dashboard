@@ -2,6 +2,7 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
+import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
@@ -16,6 +17,7 @@ function DeploymentStatusCard({
     hideDetails,
     deploymentTriggerTime,
     triggeredBy,
+    isVirtualEnvironment
 }: DeploymentStatusCardType) {
     const history = useHistory()
 
@@ -29,7 +31,7 @@ function DeploymentStatusCard({
         return (
             <>
                 <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                    <CD className="icon-dim-32" />
+                    {isVirtualEnvironment ? <Rocket className="icon-dim-32" /> : <CD className="icon-dim-32" />}
                 </div>
                 <div className="flex left column pr-16 dc__border-right-n1 mr-16">
                     <div className="flexbox">
@@ -88,7 +90,7 @@ function DeploymentStatusCard({
         >
             {!hideDeploymentStatusLeftInfo && renderDeploymentStatus()}
             <div className="flex left column mw-140">
-                <div className="fs-12 fw-4 cn-9">
+                <div className="fs-12 fw-4 cn-9" data-testid="last-updated-heading">
                     {hideDeploymentStatusLeftInfo ? 'Last updated' : 'Deployment triggered'}
                 </div>
                 <div className="flexbox" data-testid="last-updated-time">

@@ -1,8 +1,10 @@
 import { getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service';
-import {Routes} from '../../../config';
+import {Routes, SERVER_MODE} from '../../../config';
 import {get, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
 import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 import { APP_STATUS } from '../config';
+import { getProjectList } from '../../project/service';
+import { getClusterList } from '../../cluster/cluster.service';
 
 
 export interface AppListResponse extends ResponseType{
@@ -36,7 +38,18 @@ export interface AppEnvironmentDetail {
     environmentId: number,
     namespace: string,
     clusterName: string,
-    clusterId: number
+    clusterId: number,
+    isVirtualEnvironment?: boolean
+}
+
+async function commonAppFilters(serverMode) {
+    if(serverMode === SERVER_MODE.FULL){
+        return getAppFilters()
+    } else {
+        return Promise.all([getProjectList(), getClusterList()]).then(([projectListRes, clusterListResp]) => {
+            return {result: {Teams: projectListRes?.result, Clusters: clusterListResp?.result }}
+        })
+    } 
 }
 
 export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Promise<any> => {
@@ -44,7 +57,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
     let _clusterVsNamespaceMap = buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(','));
     let _clusterIds = [..._clusterVsNamespaceMap.keys()].join(',');
 
-    return Promise.all([getAppFilters() , (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([appFilterList, namespaceListRes]) => {
+    return Promise.all([commonAppFilters(serverMode), (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([appFilterList, namespaceListRes]) => {
         const projectList = appFilterList.result?.Teams
         const environmentList = appFilterList.result?.Environments
         const clusterList = appFilterList.result?.Clusters
@@ -229,10 +242,10 @@ const _buildNamespaces = (namespaceListRes : EnvironmentListHelmResponse, cluste
         namespaceObj.environments.forEach((environment : EnvironmentHelmResult) => {
             let _namespace = environment.namespace;
             // avoid pushing same namespace for same cluster multiple times (can be data bug in backend)
-            if(!_namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
+            if(_namespace && !_namespaces.some(_ns => (_ns.clusterId == _clusterId && _ns.actualName == _namespace))){
                 _namespaces.push({
                     key: _clusterId + "_" + _namespace,
-                    label: '<div><div>'+_namespace+'</div><div class="cn-6 fs-11 fw-n"> cluster: '+_clusterName+'</div></div>',
+                    label: '<div><div class="dc__truncate-text">'+_namespace+'</div><div class="cn-6 fs-11 fw-n dc__truncate-text"> cluster: '+_clusterName+'</div></div>',
                     isSaved: true,
                     isChecked: _isClusterSelected && clusterVsNamespaceMap.get(_clusterId.toString()).includes(_namespace),
                     clusterId : _clusterId,
