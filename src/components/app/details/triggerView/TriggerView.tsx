@@ -53,6 +53,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -514,11 +515,59 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
+    getBranchValues = (ciNodeId: string) => {
+        let branchValues = ''
+
+        for (const workflow of this.state.workflows) {
+            for (const node of workflow.nodes) {
+                if (node.type === 'CI' && node.id == ciNodeId) {
+                    debugger
+                    const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                    if (selectedCIPipeline?.ciMaterial) {
+                        for (const mat of selectedCIPipeline.ciMaterial) {
+                            branchValues += `${branchValues ? ',' : ''}${mat.source.value}`
+                        }
+                    }
+                    break
+                }
+            }
+        }
+
+        return branchValues
+    }
+
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         this.setState({ loader: true, showCIModal: true })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.abortController = new AbortController()
-        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal)
+
+        Promise.all([
+            this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
+            getCIBlockState
+                ? getCIBlockState(ciNodeId, this.props.match.params.appId, this.getBranchValues(ciNodeId))
+                : { result: null },
+        ])
+            .then((resp) => {
+                // need to set result for getCIBlockState call only as for updateCIMaterialList
+                // it's already being set inside the same function
+                if (resp[1].result) {
+                    const workflows = [...this.state.workflows].map((workflow) => {
+                        workflow.nodes.map((node) => {
+                            if (node.type === 'CI' && node.id == ciNodeId) {
+                                node.ciBlockState = resp[1].result
+                                return node
+                            }
+                            return node
+                        })
+
+                        return workflow
+                    })
+
+                    this.setState({
+                        workflows,
+                    })
+                }
+            })
             .catch((errors: ServerErrors) => {
                 if (!this.abortController.signal.aborted) {
                     showError(errors)
@@ -684,7 +733,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        this.onClickManifestDownload(_appId, node.environmentId, response.result.helmPackageName, nodeType)
+                        this.onClickManifestDownload(
+                            _appId,
+                            node.environmentId,
+                            response.result.helmPackageName,
+                            nodeType,
+                        )
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -949,7 +1003,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node[this.state.materialType][materialIndex]['lastExecution'] =
                                     response.result.lastExecution
                                 node[this.state.materialType][materialIndex]['vulnerabilitiesLoading'] = false
-                                node[this.state.materialType][materialIndex]['scanToolId']=response.result.scanToolId
+                                node[this.state.materialType][materialIndex]['scanToolId'] = response.result.scanToolId
                             }
                             return node
                         })
