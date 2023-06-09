@@ -15,6 +15,8 @@ import {
     TaskErrorObj,
     BuildStageVariable,
     PluginType,
+    RefVariableStageType,
+    RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
@@ -98,7 +100,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
     }
 
     const deleteTask = (e): void => {
-        const taskIndex = e.currentTarget.dataset.index
+        const taskIndex = +e.currentTarget.dataset.index
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
@@ -121,7 +123,11 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
-        setFormData(_formData)
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, newTaskIndex)
+        } else {
+            setFormData(_formData)
+        }
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
@@ -135,7 +141,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
     }
 
     const moveTaskToOtherStage = (e): void => {
-        const taskIndex = e.currentTarget.dataset.index
+        const taskIndex = +e.currentTarget.dataset.index
         const moveToStage =
             activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
         const _formData = { ...formData }
@@ -177,7 +183,11 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
-        setFormData(_formData)
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, newTaskIndex)
+        } else {
+            setFormData(_formData)
+        }
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
@@ -187,7 +197,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
             isValid: true,
             [_taskDetail[0].stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail']: {
                 inputVariables: [],
-                outputVariables: []
+                outputVariables: [],
             },
         })
         if (isMandatoryMissing) {
@@ -195,6 +205,35 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         } else {
             validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
             setFormDataErrorObj(_formDataErrorObj)
+        }
+    }
+
+    const clearDependentPostVariables = (_formData: FormType, deletedTaskIndex: number): void => {
+        const stepsLength = _formData[BuildStageVariable.PostBuild].steps?.length
+        for (let i = 0; i < stepsLength; i++) {
+            if (!_formData[BuildStageVariable.PostBuild].steps[i].stepType) {
+                continue
+            }
+            const currentStepTypeVariable =
+                _formData[BuildStageVariable.PostBuild].steps[i].stepType === PluginType.INLINE
+                    ? 'inlineStepDetail'
+                    : 'pluginRefStepDetail'
+            if (_formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable].inputVariables) {
+                for (const key in _formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable]
+                    .inputVariables) {
+                    const variableDetail =
+                        _formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable].inputVariables[key]
+                    if (
+                        variableDetail.refVariableStage === RefVariableStageType.PRE_CI &&
+                        variableDetail.refVariableStepIndex === deletedTaskIndex + 1
+                    ) {
+                        variableDetail.refVariableStepIndex = 0
+                        variableDetail.refVariableName = ''
+                        variableDetail.variableType = RefVariableType.NEW
+                        delete variableDetail.refVariableStage
+                    }
+                }
+            }
         }
     }
 
@@ -211,7 +250,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
                 true,
                 _formData,
                 BuildStageVariable.PostBuild,
-                0
+                0,
             ).calculatedStageVariables
         } else {
             const preTaskLength = _formData[BuildStageVariable.PreBuild].steps.length
