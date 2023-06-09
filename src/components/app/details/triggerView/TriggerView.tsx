@@ -550,7 +550,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .then((resp) => {
                 // need to set result for getCIBlockState call only as for updateCIMaterialList
                 // it's already being set inside the same function
-                if (resp[1].result) {
+                if (getCIBlockState) {
                     const workflows = [...this.state.workflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
