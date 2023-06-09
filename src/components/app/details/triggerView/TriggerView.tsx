@@ -521,7 +521,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         for (const workflow of this.state.workflows) {
             for (const node of workflow.nodes) {
                 if (node.type === 'CI' && node.id == ciNodeId) {
-                    debugger
                     const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                     if (selectedCIPipeline?.ciMaterial) {
                         for (const mat of selectedCIPipeline.ciMaterial) {
