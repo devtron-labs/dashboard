@@ -132,7 +132,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 appId,
                 envId,
                 pipelineId,
-                triggerId: deploymentHistoryResult.result[0].id,
+                triggerId: deploymentHistoryResult.result.cdWorkflows?.[0].id,
             }),
         )
     }
