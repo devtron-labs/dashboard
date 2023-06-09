@@ -555,6 +555,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }
                         return node
                     })
+                    workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.nodes = nodes
                     return workflow
                 })

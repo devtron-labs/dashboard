@@ -132,7 +132,7 @@ export interface TriggerResponseModalType {
 
 export interface TriggerModalRowType {
     rowData: ResponseRowType
-    key: number
+    index: number
     isVirtualEnv?: boolean
     envName?: string
 }

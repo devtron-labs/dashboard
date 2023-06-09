@@ -280,6 +280,7 @@ export interface WorkflowType {
     isSelected?: boolean
     approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
     imageReleaseTags: string[]
+    appReleaseTags?: string[]
 }
 
 export interface WebhookPayloadDataResponse {

@@ -26,7 +26,7 @@
 }
 
 .right-readme {
-    height: 100%;
+    height: calc(100vh - 97px);
     overflow: auto;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .bulk-output-drawer {
-    height: 280px;
+    height: auto;
 }
 
 .bulk-output-drawer {
@@ -66,19 +66,21 @@
 .bulk-container {
     display: grid;
     grid-template-columns: 50% 50%;
-    height: 100%;
+    height: calc(100vh - 48px);
     background-color: white;
 }
 
 .code-editor-body {
-    overflow: auto;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 97px);
     background: white;
+    .react-monaco-editor-container {
+        min-height: calc(60vh - 97px);
+    }
 }
 
 .bulk-output-body {
     letter-spacing: 0.2px;
-    height: calc(100vh - 600px);
+    height: calc(40vh - 36px);
     overflow: scroll;
     font-family: monospace;
 }

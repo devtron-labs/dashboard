@@ -15,7 +15,9 @@ export interface DeploymentHistoryResult extends ResponseType {
 }
 
 export interface DeploymentHistoryResultObject {
-    cdWorkflows?: History[]
+    cdWorkflows: History[]
+    appReleaseTagNames: string[]
+    tagsEditable: boolean
 }
 
 export async function getTriggerHistory(
@@ -28,19 +30,23 @@ export async function getTriggerHistory(
         `app/cd-pipeline/workflow/history/${appId}/${envId}/${pipelineId}?offset=${pagination.offset}&size=${pagination.size}`,
     ).then(({ result, code, status }) => {
         return {
-            result: (result || []).map((deploymentHistory: DeploymentHistory) => ({
-                ...deploymentHistory,
-                triggerId: deploymentHistory?.cd_workflow_id,
-                podStatus: deploymentHistory?.pod_status,
-                startedOn: deploymentHistory?.started_on,
-                finishedOn: deploymentHistory?.finished_on,
-                pipelineId: deploymentHistory?.pipeline_id,
-                logLocation: deploymentHistory?.log_file_path,
-                triggeredBy: deploymentHistory?.triggered_by,
-                artifact: deploymentHistory?.image,
-                triggeredByEmail: deploymentHistory?.email_id,
-                stage: deploymentHistory?.workflow_type,
-            })),
+            result: {
+                cdWorkflows: (result.cdWorkflows || []).map((deploymentHistory: DeploymentHistory) => ({
+                    ...deploymentHistory,
+                    triggerId: deploymentHistory?.cd_workflow_id,
+                    podStatus: deploymentHistory?.pod_status,
+                    startedOn: deploymentHistory?.started_on,
+                    finishedOn: deploymentHistory?.finished_on,
+                    pipelineId: deploymentHistory?.pipeline_id,
+                    logLocation: deploymentHistory?.log_file_path,
+                    triggeredBy: deploymentHistory?.triggered_by,
+                    artifact: deploymentHistory?.image,
+                    triggeredByEmail: deploymentHistory?.email_id,
+                    stage: deploymentHistory?.workflow_type,
+                })),
+                appReleaseTagNames:result.appReleaseTagNames,
+                tagsEditable: result.tagsEditable
+            },
             code,
             status,
         }

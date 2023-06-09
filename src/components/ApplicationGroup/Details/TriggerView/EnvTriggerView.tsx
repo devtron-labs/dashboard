@@ -251,6 +251,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     name: wf.name,
                     preNodeAvailable: false,
                     postNodeAvailable: false,
+                    appReleaseTags: wf.appReleaseTags
                 }
                 for (const node of wf.nodes) {
                     if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
@@ -502,6 +503,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     }
                     return node
                 })
+                wf.appReleaseTags = response.result.appReleaseTags
                 return wf
             })
             setFilteredWorkflows(_workflows)
@@ -682,6 +684,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                         return node
                     })
+                    workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.nodes = nodes
                     return workflow
                 })
@@ -737,6 +740,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                         return node
                     })
+                    workflow.appReleaseTags = response.result.appReleaseTags
                     workflow.nodes = nodes
                     return workflow
                 })
