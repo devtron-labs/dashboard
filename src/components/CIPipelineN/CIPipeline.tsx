@@ -275,7 +275,7 @@ export default function CIPipeline({
     }
 
     const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
-        if (processPluginData && prepareFormData && pluginList.length) {
+        if (!isJobView && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {

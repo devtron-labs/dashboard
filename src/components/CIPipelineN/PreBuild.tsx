@@ -115,7 +115,8 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            isPluginRequired = isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+            isPluginRequired =
+                !isJobView && isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired

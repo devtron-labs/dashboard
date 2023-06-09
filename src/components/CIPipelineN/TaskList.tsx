@@ -23,7 +23,7 @@ import { importComponentFromFELibrary } from '../common'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesListFromPrevStep }: TaskListType) {
+export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesListFromPrevStep, isJobView}: TaskListType) {
     const {
         formData,
         setFormData,
@@ -150,6 +150,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         let isMandatoryMissing = false
         if (_taskDetail[0].pluginRefStepDetail) {
             const isPluginRequired =
+                !isJobView &&
                 isRequired &&
                 isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
             if (_taskDetail[0].isMandatory && !isPluginRequired) {
@@ -235,6 +236,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
                 }
             }
         }
+        setFormData(_formData)
     }
 
     const reCalculatePrevStepVar = (_formData: FormType, newTaskIndex: number): void => {
@@ -358,7 +360,7 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
                                             )}
                                         </div>
                                     )}
-                                    {taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
+                                    {!isJobView && taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
                                         <MandatoryPluginMenuOptionTippy
                                             pluginDetail={mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]}
                                         />
