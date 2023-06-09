@@ -56,6 +56,7 @@ export interface CDMaterialProps {
     triggerType?: string
     isVirtualEnvironment?: boolean
     isSaveLoading?: boolean
+    ciPipelineId?: number
 }
 
 export enum DeploymentWithConfigType {
