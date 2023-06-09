@@ -45,7 +45,7 @@ export default function GitInfoMaterial({
     hideSearchHeader,
     isJobView = false,
     isCITriggerBlocked = false,
-    ciBlockState = null
+    ciBlockState = null,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -382,7 +382,12 @@ export default function GitInfoMaterial({
     }
 
     const redirectToCIPipeline = () => {
-        push(`/app/${appId}/edit/workflow/${workflowId}/ci-pipeline/${pipelineId}/build`)
+        const ciPipelineURL = `/app/${appId}/edit/workflow/${workflowId}/ci-pipeline/${pipelineId}/build`
+        if (fromAppGrouping) {
+            window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
+        } else {
+            push(ciPipelineURL)
+        }
     }
 
     return (
