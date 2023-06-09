@@ -23,7 +23,12 @@ import { importComponentFromFELibrary } from '../common'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesListFromPrevStep, isJobView}: TaskListType) {
+export function TaskList({
+    withWarning,
+    mandatoryPluginsMap,
+    setInputVariablesListFromPrevStep,
+    isJobView,
+}: TaskListType) {
     const {
         formData,
         setFormData,
@@ -123,12 +128,12 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
+        const _formDataErrorObj = { ...formDataErrorObj }
         if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
-            clearDependentPostVariables(_formData, newTaskIndex)
+            clearDependentPostVariables(_formData, newTaskIndex, _formDataErrorObj)
         } else {
             setFormData(_formData)
         }
-        const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
@@ -184,11 +189,6 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
-        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
-            clearDependentPostVariables(_formData, newTaskIndex)
-        } else {
-            setFormData(_formData)
-        }
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
         newErrorList.splice(taskIndex, 1)
@@ -201,6 +201,11 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
                 outputVariables: [],
             },
         })
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, newTaskIndex, _formDataErrorObj)
+        } else {
+            setFormData(_formData)
+        }
         if (isMandatoryMissing) {
             validateStage(activeStageName, _formData, _formDataErrorObj)
         } else {
@@ -209,8 +214,9 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
         }
     }
 
-    const clearDependentPostVariables = (_formData: FormType, deletedTaskIndex: number): void => {
+    const clearDependentPostVariables = (_formData: FormType, deletedTaskIndex: number, _formDataErrorObj): void => {
         const stepsLength = _formData[BuildStageVariable.PostBuild].steps?.length
+        let reValidateStage = false
         for (let i = 0; i < stepsLength; i++) {
             if (!_formData[BuildStageVariable.PostBuild].steps[i].stepType) {
                 continue
@@ -232,9 +238,13 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
                         variableDetail.refVariableName = ''
                         variableDetail.variableType = RefVariableType.NEW
                         delete variableDetail.refVariableStage
+                        reValidateStage = true
                     }
                 }
             }
+        }
+        if (reValidateStage) {
+            validateStage(BuildStageVariable.PostBuild, _formData, _formDataErrorObj)
         }
         setFormData(_formData)
     }
