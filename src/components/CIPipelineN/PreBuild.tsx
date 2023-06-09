@@ -5,6 +5,7 @@ import {
     ScriptType,
     FormErrorObjectType,
     VariableType,
+    RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -72,7 +73,10 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
     }, [activeStageName])
 
     const setVariableStepIndexInPlugin = (variable): VariableType => {
-        variable.variableStepIndexInPlugin = variable.variableStepIndex
+        variable.refVariableStepIndex = 0
+        variable.refVariableName = ''
+        variable.variableType = RefVariableType.NEW
+        delete variable.refVariableStage
         delete variable.variableStepIndex
         return variable
     }
