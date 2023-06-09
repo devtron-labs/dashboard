@@ -45,6 +45,9 @@ export function getCITriggerInfoModal(
 ) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
+        let appReleaseTags = response?.result?.imageTaggingData?.appReleaseTags
+        let imageComment = response?.result?.imageTaggingData?.imageComment
+        let imageReleaseTags = response?.result?.imageTaggingData?.imageReleaseTags
         materials = materials.map((mat) => {
             return {
                 id: mat.id,
@@ -65,7 +68,7 @@ export function getCITriggerInfoModal(
                         showChanges: index === 0,
                         webhookData: hist.WebhookData,
                     }
-                }),
+                }), 
                 isSelected:
                     mat.history.find((h) =>
                         mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
@@ -87,6 +90,9 @@ export function getCITriggerInfoModal(
                 environmentName: response.result.environmentName || '',
                 environmentId: response.result.environmentId || 0,
                 appName: response.result.appName || '',
+                appReleaseTags: appReleaseTags,
+                imageComment: imageComment,
+                imageReleaseTags: imageReleaseTags,
             },
         }
     })

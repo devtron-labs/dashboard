@@ -194,11 +194,12 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
 
     return (
         <div
-            className={`mb-16 dc__h-fit-content ci-artifact ci-artifact--${type}`}
+            className={`dc__h-fit-content ci-artifact w-100 ci-artifact--${type}`}
             data-testid="hover-on-report-artifact"
+            // style={{width: 'i'}}
         >
-            <div className="ci-artifacts-grid">
-                <div className="bcn-1 flex br-4 w-56">
+            <div className="ci-artifacts-grid flex left">
+                <div className="bcn-1 flex br-4 w-56 h-100">
                     <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
                 </div>
                 {children}

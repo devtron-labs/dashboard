@@ -1,72 +1,81 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
-import { getCITriggerInfoModal } from '../service';
-import { ViewType } from '../../../config';
-import close from '../../../assets/icons/ic-close.svg';
-import { MaterialHistory, CIMaterialType } from '../details/triggerView/MaterialHistory';
-import MaterialSource from '../details/triggerView/MaterialSource';
+import { getCITriggerInfoModal } from '../service'
+import { ViewType } from '../../../config'
+import close from '../../../assets/icons/ic-close.svg'
+import { MaterialHistory, CIMaterialType } from '../details/triggerView/MaterialHistory'
+import MaterialSource from '../details/triggerView/MaterialSource'
+import { ImageTagsContainer } from '../details/cicdHistory/ImageTags'
+import Artifacts from '../details/cicdHistory/Artifacts'
+import { HistoryComponentType, ImageComment, ReleaseTag } from '../details/cicdHistory/types'
 
 interface TriggerInfoModalState {
-    statusCode: number;
-    view: string;
-    materials: CIMaterialType[];
-    triggeredByEmail: string;
-    lastDeployedTime: string;
-    environmentName: string;
-    environmentId: number;
-    appName: string;
+    statusCode: number
+    view: string
+    materials: CIMaterialType[]
+    triggeredByEmail: string
+    lastDeployedTime: string
+    environmentName: string
+    environmentId: number
+    appName: string
+    appReleaseTags: []
+    imageComment: ImageComment
+    imageReleaseTags: ReleaseTag[]
 }
 
 interface TriggerInfoModalProps {
-    close: () => void;
-    envId: number | string;
-    ciArtifactId: number | string;
-    commit?: string;
+    close: () => void
+    envId: number | string
+    ciArtifactId: number
+    commit?: string
 }
 
 export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerInfoModalState> {
-
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             statusCode: 0,
             view: ViewType.LOADING,
             materials: [],
-            triggeredByEmail: "",
-            lastDeployedTime: "",
-            environmentName: "",
+            triggeredByEmail: '',
+            lastDeployedTime: '',
+            environmentName: '',
             environmentId: 0,
-            appName: "",
+            appName: '',
+            appReleaseTags: [],
+            imageComment: {id:0, artifactId:0, comment:""},
+            imageReleaseTags: []
         }
-        this.selectMaterial = this.selectMaterial.bind(this);
-        this.toggleChanges = this.toggleChanges.bind(this);
+        this.selectMaterial = this.selectMaterial.bind(this)
+        this.toggleChanges = this.toggleChanges.bind(this)
     }
 
     componentDidMount() {
         let params = {
             envId: this.props.envId,
-            ciArtifactId: this.props.ciArtifactId
+            ciArtifactId: this.props.ciArtifactId,
         }
-        getCITriggerInfoModal(params, this.props.commit).then((response) => {
-            this.setState({
-                statusCode: response.code,
-                view: ViewType.FORM,
-                ...response.result,
+        getCITriggerInfoModal(params, this.props.commit)
+            .then((response) => {
+                this.setState({
+                    statusCode: response.code,
+                    view: ViewType.FORM,
+                    ...response.result,
+                })
             })
-        }).catch((error) => {
-            showError(error);
-        })
+            .catch((error) => {
+                showError(error)
+            })
     }
 
     selectMaterial(materialId: string): void {
         let materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
-                material.isSelected = true;
-            }
-            else material.isSelected = false;
-            return material;
+                material.isSelected = true
+            } else material.isSelected = false
+            return material
         })
-        this.setState({ materials: materials });
+        this.setState({ materials: materials })
     }
 
     toggleChanges(materialId: string, commit: string): void {
@@ -74,20 +83,20 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             if (String(material.id) === materialId) {
                 material.history = material.history.map((hist) => {
                     if (hist.commit === commit) {
-                        hist.showChanges = !hist.showChanges;
+                        hist.showChanges = !hist.showChanges
                     }
-                    return hist;
+                    return hist
                 })
             }
-            return material;
+            return material
         })
-        this.setState({ materials: materials });
+        this.setState({ materials: materials })
     }
 
     renderWithBackDrop(headerDescription: string, body) {
         return (
-            <Drawer position="right" width="570px" >
-                <div data-testid="visible-modal-commit-info" className={""}>
+            <Drawer position="right" width="570px">
+                <div data-testid="visible-modal-commit-info" className={''}>
                     <div className="trigger-modal__header bcn-0">
                         <div className="">
                             <h1 className="modal__title">{this.state.appName}</h1>
@@ -98,27 +107,28 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             type="button"
                             className="dc__transparent"
                             onClick={this.props.close}
-                        > 
+                        >
                             <img src={close} alt="close" />
                         </button>
                     </div>
                     {body}
                 </div>
-                </Drawer>
+            </Drawer>
         )
     }
 
     render() {
-        let headerDescription, body;
+        let headerDescription, body
         if (this.state.view === ViewType.LOADING) {
-            headerDescription = null;
-            body = <div className="m-lr-0 flexbox">
-                <div className="select-material" style={{ height: '100vh' }}>
-                    <Progressing pageLoader />
+            headerDescription = null
+            body = (
+                <div className="m-lr-0 flexbox">
+                    <div className="select-material" style={{ height: '100vh' }}>
+                        <Progressing pageLoader />
+                    </div>
                 </div>
-            </div>
-        }
-        else {
+            )
+        } else {
             const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
             headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
             body = (
@@ -129,10 +139,24 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             pipelineName=""
                             toggleChanges={this.toggleChanges}
                         />
+                        <div className="mt-16 mb-16 mr-20 ml-20 bcn-0 dc__border br-4">
+                            <Artifacts
+                                status={''}
+                                artifact={"gireeshnaidu/kuchbhi:07622cde-1-9"} 
+                                blobStorageEnabled={true}
+                                isArtifactUploaded={false}
+                                isJobView={false}
+                                type={HistoryComponentType.CI}
+                                imageReleaseTags={this.state.imageReleaseTags}
+                                imageComment={this.state.imageComment}
+                                ciPipelineId={selectedMaterial.id}
+                                artifactId={this.props.ciArtifactId}
+                            />
+                        </div>
                     </div>
                 </div>
             )
         }
-        return this.renderWithBackDrop(headerDescription, body);
+        return this.renderWithBackDrop(headerDescription, body)
     }
 }
