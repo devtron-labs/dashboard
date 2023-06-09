@@ -288,9 +288,7 @@ export default function CIPipeline({
                 selectedBranchRef.current = branchName
                 processPluginData(_formData, pluginList, appId, ciPipelineId, branchName)
                     .then((response: MandatoryPluginDataType) => {
-                        if (response?.pluginData?.length) {
-                            setMandatoryPluginData(response)
-                        }
+                        setMandatoryPluginData(response)
                         if (_formData) {
                             setFormData(prepareFormData(_formData, response?.pluginData ?? []))
                         }
