@@ -380,6 +380,8 @@ function cdMaterialListModal(
             artifactStatus: artifactStatusValue,
             userApprovalMetadata: material.userApprovalMetadata,
             triggeredBy: material.triggeredBy,
+            imageComment: material.imageComment,
+            imageReleaseTags: material.imageReleaseTags,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {
