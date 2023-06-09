@@ -375,6 +375,8 @@ function cdMaterialListModal(
             runningOnParentCd: material.runningOnParentCd,
             artifactStatus: artifactStatusValue,
             userApprovalMetadata: material.userApprovalMetadata,
+            imageComment: material.imageComment,
+            imageReleaseTags:material.imageReleaseTags,
             triggeredBy: material.triggeredBy,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {

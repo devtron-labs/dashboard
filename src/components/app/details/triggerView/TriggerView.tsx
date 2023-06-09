@@ -1192,6 +1192,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 requestedUserId={node.requestedUserId}
                                 isVirtualEnvironment={node.isVirtualEnvironment}
                                 isSaveLoading={this.state.isSaveLoading}
+                                ciPipelineId={node.connectingCiPipelineId}
                             />
                         )}
                     </div>

@@ -74,6 +74,8 @@ export interface ArtifactType {
     type: HistoryComponentType
     ciPipelineId?: number
     artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
 }
 
 export interface CopyTippyWithTextType {
@@ -89,6 +91,8 @@ export interface CIListItemType {
     children: any
     ciPipelineId?: number
     artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
 }
 
 export interface ReleaseTag {
@@ -109,6 +113,8 @@ export interface ImageComment {
 export interface ImageTagType {
     ciPipelineId?: number
     artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
 }
 
 export interface LogsRendererType {

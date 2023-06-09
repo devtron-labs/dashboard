@@ -598,7 +598,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
                     </div>
                     <div className="pl-12 pr-12 pb-12">
-                        <ImageTagsContainer ciPipelineId={0} artifactId={0} />
+                        <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} />
                     </div>
                     <div></div>
                     {mat.showSourceInfo && (

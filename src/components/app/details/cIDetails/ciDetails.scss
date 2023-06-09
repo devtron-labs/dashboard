@@ -39,23 +39,6 @@
                 grid-column-gap: 8px;
             }
         }
-
-        .image-tags-container{
-
-            .image-tags-container-edit__icon{
-                display: none;
-            }
-
-            &:hover{
-                background-color: var(--N50);
-                .image-tags-container-edit__icon{
-                    display: block;
-                }
-                .image-tags-container-rectangle__icon{
-                    display: none;
-                }
-            }
-        }
     }
 
     .zoom {
@@ -81,7 +64,7 @@
         border-right: 1px solid var(--N200);
         display: grid;
         grid-template-rows: 80px 1fr;
-        overflow: hidden;
+        overflow: hidden; 
         flex-basis: 280px;
         transition: flex-basis 0.3s;
     }
@@ -464,4 +447,21 @@
     border: 1px dashed #B1B7BC;
     border-radius: 4px; 
     cursor: pointer;
+}
+
+.image-tags-container{
+
+    .image-tags-container-edit__icon{
+        display: none;
+    }
+
+    &:hover{
+        background-color: var(--N50);
+        .image-tags-container-edit__icon{
+            display: block;
+        }
+        .image-tags-container-rectangle__icon{
+            display: none;
+        }
+    }
 }

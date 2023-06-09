@@ -12,38 +12,28 @@ import { ImageTagType, ReleaseTag } from './types'
 import { setImageTags, getImageTags } from '../../service'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 
-export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) => {
-    const [initialTags, setInitialTags] = useState<ReleaseTag[]>([])
-    const [initialDescription, setInitialDescription] = useState('')
+export const ImageTagsContainer = ({ ciPipelineId, artifactId, imageComment, imageReleaseTags }: ImageTagType) => {
+    const [initialTags, setInitialTags] = useState<ReleaseTag[]>(imageReleaseTags ? imageReleaseTags : [])
+    const [initialDescription, setInitialDescription] = useState(imageComment? imageComment.comment: "")
     const [existingTags, setExistingTags] = useState([])
-    const [newDescription, setNewDescription] = useState('')
+    const [newDescription, setNewDescription] = useState(imageComment? imageComment.comment: "")
     const [isEditing, setIsEditing] = useState(false)
-    const [displayedTags, setDisplayedTags] = useState<ReleaseTag[]>([])
-    const [tagErrorMessage, setTagErrorMessage] = useState('')
+    const [displayedTags, setDisplayedTags] = useState<ReleaseTag[]>(imageReleaseTags ? imageReleaseTags : [])
+    const [tagErrorMessage, setTagErrorMessage] = useState('') 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await getImageTags(ciPipelineId, artifactId)
-                const tags = response.result?.imageReleaseTags?.map((tag) => ({
-                    id: tag.id,
-                    tagName: tag.tagName,
-                    deleted: tag.deleted,
-                    appId: 0,
-                    artifactId: 0,
-                }))
                 const appReleaseTags = response.result?.appReleaseTags
                 setExistingTags(appReleaseTags)
-                setDisplayedTags(tags)
-                setInitialTags(tags)
-                setInitialDescription(response.result?.imageComment?.comment)
-                setNewDescription(response.result?.imageComment?.comment)
             } catch (error) {
                 // Handle the error if necessary
                 showError(error)
             }
         }
-        fetchData()
+        fetchData() 
     }, [ciPipelineId, artifactId])
+   // also add is tags editable
     const [createTags, setCreateTags] = useState<ReleaseTag[]>([])
     const [softDeleteTags, setSoftDeleteTags] = useState<ReleaseTag[]>([])
     const [hardDeleteTags, setHardDeleteTags] = useState<ReleaseTag[]>([])
@@ -159,7 +149,7 @@ export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) =
 
     const creatableRef = useRef(null)
 
-    if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
+    if (newDescription === "" && displayedTags.length === 0 && !isEditing) {
         return (
             <div className="bcn-0">
                 <AddImageButton handleEditClick={handleEditClick} />
@@ -171,7 +161,7 @@ export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) =
         <div>
             {!isEditing ? (
                 <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
-                    <div className="flex left" style={{ width: '734px' }}>
+                    <div className="flex left" style={{ width: 'calc(100vw - 56px)' }}>
                         <Rectangle className="image-tags-container-rectangle__icon" />
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
@@ -190,10 +180,10 @@ export const ImageTagsContainer = ({ ciPipelineId, artifactId }: ImageTagType) =
                             </div>
                         </div>
                     </div>
-                    <EditIcon
-                        className="icon-dim-16 mt-8 ml-10 image-tags-container-edit__icon"
+                    <div className="mt-8 mr-6"><EditIcon
+                        className="icon-dim-16 image-tags-container-edit__icon cursor"
                         onClick={handleEditClick}
-                    />
+                    /></div>
                 </div>
             ) : (
                 <div className="bcn-0 dc__border-top-n1 ">
