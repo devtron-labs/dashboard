@@ -43,6 +43,10 @@ export async function getTriggerHistory(
                     artifact: deploymentHistory?.image,
                     triggeredByEmail: deploymentHistory?.email_id,
                     stage: deploymentHistory?.workflow_type,
+                    image: deploymentHistory?.image,
+                    imageComment: deploymentHistory?.imageComment,
+                    imageReleaseTags: deploymentHistory?.imageReleaseTags,
+                    artifactId: deploymentHistory?.ci_artifact_id
                 })),
                 appReleaseTagNames:result.appReleaseTagNames,
                 tagsEditable: result.tagsEditable

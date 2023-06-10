@@ -48,6 +48,7 @@ export function getCITriggerInfoModal(
         let appReleaseTags = response?.result?.imageTaggingData?.appReleaseTags
         let imageComment = response?.result?.imageTaggingData?.imageComment
         let imageReleaseTags = response?.result?.imageTaggingData?.imageReleaseTags
+        let image = response?.result?.image
         materials = materials.map((mat) => {
             return {
                 id: mat.id,
@@ -93,6 +94,7 @@ export function getCITriggerInfoModal(
                 appReleaseTags: appReleaseTags,
                 imageComment: imageComment,
                 imageReleaseTags: imageReleaseTags,
+                image: image,
             },
         }
     })
@@ -298,6 +300,8 @@ export function getCDMaterialList(
                     true,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
+                    response.result.appReleaseTagNames,
+                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
@@ -312,6 +316,8 @@ export function getCDMaterialList(
                     true,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
+                    response.result.appReleaseTagNames,
+                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
@@ -352,6 +358,8 @@ function cdMaterialListModal(
     markFirstSelected: boolean,
     artifactId?: number,
     artifactStatus?: string,
+    appReleaseTagNames?: string[],
+    tagsEditable?: boolean
 ) {
     if (!artifacts || !artifacts.length) return []
 

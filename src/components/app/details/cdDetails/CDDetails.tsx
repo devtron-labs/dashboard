@@ -231,6 +231,8 @@ export default function CDDetails() {
                                 deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
+                                deploymentHistoryResult={deploymentHistoryResult.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
+
                             />
                         </Route>
                     ) : !envId ? (
@@ -260,6 +262,7 @@ export const TriggerOutput: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
+    deploymentHistoryResult: History[]
 }> = ({
     fullScreenView,
     syncState,
@@ -269,6 +272,7 @@ export const TriggerOutput: React.FC<{
     deploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
+    deploymentHistoryResult,
 }) => {
         const { appId, triggerId, envId, pipelineId } = useParams<{
             appId: string
@@ -401,12 +405,16 @@ export const TriggerOutput: React.FC<{
                 deploymentHistoryList={deploymentHistoryList}
                 deploymentAppType={deploymentAppType}
                 isBlobStorageConfigured={isBlobStorageConfigured}
+                deploymentHistoryResult = {deploymentHistoryResult}
+                artifactId = {triggerDetailsResult?.result?.artifactId}
+                ciPipelineId = {triggerDetailsResult?.result?.ciPipelineId}
             />
         </>
     )
 }
 
 const HistoryLogs: React.FC<{
+    key: number
     triggerDetails: History
     loading: boolean
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
@@ -416,6 +424,9 @@ const HistoryLogs: React.FC<{
     isBlobStorageConfigured: boolean
     userApprovalMetadata: UserApprovalMetadataType
     triggeredByEmail: string
+    deploymentHistoryResult: History[]
+    artifactId: number
+    ciPipelineId: number
 }> = ({
     triggerDetails,
     loading,
@@ -426,6 +437,9 @@ const HistoryLogs: React.FC<{
     isBlobStorageConfigured,
     userApprovalMetadata,
     triggeredByEmail,
+    deploymentHistoryResult,
+    artifactId,
+    ciPipelineId,
 }) => {
         let { path } = useRouteMatch()
         const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -445,6 +459,12 @@ const HistoryLogs: React.FC<{
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
+
+    let artifactTodeploymentHistoryIndexMap = new Map<number,number>()
+    deploymentHistoryResult.forEach((val,i)=>{
+        artifactTodeploymentHistoryIndexMap.set(val['ci_artifact_id'],i)
+    })
+
 
     return (
         <>
@@ -487,6 +507,23 @@ const HistoryLogs: React.FC<{
                                 artifact={triggerDetails.artifact}
                                 userApprovalMetadata={userApprovalMetadata}
                                 triggeredByEmail={triggeredByEmail}
+                                artifactId={artifactId}
+                            />
+                            <Artifacts
+                                status={triggerDetails.status}
+                                artifact={triggerDetails.artifact}
+                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                ciPipelineId={ciPipelineId}
+                                artifactId={artifactId}
+                                imageComment={
+                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        .imageComment
+                                }
+                                imageReleaseTags={
+                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        .imageReleaseTags
+                                }
+                                type={HistoryComponentType.CI}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (

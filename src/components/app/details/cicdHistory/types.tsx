@@ -76,6 +76,8 @@ export interface ArtifactType {
     artifactId?: number
     imageComment?: ImageComment
     imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface CopyTippyWithTextType {
@@ -93,6 +95,8 @@ export interface CIListItemType {
     artifactId?: number
     imageComment?: ImageComment
     imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface ReleaseTag {
@@ -115,6 +119,8 @@ export interface ImageTagType {
     artifactId?: number
     imageComment?: ImageComment
     imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface LogsRendererType {
@@ -140,6 +146,9 @@ export interface GitChangesType {
     artifact?: string
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredByEmail?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    artifactId?: number
 }
 export interface EmptyViewType {
     imgSrc?: string

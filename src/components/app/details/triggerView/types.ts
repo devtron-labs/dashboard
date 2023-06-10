@@ -57,6 +57,8 @@ export interface CDMaterialProps {
     isVirtualEnvironment?: boolean
     isSaveLoading?: boolean
     ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean 
 }
 
 export enum DeploymentWithConfigType {
@@ -265,6 +267,7 @@ export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterP
 }
 
 export interface WorkflowType {
+    tagsEditable: boolean
     id: string
     name: string
     gitMaterials?: Material[]
@@ -322,6 +325,7 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
+    
 }
 
 //-- begining of response type objects for trigger view

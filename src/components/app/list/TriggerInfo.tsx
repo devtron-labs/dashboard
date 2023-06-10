@@ -8,6 +8,8 @@ import MaterialSource from '../details/triggerView/MaterialSource'
 import { ImageTagsContainer } from '../details/cicdHistory/ImageTags'
 import Artifacts from '../details/cicdHistory/Artifacts'
 import { HistoryComponentType, ImageComment, ReleaseTag } from '../details/cicdHistory/types'
+import { GitMaterialInfoHeader } from '../../common'
+import GitCommitInfoGeneric from '../../common/GitCommitInfoGeneric'
 
 interface TriggerInfoModalState {
     statusCode: number
@@ -21,6 +23,7 @@ interface TriggerInfoModalState {
     appReleaseTags: []
     imageComment: ImageComment
     imageReleaseTags: ReleaseTag[]
+    image: string
 }
 
 interface TriggerInfoModalProps {
@@ -44,7 +47,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             appName: '',
             appReleaseTags: [],
             imageComment: {id:0, artifactId:0, comment:""},
-            imageReleaseTags: []
+            imageReleaseTags: [],
+            image: '',
         }
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
@@ -95,7 +99,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     renderWithBackDrop(headerDescription: string, body) {
         return (
-            <Drawer position="right" width="570px">
+            <Drawer position="right" width="800px">
                 <div data-testid="visible-modal-commit-info" className={''}>
                     <div className="trigger-modal__header bcn-0">
                         <div className="">
@@ -142,7 +146,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                         <div className="mt-16 mb-16 mr-20 ml-20 bcn-0 dc__border br-4">
                             <Artifacts
                                 status={''}
-                                artifact={"gireeshnaidu/kuchbhi:07622cde-1-9"} 
+                                artifact={this.state.image} 
                                 blobStorageEnabled={true}
                                 isArtifactUploaded={false}
                                 isJobView={false}
