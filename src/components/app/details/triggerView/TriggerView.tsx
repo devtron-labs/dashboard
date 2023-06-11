@@ -542,14 +542,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         Promise.all([
             this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
-            getCIBlockState
+            getCIBlockState && !this.props.isJobView
                 ? getCIBlockState(ciNodeId, this.props.match.params.appId, this.getBranchValues(ciNodeId))
                 : { result: null },
         ])
             .then((resp) => {
                 // need to set result for getCIBlockState call only as for updateCIMaterialList
                 // it's already being set inside the same function
-                if (getCIBlockState) {
+                if (getCIBlockState && !this.props.isJobView && resp[1].result) {
                     const workflows = [...this.state.workflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
