@@ -243,11 +243,11 @@ export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], fil
 }
 
 export const processConsequenceData = (data: BlockedStateData): ConsequenceType | null => {
-  if (!data.isOffendingMandatoryPlugin) {
-      return null
-  } else if (data.isCITriggerBlocked) {
-      return { action: ConsequenceAction.BLOCK, metadataField: '' }
-  } else {
-      return data.ciBlockState
-  }
+    if (!data.isOffendingMandatoryPlugin) {
+        return null
+    } else if (data.isCITriggerBlocked) {
+        return { action: ConsequenceAction.BLOCK, metadataField: '0001-01-01T00:00:00Z' }
+    } else {
+        return data.ciBlockState
+    }
 }
