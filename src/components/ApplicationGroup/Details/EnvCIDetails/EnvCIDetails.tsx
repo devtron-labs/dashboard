@@ -113,7 +113,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             showError(error)
             return
         }
-        setTriggerHistory(mapByKey(result?.result || [], 'id'))
+        setTriggerHistory(mapByKey(result?.result.ciWorkflows || [], 'id'))
     }
 
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
