@@ -7,7 +7,7 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-help-out
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Redo } from '../../../../assets/icons/ic-arrow-counter-clockwise.svg'
 import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
-import { ReactComponent as Rectangle } from '../../../../assets/icons/RectangleLine.svg'
+import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ImageTagType, ReleaseTag } from './types'
 import { setImageTags } from '../../service'
@@ -27,6 +27,7 @@ export const ImageTagsContainer = ({
     const [existingTags, setExistingTags] = useState(appReleaseTagNames ? appReleaseTagNames : [])
     const [newDescription, setNewDescription] = useState(imageComment ? imageComment.comment : '')
     const [isEditing, setIsEditing] = useState(false)
+    const [showTagsWarning, setShowTagsWarning] = useState(false)
     const [displayedTags, setDisplayedTags] = useState<ReleaseTag[]>(imageReleaseTags ? imageReleaseTags : [])
     const [tagErrorMessage, setTagErrorMessage] = useState('')
     const [createTags, setCreateTags] = useState<ReleaseTag[]>([])
@@ -95,6 +96,7 @@ export const ImageTagsContainer = ({
         }
         setCreateTags([...createTags, newTag])
         setDisplayedTags([...displayedTags, newTag])
+        setShowTagsWarning(true)
     }
 
     const handleTagSoftDelete = (index) => {
@@ -259,6 +261,14 @@ export const ImageTagsContainer = ({
                             />
                         ))}
                     </div>
+                    {showTagsWarning && (
+                        <div className="cn-7 mb-8 flex left">
+                            <Info
+                                className="form__icon--info icon-dim-16 mr-2"
+                            />
+                            Tags cannot be edited/removed later
+                        </div>
+                    )}
                     <div className="cn-7">Comment</div>
                     <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12 ">
                         <textarea
@@ -279,7 +289,6 @@ export const ImageTagsContainer = ({
             ) : (
                 <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
                     <div className="flex left image-tag-left-border" style={{ width: 'calc(100vw - 56px)' }}>
-                        {/* <Rectangle className="image-tags-container-rectangle__icon" /> */}
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
                             <div className="dc__flex-wrap flex left">

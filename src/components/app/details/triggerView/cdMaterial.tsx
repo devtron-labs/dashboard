@@ -600,7 +600,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="pl-12 pr-12 pb-12">
                         <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} appReleaseTagNames={this.props.appReleaseTagNames} tagsEditable={this.props.tagsEditable} />
                     </div>
-                    <div></div>
                     {mat.showSourceInfo && (
                         <>
                             {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
