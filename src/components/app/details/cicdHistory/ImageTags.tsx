@@ -73,6 +73,8 @@ export const ImageTagsContainer = ({
         setSoftDeleteTags([])
         setHardDeleteTags([])
         handleEditClick()
+        setShowTagsWarning(false)
+        setTagErrorMessage('')
     }
 
     const handleTagCreate = (newValue) => {
@@ -163,6 +165,8 @@ export const ImageTagsContainer = ({
             setSoftDeleteTags([])
             setHardDeleteTags([])
             handleEditClick()
+            setShowTagsWarning(false)
+            setTagErrorMessage('')
         } catch (err) {
             showError(err)
         }
