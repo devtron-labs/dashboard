@@ -482,7 +482,7 @@ export function RedirectUserWithSentry({ isFirstLoginUser }) {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        if (pathname && pathname !== '/' &&  pathname!=='/health') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
         if (window._env_.K8S_CLIENT) {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
