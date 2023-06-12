@@ -741,11 +741,13 @@ export default function CIPipeline({
                         _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
                     if (
                         variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
-                        variableDetail.refVariableStage ===
+                        ((variableDetail.refVariableStage ===
                             (activeStageName === BuildStageVariable.PreBuild
                                 ? RefVariableStageType.PRE_CI
                                 : RefVariableStageType.POST_CI) &&
-                        variableDetail.refVariableStepIndex > startIndex
+                            variableDetail.refVariableStepIndex > startIndex) ||
+                            (activeStageName === BuildStageVariable.PreBuild &&
+                                variableDetail.refVariableStage === RefVariableStageType.POST_CI))
                     ) {
                         variableDetail.refVariableStepIndex = 0
                         variableDetail.refVariableName = ''
