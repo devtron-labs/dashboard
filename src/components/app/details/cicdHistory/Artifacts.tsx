@@ -95,7 +95,7 @@ export default function Artifacts({
     } else {
         return (
             <div className="flex left column p-16">
-                {!isJobView && (
+                {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem type="artifact">
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
