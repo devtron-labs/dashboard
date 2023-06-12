@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
@@ -10,7 +10,7 @@ import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Rectangle } from '../../../../assets/icons/RectangleLine.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ImageTagType, ReleaseTag } from './types'
-import { setImageTags, getImageTags } from '../../service'
+import { setImageTags } from '../../service'
 import { showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ImageTagsContainer = ({
@@ -59,15 +59,21 @@ export const ImageTagsContainer = ({
     }
 
     const handleTagCreate = (newValue) => {
+        const lowercaseValue = newValue.toLowerCase()
         setTagErrorMessage('')
-        const isTagExists = existingTags.includes(newValue)
-        if (isTagExists) {
+        const isTagExistsInExistingTags = existingTags.includes(lowercaseValue)
+        let isTagExistsInDisplayedTags =  false
+        for(let i=0;i<displayedTags?.length;i++){
+            if(displayedTags[i]?.tagName.toLowerCase() === lowercaseValue)isTagExistsInDisplayedTags = true
+        }
+        // console.log(displayedTags)
+        if (isTagExistsInExistingTags || isTagExistsInDisplayedTags) {
             setTagErrorMessage('This tag is already applied on another image in this application')
             return
         }
         const newTag: ReleaseTag = {
             id: 0,
-            tagName: newValue,
+            tagName: lowercaseValue,
             appId: 0,
             deleted: false,
             artifactId: 0,
@@ -188,7 +194,7 @@ export const ImageTagsContainer = ({
 
     const creatableRef = useRef(null)
 
-    if (newDescription === '' && displayedTags.length === 0 && !isEditing && !tagsEditable){
+    if (newDescription === '' && displayedTags.length === 0 && !isEditing && !tagsEditable) {
         return
     }
 
@@ -277,10 +283,12 @@ export const ImageTagsContainer = ({
                         </div>
                     </div>
                     <div className="mt-8 mr-6">
-                        <EditIcon
-                            className="icon-dim-16 image-tags-container-edit__icon cursor"
-                            onClick={handleEditClick}
-                        />
+                        {tagsEditable && (
+                            <EditIcon
+                                className="icon-dim-16 image-tags-container-edit__icon cursor"
+                                onClick={handleEditClick}
+                            />
+                        )}
                     </div>
                 </div>
             )}
