@@ -278,8 +278,8 @@ export const ImageTagsContainer = ({
                 </div>
             ) : (
                 <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
-                    <div className="flex left" style={{ width: 'calc(100vw - 56px)' }}>
-                        <Rectangle className="image-tags-container-rectangle__icon" />
+                    <div className="flex left image-tag-left-border" style={{ width: 'calc(100vw - 56px)' }}>
+                        {/* <Rectangle className="image-tags-container-rectangle__icon" /> */}
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
                             <div className="dc__flex-wrap flex left">
