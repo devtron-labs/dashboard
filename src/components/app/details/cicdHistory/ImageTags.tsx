@@ -9,7 +9,7 @@ import { ReactComponent as Redo } from '../../../../assets/icons/ic-arrow-counte
 import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Rectangle } from '../../../../assets/icons/RectangleLine.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ImageTagType, ReleaseTag } from './types'
+import {ImageTaggingContainerType, ReleaseTag} from './types'
 import { setImageTags, getImageTags } from '../../service'
 import { showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -20,7 +20,7 @@ export const ImageTagsContainer = ({
     imageReleaseTags,
     appReleaseTagNames,
     tagsEditable,
-}: ImageTagType) => {
+}: ImageTaggingContainerType) => {
     const [initialTags, setInitialTags] = useState<ReleaseTag[]>(imageReleaseTags ? imageReleaseTags : [])
     const [initialDescription, setInitialDescription] = useState(imageComment ? imageComment.comment : '')
     const [existingTags, setExistingTags] = useState(appReleaseTagNames ? appReleaseTagNames : [])

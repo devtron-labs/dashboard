@@ -116,7 +116,7 @@ export interface ImageComment {
 }
 
 
-export interface ImageTagType {
+export interface ImageTaggingContainerType {
     ciPipelineId?: number
     artifactId?: number
     imageComment?: ImageComment
