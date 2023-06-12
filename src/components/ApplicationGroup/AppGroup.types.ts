@@ -43,6 +43,8 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     approvalUsers?: string[]
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
 }
 
 export interface ResponseRowType {

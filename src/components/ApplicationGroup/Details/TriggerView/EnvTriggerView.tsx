@@ -1491,6 +1491,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         approvalUsers: _selectedNode.approvalUsers,
                         userApprovalConfig: _selectedNode.userApprovalConfig,
                         requestedUserId: _selectedNode.requestedUserId,
+                        appReleaseTags: wf.appReleaseTags,
+                        tagsEditable: wf.tagsEditabe,
                     })
                 } else {
                     let warningMessage = ''

@@ -58,7 +58,7 @@ export interface CDMaterialProps {
     isSaveLoading?: boolean
     ciPipelineId?: number
     appReleaseTagNames?: string[]
-    tagsEditable?: boolean 
+    tagsEditable?: boolean
 }
 
 export enum DeploymentWithConfigType {

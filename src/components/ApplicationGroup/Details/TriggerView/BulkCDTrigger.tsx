@@ -5,7 +5,7 @@ import {
     Drawer,
     noop,
     Progressing,
-    showError,
+    showError, stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -322,6 +322,8 @@ export default function BulkCDTrigger({
                             userApprovalConfig={_currentApp.userApprovalConfig}
                             requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
+                            appReleaseTagNames={_currentApp.appReleaseTags}
+                            tagsEditable={_currentApp.tagsEditable}
                         />
                     )}
                 </div>
@@ -329,12 +331,13 @@ export default function BulkCDTrigger({
         )
     }
 
-    const onClickStartDeploy = (): void => {
+    const onClickStartDeploy = (e): void => {
+        stopPropagation(e)
         onClickTriggerBulkCD()
     }
 
     const isDeployDisabled = (): boolean => {
-        return appList.every((app) => app.warningMessage || !app.material?.length)
+        return appList.every((app) => (app.warningMessage||tagNotFoundWarningsMap.has(app.appId)) || !app.material?.length)
     }
 
     const renderFooterSection = (): JSX.Element => {

@@ -584,7 +584,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history bcn-0 material-history--cd ${
+                    className={`material-history material-history--cd ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
@@ -593,14 +593,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
                         data-testid={`cd-material-history-image-${mat.index}`}
-                        className={`material-history__top p-12 cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
+                        className={`material-history__top cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
                     >
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
                     </div>
-                    <div className="pl-12 pr-12 pb-12">
+                    { !this.props.isFromBulkCD && <div >
                         <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} appReleaseTagNames={this.props.appReleaseTagNames} tagsEditable={this.props.tagsEditable} />
-                    </div>
-                    <div></div>
+                    </div>}
                     {mat.showSourceInfo && (
                         <>
                             {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
