@@ -23,9 +23,8 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import ReactSelect, { components } from 'react-select'
-import { _customStyles } from '../../../ciConfig/CIConfig.utils'
-// import { releaseTagOption } from '../../../ciConfig/CIBuildpackBuildOptions'
 import { Option as releaseTagOption} from '../../../v2/common/ReactSelect.utils'
+import {imageTaggingSelectorStyle} from "../../AppGroup.utils";
 
 export default function BulkCDTrigger({
     stage,
@@ -233,22 +232,7 @@ export default function BulkCDTrigger({
                             isSearchable={true}
                             options={options}
                             value={selectedTagName}
-                            styles={{
-                                ..._customStyles,
-                                control: (base) => ({
-                                    ...base,
-                                    borderRadius: '4px',
-                                    borderWidth: '1px',
-                                    marginLeft: '16px',
-                                    marginRight: '16px',
-                                    marginTop: '12px',
-                                }),
-                                dropdownIndicator: (base) => ({
-                                    ...base,
-                                    paddingLeft: '0px',
-                                    paddingRight: '2px',
-                                }),
-                            }}
+                            styles={imageTaggingSelectorStyle}
                             components={{
                                 IndicatorSeparator: null,
                                 Option: releaseTagOption,
@@ -297,7 +281,7 @@ export default function BulkCDTrigger({
                         </div>
                     ))}
                 </div>
-                <div className="main-content dc__window-bg dc__height-inherit">
+                <div className="main-content dc__window-bg dc__height-inherit w-100">
                     {selectedApp.warningMessage || unauthorizedAppList[selectedApp.appId] ? (
                         renderEmptyView()
                     ) : (

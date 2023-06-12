@@ -219,3 +219,20 @@ export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): strin
     }
     return 'bcn-0'
 }
+
+export const imageTaggingSelectorStyle = {
+    ...appGroupAppSelectorStyle,
+    control: (base) => ({
+    ...base,
+    borderRadius: '4px',
+    borderWidth: '1px',
+    marginLeft: '16px',
+    marginRight: '16px',
+    marginTop: '12px',
+}),
+    dropdownIndicator: (base) => ({
+    ...base,
+    paddingLeft: '0px',
+    paddingRight: '2px',
+}),
+}

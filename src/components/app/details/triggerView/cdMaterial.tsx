@@ -584,7 +584,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history material-history--cd ${
+                    className={`material-history bcn-0 material-history--cd ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
@@ -597,9 +597,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     >
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
                     </div>
-                    { !this.props.isFromBulkCD && <div >
+                    <div className="pl-12 pr-12 pb-12 mw-400">
                         <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} appReleaseTagNames={this.props.appReleaseTagNames} tagsEditable={this.props.tagsEditable} />
-                    </div>}
+                    </div>
                     {mat.showSourceInfo && (
                         <>
                             {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
