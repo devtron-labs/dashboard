@@ -33,7 +33,7 @@ export default function Artifacts({
     imageComment,
     imageReleaseTags,
     type,
-    appReleaseTagNames, 
+    appReleaseTagNames,
     tagsEditable,
 }: ArtifactType) {
     const { triggerId, buildId } = useParams<{
@@ -103,7 +103,7 @@ export default function Artifacts({
     } else {
         return (
             <div className="flex left column p-16">
-                {!isJobView && (
+                {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem type="artifact" ciPipelineId={ciPipelineId} artifactId={artifactId} imageComment={imageComment} imageReleaseTags={imageReleaseTags} appReleaseTagNames={appReleaseTagNames} tagsEditable={tagsEditable}>
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
@@ -181,7 +181,7 @@ const CIProgressView = (): JSX.Element => {
             </EmptyState.Subtitle>
         </EmptyState>
     )
-} 
+}
 
 export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, ciPipelineId, artifactId, imageComment, imageReleaseTags, appReleaseTagNames, tagsEditable}: CIListItemType) => {
     if (type === 'approved-artifact') {
