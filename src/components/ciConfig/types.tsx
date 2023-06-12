@@ -365,4 +365,5 @@ export interface TaskListType {
             postBuildStage: Map<string, VariableType>[]
         }>
     >
+    isJobView: boolean
 }

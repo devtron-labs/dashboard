@@ -275,7 +275,7 @@ export default function CIPipeline({
     }
 
     const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
-        if (processPluginData && prepareFormData && pluginList.length) {
+        if (!isJobView && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
@@ -667,6 +667,7 @@ export default function CIPipeline({
         _formData: FormType,
         activeStageName: string,
         startIndex?: number,
+        isFromMoveTask?: boolean,
     ): {
         index: number
         calculatedStageVariables: Map<string, VariableType>[]
@@ -757,7 +758,7 @@ export default function CIPipeline({
                 }
             }
         }
-        if (isFromAddNewTask) {
+        if (isFromAddNewTask || isFromMoveTask) {
             _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
         }
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
