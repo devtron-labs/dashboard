@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
@@ -12,6 +12,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import {ImageTaggingContainerType, ReleaseTag} from './types'
 import { setImageTags } from '../../service'
 import { showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { getUserRole } from '../../../userGroups/userGroup.service'
 
 export const ImageTagsContainer = ({
     ciPipelineId,
@@ -31,6 +32,21 @@ export const ImageTagsContainer = ({
     const [createTags, setCreateTags] = useState<ReleaseTag[]>([])
     const [softDeleteTags, setSoftDeleteTags] = useState<ReleaseTag[]>([])
     const [hardDeleteTags, setHardDeleteTags] = useState<ReleaseTag[]>([])
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
+
+    useEffect(() => {
+        initialise()
+    }, [])
+    async function initialise() {
+        try {
+            const userRole = await getUserRole()
+
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            setSuperAdmin(superAdmin)
+        } catch (err) {
+            showError(err)
+        }
+    }
 
     const CreatableComponents = useMemo(
         () => ({
@@ -62,11 +78,10 @@ export const ImageTagsContainer = ({
         const lowercaseValue = newValue.toLowerCase()
         setTagErrorMessage('')
         const isTagExistsInExistingTags = existingTags.includes(lowercaseValue)
-        let isTagExistsInDisplayedTags =  false
-        for(let i=0;i<displayedTags?.length;i++){
-            if(displayedTags[i]?.tagName.toLowerCase() === lowercaseValue)isTagExistsInDisplayedTags = true
+        let isTagExistsInDisplayedTags = false
+        for (let i = 0; i < displayedTags?.length; i++) {
+            if (displayedTags[i]?.tagName.toLowerCase() === lowercaseValue) isTagExistsInDisplayedTags = true
         }
-        // console.log(displayedTags)
         if (isTagExistsInExistingTags || isTagExistsInDisplayedTags) {
             setTagErrorMessage('This tag is already applied on another image in this application')
             return
@@ -240,6 +255,7 @@ export const ImageTagsContainer = ({
                                 onHardDeleteClick={() => handleTagHardDelete(index)}
                                 tagId={tag.id}
                                 softDeleteTags={softDeleteTags}
+                                isSuperAdmin={isSuperAdmin}
                             />
                         ))}
                     </div>
@@ -277,6 +293,7 @@ export const ImageTagsContainer = ({
                                         onHardDeleteClick={() => handleTagHardDelete(index)}
                                         tagId={tag.id}
                                         softDeleteTags={softDeleteTags}
+                                        isSuperAdmin={isSuperAdmin}
                                     />
                                 ))}
                             </div>
@@ -304,6 +321,7 @@ const ImageTagButton = ({
     onHardDeleteClick,
     tagId,
     softDeleteTags,
+    isSuperAdmin,
 }) => {
     const containerClassName = isSoftDeleted ? 'image-tag-button-soft-deleted mb-8 mr-8' : 'image-tag-button mb-8 mr-8'
     const IconComponent = isSoftDeleted ? Redo : Minus
@@ -321,6 +339,7 @@ const ImageTagButton = ({
     }
 
     const isInSoftDeleteTags = isSoftDeleted && softDeleteTags.some((tag) => tag.tagName === text)
+    const isCloseButtonVisible = tagId === 0 || isSuperAdmin
 
     return (
         <div className={containerClassName} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -329,7 +348,9 @@ const ImageTagButton = ({
                     <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />
                 )}
                 {text}
-                {isHovered && isEditing && <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />}
+                {isHovered && isEditing && isCloseButtonVisible && (
+                    <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />
+                )}
             </div>
         </div>
     )
