@@ -76,13 +76,19 @@ import {
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
+import {
+    getBranchValues,
+    handleSourceNotConfigured,
+    processConsequenceData,
+    processWorkflowStatuses,
+} from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) {
@@ -636,7 +642,48 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowCIModal(true)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current = new AbortController()
-        updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, abortControllerRef.current.signal)
+        let _appID
+        for (const _wf of filteredWorkflows) {
+            const nd = _wf.nodes.find((node) => +node.id == +ciNodeId && node.type === 'CI')
+            if (nd) {
+                _appID = _wf.appId
+                break
+            }
+        }
+        Promise.all([
+            updateCIMaterialList(
+                ciNodeId,
+                ciPipelineName,
+                preserveMaterialSelection,
+                abortControllerRef.current.signal,
+            ),
+            getCIBlockState
+                ? getCIBlockState(
+                      ciNodeId,
+                      _appID,
+                      getBranchValues(ciNodeId, filteredWorkflows, filteredCIPipelines.get(_appID)),
+                  )
+                : { result: null },
+        ])
+            .then((resp) => {
+                // need to set result for getCIBlockState call only as for updateCIMaterialList
+                // it's already being set inside the same function
+                if (resp[1].result) {
+                    const workflows = [...filteredWorkflows].map((workflow) => {
+                        workflow.nodes.map((node) => {
+                            if (node.type === 'CI' && node.id == ciNodeId) {
+                                node.ciBlockState = processConsequenceData(resp[1].result)
+                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                return node
+                            }
+                            return node
+                        })
+
+                        return workflow
+                    })
+                    setFilteredWorkflows(workflows)
+                }
+            })
             .catch((errors: ServerErrors) => {
                 if (!abortControllerRef.current.signal.aborted) {
                     showError(errors)

@@ -47,7 +47,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
+import { getBranchValues, handleSourceNotConfigured, processConsequenceData, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 
@@ -515,26 +515,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    getBranchValues = (ciNodeId: string) => {
-        let branchValues = ''
-
-        for (const workflow of this.state.workflows) {
-            for (const node of workflow.nodes) {
-                if (node.type === 'CI' && node.id == ciNodeId) {
-                    const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
-                    if (selectedCIPipeline?.ciMaterial) {
-                        for (const mat of selectedCIPipeline.ciMaterial) {
-                            branchValues += `${branchValues ? ',' : ''}${mat.source.value}`
-                        }
-                    }
-                    break
-                }
-            }
-        }
-
-        return branchValues
-    }
-
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         this.setState({ loader: true, showCIModal: true })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
@@ -543,7 +523,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         Promise.all([
             this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
             getCIBlockState && !this.props.isJobView
-                ? getCIBlockState(ciNodeId, this.props.match.params.appId, this.getBranchValues(ciNodeId))
+                ? getCIBlockState(
+                      ciNodeId,
+                      this.props.match.params.appId,
+                      getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
+                  )
                 : { result: null },
         ])
             .then((resp) => {
@@ -553,7 +537,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const workflows = [...this.state.workflows].map((workflow) => {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.ciBlockState = resp[1].result
+                                node.ciBlockState = processConsequenceData(resp[1].result)
+                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
                                 return node
                             }
                             return node
