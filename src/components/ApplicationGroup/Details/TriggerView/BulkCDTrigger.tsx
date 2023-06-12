@@ -24,8 +24,8 @@ import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import ReactSelect, { components } from 'react-select'
 import { _customStyles } from '../../../ciConfig/CIConfig.utils'
-import { releaseTagOption } from '../../../ciConfig/CIBuildpackBuildOptions'
-// import { option } from '../../../v2/common/ReactSelect.utils'
+// import { releaseTagOption } from '../../../ciConfig/CIBuildpackBuildOptions'
+import { Option as releaseTagOption} from '../../../v2/common/ReactSelect.utils'
 
 export default function BulkCDTrigger({
     stage,
@@ -51,8 +51,8 @@ export default function BulkCDTrigger({
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const closeBulkCDModal = (e): void => {
-        // abortControllerRef.current.abort()
-        // closePopup(e)
+        abortControllerRef.current.abort()
+        closePopup(e)
     }
     const [selectedTagName,setSelectedTagName] = useState<{label: string, value: string}>({label:'latest',value:'latest'})
     const escKeyPressHandler = (evt): void => {
