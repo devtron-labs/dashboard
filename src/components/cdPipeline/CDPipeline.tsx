@@ -333,8 +333,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
                     : [],
             },
-            runPreStageInEnv: pipelineConfigFromRes.runPreStageInEnv || false,
-            runPostStageInEnv: pipelineConfigFromRes.runPostStageInEnv || false,
+            runPreStageInEnv: this.state.pipelineConfig.isVirtualEnvironment ? true : (pipelineConfigFromRes.runPreStageInEnv || false),
+            runPostStageInEnv: this.state.pipelineConfig.isVirtualEnvironment ? true : (pipelineConfigFromRes.runPostStageInEnv || false),
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
             deploymentAppType: pipelineConfigFromRes.deploymentAppType || '',
         }
@@ -471,8 +471,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 secrets: [],
             }
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
-            pipelineConfig.runPreStageInEnv = pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv
-            pipelineConfig.runPostStageInEnv = pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv
+            pipelineConfig.runPreStageInEnv =  selection.isVirtualEnvironment ? true : pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv
+            pipelineConfig.runPostStageInEnv = selection.isVirtualEnvironment ? true : pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv
             this.setState({ environments: list, pipelineConfig, errorForm }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
@@ -517,8 +517,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     handleRunInEnvCheckbox(event, stageType: 'preStage' | 'postStage') {
         let { pipelineConfig } = { ...this.state }
-        if (stageType === 'preStage') pipelineConfig.runPreStageInEnv = !pipelineConfig.runPreStageInEnv
-        if (stageType === 'postStage') pipelineConfig.runPostStageInEnv = !pipelineConfig.runPostStageInEnv
+        if (stageType === 'preStage') pipelineConfig.runPreStageInEnv = this.state.pipelineConfig.isVirtualEnvironment ? true : !pipelineConfig.runPreStageInEnv
+        if (stageType === 'postStage') pipelineConfig.runPostStageInEnv = this.state.pipelineConfig.isVirtualEnvironment ? true : !pipelineConfig.runPostStageInEnv
         this.setState({ pipelineConfig })
     }
 
@@ -1034,10 +1034,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     this.handleStageConfigChange(event.target.value, key, 'triggerType')
                                 }}
                             >
-                                <RadioGroupItem dataTestId="trigger-automatic-button" value={TriggerType.Auto}>
+                                <RadioGroupItem dataTestId="cd-auto-mode-button" value={TriggerType.Auto}>
                                     Automatic
                                 </RadioGroupItem>
-                                <RadioGroupItem dataTestId="trigger-manual-button" value={TriggerType.Manual}>
+                                <RadioGroupItem dataTestId="cd-manual-mode-button" value={TriggerType.Manual}>
                                     Manual
                                 </RadioGroupItem>
                             </RadioGroup>
@@ -1112,9 +1112,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     >
                         <span className="mr-5">Execute in application Environment</span>
                     </Checkbox>
-                    <span className="checkbox-tooltip-body">
-                        This Environment is not configured to run on devtron worker.
-                    </span>
+                    {!this.state.pipelineConfig.isVirtualEnvironment && (
+                        <span className="checkbox-tooltip-body">
+                            This Environment is not configured to run on devtron worker.
+                        </span>
+                    )}
                 </div>
             </div>
         )
@@ -1140,7 +1142,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderTriggerType() {
         return (
             <div className="cd-pipeline__trigger-type">
-                <label className="form__label form__label--sentence dc__bold">When do you want the pipeline to execute?</label>
+                <label className="form__label form__label--sentence dc__bold">
+                    When do you want the pipeline to execute?
+                </label>
                 <RadioGroup
                     value={
                         this.state.pipelineConfig.triggerType ? this.state.pipelineConfig.triggerType : TriggerType.Auto
@@ -1149,10 +1153,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onChange={this.handleTriggerTypeChange}
                     className="chartrepo-type__radio-group"
                 >
-                    <RadioGroupItem data-testid="cd-auto-mode-button" value={TriggerType.Auto}>
+                    <RadioGroupItem dataTestId="cd-auto-mode-button" value={TriggerType.Auto}>
                         Automatic
                     </RadioGroupItem>
-                    <RadioGroupItem data-testid="cd-manual-mode-button" value={TriggerType.Manual}>
+                    <RadioGroupItem dataTestId="cd-manual-mode-button" value={TriggerType.Manual}>
                         Manual
                     </RadioGroupItem>
                 </RadioGroup>
