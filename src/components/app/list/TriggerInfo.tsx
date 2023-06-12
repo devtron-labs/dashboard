@@ -20,10 +20,11 @@ interface TriggerInfoModalState {
     environmentName: string
     environmentId: number
     appName: string
-    appReleaseTags: []
     imageComment: ImageComment
     imageReleaseTags: ReleaseTag[]
     image: string
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
 }
 
 interface TriggerInfoModalProps {
@@ -45,11 +46,12 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             environmentName: '',
             environmentId: 0,
             appName: '',
-            appReleaseTags: [],
             imageComment: {id:0, artifactId:0, comment:""},
             imageReleaseTags: [],
             image: '',
-        }
+            appReleaseTags:[],
+            tagsEditable: false,
+        } 
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
     }
@@ -155,6 +157,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                                 imageComment={this.state.imageComment}
                                 ciPipelineId={selectedMaterial.id}
                                 artifactId={this.props.ciArtifactId}
+                                appReleaseTagNames={this.state.appReleaseTags}
+                                tagsEditable={this.state.tagsEditable}
                             />
                         </div>
                     </div>

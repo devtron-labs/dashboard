@@ -547,8 +547,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
-                            node.appReleaseTagNames= workflow.appReleaseTags
-                            node.tagsEditable = workflow.tagsEditable
+                            node.appReleaseTagNames= data.appReleaseTagNames
+                            node.tagsEditable = data.tagsEditable
                             if (node.type === 'CD') {
                                 node.approvalUsers = data.approvalUsers
                                 node.userApprovalConfig =
@@ -558,6 +558,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }
                         return node
                     })
+                    workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.nodes = nodes
                     return workflow
                 })

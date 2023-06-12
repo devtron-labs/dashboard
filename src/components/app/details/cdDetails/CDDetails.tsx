@@ -232,7 +232,8 @@ export default function CDDetails() {
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
                                 deploymentHistoryResult={deploymentHistoryResult.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
-
+                                appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
+                                tagsEditable={deploymentHistoryResult.result?.tagsEditable}
                             />
                         </Route>
                     ) : !envId ? (
@@ -263,6 +264,8 @@ export const TriggerOutput: React.FC<{
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
     deploymentHistoryResult: History[]
+    appReleaseTags: string[]
+    tagsEditable: boolean
 }> = ({
     fullScreenView,
     syncState,
@@ -273,6 +276,8 @@ export const TriggerOutput: React.FC<{
     deploymentAppType,
     isBlobStorageConfigured,
     deploymentHistoryResult,
+    appReleaseTags,
+    tagsEditable,
 }) => {
         const { appId, triggerId, envId, pipelineId } = useParams<{
             appId: string
@@ -408,6 +413,8 @@ export const TriggerOutput: React.FC<{
                 deploymentHistoryResult = {deploymentHistoryResult}
                 artifactId = {triggerDetailsResult?.result?.artifactId}
                 ciPipelineId = {triggerDetailsResult?.result?.ciPipelineId}
+                appReleaseTags={appReleaseTags}
+                tagsEditable={tagsEditable}
             />
         </>
     )
@@ -427,6 +434,8 @@ const HistoryLogs: React.FC<{
     deploymentHistoryResult: History[]
     artifactId: number
     ciPipelineId: number
+    appReleaseTags: string[]
+    tagsEditable: boolean
 }> = ({
     triggerDetails,
     loading,
@@ -440,6 +449,8 @@ const HistoryLogs: React.FC<{
     deploymentHistoryResult,
     artifactId,
     ciPipelineId,
+    appReleaseTags,
+    tagsEditable,
 }) => {
         let { path } = useRouteMatch()
         const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -523,6 +534,8 @@ const HistoryLogs: React.FC<{
                                     deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
                                         .imageReleaseTags
                                 }
+                                appReleaseTagNames={appReleaseTags}
+                                tagsEditable = {tagsEditable} 
                                 type={HistoryComponentType.CI}
                             />
                         </Route>

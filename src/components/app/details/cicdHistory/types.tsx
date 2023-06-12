@@ -33,6 +33,8 @@ export interface History {
     helmPackageName?: string
     imageComment?: ImageComment
     imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface CiMaterial {

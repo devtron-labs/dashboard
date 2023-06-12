@@ -2,7 +2,8 @@ import React, { useMemo, useRef, useState, useEffect } from 'react'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import Creatable from 'react-select/creatable'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as QuestionIcon } from '../../../v2/assets/icons/ic-question.svg'
+import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Redo } from '../../../../assets/icons/ic-arrow-counter-clockwise.svg'
 import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
@@ -10,7 +11,7 @@ import { ReactComponent as Rectangle } from '../../../../assets/icons/RectangleL
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ImageTagType, ReleaseTag } from './types'
 import { setImageTags, getImageTags } from '../../service'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ImageTagsContainer = ({
     ciPipelineId,
@@ -158,6 +159,47 @@ export const ImageTagsContainer = ({
         }
     }
 
+    const renderInfoCard = (): JSX.Element => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-250 fcv-5 dc__overflow-scroll"
+                placement="right"
+                Icon={QuestionFilled}
+                heading="Release tags"
+                infoText={`Release tags allow you to tag container images with readable and relatable tags eg. v1.0.`}
+                showCloseButton={true}
+                trigger="click"
+                interactive={true}
+                documentationLinkText="View Documentation"
+                additionalContent={getBuildContextAdditionalContent()}
+            >
+                <div className="icon-dim-16 fcn-5 ml-8 cursor">
+                    <Question />
+                </div>
+            </TippyCustomized>
+        )
+    }
+
+    const getBuildContextAdditionalContent = () => {
+        return (
+            <div className="p-12 fs-13">
+                <ul>
+                    <li>
+                        A release tag can only be added if a workflow has CD pipelines deploying to Production
+                        environments.
+                    </li>
+                    <li>Multiple tags can be added to an image.</li>
+                    <li>Multiple images in an application cannot have the same tag.</li>
+                    <li>
+                        Tags cannot be deleted once saved. Although, you can soft delete a tag if an unwanted tag has
+                        been added.
+                    </li>
+                </ul>
+            </div>
+        )
+    }
+
     const creatableRef = useRef(null)
 
     if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
@@ -169,91 +211,93 @@ export const ImageTagsContainer = ({
     }
 
     return (
-        <div>
-            {!isEditing ? (
-                <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
-                    <div className="flex left" style={{ width: 'calc(100vw - 56px)' }}>
-                        <Rectangle className="image-tags-container-rectangle__icon" />
-                        <div className="ml-10">
-                            <div className="mb-8 mt-8">{initialDescription}</div>
-                            <div className="dc__flex-wrap flex left">
-                                {initialTags?.map((tag, index) => (
-                                    <ImageTagButton
-                                        key={tag?.id}
-                                        text={tag?.tagName}
-                                        isSoftDeleted={tag?.deleted}
-                                        isEditing={isEditing}
-                                        onSoftDeleteClick={() => handleTagSoftDelete(index)}
-                                        onHardDeleteClick={() => handleTagHardDelete(index)}
-                                        tagId={tag.id}
-                                        softDeleteTags={softDeleteTags}
-                                    />
-                                ))}
+        // tagsEditable && (
+            <div>
+                {!isEditing ? (
+                    <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
+                        <div className="flex left" style={{ width: 'calc(100vw - 56px)' }}>
+                            <Rectangle className="image-tags-container-rectangle__icon" />
+                            <div className="ml-10">
+                                <div className="mb-8 mt-8">{initialDescription}</div>
+                                <div className="dc__flex-wrap flex left">
+                                    {initialTags?.map((tag, index) => (
+                                        <ImageTagButton
+                                            key={tag?.id}
+                                            text={tag?.tagName}
+                                            isSoftDeleted={tag?.deleted}
+                                            isEditing={isEditing}
+                                            onSoftDeleteClick={() => handleTagSoftDelete(index)}
+                                            onHardDeleteClick={() => handleTagHardDelete(index)}
+                                            tagId={tag.id}
+                                            softDeleteTags={softDeleteTags}
+                                        />
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="mt-8 mr-6">
-                        <EditIcon
-                            className="icon-dim-16 image-tags-container-edit__icon cursor"
-                            onClick={handleEditClick}
-                        />
-                    </div>
-                </div>
-            ) : (
-                <div className="bcn-0 dc__border-top-n1 ">
-                    <div className="cn-7 mt-12 flex left">
-                        Release tags (eg. v1.0)
-                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </div>
-                    <div className="mt-6">
-                        <Creatable
-                            placeholder="Type a tag and press enter"
-                            onCreateOption={handleTagCreate}
-                            ref={creatableRef}
-                            components={CreatableComponents}
-                        />
-                    </div>
-
-                    {tagErrorMessage && (
-                        <div className="flex left">
-                            <Error className="form__icon form__icon--error" />
-                            <div className="form__error">{tagErrorMessage}</div>
-                        </div>
-                    )}
-                    <div className="dc__flex-wrap mt-8 flex left">
-                        {displayedTags?.map((tag, index) => (
-                            <ImageTagButton
-                                key={tag.id}
-                                text={tag?.tagName}
-                                isSoftDeleted={tag?.deleted}
-                                isEditing={isEditing}
-                                onSoftDeleteClick={() => handleTagSoftDelete(index)}
-                                onHardDeleteClick={() => handleTagHardDelete(index)}
-                                tagId={tag.id}
-                                softDeleteTags={softDeleteTags}
+                        <div className="mt-8 mr-6">
+                            <EditIcon
+                                className="icon-dim-16 image-tags-container-edit__icon cursor"
+                                onClick={handleEditClick}
                             />
-                        ))}
+                        </div>
                     </div>
-                    <div className="cn-7">Comment</div>
-                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12 ">
-                        <textarea
-                            value={newDescription}
-                            onChange={handleDescriptionChange}
-                            className="flex left flex-wrap dc__gap-8 dc__description-textarea h-90"
-                        />
+                ) : (
+                    <div className="bcn-0 dc__border-top-n1 ">
+                        <div className="cn-7 mt-12 flex left">
+                            <span>Release tags (eg. v1.0)</span>
+                            <div className="flex row ml-0">{renderInfoCard()}</div>
+                        </div>
+                        <div className="mt-6">
+                            <Creatable
+                                placeholder="Type a tag and press enter"
+                                onCreateOption={handleTagCreate}
+                                ref={creatableRef}
+                                components={CreatableComponents}
+                            />
+                        </div>
+
+                        {tagErrorMessage && (
+                            <div className="flex left">
+                                <Error className="form__icon form__icon--error" />
+                                <div className="form__error">{tagErrorMessage}</div>
+                            </div>
+                        )}
+                        <div className="dc__flex-wrap mt-8 flex left">
+                            {displayedTags?.map((tag, index) => (
+                                <ImageTagButton
+                                    key={tag.id}
+                                    text={tag?.tagName}
+                                    isSoftDeleted={tag?.deleted}
+                                    isEditing={isEditing}
+                                    onSoftDeleteClick={() => handleTagSoftDelete(index)}
+                                    onHardDeleteClick={() => handleTagHardDelete(index)}
+                                    tagId={tag.id}
+                                    softDeleteTags={softDeleteTags}
+                                />
+                            ))}
+                        </div>
+                        <div className="cn-7">Comment</div>
+                        <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12 ">
+                            <textarea
+                                value={newDescription}
+                                onChange={handleDescriptionChange}
+                                className="flex left flex-wrap dc__gap-8 dc__description-textarea h-90"
+                            />
+                        </div>
+                        <div className="w-100 flex right">
+                            <button className="cta cancel h-32 lh-32" type="button" onClick={handleCancel}>
+                                Cancel
+                            </button>
+                            <button className="cta h-32 lh-32 ml-12" type="button" onClick={handleSave}>
+                                Save
+                            </button>
+                        </div>
                     </div>
-                    <div className="w-100 flex right">
-                        <button className="cta cancel h-32 lh-32" type="button" onClick={handleCancel}>
-                            Cancel
-                        </button>
-                        <button className="cta h-32 lh-32 ml-12" type="button" onClick={handleSave}>
-                            Save
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
-    )
+                )}
+            </div>
+        )
+    // )
 }
 
 const ImageTagButton = ({

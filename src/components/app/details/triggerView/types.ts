@@ -267,7 +267,6 @@ export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterP
 }
 
 export interface WorkflowType {
-    tagsEditable: boolean
     id: string
     name: string
     gitMaterials?: Material[]
@@ -284,6 +283,7 @@ export interface WorkflowType {
     approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
     imageReleaseTags: string[]
     appReleaseTags?: string[]
+    tagsEditabe?: boolean
 }
 
 export interface WebhookPayloadDataResponse {

@@ -37,6 +37,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
+    const [aretagsEditable, setAreTagsEditable] = useState<boolean>(false)
+    const [allTagsOfApp, setAllTagsOfApp] = useState<[]>([])
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
@@ -65,6 +67,10 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             setHasMore(true)
             setHasMoreLoading(true)
         }
+        const appReleaseTags = triggerHistoryResult.result?.appReleaseTagNames
+        const tagsEditable = triggerHistoryResult.result?.tagsEditable
+        setAreTagsEditable(tagsEditable)
+        setAllTagsOfApp(appReleaseTags)
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -171,6 +177,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
                                             isJobView={isJobView}
+                                            tagsEditable = {aretagsEditable}
+                                            appReleaseTags = {allTagsOfApp}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -210,6 +218,8 @@ export const Details = ({
     isBlobStorageConfigured,
     isJobView,
     appIdFromParent,
+    tagsEditable, 
+    appReleaseTags,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -326,12 +336,14 @@ export const Details = ({
                 isBlobStorageConfigured={isBlobStorageConfigured}
                 isJobView={isJobView}
                 appIdFromParent={appIdFromParent}
+                appReleaseTags = {appReleaseTags}
+                tagsEditable={tagsEditable}
             />
         </>
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent }: HistoryLogsType) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent, appReleaseTags, tagsEditable}: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -372,6 +384,8 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         imageReleaseTags ={triggerDetails.imageReleaseTags} 
                         ciPipelineId={triggerDetails.ciPipelineId}
                         artifactId={triggerDetails.artifactId}
+                        tagsEditable={tagsEditable}
+                        appReleaseTagNames={appReleaseTags} 
                         type={HistoryComponentType.CI}
                     />
                 </Route>

@@ -15,6 +15,8 @@ export interface BuildDetails {
     isBlobStorageConfigured: boolean
     isJobView?: boolean
     appIdFromParent?: string
+    appReleaseTags?:[]
+    tagsEditable: boolean
 }
 
 export interface HistoryLogsType {
@@ -22,6 +24,8 @@ export interface HistoryLogsType {
     isBlobStorageConfigured?: boolean
     isJobView?: boolean
     appIdFromParent?: string
+    appReleaseTags?:[]
+    tagsEditable: boolean
 }
 
 export interface SecurityTabType {

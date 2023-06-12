@@ -166,6 +166,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
                         deploymentHistoryResult = {deploymentHistoryResult.result?.cdWorkflows}
+                        appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
+                        tagsEditable={deploymentHistoryResult.result?.tagsEditable}
                     />
                 </Route>
             )

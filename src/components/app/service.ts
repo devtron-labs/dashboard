@@ -46,6 +46,7 @@ export function getCITriggerInfoModal(
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
         let appReleaseTags = response?.result?.imageTaggingData?.appReleaseTags
+        let tagsEditable = response?.result?.imageTaggingData?.tagsEditable
         let imageComment = response?.result?.imageTaggingData?.imageComment
         let imageReleaseTags = response?.result?.imageTaggingData?.imageReleaseTags
         let image = response?.result?.image
@@ -95,6 +96,7 @@ export function getCITriggerInfoModal(
                 imageComment: imageComment,
                 imageReleaseTags: imageReleaseTags,
                 image: image,
+                tagsEditable: tagsEditable,
             },
         }
     })
@@ -393,8 +395,6 @@ function cdMaterialListModal(
             runningOnParentCd: material.runningOnParentCd,
             artifactStatus: artifactStatusValue,
             userApprovalMetadata: material.userApprovalMetadata,
-            imageComment: material.imageComment,
-            imageReleaseTags:material.imageReleaseTags,
             triggeredBy: material.triggeredBy,
             imageComment: material.imageComment,
             imageReleaseTags: material.imageReleaseTags,
