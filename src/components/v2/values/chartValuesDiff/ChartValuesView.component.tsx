@@ -41,10 +41,10 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DeploymentAppTypes } from '../../../../config/constants'
+import { DELETE_ACTION } from '../../../../config'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
-import { DELETE_ACTION } from '../../../../config'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
