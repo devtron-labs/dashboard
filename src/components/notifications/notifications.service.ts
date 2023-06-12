@@ -68,6 +68,10 @@ interface SESConfigResponseType extends ResponseType {
     }
 }
 
+interface WebhookAttributesResponseType extends ResponseType {
+    result?: Record<string, string>
+}
+
 function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
     let allPipelines = selectedPipelines.map((config) => {
         let eventTypeIds = []
@@ -120,6 +124,11 @@ export function getChannelConfigs(): Promise<ResponseType> {
     return get(URL)
 }
 
+export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
+    const URL = `${Routes.NOTIFIER}/attribute`
+    return get(URL)
+}
+
 export function getConfigs(): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
         let slackConfigs = response.result?.slackConfigs || []
@@ -163,12 +172,24 @@ export function getConfigs(): Promise<ResponseType> {
                 isDefault: smtpConfig.default || false,
             }
         })
+        let webhookConfigs = response.result?.webhookConfigs || []
+        webhookConfigs = webhookConfigs.sort((a, b) => {
+            return sortCallback('configName', a, b)
+        })
+        webhookConfigs = webhookConfigs.map((webhookConfig) => {
+            return {
+                id: webhookConfig.id,
+                name: webhookConfig.configName || '',
+                webhookUrl: webhookConfig.webhookUrl || '',
+            }
+        })
         return {
             ...response,
             result: {
                 slackConfigurationList: slackConfigs,
                 sesConfigurationList: sesConfigs,
                 smtpConfigurationList: smtpConfigs,
+                webhookConfigurationList: webhookConfigs,
             },
         }
     })
@@ -334,6 +355,44 @@ export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?:
             }
         }
     })
+}
+
+export function getWebhookConfiguration(webhookConfigId: number): Promise<ResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`
+    return get(URL)
+}
+
+export function saveWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel`
+    let payload = {
+        channel: 'webhook',
+        configs: [
+            {
+                configName: data.configName,
+                webhookUrl: data.webhookUrl,
+                headers: data.headers,
+                webhookPayload: data.webhookPayload,
+            },
+        ],
+    }
+    return post(URL, payload)
+}
+
+export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel`
+    let payload = {
+        channel: 'webhook',
+        configs: [
+            {
+                id: data.id,
+                onfigName: data.configName,
+                webhookUrl: data.webhookUrl,
+                headers: data.headers,
+                webhookPayload: data.webhookPayload,
+            },
+        ],
+    }
+    return post(URL, payload)
 }
 
 export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> {

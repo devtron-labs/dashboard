@@ -3,6 +3,7 @@ import { components } from 'react-select';
 import { validateEmail } from '../common';
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
@@ -70,6 +71,7 @@ export function MultiValueLabel(props) {
         {item.data.dest === "" && validateEmail(props.children) ? <Email className="icon-dim-20 mr-5" /> : null}
         {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
         {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
+        {item.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
         {props.children}
     </components.MultiValueLabel>
 }
@@ -92,7 +94,8 @@ export const MultiValueContainer = ({ validator, ...props }) => {
     else {
         return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
             <div className="flex fs-12 ml-4">
-                <Slack className="icon-dim-20 mr-5" />
+                {data.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null }
+                {data.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null }
                 <div className="cn-9">{label}</div>
             </div>
             {children[1]}
@@ -110,6 +113,7 @@ export function Option(props) {
     else return <components.Option {...props} >
         {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
         {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
+        {item.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
         {props.children}
     </components.Option>
 }

@@ -56,3 +56,29 @@ export interface SMTPConfigModalState {
         fromEmail: boolean
     }
 }
+
+export interface HeaderType {
+    key: string
+    value: string
+}
+
+export interface CreateHeaderDetailsType {
+    index: number;
+    headerData: HeaderType;
+    setHeaderData: (index: number, headerData: HeaderType) => void;
+    removeHeader?: (index: number) => void;
+    headerIndex?: number;
+}
+
+export interface HeaderValueSelectorType {
+    minHeight?: number;
+    maxHeight?: number;
+    selectedHeaderIndex: number;
+    headerData: HeaderType,
+    setHeaderData: (index: number, headerData: HeaderType) => void;
+    headerInputType: "key" | "value";
+    placeholder: string
+    headerIndex: number,
+    refVar: React.MutableRefObject<HTMLTextAreaElement>
+    dependentRef: React.MutableRefObject<HTMLTextAreaElement>
+}

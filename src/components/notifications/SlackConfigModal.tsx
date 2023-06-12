@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { Select } from '../common';
-import { showError, Progressing, VisibleModal, getTeamListMin as getProjectListMin } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, getTeamListMin as getProjectListMin, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service';
@@ -146,19 +146,17 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
     }
 
     renderWithBackdrop(body) {
-        return <VisibleModal className="">
-            <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
-                <div className="modal__header m-24">
-                    <h1 className="modal__title">Configure Slack</h1>
+        return <Drawer position="right">
+            <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
+                <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                    <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure Slack</h1>
                     <button type="button" className="dc__transparent" onClick={this.props.closeSlackConfigModal}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <form onSubmit={(event) => { event.preventDefault(); this.saveSlackConfig() }}>
-                    {body}
-                </form>
+                {body}
             </div>
-        </VisibleModal>
+        </Drawer>
     }
 
     render() {
@@ -170,7 +168,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
             </div>
         }
         else body = <>
-            <div className="m-24 mb-32">
+            <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
                 <label className="form__row">
                     <span className="form__label">Slack Channel*</span>
                     <input data-testid="add-slack-channel" className="form__input" type="text" name="app-name"
@@ -206,7 +204,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             : null}
                     </span>
                 </label>
-                <div className="form__row">
+                <div >
                     <label className="form__label">Project*
                         <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true} placement="top" content="Required to control user Acccess">
@@ -226,16 +224,16 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                     </span>
                 </div>
             </div>
-            <div className="form__button-group-bottom">
-                <div className="flex right">
-                    <button type="button" className="cta cancel mr-16" tabIndex={5}
-                        onClick={this.props.closeSlackConfigModal}>Cancel
-                    </button>
-                    <button data-testid="add-slack-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
-                        {this.state.form.isLoading ? <Progressing /> : "Save"}
-                    </button>
+            <div className=" form__button-group-bottom flex right">
+                    <div className="flex right">
+                        <button type="button" className="cta cancel mr-16" tabIndex={5}
+                            onClick={this.props.closeSlackConfigModal}>Cancel
+                        </button>
+                        <button onClick={(event) => { event.preventDefault(); this.saveSlackConfig() }} data-testid="add-slack-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
+                            {this.state.form.isLoading ? <Progressing /> : "Save"}
+                        </button>
+                    </div>
                 </div>
-            </div>
         </>
 
         return this.renderWithBackdrop(body);

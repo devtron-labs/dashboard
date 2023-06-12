@@ -858,7 +858,7 @@ export default function ClusterForm({
                         subTitle="Please wait while the kubeconfig is verified and cluster details are fetched."
                     />
                 </div>
-                <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
+                <div className="w-100 dc__border-top  pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
                     <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled={true}>
                         Cancel
                     </button>

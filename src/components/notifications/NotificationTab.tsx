@@ -28,6 +28,7 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
@@ -566,6 +567,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                         {p.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "smtp" ? <Email className="icon-dim-20 mr-5" /> : null}
+                                        {p.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
                                         {p.recipient ? p.recipient : p.name}
                                     </div>
                                 })}

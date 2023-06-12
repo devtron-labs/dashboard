@@ -127,7 +127,7 @@
 
 .configuration-tab {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     padding: 16px 24px;
     grid-gap: 16px;
     height: calc(100vh - 220px);
@@ -244,8 +244,8 @@
     height: 56px;
     display: flex;
     align-items: center;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 12px;
+    padding-right: 12px;
     background-color: var(--N000);
     position: sticky;
     bottom: 0px;
@@ -367,3 +367,34 @@
         fill: var(--Y700);
     }
 }
+
+.script-container {
+    border: 1px solid #d6dbdf;
+    padding: 8px 0;
+    border-radius: 4px;
+    background: var(--N50);
+}
+
+.hover-only {
+    display: none ;
+}
+
+.hover-trigger {
+    .tippy-box.default-tt {
+        display: none !important;
+    }
+
+    &:hover {
+        .tippy-box.default-tt {
+            display: block !important;
+        }
+
+        .hover-only {
+            display: inline-block;
+        }
+    }
+}
+
+// .hover-trigger:hover + .hover-only {
+//     display: block;
+//   }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { validateEmail } from '../common'
-import { showError, Progressing, VisibleModal, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, Checkbox, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -142,24 +142,17 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
 
     renderWithBackdrop(body) {
         return (
-            <VisibleModal className="">
-                <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
-                    <div className="modal__header m-24">
-                        <h1 className="modal__title">Configure SMTP</h1>
+            <Drawer position="right">
+                <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
+                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SMTP</h1>
                         <button type="button" className="dc__transparent" onClick={this.props.closeSMTPConfigModal}>
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-                    <form
-                        onSubmit={(event) => {
-                            event.preventDefault()
-                            this.saveSMTPConfig()
-                        }}
-                    >
-                        {body}
-                    </form>
+                    {body}
                 </div>
-            </VisibleModal>
+            </Drawer>
         )
     }
 
@@ -174,7 +167,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
         } else
             body = (
                 <>
-                    <div className="m-24 mb-32">
+                    <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
                         <label className="form__row">
                             <span className="form__label">Configuration Name*</span>
                             <input
@@ -327,7 +320,10 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             >
                                 Cancel
                             </button>
-                            <button data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button onClick={(event) => {
+                                event.preventDefault()
+                                this.saveSMTPConfig()
+                            }} data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>
