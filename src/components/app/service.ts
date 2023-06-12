@@ -396,6 +396,8 @@ function cdMaterialListModal(
             imageComment: material.imageComment,
             imageReleaseTags:material.imageReleaseTags,
             triggeredBy: material.triggeredBy,
+            imageComment: material.imageComment,
+            imageReleaseTags: material.imageReleaseTags,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {

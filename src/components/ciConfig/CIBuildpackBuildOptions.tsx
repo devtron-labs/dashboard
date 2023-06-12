@@ -15,6 +15,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Tag} from '../../assets/icons/ic-tag.svg'
 import { getAbsoluteProjectPath, _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -26,7 +27,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {stopPropagation, TippyCustomized, TippyTheme} from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -64,11 +65,11 @@ export const repositoryOption = (props): JSX.Element => {
         </components.Option>
     )
 }
+
 export const releaseTagOption = (props) : JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
-        <components.Option {...props}>
-            <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
+        <components.Option {...props} onClick={stopPropagation}>
             {props.value}
         </components.Option>
     )

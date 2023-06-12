@@ -1226,7 +1226,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (_selectedNode) {
                     _selectedNode.inputMaterialList = _materialData.materials
                 }
+                wf.appReleaseTags = _materialData.appReleaseTagNames
             }
+
             return wf
         })
         setFilteredWorkflows(_workflows)
@@ -1449,8 +1451,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
                 //extract unique tags for this workflow
-                wf.imageReleaseTags?.forEach((tag)=>{
+                wf.appReleaseTags?.forEach((tag)=>{
+                    if(!uniqueTagsSet.has(tag)){
+                        uniqueReleaseTags.push(tag)
+                    }
                     uniqueTagsSet.add(tag)
+
                 })
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
