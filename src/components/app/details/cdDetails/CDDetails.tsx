@@ -231,6 +231,9 @@ export default function CDDetails() {
                                 deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
+                                deploymentHistoryResult={deploymentHistoryResult.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
+                                appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
+                                tagsEditable={deploymentHistoryResult.result?.tagsEditable}
                             />
                         </Route>
                     ) : !envId ? (
@@ -260,6 +263,9 @@ export const TriggerOutput: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
+    deploymentHistoryResult: History[]
+    appReleaseTags: string[]
+    tagsEditable: boolean
 }> = ({
     fullScreenView,
     syncState,
@@ -269,6 +275,9 @@ export const TriggerOutput: React.FC<{
     deploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
+    deploymentHistoryResult,
+    appReleaseTags,
+    tagsEditable,
 }) => {
         const { appId, triggerId, envId, pipelineId } = useParams<{
             appId: string
@@ -401,12 +410,18 @@ export const TriggerOutput: React.FC<{
                 deploymentHistoryList={deploymentHistoryList}
                 deploymentAppType={deploymentAppType}
                 isBlobStorageConfigured={isBlobStorageConfigured}
+                deploymentHistoryResult = {deploymentHistoryResult}
+                artifactId = {triggerDetailsResult?.result?.artifactId}
+                ciPipelineId = {triggerDetailsResult?.result?.ciPipelineId}
+                appReleaseTags={appReleaseTags}
+                tagsEditable={tagsEditable}
             />
         </>
     )
 }
 
 const HistoryLogs: React.FC<{
+    key: number
     triggerDetails: History
     loading: boolean
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
@@ -416,6 +431,11 @@ const HistoryLogs: React.FC<{
     isBlobStorageConfigured: boolean
     userApprovalMetadata: UserApprovalMetadataType
     triggeredByEmail: string
+    deploymentHistoryResult: History[]
+    artifactId: number
+    ciPipelineId: number
+    appReleaseTags: string[]
+    tagsEditable: boolean
 }> = ({
     triggerDetails,
     loading,
@@ -426,6 +446,11 @@ const HistoryLogs: React.FC<{
     isBlobStorageConfigured,
     userApprovalMetadata,
     triggeredByEmail,
+    deploymentHistoryResult,
+    artifactId,
+    ciPipelineId,
+    appReleaseTags,
+    tagsEditable,
 }) => {
         let { path } = useRouteMatch()
         const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -446,6 +471,12 @@ const HistoryLogs: React.FC<{
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
 
+    let artifactTodeploymentHistoryIndexMap = new Map<number,number>()
+    deploymentHistoryResult.forEach((val,i)=>{
+        artifactTodeploymentHistoryIndexMap.set(val['ci_artifact_id'],i)
+    })
+
+
     return (
         <>
             <div className="trigger-outputs-container">
@@ -453,16 +484,18 @@ const HistoryLogs: React.FC<{
                     <Progressing pageLoader />
                 ) : (
                     <Switch>
-                        {triggerDetails.stage !== 'DEPLOY' ? (!triggerDetails.IsVirtualEnvironment &&
-                            <Route path={`${path}/logs`}>
-                                <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                    <LogsRenderer
-                                        triggerDetails={triggerDetails}
-                                        isBlobStorageConfigured={isBlobStorageConfigured}
-                                        parentType={HistoryComponentType.CD}
-                                    />
-                                </div>
-                            </Route>
+                        {triggerDetails.stage !== 'DEPLOY' ? (
+                            !triggerDetails.IsVirtualEnvironment && (
+                                <Route path={`${path}/logs`}>
+                                    <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
+                                        <LogsRenderer
+                                            triggerDetails={triggerDetails}
+                                            isBlobStorageConfigured={isBlobStorageConfigured}
+                                            parentType={HistoryComponentType.CD}
+                                        />
+                                    </div>
+                                </Route>
+                            )
                         ) : (
                             <Route path={`${path}/deployment-steps`}>
                                 <DeploymentDetailSteps
@@ -485,6 +518,25 @@ const HistoryLogs: React.FC<{
                                 artifact={triggerDetails.artifact}
                                 userApprovalMetadata={userApprovalMetadata}
                                 triggeredByEmail={triggeredByEmail}
+                                artifactId={artifactId}
+                            />
+                            <Artifacts
+                                status={triggerDetails.status}
+                                artifact={triggerDetails.artifact}
+                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                ciPipelineId={ciPipelineId}
+                                artifactId={artifactId}
+                                imageComment={
+                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        .imageComment
+                                }
+                                imageReleaseTags={
+                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        .imageReleaseTags
+                                }
+                                appReleaseTagNames={appReleaseTags}
+                                tagsEditable = {tagsEditable} 
+                                type={HistoryComponentType.CI}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
@@ -520,6 +572,10 @@ const HistoryLogs: React.FC<{
                                         status={triggerDetails.status}
                                         artifact={triggerDetails.artifact}
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        ciPipelineId={triggerDetails.ciPipelineId}
+                                        artifactId={triggerDetails.artifactId}
+                                        imageComment={triggerDetails.imageComment}
+                                        imageReleaseTags={triggerDetails.imageReleaseTags}
                                         getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
                                         type={HistoryComponentType.CD}
                                     />
@@ -530,7 +586,8 @@ const HistoryLogs: React.FC<{
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'
                                     ? `deployment-steps`
-                                    : (triggerDetails.status.toLowerCase() === 'succeeded' || triggerDetails.IsVirtualEnvironment)
+                                    : triggerDetails.status.toLowerCase() === 'succeeded' ||
+                                      triggerDetails.IsVirtualEnvironment
                                     ? `artifacts`
                                     : `logs`
                             }`}

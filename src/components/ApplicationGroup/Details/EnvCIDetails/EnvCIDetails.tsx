@@ -28,6 +28,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
     const [securityModuleInstalled, setSecurityModuleInstalled] = useState(false)
     const [blobStorageConfigured, setBlobStorageConfigured] = useState(false)
+    const [appReleaseTags,setAppReleaseTags] = useState<[]>([])
+    const [tagsEditable,setTagsEditable] = useState<boolean>(false)
 
     useEffect(() => {
         try {
@@ -81,6 +83,10 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setHasMore(true)
             setHasMoreLoading(true)
         }
+        const appReleaseTags = triggerHistoryResult.result?.appReleaseTagNames
+        const tagsEditable = triggerHistoryResult.result?.tagsEditable
+        setTagsEditable(tagsEditable)
+        setAppReleaseTags(appReleaseTags)
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -92,6 +98,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setAppReleaseTags([])
+            setTagsEditable(false)
         }
     }, [pipelineId])
 
@@ -113,6 +121,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             showError(error)
             return
         }
+        setAppReleaseTags(result?.result.appReleaseTagNames)
+        setTagsEditable(result?.result.tagsEditable)
         setTriggerHistory(mapByKey(result?.result.ciWorkflows || [], 'id'))
     }
 
@@ -142,7 +152,10 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         isSecurityModuleInstalled={securityModuleInstalled}
                         isBlobStorageConfigured={blobStorageConfigured}
                         appIdFromParent={pipeline.appId}
+                        appReleaseTags={appReleaseTags}
+                        tagsEditable={tagsEditable}
                     />
+                    {console.log(appReleaseTags, tagsEditable)}
                 </Route>
             )
         } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {

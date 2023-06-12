@@ -45,6 +45,11 @@ export function getCITriggerInfoModal(
 ) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
+        let appReleaseTags = response?.result?.imageTaggingData?.appReleaseTags
+        let tagsEditable = response?.result?.imageTaggingData?.tagsEditable
+        let imageComment = response?.result?.imageTaggingData?.imageComment
+        let imageReleaseTags = response?.result?.imageTaggingData?.imageReleaseTags
+        let image = response?.result?.image
         materials = materials.map((mat) => {
             return {
                 id: mat.id,
@@ -65,7 +70,7 @@ export function getCITriggerInfoModal(
                         showChanges: index === 0,
                         webhookData: hist.WebhookData,
                     }
-                }),
+                }), 
                 isSelected:
                     mat.history.find((h) =>
                         mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
@@ -87,6 +92,11 @@ export function getCITriggerInfoModal(
                 environmentName: response.result.environmentName || '',
                 environmentId: response.result.environmentId || 0,
                 appName: response.result.appName || '',
+                appReleaseTags: appReleaseTags,
+                imageComment: imageComment,
+                imageReleaseTags: imageReleaseTags,
+                image: image,
+                tagsEditable: tagsEditable,
             },
         }
     })
@@ -292,6 +302,8 @@ export function getCDMaterialList(
                     true,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
+                    response.result.appReleaseTagNames,
+                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
@@ -306,6 +318,8 @@ export function getCDMaterialList(
                     true,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
+                    response.result.appReleaseTagNames,
+                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
@@ -346,6 +360,8 @@ function cdMaterialListModal(
     markFirstSelected: boolean,
     artifactId?: number,
     artifactStatus?: string,
+    appReleaseTagNames?: string[],
+    tagsEditable?: boolean
 ) {
     if (!artifacts || !artifacts.length) return []
 
@@ -521,6 +537,16 @@ export function getTriggerHistory(pipelineId, params) {
     let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
+export function setImageTags(request, pipelineId, artifactId){
+    let URL = `${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`
+    return post(URL,request )
+}
+
+export function getImageTags(pipelineId, artifactId){
+    let URL = `${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`
+    return get (URL)
+}
+
 
 function handleTime(ts: string) {
     let timestamp = ''

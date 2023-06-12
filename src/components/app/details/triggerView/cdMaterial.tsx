@@ -56,6 +56,7 @@ import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
+import { ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -505,6 +506,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__info flex left fs-13">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
+                       
                     </div>
                 )}
                 {!!mat.deployedBy && this.state.isRollbackTrigger ? (
@@ -582,7 +584,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history material-history--cd ${
+                    className={`material-history bcn-0 material-history--cd ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
@@ -591,10 +593,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
                         data-testid={`cd-material-history-image-${mat.index}`}
-                        className={`material-history__top cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
+                        className={`material-history__top p-12 cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
                     >
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
                     </div>
+                    <div className="pl-12 pr-12 pb-12">
+                        <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} appReleaseTagNames={this.props.appReleaseTagNames} tagsEditable={this.props.tagsEditable} />
+                    </div>
+                    <div></div>
                     {mat.showSourceInfo && (
                         <>
                             {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (

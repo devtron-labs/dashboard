@@ -56,6 +56,9 @@ export interface CDMaterialProps {
     triggerType?: string
     isVirtualEnvironment?: boolean
     isSaveLoading?: boolean
+    ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean 
 }
 
 export enum DeploymentWithConfigType {
@@ -280,6 +283,7 @@ export interface WorkflowType {
     approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
     imageReleaseTags: string[]
     appReleaseTags?: string[]
+    tagsEditabe?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -321,6 +325,7 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
+    
 }
 
 //-- begining of response type objects for trigger view

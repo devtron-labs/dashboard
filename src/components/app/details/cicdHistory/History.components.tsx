@@ -7,12 +7,12 @@ import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-full
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
-import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
+import { EmptyViewType, GitChangesType, HistoryComponentType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
 import { EmptyState, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { CIListItem, CopyTippyWithText } from './Artifacts'
+import Artifacts, { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
@@ -85,32 +85,34 @@ export const GitChanges = ({
         return <GenericEmptyState title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE} subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE} />
     }
     return (
-        <div className="flex column left w-100 p-16">
+        <div className="flex column left w-100 ">
             {ciMaterials?.map((ciMaterial, index) => {
                 const gitTrigger = gitTriggers[ciMaterial.id]
                 return gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) ? (
-                    <div
-                        key={`mat-${gitTrigger?.Commit}-${index}`}
-                        className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
-                        data-testid="source-code-git-hash"
-                        style={{ width: 'min( 100%, 800px )' }}
-                    >
-                        <GitCommitInfoGeneric
-                            index={index}
-                            materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
-                            showMaterialInfoHeader={true}
-                            commitInfo={gitTrigger}
-                            materialSourceType={
-                                gitTrigger?.CiConfigureSourceType ? gitTrigger.CiConfigureSourceType : ciMaterial?.type
-                            }
-                            selectedCommitInfo={''}
-                            materialSourceValue={
-                                gitTrigger?.CiConfigureSourceValue
-                                    ? gitTrigger.CiConfigureSourceValue
-                                    : ciMaterial?.value
-                            }
-                        />
-                    </div>
+                        <div
+                            key={`mat-${gitTrigger?.Commit}-${index}`}
+                            className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mt-16 ml-16"
+                            data-testid="source-code-git-hash"
+                            style={{ width: 'min( 100%, 800px )' }}
+                        >
+                            <GitCommitInfoGeneric
+                                index={index}
+                                materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
+                                showMaterialInfoHeader={true}
+                                commitInfo={gitTrigger}
+                                materialSourceType={
+                                    gitTrigger?.CiConfigureSourceType
+                                        ? gitTrigger.CiConfigureSourceType
+                                        : ciMaterial?.type
+                                }
+                                selectedCommitInfo={''}
+                                materialSourceValue={
+                                    gitTrigger?.CiConfigureSourceValue
+                                        ? gitTrigger.CiConfigureSourceValue
+                                        : ciMaterial?.value
+                                }
+                            />
+                        </div>
                 ) : null
             })}
             {artifact && userApprovalMetadata && (
