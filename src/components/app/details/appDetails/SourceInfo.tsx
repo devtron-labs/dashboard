@@ -37,8 +37,6 @@ export function SourceInfo({
     isVirtualEnvironment,
     setRotateModal = null,
 }: SourceInfoType) {
-    const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
-    const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
@@ -100,7 +98,7 @@ export function SourceInfo({
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            isArgoCdApp
+                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd
                                 ? DeploymentAppTypeNameMapping.GitOps
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
@@ -108,7 +106,7 @@ export function SourceInfo({
                         <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                     </Tippy>
                 )}
-                {isdeploymentAppDeleting && (
+                {appDetails?.deploymentAppDeleteRequest && (
                     <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
@@ -117,7 +115,7 @@ export function SourceInfo({
                 )}
                 {!loadingResourceTree && environment && (
                     <>
-                        {!isdeploymentAppDeleting && (
+                        {!appDetails?.deploymentAppDeleteRequest && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
                                 {!isVirtualEnvironment && showUrlInfo && (
                                     <button
@@ -235,7 +233,7 @@ export function SourceInfo({
                 shimmerLoaderBlocks()
             ) : (
                 <>
-                    {!isdeploymentAppDeleting && environment && (
+                    {!appDetails?.deploymentAppDeleteRequest && environment && (
                         <div className="flex left w-100">
                             {!isVirtualEnvironment && (
                                 <div

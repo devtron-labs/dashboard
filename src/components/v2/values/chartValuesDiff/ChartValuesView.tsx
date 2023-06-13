@@ -10,7 +10,6 @@ import {
     InfoColourBar,
     ServerErrors,
     ForceDeleteDialog,
-    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,
@@ -34,7 +33,7 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { ConfigurationType, DELETE_ACTION, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -102,7 +101,6 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
-import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -566,47 +564,34 @@ function ChartValuesView({
         }
     }
 
-    const deleteApplication = (deleteAction: DELETE_ACTION) => {
+    const deleteApplication = (force?: boolean) => {
         if (commonState.isDeleteInProgress) {
             return
         }
-        getDeleteApplicationApi(deleteAction)
-            .then((response: ResponseType) => {
+
+        dispatch({
+            type: ChartValuesViewActionTypes.multipleOptions,
+            payload: {
+                isDeleteInProgress: true,
+                showDeleteAppConfirmationDialog: false,
+            },
+        })
+        getDeleteApplicationApi(force)
+            .then(() => {
                 dispatch({
                     type: ChartValuesViewActionTypes.isDeleteInProgress,
                     payload: false,
                 })
-                if (response.result.deleteResponse?.deleteInitiated) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
-                    init && init()
-                    history.push(
-                        isCreateValueView
-                            ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                            : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
-                    )
-                } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
-                    dispatch({
-                        type: ChartValuesViewActionTypes.multipleOptions,
-                        payload: {
-                            isDeleteInProgress: true,
-                            showDeleteAppConfirmationDialog: false,
-                        },
-                    })
-                    dispatch({
-                        type: ChartValuesViewActionTypes.nonCascadeDeleteData,
-                        payload: {
-                            nonCascade: true,
-                            clusterName: response.result.deleteResponse?.clusterName
-                        },
-                    })
-                    dispatch({
-                        type: ChartValuesViewActionTypes.isDeleteInProgress,
-                        payload: false,
-                    })
-                }
+                toast.success(TOAST_INFO.DELETION_INITIATED)
+                init && init()
+                history.push(
+                    isCreateValueView
+                        ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
+                        : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
+                )
             })
             .catch((error) => {
-                if (deleteAction !== DELETE_ACTION.FORCE_DELETE && error.code !== 403) {
+                if (!force && error.code !== 403) {
                     let forceDeleteTitle = '',
                         forceDeleteMessage = ''
                     if (error instanceof ServerErrors && Array.isArray(error.errors)) {
@@ -615,20 +600,7 @@ function ChartValuesView({
                             forceDeleteMessage = internalMessage
                         })
                     }
-                    dispatch({
-                        type: ChartValuesViewActionTypes.multipleOptions,
-                        payload: {
-                            isDeleteInProgress: true,
-                            showDeleteAppConfirmationDialog: false,
-                        },
-                    })
-                    dispatch({
-                        type: ChartValuesViewActionTypes.nonCascadeDeleteData,
-                        payload: {
-                            nonCascade: false,
-                            clusterName: ''
-                        },
-                    })
+
                     dispatch({
                         type: ChartValuesViewActionTypes.forceDeleteData,
                         payload: {
@@ -648,13 +620,13 @@ function ChartValuesView({
             })
     }
 
-    const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
+    const getDeleteApplicationApi = (force?: boolean): Promise<any> => {
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
         } else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
         } else {
-            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, deleteAction)
+            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, force)
         }
     }
 
@@ -1232,27 +1204,6 @@ function ChartValuesView({
         }
     }
 
-    const onClickHideNonCascadeDeletePopup = () => {
-        dispatch({
-            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
-            payload: {
-                nonCascade: false,
-                clusterName: ''
-            },
-        })
-    }
-    
-    const onClickNonCascadeDelete = () => {
-        dispatch({
-            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
-            payload: {
-                nonCascade: false,
-                clusterName: ''
-            },
-        })
-        deleteApplication(DELETE_ACTION.NONCASCADE_DELETE)
-    }
-
     const renderChartValuesEditor = () => {
         return (
             <div
@@ -1609,7 +1560,7 @@ function ChartValuesView({
                     <ForceDeleteDialog
                         forceDeleteDialogTitle={commonState.forceDeleteData.title}
                         forceDeleteDialogMessage={commonState.forceDeleteData.message}
-                        onClickDelete={() => deleteApplication(DELETE_ACTION.FORCE_DELETE)}
+                        onClickDelete={() => deleteApplication(true)}
                         closeDeleteModal={() => {
                             dispatch({
                                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -1624,13 +1575,6 @@ function ChartValuesView({
                             })
                         }}
                     />
-                )}
-                {commonState.nonCascadeDeleteData.nonCascade && (
-                    <ClusterNotReachableDailog
-                    clusterName={commonState.nonCascadeDeleteData.clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
                 )}
                 {commonState.showNoGitOpsWarning && (
                     <NoGitOpsConfiguredWarning
