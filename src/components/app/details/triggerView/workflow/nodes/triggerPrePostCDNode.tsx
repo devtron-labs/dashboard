@@ -64,7 +64,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
                     </div>
                     {this.renderStatus(isClickable, status)}
                     <div className="workflow-node__btn-grp">
-                        <button className="workflow-node__deploy-btn" onClick={(event) => { event.stopPropagation(); context.onClickCDMaterial(this.props.id, this.props.type) }}>Select Image</button>
+                        <button className="workflow-node__deploy-btn" data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`} onClick={(event) => { event.stopPropagation(); context.onClickCDMaterial(this.props.id, this.props.type) }}>Select Image</button>
                     </div>
                 </div>
             }}
