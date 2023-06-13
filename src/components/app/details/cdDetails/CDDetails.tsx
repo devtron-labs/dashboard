@@ -521,33 +521,38 @@ const HistoryLogs: React.FC<{
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
                             />
-                            <div className="mt-8" style={{width:'832px'}}>
-                            <div className="dc__dasshed_icon_grid-container">
-                                <hr className="dc__dotted-line" />
-                                <div className="flex">
-                                    <Down />
+                            {artifactId != 0 && (
+                                <div>
+                                    {console.log(artifactId)}
+                                    <div className="mt-8" style={{ width: '832px' }}>
+                                        <div className="dc__dasshed_icon_grid-container">
+                                            <hr className="dc__dotted-line" />
+                                            <div className="flex">
+                                                <Down />
+                                            </div>
+                                            <hr className="dc__dotted-line" />
+                                        </div>
+                                    </div>
+                                    <Artifacts
+                                        status={triggerDetails.status}
+                                        artifact={triggerDetails.artifact}
+                                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        ciPipelineId={ciPipelineId}
+                                        artifactId={artifactId}
+                                        imageComment={
+                                            deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                                .imageComment
+                                        }
+                                        imageReleaseTags={
+                                            deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                                .imageReleaseTags
+                                        }
+                                        appReleaseTagNames={appReleaseTags}
+                                        tagsEditable={tagsEditable}
+                                        type={HistoryComponentType.CI}
+                                    />
                                 </div>
-                                <hr className="dc__dotted-line" />
-                            </div>
-                            </div>
-                            <Artifacts
-                                status={triggerDetails.status}
-                                artifact={triggerDetails.artifact}
-                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                ciPipelineId={ciPipelineId}
-                                artifactId={artifactId}
-                                imageComment={
-                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageComment
-                                }
-                                imageReleaseTags={
-                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageReleaseTags
-                                }
-                                appReleaseTagNames={appReleaseTags}
-                                tagsEditable={tagsEditable}
-                                type={HistoryComponentType.CI}
-                            />
+                            )}
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
                             <Route path={`${path}/configuration`} exact>
