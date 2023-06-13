@@ -308,6 +308,7 @@ export default function BulkCDTrigger({
                             isFromBulkCD={true}
                             appReleaseTagNames={_currentApp.appReleaseTags}
                             tagsEditable={_currentApp.tagsEditable}
+                            ciPipelineId={_currentApp.ciPipelineId}
                         />
                     )}
                 </div>

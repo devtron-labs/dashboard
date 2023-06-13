@@ -1493,6 +1493,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         requestedUserId: _selectedNode.requestedUserId,
                         appReleaseTags: wf.appReleaseTags,
                         tagsEditable: wf.tagsEditabe,
+                        ciPipelineId: _selectedNode.connectingCiPipelineId,
                     })
                 } else {
                     let warningMessage = ''

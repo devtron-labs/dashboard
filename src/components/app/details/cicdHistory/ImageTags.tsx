@@ -11,7 +11,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ImageButtonType, ImageTaggingContainerType, ReleaseTag} from './types'
 import { setImageTags } from '../../service'
-import { showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {showError, stopPropagation, TippyCustomized, TippyTheme} from '@devtron-labs/devtron-fe-common-lib'
 import { getUserRole } from '../../../userGroups/userGroup.service'
 
 export const ImageTagsContainer = ({
@@ -38,16 +38,31 @@ export const ImageTagsContainer = ({
     useEffect(() => {
         initialise()
     }, [])
+
+
+    useEffect(() => {
+        reInitState()
+    }, [imageReleaseTags,imageComment,appReleaseTagNames,tagsEditable])
+
+
     async function initialise() {
         try {
             const userRole = await getUserRole()
 
             const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
-            setSuperAdmin(superAdmin)
         } catch (err) {
             showError(err)
         }
     }
+
+    const reInitState = () => {
+        setInitialTags(imageReleaseTags ? imageReleaseTags : [])
+        setInitialDescription(imageComment ? imageComment.comment : '')
+        setExistingTags(appReleaseTagNames ? appReleaseTagNames : [])
+        setNewDescription(imageComment ? imageComment.comment : '')
+        setDisplayedTags(imageReleaseTags ? imageReleaseTags : [])
+    }
+
 
     const CreatableComponents = useMemo(
         () => ({
@@ -282,17 +297,23 @@ export const ImageTagsContainer = ({
                         />
                     </div>
                     <div className="w-100 flex right">
-                        <button className="cta cancel h-32 lh-32" type="button" onClick={handleCancel}>
+                        <button className="cta cancel h-32 lh-32" type="button" onClick={(e)=> {
+                            stopPropagation(e)
+                            handleCancel()
+                        }}>
                             Cancel
                         </button>
-                        <button className="cta h-32 lh-32 ml-12" type="button" onClick={handleSave}>
+                        <button className="cta h-32 lh-32 ml-12" type="button" onClick={(e)=>{
+                            stopPropagation(e)
+                            handleSave()
+                        }}>
                             Save
                         </button>
                     </div>
                 </div>
             ) : (
                 <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
-                    <div className="flex left image-tag-left-border" style={{ width: 'calc(100vw - 56px)' }}>
+                    <div className="flex left image-tag-left-border w-100">
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
                             <div className="dc__flex-wrap flex left">
@@ -316,7 +337,10 @@ export const ImageTagsContainer = ({
                         {tagsEditable && (
                             <EditIcon
                                 className="icon-dim-16 image-tags-container-edit__icon cursor"
-                                onClick={handleEditClick}
+                                onClick={(e)=>{
+                                    stopPropagation(e)
+                                    handleEditClick()
+                                }}
                             />
                         )}
                     </div>

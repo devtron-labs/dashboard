@@ -45,6 +45,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     requestedUserId?: number
     appReleaseTags?: string[]
     tagsEditable?: boolean
+    ciPipelineId?: number
 }
 
 export interface ResponseRowType {
