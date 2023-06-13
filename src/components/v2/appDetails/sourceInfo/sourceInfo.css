@@ -26,6 +26,18 @@
     } */
 }
 
+.helm-delete-pop-up{
+  position: fixed;
+  left: unset;
+  top: 130px;
+  opacity: 1;
+  right: 20px;
+  background-color: var(--N000);
+  z-index: var(--modal-index);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px 0 rgba(21,21,21,.3);
+}
+
 .events-logs__label {
     margin-right: 10px;
     /* color: white; */

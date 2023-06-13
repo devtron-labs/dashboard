@@ -259,7 +259,7 @@ function EnvironmentSelectorComponent({
                                     <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <Popup />
+                                   <div className="helm-delete-pop-up"> <Popup /></div>
                                 </PopupMenu.Body>
                             </PopupMenu>
                             {showDeleteConfirmation && (
