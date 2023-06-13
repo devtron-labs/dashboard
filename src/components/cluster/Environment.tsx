@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { showError, Progressing, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
@@ -78,6 +78,13 @@ export default function Environment({
             description: state.description.value || '',
         }
     }
+
+    const renderVirtualClusterSaveUpdate = (id) => {
+        if (virtualClusterSaveUpdateApi) {
+            return virtualClusterSaveUpdateApi(id)
+        }
+    }
+
     async function onValidation() {
         let payload
         let api
@@ -90,7 +97,7 @@ export default function Environment({
                 cluster_id: cluster_id,
                 description: state.description.value || '',
             }
-            api = virtualClusterSaveUpdateApi(id)
+            api = renderVirtualClusterSaveUpdate(id)
         } else {
             if (!state.namespace.value && !ignore) {
                 setIngoreError('Enter a namespace or select ignore namespace')
@@ -177,7 +184,7 @@ export default function Environment({
                             <input
                                 data-testid="nonProduction"
                                 type="radio"
-                                name="isNonProduction"
+                                name="isProduction"
                                 checked={state.isProduction.value === 'false'}
                                 value="false"
                                 onChange={handleOnChange}
