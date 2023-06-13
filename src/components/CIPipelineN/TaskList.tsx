@@ -130,7 +130,7 @@ export function TaskList({
         }, 0)
         const _formDataErrorObj = { ...formDataErrorObj }
         if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
-            clearDependentPostVariables(_formData, newTaskIndex, _formDataErrorObj)
+            clearDependentPostVariables(_formData, taskIndex, _formDataErrorObj)
         } else {
             setFormData(_formData)
         }
@@ -202,7 +202,7 @@ export function TaskList({
             },
         })
         if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
-            clearDependentPostVariables(_formData, newTaskIndex, _formDataErrorObj)
+            clearDependentPostVariables(_formData, taskIndex, _formDataErrorObj)
         } else {
             setFormData(_formData)
         }

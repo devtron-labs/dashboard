@@ -34,9 +34,10 @@ import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import Tippy from '@tippyjs/react'
 import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_MESSAGING } from '../../Constants'
+import { processConsequenceData } from '../../AppGroup.utils'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
-const getPolicyData = importComponentFromFELibrary('getPolicyData', null, 'function')
+const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 export default function BulkCITrigger({
     appList,
@@ -172,7 +173,7 @@ export default function BulkCITrigger({
                         branchNames += `${branchNames ? ',' : ''}${material.value}`
                     }
                 }
-                return !branchNames ? null : getPolicyData(appDetails.appId, appDetails.ciPipelineId, branchNames)
+                return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
             }
         })
         if (policyPromiseList?.length) {
@@ -181,6 +182,8 @@ export default function BulkCITrigger({
                 .then((responses) => {
                     responses.forEach((res, index) => {
                         policyListMap[appList[index]?.appId] = res?.['result']
+                            ? processConsequenceData(res['result'])
+                            : null
                     })
                     setAppPolicy(policyListMap)
                 })
