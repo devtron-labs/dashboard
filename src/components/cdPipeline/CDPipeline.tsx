@@ -268,6 +268,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             })
     }
 
+    getPrePostStageInEnv = (isRunPrePostStageInEnv: boolean): boolean => {
+      let isPrePostStage: boolean;
+      if(this.state.pipelineConfig.isVirtualEnvironment){
+         isPrePostStage = true
+      } else{
+         isPrePostStage = !isRunPrePostStageInEnv || false
+      }
+       return isPrePostStage
+    }
+
+
     updateStateFromResponse(pipelineConfigFromRes, environments): void {
         let { pipelineConfig, strategies } = { ...this.state }
         sortObjectArrayAlphabetically(environments, 'name')
@@ -514,8 +525,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     handleRunInEnvCheckbox(event, stageType: 'preStage' | 'postStage') {
         let { pipelineConfig } = { ...this.state }
-        if (stageType === 'preStage') pipelineConfig.runPreStageInEnv = this.state.pipelineConfig.isVirtualEnvironment ? true : !pipelineConfig.runPreStageInEnv
-        if (stageType === 'postStage') pipelineConfig.runPostStageInEnv = this.state.pipelineConfig.isVirtualEnvironment ? true : !pipelineConfig.runPostStageInEnv
+        if (stageType === 'preStage') pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(pipelineConfig.runPreStageInEnv)
+        if (stageType === 'postStage') pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(pipelineConfig.runPostStageInEnv)
         this.setState({ pipelineConfig })
     }
 

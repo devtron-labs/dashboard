@@ -652,7 +652,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
-        console.log(cdWorkflowType)
         const downloadManifetsDownload = {
             appId: appId,
             envId: envId,
