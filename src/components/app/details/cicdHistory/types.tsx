@@ -125,6 +125,17 @@ export interface ImageTagType {
     tagsEditable?: boolean
 }
 
+export interface ImageButtonType {
+    text: string
+    isSoftDeleted: boolean
+    isEditing: boolean
+    onSoftDeleteClick?: any
+    onHardDeleteClick?: any
+    tagId: number
+    softDeleteTags: any
+    isSuperAdmin: any
+}
+
 export interface LogsRendererType {
     triggerDetails: History
     isBlobStorageConfigured: boolean

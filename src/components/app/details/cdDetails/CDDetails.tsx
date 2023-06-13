@@ -29,6 +29,7 @@ import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { STAGE_TYPE } from '../triggerView/types'
+import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -520,6 +521,15 @@ const HistoryLogs: React.FC<{
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
                             />
+                            <div className="mt-8" style={{width:'832px'}}>
+                            <div className="dc__dasshed_icon_grid-container">
+                                <hr className="dc__dotted-line" />
+                                <div className="flex">
+                                    <Down />
+                                </div>
+                                <hr className="dc__dotted-line" />
+                            </div>
+                            </div>
                             <Artifacts
                                 status={triggerDetails.status}
                                 artifact={triggerDetails.artifact}
@@ -535,7 +545,7 @@ const HistoryLogs: React.FC<{
                                         .imageReleaseTags
                                 }
                                 appReleaseTagNames={appReleaseTags}
-                                tagsEditable = {tagsEditable} 
+                                tagsEditable={tagsEditable}
                                 type={HistoryComponentType.CI}
                             />
                         </Route>

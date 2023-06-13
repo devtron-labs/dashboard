@@ -9,7 +9,7 @@ import { ReactComponent as Redo } from '../../../../assets/icons/ic-arrow-counte
 import { ReactComponent as Minus } from '../../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ImageTagType, ReleaseTag } from './types'
+import { ImageButtonType, ImageTagType, ReleaseTag } from './types'
 import { setImageTags } from '../../service'
 import { showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { getUserRole } from '../../../userGroups/userGroup.service'
@@ -326,7 +326,7 @@ export const ImageTagsContainer = ({
     )
 }
 
-const ImageTagButton = ({
+export const ImageTagButton = ({
     text,
     isSoftDeleted,
     isEditing,
@@ -335,7 +335,7 @@ const ImageTagButton = ({
     tagId,
     softDeleteTags,
     isSuperAdmin,
-}) => {
+}: ImageButtonType) => {
     const containerClassName = isSoftDeleted ? 'image-tag-button-soft-deleted mb-8 mr-8' : 'image-tag-button mb-8 mr-8'
     const IconComponent = isSoftDeleted ? Redo : Minus
 
@@ -375,7 +375,7 @@ const AddImageButton = ({ handleEditClick }) => {
     }
 
     return (
-        <div className="add-tag-button flex" onClick={handleClick}>
+        <div className="add-tag-button flex pt-12 pr-12" onClick={handleClick}>
             <div className="lh-16 flex">
                 <Add className="icon-dim-16 cn-6" />
                 <span className="cn-7">Add tags/comment</span>
