@@ -523,7 +523,6 @@ const HistoryLogs: React.FC<{
                             />
                             {artifactId != 0 && (
                                 <div>
-                                    {console.log(artifactId)}
                                     <div className="mt-8" style={{ width: '832px' }}>
                                         <div className="dc__dasshed_icon_grid-container">
                                             <hr className="dc__dotted-line" />
@@ -534,7 +533,7 @@ const HistoryLogs: React.FC<{
                                         </div>
                                     </div>
                                     <Artifacts
-                                        status={triggerDetails.status}
+                                        status={"succeeded"}
                                         artifact={triggerDetails.artifact}
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                         ciPipelineId={ciPipelineId}
