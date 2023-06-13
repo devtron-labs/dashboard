@@ -41,6 +41,7 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DeploymentAppTypes } from '../../../../config/constants'
+import { DELETE_ACTION } from '../../../../config'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -320,11 +321,17 @@ export const DeleteChartDialog = ({
     toggleConfirmation,
     isCreateValueView,
 }: DeleteChartDialogProps) => {
+    const closeConfirmation = () => {
+        toggleConfirmation(false)
+    }
+    const handleForceDelete = () => {
+        handleDelete(DELETE_ACTION.DELETE)
+    }
     return (
         <DeleteDialog
             title={`Delete '${appName}' ?`}
-            delete={() => handleDelete(false)}
-            closeDelete={toggleConfirmation}
+            delete={handleForceDelete}
+            closeDelete={closeConfirmation}
         >
             {isCreateValueView ? (
                 <DeleteDialog.Description>

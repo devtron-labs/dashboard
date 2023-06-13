@@ -155,6 +155,8 @@ export const Routes = {
     DESIRED_MANIFEST: 'application/desired-manifest',
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
+    NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
+    NONCASCADE_DELETE_DEVTRON_APP : 'app/delete',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
@@ -802,6 +804,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const RESOURCES_NOT_FOUND = 'Resources are not available' 
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
@@ -835,3 +838,9 @@ export enum DeploymentAppTypes {
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'
+
+export enum DELETE_ACTION {
+    DELETE= 'delete',
+    FORCE_DELETE= 'force_delete',
+    NONCASCADE_DELETE= 'noncascade_delete',
+}
