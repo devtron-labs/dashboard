@@ -538,8 +538,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         workflow.nodes.map((node) => {
                             if (node.type === 'CI' && node.id == ciNodeId) {
                                 node.ciBlockState = processConsequenceData(resp[1].result)
-                                //TODO: uncomment when allow until handled from BE
-                                //node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
                                 return node
                             }
                             return node
