@@ -1,12 +1,15 @@
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerErrors,
+    showError,
+    BlockedStateData,
+    ConsequenceType,
+    ConsequenceAction,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
-import { BlockedStateData } from '@devtron-labs/devtron-fe-common-lib'
-import { ConsequenceType } from '@devtron-labs/devtron-fe-common-lib'
-import { ConsequenceAction } from '@devtron-labs/devtron-fe-common-lib'
 
 let timeoutId
 
@@ -246,7 +249,7 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
     if (!data.isOffendingMandatoryPlugin) {
         return null
     } else if (data.isCITriggerBlocked) {
-        return { action: ConsequenceAction.BLOCK, metadataField: '0001-01-01T00:00:00Z' }
+        return { action: ConsequenceAction.BLOCK, metadataField: null }
     } else {
         return data.ciBlockState
     }
