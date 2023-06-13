@@ -3,36 +3,16 @@ import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from './index.store'
 import { renderErrorHeaderMessage } from '../../common/error/error.utils'
-import { AppType, DeploymentAppType, SyncErrorType } from './appDetails.type'
+import { AppType, SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'
-import { ForceDeleteDialog, ResponseType, ServerErrors, not, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from '../../app/details/appDetails/appDetails.service'
-import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
-import { toast } from 'react-toastify'
-import { TOAST_INFO } from '../../../config/constantMessaging'
-import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { not } from '@devtron-labs/devtron-fe-common-lib'
 
 const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
-    const [clusterConnectionError, setClusterConnectionError] = useState<boolean>(false)
-    const [clusterName, setClusterName] = useState<string>('')
-    const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState<string>('')
-    const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState<string>('')
-    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
-    const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
     const appDetails = IndexStore.getAppDetails()
     const conditions = appStreamData?.result?.application?.status?.conditions || []
 
-    const verifyDeployedClusterConnectionStatus = async (): Promise<void> => {
-        await getClusterConnectionStatus(appDetails.environmentId).then((response: ClusterConnectionResponse) => {
-            if (response.result) {
-                response.result?.clusterReachable ? setClusterConnectionError(false) : setClusterConnectionError(true)
-                setClusterName(response.result.clusterName)
-            }
-        })
-    }
-    
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP && appDetails.resourceTree?.nodes?.length) {
             for (let index = 0; index < appDetails.resourceTree.nodes.length; index++) {
@@ -60,66 +40,12 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         }
     }, [appDetails])
 
-    useEffect(() => {
-        if (appDetails.deploymentAppType === DeploymentAppType.argo_cd && appDetails.deploymentAppDeleteRequest) {
-            verifyDeployedClusterConnectionStatus()
-        }
-    }, [appDetails.appId, appDetails.environmentId])
-    
-    if (!appDetails || (conditions.length === 0 && !isImagePullBackOff && !clusterConnectionError)) {
+    if (!appDetails || (conditions.length === 0 && !isImagePullBackOff)) {
         return null
-    }
-
-    const setForceDeleteDialogData = (serverError) => {
-        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
-            serverError.errors.map(({ userMessage, internalMessage }) => {
-                setForceDeleteDialogTitle(userMessage)
-                setForceDeleteDialogMessage(internalMessage)
-            })
-        }
-    }
-
-    const nonCascadeDeleteArgoCDApp = async (force: boolean): Promise<void> => {
-        showForceDeleteDialog(false)
-        deleteArgoCDAppWithNonCascade(appDetails.appType, appDetails.appId, appDetails.environmentId, force).then(
-            (response: ResponseType) => {
-                if (response.code === 200) {
-                    toast.success(TOAST_INFO.DELETION_INITIATED)
-                }
-            },
-        ).catch((error: ServerErrors) => {
-            if (!forceDeleteDialog && error.code != 403) {
-                showForceDeleteDialog(true)
-                setForceDeleteDialogData(error)
-            } else {
-                showError(error)
-            }
-        })
-    }
-
-    const onClickHideNonCascadeDeletePopup = () => {
-        showNonCascadeDeleteDialog(false)
-    }
-
-    const onClickNonCascadeDelete = async () => {
-        showNonCascadeDeleteDialog(false)
-        await nonCascadeDeleteArgoCDApp(false)
     }
 
     const toggleErrorHeader = () => {
         toggleCollapsed(not)
-    }
-
-    const errorCounter = conditions.length +
-        (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) +
-        (clusterConnectionError && 1)
-    
-    const handleForceDelete = () => {
-        nonCascadeDeleteArgoCDApp(true)
-    }
-
-    const setNonCascadeDelete = () => {
-        showNonCascadeDeleteDialog(true)
     }
 
     return (
@@ -127,17 +53,13 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
                 <span className="cr-5 fs-14 fw-6">
-                    {errorCounter === 1 ? '1 Error' : `${errorCounter} Errors`}
+                    {conditions.length + (isImagePullBackOff && !appDetails.externalCi ? 1 : 0)} Errors
                 </span>
                 {collapsed && (
                     <span className="cn-9 ml-24 w-80 dc__ellipsis-right">
-                        {clusterConnectionError &&
-                            `Cluster is not reachable${
-                                conditions.length > 0 || (isImagePullBackOff && !appDetails.externalCi) ? ', ' : ''
-                            }`}
                         {isImagePullBackOff &&
                             !appDetails.externalCi &&
-                            `IMAGEPULLBACKOFF${conditions.length > 0 ? ', ' : ''}`}
+                            `IMAGEPULLBACKOFF${conditions.length > 0 && ', '}`}
                         {conditions.map((condition) => condition.type).join(', ')}
                     </span>
                 )}
@@ -149,23 +71,6 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
             {!collapsed && (
                 <table className="mb-8">
                     <tbody>
-                        {clusterConnectionError && (
-                            <tr>
-                                <td className="pb-8 min-width">Cluster is not reachable</td>
-                                <td className="pl-24 pb-8">
-                                    {`The underlying resources cannot be deleted as the cluster${
-                                        clusterName ? ` '${clusterName}'` : ''
-                                    } is not
-                                    reachable at the moment.`}
-                                    <span
-                                        className="pointer ml-8 cb-5"
-                                        onClick={setNonCascadeDelete}
-                                    >
-                                        Force Delete
-                                    </span>
-                                </td>
-                            </tr>
-                        )}
                         {conditions.map((condition) => (
                             <tr>
                                 <td className="pb-8 min-width">{condition.type}</td>
@@ -182,21 +87,6 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
                         )}
                     </tbody>
                 </table>
-            )}
-            {forceDeleteDialog && (
-                <ForceDeleteDialog
-                    forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    onClickDelete={handleForceDelete}
-                    closeDeleteModal={() => showForceDeleteDialog(false)}
-                    forceDeleteDialogMessage={forceDeleteDialogMessage}
-                />
-            )}
-            {nonCascadeDeleteDialog && (
-                <ClusterNotReachableDailog
-                    clusterName={clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
             )}
         </div>
     )
