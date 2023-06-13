@@ -576,7 +576,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
-        return materialList.map((mat, idx) => {
+        return materialList.map((mat) => {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
             const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
             const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
@@ -593,11 +593,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
                         data-testid={`cd-material-history-image-${mat.index}`}
-                        className={`material-history__top cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
+                        className={`material-history__top p-12 cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
                     >
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
                     </div>
-                    <div className="pl-12 pr-12 pb-12 mw-400">
+                    <div className="pb-12">
                         <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} appReleaseTagNames={this.props.appReleaseTagNames} tagsEditable={this.props.tagsEditable} />
                     </div>
                     {mat.showSourceInfo && (
@@ -668,7 +668,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.props.toggleSourceInfo(
-                                    idx,
+                                    mat.index,
                                     this.props.isFromBulkCD
                                         ? { id: this.props.pipelineId, type: this.props.stageType }
                                         : null,
@@ -1028,7 +1028,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
+                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
                         {this.props.isSaveLoading ? (
