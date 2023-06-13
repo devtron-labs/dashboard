@@ -33,6 +33,7 @@ export interface WebhhookConfigModalState {
     isValid: {
         configName: boolean;
         webhookUrl: boolean;
+        payload: boolean;
     };
     webhookAttribute: Record<string, string>;
     copyAttribute: boolean;
@@ -55,6 +56,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             isValid: {
                 configName: true,
                 webhookUrl: true,
+                payload: true,
             },
             webhookAttribute: {},
             copyAttribute: false
@@ -75,19 +77,29 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
     componentDidMount() {
         if (this.props.webhookConfigId) {
             getWebhookConfiguration(this.props.webhookConfigId)
-            .then((response) => {
-                let state = { ...this.state };
-                state.view = ViewType.FORM;
-                state.form = { ...response.result };
-                state.isValid = {
-                    configName: true,
-                    webhookUrl: true,
-                }
-                this.setState(state);
-                console.log(response.result)
-            }).catch((error) => {
-                showError(error);
-            })
+                .then((response) => {
+                    let state = { ...this.state };
+                    const _headers = [...this.state.form.header]
+                    state.view = ViewType.FORM;
+                    const _responseKeys = response.result?.header ? Object.keys(response.result.header) : undefined
+                    {_responseKeys && _responseKeys.map((_key) => {
+                        _headers.push({ key: _key, value: response.result?.header[_key] })
+                    })}
+                    const _responsePayload = response.result?.payload ? JSON.stringify(response.result?.payload) : ""
+                    state.form = {
+                        ...response.result,
+                        header: _headers,
+                        payload: _responsePayload    
+                    };
+                    state.isValid = {
+                        configName: true,
+                        webhookUrl: true,
+                        payload: true,
+                    }
+                    this.setState(state);
+                }).catch((error) => {
+                    showError(error);
+                })
         }
         else {
             getProjectListMin().then((response) => {
@@ -114,9 +126,18 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.setState({ form });
     }
 
-    isValid(event, key: 'configName' | 'webhookUrl' ): void {
+    isValid(event, key: 'configName' | 'webhookUrl' | 'payload'): void {
         let { form, isValid } = { ...this.state };
-        isValid[key] = event.target.value.length !== 0;
+        if(key!='payload'){
+            isValid[key] = event.target.value.length !== 0;
+        }else if(this.state.form.payload != '') {
+            try{
+                JSON.parse(this.state.form.payload)
+                isValid[key] = true
+            }catch(err) {
+                isValid[key] = false
+            }
+        }
         this.setState({ form, isValid });
     }
 
@@ -141,7 +162,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             isFormValid = isFormValid && this.state.isValid[key];
             return isFormValid;
         }, true);
-
         if (!isFormValid) {
             state.form.isLoading = false;
             state.form.isError = true;
@@ -330,16 +350,21 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     </div>
                     <label className="form__row w-100-imp">
                         <span className="form__label dc__required-field">Data to be shared through Webhook</span>
-                        <div className="script-container">
+                        <div className="script-container" onBlur={(event) => this.isValid(event, 'payload')}>
                             <CodeEditor
                                 value={this.state.form.payload}
                                 theme="vs-alice-blue"
-                                mode="shell"
+                                mode="json"
                                 onChange={(value) => this.handleWebhookPaylodChange(value)}
                                 inline
                                 height={200}
                             ></CodeEditor>
                         </div>
+                        <span className="form__error">
+                            {!this.state.isValid.payload
+                                ? <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></>
+                                : null}
+                        </span>
                     </label>
                 </div>
                 {this.renderConfigureLinkInfoColumn()}

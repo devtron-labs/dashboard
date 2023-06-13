@@ -121,7 +121,7 @@ export function Option(props) {
   export const renderPipelineTypeIcon = (row) => {
       if (row.isVirtualEnvironment) {
           return <Rocket className="icon-dim-24" />
-      } else if (row.type === 'CI') {
+      } else if (row.pipelineType === 'CI' || row.type === 'CI') {
           return <CI className="icon-dim-20 dc__flip" />
       } else {
           return <CD className="icon-dim-20 dc__flip" />

@@ -364,14 +364,21 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
 
 export function saveWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
+    const headerObj = {};
+    const headerPayload =  data.payload != '' ? JSON.parse(data.payload) : {}
+    data.header.forEach((element) => {
+        if (element.key != '') {
+            headerObj[element.key] = element.value
+        }
+    });
     let payload = {
         channel: 'webhook',
         configs: [
             {
                 configName: data.configName,
                 webhookUrl: data.webhookUrl,
-                headers: data.headers,
-                webhookPayload: data.webhookPayload,
+                header: headerObj,
+                payload: headerPayload,
             },
         ],
     }
@@ -380,15 +387,23 @@ export function saveWebhookConfiguration(data): Promise<UpdateConfigResponseType
 
 export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
+    const headerObj = {};
+    const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
+    data.header.forEach((element) => {
+        if (element.key != '') {
+            headerObj[element.key] = element.value
+        }
+    });
+
     let payload = {
         channel: 'webhook',
         configs: [
             {
                 id: data.id,
-                onfigName: data.configName,
+                configName: data.configName,
                 webhookUrl: data.webhookUrl,
-                headers: data.headers,
-                webhookPayload: data.webhookPayload,
+                header: headerObj,
+                payload: headerPayload,
             },
         ],
     }
@@ -454,27 +469,27 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
         let parsedResult = response.result?.map((row) => {
             let projects = row.team
                 ? row.team.map((team) => {
-                      return {
-                          type: 'project',
-                          ...team,
-                      }
-                  })
+                    return {
+                        type: 'project',
+                        ...team,
+                    }
+                })
                 : []
             let app = row.app
                 ? row.app.map((team) => {
-                      return {
-                          type: 'application',
-                          ...team,
-                      }
-                  })
+                    return {
+                        type: 'application',
+                        ...team,
+                    }
+                })
                 : []
             let environment = row.environment
                 ? row.environment?.map((team) => {
-                      return {
-                          type: 'environment',
-                          ...team,
-                      }
-                  })
+                    return {
+                        type: 'environment',
+                        ...team,
+                    }
+                })
                 : []
             return {
                 appliedFilters: projects.concat(app, environment),
