@@ -29,6 +29,7 @@ import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { STAGE_TYPE } from '../triggerView/types'
+import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -520,24 +521,38 @@ const HistoryLogs: React.FC<{
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
                             />
-                            <Artifacts
-                                status={triggerDetails.status}
-                                artifact={triggerDetails.artifact}
-                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                ciPipelineId={ciPipelineId}
-                                artifactId={artifactId}
-                                imageComment={
-                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageComment
-                                }
-                                imageReleaseTags={
-                                    deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageReleaseTags
-                                }
-                                appReleaseTagNames={appReleaseTags}
-                                tagsEditable = {tagsEditable} 
-                                type={HistoryComponentType.CI}
-                            />
+                            {artifactId != 0 && (
+                                <div>
+                                    {console.log(artifactId)}
+                                    <div className="mt-8" style={{ width: '832px' }}>
+                                        <div className="dc__dasshed_icon_grid-container">
+                                            <hr className="dc__dotted-line" />
+                                            <div className="flex">
+                                                <Down />
+                                            </div>
+                                            <hr className="dc__dotted-line" />
+                                        </div>
+                                    </div>
+                                    <Artifacts
+                                        status={triggerDetails.status}
+                                        artifact={triggerDetails.artifact}
+                                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        ciPipelineId={ciPipelineId}
+                                        artifactId={artifactId}
+                                        imageComment={
+                                            deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                                .imageComment
+                                        }
+                                        imageReleaseTags={
+                                            deploymentHistoryResult[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                                .imageReleaseTags
+                                        }
+                                        appReleaseTagNames={appReleaseTags}
+                                        tagsEditable={tagsEditable}
+                                        type={HistoryComponentType.CI}
+                                    />
+                                </div>
+                            )}
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
                             <Route path={`${path}/configuration`} exact>

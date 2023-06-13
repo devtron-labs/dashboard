@@ -10,6 +10,7 @@ import Artifacts from '../details/cicdHistory/Artifacts'
 import { HistoryComponentType, ImageComment, ReleaseTag } from '../details/cicdHistory/types'
 import { GitMaterialInfoHeader } from '../../common'
 import GitCommitInfoGeneric from '../../common/GitCommitInfoGeneric'
+import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
 
 interface TriggerInfoModalState {
     statusCode: number
@@ -145,10 +146,17 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             pipelineName=""
                             toggleChanges={this.toggleChanges}
                         />
+                        <div className="dc__dasshed_icon_grid-container">
+                            <hr className="dc__dotted-line" />
+                            <div className="flex">
+                                <Down/>
+                            </div>
+                            <hr className="dc__dotted-line" />
+                        </div>
                         <div className="mt-16 mb-16 mr-20 ml-20 bcn-0 dc__border br-4">
                             <Artifacts
                                 status={''}
-                                artifact={this.state.image} 
+                                artifact={this.state.image}
                                 blobStorageEnabled={true}
                                 isArtifactUploaded={false}
                                 isJobView={false}

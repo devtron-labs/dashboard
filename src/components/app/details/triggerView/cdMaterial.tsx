@@ -53,10 +53,10 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
-import { ImageTagsContainer } from '../cicdHistory/ImageTags'
+import { ImageTagButton, ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -304,12 +304,26 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             mat.artifactStatus === ARTIFACT_STATUS.Failed
         ) {
             return (
-                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
-                    {this.renderActiveCD(mat)}
-                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
-                    {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
-                        this.renderFailedCD(mat)}
+                <div>
+                    <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
+                        {this.renderActiveCD(mat)}
+                        {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
+                        {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                            mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                            this.renderFailedCD(mat)}
+                        {/* {mat.latest && ( */}
+                            <div className="mt-6 ml-2">
+                                <ImageTagButton
+                                    text={'Latest'}
+                                    isSoftDeleted={false}
+                                    isEditing={false}
+                                    tagId={0}
+                                    softDeleteTags={[]}
+                                    isSuperAdmin={[]}
+                                />
+                            </div>
+                        {/* )} */}
+                    </div>
                 </div>
             )
         }
@@ -506,7 +520,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__info flex left fs-13">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
-                       
                     </div>
                 )}
                 {!!mat.deployedBy && this.state.isRollbackTrigger ? (
@@ -597,8 +610,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     >
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
                     </div>
-                    <div className="pb-12">
-                        <ImageTagsContainer ciPipelineId={this.props.ciPipelineId} artifactId={parseInt(mat.id)} imageComment={mat.imageComment} imageReleaseTags= {mat.imageReleaseTags} appReleaseTagNames={this.props.appReleaseTagNames} tagsEditable={this.props.tagsEditable} />
+                    <div className="pl-12 pb-12">
+                        <ImageTagsContainer
+                            ciPipelineId={this.props.ciPipelineId}
+                            artifactId={parseInt(mat.id)}
+                            imageComment={mat.imageComment}
+                            imageReleaseTags={mat.imageReleaseTags}
+                            appReleaseTagNames={this.props.appReleaseTagNames}
+                            tagsEditable={this.props.tagsEditable}
+                        />
                     </div>
                     {mat.showSourceInfo && (
                         <>
