@@ -128,6 +128,8 @@ export const ImageTagsContainer = ({
         const updatedDisplayedTags = [...displayedTags]
         updatedDisplayedTags.splice(index, 1)
         setDisplayedTags(updatedDisplayedTags)
+        const updatedExistingTags = existingTags.filter((tag) => tag.toLowerCase() !== deletedTag.tagName.toLowerCase())
+        setExistingTags(updatedExistingTags)
         if (deletedTag.id !== 0) {
             const updatedHardDeleteTags = [...hardDeleteTags, deletedTag]
             setHardDeleteTags(updatedHardDeleteTags)
