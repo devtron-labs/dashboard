@@ -3,16 +3,12 @@ import { KEY_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { HeaderValueSelectorType } from './types'
 
 export const HeaderValueSelector = ({
-    minHeight,
-    maxHeight,
     selectedHeaderIndex,
     headerData,
     setHeaderData,
     headerInputType,
     placeholder,
     headerIndex = null,
-    refVar,
-    dependentRef,
 }: HeaderValueSelectorType) => {
     const [selectedValue, setSelectedValue] = useState<string>('')
 
@@ -35,28 +31,6 @@ export const HeaderValueSelector = ({
     const handleInputChange = (e) => {
         setSelectedValue(e.target.value)
     }
-
-    // const reInitHeight = () => {
-    //     if (document.activeElement !== refVar.current) return
-    //     refVar.current.style.height = minHeight + 'px'
-    //     dependentRef.current.style.height = minHeight + 'px'
-    //     let nextHeight = refVar.current.scrollHeight
-    //     if (nextHeight < dependentRef.current.scrollHeight) {
-    //         nextHeight = dependentRef.current.scrollHeight
-    //     }
-    //     if (minHeight && nextHeight < minHeight) {
-    //         nextHeight = minHeight
-    //     }
-    //     if (maxHeight && nextHeight > maxHeight) {
-    //         nextHeight = maxHeight
-    //     }
-    //     refVar.current.style.height = nextHeight + 'px'
-    //     dependentRef.current.style.height = nextHeight + 'px'
-    // }
-
-    // const handleOnFocus = () => {
-    //     reInitHeight()
-    // }
 
     return (
         <input

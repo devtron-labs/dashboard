@@ -71,14 +71,10 @@ export interface CreateHeaderDetailsType {
 }
 
 export interface HeaderValueSelectorType {
-    minHeight?: number;
-    maxHeight?: number;
     selectedHeaderIndex: number;
     headerData: HeaderType,
     setHeaderData: (index: number, headerData: HeaderType) => void;
     headerInputType: "key" | "value";
     placeholder: string
     headerIndex: number,
-    refVar: React.MutableRefObject<HTMLTextAreaElement>
-    dependentRef: React.MutableRefObject<HTMLTextAreaElement>
 }
