@@ -4,12 +4,8 @@ import { getCITriggerInfoModal } from '../service'
 import { ViewType } from '../../../config'
 import close from '../../../assets/icons/ic-close.svg'
 import { MaterialHistory, CIMaterialType } from '../details/triggerView/MaterialHistory'
-import MaterialSource from '../details/triggerView/MaterialSource'
-import { ImageTagsContainer } from '../details/cicdHistory/ImageTags'
 import Artifacts from '../details/cicdHistory/Artifacts'
 import { HistoryComponentType, ImageComment, ReleaseTag } from '../details/cicdHistory/types'
-import { GitMaterialInfoHeader } from '../../common'
-import GitCommitInfoGeneric from '../../common/GitCommitInfoGeneric'
 import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
 
 interface TriggerInfoModalState {

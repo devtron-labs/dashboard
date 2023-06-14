@@ -87,7 +87,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={this.props.material.gitURL}
-                                showMaterialInfoHeader={true}
+                                showMaterialInfoHeader={this.props.pipelineName===""}
                                 commitInfo={history}
                                 materialSourceType={this.props.material.type}
                                 selectedCommitInfo={this.props.selectCommit}
