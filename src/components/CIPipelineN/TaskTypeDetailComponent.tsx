@@ -9,14 +9,13 @@ import {
     TaskFieldDescription,
     TaskFieldLabel,
 } from '../ciPipeline/types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import OutputDirectoryPath from './OutputDirectoryPath'
 import MultiplePort from './MultiplsPort'
 import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
-import { Checkbox, CHECKBOX_VALUE } from '../common'
+import { Checkbox, CHECKBOX_VALUE, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import CreatableSelect from 'react-select/creatable'
@@ -26,6 +25,8 @@ import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
+import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -206,21 +207,20 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
+    const menuList = (props) => {
         return (
-            <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select or enter image</span>)}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
+            <components.MenuList {...props}>
+                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+                    Type to enter a custom value. Press Enter to accept.
+                </div>
+                {props.children}
+            </components.MenuList>
         )
     }
 
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+
         return (
             <>
                 <div className="row-container mb-12">
@@ -228,7 +228,8 @@ export function TaskTypeDetailComponent() {
                         taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
                         contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                     />
-                    <div style={{ width: '80% !important' }}>
+
+                    <div className="dc__position-rel">
                         <CreatableSelect
                             tabIndex={1}
                             value={selectedContainerImage}
@@ -238,16 +239,7 @@ export function TaskTypeDetailComponent() {
                             styles={containerImageSelectStyles}
                             classNamePrefix="select"
                             components={{
-                                MenuList: (props) => {
-                                    return (
-                                        <components.MenuList {...props}>
-                                            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                                                Type to enter a custom value. Press Enter to accept.
-                                            </div>
-                                            {props.children}
-                                        </components.MenuList>
-                                    )
-                                },
+                                MenuList: menuList,
                                 Option,
                                 IndicatorSeparator: null,
                                 ValueContainer,
@@ -259,7 +251,13 @@ export function TaskTypeDetailComponent() {
                             isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
                         />
-
+                        {selectedContainerImage?.label && (
+                            <CopyToClipboardTextWithTippy
+                                text={selectedContainerImage.label}
+                                rootClassName="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20"
+                                placement="bottom"
+                            />
+                        )}
                         {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
@@ -336,6 +334,7 @@ export function TaskTypeDetailComponent() {
                     />
                     <input
                         style={{ width: '80% !important' }}
+                        data-testid="custom-script-container-image-command-textbox"
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         autoComplete="off"
                         placeholder="Eg. “echo”"
@@ -351,6 +350,7 @@ export function TaskTypeDetailComponent() {
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
                     <input
+                        data-testid="custom-script-container-image-args-textbox"
                         style={{ width: '80% !important' }}
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         autoComplete="off"
@@ -383,8 +383,12 @@ export function TaskTypeDetailComponent() {
                             handleMountChange(event)
                         }}
                     >
-                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-container-false" value={MountPath.FALSE}>
+                            {MountPath.FALSE}
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-container-true" value={MountPath.TRUE}>
+                            {MountPath.TRUE}
+                        </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
@@ -395,6 +399,7 @@ export function TaskTypeDetailComponent() {
                                 style={{ width: '80% !important' }}
                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
+                                data-testid="script-mount-container-textbox"
                                 placeholder="Eg file/folder"
                                 type="text"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
@@ -432,8 +437,12 @@ export function TaskTypeDetailComponent() {
                             handleMountChange(event)
                         }}
                     >
-                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-host-false" value={MountPath.FALSE}>
+                            {MountPath.FALSE}
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-host-true" value={MountPath.TRUE}>
+                            {MountPath.TRUE}
+                        </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost && (

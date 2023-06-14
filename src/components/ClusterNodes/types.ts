@@ -1,7 +1,8 @@
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType } from '../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
+import { CLUSTER_PAGE_TAB } from './constants'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -61,6 +62,20 @@ export interface ClusterDetail {
     serverVersion: string
     nodeNames?: string[]
     nodeDetails?: NodeDetailsType[]
+    isVirtualCluster?: boolean
+}
+export interface ClusterDescriptionType {
+    clusterId: number
+    clusterName:   string
+    clusterCreatedBy: string
+    clusterCreatedOn: string
+    clusterNote?: ClusterNoteType
+}
+export interface ClusterNoteType {
+    id: number
+    description: string
+    updatedBy: string
+    updatedOn: string
 }
 
 export interface NodeRowDetail {
@@ -79,9 +94,19 @@ export interface NodeRowDetail {
 export interface ClusterListResponse extends ResponseType {
     result?: ClusterDetail[]
 }
+
+export interface ClusterDescriptionResponse extends ResponseType {
+    result?: ClusterDescriptionType
+}
+
+export interface ClusterNoteResponse extends ResponseType {
+    result?: ClusterNoteType
+}
+
 export interface ClusterCapacityResponse extends ResponseType {
     result?: ClusterCapacityType
 }
+
 export interface NodeListResponse extends ResponseType {
     result?: NodeRowDetail[]
 }
@@ -148,6 +173,15 @@ export interface ClusterListType {
     namespaceList: string[]
 }
 
+export interface ClusterDetailsPropType extends ClusterListType { 
+    clusterId: string
+}
+
+export interface ClusterAboutPropType {
+    clusterId: string
+    isSuperAdmin: boolean
+}
+
 export interface SelectGroupType {
     label: string
     options: OptionType[]
@@ -159,6 +193,7 @@ export interface ClusterTerminalType {
     nodeList?: string[]
     closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
+    isClusterDetailsPage?: boolean
     isNodeDetailsPage?: boolean
     namespaceList: string[]
     node?: string
@@ -219,6 +254,11 @@ export interface NodeCordonRequest extends NodeActionRequest {
     nodeCordonOptions: NodeCordonOptions
 }
 
+export interface ClusteNotePatchRequest {
+    clusterId: number
+    description: string
+}
+
 interface NodeDrainOptions {
     gracePeriodSeconds: number
     deleteEmptyDirData: boolean
@@ -260,3 +300,7 @@ export interface TerminalDataType {
     namespace: string
     terminalAccessId?: number
 }
+
+export type MDEditorSelectedTabType = "write" | "preview"
+
+export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS

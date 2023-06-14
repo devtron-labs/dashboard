@@ -4,11 +4,11 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { ModuleNameMap, URLS } from '../../../config'
+import { CLAIR_TOOL_VERSION_V2, CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
 import IndexStore from '../appDetails/index.store'
 import { AppDetails, AppType } from '../appDetails/appDetails.type'
 import { handleError } from './DevtronStackManager.component'
-import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
+import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
     ModuleActionRequest,
     ModuleActions,
@@ -61,11 +61,13 @@ export const handleAction = async (
     updateActionTrigger: (isActionTriggered: boolean) => void,
     history: RouteComponentProps['history'],
     location: RouteComponentProps['location'],
+    moduleType?:string
 ) => {
     try {
         const actionRequest: ModuleActionRequest = {
             action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
             version: upgradeVersion,
+            moduleType: moduleType
         }
 
         const { result } = isUpgradeView
@@ -80,6 +82,28 @@ export const handleAction = async (
     } finally {
         updateActionTrigger(false)
     }
+}
+export const handleEnableAction = async (
+    moduleName: string,
+    setRetryFlag: React.Dispatch<React.SetStateAction<boolean>>,
+    setSuccessState: React.Dispatch<React.SetStateAction<boolean>>,
+    setDialog: React.Dispatch<React.SetStateAction<boolean>>,
+    moduleNotEnabledState: React.Dispatch<React.SetStateAction<boolean>>,
+    setProgressing: React.Dispatch<React.SetStateAction<boolean>>,
+) => {
+    try {
+        const toolVersion =
+            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window._env_.CLAIR_TOOL_VERSION|| CLAIR_TOOL_VERSION_V4)
+        const { result } = await executeModuleEnableAction(moduleName, toolVersion)
+        if (result?.success) {
+            setSuccessState(true)
+            setDialog(false)
+            moduleNotEnabledState(false)
+        }
+    } catch (e) {
+        setRetryFlag(true)
+    }
+    setProgressing(false)
 }
 
 const getVersionLevels = (version: string): number[] => {

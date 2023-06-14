@@ -175,41 +175,47 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
     }
 
     render() {
-        return <>
-            <div className="flex" style={{ borderRadius: '4px', border: 'solid 1px var(--N200)' }} onClick={() => {
-                this.setState({ showCalendar: !this.state.showCalendar });
-            }}>
-                <p className="cursor" style={{ marginBottom: '0', height: '32px', padding: '5px' }}>
-                    {this.props.calendarValue}
-                </p>
-                <ArrowDown className="icon-dim-20 dc__inline-block fcn-6" />
-            </div>
-            {this.state.showCalendar && (<DayPickerRangeController focused
-                startDate={this.props.calendar.startDate}
-                startDateId="startDate"
-                endDate={this.props.calendar.endDate}
-                endDateId="endDate"
-                focusedInput={this.props.focusedInput}
-                onDatesChange={this.props.handleDatesChange}
-                onFocusChange={this.props.handleFocusChange}
-                numberOfMonths={1}
-                withPortal={true}
-                appendToBody={true}
-                renderCalendarInfo={this.renderDatePresets}
-                calendarInfoPosition="after"
-                hideKeyboardShortcutsPanel={true}
-                isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} //enable past dates
-                renderCalendarDay={props => (
-                    <CustomizableCalendarDay {...props} {...customDayStyles} />
+        return (
+            <>
+                <div
+                    data-testid="app-metrics-range-picker-box"
+                    className="flex"
+                    style={{ borderRadius: '4px', border: 'solid 1px var(--N200)' }}
+                    onClick={() => {
+                        this.setState({ showCalendar: !this.state.showCalendar })
+                    }}
+                >
+                    <p className="cursor" style={{ marginBottom: '0', height: '32px', padding: '5px' }}>
+                        {this.props.calendarValue}
+                    </p>
+                    <ArrowDown className="icon-dim-20 dc__inline-block fcn-6" />
+                </div>
+                {this.state.showCalendar && (
+                    <DayPickerRangeController
+                        focused
+                        startDate={this.props.calendar.startDate}
+                        startDateId="startDate"
+                        endDate={this.props.calendar.endDate}
+                        endDateId="endDate"
+                        focusedInput={this.props.focusedInput}
+                        onDatesChange={this.props.handleDatesChange}
+                        onFocusChange={this.props.handleFocusChange}
+                        numberOfMonths={1}
+                        withPortal={true}
+                        appendToBody={true}
+                        renderCalendarInfo={this.renderDatePresets}
+                        calendarInfoPosition="after"
+                        hideKeyboardShortcutsPanel={true}
+                        isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} //enable past dates
+                        renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
+                        onOutsideClick={() => {
+                            this.setState({ showCalendar: false })
+                        }}
+                        initialVisibleMonth={() => moment().subtract(2, 'd')} //
+                    />
                 )}
-                onOutsideClick={() => {
-                    this.setState({ showCalendar: false });
-                }}
-                initialVisibleMonth={() => moment().subtract(2, "d")} //
-            />
-            )}
-
-        </>
+            </>
+        )
     }
 }
 

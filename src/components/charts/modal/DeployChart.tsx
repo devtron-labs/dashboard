@@ -3,20 +3,16 @@ import {
     Select,
     Page,
     DropdownIcon,
-    Progressing,
-    showError,
     useJsonYaml,
-    DeleteDialog,
-    sortCallback,
-    multiSelectStyles,
 } from '../../common'
-import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../services/service'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { useHistory, useParams } from 'react-router'
-import { URLS, SERVER_MODE, ACCESS_TYPE_MAP } from '../../../config'
+import { URLS, SERVER_MODE } from '../../../config'
 import {
     installChart,
     updateChart,
@@ -32,11 +28,9 @@ import { styles, menuList, DropdownIndicator } from '../charts.util'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import AsyncSelect from 'react-select/async'
 import ReactGA from 'react-ga4'
-import ReactSelect, { components } from 'react-select'
+import ReactSelect from 'react-select'
 import './DeployChart.scss'
-import { ServerErrors } from '../../../modals/commonTypes'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'

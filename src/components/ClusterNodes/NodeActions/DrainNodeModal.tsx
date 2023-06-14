@@ -1,10 +1,18 @@
 import React, { useState } from 'react'
-import { Checkbox, CHECKBOX_VALUE, ConfirmationDialog, Progressing, showError, stopPropagation } from '../../common'
+import {
+    showError,
+    Progressing,
+    ConfirmationDialog,
+    TippyCustomized,
+    TippyTheme,
+    stopPropagation,
+    Checkbox,
+    CHECKBOX_VALUE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
-import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 import { DRAIN_NODE_MODAL_MESSAGING } from '../constants'
 import { NodeActionModalPropType } from '../types'
 import { useParams } from 'react-router-dom'

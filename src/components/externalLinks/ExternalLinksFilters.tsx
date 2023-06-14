@@ -13,8 +13,8 @@ import {
 } from '../externalLinks/ExternalLinks.type'
 import { OptionType } from '../app/types'
 import { FilterMenuList, ValueContainer } from './ExternalLinks.component'
-import { Option } from '../common'
 import { customMultiSelectStyles } from './ExternalLinks.utils'
+import { Option } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ClusterFilter = ({
     clusters,
@@ -126,6 +126,7 @@ export const ClusterFilter = ({
                         minHeight: '32px',
                     }),
                 }}
+                classNamePrefix="external-link-cluster-select"
             />
         </div>
     )
@@ -250,6 +251,7 @@ export const ApplicationFilter = ({
                         minHeight: '32px',
                     }),
                 }}
+                classNamePrefix="external-link-application-select"
             />
         </div>
     )
@@ -299,6 +301,7 @@ export const SearchInput = ({ queryParams, history, url }: URLModificationType):
                 className="search__input bcn-1"
                 onKeyDown={filterExternalLinksUsingSearch}
                 onChange={handleSearchTermChange}
+                data-testid="external-link-app-search"
             />
             {searchApplied && (
                 <button className="search__clear-button" type="button" onClick={clearSearch}>

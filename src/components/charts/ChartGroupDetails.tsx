@@ -4,7 +4,8 @@ import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
 import { URLS } from '../../config'
-import { Progressing, showError, BreadCrumb, Pencil, useBreadcrumb, ConditionalWrap, useAsync } from '../common'
+import { Pencil, useAsync } from '../common'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import {
     deployChartGroup,
@@ -37,6 +38,7 @@ export default function ChartGroupDetails() {
         handleChartVersionChange,
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
+        setEnvironmentList
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -170,11 +172,21 @@ export default function ChartGroupDetails() {
     const renderChartGroupActionButton = () => {
         return (
             <div className="dc__page-header__cta-container flex">
-                <button type="button" className="cta flex cancel mr-16 h-32" onClick={redirectToConfigure}>
+                <button
+                    type="button"
+                    className="cta flex cancel mr-16 h-32"
+                    onClick={redirectToConfigure}
+                    data-testid="chart-group-edit-button"
+                >
                     <Pencil className="mr-5" />
                     Edit
                 </button>
-                <button className="cta flex delete h-32" type="button" onClick={() => toggleConfirmation(true)}>
+                <button
+                    className="cta flex delete h-32"
+                    type="button"
+                    data-testid="chart-group-delete-button"
+                    onClick={() => toggleConfirmation(true)}
+                >
                     {deleting ? <Progressing /> : 'Delete'}
                 </button>
             </div>
@@ -275,6 +287,7 @@ export default function ChartGroupDetails() {
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         onClick={handleDeployButtonClick}
                                         className="cta dc__ellipsis-right w-100"
+                                        data-testid="group-deploy-to-button"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>
@@ -302,6 +315,7 @@ export default function ChartGroupDetails() {
                         toggleDeployModal(false)
                         push(`${url}/deploy`, { charts: state.charts, projectId })
                     }}
+                    setEnvironments={setEnvironmentList}
                 />
             ) : null}
             {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}

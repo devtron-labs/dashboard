@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
+import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, stopPropagation } from '../helpers/Helpers'
 import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData } from './Utils'
@@ -60,7 +60,9 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
-                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right">{name}</span>
+                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
+                        {name}
+                    </span>
                 </div>
             </NavLink>
         )

@@ -1,6 +1,6 @@
 import React from 'react'
-import { ResponseType } from '../../services/service.types'
-import { Nodes, OptionType } from '../app/types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 
 export interface ResourceDetailType {
@@ -11,7 +11,7 @@ export interface ResourceDetailType {
 export interface GVKType {
     Group: string
     Version: string
-    Kind: Nodes
+    Kind: Nodes | NodeType
 }
 
 export interface ResourceListResponse extends ResponseType {

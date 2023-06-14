@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { showError } from '../common'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
@@ -12,6 +11,8 @@ import {
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { saveUser } from '../userGroups/userGroup.service'
 import {
     ActionTypes,
@@ -22,12 +23,36 @@ import {
 } from '../userGroups/userGroups.types'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import GroupPermission from './GroupPermission'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors, showError, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION } from '../../config'
+import { API_COMPONENTS } from '../../config/constantMessaging'
+
+export const renderQuestionwithTippy = () => {
+    return (
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-300 h-100 fcv-5"
+            placement="right"
+            Icon={QuestionFilled}
+            heading={API_COMPONENTS.TITLE}
+            infoText={API_COMPONENTS.QUESTION_ICON_INFO}
+            showCloseButton={true}
+            trigger="click"
+            interactive = {true}
+            documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
+            documentationLinkText="View Documentation"
+        >
+            <div className="icon-dim-20 fcn-9 ml-8 cursor">
+                <Question />
+            </div>
+
+        </TippyCustomized>
+    )
+}
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -208,28 +233,28 @@ function CreateAPIToken({
     }
 
     return (
-        <>
-            <div className="cn-9 fw-6 fs-16">
-                <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                    API tokens
-                </span>{' '}
-                / New API token
+        <div className="bcn-0 api__token">
+            <div className="flex dc__content-space pt-16 pb-16 dc__gap-8">
+                <div className="flex row ml-0 h-32">
+                    <div className="cn-9 fw-6 fs-16">
+                        <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                            {API_COMPONENTS.TITLE}
+                        </span>
+                        {API_COMPONENTS.NEW_API_TITLE}
+                    </div>
+                    {renderQuestionwithTippy()}
+                </div>
             </div>
-            <p className="fs-12 fw-4">
-                API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for
-                programmatic access to API.
-            </p>
 
-            <div className="bcn-0 br-8 en-2 bw-1">
-                <div className="p-20">
+            <div className="bcn-0">
+                <div className="pb-20">
                     <div>
                         <label className="form__row w-400">
-                            <span className="form__label dc__required-field">
-                                Name
-                            </span>
+                            <span className="form__label dc__required-field">Name</span>
                             <input
                                 tabIndex={1}
                                 placeholder="Name"
+                                data-testid="api-token-name-textbox"
                                 className="form__input"
                                 name="name"
                                 value={formData.name}
@@ -249,6 +274,7 @@ function CreateAPIToken({
                             <textarea
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
+                                data-testid="api-token-description-textbox"
                                 className="form__textarea"
                                 value={formData.description}
                                 name="description"
@@ -286,7 +312,12 @@ function CreateAPIToken({
                                 onChange={handlePermissionType}
                             >
                                 {PermissionType.map(({ label, value }) => (
-                                    <RadioGroupItem value={value}>
+                                    <RadioGroupItem
+                                        dataTestId={`${
+                                            value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                                        }-permission-radio-button`}
+                                        value={value}
+                                    >
                                         <span
                                             className={`dc__no-text-transform ${
                                                 adminPermission === value ? 'fw-6' : 'fw-4'
@@ -332,7 +363,7 @@ function CreateAPIToken({
                     redirectToTokenList={redirectToTokenList}
                 />
             )}
-        </>
+        </div>
     )
 }
 

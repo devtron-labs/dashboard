@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DeleteDialog, Drawer, noop, Progressing, showError } from '../common'
+import { showError, Progressing, Drawer, DeleteDialog, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -22,6 +22,7 @@ export default function CIConfigDiffView({
     processedWorkflows,
     toggleConfigOverrideDiffModal,
     reload,
+    gitMaterials,
 }: CIConfigDiffViewProps) {
     const history = useHistory()
     const location = useLocation()
@@ -210,6 +211,7 @@ export default function CIConfigDiffView({
                                     configOverridenPipelines={configOverridenPipelines}
                                     materials={ciConfig?.materials}
                                     globalCIConfig={globalCIConfig}
+                                    gitMaterials = {gitMaterials}
                                 />
                             </div>
                         ))

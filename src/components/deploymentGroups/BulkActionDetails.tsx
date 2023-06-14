@@ -1,5 +1,13 @@
-import { useAsync, showError, Progressing, PopupMenu, ConfirmationDialog, useInterval, ConditionalWrap, Td } from '../common'
-import { trash } from '../../services/api'
+import { useAsync, useInterval, Td } from '../common'
+import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    trash,
+    ConfirmationDialog,
+    PopupMenu,
+    DeploymentNodeType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as DeployButton } from '../../assets/icons/ic-deploy.svg';
 import React, { useState } from 'react'
@@ -16,7 +24,6 @@ import warningIcon from '../../assets/icons/ic-warning.svg';
 import restoreIcon from '../../assets/icons/ic-restore.svg'
 import Tippy from '@tippyjs/react';
 import {ReactComponent as DropDown} from '../../assets/icons/appstatus/ic-chevron-down.svg';
-import { DeploymentNodeType } from '../app/details/triggerView/types';
 
 export default function BulkActionDetails() {
     const { id: deploymentGroupId } = useParams<{id: string}>()

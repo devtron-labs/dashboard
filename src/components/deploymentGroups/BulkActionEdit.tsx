@@ -2,7 +2,14 @@ import React from 'react'
 import { useParams, useHistory, useLocation } from 'react-router';
 import { useCallback } from 'react';
 import { useReducer } from 'react';
-import { OpaqueModal, useKeyDown, Info, ConfirmationDialog, useAsync, Progressing, showError } from '../common'
+import { useKeyDown, Info, useAsync } from '../common'
+import {
+    showError,
+    Progressing,
+    OpaqueModal,
+    ConfirmationDialog,
+    EmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect } from 'react';
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg';
@@ -10,8 +17,12 @@ import { ReactComponent as Error } from '../../assets/icons/misc/errorInfo.svg';
 import WarningIcon from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as SearchIcon } from '../../assets/icons/ic-search.svg';
 import { toast } from 'react-toastify';
-import EmptyState from '../EmptyState/EmptyState'
-import {getCiPipelineApps, getLinkedCiPipelines, createUpdateDeploymentGroup, getDeploymentGroupDetails} from './service'
+import {
+    getCiPipelineApps,
+    getLinkedCiPipelines,
+    createUpdateDeploymentGroup,
+    getDeploymentGroupDetails,
+} from './service'
 import { useMemo } from 'react';
 
 export function BulkActionEdit() {
@@ -391,7 +402,7 @@ function TitledCard({ number, completed = false, title, next, onClick, children 
         <div className="white-card--titled" onClick={onClick}>
             <div className={`title-container ${completed ? 'active' : ''}`}>
                 <div className="index flex">{number}</div>
-                <div className="title flex left">{title}</div>
+                <div className="title flex left cn-9">{title}</div>
                 <div className="next flex">{completed && typeof next === 'function' && <button className="cta" onClick={next} type="button">Next</button>}</div>
             </div>
             {children}

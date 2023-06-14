@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { Progressing, showError, VisibleModal } from '../../common'
+import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import ReactSelect from 'react-select'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { createAppLabels } from '../service'
@@ -17,6 +16,7 @@ export default function AboutAppInfoModal({
     getAppMetaInfoRes,
     fetchingProjects,
     projectsList,
+    isJobOverview,
 }: AboutAppInfoModalProps) {
     const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
@@ -51,6 +51,7 @@ export default function AboutAppInfoModal({
     const renderProjectSelect = (): JSX.Element => {
         return (
             <ReactSelect
+                classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
@@ -81,6 +82,7 @@ export default function AboutAppInfoModal({
         const payload = {
             id: parseInt(appId),
             teamId: selectedProject.value,
+            labels: appMetaInfo.labels,
         }
 
         try {
@@ -123,7 +125,7 @@ export default function AboutAppInfoModal({
                     <>
                         <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
                         {renderProjectSelect()}
-                        {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
+                        {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && !isJobOverview &&(
                             <InfoColourBar
                                 classname="warn cn-9 lh-20"
                                 Icon={Error}
@@ -152,6 +154,7 @@ export default function AboutAppInfoModal({
                         disabled={submitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
+                        data-testid="overview-project-save-button"
                     >
                         {submitting ? <Progressing /> : 'Save'}
                     </button>

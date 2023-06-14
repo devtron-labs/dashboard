@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-    BreadCrumb,
     ButtonWithLoader,
     copyToClipboard,
     handleUTCTime,
-    Pagination,
-    Progressing,
-    showError,
-    useBreadcrumb,
     ToastBodyWithButton,
     filterImageList,
-    toastAccessDenied,
 } from '../common'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    toastAccessDenied,
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -51,7 +53,6 @@ import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
-import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
@@ -59,6 +60,7 @@ import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
+
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
@@ -469,7 +471,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const renderProbableIssuesOverviewCard = (): JSX.Element | null => {
         const isCPUOverCommitted = Number(cpuData.usagePercentage?.slice(0, -1)) > 100
         const issueCount =
-            (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taintCount > 0 ? 1 : 0)
+            (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taints?.length > 0 ? 1 : 0)
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
@@ -486,9 +488,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                             <p className="fw-4 fs-13 cn-7 mb-12">Limits for “cpu” is over 100%</p>
                         </div>
                     )}
-                    {nodeDetail.taintCount && (
+                    {nodeDetail.taints?.length && (
                         <div>
-                            <div className="fw-6 fs-13 cn-9">{nodeDetail.taintCount} taints applied</div>
+                            <div className="fw-6 fs-13 cn-9">{nodeDetail.taints?.length} taints applied</div>
                             <p className="fw-4 fs-13 cn-7 mb-12">
                                 Taints may be restricting pods from being scheduled on this node
                             </p>

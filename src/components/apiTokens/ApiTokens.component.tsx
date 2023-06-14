@@ -3,14 +3,14 @@ import './apiToken.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getGeneratedAPITokenList } from './service'
-import { showError, Progressing, ErrorScreenManager, useAsync } from '../common'
-import EmptyState from '../EmptyState/EmptyState'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './authorization.type'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 function ApiTokens() {
     const { path } = useRouteMatch()
@@ -108,6 +108,7 @@ function ApiTokens() {
                     <input
                         type="text"
                         placeholder="Search Token"
+                        data-testid="search-token-input"
                         value={searchText}
                         className={`search__input bcn-0 ${searchApplied ? 'search-applied' : ''}`}
                         onChange={(event) => {
@@ -133,7 +134,7 @@ function ApiTokens() {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
-                <div className="api-token-container">
+                <div data-testid="api-token-page" className="api-token-container bcn-0">
                     <Switch>
                         <Route path={`${path}/list`}>
                             <APITokenList
@@ -178,32 +179,28 @@ function ApiTokens() {
         history.push(`${path}/create`)
     }
 
+    const renderGenerateButton = () => {
+        return (
+            <button className="flex cta h-32" onClick={redirectToCreate}>
+                Generate new token
+            </button>
+        )
+    }
+
     const renderEmptyState = (): JSX.Element => {
         return (
-            <div className="flex column h-100">
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={emptyGeneratToken} alt="Empty api token links" />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="title">Generate a token to access the Devtron API</h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>
-                        API tokens are like ordinary OAuth access tokens. They can be used instead of username and
-                        password for programmatic access to API.
-                    </EmptyState.Subtitle>
-                    <EmptyState.Button>
-                        <button className="flex cta h-32" onClick={redirectToCreate}>
-                            Generate new token
-                        </button>
-                    </EmptyState.Button>
-                </EmptyState>
-            </div>
+            <GenericEmptyState
+                image={emptyGeneratToken}
+                title={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.TITLE}
+                subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}
+                isButtonAvailable={true}
+                renderButton={renderGenerateButton}
+            />
         )
     }
 
     if (loader) {
-        return <Progressing pageLoader />
+        return <Progressing data-testid="api-token-page-loading" pageLoader />
     } else if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">

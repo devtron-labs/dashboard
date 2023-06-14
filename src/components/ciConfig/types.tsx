@@ -1,5 +1,5 @@
 import React from 'react'
-import { ServerError } from '../../modals/commonTypes'
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
@@ -91,6 +91,7 @@ export interface CIConfigDiffViewProps {
     processedWorkflows: ProcessedWorkflowsType
     toggleConfigOverrideDiffModal: () => void
     reload: (skipPageReload?: boolean) => Promise<void>
+    gitMaterials: any
 }
 
 export interface CIConfigFormProps {
@@ -223,8 +224,11 @@ export interface CIDockerFileConfigProps {
     allowOverride: boolean
     selectedCIPipeline: CIPipelineDataType
     currentMaterial: any
+    currentBuildContextGitMaterial: any
     selectedMaterial: any
     setSelectedMaterial: React.Dispatch<React.SetStateAction<any>>
+    selectedBuildContextGitMaterial: any
+    setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
     formState: any
     updateDockerConfigOverride: (key: string, value: CIBuildConfigType | boolean | string) => void
     args: CIBuildArgType[]
@@ -251,9 +255,21 @@ export interface CICreateDockerfileOptionProps {
     currentMaterial: any
     selectedMaterial: any
     handleFileLocationChange: (selectedMaterial) => void
-    repository: CIFormStateOptionType
+    repository?: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    currentBuildContextGitMaterial: any
+    selectedBuildContextGitMaterial: any
+    handleBuildContextPathChange: (selectedBuildContextGitMaterial) => void
+    formState: any
+    ciConfig: CiPipelineResult
+    handleOnChangeConfig: (e) => void
+    renderInfoCard: () => JSX.Element
+    isDefaultBuildContext: () => boolean
+    handleBuildContextCheckoutPathChange: (checkoutPath : any) => void
+    getCheckoutPathValue: (selectedBuildContextGitMaterial: any,currentMaterial :any, useRootBuildContextFlag: boolean) => OptionType
+    useRootBuildContextFlag: boolean
+    checkoutPathOptions: OptionType[]
 }
 
 export interface CIBuildpackBuildOptionsProps {
@@ -294,6 +310,7 @@ export interface CIBuildConfigDiffProps {
     configOverridenPipelines: CiPipeline[]
     materials: Material[]
     globalCIConfig: DockerConfigOverrideType
+    gitMaterials: any
 }
 
 export interface TargetPlatformSelectorType {
@@ -306,4 +323,14 @@ export interface TargetPlatformSelectorType {
   targetPlatform?: string
   configOverrideView?: boolean
   updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
+}
+
+export interface BuildContextProps {
+    disable: boolean
+    setDisable: React.Dispatch<React.SetStateAction<boolean>>
+    formState: any
+    configOverrideView: boolean
+    allowOverride: boolean
+    ciConfig:  CiPipelineResult
+    handleOnChangeConfig: (e) => void
 }

@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { Switch, NavLink, Route, Redirect } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
+import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
-import { ErrorBoundary, ErrorScreenNotAuthorized } from '../common'
+import { ErrorBoundary } from '../common'
 import { DOCUMENTATION } from '../../config'
-import './notifications.css'
+import './notifications.scss'
 
 interface NotificationsProps extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
@@ -30,12 +31,12 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                     </p>
                     <ul className="tab-list">
                         <li className="tab-list__tab">
-                            <NavLink to={`${this.props.match.path}/channels`} className="tab-list__tab-link">
+                            <NavLink data-testid="notifications-link-button" to={`${this.props.match.path}/channels`} className="tab-list__tab-link">
                                 Notifications
                             </NavLink>
                         </li>
                         <li className="tab-list__tab">
-                            <NavLink to={`${this.props.match.path}/configurations`} className="tab-list__tab-link">
+                            <NavLink data-testid="configurations-link-button" to={`${this.props.match.path}/configurations`} className="tab-list__tab-link">
                                 Configurations
                             </NavLink>
                         </li>

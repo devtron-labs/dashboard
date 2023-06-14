@@ -19,13 +19,16 @@ import { TaskDetailComponent } from './TaskDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import { ciPipelineContext } from './CIPipeline'
+import nojobs from '../../assets/img/empty-joblist@2x.png'
 
 export function PreBuild({
     presetPlugins,
     sharedPlugins,
+    isJobView,
 }: {
     presetPlugins: PluginDetailType[]
     sharedPlugins: PluginDetailType[]
+    isJobView?: boolean
 }) {
     const {
         formData,
@@ -128,6 +131,7 @@ export function PreBuild({
                 <div className="cn-9 fw-6 fs-14 pb-10">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <PluginCard
+                        dataTestId="execute-custom-script-button"
                         imgSource={PreBuildIcon}
                         title="Execute custom script"
                         subTitle="Write a script to perform custom tasks."
@@ -147,20 +151,34 @@ export function PreBuild({
         )
     }
 
+    const getImgSource = () => {
+        if (isJobView) {
+            return nojobs
+        } else if (activeStageName === BuildStageVariable.PreBuild) {
+            return EmptyPreBuild
+        } else {
+            return EmptyPostBuild
+        }
+    }
+
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
+            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
+            const _execOrderText = activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
+            const _title = isJobView ? 'No tasks configured' : `No ${_preBuildText} tasks configured`
+            const _subtitle = isJobView
+                ? 'Configure tasks to be executed by this job.'
+                : `Here, you can configure tasks to be executed ${_execOrderText} the container image is built.`
+
             return (
                 <CDEmptyState
-                    imgSource={activeStageName === BuildStageVariable.PreBuild ? EmptyPreBuild : EmptyPostBuild}
-                    title={`No ${
-                        activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
-                    } tasks configured`}
-                    subtitle={`Here, you can configure tasks to be executed ${
-                        activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
-                    } the container image is built.`}
+                    imgSource={getImgSource()}
+                    title={_title}
+                    subtitle={_subtitle}
                     actionHandler={addNewTask}
                     actionButtonText="Add task"
                     ActionButtonIcon={Add}
+                    dataTestId="pre-build-add-task-button"
                 />
             )
         } else {

@@ -2,12 +2,12 @@ import React from 'react'
 import ReactSelect from 'react-select'
 import moment from 'moment'
 import { MomentDateFormat } from '../../config'
-import { multiSelectStyles, SingleDatePickerComponent } from '../common'
+import { SingleDatePickerComponent } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import { getOptions, getDateInMilliseconds } from './authorization.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { InfoColourBar, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) {
     return (
@@ -20,6 +20,7 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                     value={selectedExpirationDate}
                     options={getOptions(customDate)}
                     className="select-width w-200"
+                    classNamePrefix="select-token-expiry-duration"
                     isSearchable={false}
                     onChange={onChangeSelectFormData}
                     components={{

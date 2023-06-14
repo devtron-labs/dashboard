@@ -1,7 +1,8 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OptionType } from '../../app/types'
-import { createGroupedItemsByKey, Drawer, Progressing, showError } from '../../common'
+import { createGroupedItemsByKey } from '../../common'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {
@@ -417,13 +418,13 @@ export default function AddExternalLink({
             if (isAppConfigView) {
                 const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
                 setExternalLinks(
-                    result
-                        ?.filter((_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel)
-                        .sort(sortByUpdatedOn) || [],
+                    result?.ExternalLinks?.filter(
+                        (_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel,
+                    ).sort(sortByUpdatedOn) || [],
                 )
             } else {
                 const { result } = await getExternalLinks()
-                setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+                setExternalLinks(result?.ExternalLinks?.sort(sortByUpdatedOn) || [])
             }
             setSavingLinks(false)
             handleDialogVisibility()
@@ -462,7 +463,7 @@ export default function AddExternalLink({
                 </div>
                 <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__buttons">
-                    <button className="cta" onClick={saveLinks} disabled={savingLinks}>
+                    <button className="cta" onClick={saveLinks} disabled={savingLinks} data-testid="save-link-button">
                         {savingLinks ? <Progressing /> : 'Save'}
                     </button>
                 </div>

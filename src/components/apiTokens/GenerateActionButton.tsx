@@ -7,42 +7,34 @@ function GenerateActionButton({
     onCancel,
     onSave,
     buttonText,
-    showDelete = false,
-    onDelete,
+    regenerateButton
 }: GenerateActionButtonType) {
     return (
-        <div className={`modal__buttons w-100 p-16 flex ${showDelete ? 'dc__content-space ' : 'right'} dc__border-top`}>
-            {showDelete && (
-                <ButtonWithLoader
-                    rootClassName="flex cta delete h-36 mr-16"
-                    onClick={onDelete}
-                    disabled={loader}
-                    isLoading={false}
-                    loaderColor="white"
-                >
-                    Delete token
-                </ButtonWithLoader>
-            )}
-            <div className="flex">
-                <ButtonWithLoader
-                    rootClassName="flex cta cancel h-36 mr-16"
-                    onClick={onCancel}
-                    disabled={loader}
-                    isLoading={false}
-                    loaderColor="white"
-                >
-                    Cancel
-                </ButtonWithLoader>
-                <ButtonWithLoader
-                    rootClassName="flex cta h-36"
-                    onClick={() => onSave()}
-                    disabled={loader}
-                    isLoading={loader}
-                    loaderColor="white"
-                >
-                    {buttonText}
-                </ButtonWithLoader>
-            </div>
+        <div
+            className={`modal__buttons w-100 pl-0 pt-16 pb-16 pr-16 flex ${
+                regenerateButton ? 'right ml-auto' : 'left ml-0'
+            } dc__border-top-n1`}
+        >
+            <ButtonWithLoader
+                rootClassName={`flex cta cancel h-36 ${regenerateButton ? 'mr-12 order-first' : 'order-second'}`}
+                onClick={onCancel}
+                disabled={loader}
+                dataTestId="cancel-token"
+                isLoading={false}
+                loaderColor="white"
+            >
+                Cancel
+            </ButtonWithLoader>
+            <ButtonWithLoader
+                rootClassName={`flex cta h-36 ${regenerateButton ? 'order-second' : 'mr-12 order-first'}`}
+                onClick={onSave}
+                disabled={loader}
+                isLoading={loader}
+                loaderColor="white"
+                dataTestId={buttonText.toLowerCase().replace(' ', '-')}
+            >
+                {buttonText}
+            </ButtonWithLoader>
         </div>
     )
 }

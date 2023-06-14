@@ -3,8 +3,7 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
-import {Teams} from "../../../../services/service.types";
-import {AppMetaInfo, LabelTagsType} from "../../../app/types";
+import {AppMetaInfo} from "../../../app/types";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -46,6 +45,7 @@ export interface ChartEnvironmentOptionType {
     clusterName?: string
     clusterId?: number
     active?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface ChartEnvironmentListType {
@@ -76,6 +76,8 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
     environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
+    isVirtualEnvironmentOnSelector?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface DeploymentAppSelectorType {
@@ -313,6 +315,7 @@ export enum ChartValuesViewActionTypes {
     selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
+// TOdo replace this with the common
 export enum DeploymentAppType {
     Helm = 'helm',
     GitOps = 'argo_cd',

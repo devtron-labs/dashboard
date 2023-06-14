@@ -141,9 +141,11 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
+//TODO replace it everthere with DeploymentAppType from common constant
 export enum DeploymentAppType {
     helm = 'helm',
     argo_cd = 'argo_cd',
+    manifest_download = 'manifest_download'
 }
 
 export interface AppDetails {
@@ -181,6 +183,10 @@ export interface AppDetails {
     clusterName?: string
     dockerRegistryId?: string
     deploymentAppDeleteRequest?: boolean
+    userApprovalConfig?: string
+    isVirtualEnvironment?: boolean
+    imageTag?: string
+    helmPackageName?: string
 }
 
 interface MaterialInfo {
@@ -390,10 +396,12 @@ export interface LogsComponentProps extends NodeDetailPropsType {
 }
 
 export interface TerminalComponentProps {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
+    selectedTab: (_tabName: string, _url?: string) => void
+    isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    selectedContainer: Map<string, string>
+    setSelectedContainer: (containerName: Map<string, string>) => void
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
@@ -447,6 +455,7 @@ export interface SelectedResourceType {
     namespace: string
     name: string
     containers: OptionsBase[]
+    selectedContainer?: string
 }
 
 export interface ResourceInfoActionPropsType {

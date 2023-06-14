@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
-import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
+import {
+    showError,
+    Progressing,
+    Reload,
+    UserApprovalMetadataType,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
+import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
+import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import Reload from '../../../Reload/Reload'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
@@ -15,16 +21,21 @@ import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
+import { CICDSidebarFilterOptionType, DeploymentStageType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
+import { AppEnvironment } from '../../../../services/service.types'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
+const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function CDDetails() {
+    const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
         envId: string
@@ -35,12 +46,11 @@ export default function CDDetails() {
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
-
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [loading, result, error] = useAsync(
         () =>
             Promise.allSettled([
-                getAppOtherEnvironment(appId),
+                getAppOtherEnvironmentMin(appId),
                 getCDPipelines(appId),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
@@ -51,32 +61,106 @@ export default function CDDetails() {
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
+    const [envOptions, setEnvOptions] = useState<CICDSidebarFilterOptionType[]>([])
+    const [selectedEnv, setSelectedEnv] = useState<AppEnvironment>(null)
+    const [deploymentAppType, setDeploymentAppType] = useState<DeploymentAppType>(null)
     const { path } = useRouteMatch()
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
+
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
-        if (deploymentHistoryResult?.result?.length !== pagination.size) {
+        if (deploymentHistoryResult.result?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (deploymentHistoryResult?.result || []).reduce((agg, curr) => {
+        let _triggerId = deploymentHistoryResult.result[0]?.id
+        let queryString = new URLSearchParams(location.search)
+        let queryParam = queryString.get('type')
+        if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
+            let deploymentStageType = queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+            const requiredResult = deploymentHistoryResult.result.filter((obj) => {
+                return obj.stage === deploymentStageType;
+            });
+            if(requiredResult?.[0]) {
+                _triggerId = requiredResult[0].id
+            }
+        }
+        const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+        if (!triggerId && envId && pipelineId && deploymentHistoryResult.result?.length) {
+            replace(
+                generatePath(path, {
+                    appId,
+                    envId,
+                    pipelineId,
+                    triggerId: _triggerId,
+                }),
+            )
+        }
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
     useEffect(() => {
-      return () => {
-          setTriggerHistory(new Map())
-          setHasMoreLoading(false)
-      }
-  }, [envId])
+        if (result) {
+            if (result[1]) {
+                setDeploymentAppType(
+                    result[1]['value']?.pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))
+                        ?.deploymentAppType,
+                )
+            }
+            if (result[0]) {
+                let _selectedEnvironment = (result[0]['value']?.result || []).find((envData) => {
+                    return +envId === envData.environmentId
+                })
+                setSelectedEnv(_selectedEnvironment)
+            }
+        }
+
+        return () => {
+            setTriggerHistory(new Map())
+            setHasMoreLoading(false)
+        }
+    }, [envId])
+
+    useEffect(() => {
+        if (result) {
+            const pipelines = result[1]['value']?.pipelines
+            const _deploymentAppType = pipelines?.find(
+                (pipeline) => pipeline.id === Number(pipelineId),
+            )?.deploymentAppType
+            const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
+            let _selectedEnvironment,
+                isEnvDeleted = false
+            const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((envData) => {
+                if (envData.environmentId === +envId) {
+                    _selectedEnvironment = envData
+                }
+                if (envData.deploymentAppDeleteRequest) {
+                    isEnvDeleted = true
+                }
+                return {
+                    value: `${envData.environmentId}`,
+                    label: envData.environmentName,
+                    pipelineId: cdPipelinesMap.get(envData.environmentId).id,
+                    deploymentAppDeleteRequest: envData.deploymentAppDeleteRequest,
+                }
+            })
+
+            if (envOptions.length === 1 && !envId && !isEnvDeleted) {
+                replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+            }
+            setEnvOptions(envOptions)
+            setSelectedEnv(_selectedEnvironment)
+            setDeploymentAppType(_deploymentAppType)
+        }
+    }, [result])
 
     async function pollHistory() {
         // polling
@@ -111,43 +195,11 @@ export default function CDDetails() {
         return <Progressing pageLoader />
     } else if (
         result &&
-        (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines))
+        (!Array.isArray(result[0]?.['value']?.result) || !Array.isArray(result[1]?.['value']?.pipelines))
     ) {
         return <AppNotConfigured />
     } else if (!result || (envId && dependencyState[2] !== envId)) {
         return null
-    }
-
-    const pipelines = result[1]['value'].pipelines
-    const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
-    const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
-
-    if (!triggerId && envId && pipelineId && deploymentHistoryResult?.result?.length) {
-        replace(
-            generatePath(path, {
-                appId,
-                envId,
-                pipelineId,
-                triggerId: deploymentHistoryResult.result[0].id,
-            }),
-        )
-    }
-    const environment = result[0]['value'].result.find((envData) => envData.environmentId === +envId) || null
-    const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((item) => {
-        return {
-            value: `${item.environmentId}`,
-            label: item.environmentName,
-            pipelineId: cdPipelinesMap.get(item.environmentId).id,
-            deploymentAppDeleteRequest: item.deploymentAppDeleteRequest,
-        }
-    })
-
-    const isEnvDeleted = result[0]['value']?.result?.find(
-        (_res) => _res?.deploymentAppDeleteRequest,
-    )?.deploymentAppDeleteRequest
-
-    if (envOptions.length === 1 && !envId && !isEnvDeleted) {
-        replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
         <>
@@ -182,14 +234,14 @@ export default function CDDetails() {
                             />
                         </Route>
                     ) : !envId ? (
-                        <EmptyView
-                            title="No environment selected"
-                            subTitle="Please select an environment to start seeing CD deployments."
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
-                        <EmptyView
-                            title="No deployments"
-                            subTitle={`No deployment history available for the ${environment?.environmentName} environment.`}
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
                         />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
@@ -218,44 +270,43 @@ export const TriggerOutput: React.FC<{
     deploymentAppType,
     isBlobStorageConfigured,
 }) => {
-    const { appId, triggerId, envId, pipelineId } = useParams<{
-        appId: string
-        triggerId: string
-        envId: string
-        pipelineId: string
-    }>()
-    const triggerDetails = triggerHistory.get(+triggerId)
-    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
-        [triggerId, appId, envId],
-        !!triggerId && !!pipelineId,
-    )
-    useEffect(() => {
-        if (triggerDetailsLoading || triggerDetailsError) return
-
-        if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
-    }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
-
-    const timeout = useMemo(() => {
-        if (
-            !triggerDetails ||
-            terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+        const { appId, triggerId, envId, pipelineId } = useParams<{
+            appId: string
+            triggerId: string
+            envId: string
+            pipelineId: string
+        }>()
+        const triggerDetails = triggerHistory.get(+triggerId)
+        const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
+            () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
+            [triggerId, appId, envId],
+            !!triggerId && !!pipelineId,
         )
-            return null // no interval
-        if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
-            // 10s because progressing
-            return 10000
+        useEffect(() => {
+            if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
+            if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
+        }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
+        const timeout = useMemo(() => {
+            if (
+                !triggerDetails ||
+                terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+            )
+                return null // no interval
+            if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
+                // 10s because progressing
+                return 10000
+            }
+            return 30000 // 30s for normal
+        }, [triggerDetails])
+
+        useInterval(reloadTriggerDetails, timeout)
+
+        if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
+        if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+        if (triggerDetails?.id !== +triggerId) {
+            return null
         }
-        return 30000 // 30s for normal
-    }, [triggerDetails])
-
-    useInterval(reloadTriggerDetails, timeout)
-
-    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
-    if (!triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId) {
-        return null
-    }
 
     return (
         <>
@@ -274,10 +325,11 @@ export const TriggerOutput: React.FC<{
                             message={triggerDetails.message}
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
+                            artifact={triggerDetails.artifact}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
-                                <li className="tab-list__tab">
+                                <li className="tab-list__tab" data-testid="deployment-history-steps-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -288,8 +340,8 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            {triggerDetails.stage !== 'DEPLOY' && (
-                                <li className="tab-list__tab">
+                            {!(triggerDetails.stage === 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
+                                <li className="tab-list__tab" data-testid="deployment-history-logs-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -300,18 +352,18 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            <li className="tab-list__tab">
+                            <li className="tab-list__tab" data-testid="deployment-history-source-code-link">
                                 <NavLink
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
                                     to={`source-code`}
                                 >
-                                    Source code
+                                    Source
                                 </NavLink>
                             </li>
                             {triggerDetails.stage == 'DEPLOY' && (
-                                <li className="tab-list__tab">
+                                <li className="tab-list__tab" data-testid="deployment-history-configuration-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -322,8 +374,8 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            {triggerDetails.stage !== 'DEPLOY' && (
-                                <li className="tab-list__tab">
+                            {(triggerDetails.stage !== 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
+                                <li className="tab-list__tab" data-testid="deployment-history-artifacts-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -342,6 +394,8 @@ export const TriggerOutput: React.FC<{
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 loading={triggerDetailsLoading && !triggerDetailsResult}
+                userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
+                triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
@@ -360,6 +414,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
+    userApprovalMetadata: UserApprovalMetadataType
+    triggeredByEmail: string
 }> = ({
     triggerDetails,
     loading,
@@ -368,15 +424,24 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
+    userApprovalMetadata,
+    triggeredByEmail,
 }) => {
-    let { path } = useRouteMatch()
-    const { appId, pipelineId, triggerId, envId } = useParams<{
-        appId: string
-        pipelineId: string
-        triggerId: string
-        envId: string
-    }>()
+        let { path } = useRouteMatch()
+        const { appId, pipelineId, triggerId, envId } = useParams<{
+            appId: string
+            pipelineId: string
+            triggerId: string
+            envId: string
+        }>()
 
+        const paramsData = {
+        appId,
+        envId,
+        appName: triggerDetails.helmPackageName,
+        workflowId: triggerDetails.id,
+    }
+        
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
@@ -388,7 +453,7 @@ const HistoryLogs: React.FC<{
                     <Progressing pageLoader />
                 ) : (
                     <Switch>
-                        {triggerDetails.stage !== 'DEPLOY' ? (
+                        {triggerDetails.stage !== 'DEPLOY' ? (!triggerDetails.IsVirtualEnvironment &&
                             <Route path={`${path}/logs`}>
                                 <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
                                     <LogsRenderer
@@ -403,6 +468,13 @@ const HistoryLogs: React.FC<{
                                 <DeploymentDetailSteps
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
+                                    userApprovalMetadata={userApprovalMetadata}
+                                    isGitops={
+                                        deploymentAppType === DeploymentAppType.argo_cd ||
+                                        deploymentAppType === DeploymentAppType.manifest_download
+                                    }
+                                    isHelmApps={false}
+                                    isVirtualEnvironment={triggerDetails.IsVirtualEnvironment}
                                 />
                             </Route>
                         )}
@@ -410,6 +482,9 @@ const HistoryLogs: React.FC<{
                             <GitChanges
                                 gitTriggers={triggerDetails.gitTriggers}
                                 ciMaterials={triggerDetails.ciMaterials}
+                                artifact={triggerDetails.artifact}
+                                userApprovalMetadata={userApprovalMetadata}
+                                triggeredByEmail={triggeredByEmail}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
@@ -432,21 +507,30 @@ const HistoryLogs: React.FC<{
                                 />
                             </Route>
                         )}
-                        {triggerDetails.stage !== 'DEPLOY' && (
+                        {(triggerDetails.stage !== 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
                             <Route path={`${path}/artifacts`}>
-                                <Artifacts
-                                    status={triggerDetails.status}
-                                    artifact={triggerDetails.artifact}
-                                    blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                    getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
-                                />
+                                {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
+                                    <VirtualHistoryArtifact
+                                        status={triggerDetails.status}
+                                        titleName={triggerDetails.helmPackageName}
+                                        params={paramsData}
+                                    />
+                                ) : (
+                                    <Artifacts
+                                        status={triggerDetails.status}
+                                        artifact={triggerDetails.artifact}
+                                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                        type={HistoryComponentType.CD}
+                                    />
+                                )}
                             </Route>
                         )}
                         <Redirect
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'
                                     ? `deployment-steps`
-                                    : triggerDetails.status.toLowerCase() === 'succeeded'
+                                    : (triggerDetails.status.toLowerCase() === 'succeeded' || triggerDetails.IsVirtualEnvironment)
                                     ? `artifacts`
                                     : `logs`
                             }`}

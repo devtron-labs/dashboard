@@ -1,10 +1,9 @@
 import React from 'react'
 import Help from '../../../assets/icons/ic-help-green.svg';
-import { Progressing } from '../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg';
 import './validateForm.css'
-import { showError } from '../helpers/Helpers';
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg';
 
 export enum VALIDATION_STATUS {
@@ -105,8 +104,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
 export function ValidateForm({ id, onClickValidate, validationError, isChartRepo = false, validationStatus = "", configName, warning = "" }) {
     return (
         <div className="mt-16">
-            {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER &&
-                <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mb-20 pt-10 pb-10 pr-16 pl-16"><InfoIcon className="icon-dim-18 mr-8" />Only public chart repositories can be connected as of now.</div>}
+            {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
                 <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />}
             { validationStatus == VALIDATION_STATUS.LOADER &&

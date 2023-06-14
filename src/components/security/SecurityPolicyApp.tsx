@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { SecurityPolicyEdit } from './SecurityPolicyEdit';
 import { getAppListMin } from '../../services/service';
-import { showError, Progressing, sortCallback } from '../common';
+import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { SecurityPolicyAppState } from './security.types';
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
-import Reload from '../Reload/Reload';
 
 export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: string; }>, SecurityPolicyAppState> {
 
@@ -43,28 +42,42 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
         const url = this.props.match.url;
         if (this.state.view === ViewType.LOADING) return <div style={{ height: "280px" }}><Progressing pageLoader /></div>
         else if (this.state.view === ViewType.LOADING) return <Reload />
-        else return <table className="security-policy-cluster__table">
-            <tbody>
-                <tr>
-                    <td className="security-policy-cluster__title w-100">
-                        <div className="dc__search-with-dropdown">
-                            <Search className="icon-dim-20 ml-8" />
-                            <input type="text" className="search-with-dropdown__search"
-                                onChange={this.handleSearchChange} autoFocus placeholder="Search application" />
-                        </div>
-                    </td>
-                </tr>
-                {this.state.appList.filter(app => app.name.includes(this.state.appSearch)).map((app) => {
-                    return <tr key={app.id} className="security-policy-cluster__content-row">
-                        <td className="pl-20 pr-20 pt-16 pb-16">
-                            <NavLink to={`${url}/${app.id}`}>
-                                {app.name}
-                            </NavLink>
+        else return (
+            <table className="security-policy-cluster__table">
+                <tbody>
+                    <tr>
+                        <td className="security-policy-cluster__title w-100">
+                            <div className="dc__search-with-dropdown">
+                                <Search className="icon-dim-20 ml-8" />
+                                <input
+                                    type="text"
+                                    className="search-with-dropdown__search"
+                                    data-testid="search-application"
+                                    onChange={this.handleSearchChange}
+                                    autoFocus
+                                    placeholder="Search application"
+                                />
+                            </div>
                         </td>
                     </tr>
-                })}
-            </tbody>
-        </table>
+                    {this.state.appList
+                        .filter((app) => app.name.includes(this.state.appSearch))
+                        .map((app) => {
+                            return (
+                                <tr
+                                    key={app.id}
+                                    className="security-policy-cluster__content-row"
+                                    data-testid="select-application-from-list"
+                                >
+                                    <td className="pl-20 pr-20 pt-16 pb-16">
+                                        <NavLink to={`${url}/${app.id}`}>{app.name}</NavLink>
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                </tbody>
+            </table>
+        )
     }
 
     renderContent() {

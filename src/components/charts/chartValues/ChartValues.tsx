@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router'
-import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
+import { showError, Progressing, ErrorScreenManager, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
@@ -12,6 +12,7 @@ export default function ChartValues() {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [appStoreApplicationName, setAppStoreApplicationName] = useState('')
     const [valueName, setValueName] = useState('')
+    const [chartVersionId, setChartVersionId] = useState(0)
     const [chartInformation, setChartInformation] = useState({
         appStoreApplicationName: '',
         deprecated: false,
@@ -68,6 +69,10 @@ export default function ChartValues() {
                 if (chartValueId !== '0') {
                     setValueName(chartValues.name)
                 }
+                if(availableVersions?.length){
+                    const selectedChartVersionObj = availableVersions.find(availableVersion=> availableVersion.version === chartValues.chartVersion)
+                    setChartVersionId(+selectedChartVersionObj.id)
+                }
             }
         }
     }, [availableVersions, chartValuesList])
@@ -94,7 +99,7 @@ export default function ChartValues() {
                 chartValuesListFromParent={chartValuesList}
                 chartVersionsDataFromParent={availableVersions}
                 chartValuesFromParent={chartValues}
-                selectedVersionFromParent={availableVersions[0]?.id}
+                selectedVersionFromParent={chartVersionId}
             />
         </>
     )
