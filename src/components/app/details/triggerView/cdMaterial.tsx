@@ -575,7 +575,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
-        return materialList.map((mat) => {
+        return materialList.map((mat, idx) => {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
             const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
             const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
@@ -664,7 +664,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.props.toggleSourceInfo(
-                                    mat.index,
+                                    idx,
                                     this.props.isFromBulkCD
                                         ? { id: this.props.pipelineId, type: this.props.stageType }
                                         : null,
@@ -1024,7 +1024,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
+                        className={`cta flex h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
                         {this.props.isSaveLoading ? (

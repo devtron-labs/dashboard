@@ -421,7 +421,7 @@ export default function HelmAppList({
 
     const renderHelmAppLink = (app: HelmApp): JSX.Element => {
         return (
-            <Link key={app.appId} to={_buildAppDetailUrl(app)} className="app-list__row">
+            <Link key={app.appId} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
@@ -469,7 +469,7 @@ export default function HelmAppList({
 
     function renderApplicationList() {
         return (
-            <>
+            <div data-testid="helm-app-list-container">
                 {!clusterIdsCsv && (
                     <div className="bcn-0" data-testid="helm-app-list">
                         <div className="h-8"></div>
@@ -517,7 +517,7 @@ export default function HelmAppList({
                         />
                     </div>
                 )}
-            </>
+            </div>
         )
     }
 
