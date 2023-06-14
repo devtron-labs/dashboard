@@ -155,7 +155,6 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         appReleaseTags={appReleaseTags}
                         tagsEditable={tagsEditable}
                     />
-                    {console.log(appReleaseTags, tagsEditable)}
                 </Route>
             )
         } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {

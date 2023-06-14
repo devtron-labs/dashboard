@@ -5,7 +5,8 @@ import {
     Drawer,
     noop,
     Progressing,
-    showError, stopPropagation,
+    showError,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -210,7 +211,7 @@ export default function BulkCDTrigger({
                 if (typeof (tagsToArtifactIdMap[selectedTag.value]) !== 'undefined') {
                     artifactIndex = tagsToArtifactIdMap[selectedTag.value]
                 }
-                if (artifactIndex == -1) {
+                if (artifactIndex === -1) {
                     _tagNotFoundWarningsMap.set(app.appId,"Tag '" + selectedTag.value + "' not found")
                 }
                 selectImage(artifactIndex, MATERIAL_TYPE.inputMaterialList, {
@@ -219,6 +220,19 @@ export default function BulkCDTrigger({
                 })
             }
             setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
+        }
+
+        const imageTaggingControls = {
+            IndicatorSeparator: null,
+            Option: releaseTagOption,
+            Control: (props) => {
+                return (
+                    <components.Control {...props} >
+                        {<Tag className="ml-8 mr-8 dc__vertical-align-middle icon-dim-20"></Tag>}
+                        {props.children}
+                    </components.Control>
+                )
+            }
         }
 
         return (
@@ -233,18 +247,7 @@ export default function BulkCDTrigger({
                             options={options}
                             value={selectedTagName}
                             styles={imageTaggingSelectorStyle}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: releaseTagOption,
-                                Control: (props) => {
-                                    return(
-                                        <components.Control {...props} >
-                                            {<Tag className="ml-8 mr-8 dc__vertical-align-middle icon-dim-20"></Tag>}
-                                           {props.children}
-                                        </components.Control>
-                                    )
-                                },
-                            }}
+                            components={imageTaggingControls}
                             onChange={handleTagChange}
                             isDisabled={false}
                             classNamePrefix="build-config__select-repository-containing-code"
@@ -322,7 +325,7 @@ export default function BulkCDTrigger({
     }
 
     const isDeployDisabled = (): boolean => {
-        return appList.every((app) => (app.warningMessage||tagNotFoundWarningsMap.has(app.appId)) || !app.material?.length)
+        return appList.every((app) => (app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) || !app.material?.length)
     }
 
     const renderFooterSection = (): JSX.Element => {
