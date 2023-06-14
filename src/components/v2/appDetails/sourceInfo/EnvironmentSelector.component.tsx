@@ -216,7 +216,7 @@ function EnvironmentSelectorComponent({
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
                             <BinWithDots className="icon-dim-16 mr-8 ml-12" />
-                            <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="cr-5 fw-6" data-testid = "delete-progress">{DELETE_DEPLOYMENT_PIPELINE}</span>
                             <span className="dc__loading-dots cr-5" />
                         </>
                     )}

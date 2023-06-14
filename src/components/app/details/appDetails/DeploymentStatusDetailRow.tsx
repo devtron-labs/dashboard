@@ -153,7 +153,7 @@ export function DeploymentStatusDetailRow({
     const renderIcon = (iconState: string): JSX.Element => {
         switch (iconState) {
             case 'success':
-                return <Check className="icon-dim-20 green-tick" />
+                return <Check className="icon-dim-20 green-tick" data-testid = "success-green-tick" />
             case 'failed':
                 return <Error className="icon-dim-20" />
             case 'unknown':
@@ -221,6 +221,7 @@ export function DeploymentStatusDetailRow({
                         style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
                         className="icon-dim-24 rotate pointer"
                         onClick={toggleDropdown}
+                        data-testid = "steps-deployment-history-dropdown"
                     />
                 )}
             </div>
