@@ -275,8 +275,14 @@ export const ImageTagsContainer = ({
                                 text={tag?.tagName}
                                 isSoftDeleted={tag?.deleted}
                                 isEditing={isEditing}
-                                onSoftDeleteClick={() => handleTagSoftDelete(index)}
-                                onHardDeleteClick={() => handleTagHardDelete(index)}
+                                onSoftDeleteClick={(e) => {
+                                    stopPropagation(e)
+                                    handleTagSoftDelete(index)
+                                }}
+                                onHardDeleteClick={(e) => {
+                                    stopPropagation(e)
+                                    handleTagHardDelete(index)
+                                }}
                                 tagId={tag.id}
                                 softDeleteTags={softDeleteTags}
                                 isSuperAdmin={isSuperAdmin}
@@ -326,8 +332,14 @@ export const ImageTagsContainer = ({
                                         text={tag?.tagName}
                                         isSoftDeleted={tag?.deleted}
                                         isEditing={isEditing}
-                                        onSoftDeleteClick={() => handleTagSoftDelete(index)}
-                                        onHardDeleteClick={() => handleTagHardDelete(index)}
+                                        onSoftDeleteClick={(e) => {
+                                            stopPropagation(e)
+                                            handleTagSoftDelete(index)
+                                        }}
+                                        onHardDeleteClick={(e) => {
+                                            stopPropagation(e)
+                                            handleTagHardDelete(index)
+                                        }}
                                         tagId={tag.id}
                                         softDeleteTags={softDeleteTags}
                                         isSuperAdmin={isSuperAdmin}
