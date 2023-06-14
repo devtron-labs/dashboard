@@ -135,7 +135,9 @@ export default function BulkCITrigger({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
-                    getPolicyEnforcementData(_materialListMap)
+                    if (getCIBlockState) {
+                        getPolicyEnforcementData(_materialListMap)
+                    }
                     updateBulkInputMaterial(_materialListMap)
                     if (!selectedApp.isLinkedCI && !selectedApp.isWebhookCI) {
                         setShowRegexModal(
