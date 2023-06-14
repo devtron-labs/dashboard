@@ -273,7 +273,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             isPrePostStage = true
         } else {
-            isPrePostStage = !isRunPrePostStageInEnv || false
+            isPrePostStage = isRunPrePostStageInEnv || false
         }
         return isPrePostStage
     }
@@ -340,12 +340,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
                     : [],
             },
-            runPreStageInEnv: this.state.pipelineConfig.isVirtualEnvironment
-                ? true
-                : pipelineConfigFromRes.runPreStageInEnv || false,
-            runPostStageInEnv: this.state.pipelineConfig.isVirtualEnvironment
-                ? true
-                : pipelineConfigFromRes.runPostStageInEnv || false,
+            runPreStageInEnv: this.getPrePostStageInEnv(pipelineConfigFromRes.runPreStageInEnv),
+            runPostStageInEnv: this.getPrePostStageInEnv(pipelineConfigFromRes.runPostStageInEnv),
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
             deploymentAppType: pipelineConfigFromRes.deploymentAppType || '',
         }
@@ -533,9 +529,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     handleRunInEnvCheckbox(event, stageType: 'preStage' | 'postStage') {
         let { pipelineConfig } = { ...this.state }
         if (stageType === 'preStage')
-            pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(pipelineConfig.runPreStageInEnv)
+            pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(!pipelineConfig.runPreStageInEnv)
         if (stageType === 'postStage')
-            pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(pipelineConfig.runPostStageInEnv)
+            pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(!pipelineConfig.runPostStageInEnv)
         this.setState({ pipelineConfig })
     }
 
