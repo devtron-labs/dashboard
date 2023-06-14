@@ -246,7 +246,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (this.state.slackConfigurationList.length === 0) {
+        } else if (this.state.webhookConfigurationList.length === 0) {
             return (
                 <div style={{ height: 'calc(100% - 70px)' }}>
                     <GenericEmptyState title="No Configurations" noImage={true} />
@@ -265,7 +265,6 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <tbody>
                         <tr className="mb-8">
                             {this.state.webhookConfigurationList.map((webhookConfig) => {
-                                console.log(webhookConfig)
                                 return (
                                     <td key={webhookConfig.id} className="configuration-tab__table-row" data-testid={`webhook-container-${webhookConfig.name}`}>
                                         <div className="slack-config-table__name dc__truncate-text" data-testid={`webhook-config-name-${webhookConfig.name}`}>
