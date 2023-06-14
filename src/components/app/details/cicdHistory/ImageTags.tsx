@@ -298,7 +298,7 @@ export const ImageTagsContainer = ({
                         </div>
                     )}
                     <div className="cn-7">Comment</div>
-                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12 ">
+                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12" data-testId="add-image-comment-text-area">
                         <textarea
                             value={newDescription}
                             onChange={handleDescriptionChange}
