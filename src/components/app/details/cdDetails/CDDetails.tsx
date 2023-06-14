@@ -521,7 +521,7 @@ const HistoryLogs: React.FC<{
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
                             />
-                            {artifactId != 0 && (
+                            { (artifactId) && (artifactId!==0) && (
                                 <div>
                                     <div className="mt-8" style={{ width: '832px' }}>
                                         <div className="dc__dasshed_icon_grid-container">
