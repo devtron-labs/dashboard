@@ -232,9 +232,9 @@ export default function CDDetails() {
                                 deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
-                                deploymentHistoryResult={deploymentHistoryResult.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
-                                appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
-                                tagsEditable={deploymentHistoryResult.result?.tagsEditable}
+                                deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
+                                appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
+                                tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
                             />
                         </Route>
                     ) : !envId ? (
