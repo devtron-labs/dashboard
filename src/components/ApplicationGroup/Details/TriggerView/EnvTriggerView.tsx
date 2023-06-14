@@ -1269,7 +1269,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
         const _CDTriggerPromiseList = []
         nodeList.forEach((node, index) => {
-            const ciArtifact = node[materialType].find((artifact) => artifact.isSelected == true)
+            let ciArtifact = null
+            node[materialType].forEach((artifact) => {
+                if(artifact.isSelected == true)ciArtifact = artifact
+            })
             if (ciArtifact) {
                 _CDTriggerPromiseList.push(
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
