@@ -1,19 +1,17 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
+import {
+    ConditionType,
+    FormType,
+    RefVariableType,
+    StepType,
+    VariableType,
+    FormErrorObjectType,
+    TaskErrorObj,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
-import {
-    ConditionType,
-    FormErrorObjectType,
-    FormType,
-    PluginVariableType,
-    RefVariableType,
-    StepType,
-    TaskErrorObj,
-    TaskFieldDescription,
-    VariableFieldType,
-    VariableType,
-} from '../ciPipeline/types'
+import { TaskFieldDescription, VariableFieldType, PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
