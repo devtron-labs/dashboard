@@ -1,4 +1,4 @@
-import { DeploymentNodeType } from '../app/details/triggerView/types'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ENV_TRIGGER_VIEW_GA_EVENTS = {
     MaterialClicked: {
@@ -8,6 +8,10 @@ export const ENV_TRIGGER_VIEW_GA_EVENTS = {
     ImageClicked: {
         category: 'Environment Details Trigger View',
         action: 'Select Image Clicked',
+    },
+    ApprovalNodeClicked: {
+        category: 'Environment Details Trigger View',
+        action: 'Approval Node Clicked',
     },
     RollbackClicked: {
         category: 'Environment Details Trigger View',
@@ -43,6 +47,12 @@ export enum BulkResponseStatus {
     'UNAUTHORIZE' = 'unauthorized',
 }
 
+export const BULK_VIRTUAL_RESPONSE_STATUS = {
+    [BulkResponseStatus.PASS]: 'Succeeded',
+    [BulkResponseStatus.FAIL]: 'Failed',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorised',
+}
+
 export const BULK_CI_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Build triggered',
     [BulkResponseStatus.FAIL]: 'Build not triggered',
@@ -53,6 +63,12 @@ export const BULK_CD_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Deployment triggered',
     [BulkResponseStatus.FAIL]: 'Deployment not triggered',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
+export const responseListOrder = {
+    [BulkResponseStatus.FAIL]: 0,
+    [BulkResponseStatus.UNAUTHORIZE]: 1,
+    [BulkResponseStatus.PASS]: 2,
 }
 
 export const BULK_CI_MESSAGING = {
@@ -79,11 +95,11 @@ export const BULK_CI_MESSAGING = {
 }
 
 export const BULK_CD_MESSAGING = {
-    emptyPreDeploy: {
+    [DeploymentNodeType.PRECD]: {
         title: 'does not have a pre-deployment stage',
         subTitle: 'This app does not have a pre-deployment stage',
     },
-    emptyPostDeploy: {
+    [DeploymentNodeType.POSTCD]: {
         title: 'does not have a post-deployment stage',
         subTitle: 'This app does not have a post-deployment stage',
     },
@@ -134,5 +150,20 @@ export const GROUP_LIST_HEADER = {
     NAMESPACE: 'Namespace',
     CLUSTER: 'Cluster',
     APPLICATIONS: 'Applications',
-    APPLICATION: 'Application'
+    APPLICATION: 'Application',
+}
+
+export enum AppFilterTabs {
+    'GROUP_FILTER' = 'groupFilter',
+    'APP_FILTER' = 'appFilter',
+}
+
+export enum CreateGroupTabs {
+    'SELECTED_APPS' = 'selectedApps',
+    'ALL_APPS' = 'allApps',
+}
+
+export const CREATE_GROUP_TABS = {
+    selectedApps: 'Selected applications',
+    allApps: 'Add/Remove applications',
 }

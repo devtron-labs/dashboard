@@ -1,14 +1,13 @@
-import { MultiValue } from 'react-select'
 import {
-    CDMdalTabType,
-    CiPipeline,
+    CDModalTabType,
     DeploymentNodeType,
-    WebhookPayloads,
-    WorkflowNodeType,
-    WorkflowType,
-} from '../app/details/triggerView/types'
+    ResponseType,
+    UserApprovalConfigType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { MultiValue } from 'react-select'
+import { WebhookPayloads, WorkflowNodeType, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import { BulkResponseStatus } from './Constants'
+import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -36,18 +35,24 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
+    triggerType?: string
     envName: string
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
+    approvalUsers?: string[]
+    userApprovalConfig?: UserApprovalConfigType
+    requestedUserId?: number
 }
 
 export interface ResponseRowType {
-    appId: string
+    appId: number
     appName: string
     status: BulkResponseStatus
     statusText: string
     message: string
+    isVirtual?: boolean
+    envId?: number
 }
 
 export interface BulkCITriggerType {
@@ -70,12 +75,12 @@ export interface BulkCDTriggerType {
     stage: DeploymentNodeType
     appList: BulkCDDetailType[]
     closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
+    updateBulkInputMaterial: (materialList: Record<string, any>) => void
     onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
     changeTab: (
         materrialId: string | number,
         artifactId: number,
-        tab: CDMdalTabType,
+        tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
@@ -87,6 +92,7 @@ export interface BulkCDTriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    isVirtualEnv?: boolean
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -119,6 +125,15 @@ export interface TriggerResponseModalType {
     responseList: ResponseRowType[]
     isLoading: boolean
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+    isVirtualEnv?: boolean
+    envName?: string
+}
+
+export interface TriggerModalRowType {
+    rowData: ResponseRowType
+    index: number
+    isVirtualEnv?: boolean
+    envName?: string
 }
 
 export interface WorkflowNodeSelectionType {
@@ -147,7 +162,7 @@ export interface EnvDeploymentStatus {
     appId: number
     pipelineId: number
     deployStatus: string
-    wfrId: number
+    wfrId?: number
 }
 export interface EnvAppList {
     id: number
@@ -159,6 +174,7 @@ export interface EnvAppList {
     isClusterCdActive: boolean
     environmentIdentifier: string
     appCount: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface EmptyEnvState {
@@ -212,6 +228,14 @@ export interface EnvHeaderType {
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    selectedFilterTab: AppFilterTabs
+    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
+    groupFilterOptions: GroupOptionType[]
+    selectedGroupFilter: MultiValue<GroupOptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
+    openCreateGroup: (e, groupId?: string) => void
+    openDeleteGroup: (e, groupId: string) => void
+    isSuperAdmin: boolean
 }
 
 export interface AppGroupAdminType {
@@ -219,10 +243,20 @@ export interface AppGroupAdminType {
 }
 
 export interface AppGroupDetailDefaultType {
-    filteredApps: MultiValue<OptionType>
+    filteredAppIds: string
+    appGroupListData?: AppGroupListType
+    isVirtualEnv?: boolean
+}
+
+interface CIPipeline {
+    appName: string
+    appId: number
+    id: number
+    parentCiPipeline: number
+    parentAppId: number
 }
 export interface CIConfigListType {
-    pipelineList: CiPipeline[]
+    pipelineList: CIPipeline[]
     securityModuleInstalled: boolean
     blobStorageConfigured: boolean
 }
@@ -233,4 +267,81 @@ export interface AppGroupAppFilterContextType {
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
     isMenuOpen: boolean
     setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+    selectedFilterTab: AppFilterTabs
+    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
+    groupFilterOptions: GroupOptionType[]
+    selectedGroupFilter: MultiValue<GroupOptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
+    openCreateGroup: (e, groupId?: string) => void
+    openDeleteGroup: (e, groupId: string) => void
+    isSuperAdmin: boolean
+}
+
+export interface CreateGroupAppListType {
+    id: string
+    appName: string
+    isSelected: boolean
+}
+
+export interface CreateGroupType {
+    appList: CreateGroupAppListType[]
+    selectedAppGroup: GroupOptionType
+    closePopup: (e, groupId?: number) => void
+}
+
+export interface ApplistEnvType {
+    appId: number
+    appName: string
+    appStatus: string
+    lastDeployedTime: string
+}
+
+export interface AppGroupListType {
+    namespace: string
+    environmentName: string
+    clusterName: string
+    environmentId: number
+    apps: ApplistEnvType[]
+}
+export interface ConfigAppListType extends ResponseType {
+    result?: ConfigAppList[]
+}
+export interface EnvAppType extends ResponseType {
+    result?: EnvApp
+}
+
+export interface AppGroupList extends ResponseType {
+    result?: AppGroupListType
+}
+
+export interface EnvDeploymentStatusType extends ResponseType {
+    result?: EnvDeploymentStatus[]
+}
+
+export interface EnvGroupListType {
+    id: number
+    name: string
+    appIds: number[]
+    description: string
+}
+
+export interface EnvGroupListResponse extends ResponseType {
+    result?: EnvGroupListType[]
+}
+
+export interface EnvGroupResponse extends ResponseType {
+    result?: EnvGroupListType
+}
+
+export interface GroupOptionType extends OptionType {
+    appIds: number[]
+    description: string
+}
+
+export interface SearchBarType {
+    placeholder: string
+    searchText: string
+    setSearchText: React.Dispatch<React.SetStateAction<string>>
+    searchApplied: boolean
+    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
 }

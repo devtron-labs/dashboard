@@ -1,4 +1,17 @@
 import React from 'react'
+import {
+    MaterialType,
+    DockerConfigOverrideType,
+    FormType,
+    CiPipelineSourceTypeOption,
+    Githost,
+    ErrorObj,
+    PluginDetailType,
+    MandatoryPluginDetailType,
+    RefVariableType,
+    ScriptType,
+    PluginType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 
@@ -37,11 +50,6 @@ export interface ExternalCIPipelineState {
     hostURLConfig: HostURLConfig
 }
 
-export enum PluginType {
-    INLINE = 'INLINE',
-    PLUGIN_REF = 'REF_PLUGIN',
-}
-
 export enum ConditionContainerType {
     TRIGGER_SKIP = 'Trigger/Skip',
     PASS_FAILURE = 'Pass/Failure',
@@ -50,18 +58,6 @@ export enum ConditionContainerType {
 export enum PluginVariableType {
     INPUT = 'Input',
     OUTPUT = 'Output',
-}
-
-export enum RefVariableType {
-    GLOBAL = 'GLOBAL',
-    FROM_PREVIOUS_STEP = 'FROM_PREVIOUS_STEP',
-    NEW = 'NEW',
-}
-
-export enum ScriptType {
-    SHELL = 'SHELL',
-    DOCKERFILE = 'DOCKERFILE',
-    CONTAINERIMAGE = 'CONTAINER_IMAGE',
 }
 
 export enum TaskFieldLabel {
@@ -224,6 +220,7 @@ export interface BuildPackConfigType {
 export interface DockerBuildConfigType {
     dockerfileContent: string
     dockerfileRelativePath: string
+    buildContext: string
     dockerfilePath?: string
     dockerfileRepository?: string
     args?: Record<string, string>
@@ -237,7 +234,9 @@ export interface CIBuildConfigType {
     ciBuildType: CIBuildType
     dockerBuildConfig: DockerBuildConfigType
     gitMaterialId: number
+    buildContextGitMaterialId: number
     id?: number
+    useRootBuildContext: boolean
 }
 
 export const DockerConfigOverrideKeys = {
@@ -252,73 +251,8 @@ export const DockerConfigOverrideKeys = {
     projectPath: 'projectPath',
     dockerfile: 'dockerfile',
     dockerfileRelativePath: 'dockerfileRelativePath',
-    targetPlatform: 'targetPlatform'
-}
-
-export interface DockerConfigOverrideType {
-    dockerRegistry: string
-    dockerRepository: string
-    ciBuildConfig: CIBuildConfigType
-}
-
-export interface FormType {
-    name: string
-    args: { key: string; value: string }[]
-    materials: MaterialType[]
-    gitHost: Githost
-    webhookEvents: WebhookEvent[]
-    ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
-    webhookConditionList: { selectorId: number; value: string }[]
-    triggerType: string
-    scanEnabled?: boolean
-    beforeDockerBuildScripts?: {
-        id: number
-        name: string
-        outputLocation: string
-        script: string
-        isCollapsed: boolean
-        index: number
-    }[]
-    afterDockerBuildScripts?: {
-        id: number
-        name: string
-        outputLocation: string
-        script: string
-        isCollapsed: boolean
-        index: number
-    }[]
-    ciPipelineEditable: true
-    preBuildStage?: BuildStageType
-    postBuildStage?: BuildStageType
-    isDockerConfigOverridden?: boolean
-    dockerConfigOverride?: DockerConfigOverrideType
-}
-
-interface ErrorObj {
-    isValid: boolean
-    message: string | null
-}
-export interface TaskErrorObj {
-    isValid: boolean
-    name: ErrorObj
-    inlineStepDetail?: { inputVariables?: ErrorObj[]; outputVariables?: ErrorObj[] }
-    pluginRefStepDetail?: { inputVariables?: ErrorObj[]; outputVariables?: ErrorObj[] }
-}
-export interface FormErrorObjectType {
-    name: ErrorObj
-    materials?: MaterialType[]
-    preBuildStage?: {
-        isValid: boolean
-        steps: TaskErrorObj[]
-    }
-    buildStage?: {
-        isValid: boolean
-        name: ErrorObj
-    }
-    postBuildStage?: {
-        isValid: boolean
-        steps: TaskErrorObj[]
-    }
+    targetPlatform: 'targetPlatform',
+    buildContext: 'buildContext',
 }
 
 export interface CIPipelineType {
@@ -327,6 +261,7 @@ export interface CIPipelineType {
     getWorkflows: () => void
     close: () => void
     deleteWorkflow: (appId?: string, workflowId?: number) => any
+    isJobView?: boolean
 }
 
 export interface CIPipelineDataType {
@@ -367,6 +302,7 @@ export interface LinkedCIPipelineState {
     loadingData: boolean
     ciPipelines: any[]
     loadingPipelines: boolean
+    showPluginWarning: boolean
     form: {
         parentAppId: number
         parentCIPipelineId: number
@@ -385,47 +321,6 @@ export interface Material {
     isSave: boolean
 }
 
-export interface MaterialType {
-    name: string
-    type: string
-    value: string
-    gitMaterialId: number
-    id: number
-    isSelected: boolean
-    gitHostId: number
-    gitProviderId: number
-    regex?: string
-    isRegex: boolean
-}
-
-export interface Githost {
-    id: number
-    name: string
-    active: boolean
-    webhookSecret: string
-    webhookUrl: string
-}
-
-export interface WebhookEvent {
-    id: number
-    gitHostId: number
-    name: string
-    isActive: boolean
-    selectors: WebhookEventSelectors[]
-}
-
-interface WebhookEventSelectors {
-    id: number
-    eventId: number
-    name: string
-    selector: string
-    toShowInCiFilter: boolean
-    fixValue: string
-    toShow: boolean
-    possibleValues: string
-    isActive: boolean
-}
-
 export interface CIPipelineProps
     extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }> {
     appName: string
@@ -439,23 +334,6 @@ export const PatchAction = {
     CREATE: 0,
     UPDATE_SOURCE: 1,
     DELETE: 2,
-}
-
-export interface CiPipelineSourceTypeOption {
-    label: string
-    value: string
-    isDisabled: boolean
-    isSelected: boolean
-    isWebhook: boolean
-}
-
-export interface PluginDetailType {
-    id: number
-    name: string
-    type: string
-    description: string
-    icon: string
-    tags: string[]
 }
 
 export enum VariableFieldType {
@@ -484,6 +362,7 @@ export interface SourceMaterialsProps {
     webhookData?: WebhookCIProps
     isBranchRegex?: (material) => boolean
     isAdvanced?: boolean
+    handleOnBlur?: (event) => void
 }
 
 export interface WebhookCIProps {
@@ -504,4 +383,13 @@ export interface BuildType {
     pageState: string
     isSecurityModuleInstalled: boolean
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
+    isJobView?: boolean
+    getPluginData: (_formData?: FormType) => void
+}
+
+export interface PreBuildType {
+  presetPlugins: PluginDetailType[]
+  sharedPlugins: PluginDetailType[]
+  mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+  isJobView?: boolean
 }

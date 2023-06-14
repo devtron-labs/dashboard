@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
-import { BreadCrumb, useBreadcrumb } from '../../common'
+import { BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { AppSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'

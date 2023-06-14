@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { ConfirmationDialog, DeleteDialog } from '../components/common'
-import { ServerErrors } from '../modals/commonTypes'
+import { ServerErrors, ConfirmationDialog, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
 import info from '../assets/icons/ic-info-filled.svg'
@@ -18,6 +17,7 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
+    closeCustomComponent,
 }: DeleteComponentProps) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)
     const { push } = useHistory()
@@ -33,6 +33,9 @@ function DeleteComponent({
             } else {
                 reload()
             }
+            if (typeof closeCustomComponent === 'function') {
+                closeCustomComponent()
+            }
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
@@ -45,6 +48,9 @@ function DeleteComponent({
     const handleConfirmation = () => {
         setCannotDeleteDialogModal(false)
         toggleConfirmation(false)
+        if (typeof closeCustomComponent === 'function') {
+            closeCustomComponent()
+        }
     }
 
     const renderCannotDeleteDialogModal = () => {
@@ -54,7 +60,7 @@ function DeleteComponent({
                 <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
                 <ConfirmationDialog.ButtonGroup>
-                    <button type="button" className="cta" onClick={handleConfirmation}>
+                    <button data-testid="delete_warning_popup" type="button" className="cta" onClick={handleConfirmation}>
                         Okay
                     </button>
                 </ConfirmationDialog.ButtonGroup>
@@ -68,6 +74,7 @@ function DeleteComponent({
                 title={`Delete ${component} '${title}'`}
                 delete={handleDelete}
                 closeDelete={() => toggleConfirmation(false)}
+                dataTestId="delete-dialog"
             >
                 <DeleteDialog.Description>
                     <p>Are you sure you want to delete this {configuration ? configuration : component}? </p>
@@ -75,12 +82,7 @@ function DeleteComponent({
             </DeleteDialog>
         )
     }
-    return (
-        <div>
-            {!showCannotDeleteDialogModal && renderDeleteDialog()}
-            {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
-        </div>
-    )
+    return <div>{showCannotDeleteDialogModal ? renderCannotDeleteDialogModal() : renderDeleteDialog()}</div>
 }
 
 export default DeleteComponent

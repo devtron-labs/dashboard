@@ -1,6 +1,5 @@
 import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router'
+import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { URLS } from './config'
 import { toast } from 'react-toastify'
 import 'patternfly/dist/css/patternfly.css'
@@ -15,18 +14,14 @@ import './css/forms.scss'
 import 'tippy.js/dist/tippy.css'
 import {
     useOnline,
-    BreadcrumbStore,
     ToastBody,
     ToastBody3 as UpdateToast,
-    Progressing,
-    showError,
-    getLoginInfo,
     ErrorBoundary,
 } from './components/common'
+import { showError, Progressing, BreadcrumbStore, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
-import Reload from './components/Reload/Reload'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
@@ -82,15 +77,18 @@ export default function App() {
         }
     }, [isOnline])
 
+    const defaultRedirection = (): void => {
+        if (location.search && location.search.includes('?continue=')) {
+            const newLocation = location.search.replace('?continue=', '')
+            push(newLocation)
+        }
+    }
+
     useEffect(() => {
         async function validation() {
             try {
                 await validateToken()
-                // check if admin then direct to admin otherwise router will redirect to app list
-                if (location.search && location.search.includes('?continue=')) {
-                    const newLocation = location.search.replace('?continue=', '')
-                    push(newLocation)
-                }
+                defaultRedirection()
             } catch (err: any) {
                 // push to login without breaking search
                 if (err?.code === 401) {
@@ -107,7 +105,13 @@ export default function App() {
                 setValidating(false)
             }
         }
-        validation()
+        // If not K8S_CLIENT then validateToken otherwise directly redirect
+        if (!window._env_.K8S_CLIENT) {
+            validation()
+        } else {
+            setValidating(false)
+            defaultRedirection()
+        }
     }, [])
 
     async function update() {
@@ -153,6 +157,9 @@ export default function App() {
                 updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
             }
             setForceUpdateOnLocationChange(true)
+            if (typeof Storage !== 'undefined') {
+                localStorage.removeItem('serverInfo')
+            }
         }
         function onSuccess(reg) {
             console.log('successfully installed')
@@ -199,22 +206,24 @@ export default function App() {
     return (
         <Suspense fallback={null}>
             {validating ? (
-                <div style={{ height: '100vh', width: '100vw' }}>
+                <div className="full-height-width">
                     <Progressing pageLoader />
                 </div>
             ) : (
                 <>
                     {errorPage ? (
-                        <div style={{ height: '100vh', width: '100vw' }}>
+                        <div className="full-height-width">
                             <Reload />
                         </div>
                     ) : (
                         <ErrorBoundary>
                             <BreadcrumbStore>
                                 <Switch>
-                                    <Route path={`/login`} component={Login} />
+                                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
                                     <Route path="/" render={() => <NavigationRoutes />} />
-                                    <Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
+                                    <Redirect
+                                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
+                                    />
                                 </Switch>
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>

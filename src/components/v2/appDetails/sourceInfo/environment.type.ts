@@ -1,5 +1,13 @@
+import { DeploymentStatusDetailsBreakdownDataType } from "../../../app/details/appDetails/appDetails.type"
 import { AppStreamData } from "../appDetails.type"
+export interface EnvironmentStatusComponentType {
+    appStreamData: any
+    loadingDetails: boolean
+    loadingResourceTree: boolean
+    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+    isVirtualEnvironment?: boolean
 
+}
 export interface AppEnvironment {
     environmentName: string
     environmentId: number

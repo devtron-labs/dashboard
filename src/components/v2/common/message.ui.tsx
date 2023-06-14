@@ -3,7 +3,8 @@ import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray
 import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg';
 import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg';
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg';
-import { Pod as PodIcon, Progressing } from '../../common';
+import { Pod as PodIcon } from '../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum MsgUIType {
     LOADING = 'loading',
@@ -15,6 +16,7 @@ export enum MsgUIType {
 
 export interface MsgUIProps {
     msg: string;
+    dataTestId?: string;
     icon?: MsgUIType;
     theme?: 'white' | 'dark' | 'light-gray';
     iconClassName?: string;
@@ -30,6 +32,7 @@ export interface MsgUIProps {
 
 const MessageUI: React.FC<MsgUIProps> = ({
     msg,
+    dataTestId,
     icon,
     theme,
     iconClassName,
@@ -44,6 +47,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
 }: MsgUIProps) => {
     return (
         <div
+            data-testid={dataTestId}
             className={`dc__text-center ${theme || 'dark'}-background w-100 `}
             style={{ paddingTop: '200px', minHeight: minHeight || '600px', flex: '1', ...bodyStyle }}
         >

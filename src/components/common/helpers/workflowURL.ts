@@ -15,9 +15,14 @@ export function getCIPipelineURL(
     workflowId: string,
     isGitNotConfigured: boolean,
     ciPipelineId: string | number = null,
+    isJobView?: boolean,
 ) {
-    const prefixURL = isGitNotConfigured ? `/app/${appId}/edit/workflow/` : ''
-    return `${prefixURL}${workflowId}/ci-pipeline${ciPipelineId ? `/${ciPipelineId}` : ''}`
+    let prefixURL = ''
+    if (isGitNotConfigured) {
+        prefixURL = `/${isJobView ? 'job' : 'app'}/${appId}/edit/workflow/`
+    }
+    const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
+    return `${prefixURL}${workflowId}/ci-pipeline${ciPipelineSuffix}`
 }
 
 export function getExCIPipelineURL(appId: string, workflowId: string, ciPipelineId: string = null) {

@@ -1,18 +1,5 @@
-import { VulnerabilityType } from '../components/common';
+import { ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
 import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
-
-export interface ResponseType {
-    code: number;
-    status: string;
-    result?: any;
-    errors?: any;
-}
-
-export interface APIOptions {
-    timeout?: number;
-    signal?: AbortSignal;
-    preventAutoLogout?: boolean;
-}
 
 export interface RootObject {
     code: number;
@@ -42,6 +29,7 @@ export interface CDPipeline {
     id: number;
     environmentId: number;
     environmentName: string;
+    description: string;
     ciPipelineId: number;
     triggerType: string;
     name: string;
@@ -55,16 +43,6 @@ export interface CDPipeline {
     runPostStageInEnv: boolean;
     isClusterCdActive: boolean;
     deploymentAppType?: DeploymentAppType
-}
-
-export interface TeamList extends RootObject {
-    result: Teams[];
-}
-
-export interface Teams {
-    id: number;
-    name: string;
-    active: boolean;
 }
 
 export interface AppListMin extends ResponseType {
@@ -92,6 +70,7 @@ export interface AppEnvironment {
     lastDeployed?: string
     appStatus?: string
     deploymentAppDeleteRequest?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface AppOtherEnvironment extends ResponseType {
@@ -120,6 +99,7 @@ export interface LastExecutionResponseType {
             low: number;
         },
         vulnerabilities: VulnerabilityType[];
+        scanToolId ?:number
     }
 }
 
@@ -176,6 +156,7 @@ export interface EnvironmentHelmResult {
     environmentName: string,
     namespace: string,
     environmentIdentifier: string
+    isVirtualEnvironment?: boolean // Need to confirm for not full mode
 }
 
 export interface ClusterListResponse extends ResponseType {
@@ -187,6 +168,7 @@ export interface Cluster {
     cluster_name: string
     active: boolean
     errorInConnecting?: string
+    isVirtualCluster?: boolean
 }
 export interface LoginCountType extends ResponseType {
   result?: LoginCount

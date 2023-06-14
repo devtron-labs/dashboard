@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { showError, Progressing, PopupMenu, ConfirmationDialog, Td } from '../../common';
+import { Td } from '../../common';
 import moment from 'moment';
-import { get } from '../../../services/api';
+import { get, ServerErrors, showError, Progressing, ConfirmationDialog, ForceDeleteDialog, PopupMenu } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes, URLS, ViewType, SERVER_MODE } from '../../../config';
 import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
@@ -9,8 +9,6 @@ import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
-import { ServerErrors } from '../../../modals/commonTypes';
-import ForceDeleteDialog from '../../common/dialogs/ForceDeleteDialog';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
 
 export function ChartDeploymentList({ chartId }) {
@@ -118,12 +116,21 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         }
     }
 
+    const renderChartStatus = (status: string) => {
+        if (status === 'Not Found') {
+            return 'NOT AVAILABLE'
+        }
+        return status.toUpperCase()
+    }
+
     return (
         <>
             <tr className="deployment-table-row" >
                 <Td to={link} className="app-detail">
                     <div className="deployed-app-name dc__ellipsis-right" >{appName}</div>
-                    <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{status.toUpperCase()}</div>
+                    <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{
+                    renderChartStatus(status)
+                    }</div>
                 </Td>
                 <Td to={link} className="dc__ellipsis-right">{environmentName}</Td>
                 <Td to={link} className="dc__ellipsis-right">{deployedBy}</Td>

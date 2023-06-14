@@ -1,5 +1,6 @@
 import React from 'react'
-import { Progressing, BreadCrumb, useAsync, useBreadcrumb } from '../../common'
+import { useAsync } from '../../common'
+import { Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartGroups } from '../charts.service'
 import ChartGroupCard from '../util/ChartGroupCard'
 import { useRouteMatch, useHistory, useLocation, Switch } from 'react-router'

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, showError, useAsync, useInterval, mapByKey, asyncWrap, sortCallback } from '../../../common'
+import { Progressing, showError, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { getCDConfig } from '../../AppGroup.service'
+import { getAppsCDConfigMin } from '../../AppGroup.service'
 import Sidebar from '../../../app/details/cicdHistory/Sidebar'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
 import { getTriggerHistory } from '../../../app/details/cdDetails/service'
@@ -17,7 +18,7 @@ import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
 
-export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
         envId: string
@@ -31,8 +32,12 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
     const [pipelineList, setPipelineList] = useState([])
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [loading, result] = useAsync(
-        () => Promise.allSettled([getCDConfig(envId), getModuleConfigured(ModuleNameMap.BLOB_STORAGE)]),
-        [envId],
+        () =>
+            Promise.allSettled([
+                getAppsCDConfigMin(envId, filteredAppIds),
+                getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+            ]),
+        [filteredAppIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
@@ -45,32 +50,21 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     useEffect(() => {
-        if (filteredApps.length && result?.[0]?.['value']?.result?.pipelines.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _filteredPipelines = []
-            let selectedPipelineExist = false
-            result[0]['value'].result.pipelines.forEach((pipeline) => {
-                if (pipeline.environmentId === +envId && _filteredAppMap.get(+pipeline.appId)) {
-                    _filteredPipelines.push(pipeline)
-                    selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
-                }
-            })
-            _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
+        if (result?.[0]?.['value']?.result?.length) {
+            const selectedPipelineExist = result[0]['value'].result.some((pipeline) => pipeline.id === +pipelineId)
+            result[0]['value'].result.sort((a, b) => sortCallback('appName', a, b))
             if (!selectedPipelineExist) {
                 replace(
                     generatePath(path, {
                         envId,
-                        appId: _filteredPipelines[0].appId,
-                        pipelineId: _filteredPipelines[0].id,
+                        appId: result[0]['value'].result[0].appId,
+                        pipelineId: result[0]['value'].result[0].id,
                     }),
                 )
             }
-            setPipelineList(_filteredPipelines)
+            setPipelineList(result[0]['value'].result)
         }
-    }, [filteredApps, result?.[0]?.['value']?.result?.pipelines])
+    }, [result?.[0]?.['value']?.result])
 
     useEffect(() => {
         // check for more
@@ -126,13 +120,11 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
         return <Progressing pageLoader />
-    } else if (result && !Array.isArray(result[0]?.['value']?.result?.pipelines)) {
+    } else if (result && !Array.isArray(result[0]?.['value']?.result)) {
         return <AppNotConfigured />
     } else if (!result || (appId && dependencyState[1] !== appId)) {
         return null
     }
-
-    const deploymentAppType = pipelineList.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
 
     if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(
@@ -144,7 +136,6 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
             }),
         )
     }
-    const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
 
     const envOptions: CICDSidebarFilterOptionType[] = pipelineList.map((item) => {
         return {
@@ -156,6 +147,9 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
 
     const renderDetail = (): JSX.Element => {
         if (triggerHistory.size > 0) {
+            const deploymentAppType = pipelineList.find(
+                (pipeline) => pipeline.id === Number(pipelineId),
+            )?.deploymentAppType
             return (
                 <Route
                     path={`${path
@@ -182,6 +176,7 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
                 />
             )
         } else {
+            const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
             return (
                 <EmptyView
                     title={APP_GROUP_CD_DETAILS.noDeployment.title}

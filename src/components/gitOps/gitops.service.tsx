@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { post, put, get } from '../../services/api';
+import { post, put, get } from '@devtron-labs/devtron-fe-common-lib';
 
 export const getGitOpsConfiguration = (id: number): Promise<any> => {
   const URL = `${Routes.GITOPS}/${id}`;
@@ -19,7 +19,7 @@ export const saveGitOpsConfiguration = (request: any):Promise<any>  => {
 export function getGitOpsConfigurationList(): Promise<any> {
   const URL = `${Routes.GITOPS}`;
   return get(URL);
-}  
+}
 
 export const validateGitOpsConfiguration = (request: any):Promise<any> => {
   const URL = `${Routes.GITOPS_VALIDATE}`;

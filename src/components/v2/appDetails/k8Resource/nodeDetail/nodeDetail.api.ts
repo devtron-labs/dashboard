@@ -1,5 +1,5 @@
-import { Routes } from '../../../../../config'
-import { get, post, put } from '../../../../../services/api'
+import { Routes } from '../../../../../config';
+import { get, post, put } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails, AppType, DeploymentAppType, SelectedResourceType } from '../../appDetails.type'
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
@@ -24,13 +24,13 @@ export const getManifestResource = (
 
     return get(
         `api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${
-            ad.namespace
+            cn.namespace || ''
         }&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`,
     )
 }
 
 export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
-    const selectedResource = appDetails.resourceTree.nodes.filter(
+    const selectedResource = appDetails.resourceTree?.nodes.filter(
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0]
     const requestData = {
@@ -62,7 +62,9 @@ export const getEvent = (
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
     return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
+        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${
+            cn.namespace || ''
+        }&resourceUID=${cn.uid}&resourceName=${cn.name}`,
     )
 }
 

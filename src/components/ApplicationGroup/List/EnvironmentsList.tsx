@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import './EnvironmentsList.scss'
 import PageHeader from '../../common/header/PageHeader'
-import { Filter, FilterOption, Progressing, useAsync } from '../../common'
+import { Filter, FilterOption, useAsync } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { Cluster } from '../../../services/service.types'
@@ -137,6 +138,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
             <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
+                    data-testid="environment-search-box"
                     type="text"
                     placeholder="Search environment"
                     value={searchText}
@@ -194,11 +196,12 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
 
     return (
         <div>
-            <PageHeader headerName="Application Groups" markAsBeta={true}/>
+            <PageHeader headerName="Application Groups" markAsBeta={true} />
             <div className="env-list bcn-0">
-                <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
+                <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
                     {renderSearch()}
                     <Filter
+                        dataTestId="app-group-cluster"
                         list={clusterfilter}
                         labelKey="label"
                         buttonText="Cluster"

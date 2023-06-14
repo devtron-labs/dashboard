@@ -9,6 +9,8 @@ export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
+    JOB: '/job',
+    CREATE_JOB: 'create-job',
     APPLICATION_GROUP: '/application-group',
     RESOURCE_BROWSER: '/resource-browser',
     EXTERNAL_APPS: 'ea',
@@ -63,6 +65,8 @@ export const URLS = {
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
+    GLOBAL_CONFIG_TAGS: '/global-config/tags',
+    GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     SECURITY: '/security',
@@ -103,13 +107,14 @@ export const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
     { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG },
 ]
 
-export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE): string => {
-    if (!appStage) return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}`
+export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
+    const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
+    if (!appStage) return _url
     for (let stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
         const { stage, path } = stageDetail
-        if (stage === appStage) return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${path}`
+        if (stage === appStage) return `${_url}/${path}`
     }
-    return `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_GIT_CONFIG}`
+    return `${_url}/${URLS.APP_GIT_CONFIG}`
 }
 
 export function getAppDetailsURL(appId: number | string, envId?: number | string): string {

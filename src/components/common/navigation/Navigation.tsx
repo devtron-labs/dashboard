@@ -14,7 +14,6 @@ import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-sec
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
-import { getLoginInfo } from '../index'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
@@ -23,12 +22,15 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 
 const NavigationList = [
     {
         title: 'Applications',
+        dataTestId: 'click-on-application',
         type: 'link',
         iconClass: 'nav-short-apps',
         icon: ApplicationsIcon,
@@ -36,7 +38,18 @@ const NavigationList = [
         isAvailableInEA: true,
     },
     {
+        title: 'Jobs',
+        dataTestId: 'click-on-job',
+        type: 'link',
+        iconClass: 'nav-short-jobs',
+        icon: JobsIcon,
+        href: URLS.JOB,
+        isAvailableInEA: false,
+        markOnlyForSuperAdmin: true,
+    },
+    {
         title: 'Application Groups',
+        dataTestId: 'click-on-application-groups',
         type: 'link',
         iconClass: 'nav-short-env',
         icon: EnvIcon,
@@ -46,24 +59,8 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
-        title: 'Resource Browser',
-        type: 'link',
-        iconClass: 'nav-short-apps',
-        icon: CubeIcon,
-        href: URLS.RESOURCE_BROWSER,
-        isAvailableInEA: true,
-        markAsBeta: false,
-    },
-    {
-        title: 'Chart Store',
-        type: 'link',
-        iconClass: 'nav-short-helm',
-        icon: ChartStoreIcon,
-        href: URLS.CHARTS,
-        isAvailableInEA: true,
-    },
-    {
         title: 'Deployment Groups',
+        dataTestId: 'click-on-deployment-groups',
         type: 'link',
         iconClass: 'nav-short-bulk-actions',
         icon: DeploymentGroupIcon,
@@ -72,23 +69,48 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
-        title: 'Security',
+        title: 'Resource Browser',
+        dataTestId: 'click-on-resource-browser',
         type: 'link',
-        href: URLS.SECURITY,
-        iconClass: 'nav-security',
-        icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY,
+        iconClass: 'nav-short-resource-browser',
+        icon: CubeIcon,
+        href: URLS.RESOURCE_BROWSER,
+        isAvailableInEA: true,
+        markAsBeta: false,
+        isAvailableInDesktop: true,
     },
     {
         title: 'Clusters',
+        dataTestId: 'click-on-cluster',
         type: 'link',
         href: URLS.CLUSTER_LIST,
         iconClass: 'nav-short-clusters',
         icon: ClusterIcon,
         isAvailableInEA: true,
+        isAvailableInDesktop: true,
+    },
+    {
+        title: 'Chart Store',
+        dataTestId: 'click-on-chart-store',
+        type: 'link',
+        iconClass: 'nav-short-helm',
+        icon: ChartStoreIcon,
+        href: URLS.CHARTS,
+        isAvailableInEA: true,
+    },
+    {
+        title: 'Security',
+        dataTestId: 'click-on-security',
+        type: 'link',
+        href: URLS.SECURITY,
+        iconClass: 'nav-security',
+        icon: SecurityIcon,
+        moduleName: ModuleNameMap.SECURITY_CLAIR,
+        moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
     },
     {
         title: 'Bulk Edit',
+        dataTestId: 'click-on-bulk-edit',
         type: 'link',
         href: URLS.BULK_EDITS,
         iconClass: 'nav-bulk-update',
@@ -97,16 +119,19 @@ const NavigationList = [
     },
     {
         title: 'Global Configurations',
+        dataTestId: 'click-on-global-configuration',
         type: 'link',
         href: URLS.GLOBAL_CONFIG,
         iconClass: 'nav-short-global',
         icon: GlobalConfigIcon,
         isAvailableInEA: true,
+        isAvailableInDesktop: true,
     },
 ]
 
 const NavigationStack = {
     title: 'Devtron Stack Manager',
+    dataTestId: 'click-on-stack-manager',
     type: 'link',
     iconClass: 'nav-short-stack',
     icon: StackManagerIcon,
@@ -116,7 +141,9 @@ interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
     moduleInInstallingState: string
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
+    isSuperAdmin: boolean
 }
+
 export default class Navigation extends Component<
     NavigationType,
     {
@@ -155,29 +182,48 @@ export default class Navigation extends Component<
     componentDidUpdate(prevProps) {
         if (
             this.props.moduleInInstallingState !== prevProps.moduleInInstallingState &&
-            this.props.moduleInInstallingState === ModuleNameMap.SECURITY
+            (this.props.moduleInInstallingState === ModuleNameMap.SECURITY_CLAIR ||
+                this.props.moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY)
         ) {
             this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
         }
     }
 
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
-        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY]) {
+        if (
+            this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] ||
+            window._env_.K8S_CLIENT ||
+            this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY]
+        ) {
             return
         }
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                this.props.installedModuleMap.current = {
-                    ...this.props.installedModuleMap.current,
-                    [ModuleNameMap.SECURITY]: true,
-                }
-                this.setState({ forceUpdateTime: Date.now() })
-            } else if (result?.status === ModuleStatus.INSTALLING) {
-                this.securityModuleStatusTimer = setTimeout(() => {
-                    this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
-                }, MODULE_STATUS_POLLING_INTERVAL)
-            }
+            Promise.all([getModuleInfo(ModuleNameMap.SECURITY_CLAIR), getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(
+                ([clairResponse, trivyResponse]) => {
+                    if (clairResponse?.result?.status === ModuleStatus.INSTALLED) {
+                        this.props.installedModuleMap.current = {
+                            ...this.props.installedModuleMap.current,
+                            [ModuleNameMap.SECURITY_CLAIR]: true,
+                        }
+                        this.setState({ forceUpdateTime: Date.now() })
+                    } else if (clairResponse?.result?.status === ModuleStatus.INSTALLING) {
+                        this.securityModuleStatusTimer = setTimeout(() => {
+                            this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
+                        }, MODULE_STATUS_POLLING_INTERVAL)
+                    }
+                    if (trivyResponse?.result?.status === ModuleStatus.INSTALLED) {
+                        this.props.installedModuleMap.current = {
+                            ...this.props.installedModuleMap.current,
+                            [ModuleNameMap.SECURITY_TRIVY]: true,
+                        }
+                        this.setState({ forceUpdateTime: Date.now() })
+                    } else if (trivyResponse?.result?.status === ModuleStatus.INSTALLING) {
+                        this.securityModuleStatusTimer = setTimeout(() => {
+                            this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
+                        }, MODULE_STATUS_POLLING_INTERVAL)
+                    }
+                },
+            )
         } catch (error) {
             if (retryOnError >= 0) {
                 this.getSecurityModuleStatus(retryOnError--)
@@ -253,7 +299,7 @@ export default class Navigation extends Component<
             >
                 <div className="short-nav__item-selected" />
                 <div className="short-nav--flex">
-                    <div className={`svg-container flex ${item.iconClass}`}>
+                    <div className={`svg-container flex ${item.iconClass}`} data-testid={item?.dataTestId}>
                         <item.icon className="icon-dim-20" />
                     </div>
                     <div className="expandable-active-nav">
@@ -262,6 +308,23 @@ export default class Navigation extends Component<
                 </div>
             </NavLink>
         )
+    }
+
+    canShowNavOption = (item) => {
+        const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
+        if (window._env_.K8S_CLIENT) {
+            return item.isAvailableInDesktop
+        } else if (
+            allowedUser &&
+            (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
+        ) {
+            return (
+                (this.props.serverMode === SERVER_MODE.FULL && !item.moduleName) ||
+                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                this.props.installedModuleMap.current?.[item.moduleName] ||
+                this.props.installedModuleMap.current?.[item.moduleNameTrivy]
+            )
+        }
     }
 
     render() {
@@ -279,22 +342,20 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                <svg className="devtron-logo" viewBox="0 0 40 40">
+                                <svg
+                                    className="devtron-logo"
+                                    data-testid="click-on-devtron-app-logo"
+                                    viewBox="0 0 40 40"
+                                >
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
-                                <div className="pl-12 pt-10 pt-0">
+                                <div className="pl-12">
                                     <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
                                 </div>
                             </div>
                         </NavLink>
-                        {NavigationList.map((item, index) => {
-                            if (
-                                (!item.forceHideEnvKey ||
-                                    (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                    (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                    this.props.installedModuleMap.current?.[item.moduleName])
-                            ) {
+                        {NavigationList.map((item) => {
+                            if (this.canShowNavOption(item)) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
                                 } else {
@@ -302,8 +363,12 @@ export default class Navigation extends Component<
                                 }
                             }
                         })}
-                        <div className="short-nav__divider" />
-                        {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                        {!window._env_.K8S_CLIENT && (
+                            <>
+                                <div className="short-nav__divider" />
+                                {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                            </>
+                        )}
                     </aside>
                 </nav>
                 <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>

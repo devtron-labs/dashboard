@@ -1,5 +1,4 @@
 import { History } from '../cicdHistory/types'
-import { CIMaterial } from '../triggerView/ciMaterial'
 
 export interface CIPipeline {
     name: string
@@ -14,15 +13,20 @@ export interface BuildDetails {
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
+    isJobView?: boolean
+    appIdFromParent?: string
 }
 
 export interface HistoryLogsType {
     triggerDetails: History
     isBlobStorageConfigured?: boolean
+    isJobView?: boolean
+    appIdFromParent?: string
 }
 
 export interface SecurityTabType {
     ciPipelineId: number
     artifactId: number
     status: string
+    appIdFromParent?: string
 }

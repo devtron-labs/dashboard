@@ -1,7 +1,7 @@
 import { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-
+import { UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string
@@ -27,6 +27,10 @@ export interface History {
     triggeredByEmail: string
     stage?: DeploymentStageType
     blobStorageEnabled?: boolean
+    isArtifactUploaded?: boolean
+    userApprovalMetadata?: UserApprovalMetadataType
+    IsVirtualEnvironment?: boolean
+    helmPackageName?: string
 }
 
 export interface CiMaterial {
@@ -48,7 +52,7 @@ export interface CiMaterial {
 export interface GitTriggers {
     Commit: string
     Author: string
-    Date: Date
+    Date: Date | string
     Message: string
     Changes: string[]
     WebhookData: WebHookData
@@ -62,7 +66,10 @@ export interface ArtifactType {
     status: string
     artifact: string
     blobStorageEnabled: boolean
+    isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
+    isJobView?: boolean
+    type: HistoryComponentType
 }
 
 export interface CopyTippyWithTextType {
@@ -72,7 +79,9 @@ export interface CopyTippyWithTextType {
 }
 
 export interface CIListItemType {
-    type: 'report' | 'artifact'
+    type: 'report' | 'artifact' | 'approved-artifact'
+    userApprovalMetadata?: UserApprovalMetadataType
+    triggeredBy?: string
     children: any
 }
 
@@ -96,6 +105,9 @@ export interface ScrollerType {
 export interface GitChangesType {
     gitTriggers: Map<number, GitTriggers>
     ciMaterials: CiMaterial[]
+    artifact?: string
+    userApprovalMetadata?: UserApprovalMetadataType
+    triggeredByEmail?: string
 }
 export interface EmptyViewType {
     imgSrc?: string
@@ -124,6 +136,7 @@ export interface HistorySummaryCardType {
     artifact: string
     type: HistoryComponentType
     stage: DeploymentStageType
+    dataTestId?: string
 }
 
 export interface SummaryTooltipCardType {
@@ -151,14 +164,14 @@ export interface TriggerDetailsType {
 }
 
 export interface TriggerDetailsStatusIconType {
-  status: string
+    status: string
 }
 
 export interface FinishedType {
     status: string
-    startedOn:string
     finishedOn: string
     artifact: string
+    type: HistoryComponentType
 }
 export interface WorkerStatusType {
     message: string
@@ -167,7 +180,6 @@ export interface WorkerStatusType {
 }
 export interface ProgressingStatusType {
     status: string
-    startedOn: string
     message: string
     podStatus: string
     stage: DeploymentStageType
@@ -176,7 +188,6 @@ export interface ProgressingStatusType {
 
 export interface CurrentStatusType {
     status: string
-    startedOn:string
     finishedOn: string
     artifact: string
     message: string
@@ -204,7 +215,7 @@ export enum HistoryComponentType {
     CI = 'CI',
     CD = 'CD',
     GROUP_CI = 'GROUP_CI',
-    GROUP_CD = 'GROUP_CD'
+    GROUP_CD = 'GROUP_CD',
 }
 
 export enum DeploymentStageType {

@@ -3,6 +3,11 @@
     right: 56px;
 }
 
+.help-card__more-option.k8s-client-view {
+  right: 20px;
+  grid-template-rows: 36px 1px 36px 1px 36px 1px 36px auto;
+}
+
 .logout-card__more-option {
     top: 42px;
     right: 20px;

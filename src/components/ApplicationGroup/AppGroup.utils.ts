@@ -1,8 +1,13 @@
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
+import {
+    ServerErrors,
+    showError,
+    BlockedStateData,
+    ConsequenceType,
+    ConsequenceAction,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
-import { showError } from '../common'
 import { getEnvAppList } from './AppGroup.service'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
 
@@ -52,7 +57,7 @@ export const processWorkflowStatuses = (
         wf.nodes = wf.nodes.map((node) => {
             switch (node.type) {
                 case 'CI':
-                    node['status'] = ciMap[node.id]?.status
+                    node['status'] = node.isLinkedCI ? ciMap[node.parentCiPipeline]?.status : ciMap[node.id]?.status
                     node['storageConfigured'] = ciMap[node.id]?.storageConfigured
                     break
                 case 'PRECD':
@@ -78,9 +83,10 @@ export const handleSourceNotConfigured = (
     _materialList: any[],
     isDockerFileError: boolean,
 ) => {
-    if (_materialList?.length > 0) {
+    if (_materialList.length > 0) {
         _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
     }
+
     for (const material of wf.gitMaterials) {
         if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
             continue
@@ -104,6 +110,8 @@ export const handleSourceNotConfigured = (
             isRegex: false,
             isDockerFileError: isDockerFileError,
             dockerFileErrorMsg: isDockerFileError ? DOCKER_FILE_ERROR_TITLE : '',
+            isMaterialSelectionError: false,
+            materialSelectionErrorMsg: '',
         }
         _materialList.push(ciMaterial)
     }
@@ -150,7 +158,7 @@ export const appGroupAppSelectorStyle = {
         borderRadius: '4px',
         height: '32px',
         fontSize: '12px',
-        width: '250px',
+        width: state.menuIsOpen ? '250px' : 'unset',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
     singleValue: (base, state) => ({
@@ -165,20 +173,24 @@ export const appGroupAppSelectorStyle = {
         ...base,
         fontWeight: '500',
         fontSize: '13px',
-        padding: '5px 8px 5px 0',
+        padding: '6px 8px 6px 0',
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         backgroundColor: getBGColor(state.isSelected, state.isFocused),
+        cursor: 'pointer',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     }),
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        padding: '0px 10px',
+        padding: '0 0 0 10px',
         display: 'flex',
         height: '30px',
         fontSize: '13px',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         pointerEvents: 'all',
-        width: '100px',
+        width: state.menuIsOpen ? '250px' : 'max-content',
         whiteSpace: 'nowrap',
     }),
     menuList: (base) => {
@@ -186,9 +198,14 @@ export const appGroupAppSelectorStyle = {
             ...base,
             paddingTop: '0',
             paddingBottom: '0',
-            marginBottom: '4px',
+            marginBottom: '0',
+            borderRadius: '4px',
         }
     },
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        padding: '0 4px 0 4px',
+    }),
 }
 
 const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
@@ -207,4 +224,33 @@ export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): strin
         return 'bc-n50'
     }
     return 'bcn-0'
+}
+
+export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], filteredCIPipelines) => {
+    let branchValues = ''
+
+    for (const workflow of workflows) {
+        for (const node of workflow.nodes) {
+            if (node.type === 'CI' && node.id == ciNodeId) {
+                const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                if (selectedCIPipeline?.ciMaterial) {
+                    for (const mat of selectedCIPipeline.ciMaterial) {
+                        branchValues += `${branchValues ? ',' : ''}${mat.source.value}`
+                    }
+                }
+                break
+            }
+        }
+    }
+    return branchValues
+}
+
+export const processConsequenceData = (data: BlockedStateData): ConsequenceType | null => {
+    if (!data.isOffendingMandatoryPlugin) {
+        return null
+    } else if (data.isCITriggerBlocked) {
+        return { action: ConsequenceAction.BLOCK, metadataField: null }
+    } else {
+        return data.ciBlockState
+    }
 }

@@ -22,22 +22,31 @@ export const styles = {
             color: 'var(--N900)'
         })
     },
+    multiValue: (base ,state) => {
+        return({
+            ...base,
+            backgroundColor: 'var(--N0)',
+            border: '1px solid var(--N200)',
+            borderRadius: '4px'
+        })
+    },
     option: (base, state) => {
         return ({
             ...base,
             color: 'var(--N900)',
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+            paddingLeft: '8px',
         })
     }
 }
 
 export function Option(props) {
     const { selectOption, data } = props;
-    const style = { height: '16px', width: '16px', flex: '0 0 16px' }
+    const style = { flex: '0 0' , alignText: 'left' }
     const onClick = (e) => selectOption(data);
-    return <div className="flex left pl-12" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-        {props.isSelected ? <Check onClick={onClick} className="mr-8 icon-dim-16" style={style} />
-            : <span onClick={onClick} className="mr-8" style={style} />}
+    return <div className="flex left" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+        {props.isSelected ? <Check onClick={onClick} className="icon-dim-16" style={style} />
+            : <span onClick={onClick} style={style} />}
         <components.Option {...props} />
     </div>
 };
@@ -47,3 +56,5 @@ export function DropdownIndicator(props) {
         <ArrowDown className="icon-dim-20 icon-n5" />
     </components.DropdownIndicator>
 }
+
+export const NUMBER_OF_APPROVALS = 6

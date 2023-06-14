@@ -437,6 +437,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
       currentTableData: [{ icon: 'success', message: 'Started by Argo CD' }],
   }
 
+  // data when timelines is available
   if (data?.timelines?.length) {
       for (let index = data.timelines.length - 1; index >= 0; index--) {
           const element = data.timelines[index]
@@ -617,6 +618,20 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
               }
           }
       }
+  } else if(!data?.timelines){   // data when timelines is not available in case of the previously deployed app(deployment-status/timline api) )
+    if (data?.wfrStatus === 'Healthy' || data?.wfrStatus === 'Succeeded') {
+        deploymentData.deploymentStatus = DEPLOYMENT_STATUS.SUCCEEDED
+        deploymentData.deploymentStatusText = 'Succeeded'
+        deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
+        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
+        deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = true
+        deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = true
+        deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
+    } else if (data?.wfrStatus === 'Failed' || data?.wfrStatus === 'Degraded') {
+        deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
+        deploymentData.deploymentStatusText = 'Failed'
+        deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
+    }
   }
   return deploymentData
 }
@@ -629,4 +644,21 @@ export const ValueContainer = (props) => {
           {React.cloneElement(children[1])}
       </components.ValueContainer>
   )
+}
+
+export const ValueContainerImage = (props) => {
+    const value = props.selectProps?.value?.value
+    return (
+        <components.ValueContainer {...props}>
+            <>
+                {!props.selectProps.menuIsOpen &&
+                    (value ? (
+                        <div className="cn-7 fs-12 flex left">{value}</div>
+                    ) : (
+                        <span className="cn-5">Select or enter image</span>
+                    ))}
+                {React.cloneElement(props.children[1])}
+            </>
+        </components.ValueContainer>
+    )
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
 import { DEPLOYMENT_STATUS, MANIFEST_STATUS_HEADERS, Moment12HourFormat, TERMINAL_STATUS_MAP, TIMELINE_STATUS } from '../../../../config'
-import { showError } from '../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { getManualSync } from '../../service'
 import { DeploymentStatusDetailRowType } from './appDetails.type'
@@ -22,6 +22,7 @@ export function DeploymentStatusDetailRow({
     deploymentDetailedData,
     streamData,
 }: DeploymentStatusDetailRowType) {
+    
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
     const [collapsed, toggleCollapsed] = useState<boolean>(
@@ -93,8 +94,8 @@ export function DeploymentStatusDetailRow({
                                                 className="app-status-row pt-8 pb-8"
                                                 key={`${nodeDetails.resourceKind}/${nodeDetails.resourceName}`}
                                             >
-                                                <div>{nodeDetails.resourceKind}</div>
-                                                <div>{nodeDetails.resourceName}</div>
+                                                <div className="dc__break-word">{nodeDetails.resourceKind}</div>
+                                                <div className="dc__break-word">{nodeDetails.resourceName}</div>
                                                 <div
                                                     className={`app-summary__status-name f-${
                                                         nodeDetails.resourceStatus
@@ -186,7 +187,7 @@ export function DeploymentStatusDetailRow({
             >
                 {renderIcon(statusBreakDownType.icon)}
                 <span className="ml-12 mr-12 fs-13">
-                    <span>{statusBreakDownType.displayText}</span>
+                    <span data-testid = "deployment-status-step-name">{statusBreakDownType.displayText}</span>
                     {statusBreakDownType.displaySubText && (
                         <span className={`ml-12 f-${statusBreakDownType.icon || 'waiting'}`}>
                             {statusBreakDownType.displaySubText}
@@ -197,6 +198,7 @@ export function DeploymentStatusDetailRow({
                 {statusBreakDownType.time !== '' &&
                     statusBreakDownType.icon !== 'inprogress' && (
                         <span
+                            data-testid="deployment-status-kubernetes-dropdown"
                             className={`pl-8 pr-8 pt-4 pb-4 br-12 ${
                                 statusBreakDownType.icon === 'failed'
                                     ? 'bcr-1 cr-5'
