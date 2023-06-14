@@ -1,5 +1,5 @@
 import React from 'react'
-import { PluginDetailType, PluginType } from '../ciPipeline/types'
+import { PluginType, PluginDetailType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginCard } from './PluginCard'
 
 export function PluginCardListContainer({
@@ -9,7 +9,14 @@ export function PluginCardListContainer({
 }: {
     pluginListTitle: string
     pluginList: PluginDetailType[]
-    setPluginType: (PluginType: PluginType, pluginId: number, pluginName: string, pluginDescription: string) => void
+    setPluginType: (
+        PluginType: PluginType,
+        pluginId: number,
+        pluginName: string,
+        pluginDescription: string,
+        inputVariables: VariableType[],
+        outputVariables: VariableType[],
+    ) => void
 }) {
     return (
         pluginList.length > 0 && (
@@ -26,6 +33,8 @@ export function PluginCardListContainer({
                                 pluginDetails.id,
                                 pluginDetails.name,
                                 pluginDetails.description,
+                                pluginDetails.inputVariables ?? [],
+                                pluginDetails.outputVariables ?? [],
                             )
                         }
                     >

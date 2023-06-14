@@ -250,8 +250,11 @@
 }
 
 .task-container {
-    max-height: 235px;
+    max-height: calc(100vh - 330px);
     overflow: auto;
+    &.with-warning{
+      max-height: calc(100vh - 486px);
+    }
 }
 
 .task-item {

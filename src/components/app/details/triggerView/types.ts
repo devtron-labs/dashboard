@@ -1,6 +1,5 @@
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
-import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 import {
@@ -9,6 +8,8 @@ import {
     CommonNodeAttr,
     DeploymentNodeType,
     UserApprovalConfigType,
+    CIBuildConfigType,
+    DockerConfigOverrideType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CDMaterialProps {
@@ -135,6 +136,11 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     fromAppGrouping?: boolean
     appId: string
     isJobView?: boolean
+    isCITriggerBlocked?: boolean
+    ciBlockState?: {
+        action: any,
+        metadataField: string
+    }
 }
 
 export interface RegexValueType {
@@ -245,12 +251,7 @@ export interface TriggerViewContextType {
     selectMaterial: (materialId) => void
     toggleChanges: (materialId: string, hash: string) => void
     toggleInvalidateCache: () => void
-    getMaterialByCommit: (
-        ciNodeId: number,
-        materialId: number,
-        gitMaterialId: number,
-        commitHash: string,
-    ) => void
+    getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
 }
 
@@ -457,6 +458,12 @@ export interface CiPipeline {
     appName?: string
     appId?: string
     componentId?: number
+    isCITriggerBlocked?: boolean
+    ciBlockState?: {
+        action: any,
+        metadataField: string
+    }
+    isOffendingMandatoryPlugin?: boolean
 }
 
 export interface Material {
