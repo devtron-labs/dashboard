@@ -100,7 +100,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
 
-        const triggerHistoryMap = mapByKey(result?.result || [], 'id')
+        const triggerHistoryMap = mapByKey(result?.result?.cdWorkflows || [], 'id')
         const newTriggerHistory = Array.from(triggerHistoryMap).reduce((agg, [triggerId, curr]) => {
             const detailedTriggerHistory = triggerHistory.has(triggerId) ? triggerHistory.get(triggerId) : {}
             agg.set(curr.id, { ...detailedTriggerHistory, ...curr })
