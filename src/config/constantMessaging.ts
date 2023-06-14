@@ -329,6 +329,11 @@ export const EMPTY_STATE_STATUS = {
     CUSTOM_CHART_LIST: {
         TITLE: 'Use custom charts in applications',
     },
+
+    BULK_ACTION_EDITS: {
+        TITLE: 'No Linked pipelines created',
+        SUBTITLE: 'Deployment groups can only be created for applications and environments using Linked CI Pipelines.',
+    },
     
 }
 

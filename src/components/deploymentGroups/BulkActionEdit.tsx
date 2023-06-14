@@ -25,6 +25,7 @@ import {
     getDeploymentGroupDetails,
 } from './service'
 import { useMemo } from 'react';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 
 export function BulkActionEdit() {
     const { id } = useParams<{id: string}>();
@@ -266,11 +267,9 @@ export function BulkActionEdit() {
                                 <GenericEmptyState
                                     classname="flex column empty-pipelines w-32 h-32"
                                     image={Error}
-                                    title={'No Linked pipelines created'}
+                                    title={EMPTY_STATE_STATUS.BULK_ACTION_EDITS.TITLE}
                                     heightToDeduct={500}
-                                    subTitle={
-                                        'Deployment groups can only be created for applications and environments using Linked CI Pipelines.'
-                                }
+                                    subTitle={EMPTY_STATE_STATUS.BULK_ACTION_EDITS.SUBTITLE}
                             />}
                             </>}
                         </div>}
