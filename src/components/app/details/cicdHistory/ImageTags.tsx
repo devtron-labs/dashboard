@@ -253,7 +253,7 @@ export const ImageTagsContainer = ({
                         <span>Release tags (eg. v1.0)</span>
                         <div className="flex row ml-0">{renderInfoCard()}</div>
                     </div>
-                    <div className="mt-6">
+                    <div className="mt-6" data-testId="add-tag-text-area">
                         <Creatable
                             placeholder="Type a tag and press enter"
                             onCreateOption={handleTagCreate}
@@ -414,7 +414,7 @@ const AddImageButton = ({ handleEditClick }) => {
     }
 
     return (
-        <div className="add-tag-button flex pt-12 pr-12" onClick={handleClick}>
+        <div className="add-tag-button flex pt-12 pr-12" data-testId="add-tags-button" onClick={handleClick}>
             <div className="lh-16 flex">
                 <Add className="icon-dim-16 cn-6" />
                 <span className="cn-7">Add tags/comment</span>
