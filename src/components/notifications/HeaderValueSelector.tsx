@@ -41,9 +41,8 @@ export const HeaderValueSelector = ({
             value={selectedValue}
             onChange={handleInputChange}
             onBlur={onBlur}
-            // onFocus={handleOnFocus}
             placeholder={placeholder}
-            data-testid={`tag-${headerInputType === KEY_VALUE.KEY ? 'key' : 'value'}-${selectedHeaderIndex}`}
+            data-testid={`header-${headerInputType === KEY_VALUE.KEY ? 'key' : 'value'}-${selectedHeaderIndex}`}
         />
     )
 }

@@ -224,14 +224,14 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
     renderConfigureLinkInfoColumn() {
         let keys = Object.keys(this.state.webhookAttribute)
         return (
-            <div className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16">
+            <div className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16" data-testid="available-webhook-data">
                 <div className="flex dc__align-items-center p-0 mb-16">
                     <Help className="icon-dim-18 fcv-5" />
                     <span className="ml-8 fw-6 fs-13 lh-20"> Available data</span>
                 </div>
                 <span className="fw-4 fs-13 lh-20 mb-16">Following data are available to be shared through Webhook. Use Payload to configure.</span>
                 {keys.map((atrribute, index) => (
-                    <div className="w-100-imp cn-7 fs-12 mb-8 flex left hover-trigger" >
+                    <div className="w-100-imp cn-7 fs-12 mb-8 flex left hover-trigger" data-testid={`${this.state.webhookAttribute[atrribute]}-${index}`}>
                         <span className="bcn-1 br-4 fs-12 fw-4 lh-16 p-4">{this.state.webhookAttribute[atrribute]}</span>
                         <Tippy
                             className="default-tt"
@@ -305,7 +305,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                 <div className="w-600 m-20 flex column dc__align-start dc__content-start dc__overflow-scroll" style={{ height: 'calc(100vh - 160px)' }}>
                     <label className="form__row w-100-imp">
                         <span className="form__label dc__required-field">Configuration name</span>
-                        <input data-testid="add-slack-channel" className="form__input" type="text" name="app-name"
+                        <input data-testid="add-webhook-config-name" className="form__input" type="text" name="app-name"
                             value={this.state.form.configName} onChange={this.handleWebhookConfigNameChange}
                             onBlur={(event) => this.isValid(event, 'configName')}
                             placeholder="Enter name" autoFocus={true} tabIndex={1} />
@@ -342,7 +342,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                         <div className="flex ml-0 dc__content-space">
                             <span className="form__label">Headers
                             </span>
-                            <span className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor" onClick={this.addNewHeader}>
+                            <span className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor" data-testid="add-new-header-button" onClick={this.addNewHeader}>
                                 <Add className="icon-dim-20 fcb-5" /> Add
                             </span>
                         </div>
@@ -374,7 +374,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     <button type="button" className="cta cancel mr-16" tabIndex={5}
                         onClick={this.props.closeWebhookConfigModal}>Cancel
                     </button>
-                    <button onClick={(event) => { event.preventDefault(); this.saveWebhookConfig() }} data-testid="add-slack-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
+                    <button onClick={(event) => { event.preventDefault(); this.saveWebhookConfig() }} data-testid="add-webhook-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
                         {this.state.form.isLoading ? <Progressing /> : "Save"}
                     </button>
                 </div>

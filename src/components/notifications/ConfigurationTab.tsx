@@ -267,11 +267,11 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                             {this.state.webhookConfigurationList.map((webhookConfig) => {
                                 console.log(webhookConfig)
                                 return (
-                                    <td key={webhookConfig.id} className="configuration-tab__table-row">
-                                        <div className="slack-config-table__name dc__truncate-text ">
+                                    <td key={webhookConfig.id} className="configuration-tab__table-row" data-testid={`webhook-container-${webhookConfig.name}`}>
+                                        <div className="slack-config-table__name dc__truncate-text" data-testid={`webhook-config-name-${webhookConfig.name}`}>
                                             {webhookConfig.name}
                                         </div>
-                                        <div className="slack-config-table__webhook dc__truncate-text ">
+                                        <div className="slack-config-table__webhook dc__truncate-text" data-testid={`webhook-url-${webhookConfig.webhookUrl}`}>
                                             {webhookConfig.webhookUrl}
                                         </div>
                                         <div className="slack-config-table__action">

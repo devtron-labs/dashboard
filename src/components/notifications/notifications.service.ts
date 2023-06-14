@@ -125,7 +125,7 @@ export function getChannelConfigs(): Promise<ResponseType> {
 }
 
 export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
-    const URL = `${Routes.NOTIFIER}/attribute`
+    const URL = `${Routes.NOTIFIER}/variables`
     return get(URL)
 }
 
