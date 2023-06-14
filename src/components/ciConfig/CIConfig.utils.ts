@@ -1,9 +1,9 @@
 import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIPipelineDataType } from '../ciPipeline/types'
 import { deepEqual } from '../common'
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, CIBuildType, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 import {RootBuildContext} from "./ciConfigConstant";
 
@@ -131,7 +131,7 @@ export const CI_CONFIG_FORM_VALIDATION = {
     },
     buildContext: {
         required: false,
-    }
+    },
 }
 
 export const getCIConfigFormState = (
@@ -446,7 +446,7 @@ export const getCIConfigDiffValues = (
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
     let globalGitMaterialName, currentMaterialName
-    let globalBuildContextGitMaterialItem,currentBuildContextGitMaterialItem
+    let globalBuildContextGitMaterialItem, currentBuildContextGitMaterialItem
     let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext,
         currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
     let globalUseRootBuildContext = globalCIConfig.ciBuildConfig ? globalCIConfig.ciBuildConfig.useRootBuildContext : true
@@ -454,10 +454,10 @@ export const getCIConfigDiffValues = (
     globalBuildContext = globalBuildContext ? globalBuildContext : ''
     currentBuildContext = currentBuildContext ? currentBuildContext : ''
     if (
-        (globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
-            ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE)
+        globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
+        ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE
     ) {
-        if(materials) {
+        if (materials) {
             for (const gitMaterial of materials) {
                 if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
                     globalGitMaterialName = gitMaterial.materialName
@@ -536,7 +536,9 @@ export const getCIConfigDiffValues = (
         ciConfigDiffValues.push(
             {
                 configName: 'Repo containing build context',
-                changeBGColor: globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !== ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
+                changeBGColor:
+                    globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !==
+                    ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
                 baseValue: globalBuildContextGitMaterialItem?.name,
                 overridenValue: currentBuildContextGitMaterialItem?.name,
             },

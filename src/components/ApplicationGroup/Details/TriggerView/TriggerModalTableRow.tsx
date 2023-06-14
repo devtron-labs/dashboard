@@ -46,7 +46,7 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName }: Trigg
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
-                <div className="flex right cursor" onClick={downloadPackage}>
+                <div className="flex right cursor" data-testid={`bulk-cd-manifest-download-button-${index}`} onClick={downloadPackage}>
                     {downloader ? (
                         <span className="flex">
                             <Progressing />

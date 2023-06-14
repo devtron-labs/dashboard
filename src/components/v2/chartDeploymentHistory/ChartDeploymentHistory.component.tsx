@@ -457,6 +457,7 @@ function ChartDeploymentHistory({
                 className={`trigger-outputs-container ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
+                data-testid="trigger-output-container"
             >
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS && (
                     <DeploymentDetailSteps
