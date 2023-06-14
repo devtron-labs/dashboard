@@ -394,12 +394,13 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
 }
 export function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
     return (
-        <div className="flex h-100">
+        <div className="flex h-100 dc__position-rel">
             <GenericEmptyState
                 image={novulnerability}
-                title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
+                title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.TITLE}
+                subTitle={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.SUBTITLE}
                 children={
-                    <span className="flex workflow__header dc__border-radius-24 bcn-0">
+                    <span className="flex dc__border-radius-24 bcn-0 pl-16 pr-16 pt-8 pb-8 en-1 bw-1">
                         <ScannedByToolModal scanToolId={scanToolId} />
                     </span>
                 }
@@ -452,7 +453,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     function toggleCollapse() {
         setIsCollapsed(!isCollapsed)
     }
-        
+
     useEffect(() => {
         if (artifactId) {
             callGetSecurityIssues()
@@ -491,7 +492,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
             return <ImageNotScannedView />
         }
     } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId}/>  
+        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId}/>
     }
     const scanToolId= securityData.ScanToolId
 
