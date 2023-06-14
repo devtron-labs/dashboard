@@ -7,7 +7,7 @@ import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
-import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, {
     checkoutPathOption,
     renderOptionIcon,
@@ -16,7 +16,7 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { showError, ConditionalWrap, TippyCustomized, TippyTheme, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, ConditionalWrap, showError, TippyCustomized, TippyTheme, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
