@@ -30,6 +30,11 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     fromAppGrouping: boolean
     isJobView?: boolean
     index?: number
+    isCITriggerBlocked?: boolean
+    ciBlockState?: {
+        action: any
+        metadataField: string
+    }
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -106,14 +111,20 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 {this.props.linkedCount ? (
                     <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.linkedCount}>
                         <span className="link-count">
-                            {' '}
                             <img src={link} className="icon-dim-12 mr-5" alt="" />
                             {this.props.linkedCount}
                         </span>
                     </Tippy>
                 ) : null}
-                <div className="workflow-node__trigger-type workflow-node__trigger-type--ci">
-                    {this.props.triggerType}
+                <div
+                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci ${
+                        this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
+                    }`}
+                    style={{
+                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4
+                    }}
+                >
+                    {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
                 </div>
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
