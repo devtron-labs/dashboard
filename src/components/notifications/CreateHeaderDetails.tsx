@@ -1,9 +1,6 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { ReactComponent as DeleteCross } from '../../assets/icons/ic-cross.svg'
-import {
-    KEY_VALUE,
-    stopPropagation,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { KEY_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { CreateHeaderDetailsType } from './types'
 import { HeaderValueSelector } from './HeaderValueSelector'
 

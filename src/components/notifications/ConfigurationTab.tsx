@@ -727,8 +727,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                 : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
                                 ? this.state.sesConfig.configName
                                 : this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab
-                                ? this.state.webhookConfig
-                                : this.state.smtpConfig
+                                ? this.state.webhookConfig.configName
+                                : this.state.smtpConfig.configName
                         }
                         toggleConfirmation={this.toggleConfirmation}
                         component={
