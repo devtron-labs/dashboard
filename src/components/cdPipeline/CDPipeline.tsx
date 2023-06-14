@@ -269,13 +269,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
-        let isPrePostStage: boolean
         if (isVirtualEnvironment) {
-            isPrePostStage = true
+            return true
         } else {
-            isPrePostStage = isRunPrePostStageInEnv || false
+            return isRunPrePostStageInEnv ?? false
         }
-        return isPrePostStage
     }
 
     updateStateFromResponse(pipelineConfigFromRes, environments): void {
