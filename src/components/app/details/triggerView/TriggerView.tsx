@@ -47,13 +47,14 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
+import { getBranchValues, handleSourceNotConfigured, processConsequenceData, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { workflow } from './__mocks__/workflow.mock'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -519,7 +520,39 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ loader: true, showCIModal: true })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.abortController = new AbortController()
-        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal)
+
+        Promise.all([
+            this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
+            getCIBlockState && !this.props.isJobView
+                ? getCIBlockState(
+                      ciNodeId,
+                      this.props.match.params.appId,
+                      getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
+                  )
+                : { result: null },
+        ])
+            .then((resp) => {
+                // need to set result for getCIBlockState call only as for updateCIMaterialList
+                // it's already being set inside the same function
+                if (resp[1].result) {
+                    const workflows = [...this.state.workflows].map((workflow) => {
+                        workflow.nodes.map((node) => {
+                            if (node.type === 'CI' && node.id == ciNodeId) {
+                                node.ciBlockState = processConsequenceData(resp[1].result)
+                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                return node
+                            }
+                            return node
+                        })
+
+                        return workflow
+                    })
+
+                    this.setState({
+                        workflows,
+                    })
+                }
+            })
             .catch((errors: ServerErrors) => {
                 if (!this.abortController.signal.aborted) {
                     showError(errors)
@@ -656,7 +689,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
-        console.log(cdWorkflowType)
         const downloadManifetsDownload = {
             appId: appId,
             envId: envId,
@@ -689,7 +721,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        this.onClickManifestDownload(_appId, node.environmentId, response.result.helmPackageName, nodeType)
+                        this.onClickManifestDownload(
+                            _appId,
+                            node.environmentId,
+                            response.result.helmPackageName,
+                            nodeType,
+                        )
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -954,7 +991,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node[this.state.materialType][materialIndex]['lastExecution'] =
                                     response.result.lastExecution
                                 node[this.state.materialType][materialIndex]['vulnerabilitiesLoading'] = false
-                                node[this.state.materialType][materialIndex]['scanToolId']=response.result.scanToolId
+                                node[this.state.materialType][materialIndex]['scanToolId'] = response.result.scanToolId
                             }
                             return node
                         })
@@ -1125,6 +1162,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isCacheAvailable={nd?.storageConfigured}
                                 appId={this.props.match.params.appId}
                                 isJobView={this.props.isJobView}
+                                isCITriggerBlocked={nd?.isCITriggerBlocked}
+                                ciBlockState={nd?.ciBlockState}
                             />
                         )}
                     </div>

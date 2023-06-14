@@ -5,14 +5,14 @@ import {
     DropdownIcon,
     useJsonYaml,
 } from '../../common'
-import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
 import { MarkDown } from '../discoverChartDetail/DiscoverChartDetails'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { useHistory, useParams } from 'react-router'
-import { URLS, SERVER_MODE, DELETE_ACTION } from '../../../config'
+import { URLS, SERVER_MODE } from '../../../config'
 import {
     installChart,
     updateChart,
@@ -35,7 +35,6 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { DeploymentAppType } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
-import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -124,8 +123,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
     const { push } = useHistory()
     const { chartId, envId } = useParams<{ chartId; envId }>()
     const [showCodeEditorError, setCodeEditorError] = useState(false)
-    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false);
-    const [clusterName, setClusterName] = useState<string>('');
     const deployChartForm = useRef(null)
     const deployChartEditor = useRef(null)
 
@@ -353,27 +350,20 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
-    async function handleDelete(deleteAction: DELETE_ACTION) {
+    async function handleDelete(force) {
         setDeleting(true)
         try {
-            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), false, deleteAction)
-            if (response.result.deleteResponse?.deleteInitiated) {
-                toast.success('Successfully deleted.')
-                toggleConfirmation(false)
-                showNonCascadeDeleteDialog(false)
-                setForceDeleteDialog(false)
-                push(URLS.CHARTS)
-            } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
-                setClusterName(response.result.deleteResponse?.clusterName)
-                toggleConfirmation(false)
-                showNonCascadeDeleteDialog(true)
+            if (force === true) {
+                await deleteInstalledChart(installedAppId, force)
+            } else {
+                await deleteInstalledChart(installedAppId)
             }
+            toast.success('Successfully deleted.')
+            push(URLS.CHARTS)
         } catch (err: any) {
-            if (deleteAction !== DELETE_ACTION.FORCE_DELETE && err.code != 403) {
-                toggleConfirmation(false)
-                showNonCascadeDeleteDialog(false)
-                setForceDeleteDialogData(err)
+            if (!force && err.code != 403) {
                 setForceDeleteDialog(true)
+                setForceDeleteDialogData(err)
             } else {
                 showError(err)
             }
@@ -488,19 +478,6 @@ const DeployChart: React.FC<DeployChartProps> = ({
             fetchChartVersionsData(chartIdFromDeploymentDetail)
         }
     }, [])
-
-    const onClickHideNonCascadeDeletePopup = () => {
-        showNonCascadeDeleteDialog(false)
-    }
-    
-    const onClickNonCascadeDelete = async () => {
-        showNonCascadeDeleteDialog(false)
-        await handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
-    }
-
-    const handleForceDelete = () => {handleDelete(DELETE_ACTION.FORCE_DELETE)}
-    const handleCascadeDelete = () => {handleDelete(DELETE_ACTION.DELETE)}
-
     return (
         <>
             <div
@@ -741,7 +718,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 {confirmation && (
                     <DeleteDialog
                         title={`Delete '${originalName}' ?`}
-                        delete={handleCascadeDelete}
+                        delete={() => handleDelete(false)}
                         closeDelete={() => toggleConfirmation(false)}
                     >
                         <DeleteDialog.Description>
@@ -753,19 +730,12 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 {showForceDeleteDialog && (
                     <ForceDeleteDialog
                         forceDeleteDialogTitle={forceDeleteDialogTitle}
-                        onClickDelete={handleForceDelete}
+                        onClickDelete={() => handleDelete(true)}
                         closeDeleteModal={() => {
                             toggleConfirmation(false)
                             setForceDeleteDialog(false)
                         }}
                         forceDeleteDialogMessage={forceDeleteDialogMessage}
-                    />
-                )}
-                {nonCascadeDeleteDialog && (
-                    <ClusterNotReachableDailog
-                        clusterName={clusterName}
-                        onClickCancel={onClickHideNonCascadeDeletePopup}
-                        onClickDelete={onClickNonCascadeDelete}
                     />
                 )}
             </div>

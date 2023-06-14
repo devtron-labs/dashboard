@@ -1,5 +1,11 @@
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerErrors,
+    showError,
+    BlockedStateData,
+    ConsequenceType,
+    ConsequenceAction,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
@@ -220,6 +226,35 @@ export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): strin
         return 'bc-n50'
     }
     return 'bcn-0'
+}
+
+export const getBranchValues = (ciNodeId: string, workflows: WorkflowType[], filteredCIPipelines) => {
+    let branchValues = ''
+
+    for (const workflow of workflows) {
+        for (const node of workflow.nodes) {
+            if (node.type === 'CI' && node.id == ciNodeId) {
+                const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                if (selectedCIPipeline?.ciMaterial) {
+                    for (const mat of selectedCIPipeline.ciMaterial) {
+                        branchValues += `${branchValues ? ',' : ''}${mat.source.value}`
+                    }
+                }
+                break
+            }
+        }
+    }
+    return branchValues
+}
+
+export const processConsequenceData = (data: BlockedStateData): ConsequenceType | null => {
+    if (!data.isOffendingMandatoryPlugin) {
+        return null
+    } else if (data.isCITriggerBlocked) {
+        return { action: ConsequenceAction.BLOCK, metadataField: null }
+    } else {
+        return data.ciBlockState
+    }
 }
 
 export const imageTaggingSelectorStyle = {

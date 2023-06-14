@@ -1,5 +1,5 @@
+import { RefVariableType } from '@devtron-labs/devtron-fe-common-lib';
 import { PATTERNS } from '../../config'
-import { RefVariableType } from './types'
 import {
     CHARACTER_ERROR_MIN,
     CHARACTER_ERROR_MAX,

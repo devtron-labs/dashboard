@@ -1,6 +1,5 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
-import { SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -126,19 +125,6 @@ export interface ModuleConfigResponse extends ResponseType {
   }
 }
 
-export interface ClusterConnectionResponse extends ResponseType {
-  result?: {
-    clusterReachable: boolean
-    clusterName: string,
-  }
-}
-
-export type DeleteResponseType = {
-    clusterName: string,
-    clusterReachable: boolean,
-    deleteInitiated: boolean,
-}
-
 export interface DeploymentStatusDetailRowType {
     type: string
     hideVerticalConnector?: boolean
@@ -191,10 +177,6 @@ export interface DetailsType {
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnvRef?: React.MutableRefObject<boolean>
-}
-
-export interface DeletedAppComponentType extends SyncErrorType {
-    resourceTreeFetchTimeOut: boolean,
 }
 
 export interface DeploymentStatusCardType {
