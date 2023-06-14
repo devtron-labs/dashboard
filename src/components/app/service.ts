@@ -374,6 +374,7 @@ function cdMaterialListModal(
             artifactStatus: artifactStatusValue,
             userApprovalMetadata: material.userApprovalMetadata,
             triggeredBy: material.triggeredBy,
+            isVirtualEnvironment: material.isVirtualEnvironment,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {

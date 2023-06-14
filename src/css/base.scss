@@ -2392,6 +2392,10 @@ textarea,
     width: 0px;
 }
 
+.mw-none {
+  min-width: 0px !important;
+}
+
 .mw-4 {
     min-width: 4px !important;
 }
