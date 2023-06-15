@@ -390,7 +390,7 @@ export const ImageTagButton = ({
     }
 
     const isInSoftDeleteTags = isSoftDeleted && softDeleteTags.some((tag) => tag.tagName === text)
-    const isCloseButtonVisible = tagId === 0 || isSuperAdmin
+    const canTagBeHardDelete = tagId === 0 || isSuperAdmin
 
     return (
         <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mb-8 mr-8 ${ isSoftDeleted ? 'cr-5 bcr-1 dc__strike-through' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -399,7 +399,7 @@ export const ImageTagButton = ({
                     <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />
                 )}
                 {text}
-                {isHovered && isEditing && isCloseButtonVisible && (
+                {isHovered && isEditing && canTagBeHardDelete && (
                     <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />
                 )}
             </div>
