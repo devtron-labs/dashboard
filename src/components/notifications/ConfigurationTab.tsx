@@ -86,6 +86,10 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             showDeleteConfigModalType: '',
         }
         this.getAllChannelConfigs = this.getAllChannelConfigs.bind(this)
+        this.editWebhookHandler = this.editWebhookHandler.bind(this)
+        this.addWebhookConfigHandler = this.addWebhookConfigHandler.bind(this)
+        this.onSaveWebhook = this.onSaveWebhook.bind(this)
+        this.onCloseWebhookModal = this.onCloseWebhookModal.bind(this)
     }
 
     componentDidMount() {
@@ -109,6 +113,10 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             })
     }
 
+    addWebhookConfigHandler() {
+        this.setState({ showWebhookConfigModal: true, webhookConfigId: 0 })
+    }
+
     renderWebhookConfigurations() {
         return (
             <div key="webhook-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
@@ -120,9 +128,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <button
                         type="button"
                         className="cta flex small"
-                        onClick={(event) => {
-                            this.setState({ showWebhookConfigModal: true, webhookConfigId: 0 })
-                        }}
+                        onClick={this.addWebhookConfigHandler}
                         data-testid="webhook-config-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
@@ -239,6 +245,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
     }
 
+    editWebhookHandler(e) {
+        let _state = {...this.state}
+        _state.showWebhookConfigModal = true;
+        _state.webhookConfigId = e.currentTarget.dataset.webhookid
+        this.setState( _state )
+    }
+
     renderWebhookConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -278,12 +291,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                 <button
                                                     type="button"
                                                     className="dc__transparent dc__align-right mr-16"
-                                                    onClick={(event) => {
-                                                        this.setState({
-                                                            showWebhookConfigModal: true,
-                                                            webhookConfigId: webhookConfig.id,
-                                                        })
-                                                    }}
+                                                    data-webhookid={webhookConfig.id}
+                                                    onClick={this.editWebhookHandler}
                                                     data-testid="webhook-configure-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
@@ -664,18 +673,22 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         }
     }
 
+    onSaveWebhook() {
+        this.setState({ showWebhookConfigModal: false, webhookConfigId: 0 })
+        this.getAllChannelConfigs()
+    }
+
+    onCloseWebhookModal() {
+        this.setState({ showWebhookConfigModal: false, webhookConfigId: 0 })
+    }
+
     renderWebhookConfigModal() {
         if (this.state.showWebhookConfigModal) {
             return (
                 <WebhookConfigModal
                     webhookConfigId={this.state.webhookConfigId}
-                    onSaveSuccess={() => {
-                        this.setState({ showWebhookConfigModal: false, webhookConfigId: 0 })
-                        this.getAllChannelConfigs()
-                    }}
-                    closeWebhookConfigModal={(event) => {
-                        this.setState({ showWebhookConfigModal: false, webhookConfigId: 0 })
-                    }}
+                    onSaveSuccess={this.onSaveWebhook}
+                    closeWebhookConfigModal={this.onCloseWebhookModal}
                 />
             )
         }

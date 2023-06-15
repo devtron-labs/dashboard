@@ -57,6 +57,31 @@ export interface SMTPConfigModalState {
     }
 }
 
+export interface WebhookConfigModalProps {
+    webhookConfigId: number;
+    onSaveSuccess: () => void;
+    closeWebhookConfigModal: (event) => void;
+}
+
+export interface WebhhookConfigModalState {
+    view: string;
+    form: {
+        configName: string;
+        webhookUrl: string;
+        isLoading: boolean;
+        isError: boolean;
+        payload: string;
+        header: HeaderType[];
+    };
+    isValid: {
+        configName: boolean;
+        webhookUrl: boolean;
+        payload: boolean;
+    };
+    webhookAttribute: Record<string, string>;
+    copyAttribute: boolean;
+}
+
 export interface HeaderType {
     key: string
     value: string

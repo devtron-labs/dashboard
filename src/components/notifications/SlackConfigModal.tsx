@@ -56,6 +56,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
         this.handleWebhookUrlChange = this.handleWebhookUrlChange.bind(this);
         this.handleProjectChange = this.handleProjectChange.bind(this);
         this.isValid = this.isValid.bind(this);
+        this.onSaveClickHandler = this.onSaveClickHandler.bind(this);
     }
 
     componentDidMount() {
@@ -87,7 +88,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
         }
     }
 
-    handleSlackChannelChange(event: React.ChangeEvent<HTMLInputElement>, ): void {
+    handleSlackChannelChange(event: React.ChangeEvent<HTMLInputElement>,): void {
         let { form } = { ...this.state };
         form.configName = event.target.value;
         this.setState({ form });
@@ -159,6 +160,11 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
         </Drawer>
     }
 
+    onSaveClickHandler(event) {
+        event.preventDefault();
+        this.saveSlackConfig()
+    }
+
     render() {
         let project = this.state.projectList.find(p => p.id === this.state.form.projectId);
         let body;
@@ -168,7 +174,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
             </div>
         }
         else body = <>
-            <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
+            <div className="m-20" style={{ height: 'calc(100vh - 160px' }}>
                 <label className="form__row">
                     <span className="form__label">Slack Channel*</span>
                     <input data-testid="add-slack-channel" className="form__input" type="text" name="app-name"
@@ -183,7 +189,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                 </label>
                 <label className="form__row">
                     <span className="form__label">Webhook URL*
-                         <Tippy className="default-tt" arrow={true} trigger={"click"}
+                        <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true}
                             placement="top" content={
                                 <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack" target="_blank" rel="noopener noreferrer"
@@ -204,7 +210,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             : null}
                     </span>
                 </label>
-                <div >
+                <div>
                     <label className="form__label">Project*
                         <Tippy className="default-tt" arrow={true} trigger={"click"}
                             interactive={true} placement="top" content="Required to control user Acccess">
@@ -224,16 +230,16 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                     </span>
                 </div>
             </div>
-            <div className=" form__button-group-bottom flex right">
-                    <div className="flex right">
-                        <button type="button" className="cta cancel mr-16" tabIndex={5}
-                            onClick={this.props.closeSlackConfigModal}>Cancel
-                        </button>
-                        <button onClick={(event) => { event.preventDefault(); this.saveSlackConfig() }} data-testid="add-slack-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
-                            {this.state.form.isLoading ? <Progressing /> : "Save"}
-                        </button>
-                    </div>
+            <div className="form__button-group-bottom flex right">
+                <div className="flex right">
+                    <button type="button" className="cta cancel mr-16" tabIndex={5}
+                        onClick={this.props.closeSlackConfigModal}>Cancel
+                    </button>
+                    <button onClick={this.onSaveClickHandler} data-testid="add-slack-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
+                        {this.state.form.isLoading ? <Progressing /> : "Save"}
+                    </button>
                 </div>
+            </div>
         </>
 
         return this.renderWithBackdrop(body);

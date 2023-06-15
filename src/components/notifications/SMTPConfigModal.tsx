@@ -38,6 +38,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
         this.handleCheckbox = this.handleCheckbox.bind(this)
         this.handleBlur = this.handleBlur.bind(this)
         this.handleInputChange = this.handleInputChange.bind(this)
+        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
     }
 
     componentDidMount() {
@@ -154,6 +155,11 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                 </div>
             </Drawer>
         )
+    }
+
+    onSaveClickHandler(event) {
+        event.preventDefault()
+        this.saveSMTPConfig()
     }
 
     render() {
@@ -320,10 +326,8 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             >
                                 Cancel
                             </button>
-                            <button onClick={(event) => {
-                                event.preventDefault()
-                                this.saveSMTPConfig()
-                            }} data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button onClick={this.onSaveClickHandler}
+                            data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>

@@ -28,7 +28,7 @@ export const HeaderValueSelector = ({
         }
     }
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e): void => {
         setSelectedValue(e.target.value)
     }
 

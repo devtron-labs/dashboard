@@ -1,43 +1,19 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { copyToClipboard, Select } from '../common';
-import { showError, Progressing, VisibleModal, getTeamListMin as getProjectListMin, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard } from '../common';
+import { showError, Progressing, getTeamListMin as getProjectListMin, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
-import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration, getWebhookAttributes, updateWebhookConfiguration, saveWebhookConfiguration, getWebhookConfiguration } from './notifications.service';
+import { getWebhookAttributes, updateWebhookConfiguration, saveWebhookConfiguration, getWebhookConfiguration } from './notifications.service';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor';
-import { HeaderType } from './types';
+import { WebhhookConfigModalState, WebhookConfigModalProps } from './types';
 import CreateHeaderDetails from './CreateHeaderDetails';
-
-export interface WebhookConfigModalProps {
-    webhookConfigId: number;
-    onSaveSuccess: () => void;
-    closeWebhookConfigModal: (event) => void;
-}
-
-export interface WebhhookConfigModalState {
-    view: string;
-    form: {
-        configName: string;
-        webhookUrl: string;
-        isLoading: boolean;
-        isError: boolean;
-        payload: string;
-        header: HeaderType[];
-    };
-    isValid: {
-        configName: boolean;
-        webhookUrl: boolean;
-        payload: boolean;
-    };
-    webhookAttribute: Record<string, string>;
-    copyAttribute: boolean;
-}
+import HelpNav from '../common/header/HelpNav';
 
 export class WebhookConfigModal extends Component<WebhookConfigModalProps, WebhhookConfigModalState> {
 
@@ -72,6 +48,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.setCopied = this.setCopied.bind(this);
         this.copyToClipboard = this.copyToClipboard.bind(this);
         this.isValid = this.isValid.bind(this);
+        this.onSaveClickHandler = this.onSaveClickHandler.bind(this);
     }
 
     componentDidMount() {
@@ -83,13 +60,13 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     state.view = ViewType.FORM;
                     const _responseKeys = response.result?.header ? Object.keys(response.result.header) : undefined
                     {_responseKeys && _responseKeys.map((_key) => {
-                        _headers.push({ key: _key, value: response.result?.header[_key] })
+                            _headers.push({ key: _key, value: response.result.header[_key] })
                     })}
-                    const _responsePayload = response.result?.payload ? JSON.stringify(response.result?.payload) : ""
+                    const _responsePayload = response.result?.payload ? JSON.stringify(response.result.payload) : ""
                     state.form = {
                         ...response.result,
                         header: _headers,
-                        payload: _responsePayload    
+                        payload: _responsePayload
                     };
                     state.isValid = {
                         configName: true,
@@ -128,13 +105,13 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
 
     isValid(event, key: 'configName' | 'webhookUrl' | 'payload'): void {
         let { form, isValid } = { ...this.state };
-        if(key!='payload'){
+        if (key != 'payload') {
             isValid[key] = event.target.value.length !== 0;
-        }else if(this.state.form.payload != '') {
-            try{
+        } else if (this.state.form.payload != '') {
+            try {
                 JSON.parse(this.state.form.payload)
                 isValid[key] = true
-            }catch(err) {
+            } catch (err) {
                 isValid[key] = false
             }
         }
@@ -293,94 +270,103 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         </Drawer>
     }
 
-    render() {
-        let body;
+    onSaveClickHandler(event) {
+        event.preventDefault(); 
+        this.saveWebhookConfig();
+    }
+
+    renderWebhookModal = () => {
         if (this.state.view === ViewType.LOADING) {
-            body = <div style={{ height: "350px" }}>
+            return (<div style={{ height: "350px" }}>
                 <Progressing pageLoader />
             </div>
+            )
         }
-        else body = <>
-            <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
-                <div className="w-600 m-20 flex column dc__align-start dc__content-start dc__overflow-scroll" style={{ height: 'calc(100vh - 160px)' }}>
-                    <label className="form__row w-100-imp">
-                        <span className="form__label dc__required-field">Configuration name</span>
-                        <input data-testid="add-webhook-config-name" className="form__input" type="text" name="app-name"
-                            value={this.state.form.configName} onChange={this.handleWebhookConfigNameChange}
-                            onBlur={(event) => this.isValid(event, 'configName')}
-                            placeholder="Enter name" autoFocus={true} tabIndex={1} />
-                        <span className="form__error">
-                            {!this.state.isValid.configName
-                                ? <><Error className="form__icon form__icon--error" />This is required field.<br /></>
-                                : null}
-                        </span>
-                    </label>
-                    <label className="form__row w-100-imp">
-                        <span className="form__label dc__required-field">Webhook URL
-                            <Tippy className="default-tt" arrow={true} trigger={"click"}
-                                interactive={true}
-                                placement="top" content={
-                                    <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack" target="_blank" rel="noopener noreferrer"
-                                        style={{ color: "white", textTransform: "none" }}>
-                                        Learn how to setup slack webhooks
-                                    </a>
-                                }>
-                                <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                            </Tippy>
-                        </span>
-                        <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
-                            value={this.state.form.webhookUrl}
-                            placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
-                            onBlur={(event) => this.isValid(event, 'webhookUrl')} />
-                        <span className="form__error">
-                            {!this.state.isValid.webhookUrl
-                                ? <><Error className="form__icon form__icon--error" />This is a required field. <br /></>
-                                : null}
-                        </span>
-                    </label>
-                    <div className="form__row w-100-imp" >
-                        <div className="flex ml-0 dc__content-space">
-                            <span className="form__label">Headers
+        else return (
+            <>
+                <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
+                    <div className="w-600 m-20 flex column dc__align-start dc__content-start dc__overflow-scroll" style={{ height: 'calc(100vh - 160px)' }}>
+                        <label className="form__row w-100-imp">
+                            <span className="form__label dc__required-field">Configuration name</span>
+                            <input data-testid="add-webhook-config-name" className="form__input" type="text" name="app-name"
+                                value={this.state.form.configName} onChange={this.handleWebhookConfigNameChange}
+                                onBlur={(event) => this.isValid(event, 'configName')}
+                                placeholder="Enter name" autoFocus={true} tabIndex={1} />
+                            <span className="form__error">
+                                {!this.state.isValid.configName
+                                    ? <><Error className="form__icon form__icon--error" />This is required field.<br /></>
+                                    : null}
                             </span>
-                            <span className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor" data-testid="add-new-header-button" onClick={this.addNewHeader}>
-                                <Add className="icon-dim-20 fcb-5" /> Add
+                        </label>
+                        <label className="form__row w-100-imp">
+                            <span className="form__label dc__required-field">Webhook URL
+                                <Tippy className="default-tt" arrow={true} trigger={"click"}
+                                    interactive={true}
+                                    placement="top" content={
+                                        <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack" target="_blank" rel="noopener noreferrer"
+                                            style={{ color: "white", textTransform: "none" }}>
+                                            Learn how to setup slack webhooks
+                                        </a>
+                                    }>
+                                    <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
+                                </Tippy>
                             </span>
+                            <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
+                                value={this.state.form.webhookUrl}
+                                placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
+                                onBlur={(event) => this.isValid(event, 'webhookUrl')} />
+                            <span className="form__error">
+                                {!this.state.isValid.webhookUrl
+                                    ? <><Error className="form__icon form__icon--error" />This is a required field. <br /></>
+                                    : null}
+                            </span>
+                        </label>
+                        <div className="form__row w-100-imp" >
+                            <div className="flex ml-0 dc__content-space">
+                                <span className="form__label">Headers
+                                </span>
+                                <span className="flex dc__align-end dc__content-end cb-5 fw-6 fs-13 flex right mb-4 cursor" data-testid="add-new-header-button" onClick={this.addNewHeader}>
+                                    <Add className="icon-dim-20 fcb-5" /> Add
+                                </span>
+                            </div>
+                            {this.renderHeadersList()}
                         </div>
-                        {this.renderHeadersList()}
+                        <label className="form__row w-100-imp">
+                            <span className="form__label dc__required-field">Data to be shared through Webhook</span>
+                            <div className="dc__border pt-8 pb-8 br-4" onBlur={(event) => this.isValid(event, 'payload')}>
+                                <CodeEditor
+                                    value={this.state.form.payload}
+                                    theme="vs-alice-blue"
+                                    mode="json"
+                                    onChange={(value) => this.handleWebhookPaylodChange(value)}
+                                    inline
+                                    height={200}
+                                ></CodeEditor>
+                            </div>
+                            <span className="form__error">
+                                {!this.state.isValid.payload
+                                    ? <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></>
+                                    : null}
+                            </span>
+                        </label>
                     </div>
-                    <label className="form__row w-100-imp">
-                        <span className="form__label dc__required-field">Data to be shared through Webhook</span>
-                        <div className="script-container" onBlur={(event) => this.isValid(event, 'payload')}>
-                            <CodeEditor
-                                value={this.state.form.payload}
-                                theme="vs-alice-blue"
-                                mode="json"
-                                onChange={(value) => this.handleWebhookPaylodChange(value)}
-                                inline
-                                height={200}
-                            ></CodeEditor>
-                        </div>
-                        <span className="form__error">
-                            {!this.state.isValid.payload
-                                ? <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></>
-                                : null}
-                        </span>
-                    </label>
+                    {this.renderConfigureLinkInfoColumn()}
                 </div>
-                {this.renderConfigureLinkInfoColumn()}
-            </div>
-            <div className=" form__button-group-bottom flex right">
-                <div className="flex right">
-                    <button type="button" className="cta cancel mr-16" tabIndex={5}
-                        onClick={this.props.closeWebhookConfigModal}>Cancel
-                    </button>
-                    <button onClick={(event) => { event.preventDefault(); this.saveWebhookConfig() }} data-testid="add-webhook-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
-                        {this.state.form.isLoading ? <Progressing /> : "Save"}
-                    </button>
+                <div className=" form__button-group-bottom flex right">
+                    <div className="flex right">
+                        <button type="button" className="cta cancel mr-16" tabIndex={5}
+                            onClick={this.props.closeWebhookConfigModal}>Cancel
+                        </button>
+                        <button onClick={(event) => { event.preventDefault(); this.saveWebhookConfig() }} data-testid="add-webhook-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
+                            {this.state.form.isLoading ? <Progressing /> : "Save"}
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </>
+            </>
+        )
+    }
 
-        return this.renderWithBackdrop(body);
+    render() {
+        return this.renderWithBackdrop(this.renderWebhookModal());
     }
 }

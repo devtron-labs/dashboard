@@ -77,6 +77,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
         this.handleEmailChange = this.handleEmailChange.bind(this)
         this.handleCheckbox = this.handleCheckbox.bind(this)
         this.handleBlur = this.handleBlur.bind(this)
+        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
     }
 
     componentDidMount() {
@@ -235,6 +236,11 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                 </div>
             </Drawer>
         )
+    }
+
+    onSaveClickHandler(event) {
+        event.preventDefault()
+        this.saveSESConfig()
     }
 
     render() {
@@ -406,10 +412,8 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             >
                                 Cancel
                             </button>
-                            <button onClick={(event) => {
-                                event.preventDefault()
-                                this.saveSESConfig()
-                            }} data-testid="add-ses-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button onClick={this.onSaveClickHandler}
+                                data-testid="add-ses-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>

@@ -139,6 +139,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
         this.changePage = this.changePage.bind(this);
+        this.onChangePipelineCheckbox = this.onChangePipelineCheckbox.bind(this);
     }
 
     componentDidMount() {
@@ -477,6 +478,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
+    onChangePipelineCheckbox(e) {
+        e.stopPropagation(); 
+        this.toggleAllNotification()
+    }
+
     renderPipelineList() {
         return <table className="pipeline-list__table">
             <tbody>
@@ -485,7 +491,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         <Checkbox rootClassName=""
                             isChecked={this.state.headerCheckbox.isChecked}
                             value={this.state.headerCheckbox.value}
-                            onChange={(e) => { e.stopPropagation(); this.toggleAllNotification() }} 
+                            onChange={this.onChangePipelineCheckbox} 
                             dataTestId="notification-list">
                             <span></span>
                         </Checkbox>
