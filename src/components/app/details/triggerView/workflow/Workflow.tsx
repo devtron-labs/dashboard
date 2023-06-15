@@ -119,6 +119,7 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     fromAppGrouping={this.props.fromAppGrouping}
+                    isCITriggerBlocked={node.isCITriggerBlocked}
                 />
             )
         } else if (node.isExternalCI) {
@@ -172,6 +173,8 @@ export class Workflow extends Component<WorkflowProps> {
                     fromAppGrouping={this.props.fromAppGrouping}
                     isJobView={this.props.isJobView}
                     index={this.props.index}
+                    isCITriggerBlocked={node.isCITriggerBlocked}
+                    ciBlockState={node.ciBlockState}
                 />
             )
         }
