@@ -10,7 +10,6 @@ import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
-import {components} from "react-select";
 import React from "react";
 
 let timeoutId

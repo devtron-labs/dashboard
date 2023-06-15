@@ -54,7 +54,10 @@ export default function BulkCDTrigger({
         abortControllerRef.current.abort()
         closePopup(e)
     }
-    const [selectedTagName,setSelectedTagName] = useState<{label: string, value: string}>({label:'latest',value:'latest'})
+    const [selectedTagName, setSelectedTagName] = useState<{ label: string; value: string }>({
+        label: 'latest',
+        value: 'latest',
+    })
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
