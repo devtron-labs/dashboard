@@ -142,7 +142,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             pipelineName=""
                             toggleChanges={this.toggleChanges}
                         />
-                        <div className="dc__dashed_icon_grid-container">
+                        <div className="dc__dashed_icon_grid-container" >
                             <hr className="dc__dotted-line" />
                             <div className="flex">
                                 <Down/>

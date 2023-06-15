@@ -523,7 +523,7 @@ const HistoryLogs: React.FC<{
                             />
                             { (artifactId) && (artifactId!==0) && (
                                 <div>
-                                    <div className="mt-8" style={{ width: '832px' }}>
+                                    <div className="mt-8" style={{ width: '832px' }} >
                                         <div className="dc__dashed_icon_grid-container">
                                             <hr className="dc__dotted-line" />
                                             <div className="flex">
