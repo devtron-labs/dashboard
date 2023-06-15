@@ -253,7 +253,7 @@ export const ImageTagsContainer = ({
                         <span>Release tags (eg. v1.0)</span>
                         <div className="flex row ml-0">{renderInfoCard()}</div>
                     </div>
-                    <div className="mt-6" data-testId="add-tag-text-area">
+                    <div className="mt-6" data-testid="add-tag-text-area">
                         <Creatable
                             placeholder="Type a tag and press enter"
                             onCreateOption={handleTagCreate}
@@ -298,7 +298,7 @@ export const ImageTagsContainer = ({
                         </div>
                     )}
                     <div className="cn-7">Comment</div>
-                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12" data-testId="add-image-comment-text-area">
+                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12" data-testid="add-image-comment-text-area">
                         <textarea
                             value={newDescription}
                             onChange={handleDescriptionChange}
@@ -312,7 +312,7 @@ export const ImageTagsContainer = ({
                         }}>
                             Cancel
                         </button>
-                        <button className="cta h-32 lh-32 ml-12" type="button" onClick={(e)=>{
+                        <button className="cta h-32 lh-32 ml-12"data-testid="save-tags-button"  type="button" onClick={(e)=>{
                             stopPropagation(e)
                             handleSave()
                         }}>
@@ -321,14 +321,15 @@ export const ImageTagsContainer = ({
                     </div>
                 </div>
             ) : (
-                <div className="top br-4 bcn-0 image-tags-container" style={{ display: 'flex' }}>
-                    <div className="flex left image-tag-left-border w-100">
+                <div className="top br-4 bcn-0 image-tags-container"  style={{ display: 'flex' }}>
+                    <div className="flex left image-tag-left-border w-100 "
+                    data-testid="hello">
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
                             <div className="dc__flex-wrap flex left">
                                 {initialTags?.map((tag, index) => (
                                     <ImageTagButton
-                                        key={tag?.id}
+                                        key={tag?.id} 
                                         text={tag?.tagName}
                                         isSoftDeleted={tag?.deleted}
                                         isEditing={isEditing}
@@ -352,6 +353,7 @@ export const ImageTagsContainer = ({
                         {tagsEditable && (
                             <EditIcon
                                 className="icon-dim-16 image-tags-container-edit__icon cursor"
+                                data-testid="edit-tags-icon"
                                 onClick={(e)=>{
                                     stopPropagation(e)
                                     handleEditClick()
@@ -414,7 +416,7 @@ const AddImageButton = ({ handleEditClick }) => {
     }
 
     return (
-        <div className="add-tag-button flex pt-12 pr-12" data-testId="add-tags-button" onClick={handleClick}>
+        <div className="add-tag-button flex pt-12 pr-12" data-testid="add-tags-button" onClick={handleClick}>
             <div className="lh-16 flex">
                 <Add className="icon-dim-16 cn-6" />
                 <span className="cn-7">Add tags/comment</span>
