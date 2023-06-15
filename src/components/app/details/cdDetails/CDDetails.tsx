@@ -521,7 +521,7 @@ const HistoryLogs: React.FC<{
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
                             />
-                            { (artifactId) && (artifactId!==0) && (
+                            { (artifactId && artifactId!==0) && (
                                 <div>
                                     <div className="mt-8" style={{ width: '832px' }} >
                                         <div className="dc__dashed_icon_grid-container">
@@ -533,7 +533,7 @@ const HistoryLogs: React.FC<{
                                         </div>
                                     </div>
                                     <Artifacts
-                                        status={"succeeded"}
+                                        status="succeeded"
                                         artifact={triggerDetails.artifact}
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                         ciPipelineId={ciPipelineId}

@@ -2351,6 +2351,9 @@ textarea,
     word-wrap: break-word;
 }
 
+.dc__word-wrap-anywhere {
+    word-wrap: anywhere;
+}
 .dc__ff-monospace {
     font-family: monospace;
 }
@@ -2452,7 +2455,7 @@ textarea,
     width: 54px;
 }
 
-.w-56{
+.w-56 {
     width: 56px;
 }
 

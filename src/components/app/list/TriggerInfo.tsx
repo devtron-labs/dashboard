@@ -151,7 +151,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                         </div>
                         <div className="mt-16 mb-16 mr-20 ml-20 bcn-0 dc__border br-4">
                             <Artifacts
-                                status={''}
+                                status=""
                                 artifact={this.state.image}
                                 blobStorageEnabled={true}
                                 isArtifactUploaded={false}

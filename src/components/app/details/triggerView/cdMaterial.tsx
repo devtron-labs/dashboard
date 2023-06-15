@@ -510,7 +510,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
                         {(mat.index == 0) && <div className="mt-6 ml-8">
                             <ImageTagButton
-                                text={'Latest'}
+                                text="Latest"
                                 isSoftDeleted={false}
                                 isEditing={false}
                                 tagId={0}

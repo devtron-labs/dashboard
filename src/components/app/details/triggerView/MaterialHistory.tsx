@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { SourceTypeMap } from '../../../../config'
-import { ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 export interface WebhookData {
     id: number

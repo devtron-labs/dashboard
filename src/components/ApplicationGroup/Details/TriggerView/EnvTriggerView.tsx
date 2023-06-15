@@ -69,7 +69,7 @@ import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
 import {
     AppGroupDetailDefaultType,
-    BulkCDDetailType,
+    BulkCDDetailType, BulkCDDetailTypeResponse,
     BulkCIDetailType,
     ProcessWorkFlowStatusType,
     ResponseRowType,
@@ -1495,10 +1495,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
         handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
     }
-    interface BulkCDDetailTypeResponse{
-        bulkCDDetailType: BulkCDDetailType[],
-        uniqueReleaseTags: string[],
-    }
+
     const createBulkCDTriggerData = (): BulkCDDetailTypeResponse => {
         let uniqueReleaseTags: string[] = []
         let uniqueTagsSet = new Set<string>()
@@ -1566,8 +1563,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
         _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
         return {
-            bulkCDDetailType:_selectedAppWorkflowList,
-            uniqueReleaseTags:uniqueReleaseTags
+            bulkCDDetailType: _selectedAppWorkflowList,
+            uniqueReleaseTags: uniqueReleaseTags
         }
     }
 

@@ -173,7 +173,7 @@ export default function BulkCITrigger({
                         branchNames += `${branchNames ? ',' : ''}${material.value}`
                     }
                 }
-                return !branchNames || !getCIBlockState? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
+                return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
             }
         })
         if (policyPromiseList?.length) {
