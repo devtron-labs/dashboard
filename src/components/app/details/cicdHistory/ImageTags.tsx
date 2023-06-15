@@ -232,7 +232,7 @@ export const ImageTagsContainer = ({
 
     const creatableRef = useRef(null)
 
-    if (newDescription === '' && displayedTags.length === 0 && !isEditing && !tagsEditable) {
+    if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
         return tagsEditable ? (
             <div className="bcn-0 pt-12 pr-12">
                 <AddImageButton handleEditClick={handleEditClick} />
