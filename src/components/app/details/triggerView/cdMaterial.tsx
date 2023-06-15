@@ -508,21 +508,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__info flex left fs-13">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
+                        {(mat.index == 0) && <div className="mt-6 ml-8">
+                            <ImageTagButton
+                                text={'Latest'}
+                                isSoftDeleted={false}
+                                isEditing={false}
+                                tagId={0}
+                                softDeleteTags={[]}
+                                isSuperAdmin={[]}
+                            />
+                        </div>
+                        }
                     </div>
                 )}
 
-                {(mat.index == 0)&& <div className="mt-6 ml-2">
-                    <ImageTagButton
-                        text={'Latest'}
-                        isSoftDeleted={false}
-                        isEditing={false}
-                        tagId={0}
-                        softDeleteTags={[]}
-                        isSuperAdmin={[]}
-                    />
-                </div>
-                }
-                
                 {!!mat.deployedBy && this.state.isRollbackTrigger ? (
                     <div className="material-history__deployed-by flex left">
                         {mat.deployedBy === 'system' ? (
