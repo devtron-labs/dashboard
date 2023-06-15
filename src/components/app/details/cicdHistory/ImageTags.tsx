@@ -268,7 +268,7 @@ export const ImageTagsContainer = ({
                             <div className="form__error">{tagErrorMessage}</div>
                         </div>
                     )}
-                    <div className="dc__flex-wrap mt-8 flex left">
+                    <div className="flex-wrap mt-8 flex left">
                         {displayedTags?.map((tag, index) => (
                             <ImageTagButton
                                 key={tag.id}
@@ -302,17 +302,18 @@ export const ImageTagsContainer = ({
                         <textarea
                             value={newDescription}
                             onChange={handleDescriptionChange}
-                            className="flex left flex-wrap dc__gap-8 dc__description-textarea h-90"
+                            className="flex left flex-wrap dc__gap-8 dc__description-textarea"
+                            style={{height: '90px !important'}}
                         />
                     </div>
                     <div className="w-100 flex right">
-                        <button className="cta cancel h-32 lh-32" type="button" onClick={(e)=> {
+                        <button className="cta cancel h-32 lh-32-imp" type="button" onClick={(e)=> {
                             stopPropagation(e)
                             handleCancel()
                         }}>
                             Cancel
                         </button>
-                        <button className="cta h-32 lh-32 ml-12"data-testid="save-tags-button"  type="button" onClick={(e)=>{
+                        <button className="cta h-32 lh-32-imp ml-12"data-testid="save-tags-button"  type="button" onClick={(e)=>{
                             stopPropagation(e)
                             handleSave()
                         }}>
@@ -326,7 +327,7 @@ export const ImageTagsContainer = ({
                     data-testid="hello">
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
-                            <div className="dc__flex-wrap flex left">
+                            <div className="flex-wrap flex left">
                                 {initialTags?.map((tag, index) => (
                                     <ImageTagButton
                                         key={tag?.id} 

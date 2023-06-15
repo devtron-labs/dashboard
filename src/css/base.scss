@@ -2652,9 +2652,6 @@ textarea,
     width: fit-content;
 }
 
-.dc__h-fit-content{
-    height: fit-content !important;
-}
 
 // Height in pixels
 .dc__height-inherit {
@@ -2675,10 +2672,6 @@ textarea,
 
 .h-12 {
     height: 12px;
-}
-
-.h-90 {
-    height: 90px !important; 
 }
 
 .h-16 {
@@ -2892,8 +2885,12 @@ textarea,
     line-height: 28px !important;
 }
 
-.lh-32 {
+.lh-32-imp {
     line-height: 32px !important;
+}
+
+.lh-32 {
+    line-height: 32px;
 }
 
 .lh-36 {
@@ -3383,11 +3380,11 @@ textarea::placeholder {
     }
 }
 
-.dc__flex-wrap {
+.flex-wrap {
     flex-wrap: wrap;
 }
 
-.dc__dasshed_icon_grid-container {
+.dc__dashed_icon_grid-container {
     display: grid;
     grid-template-columns: 48% 4% 48%;
     padding-left: 20px;

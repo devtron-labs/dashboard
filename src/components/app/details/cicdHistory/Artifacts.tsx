@@ -198,6 +198,7 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
         <div
             className={`dc__h-fit-content ci-artifact w-100 ci-artifact--${type}`}
             data-testid="hover-on-report-artifact"
+            style={{ height: 'fit-content !important' }}
         >
             <div className="ci-artifacts-grid flex left">
                 <div className="bcn-1 flex br-4 w-56 h-100">
