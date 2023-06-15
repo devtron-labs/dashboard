@@ -311,18 +311,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
                             mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
                             this.renderFailedCD(mat)}
-                        {/* {mat.latest && ( */}
-                            <div className="mt-6 ml-2">
-                                <ImageTagButton
-                                    text={'Latest'}
-                                    isSoftDeleted={false}
-                                    isEditing={false}
-                                    tagId={0}
-                                    softDeleteTags={[]}
-                                    isSuperAdmin={[]}
-                                />
-                            </div>
-                        {/* )} */}
                     </div>
                 </div>
             )
@@ -522,6 +510,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
                     </div>
                 )}
+
+                {(mat.index == 0)&& <div className="mt-6 ml-2">
+                    <ImageTagButton
+                        text={'Latest'}
+                        isSoftDeleted={false}
+                        isEditing={false}
+                        tagId={0}
+                        softDeleteTags={[]}
+                        isSuperAdmin={[]}
+                    />
+                </div>
+                }
+                
                 {!!mat.deployedBy && this.state.isRollbackTrigger ? (
                     <div className="material-history__deployed-by flex left">
                         {mat.deployedBy === 'system' ? (
