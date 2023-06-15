@@ -168,13 +168,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSlackConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing_loader_height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.slackConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
+                <div className="empty_state_height">
                     <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
@@ -255,13 +255,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderWebhookConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing_loader_height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.webhookConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
+                <div className="empty_state_height">
                     <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
@@ -445,13 +445,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing_loader_height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.sesConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
+                <div className="empty_state_height">
                    <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
@@ -532,13 +532,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSMTPConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing_loader_height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.smtpConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
+                <div className="empty_state_height">
                     <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )

@@ -387,3 +387,11 @@
         }
     }
 }
+
+.empty_state_height {
+    height: 'calc(100% - 70px)';
+}
+
+.progressing_loader_height {
+    height: 'calc(100% - 68px)';
+}
