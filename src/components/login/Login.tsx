@@ -123,7 +123,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     }
 
     renderLoginPrivacyText = () => {
-        if (window.location.host.includes(PREVIEW_DEVTRON)) {
+        if (window.location.origin === PREVIEW_DEVTRON) {
             return <div className="flex mt-12">
                 By logging in, you agree to our
                 <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">

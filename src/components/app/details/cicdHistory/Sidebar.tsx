@@ -241,11 +241,11 @@ const SummaryTooltipCard = React.memo(
         gitTriggers,
     }: SummaryTooltipCardType): JSX.Element => {
         return (
-            <div className="build-card-popup p-16 br-4 flex column left w-400 bcn-0">
+            <div className="build-card-popup p-16 br-4 w-400 bcn-0 mxh-300 dc__overflow-scroll">
                 <span className="fw-6 fs-16 mb-4" style={{ color: colorMap[status.toLowerCase()] }}>
                     {status.toLowerCase() === 'cancelled' ? 'Aborted' : status}
                 </span>
-                <div className="flex column left ">
+                <div className="flex column left">
                     <div className="flex left fs-12 cn-7">
                         <div>{moment(startedOn).format(Moment12HourFormat)}</div>
                         <div className="dc__bullet ml-6 mr-6"></div>

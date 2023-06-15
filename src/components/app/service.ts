@@ -70,7 +70,7 @@ export function getCITriggerInfoModal(
                         showChanges: index === 0,
                         webhookData: hist.WebhookData,
                     }
-                }), 
+                }),
                 isSelected:
                     mat.history.find((h) =>
                         mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
@@ -396,6 +396,7 @@ function cdMaterialListModal(
             artifactStatus: artifactStatusValue,
             userApprovalMetadata: material.userApprovalMetadata,
             triggeredBy: material.triggeredBy,
+            isVirtualEnvironment: material.isVirtualEnvironment,
             imageComment: material.imageComment,
             imageReleaseTags: material.imageReleaseTags,
             materialInfo: material.material_info
