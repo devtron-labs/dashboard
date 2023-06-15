@@ -240,6 +240,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
                                     isTlsConnection={this.state.isTlsConnection}
+                                    prometheus_url={cluster.prometheus_url}
                                 />
                             ),
                     )}
@@ -751,8 +752,8 @@ function Cluster({
                                 active={true}
                                 config={{}}
                                 reload={reload}
-                                prometheus_url=""
-                                prometheusAuth={state.prometheus}
+                                prometheus_url={prometheus_url}
+                                prometheusAuth={state.prometheus} 
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
