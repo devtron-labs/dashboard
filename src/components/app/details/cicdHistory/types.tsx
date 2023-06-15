@@ -31,6 +31,10 @@ export interface History {
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface CiMaterial {
@@ -70,6 +74,12 @@ export interface ArtifactType {
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
     type: HistoryComponentType
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface CopyTippyWithTextType {
@@ -83,6 +93,47 @@ export interface CIListItemType {
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
     children: any
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+}
+
+export interface ReleaseTag {
+    id: number
+    tagName: string
+    appId: number
+    deleted: boolean
+    artifactId: number
+}
+
+export interface ImageComment {
+    id: number
+    comment: string
+    artifactId: number
+}
+
+
+export interface ImageTaggingContainerType {
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[] 
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+}
+
+export interface ImageButtonType {
+    text: string
+    isSoftDeleted: boolean
+    isEditing: boolean
+    onSoftDeleteClick?: any
+    onHardDeleteClick?: any
+    tagId: number
+    softDeleteTags: any
+    isSuperAdmin: any
 }
 
 export interface LogsRendererType {
@@ -108,6 +159,9 @@ export interface GitChangesType {
     artifact?: string
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredByEmail?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    artifactId?: number
 }
 export interface EmptyViewType {
     imgSrc?: string

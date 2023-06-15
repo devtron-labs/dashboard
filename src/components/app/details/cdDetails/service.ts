@@ -11,8 +11,15 @@ import {
 import { decode } from '../../../../util/Util'
 
 export interface DeploymentHistoryResult extends ResponseType {
-    result?: History[]
+    result?: DeploymentHistoryResultObject
 }
+
+export interface DeploymentHistoryResultObject {
+    cdWorkflows: History[]
+    appReleaseTagNames: string[]
+    tagsEditable: boolean
+}
+
 export async function getTriggerHistory(
     appId: number | string,
     envId: number | string,
@@ -23,19 +30,27 @@ export async function getTriggerHistory(
         `app/cd-pipeline/workflow/history/${appId}/${envId}/${pipelineId}?offset=${pagination.offset}&size=${pagination.size}`,
     ).then(({ result, code, status }) => {
         return {
-            result: (result || []).map((deploymentHistory: DeploymentHistory) => ({
-                ...deploymentHistory,
-                triggerId: deploymentHistory?.cd_workflow_id,
-                podStatus: deploymentHistory?.pod_status,
-                startedOn: deploymentHistory?.started_on,
-                finishedOn: deploymentHistory?.finished_on,
-                pipelineId: deploymentHistory?.pipeline_id,
-                logLocation: deploymentHistory?.log_file_path,
-                triggeredBy: deploymentHistory?.triggered_by,
-                artifact: deploymentHistory?.image,
-                triggeredByEmail: deploymentHistory?.email_id,
-                stage: deploymentHistory?.workflow_type,
-            })),
+            result: {
+                cdWorkflows: (result.cdWorkflows || []).map((deploymentHistory: DeploymentHistory) => ({
+                    ...deploymentHistory,
+                    triggerId: deploymentHistory?.cd_workflow_id,
+                    podStatus: deploymentHistory?.pod_status,
+                    startedOn: deploymentHistory?.started_on,
+                    finishedOn: deploymentHistory?.finished_on,
+                    pipelineId: deploymentHistory?.pipeline_id,
+                    logLocation: deploymentHistory?.log_file_path,
+                    triggeredBy: deploymentHistory?.triggered_by,
+                    artifact: deploymentHistory?.image,
+                    triggeredByEmail: deploymentHistory?.email_id,
+                    stage: deploymentHistory?.workflow_type,
+                    image: deploymentHistory?.image,
+                    imageComment: deploymentHistory?.imageComment,
+                    imageReleaseTags: deploymentHistory?.imageReleaseTags,
+                    artifactId: deploymentHistory?.ci_artifact_id
+                })),
+                appReleaseTagNames:result.appReleaseTagNames,
+                tagsEditable: result.tagsEditable
+            },
             code,
             status,
         }

@@ -16,6 +16,8 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import {ImageTagsContainer} from './ImageTags'
+
 
 const ApprovedArtifact = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifact')
 
@@ -25,8 +27,14 @@ export default function Artifacts({
     blobStorageEnabled,
     isArtifactUploaded,
     getArtifactPromise,
+    ciPipelineId,
+    artifactId,
     isJobView,
+    imageComment,
+    imageReleaseTags,
     type,
+    appReleaseTagNames,
+    tagsEditable,
 }: ArtifactType) {
     const { triggerId, buildId } = useParams<{
         triggerId: string
@@ -96,7 +104,7 @@ export default function Artifacts({
         return (
             <div className="flex left column p-16">
                 {!isJobView && type !== HistoryComponentType.CD && (
-                    <CIListItem type="artifact">
+                    <CIListItem type="artifact" ciPipelineId={ciPipelineId} artifactId={artifactId} imageComment={imageComment} imageReleaseTags={imageReleaseTags} appReleaseTagNames={appReleaseTagNames} tagsEditable={tagsEditable}>
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
                                 <CopyTippyWithText
@@ -175,7 +183,7 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
+export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, ciPipelineId, artifactId, imageComment, imageReleaseTags, appReleaseTagNames, tagsEditable}: CIListItemType) => {
     if (type === 'approved-artifact') {
         return ApprovedArtifact ? (
             <ApprovedArtifact
@@ -187,11 +195,27 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }
     }
 
     return (
-        <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
-            <div className="bcn-1 flex br-4">
-                <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
+        <div
+            className={`dc__h-fit-content ci-artifact w-100 ci-artifact--${type}`}
+            data-testid="hover-on-report-artifact"
+        >
+            <div className="ci-artifacts-grid flex left">
+                <div className="bcn-1 flex br-4 w-56 h-100">
+                    <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
+                </div>
+                {children}
             </div>
-            {children}
+            {type === 'artifact' && (
+                <ImageTagsContainer
+                    ciPipelineId={ciPipelineId}
+                    artifactId={artifactId}
+                    imageComment={imageComment}
+                    imageReleaseTags={imageReleaseTags}
+                    appReleaseTagNames={appReleaseTagNames}
+                    tagsEditable={tagsEditable}
+                />
+            )}
         </div>
     )
 }
+

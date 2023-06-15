@@ -43,6 +43,9 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     approvalUsers?: string[]
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    ciPipelineId?: number
 }
 
 export interface ResponseRowType {
@@ -93,6 +96,7 @@ export interface BulkCDTriggerType {
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
+    uniqueReleaseTags: string[]
 }
 
 export interface ProcessWorkFlowStatusType {

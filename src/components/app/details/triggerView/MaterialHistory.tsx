@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { SourceTypeMap } from '../../../../config'
+import { ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 export interface WebhookData {
     id: number
@@ -68,7 +69,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
         return (
             <>
                 {this.props.material?.history?.map((history, index) => {
-                    let classes = `material-history mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
+                    let classes = `material-history w-auto mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
                     if (this.props.selectCommit) {
                         classes = `${classes}`
                     }
@@ -86,7 +87,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={this.props.material.gitURL}
-                                showMaterialInfoHeader={false}
+                                showMaterialInfoHeader={this.props.pipelineName===""}
                                 commitInfo={history}
                                 materialSourceType={this.props.material.type}
                                 selectedCommitInfo={this.props.selectCommit}

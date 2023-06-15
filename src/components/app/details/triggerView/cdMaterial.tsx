@@ -53,9 +53,10 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
+import { ImageTagButton, ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -303,12 +304,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             mat.artifactStatus === ARTIFACT_STATUS.Failed
         ) {
             return (
-                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
-                    {this.renderActiveCD(mat)}
-                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
-                    {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
-                        this.renderFailedCD(mat)}
+                <div>
+                    <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
+                        {this.renderActiveCD(mat)}
+                        {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
+                        {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                            mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                            this.renderFailedCD(mat)}
+                    </div>
                 </div>
             )
         }
@@ -505,8 +508,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__info flex left fs-13">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
+                        {(mat.index == 0) && <div className="mt-6 ml-8">
+                            <ImageTagButton
+                                text={'Latest'}
+                                isSoftDeleted={false}
+                                isEditing={false}
+                                tagId={0}
+                                softDeleteTags={[]}
+                                isSuperAdmin={[]}
+                            />
+                        </div>
+                        }
                     </div>
                 )}
+
                 {!!mat.deployedBy && this.state.isRollbackTrigger ? (
                     <div className="material-history__deployed-by flex left">
                         {mat.deployedBy === 'system' ? (
@@ -574,7 +589,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
-        return materialList.map((mat, idx) => {
+        return materialList.map((mat) => {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
             const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
             const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
@@ -582,7 +597,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history material-history--cd ${
+                    className={`material-history bcn-0 material-history--cd ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
@@ -591,9 +606,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
                         data-testid={`cd-material-history-image-${mat.index}`}
-                        className={`material-history__top cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
+                        className={`material-history__top p-12 cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
                     >
                         {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
+                    </div>
+                    <div className="pl-12 pb-12" data-testId={`image-tags-container-${mat.index}`}>
+                        <ImageTagsContainer
+                            ciPipelineId={this.props.ciPipelineId}
+                            artifactId={parseInt(mat.id)}
+                            imageComment={mat.imageComment}
+                            imageReleaseTags={mat.imageReleaseTags}
+                            appReleaseTagNames={this.props.appReleaseTagNames}
+                            tagsEditable={this.props.tagsEditable}
+                        />
                     </div>
                     {mat.showSourceInfo && (
                         <>
@@ -663,7 +688,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.props.toggleSourceInfo(
-                                    idx,
+                                    mat.index,
                                     this.props.isFromBulkCD
                                         ? { id: this.props.pipelineId, type: this.props.stageType }
                                         : null,
@@ -1023,7 +1048,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
+                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
                         {this.props.isSaveLoading ? (

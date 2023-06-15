@@ -10,6 +10,7 @@ import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
+import React from "react";
 
 let timeoutId
 
@@ -254,3 +255,21 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
         return data.ciBlockState
     }
 }
+
+export const imageTaggingSelectorStyle = {
+    ...appGroupAppSelectorStyle,
+    control: (base) => ({
+    ...base,
+    borderRadius: '4px',
+    borderWidth: '1px',
+    marginLeft: '16px',
+    marginRight: '16px',
+    marginTop: '12px',
+}),
+    dropdownIndicator: (base) => ({
+    ...base,
+    paddingLeft: '0px',
+    paddingRight: '2px',
+}),
+}
+

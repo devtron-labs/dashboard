@@ -257,6 +257,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     name: wf.name,
                     preNodeAvailable: false,
                     postNodeAvailable: false,
+                    appReleaseTags: wf.appReleaseTags,
+                    tagsEditable: wf.tagsEditabe
                 }
                 for (const node of wf.nodes) {
                     if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
@@ -508,6 +510,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     }
                     return node
                 })
+                wf.tagsEditabe = response.result.tagsEditable
+                wf.appReleaseTags = response.result.appReleaseTags
                 return wf
             })
             setFilteredWorkflows(_workflows)
@@ -729,6 +733,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                         return node
                     })
+                    workflow.appReleaseTags = data.appReleaseTagNames
+                    workflow.tagsEditabe = data.tagsEditable
                     workflow.nodes = nodes
                     return workflow
                 })
@@ -784,6 +790,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                         return node
                     })
+                    workflow.appReleaseTags = response.result.appReleaseTags
+                    workflow.tagsEditabe = response.result.tagsEditable
                     workflow.nodes = nodes
                     return workflow
                 })
@@ -1269,7 +1277,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (_selectedNode) {
                     _selectedNode.inputMaterialList = _materialData.materials
                 }
+                wf.appReleaseTags = _materialData.appReleaseTagNames
+                wf.tagsEditabe = _materialData.tagsEditable
             }
+
             return wf
         })
         setFilteredWorkflows(_workflows)
@@ -1305,7 +1316,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
         const _CDTriggerPromiseList = []
         nodeList.forEach((node, index) => {
-            const ciArtifact = node[materialType].find((artifact) => artifact.isSelected == true)
+            let ciArtifact = null
+            node[materialType].forEach((artifact) => {
+                if(artifact.isSelected == true)ciArtifact = artifact
+            })
             if (ciArtifact) {
                 _CDTriggerPromiseList.push(
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
@@ -1481,11 +1495,24 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
         handleBulkTrigger(_CITriggerPromiseList, triggeredAppList, WorkflowNodeType.CI)
     }
-
-    const createBulkCDTriggerData = (): BulkCDDetailType[] => {
+    interface BulkCDDetailTypeResponse{
+        bulkCDDetailType: BulkCDDetailType[],
+        uniqueReleaseTags: string[],
+    }
+    const createBulkCDTriggerData = (): BulkCDDetailTypeResponse => {
+        let uniqueReleaseTags: string[] = []
+        let uniqueTagsSet = new Set<string>()
         const _selectedAppWorkflowList: BulkCDDetailType[] = []
         filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
+                //extract unique tags for this workflow
+                wf.appReleaseTags?.forEach((tag)=>{
+                    if(!uniqueTagsSet.has(tag)){
+                        uniqueReleaseTags.push(tag)
+                    }
+                    uniqueTagsSet.add(tag)
+
+                })
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
@@ -1514,6 +1541,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         approvalUsers: _selectedNode.approvalUsers,
                         userApprovalConfig: _selectedNode.userApprovalConfig,
                         requestedUserId: _selectedNode.requestedUserId,
+                        appReleaseTags: wf.appReleaseTags,
+                        tagsEditable: wf.tagsEditabe,
+                        ciPipelineId: _selectedNode.connectingCiPipelineId,
                     })
                 } else {
                     let warningMessage = ''
@@ -1534,7 +1564,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
         })
-        return _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
+        _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
+        return {
+            bulkCDDetailType:_selectedAppWorkflowList,
+            uniqueReleaseTags:uniqueReleaseTags
+        }
     }
 
     const getWarningMessage = (_ciNode): string => {
@@ -1739,7 +1773,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (!showBulkCDModal) {
             return null
         }
-        const _selectedAppWorkflowList: BulkCDDetailType[] = createBulkCDTriggerData()
+        const bulkCDDetailTypeResponse = createBulkCDTriggerData()
+        const _selectedAppWorkflowList: BulkCDDetailType[] = bulkCDDetailTypeResponse.bulkCDDetailType
+        const uniqueReleaseTags = bulkCDDetailTypeResponse.uniqueReleaseTags
         return (
             <BulkCDTrigger
                 stage={bulkTriggerType}
@@ -1754,6 +1790,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 isLoading={isCDLoading}
                 setLoading={setCDLoading}
                 isVirtualEnv={isVirtualEnv}
+                uniqueReleaseTags={uniqueReleaseTags}
             />
         )
     }
@@ -1791,6 +1828,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
                     })
                     if (node) {
+                        node.appReleaseTagNames = _wf.appReleaseTags
+                        node.tagsEditable = _wf.tagsEditabe
                         _appID = _wf.appId
                         break
                     }
@@ -1839,6 +1878,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 userApprovalConfig={node?.userApprovalConfig}
                                 requestedUserId={node?.requestedUserId}
                                 isVirtualEnvironment={isVirtualEnv}
+                                ciPipelineId = {node?.connectingCiPipelineId}
+                                appReleaseTagNames = {node?.appReleaseTagNames}
+                                tagsEditable = {node?.tagsEditable}
                             />
                         )}
                     </div>
