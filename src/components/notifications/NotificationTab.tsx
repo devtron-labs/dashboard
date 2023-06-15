@@ -418,7 +418,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return <div className="dc__block mt-20 mb-20">
                 <Tippy placement="top" content="Delete" >
                     <Delete className="icon-dim-24 mr-20 notification-tab__option"
-                        onClick={this.showDeleteModal} />
+                        onClick={this.showDeleteModal} 
+                        data-testid="notification-delete-button"/>
                 </Tippy>
                 <PopupMenu onToggleCallback={(isOpen) => {
                     if (isOpen) {
@@ -484,7 +485,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         <Checkbox rootClassName=""
                             isChecked={this.state.headerCheckbox.isChecked}
                             value={this.state.headerCheckbox.value}
-                            onChange={(e) => { e.stopPropagation(); this.toggleAllNotification() }} >
+                            onChange={(e) => { e.stopPropagation(); this.toggleAllNotification() }} 
+                            dataTestId="notification-list">
                             <span></span>
                         </Checkbox>
                     </th>
