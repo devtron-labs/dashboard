@@ -221,7 +221,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
             )}
             <span>Debug Mode</span>
             <span className="toggle-icon-dim ml-8">
-                <Toggle onSelect={selectData.onToggle} selected={selectData.isEnabled} />
+                <Toggle onSelect={selectData.onToggle} dataTestId="toggle-debug-mode" selected={selectData.isEnabled} />
             </span>
         </>
     )
@@ -274,7 +274,7 @@ const manifestEditButtons = ({
         const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit
 
         return (
-            <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" onClick={config.onClick}>
+            <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" data-testid={`${buttonSelectionState}-manifest`} onClick={config.onClick}>
                 {config.icon}
                 {config.message}
             </span>
@@ -286,7 +286,7 @@ const manifestEditButtons = ({
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EditModeType.NON_EDIT && (
-                <span className="ml-12 cn-7 fw-6 fs-12 cursor" onClick={cancelChanges}>
+                <span className="ml-12 cn-7 fw-6 fs-12 cursor" data-testid="cancel-edit-manifest" onClick={cancelChanges}>
                     {MANIFEST_SELECTION_MESSAGE.CANCEL}
                 </span>
             )}

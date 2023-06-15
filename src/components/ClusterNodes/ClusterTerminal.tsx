@@ -565,6 +565,7 @@ export default function ClusterTerminal({
         setConnectTerminal(true)
         setReconnect(!isReconnect)
         setUpdate(false)
+        setManifestData('')
     }
 
     const reconnectStart = () => {

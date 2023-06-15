@@ -97,7 +97,9 @@ export default function ClusterManifest({
                         <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
                             <div className="pl-12 flex dc__content-space">
                                 Pod manifest
-                                <Close className="icon-dim-16 cursor fcn-0" onClick={switchToEditMode} />
+                                <span className='flex' data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                    <Close className="icon-dim-16 cursor fcn-0" />
+                                </span>
                             </div>
                             <div className="pl-12 flex left">
                                 <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
