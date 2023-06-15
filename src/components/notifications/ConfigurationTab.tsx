@@ -121,7 +121,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         type="button"
                         className="cta flex small"
                         onClick={(event) => {
-                            this.setState({ showWebhookConfigModal: true, slackConfigId: 0 })
+                            this.setState({ showWebhookConfigModal: true, webhookConfigId: 0 })
                         }}
                         data-testid="webhook-config-add-button"
                     >
