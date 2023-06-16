@@ -67,10 +67,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const appReleaseTags = triggerHistoryResult.result?.appReleaseTagNames
-        const tagsEditable = triggerHistoryResult.result?.tagsEditable
-        setAreTagsEditable(tagsEditable)
-        setAllTagsOfApp(appReleaseTags)
+
+        setAreTagsEditable(triggerHistoryResult.result?.tagsEditable)
+        setAllTagsOfApp(triggerHistoryResult.result?.appReleaseTagNames)
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg

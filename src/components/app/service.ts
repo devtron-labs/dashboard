@@ -70,7 +70,7 @@ export function getCITriggerInfoModal(
                         showChanges: index === 0,
                         webhookData: hist.WebhookData,
                     }
-                }), 
+                }),
                 isSelected:
                     mat.history.find((h) =>
                         mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
@@ -538,14 +538,12 @@ export function getTriggerHistory(pipelineId, params) {
     let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
-export function setImageTags(request, pipelineId, artifactId){
-    let URL = `${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`
-    return post(URL,request )
+export function setImageTags(request, pipelineId: number, artifactId: number){
+    return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`,request )
 }
 
-export function getImageTags(pipelineId, artifactId){
-    let URL = `${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`
-    return get (URL)
+export function getImageTags(pipelineId: number, artifactId: number){
+    return get (`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
 }
 
 

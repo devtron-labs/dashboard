@@ -185,13 +185,15 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
+
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         let tagsList = ['latest']
         tagsList.push(...uniqueReleaseTags)
-
+        tagsList.sort((a,b)=> a.localeCompare(b))
         const options = tagsList.map((tag) => {
             return { label: tag, value: tag }
         })
+
         let appWiseTagsToArtifactIdMapMappings = {}
         appList.forEach((app) => {
             let tagsToArtifactIdMap = { latest: 0 }
@@ -203,6 +205,16 @@ export default function BulkCDTrigger({
             }
             appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
         })
+
+        const selectImageLocal = ( index: number, materialType: string, selectedCDDetail?: { id: number; type: DeploymentNodeType }, appId?: number)=> {
+            selectImage(index,materialType,selectedCDDetail)
+            if((appWiseTagsToArtifactIdMapMappings[appId][selectedTagName.value] !== index)) {
+                let _tagNotFoundWarningsMap = tagNotFoundWarningsMap
+                _tagNotFoundWarningsMap.delete(appId)
+                setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
+                setSelectedTagName({value: 'Multiple tags', label: 'Multiple tags'})
+            }
+        }
 
         const handleTagChange = (selectedTag) => {
             setSelectedTagName(selectedTag)
@@ -304,7 +316,7 @@ export default function BulkCDTrigger({
                             triggerDeploy={onClickStartDeploy}
                             onClickRollbackMaterial={noop}
                             closeCDModal={closeBulkCDModal}
-                            selectImage={selectImage}
+                            selectImage={selectImageLocal}
                             toggleSourceInfo={toggleSourceInfo}
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}

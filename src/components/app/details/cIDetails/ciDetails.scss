@@ -424,24 +424,6 @@
     bottom: 40px;
 }
 
-.image-tag-button {
-    border-radius: 4px;
-    border: 1px solid var(--N200);
-    width: fit-content;
-    cursor: pointer;
-    word-wrap: anywhere;
-}
-
-.image-tag-button-soft-deleted {
-    border-radius: 4px;
-    border: 1px solid var(--R200);
-    width: fit-content;
-    color: var(--R500); 
-    background-color: var(--R100);
-    text-decoration: line-through;
-    cursor: pointer;
-}
-
 .add-tag-button {
     padding: 4px 8px;
     width: fit-content;

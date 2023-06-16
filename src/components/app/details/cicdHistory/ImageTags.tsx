@@ -34,6 +34,8 @@ export const ImageTagsContainer = ({
     const [softDeleteTags, setSoftDeleteTags] = useState<ReleaseTag[]>([])
     const [hardDeleteTags, setHardDeleteTags] = useState<ReleaseTag[]>([])
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
+    const [appReleaseTags, setAppReleaseTags] = useState<string[]>(appReleaseTagNames)
+    const [tagsEditableVal, setTagsEditable] = useState<boolean>(tagsEditable)
 
     useEffect(() => {
         initialise()
@@ -42,7 +44,7 @@ export const ImageTagsContainer = ({
 
     useEffect(() => {
         reInitState()
-    }, [imageReleaseTags,imageComment,appReleaseTagNames,tagsEditable])
+    }, [imageReleaseTags,imageComment,appReleaseTags,tagsEditable])
 
 
     async function initialise() {
@@ -57,9 +59,11 @@ export const ImageTagsContainer = ({
     }
 
     const reInitState = () => {
+        setAppReleaseTags(appReleaseTags)
+        setTagsEditable(tagsEditable)
         setInitialTags(imageReleaseTags ? imageReleaseTags : [])
         setInitialDescription(imageComment ? imageComment.comment : '')
-        setExistingTags(appReleaseTagNames ? appReleaseTagNames : [])
+        setExistingTags(appReleaseTags ? appReleaseTags : [])
         setNewDescription(imageComment ? imageComment.comment : '')
         setDisplayedTags(imageReleaseTags ? imageReleaseTags : [])
     }
@@ -99,7 +103,7 @@ export const ImageTagsContainer = ({
         const isTagExistsInExistingTags = existingTags.includes(lowercaseValue)
         let isTagExistsInDisplayedTags = false
         for (let i = 0; i < displayedTags?.length; i++) {
-            if (displayedTags[i]?.tagName.toLowerCase() === lowercaseValue) isTagExistsInDisplayedTags = true
+            if (displayedTags[i].tagName.toLowerCase() === lowercaseValue) isTagExistsInDisplayedTags = true
         }
         if (isTagExistsInExistingTags || isTagExistsInDisplayedTags) {
             setTagErrorMessage('This tag is already applied on another image in this application')
@@ -164,31 +168,33 @@ export const ImageTagsContainer = ({
             hardDeleteTags: hardDeleteTags,
         }
 
-        try {
-            // set loading state true
-            let response = await setImageTags(payload, ciPipelineId, artifactId)
-            const tags = response.result?.imageReleaseTags?.map((tag) => ({
+
+        // set loading state true
+        setImageTags(payload, ciPipelineId, artifactId).then((res) => {
+            const tags = res.result?.imageReleaseTags?.map((tag) => ({
                 id: tag.id,
                 tagName: tag.tagName,
                 deleted: tag.deleted,
                 appId: 0,
                 artifactId: 0,
             }))
-            const comment = response.result?.imageComment?.comment
+            setAppReleaseTags(res.result?.appReleaseTags)
+            setTagsEditable(res.result?.tagsEditable)
             setInitialTags(tags)
-            setInitialDescription(comment)
+            setInitialDescription(res.result?.imageComment?.comment)
             setDisplayedTags(tags)
-            setNewDescription(comment)
+            setNewDescription(res.result?.imageComment?.comment)
             setCreateTags([])
             setSoftDeleteTags([])
             setHardDeleteTags([])
             handleEditClick()
             setShowTagsWarning(false)
             setTagErrorMessage('')
-        } catch (err) {
+        }).catch((err)=>{
             showError(err)
-        }
+            })
     }
+
 
     const renderInfoCard = (): JSX.Element => {
         return (
@@ -198,7 +204,7 @@ export const ImageTagsContainer = ({
                 placement="right"
                 Icon={QuestionFilled}
                 heading="Release tags"
-                infoText={`Release tags allow you to tag container images with readable and relatable tags eg. v1.0.`}
+                infoText="Release tags allow you to tag container images with readable and relatable tags eg. v1.0."
                 showCloseButton={true}
                 trigger="click"
                 interactive={true}
@@ -233,21 +239,19 @@ export const ImageTagsContainer = ({
 
     const creatableRef = useRef(null)
 
-    if (newDescription === '' && displayedTags.length === 0 && !isEditing && !tagsEditable) {
-        return <div></div>
-    }
-
     if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
-        return (
+        return tagsEditableVal ? (
             <div className="bcn-0 pt-12 pr-12">
                 <AddImageButton handleEditClick={handleEditClick} />
             </div>
+        ) : (
+            <div></div>
         )
     }
 
     return (
         <div className="pt-12 pr-12">
-            {isEditing && tagsEditable ? (
+            {isEditing && tagsEditableVal ? (
                 <div className="bcn-0 dc__border-top-n1 ">
                     <div className="cn-7 mt-12 flex left">
                         <span>Release tags (eg. v1.0)</span>
@@ -351,7 +355,7 @@ export const ImageTagsContainer = ({
                         </div>
                     </div>
                     <div className="mt-8 mr-6">
-                        {tagsEditable && (
+                        {tagsEditableVal && (
                             <EditIcon
                                 className="icon-dim-16 image-tags-container-edit__icon cursor"
                                 data-testid="edit-tags-icon"
@@ -378,7 +382,6 @@ export const ImageTagButton = ({
     softDeleteTags,
     isSuperAdmin,
 }: ImageButtonType) => {
-    const containerClassName = isSoftDeleted ? 'image-tag-button-soft-deleted mb-8 mr-8' : 'image-tag-button mb-8 mr-8'
     const IconComponent = isSoftDeleted ? Redo : Minus
 
     const [isHovered, setIsHovered] = useState(false)
@@ -394,16 +397,16 @@ export const ImageTagButton = ({
     }
 
     const isInSoftDeleteTags = isSoftDeleted && softDeleteTags.some((tag) => tag.tagName === text)
-    const isCloseButtonVisible = tagId === 0 || isSuperAdmin
+    const canTagBeHardDelete = tagId === 0 || isSuperAdmin
 
     return (
-        <div className={containerClassName} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mb-8 mr-8 ${ isSoftDeleted ? 'cr-5 bcr-1 dc__strike-through' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="mr-8 ml-8 mt-2 mb-2 flex">
                 {isHovered && isEditing && (isInSoftDeleteTags || (tagId !== 0 && !isSoftDeleted)) && (
                     <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />
                 )}
                 {text}
-                {isHovered && isEditing && isCloseButtonVisible && (
+                {isHovered && isEditing && canTagBeHardDelete && (
                     <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />
                 )}
             </div>
@@ -417,7 +420,10 @@ const AddImageButton = ({ handleEditClick }) => {
     }
 
     return (
-        <div className="add-tag-button flex pt-12 pr-12" data-testid="add-tags-button" onClick={handleClick}>
+        <div className="add-tag-button flex pt-12 pr-12" data-testid="add-tags-button" onClick={(e) => {
+            stopPropagation(e)
+            handleClick()}
+        }>
             <div className="lh-16 flex">
                 <Add className="icon-dim-16 cn-6" />
                 <span className="cn-7">Add tags/comment</span>

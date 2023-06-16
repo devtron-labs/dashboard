@@ -31,6 +31,11 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     filteredCIPipelines: any
 }
 
+export interface BulkCDDetailTypeResponse{
+    bulkCDDetailType: BulkCDDetailType[],
+    uniqueReleaseTags: string[],
+}
+
 export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string

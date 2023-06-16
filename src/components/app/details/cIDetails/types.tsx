@@ -24,7 +24,7 @@ export interface HistoryLogsType {
     isBlobStorageConfigured?: boolean
     isJobView?: boolean
     appIdFromParent?: string
-    appReleaseTags?:[]
+    appReleaseTags?: []
     tagsEditable: boolean
 }
 

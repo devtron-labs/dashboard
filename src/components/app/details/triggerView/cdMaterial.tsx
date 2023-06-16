@@ -311,6 +311,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
                             mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
                             this.renderFailedCD(mat)}
+                        {(mat.index == 0) && <div className="mt-6 ml-8">
+                            <ImageTagButton
+                                text="Latest"
+                                isSoftDeleted={false}
+                                isEditing={false}
+                                tagId={0}
+                                softDeleteTags={[]}
+                                isSuperAdmin={[]}
+                            />
+                        </div>
+                        }
                     </div>
                 </div>
             )
@@ -368,6 +379,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             index,
             this.props.materialType,
             this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+            this.props.appId,
         )
         if (
             (this.props.materialType === 'none' || this.state.isSelectImageTrigger) &&
@@ -468,6 +480,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         isApprovalConfigured: boolean,
         hideSelector?: boolean,
         disableSelection?: boolean,
+        latestTagAdded?: boolean,
     ) {
         const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
@@ -508,9 +521,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__info flex left fs-13">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
-                        {(mat.index == 0) && <div className="mt-6 ml-8">
+                        { !latestTagAdded && (mat.index == 0) && <div className="mt-6 ml-8">
                             <ImageTagButton
-                                text={'Latest'}
+                                text="Latest"
                                 isSoftDeleted={false}
                                 isEditing={false}
                                 tagId={0}
@@ -593,7 +606,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
             const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
             const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
-
+            const latestTagAdded =  (
+                mat.latest ||
+                mat.runningOnParentCd ||
+                mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
+                mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                mat.artifactStatus === ARTIFACT_STATUS.Failed
+            ) && (mat.index == 0)
             return (
                 <div
                     key={`material-history-${mat.index}`}
@@ -608,7 +627,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         data-testid={`cd-material-history-image-${mat.index}`}
                         className={`material-history__top p-12 cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
                     >
-                        {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
+                        {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection,latestTagAdded)}
                     </div>
                     <div className="pl-12 pb-12" data-testId={`image-tags-container-${mat.index}`}>
                         <ImageTagsContainer
