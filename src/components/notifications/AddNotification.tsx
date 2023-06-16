@@ -758,7 +758,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         MultiValueRemove: MultiValueRemove,
                         IndicatorSeparator: null,
                         DropdownIndicator: DropdownIndicator,
-                        // MultiValueContainer: MultiValueContainer,
                         ClearIndicator: ClearIndicator,
                         Option: Option,
                         MenuList: (props) => {

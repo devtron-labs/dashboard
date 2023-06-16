@@ -13,7 +13,6 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types';
 import CreateHeaderDetails from './CreateHeaderDetails';
-import HelpNav from '../common/header/HelpNav';
 
 export class WebhookConfigModal extends Component<WebhookConfigModalProps, WebhhookConfigModalState> {
 
@@ -60,7 +59,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     let state = { ...this.state };
                     const _headers = [...this.state.form.header]
                     state.view = ViewType.FORM;
-                    const _responseKeys = Object.keys(response.result?.header) || []
+                    const _responseKeys = response.result?.header ? Object.keys(response.result.header) : []
                     {_responseKeys.forEach((_key) => {
                             _headers.push({ key: _key, value: response.result.header[_key] })
                     })}
@@ -256,7 +255,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
 
     renderWithBackdrop(body) {
         return <Drawer position="right">
-            <div className="h-100 modal__body w-885 modal__body--p-0 dc__no-top-radius mt-0 dc__position-rel">
+            <div className="h-100 modal__body w-885 modal__body--p-0 dc__no-border-radius mt-0 dc__position-rel">
                 <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                     <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure Webhook</h1>
                     <button type="button" className="dc__transparent" onClick={this.props.closeWebhookConfigModal}>
@@ -292,7 +291,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         else return (
             <>
                 <div className="flex" style={{ height: 'calc(100vh - 120px' }}>
-                    <div className="w-600 m-20 flex column dc__align-start dc__content-start dc__overflow-scroll" style={{ height: 'calc(100vh - 160px)' }}>
+                    <div className="w-600 p-20 flex column dc__align-start dc__content-start dc__overflow-scroll" style={{ height: 'calc(100vh - 120px)' }}>
                         <label className="form__row w-100-imp">
                             <span className="form__label dc__required-field">Configuration name</span>
                             <input data-testid="add-webhook-config-name" className="form__input" type="text" name="app-name"
@@ -300,7 +299,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                                 data-field="configName"
                                 onBlur={this.onBlur}
                                 placeholder="Enter name" autoFocus={true} tabIndex={1} />
-                            <span className="form__error">
+                            <span className="form__error" data-testid="webhook-config-name-error">
                                 {!this.state.isValid.configName
                                     ? <><Error className="form__icon form__icon--error" />This is required field.<br /></>
                                     : null}
@@ -308,16 +307,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                         </label>
                         <label className="form__row w-100-imp">
                             <span className="form__label dc__required-field">Webhook URL
-                                <Tippy className="default-tt" arrow={true} trigger={"click"}
-                                    interactive={true}
-                                    placement="top" content={
-                                        <a href="https://slack.com/intl/en-gb/help/articles/115005265063-Incoming-webhooks-for-Slack" target="_blank" rel="noopener noreferrer"
-                                            style={{ color: "white", textTransform: "none" }}>
-                                            Learn how to setup slack webhooks
-                                        </a>
-                                    }>
-                                    <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
-                                </Tippy>
                             </span>
                             <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
                                 value={this.state.form.webhookUrl}
@@ -325,7 +314,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                                 placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
                                 data-field="webhookUrl"
                                 onBlur={this.onBlur} />
-                            <span className="form__error">
+                            <span className="form__error" data-testid="webhook-url-error">
                                 {!this.state.isValid.webhookUrl
                                     ? <><Error className="form__icon form__icon--error" />This is a required field. <br /></>
                                     : null}
