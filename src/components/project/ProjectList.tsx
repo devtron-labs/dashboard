@@ -60,7 +60,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     handleChange(event, index: number, key: 'name'): void {
         const { projects, isValid, errorMessage } = { ...this.state }
-        if (event.target.value && event.target.value.length > 2) {
+        if(event.target.value.includes(' ')){
+            isValid[key] = false
+            errorMessage[key] = `Do not use 'spaces' in name`
+
+        }else if (event.target.value && event.target.value.length > 2) {
             isValid[key] = true
             errorMessage[key] = ''
         } else {
@@ -108,9 +112,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             this.setState({ isValid });
             return
         }
-        else {
+        else if(isValid?.[key]) {
             isValid[key] = true;
             errorMessage[key]= ""
+        }else{
+            return
         }
         this.setState({ loadingData: true, isValid });
         createProject(project).then((response) => {
