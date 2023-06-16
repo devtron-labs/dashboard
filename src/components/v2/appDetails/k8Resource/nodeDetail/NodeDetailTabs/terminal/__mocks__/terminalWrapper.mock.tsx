@@ -1,5 +1,7 @@
 import React, { useRef } from 'react'
+import { SERVER_MODE } from '../../../../../../../../config'
 import { nodeSelect, SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
+import { mainContext } from '../../../../../../../common/navigation/NavigationRoutes'
 import { TerminalWrapperType, TERMINAL_TEXT } from '../constants'
 import { TerminalSelectionListDataType } from '../terminal.type'
 
@@ -56,7 +58,7 @@ export const selectionListData: TerminalSelectionListDataType = {
     ],
     tabSwitcher: {
         terminalData: {
-            terminalRef: null,
+            terminalRef: { current: null },
             clearTerminal: true,
             terminalMessageData: jest.fn(),
             renderConnectionStrip: jest.fn(),
@@ -155,3 +157,11 @@ export const renderStrip = jest.fn(() => {
         </div>
     )
 })
+
+const userContextMock = {
+    serverMode: SERVER_MODE.FULL,
+}
+
+export const terminalContextWrapper = (terminalView) => {
+    return <mainContext.Provider value={userContextMock}>{terminalView}</mainContext.Provider>
+}

@@ -44,7 +44,7 @@ const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/Resour
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-export const mainContext = createContext(null)
+export const mainContext = createContext<any>(null)
 
 export default function NavigationRoutes() {
     const history = useHistory()
