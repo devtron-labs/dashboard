@@ -34,9 +34,9 @@ export const multiSelectStyles = {
     multiValue: (base, state) => {
         return ({
             ...base,
-            border: (state.data.data.dest !== "slack") && !validateEmail(state.data.label) ? `1px solid var(--R500)` : `1px solid var(--N200)`,
+            border: (state.data.data.dest !== "slack") && (state.data.data.dest !== "webhook") && !validateEmail(state.data.label) ? `1px solid var(--R500)` : `1px solid var(--N200)`,
             borderRadius: `4px`,
-            background: (state.data.data.dest !== "slack") && !validateEmail(state.data.label) ? 'var(--R100)' : 'var(--N000)',
+            background: (state.data.data.dest !== "slack") && (state.data.data.dest !== "webhook") && !validateEmail(state.data.label) ? 'var(--R100)' : 'var(--N000)',
             padding: `2px`,
             textTransform: `lowercase`,
             fontSize: `12px`,

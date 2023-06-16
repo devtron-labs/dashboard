@@ -201,7 +201,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
     renderConfigureLinkInfoColumn() {
         let keys = Object.keys(this.state.webhookAttribute)
         return (
-            <div className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16" data-testid="available-webhook-data">
+            <div className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16 dc__overflow-scroll" data-testid="available-webhook-data">
                 <div className="flex dc__align-items-center p-0 mb-16">
                     <Help className="icon-dim-18 fcv-5" />
                     <span className="ml-8 fw-6 fs-13 lh-20"> Available data</span>
@@ -349,7 +349,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     </div>
                     {this.renderConfigureLinkInfoColumn()}
                 </div>
-                <div className=" form__button-group-bottom flex right">
+                <div className="pt-16 pb-16 pl-24 pr-24 flex right dc__border-top">
                     <div className="flex right">
                         <button type="button" className="cta cancel mr-16" tabIndex={5}
                             onClick={this.props.closeWebhookConfigModal}>Cancel
