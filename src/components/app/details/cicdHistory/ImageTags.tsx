@@ -21,6 +21,7 @@ export const ImageTagsContainer = ({
     imageReleaseTags,
     appReleaseTagNames,
     tagsEditable,
+    toggleCardMode
 }: ImageTaggingContainerType) => {
     const [initialTags, setInitialTags] = useState<ReleaseTag[]>(imageReleaseTags ? imageReleaseTags : [])
     const [initialDescription, setInitialDescription] = useState(imageComment ? imageComment.comment : '')
@@ -76,6 +77,9 @@ export const ImageTagsContainer = ({
 
     const handleEditClick = () => {
         setIsEditing(!isEditing)
+        if(typeof toggleCardMode  === 'function'){
+            toggleCardMode(artifactId)
+        }
     }
 
     const handleDescriptionChange = (e) => {
@@ -396,11 +400,11 @@ export const ImageTagButton = ({
         <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mr-8 bcn-0 flex h-24 ${ isSoftDeleted ? 'cy-7 bcy-1 dc__strike-through ey-2' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="flex pt-2 pl-8 pr-8 pb-2">
                 {isHovered && isEditing && (isInSoftDeleteTags || (tagId !== 0 && !isSoftDeleted)) && (
-                    <IconComponent className="icon-dim-12 scn-7 mr-4 cursor" onClick={onSoftDeleteClick} />
+                    <IconComponent className={`icon-dim-12 mr-4 cursor ${isSoftDeleted ? 'scn-6' : 'fcn-6' }`} onClick={onSoftDeleteClick} />
                 )}
                 {text}
                 {isHovered && isEditing && canTagBeHardDelete && (
-                    <Close className="icon-dim-12 ml-4 scn-7 cn-5 cursor" onClick={onHardDeleteClick} />
+                    <Close className="icon-dim-12 ml-4 fcn-6 cn-5 cursor" onClick={onHardDeleteClick} />
                 )}
             </div>
         </div>

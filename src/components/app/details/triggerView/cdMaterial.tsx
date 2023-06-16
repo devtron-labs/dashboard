@@ -87,6 +87,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
+            isEditMode: new Map<number,boolean>(),
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -602,7 +603,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return isApprovalConfigured ? `material-history__approved-image${disabledClassPostfix}` : ''
     }
 
-    renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
+    toggleCardMode = (index) => {
+        this.setState((prevState) => {
+          const _isEditModeList = new Map(prevState.isEditMode);
+          _isEditModeList.set(index, !_isEditModeList.get(index));
+          return { isEditMode: _isEditModeList };
+        });
+      };
+
+    renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => { 
         return materialList.map((mat) => {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
             const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
@@ -617,6 +626,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
             const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
             const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
+            const hideSourceInfo = !this.state.isEditMode.get(+mat.id)
             return (
                 <div
                     key={`material-history-${mat.index}`}
@@ -664,15 +674,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <div data-testId={`image-tags-container-${mat.index}`}>
                             <ImageTagsContainer
                                 ciPipelineId={this.props.ciPipelineId}
-                                artifactId={parseInt(mat.id)}
+                                artifactId={+mat.id}
                                 imageComment={mat.imageComment}
                                 imageReleaseTags={mat.imageReleaseTags}
                                 appReleaseTagNames={this.props.appReleaseTagNames}
                                 tagsEditable={this.props.tagsEditable}
+                                toggleCardMode={this.toggleCardMode}
                             />
                         </div>
                     </div>
-                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
+                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && hideSourceInfo && (
                         <div>
                             <ul className="tab-list tab-list--vulnerability">
                                 {mat.showSourceInfo &&
