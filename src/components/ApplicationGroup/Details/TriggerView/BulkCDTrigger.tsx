@@ -49,6 +49,16 @@ export default function BulkCDTrigger({
     const [tagNotFoundWarningsMap,setTagNotFoundWarningsMap] = useState<Map<number,string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
+    const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
+
+
+    const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
+        setCurrentAppReleaseTags(appReleaseTags)
+    }
+    const setCurrentAppTagsEditableWrapper = (tagsEditable: boolean) => {
+        setCurrentAppTagsEditable(tagsEditable)
+    }
 
     const closeBulkCDModal = (e): void => {
         abortControllerRef.current.abort()
@@ -160,6 +170,8 @@ export default function BulkCDTrigger({
 
     const changeApp = (e): void => {
         setSelectedApp(appList[e.currentTarget.dataset.index])
+        setCurrentAppReleaseTags(selectedApp.appReleaseTags)
+        setCurrentAppTagsEditable(selectedApp.tagsEditable)
     }
 
     const renderEmptyView = (): JSX.Element => {
@@ -324,8 +336,10 @@ export default function BulkCDTrigger({
                             userApprovalConfig={_currentApp.userApprovalConfig}
                             requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
-                            appReleaseTagNames={_currentApp.appReleaseTags}
-                            tagsEditable={_currentApp.tagsEditable}
+                            appReleaseTagNames={currentAppReleaseTags}
+                            setAppReleaseTagNames={setCurrentAppReleaseTagsWrapper}
+                            tagsEditable={currentAppTagsEditable}
+                            setTagsEditable={setCurrentAppTagsEditableWrapper}
                             ciPipelineId={_currentApp.ciPipelineId}
                         />
                     )}

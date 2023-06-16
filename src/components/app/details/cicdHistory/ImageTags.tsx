@@ -63,12 +63,14 @@ export const ImageTagsContainer = ({
     }
 
     const reInitState = () => {
-        // setAppReleaseTags(appReleaseTags)
-        // setTagsEditable(tagsEditable)
-        setInitialTags(imageReleaseTags ? imageReleaseTags : [])
-        setInitialDescription(imageComment ? imageComment.comment : '')
-        setNewDescription(imageComment ? imageComment.comment : '')
-        setDisplayedTags(imageReleaseTags ? imageReleaseTags : [])
+        if (isEditing === false) {
+            // setAppReleaseTags(appReleaseTags)
+            // setTagsEditable(tagsEditable)
+            setInitialTags(imageReleaseTags ? imageReleaseTags : [])
+            setInitialDescription(imageComment ? imageComment.comment : '')
+            setNewDescription(imageComment ? imageComment.comment : '')
+            setDisplayedTags(imageReleaseTags ? imageReleaseTags : [])
+        }
     }
 
 
@@ -181,8 +183,12 @@ export const ImageTagsContainer = ({
                 appId: 0,
                 artifactId: 0,
             }))
-            setAppReleaseTagNames(res.result?.appReleaseTags)
-            setTagsEditable(res.result?.tagsEditable)
+            if(setAppReleaseTagNames){
+                setAppReleaseTagNames(res.result?.appReleaseTags)
+            }
+            if(setTagsEditable){
+                setTagsEditable(res.result?.tagsEditable)
+            }
             setInitialTags(tags)
             setInitialDescription(res.result?.imageComment?.comment)
             setDisplayedTags(tags)
