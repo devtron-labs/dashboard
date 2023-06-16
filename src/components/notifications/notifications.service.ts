@@ -399,7 +399,7 @@ export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseTy
         channel: 'webhook',
         configs: [
             {
-                id: data.id,
+                id: (Number)(data.id),
                 configName: data.configName,
                 webhookUrl: data.webhookUrl,
                 header: headerObj,
