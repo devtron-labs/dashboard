@@ -45,11 +45,6 @@ export function getCITriggerInfoModal(
 ) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
-        let appReleaseTags = response?.result?.imageTaggingData?.appReleaseTags
-        let tagsEditable = response?.result?.imageTaggingData?.tagsEditable
-        let imageComment = response?.result?.imageTaggingData?.imageComment
-        let imageReleaseTags = response?.result?.imageTaggingData?.imageReleaseTags
-        let image = response?.result?.image
         materials = materials.map((mat) => {
             return {
                 id: mat.id,
@@ -92,11 +87,11 @@ export function getCITriggerInfoModal(
                 environmentName: response.result.environmentName || '',
                 environmentId: response.result.environmentId || 0,
                 appName: response.result.appName || '',
-                appReleaseTags: appReleaseTags,
-                imageComment: imageComment,
-                imageReleaseTags: imageReleaseTags,
-                image: image,
-                tagsEditable: tagsEditable,
+                appReleaseTags: response?.result?.imageTaggingData?.appReleaseTags,
+                imageComment: response?.result?.imageTaggingData?.imageComment,
+                imageReleaseTags: response?.result?.imageTaggingData?.imageReleaseTags,
+                image: response?.result?.image,
+                tagsEditable: response?.result?.imageTaggingData?.tagsEditable,
             },
         }
     })
