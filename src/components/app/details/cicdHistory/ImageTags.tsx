@@ -36,7 +36,7 @@ export const ImageTagsContainer = ({
     const [softDeleteTags, setSoftDeleteTags] = useState<ReleaseTag[]>([])
     const [hardDeleteTags, setHardDeleteTags] = useState<ReleaseTag[]>([])
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
-
+    const [descriptionValidationMessage, setDescriptionValidationMessage] = useState<string>('')
     useEffect(() => {
         initialise()
     }, [])
@@ -88,7 +88,9 @@ export const ImageTagsContainer = ({
     }
 
     const handleDescriptionChange = (e) => {
-        setNewDescription(e.target.value)
+        const description = e.target.value
+        description?.length > 500 ? setDescriptionValidationMessage('comment length cannot exceed 500 characters') : setDescriptionValidationMessage('')
+        setNewDescription(description)
     }
 
     const handleCancel = () => {
@@ -104,14 +106,18 @@ export const ImageTagsContainer = ({
 
     const handleTagCreate = (newValue) => {
         const lowercaseValue = newValue.toLowerCase()
+        if(lowercaseValue.length == 0 || lowercaseValue.length >= 128 || lowercaseValue[0] == '.' || lowercaseValue[0] == '-') {
+            setTagErrorMessage("tag name cannot be empty or exceed 128 characters or cannot start with . or -")
+            return
+        }
         setTagErrorMessage('')
         const isTagExistsInExistingTags = existingTags.includes(lowercaseValue)
         let isTagExistsInDisplayedTags = false
         for (let i = 0; i < displayedTags?.length; i++) {
             if (displayedTags[i].tagName.toLowerCase() === lowercaseValue) isTagExistsInDisplayedTags = true
         }
-        if (isTagExistsInExistingTags || isTagExistsInDisplayedTags) {
-            setTagErrorMessage('This tag is already applied on another image in this application')
+        if (isTagExistsInExistingTags || isTagExistsInDisplayedTags || lowercaseValue === 'latest') {
+            setTagErrorMessage(`This tag ${lowercaseValue} is already applied on same/another image in this application`)
             return
         }
         const newTag: ReleaseTag = {
@@ -311,7 +317,7 @@ export const ImageTagsContainer = ({
                         </div>
                     )}
                     <div className="cn-7">Comment</div>
-                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12" data-testid="add-image-comment-text-area">
+                    <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 " data-testid="add-image-comment-text-area">
                         <textarea
                             value={newDescription}
                             onChange={handleDescriptionChange}
@@ -319,7 +325,12 @@ export const ImageTagsContainer = ({
                             style={{height: '90px !important'}}
                         />
                     </div>
-                    <div className="w-100 flex right">
+                    { (descriptionValidationMessage !== '') && (<div className="flex left">
+                        <Error className="form__icon form__icon--error" />
+                        <div className="form__error">{descriptionValidationMessage}</div>
+                    </div>
+                    )}
+                    <div className="w-100 flex right mt-12">
                         <button className="cta cancel h-32 lh-32-imp" type="button" onClick={(e)=> {
                             stopPropagation(e)
                             handleCancel()
