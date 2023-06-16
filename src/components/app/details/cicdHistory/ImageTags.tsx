@@ -20,7 +20,9 @@ export const ImageTagsContainer = ({
     imageComment,
     imageReleaseTags,
     appReleaseTagNames,
+    setAppReleaseTagNames,
     tagsEditable,
+    setTagsEditable,
 }: ImageTaggingContainerType) => {
     const [initialTags, setInitialTags] = useState<ReleaseTag[]>(imageReleaseTags ? imageReleaseTags : [])
     const [initialDescription, setInitialDescription] = useState(imageComment ? imageComment.comment : '')
@@ -34,8 +36,6 @@ export const ImageTagsContainer = ({
     const [softDeleteTags, setSoftDeleteTags] = useState<ReleaseTag[]>([])
     const [hardDeleteTags, setHardDeleteTags] = useState<ReleaseTag[]>([])
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
-    const [appReleaseTags, setAppReleaseTags] = useState<string[]>(appReleaseTagNames)
-    const [tagsEditableVal, setTagsEditable] = useState<boolean>(tagsEditable)
 
     useEffect(() => {
         initialise()
@@ -44,7 +44,11 @@ export const ImageTagsContainer = ({
 
     useEffect(() => {
         reInitState()
-    }, [imageReleaseTags,imageComment,appReleaseTags,tagsEditable])
+    }, [imageReleaseTags,imageComment,tagsEditable])
+
+    useEffect(() => {
+        setExistingTags(appReleaseTagNames ? appReleaseTagNames : [])
+    },[appReleaseTagNames])
 
 
     async function initialise() {
@@ -59,11 +63,10 @@ export const ImageTagsContainer = ({
     }
 
     const reInitState = () => {
-        setAppReleaseTags(appReleaseTags)
-        setTagsEditable(tagsEditable)
+        // setAppReleaseTags(appReleaseTags)
+        // setTagsEditable(tagsEditable)
         setInitialTags(imageReleaseTags ? imageReleaseTags : [])
         setInitialDescription(imageComment ? imageComment.comment : '')
-        setExistingTags(appReleaseTags ? appReleaseTags : [])
         setNewDescription(imageComment ? imageComment.comment : '')
         setDisplayedTags(imageReleaseTags ? imageReleaseTags : [])
     }
@@ -178,7 +181,7 @@ export const ImageTagsContainer = ({
                 appId: 0,
                 artifactId: 0,
             }))
-            setAppReleaseTags(res.result?.appReleaseTags)
+            setAppReleaseTagNames(res.result?.appReleaseTags)
             setTagsEditable(res.result?.tagsEditable)
             setInitialTags(tags)
             setInitialDescription(res.result?.imageComment?.comment)
@@ -240,7 +243,7 @@ export const ImageTagsContainer = ({
     const creatableRef = useRef(null)
 
     if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
-        return tagsEditableVal ? (
+        return tagsEditable ? (
             <div className="bcn-0 pt-12 pr-12">
                 <AddImageButton handleEditClick={handleEditClick} />
             </div>
@@ -251,7 +254,7 @@ export const ImageTagsContainer = ({
 
     return (
         <div className="pt-12 pr-12">
-            {isEditing && tagsEditableVal ? (
+            {isEditing && tagsEditable ? (
                 <div className="bcn-0 dc__border-top-n1 ">
                     <div className="cn-7 mt-12 flex left">
                         <span>Release tags (eg. v1.0)</span>
@@ -355,7 +358,7 @@ export const ImageTagsContainer = ({
                         </div>
                     </div>
                     <div className="mt-8 mr-6">
-                        {tagsEditableVal && (
+                        {tagsEditable && (
                             <EditIcon
                                 className="icon-dim-16 image-tags-container-edit__icon cursor"
                                 data-testid="edit-tags-icon"
