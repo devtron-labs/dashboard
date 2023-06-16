@@ -96,6 +96,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.isConfigAvailable = this.isConfigAvailable.bind(this)
     }
 
+    static getDerivedStateFromProps(props, state) {
+        return { ...state, selectedMaterial: props.material.find((_mat) => _mat.isSelected)}
+    }
+
     componentDidMount() {
         this.getSecurityModuleStatus()
 
@@ -766,12 +770,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         // reset the selection for some cases
-        // for (const mat of materialList) {
-        //     if (this.state.selectedMaterial?.id === mat.id) {
-        //         mat.isSelected = true
-        //         break
-        //     }
-        // }
+        for (const mat of materialList) {
+            if (this.state.selectedMaterial?.id === mat.id) {
+                mat.isSelected = true
+                break
+            }
+        }
 
         return {
             consumedImage: _consumedImage,
