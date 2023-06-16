@@ -368,22 +368,24 @@
     }
 }
 
-.hover-only {
-    display: none ;
-}
-
-.hover-trigger {
-    .tippy-box.default-tt {
-        display: none !important;
+.data-conatiner {
+    .hover-only {
+        display: none ;
     }
-
-    &:hover {
+    
+    &.hover-trigger {
         .tippy-box.default-tt {
-            display: block !important;
+            display: none !important;
         }
-
-        .hover-only {
-            display: inline-block;
+    
+        &:hover {
+            .tippy-box.default-tt {
+                display: block !important;
+            }
+    
+            .hover-only {
+                display: inline-block;
+            }
         }
     }
 }
@@ -392,6 +394,6 @@
     height: 'calc(100% - 70px)';
 }
 
-.progressing_loader_height {
+.progressing-loader-height {
     height: 'calc(100% - 68px)';
 }

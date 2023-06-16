@@ -94,8 +94,8 @@ export const MultiValueContainer = ({ validator, ...props }) => {
     else {
         return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
             <div className="flex fs-12 ml-4">
-                {data.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null }
-                {data.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null }
+                {data.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
+                {data.data.dest === "webhook" && <Webhook className="icon-dim-20 mr-5" /> }
                 <div className="cn-9">{label}</div>
             </div>
             {children[1]}
@@ -112,8 +112,8 @@ export function Option(props) {
     }
     else return <components.Option {...props} >
         {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
+        {item.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
+        {item.data.dest === "webhook" && <Webhook className="icon-dim-20 mr-5" /> }
         {props.children}
     </components.Option>
 }

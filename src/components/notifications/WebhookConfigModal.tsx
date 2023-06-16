@@ -49,6 +49,8 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.copyToClipboard = this.copyToClipboard.bind(this);
         this.isValid = this.isValid.bind(this);
         this.onSaveClickHandler = this.onSaveClickHandler.bind(this);
+        this.onClickSave = this.onClickSave.bind(this);
+        this.onBlur = this.onBlur.bind(this);
     }
 
     componentDidMount() {
@@ -58,8 +60,8 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     let state = { ...this.state };
                     const _headers = [...this.state.form.header]
                     state.view = ViewType.FORM;
-                    const _responseKeys = response.result?.header ? Object.keys(response.result.header) : undefined
-                    {_responseKeys && _responseKeys.map((_key) => {
+                    const _responseKeys = Object.keys(response.result?.header) || []
+                    {_responseKeys.forEach((_key) => {
                             _headers.push({ key: _key, value: response.result.header[_key] })
                     })}
                     const _responsePayload = response.result?.payload ? JSON.stringify(response.result.payload) : ""
@@ -139,6 +141,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             isFormValid = isFormValid && this.state.isValid[key];
             return isFormValid;
         }, true);
+        console.log(isFormValid)
         if (!isFormValid) {
             state.form.isLoading = false;
             state.form.isError = true;
@@ -188,9 +191,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
     }
 
     setCopied(value: boolean) {
-        let { copyAttribute } = { ...this.state }
-        copyAttribute = value;
-        this.setState({ copyAttribute })
+        this.setState({ copyAttribute: value })
     }
 
     copyToClipboard(e) {
@@ -208,7 +209,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                 </div>
                 <span className="fw-4 fs-13 lh-20 mb-16">Following data are available to be shared through Webhook. Use Payload to configure.</span>
                 {keys.map((atrribute, index) => (
-                    <div className="w-100-imp cn-7 fs-12 mb-8 flex left hover-trigger" data-testid={`${this.state.webhookAttribute[atrribute]}-${index}`}>
+                    <div className="w-100-imp cn-7 fs-12 mb-8 flex left data-conatiner hover-trigger" data-testid={`${this.state.webhookAttribute[atrribute]}-${index}`} key={`${index}-${atrribute}`}>
                         <span className="bcn-1 br-4 fs-12 fw-4 lh-16 p-4">{this.state.webhookAttribute[atrribute]}</span>
                         <Tippy
                             className="default-tt"
@@ -239,19 +240,16 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
 
     renderHeadersList() {
         return (
-            <div>
-                <div className="mb-8">
-                    {this.state.form.header?.map((headerData, index) => (
-                        <CreateHeaderDetails
-                            key={`tag-${index}`}
-                            index={index}
-                            headerData={headerData}
-                            setHeaderData={this.setHeaderData}
-                            removeHeader={this.removeHeader}
-                            headerIndex={3 + (index + 2)}
-                        />
-                    ))}
-                </div>
+            <div className="mb-8">
+                {this.state.form.header?.map((headerData, index) => (
+                    <CreateHeaderDetails
+                        key={`tag-${index}`}
+                        index={index}
+                        headerData={headerData}
+                        setHeaderData={this.setHeaderData}
+                        removeHeader={this.removeHeader}
+                    />
+                ))}
             </div>
         )
     }
@@ -275,6 +273,15 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.saveWebhookConfig();
     }
 
+    onClickSave(event) {
+        event.preventDefault(); 
+        this.saveWebhookConfig();
+    }
+
+    onBlur(event) {
+        this.isValid(event, event.currentTarget.dataset.field)
+    }
+
     renderWebhookModal = () => {
         if (this.state.view === ViewType.LOADING) {
             return (<div style={{ height: "350px" }}>
@@ -290,7 +297,8 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                             <span className="form__label dc__required-field">Configuration name</span>
                             <input data-testid="add-webhook-config-name" className="form__input" type="text" name="app-name"
                                 value={this.state.form.configName} onChange={this.handleWebhookConfigNameChange}
-                                onBlur={(event) => this.isValid(event, 'configName')}
+                                data-field="configName"
+                                onBlur={this.onBlur}
                                 placeholder="Enter name" autoFocus={true} tabIndex={1} />
                             <span className="form__error">
                                 {!this.state.isValid.configName
@@ -313,8 +321,10 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                             </span>
                             <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
                                 value={this.state.form.webhookUrl}
+                                autoFocus={true}
                                 placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
-                                onBlur={(event) => this.isValid(event, 'webhookUrl')} />
+                                data-field="webhookUrl"
+                                onBlur={this.onBlur} />
                             <span className="form__error">
                                 {!this.state.isValid.webhookUrl
                                     ? <><Error className="form__icon form__icon--error" />This is a required field. <br /></>
@@ -333,20 +343,18 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                         </div>
                         <label className="form__row w-100-imp">
                             <span className="form__label dc__required-field">Data to be shared through Webhook</span>
-                            <div className="dc__border pt-8 pb-8 br-4" onBlur={(event) => this.isValid(event, 'payload')}>
+                            <div className="dc__border pt-8 pb-8 br-4" data-field="payload" onBlur={this.onBlur}>
                                 <CodeEditor
                                     value={this.state.form.payload}
                                     theme="vs-alice-blue"
                                     mode="json"
-                                    onChange={(value) => this.handleWebhookPaylodChange(value)}
+                                    onChange={this.handleWebhookPaylodChange}
                                     inline
                                     height={200}
                                 ></CodeEditor>
                             </div>
                             <span className="form__error">
-                                {!this.state.isValid.payload
-                                    ? <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></>
-                                    : null}
+                                {!this.state.isValid.payload && <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></>}
                             </span>
                         </label>
                     </div>
@@ -357,7 +365,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                         <button type="button" className="cta cancel mr-16" tabIndex={5}
                             onClick={this.props.closeWebhookConfigModal}>Cancel
                         </button>
-                        <button onClick={(event) => { event.preventDefault(); this.saveWebhookConfig() }} data-testid="add-webhook-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
+                        <button onClick={this.onClickSave} data-testid="add-webhook-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
                             {this.state.form.isLoading ? <Progressing /> : "Save"}
                         </button>
                     </div>

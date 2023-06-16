@@ -90,6 +90,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         this.addWebhookConfigHandler = this.addWebhookConfigHandler.bind(this)
         this.onSaveWebhook = this.onSaveWebhook.bind(this)
         this.onCloseWebhookModal = this.onCloseWebhookModal.bind(this)
+        this.deleteConfigPayload = this.deleteConfigPayload.bind(this)
+        this.deleteConfigTitle = this.deleteConfigTitle.bind(this)
+        this.deleteConfigComponent = this.deleteConfigComponent.bind(this)
     }
 
     componentDidMount() {
@@ -168,7 +171,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSlackConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex progressing_loader_height">
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
@@ -246,16 +249,13 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     }
 
     editWebhookHandler(e) {
-        let _state = {...this.state}
-        _state.showWebhookConfigModal = true;
-        _state.webhookConfigId = e.currentTarget.dataset.webhookid
-        this.setState( _state )
+        this.setState({ showWebhookConfigModal: true, webhookConfigId: e.currentTarget.dataset.webhookid })
     }
 
     renderWebhookConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex progressing_loader_height">
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
@@ -445,7 +445,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex progressing_loader_height">
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
@@ -532,7 +532,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSMTPConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex progressing_loader_height">
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
@@ -694,6 +694,45 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         }
     }
 
+    deleteConfigPayload(): any {
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
+            return this.state.slackConfig
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
+            return this.state.sesConfig
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
+            return this.state.webhookConfig
+        }
+        return this.state.smtpConfig
+    }
+
+    deleteConfigTitle(): string {
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
+            return this.state.slackConfig.configName
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
+            return this.state.sesConfig.configName
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
+            return this.state.webhookConfig.configName
+        }
+        return this.state.smtpConfig.configName
+    }
+
+    deleteConfigComponent(): string {
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
+            return DeleteComponentsName.SlackConfigurationTab
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
+            return DeleteComponentsName.SesConfigurationTab
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
+            return DeleteComponentsName.WebhookConfigurationTab
+        }
+        return DeleteComponentsName.SMTPConfigurationTab
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -724,34 +763,10 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <DeleteComponent
                         setDeleting={this.setDeleting}
                         deleteComponent={deleteNotification}
-                        payload={
-                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                ? this.state.slackConfig
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
-                                ? this.state.sesConfig
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab
-                                ? this.state.webhookConfig
-                                : this.state.smtpConfig
-                        }
-                        title={
-                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                ? this.state.slackConfig.configName
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
-                                ? this.state.sesConfig.configName
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab
-                                ? this.state.webhookConfig.configName
-                                : this.state.smtpConfig.configName
-                        }
+                        payload={this.deleteConfigPayload()}
+                        title={this.deleteConfigTitle()}
                         toggleConfirmation={this.toggleConfirmation}
-                        component={
-                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                ? DeleteComponentsName.SlackConfigurationTab
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
-                                ? DeleteComponentsName.SesConfigurationTab
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab
-                                ? DeleteComponentsName.WebhookConfigurationTab
-                                : DeleteComponentsName.SMTPConfigurationTab
-                        }
+                        component={this.deleteConfigComponent()}
                         confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
                         reload={this.getAllChannelConfigs}
                         configuration="configuration"

@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router'
 import { ServerError, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
+export interface NotifierProps extends RouteComponentProps<{ id: string }> { }
 
 export interface NotifierState {
     code: number
@@ -92,14 +92,4 @@ export interface CreateHeaderDetailsType {
     headerData: HeaderType;
     setHeaderData: (index: number, headerData: HeaderType) => void;
     removeHeader?: (index: number) => void;
-    headerIndex?: number;
-}
-
-export interface HeaderValueSelectorType {
-    selectedHeaderIndex: number;
-    headerData: HeaderType,
-    setHeaderData: (index: number, headerData: HeaderType) => void;
-    headerInputType: "key" | "value";
-    placeholder: string
-    headerIndex: number,
 }

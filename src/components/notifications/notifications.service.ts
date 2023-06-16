@@ -125,8 +125,7 @@ export function getChannelConfigs(): Promise<ResponseType> {
 }
 
 export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
-    const URL = `${Routes.NOTIFIER}/variables`
-    return get(URL)
+    return get(`${Routes.NOTIFIER}/variables`)
 }
 
 export function getConfigs(): Promise<ResponseType> {
@@ -173,7 +172,7 @@ export function getConfigs(): Promise<ResponseType> {
             }
         })
         let webhookConfigs = response.result?.webhookConfigs || []
-        webhookConfigs = webhookConfigs.sort((a, b) => {
+        webhookConfigs.sort((a, b) => {
             return sortCallback('configName', a, b)
         })
         webhookConfigs = webhookConfigs.map((webhookConfig) => {
@@ -358,12 +357,10 @@ export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?:
 }
 
 export function getWebhookConfiguration(webhookConfigId: number): Promise<ResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`
-    return get(URL)
+    return get(`${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`)
 }
 
 export function saveWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel`
     const headerObj = {};
     const headerPayload =  data.payload != '' ? JSON.parse(data.payload) : {}
     data.header.forEach((element) => {
@@ -382,11 +379,10 @@ export function saveWebhookConfiguration(data): Promise<UpdateConfigResponseType
             },
         ],
     }
-    return post(URL, payload)
+    return post(`${Routes.NOTIFIER}/channel`, payload)
 }
 
 export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel`
     const headerObj = {};
     const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
     data.header.forEach((element) => {
@@ -407,7 +403,7 @@ export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseTy
             },
         ],
     }
-    return post(URL, payload)
+    return post(`${Routes.NOTIFIER}/channel`, payload)
 }
 
 export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> {
