@@ -105,7 +105,7 @@ export const ImageTagsContainer = ({
     }
 
     const handleTagCreate = (newValue) => {
-        const lowercaseValue = newValue.toLowerCase()
+        const lowercaseValue = newValue.toLowerCase().trim()
         if(lowercaseValue.length == 0 || lowercaseValue.length >= 128 || lowercaseValue[0] == '.' || lowercaseValue[0] == '-') {
             setTagErrorMessage("tag name cannot be empty or exceed 128 characters or cannot start with . or -")
             return
