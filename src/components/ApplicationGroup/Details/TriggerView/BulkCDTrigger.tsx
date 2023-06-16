@@ -241,6 +241,15 @@ export default function BulkCDTrigger({
                 if (artifactIndex === -1) {
                     _tagNotFoundWarningsMap.set(app.appId,"Tag '" + selectedTag.value + "' not found")
                 }
+
+                if (artifactIndex !== -1 && selectedTag.value!== 'latest') {
+                    const releaseTag = app.material[artifactIndex]?.imageReleaseTags.find((releaseTag)=> releaseTag.tagName === selectedTag.value)
+                    if(releaseTag?.deleted) {
+                        artifactIndex = -1
+                        _tagNotFoundWarningsMap.set(app.appId,"Tag '" + selectedTag.value + "' is soft-deleted")
+                    }
+                }
+
                 selectImage(artifactIndex, MATERIAL_TYPE.inputMaterialList, {
                     id: +app.cdPipelineId,
                     type: selectedApp.stageType,
