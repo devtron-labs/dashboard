@@ -128,6 +128,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [isSelectAll, setSelectAll] = useState(false)
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const abortControllerRef = useRef(new AbortController())
+    const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
+    const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
+
+    const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
+        setAppReleaseTags(appReleaseTags)
+    }
+
+    const setTagsEditableVal = (tagsEditable: boolean) => {
+        setTagsEditable(tagsEditable)
+    }
 
     useEffect(() => {
         if (envId) {
@@ -738,6 +748,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     workflow.nodes = nodes
                     return workflow
                 })
+                setAppReleaseTags(data.appReleaseTagNames)
+                setTagsEditable(data.tagsEditable)
                 setWorkflowID(_workflowId)
                 setSelectedAppID(_appID)
                 setFilteredWorkflows(_workflows)
@@ -1875,8 +1887,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 requestedUserId={node?.requestedUserId}
                                 isVirtualEnvironment={isVirtualEnv}
                                 ciPipelineId = {node?.connectingCiPipelineId}
-                                appReleaseTagNames = {node?.appReleaseTagNames}
-                                tagsEditable = {node?.tagsEditable}
+                                appReleaseTagNames = {appReleaseTags}
+                                setAppReleaseTagNames = {setAppReleaseTagsNames}
+                                tagsEditable = {tagsEditableVal}
+                                setTagsEditable = {setTagsEditableVal}
                             />
                         )}
                     </div>

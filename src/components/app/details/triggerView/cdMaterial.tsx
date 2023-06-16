@@ -636,7 +636,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             imageComment={mat.imageComment}
                             imageReleaseTags={mat.imageReleaseTags}
                             appReleaseTagNames={this.props.appReleaseTagNames}
+                            setAppReleaseTagNames={this.props.setAppReleaseTagNames}
                             tagsEditable={this.props.tagsEditable}
+                            setTagsEditable={this.props.setTagsEditable}
                         />
                     </div>
                     {mat.showSourceInfo && (

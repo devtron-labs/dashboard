@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react'
+import React, { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
 import { UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
@@ -123,6 +123,8 @@ export interface ImageTaggingContainerType {
     imageReleaseTags?: ReleaseTag[] 
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
+    setTagsEditable?: (tagsEditable: boolean) => void
 }
 
 export interface ImageButtonType {

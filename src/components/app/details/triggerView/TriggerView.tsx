@@ -88,6 +88,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isChangeBranchClicked: false,
             loader: false,
             isSaveLoading: false,
+            appReleaseTags:[],
+            tagsEditable:false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -106,6 +108,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidMount() {
         this.getHostURLConfig()
         this.getWorkflows()
+    }
+
+    setAppReleaseTags = (appReleaseTags: string[]) => {
+        this.setState({appReleaseTags: appReleaseTags})
+    }
+
+    setTagsEditable = (tagsEditable: boolean) => {
+        this.setState({tagsEditable: tagsEditable})
     }
 
     getWorkflows = () => {
@@ -603,6 +613,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     showApprovalModal: isApprovalNode,
                     showCDModal: !isApprovalNode,
                     isLoading: false,
+                    appReleaseTags: data.appReleaseTagNames,
+                    tagsEditable: data.tagsEditable,
                 })
                 preventBodyScroll(true)
             })
@@ -1235,8 +1247,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isVirtualEnvironment={node.isVirtualEnvironment}
                                 isSaveLoading={this.state.isSaveLoading}
                                 ciPipelineId={node.connectingCiPipelineId}
-                                appReleaseTagNames={node.appReleaseTagNames}
-                                tagsEditable={node.tagsEditable}
+                                appReleaseTagNames={this.state.appReleaseTags}
+                                setAppReleaseTagNames={this.setAppReleaseTags}
+                                tagsEditable={this.state.tagsEditable}
+                                setTagsEditable={this.setTagsEditable}
                             />
                         )}
                     </div>

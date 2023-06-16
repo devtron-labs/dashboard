@@ -61,7 +61,9 @@ export interface CDMaterialProps {
     isSaveLoading?: boolean
     ciPipelineId?: number
     appReleaseTagNames?: string[]
+    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
     tagsEditable?: boolean
+    setTagsEditable?: (tagsEditable: boolean) => void
 }
 
 export enum DeploymentWithConfigType {
@@ -328,7 +330,8 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
-    
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
 }
 
 //-- begining of response type objects for trigger view
