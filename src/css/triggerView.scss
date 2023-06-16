@@ -147,7 +147,6 @@
     justify-content: space-between;
     align-items: center;
     background-color: var(--white);
-    padding: 16px;
     border-radius: 4px;
     cursor: pointer;
     
@@ -202,7 +201,6 @@
 }
 
 .material-history__changes-btn {
-    height: 36px;
     font-size: 12px;
     font-weight: 600;
     font-style: normal;
@@ -211,11 +209,10 @@
     letter-spacing: normal;
     color: var(--N700);
     text-align: right;
-    padding: 8px 16px;
     width: 100%;
+    margin: 5px 0;
     background-color: var(--white);
     border: none;
-    box-shadow: inset 0 1px 0 0 var(--N200);
     font-family: 'Open Sans', sans-serif;
     display: flex;
     justify-content: flex-end;
@@ -592,17 +589,18 @@
 
 .tab-list {
     &.tab-list--vulnerability {
-        padding: 0 20px;
+        padding: 0 0 0 20px;
         background-color: var(--N000);
         border: solid 1px var(--N200);
         border-left: none;
         border-right: none;
+        border-radius: 0 0 4px 4px;
     }
 }
 
 .tab-list__tab-link {
     &.tab-list__tab-link--vulnerability {
-        padding: 10px 0;
+        padding: 8px 0;
     }
 }
 

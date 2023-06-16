@@ -158,7 +158,7 @@ export const ImageTagsContainer = ({
             softDeleteTags: softDeleteTags,
             imageComment: {
                 id: 0,
-                comment: newDescription,
+                comment: newDescription.trim(),
                 artifactId: 0,
             },
             hardDeleteTags: hardDeleteTags,
@@ -234,7 +234,7 @@ export const ImageTagsContainer = ({
 
     if (newDescription === '' && displayedTags.length === 0 && !isEditing) {
         return tagsEditable ? (
-            <div className="bcn-0 pt-12 pr-12">
+            <div className="bcn-0 mt-8">
                 <AddImageButton handleEditClick={handleEditClick} />
             </div>
         ) : (
@@ -243,7 +243,7 @@ export const ImageTagsContainer = ({
     }
 
     return (
-        <div className="pt-12 pr-12">
+        <div className='mt-8'>
             {isEditing && tagsEditable ? (
                 <div className="bcn-0 dc__border-top-n1 ">
                     <div className="cn-7 mt-12 flex left">
@@ -294,7 +294,7 @@ export const ImageTagsContainer = ({
                             Tags cannot be edited/removed later
                         </div>
                     )}
-                    <div className="cn-7">Comment</div>
+                    <div className="cn-7 mt-12">Comment</div>
                     <div className="flex left flex-wrap dc__gap-8 w-100 mt-6 mb-12" data-testid="add-image-comment-text-area">
                         <textarea
                             value={newDescription}
@@ -304,13 +304,13 @@ export const ImageTagsContainer = ({
                         />
                     </div>
                     <div className="w-100 flex right">
-                        <button className="cta cancel h-32 lh-32-imp" type="button" onClick={(e)=> {
+                        <button className="cta flex cancel h-32 lh-32-imp" type="button" onClick={(e)=> {
                             stopPropagation(e)
                             handleCancel()
                         }}>
                             Cancel
                         </button>
-                        <button className="cta h-32 lh-32-imp ml-12"data-testid="save-tags-button"  type="button" onClick={(e)=>{
+                        <button className="cta flex h-32 lh-32-imp ml-12"data-testid="save-tags-button"  type="button" onClick={(e)=>{
                             stopPropagation(e)
                             handleSave()
                         }}>
@@ -319,11 +319,11 @@ export const ImageTagsContainer = ({
                     </div>
                 </div>
             ) : (
-                <div className="top br-4 bcn-0 image-tags-container"  style={{ display: 'flex' }}>
-                    <div className="flex left image-tag-left-border w-100 "
-                    data-testid="hello">
-                        <div className="ml-10">
-                            <div className="mb-8 mt-8">{initialDescription}</div>
+                <div className="top br-4 bcn-0 image-tags-container flexbox">
+                    <div className="flex left image-tag-left-border w-100 pt-8 pb-8 pr-10 pl-10"
+                    data-testid="image-tags-container">
+                        <div>
+                            {initialDescription && <div className="mb-6">{initialDescription}</div>}
                             <div className="flex-wrap flex left">
                                 {initialTags?.map((tag, index) => (
                                     <ImageTagButton
@@ -347,7 +347,7 @@ export const ImageTagsContainer = ({
                             </div>
                         </div>
                     </div>
-                    <div className="mt-8 mr-6">
+                    <div className="mt-8 mr-6 icon-dim-16">
                         {tagsEditable && (
                             <EditIcon
                                 className="icon-dim-16 image-tags-container-edit__icon cursor"
@@ -393,14 +393,14 @@ export const ImageTagButton = ({
     const canTagBeHardDelete = tagId === 0 || isSuperAdmin
 
     return (
-        <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mb-8 mr-8 ${ isSoftDeleted ? 'cr-5 bcr-1 dc__strike-through' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <div className="mr-8 ml-8 mt-2 mb-2 flex">
+        <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mr-8 bcn-0 flex h-24 ${ isSoftDeleted ? 'cy-7 bcy-1 dc__strike-through ey-2' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <div className="flex pt-2 pl-8 pr-8 pb-2">
                 {isHovered && isEditing && (isInSoftDeleteTags || (tagId !== 0 && !isSoftDeleted)) && (
-                    <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />
+                    <IconComponent className="icon-dim-12 scn-7 mr-4 cursor" onClick={onSoftDeleteClick} />
                 )}
                 {text}
                 {isHovered && isEditing && canTagBeHardDelete && (
-                    <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />
+                    <Close className="icon-dim-12 ml-4 scn-7 cn-5 cursor" onClick={onHardDeleteClick} />
                 )}
             </div>
         </div>
