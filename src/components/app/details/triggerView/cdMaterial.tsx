@@ -379,6 +379,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             index,
             this.props.materialType,
             this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+            this.props.appId,
         )
         if (
             (this.props.materialType === 'none' || this.state.isSelectImageTrigger) &&

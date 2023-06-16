@@ -11,6 +11,7 @@ import {
     CIBuildConfigType,
     DockerConfigOverrideType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import React from "react";
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -36,6 +37,7 @@ export interface CDMaterialProps {
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
+        appId?:number,
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeCDModal: (e) => void
@@ -284,7 +286,7 @@ export interface WorkflowType {
     approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
     imageReleaseTags: string[]
     appReleaseTags?: string[]
-    tagsEditabe?: boolean
+    tagsEditable?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
