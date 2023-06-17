@@ -199,9 +199,9 @@ export default function BulkCDTrigger({
         }
 
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
+        uniqueReleaseTags.sort((a,b)=> a.localeCompare(b))
         let tagsList = ['latest']
         tagsList.push(...uniqueReleaseTags)
-        tagsList.sort((a,b)=> a.localeCompare(b))
         const options = tagsList.map((tag) => {
             return { label: tag, value: tag }
         })
