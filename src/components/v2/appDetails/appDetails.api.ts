@@ -1,7 +1,7 @@
 import { Routes } from '../../../config/constants'
 import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { AppType, DeploymentAppType } from './appDetails.type'
-import { getAppId, getDevtronAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
   return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
@@ -37,7 +37,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
     
     const data = {
         appId : appType == AppType.DEVTRON_APP
-        ? getDevtronAppId(clusterId, appId, Number(envId))
+        ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
         : getAppId(clusterId, namespace, deploymentAppType == DeploymentAppType.argo_cd
             ? `${appName}-${environmentName}`
             : appName,),

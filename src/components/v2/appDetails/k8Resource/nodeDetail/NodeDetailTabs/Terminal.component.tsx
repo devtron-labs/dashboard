@@ -18,7 +18,7 @@ import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppId, getDevtronAppId } from '../nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../nodeDetail.api'
 
 let clusterTimeOut
 
@@ -53,7 +53,7 @@ function TerminalComponent({
     const generateSessionURL = () => {
         const appId =
             appDetails.appType == AppType.DEVTRON_APP
-                ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+                ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
                 : getAppId(
                       appDetails.clusterId,
                       appDetails.namespace,

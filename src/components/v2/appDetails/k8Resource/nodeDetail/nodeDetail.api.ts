@@ -5,7 +5,7 @@ import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sR
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
 }
-export const getDevtronAppId = (clusterId: number, appId: number, envId: number) => {
+export const generateDevtronAppIdentiferForK8sRequest = (clusterId: number, appId: number, envId: number) => {
     return `${clusterId}|${appId}|${envId}`
 }
 
@@ -16,7 +16,10 @@ export const getManifestResource = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
+    const requestData = isResourceBrowserView
+        ? createResourceRequestBody(selectedResource)
+        : createBody(ad, podName, nodeType)
+    return post(Routes.MANIFEST, requestData)
 }
 
 export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
@@ -75,7 +78,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
 
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
-            ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+            ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
             : getAppId(
                   appDetails.clusterId,
                   appDetails.namespace,
@@ -106,18 +109,6 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     return requestBody
 }
 
-function getManifestResourceHelmApps(
-    ad: AppDetails,
-    nodeName: string,
-    nodeType: string,
-    isResourceBrowserView?: boolean,
-    selectedResource?: SelectedResourceType,
-) {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource)
-        : createBody(ad, nodeName, nodeType)
-    return post(Routes.MANIFEST, requestData)
-}
 
 export const updateManifestResourceHelmApps = (
     ad: AppDetails,
@@ -157,15 +148,14 @@ export const getLogsURL = (
     namespace?: string,
 ) => {
     //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
-    let prefix = `${window.location.protocol}//${window.location.host}` 
     const appId =
         ad.appType == AppType.DEVTRON_APP
-            ? getDevtronAppId(ad.clusterId, ad.appId, ad.environmentId)
+            ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
             : getAppId(ad.clusterId, ad.namespace, ad.deploymentAppType == DeploymentAppType.argo_cd
                 ? `${ad.appName}`
                 : ad.appName)
 
-    let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+    let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
 
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
