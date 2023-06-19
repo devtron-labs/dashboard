@@ -396,11 +396,11 @@ export const ImageTagButton = ({
         <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mb-8 mr-8 ${ isSoftDeleted ? 'cr-5 bcr-1 dc__strike-through' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="mr-8 ml-8 mt-2 mb-2 flex">
                 {isHovered && isEditing && (isInSoftDeleteTags || (tagId !== 0 && !isSoftDeleted)) && (
-                    <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} />
+                    <IconComponent className="icon-dim-14 mr-2" onClick={onSoftDeleteClick} data-testid={`${text}-tag-soft-delete`}/>
                 )}
                 {text}
                 {isHovered && isEditing && canTagBeHardDelete && (
-                    <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} />
+                    <Close className="icon-dim-14 mr-2 cn-5" onClick={onHardDeleteClick} data-testid={`${text}-tag-hard-delete`}/>
                 )}
             </div>
         </div>
