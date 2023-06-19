@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
@@ -26,10 +27,14 @@ export interface CINodeProps {
     configDiffView?: boolean
     hideWebhookTippy?: () => void
     isJobView?: boolean
+    showPluginWarning?: boolean
 }
 
 export class CINode extends Component<CINodeProps> {
     renderNodeIcon = () => {
+        if (this.props.showPluginWarning) {
+            return <Warning className="icon-dim-18 warning-icon-y7" />
+        }
         return (
             <div
                 className={`workflow-node__icon-common ${
@@ -82,7 +87,9 @@ export class CINode extends Component<CINodeProps> {
                         </div>
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
-                                <span className="workflow-node__text-light" data-testid="linked-indication-name">{pipeline}</span>
+                                <span className="workflow-node__text-light" data-testid="linked-indication-name">
+                                    {pipeline}
+                                </span>
                                 <Tippy
                                     className="default-tt"
                                     arrow={true}
@@ -97,7 +104,10 @@ export class CINode extends Component<CINodeProps> {
                     </div>
                 </Link>
                 {!this.props.isJobView && (
-                    <button className="workflow-node__add-cd-btn" data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}>
+                    <button
+                        className="workflow-node__add-cd-btn"
+                        data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}
+                    >
                         <Tippy
                             className="default-tt"
                             arrow={false}

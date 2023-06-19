@@ -342,7 +342,9 @@ export const DOCUMENTATION = {
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
+export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
+
+export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
 
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
