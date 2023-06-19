@@ -700,7 +700,6 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
         }
         const payload  = this.deleteConfigPayload()
-        const title = payload?.configName;
         return (
             <>
                 <div className="configuration-tab">
@@ -718,7 +717,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         setDeleting={this.setDeleting}
                         deleteComponent={deleteNotification}
                         payload={payload}
-                        title={title}
+                        title={payload.configName}
                         toggleConfirmation={this.toggleConfirmation}
                         component={this.deleteConfigComponent()}
                         confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}

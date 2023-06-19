@@ -88,11 +88,6 @@ export interface ConfigurationTabState {
     showWebhookConfigModal: boolean 
 }
 
-const enum ChannelConfigType {
-    SLACK = 'slack',
-    SES = 'ses',
-}
-
 export interface WebhookConfigModalProps {
     webhookConfigId: number;
     onSaveSuccess: () => void;

@@ -13,8 +13,7 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types';
 import CreateHeaderDetails from './CreateHeaderDetails';
-import { getServerInfo } from '../v2/devtronStackManager/DevtronStackManager.service';
-import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type';
+
 export class WebhookConfigModal extends Component<WebhookConfigModalProps, WebhhookConfigModalState> {
 
     constructor(props) {
@@ -51,7 +50,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.onSaveClickHandler = this.onSaveClickHandler.bind(this);
         this.onClickSave = this.onClickSave.bind(this);
         this.onBlur = this.onBlur.bind(this);
-        this.getServer = this.getServer.bind(this);
     }
 
     componentDidMount() {
@@ -151,8 +149,9 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         }
         let requestBody = this.state.form;
         if (this.props.webhookConfigId) requestBody['id'] = this.props.webhookConfigId;
-        let promise = this.props.webhookConfigId ? saveUpdateWebhookConfiguration(requestBody, true) : saveUpdateWebhookConfiguration(requestBody, false);
-        promise.then((response) => {
+        else requestBody['id'] = 0 ;
+        saveUpdateWebhookConfiguration(requestBody)
+            .then((response) => {
             let state = { ...this.state };
             state.form.isLoading = false;
             state.form.isError = false;
@@ -198,11 +197,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
     copyToClipboard(e) {
         e.stopPropagation()
         copyToClipboard(e.currentTarget.dataset.value, () => this.setCopied(true))
-    }
-
-    getServer = async () => {
-        const { result } = await getServerInfo(true, true)
-        return result.installationType
     }
 
     renderDataList(attribute, index) {
@@ -254,7 +248,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             <div className="mb-8">
                 {this.state.form.header?.map((headerData, index) => (
                     <CreateHeaderDetails
-                        key={`tag-${index}`}
+                        key={`tag-${headerData.key}`}
                         index={index}
                         headerData={headerData}
                         setHeaderData={this.setHeaderData}

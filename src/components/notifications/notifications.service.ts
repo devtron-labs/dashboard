@@ -356,7 +356,7 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
     return get(`${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`)
 }
 
-export function saveUpdateWebhookConfiguration(data, update: boolean = false): Promise<UpdateConfigResponseType> {
+export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
     const headerObj = {};
     const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
     data.header.forEach((element) => {
@@ -369,7 +369,7 @@ export function saveUpdateWebhookConfiguration(data, update: boolean = false): P
         channel: 'webhook',
         configs: [
             {
-                id: update ? (Number)(data.id) : 0,
+                id: (Number)(data.id),
                 configName: data.configName,
                 webhookUrl: data.webhookUrl,
                 header: headerObj,
