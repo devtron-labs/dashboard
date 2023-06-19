@@ -37,6 +37,8 @@ import {
     getRandomColor,
     CDModalTab,
     ScanVulnerabilitiesTable,
+    ImageTagButton,
+    ImageTagsContainer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -56,7 +58,6 @@ import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
-import { ImageTagButton, ImageTagsContainer } from '../cicdHistory/ImageTags'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')

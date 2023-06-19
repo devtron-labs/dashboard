@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, EmptyState, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
 import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
@@ -16,7 +16,6 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { ImageTagsContainer } from './ImageTags'
 
 
 const ApprovedArtifact = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifact')
