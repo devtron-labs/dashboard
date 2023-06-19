@@ -146,6 +146,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.selectEmailAgentConfigIdFromChild = this.selectEmailAgentConfigIdFromChild.bind(this)
         this.openAddEmailConfigPopup = this.openAddEmailConfigPopup.bind(this)
         this.changeEmailAgent = this.changeEmailAgent.bind(this)
+        this.onSaveWebhookConfig = this.onSaveWebhookConfig.bind(this)
     }
 
     componentDidMount() {
@@ -918,16 +919,18 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             return (
                 <WebhookConfigModal
                     webhookConfigId={0}
-                    onSaveSuccess={() => {
-                        this.setState({ showWebhookConfigModal: false })
-                        this.getInitialData()
-                    }}
+                    onSaveSuccess={this.onSaveWebhookConfig}
                     closeWebhookConfigModal={() => {
                         this.setState({ showWebhookConfigModal: false })
                     }}
                 />
             )
         }
+    }
+
+    onSaveWebhookConfig() {
+        this.setState({ showWebhookConfigModal: false })
+        this.getInitialData()
     }
 
     render() {
