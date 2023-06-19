@@ -125,6 +125,7 @@ export interface ImageTaggingContainerType {
     tagsEditable?: boolean
     setAppReleaseTagNames?: (appReleaseTags: string[]) => void
     setTagsEditable?: (tagsEditable: boolean) => void
+    toggleCardMode?: (id: number) => void
 }
 
 export interface ImageButtonType {

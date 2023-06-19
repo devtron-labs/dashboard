@@ -441,9 +441,13 @@
     .image-tag-left-border {
         border-left: 2px solid var(--N200);
     }
+}
 
+.material-history--cd {
     &:hover {
-        background-color: var(--N50);
+        .image-tags-container{
+            background-color: var(--N50);
+        }
         .image-tags-container-edit__icon {
             display: block;
         }
