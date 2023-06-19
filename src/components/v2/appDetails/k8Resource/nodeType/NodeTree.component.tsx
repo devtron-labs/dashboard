@@ -54,7 +54,7 @@ function NodeTreeComponent({
             }
         } else {
             history.replace({
-                pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes),
+                pathname: url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _treeNodes, isDevtronApp),
                 search: location.search
             });
         }
@@ -236,7 +236,7 @@ export function generateSelectedNodes(
     return clickedNodes;
 }
 
-export function getRedirectURLExtension(clickedNodes: Map<string, string>, _treeNodes: iNode[]): string {
+export function getRedirectURLExtension(clickedNodes: Map<string, string>, _treeNodes: iNode[], isDevtronApp: boolean): string {
     // User has yet not clicked anything
     if (clickedNodes.size === 0) {
         let leafNode = _treeNodes
@@ -247,7 +247,7 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
             .flatMap((_cn) => _cn.childNodes ?? [])
             .find((_cn, index) => index === 0);
         if (leafNode) {
-            return '/pod/group/' + leafNode.name.toLowerCase();
+            return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
         }
         leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index === 0);
         if (leafNode) {
@@ -273,11 +273,11 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
                 .flatMap((_ln) => _ln.childNodes ?? [])
                 .find((_ln) => clickedNodes.has(_ln.name.toLowerCase()));
             if (leafNode) {
-                return '/pod/group/' + leafNode.name.toLowerCase();
+                return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
             } else {
                 leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0);
                 if (leafNode) {
-                    return '/pod/group/' + leafNode.name.toLowerCase();
+                    return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
                 }
             }
             // case when clicked is not pod group
@@ -287,7 +287,7 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
             }
         }
         // handle the case when none match, its same as clickedNodes size 0
-        return getRedirectURLExtension(new Map<string, string>(), _treeNodes);
+        return getRedirectURLExtension(new Map<string, string>(), _treeNodes, isDevtronApp);
     }
 }
 
