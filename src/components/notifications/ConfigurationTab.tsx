@@ -177,7 +177,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
         } else if (this.state.slackConfigurationList.length === 0) {
             return (
-                <div className="empty_state_height">
+                <div className="empty-state-height">
                     <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
@@ -261,7 +261,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
         } else if (this.state.webhookConfigurationList.length === 0) {
             return (
-                <div className="empty_state_height">
+                <div className="empty-state-height">
                     <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
@@ -451,7 +451,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
         } else if (this.state.sesConfigurationList.length === 0) {
             return (
-                <div className="empty_state_height">
+                <div className="empty-state-height">
                    <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
@@ -538,7 +538,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             )
         } else if (this.state.smtpConfigurationList.length === 0) {
             return (
-                <div className="empty_state_height">
+                <div className="empty-state-height">
                     <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
