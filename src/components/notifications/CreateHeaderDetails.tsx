@@ -35,7 +35,7 @@ export default function CreateHeaderDetails({
                 value={headerData?.["value"]}
                 name="value"
                 onChange={handleInputChange}
-                placeholder="Enter-value"
+                placeholder="Enter value"
                 data-testid={`header-value-${index}`}
             />
 

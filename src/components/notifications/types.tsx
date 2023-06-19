@@ -57,6 +57,42 @@ export interface SMTPConfigModalState {
     }
 }
 
+export interface ConfigurationTabState {
+    view: string
+    showSlackConfigModal: boolean
+    showSESConfigModal: boolean
+    showSMTPConfigModal: boolean
+    slackConfigId: number
+    sesConfigId: number
+    smtpConfigId: number
+    webhookConfigId: number
+    sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
+    smtpConfigurationList: Array<{
+        id: number
+        name: string
+        port: string
+        host: string
+        email: string
+        isDefault: boolean
+    }>
+    slackConfigurationList: Array<{ id: number; slackChannel: string; projectId: number; webhookUrl: string }>
+    webhookConfigurationList: Array<{ id: number; name: string; webhookUrl: string }>
+    abortAPI: boolean
+    deleting: boolean
+    confirmation: boolean
+    sesConfig: any
+    smtpConfig: any
+    slackConfig: any
+    webhookConfig: any
+    showDeleteConfigModalType: string
+    showWebhookConfigModal: boolean 
+}
+
+const enum ChannelConfigType {
+    SLACK = 'slack',
+    SES = 'ses',
+}
+
 export interface WebhookConfigModalProps {
     webhookConfigId: number;
     onSaveSuccess: () => void;
@@ -92,4 +128,8 @@ export interface CreateHeaderDetailsType {
     headerData: HeaderType;
     setHeaderData: (index: number, headerData: HeaderType) => void;
     removeHeader?: (index: number) => void;
+}
+
+export interface WebhookAttributesResponseType extends ResponseType {
+    result?: Record<string, string>
 }

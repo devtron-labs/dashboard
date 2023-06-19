@@ -23,41 +23,7 @@ import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../
 import Tippy from '@tippyjs/react'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { WebhookConfigModal } from './WebhookConfigModal'
-export interface ConfigurationTabState {
-    view: string
-    showSlackConfigModal: boolean
-    showSESConfigModal: boolean
-    showSMTPConfigModal: boolean
-    slackConfigId: number
-    sesConfigId: number
-    smtpConfigId: number
-    webhookConfigId: number
-    sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
-    smtpConfigurationList: Array<{
-        id: number
-        name: string
-        port: string
-        host: string
-        email: string
-        isDefault: boolean
-    }>
-    slackConfigurationList: Array<{ id: number; slackChannel: string; projectId: number; webhookUrl: string }>
-    webhookConfigurationList: Array<{ id: number; name: string; webhookUrl: string }>
-    abortAPI: boolean
-    deleting: boolean
-    confirmation: boolean
-    sesConfig: any
-    smtpConfig: any
-    slackConfig: any
-    webhookConfig: any
-    showDeleteConfigModalType: string
-    showWebhookConfigModal: boolean 
-}
-
-const enum ChannelConfigType {
-    SLACK = 'slack',
-    SES = 'ses',
-}
+import { ConfigurationTabState } from './types'
 
 export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     constructor(props) {
@@ -91,7 +57,6 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         this.onSaveWebhook = this.onSaveWebhook.bind(this)
         this.onCloseWebhookModal = this.onCloseWebhookModal.bind(this)
         this.deleteConfigPayload = this.deleteConfigPayload.bind(this)
-        this.deleteConfigTitle = this.deleteConfigTitle.bind(this)
         this.deleteConfigComponent = this.deleteConfigComponent.bind(this)
     }
 
@@ -707,19 +672,6 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         return this.state.smtpConfig
     }
 
-    deleteConfigTitle(): string {
-        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
-            return this.state.slackConfig.configName
-        }
-        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
-            return this.state.sesConfig.configName
-        }
-        if(this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
-            return this.state.webhookConfig.configName
-        }
-        return this.state.smtpConfig.configName
-    }
-
     deleteConfigComponent(): string {
         if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
             return DeleteComponentsName.SlackConfigurationTab
@@ -747,6 +699,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 </div>
             )
         }
+        const payload  = this.deleteConfigPayload()
+        const title = payload?.configName;
         return (
             <>
                 <div className="configuration-tab">
@@ -763,8 +717,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <DeleteComponent
                         setDeleting={this.setDeleting}
                         deleteComponent={deleteNotification}
-                        payload={this.deleteConfigPayload()}
-                        title={this.deleteConfigTitle()}
+                        payload={payload}
+                        title={title}
                         toggleConfirmation={this.toggleConfirmation}
                         component={this.deleteConfigComponent()}
                         confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}

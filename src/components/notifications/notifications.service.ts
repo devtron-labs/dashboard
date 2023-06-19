@@ -2,7 +2,7 @@ import { Routes } from '../../config/constants'
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
-import { SMTPConfigResponseType } from './types'
+import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -66,10 +66,6 @@ interface SESConfigResponseType extends ResponseType {
         fromEmail: string
         default: boolean
     }
-}
-
-interface WebhookAttributesResponseType extends ResponseType {
-    result?: Record<string, string>
 }
 
 function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
@@ -360,29 +356,7 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
     return get(`${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`)
 }
 
-export function saveWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const headerObj = {};
-    const headerPayload =  data.payload != '' ? JSON.parse(data.payload) : {}
-    data.header.forEach((element) => {
-        if (element.key != '') {
-            headerObj[element.key] = element.value
-        }
-    });
-    let payload = {
-        channel: 'webhook',
-        configs: [
-            {
-                configName: data.configName,
-                webhookUrl: data.webhookUrl,
-                header: headerObj,
-                payload: headerPayload,
-            },
-        ],
-    }
-    return post(`${Routes.NOTIFIER}/channel`, payload)
-}
-
-export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
+export function saveUpdateWebhookConfiguration(data, update: boolean = false): Promise<UpdateConfigResponseType> {
     const headerObj = {};
     const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
     data.header.forEach((element) => {
@@ -395,7 +369,7 @@ export function updateWebhookConfiguration(data): Promise<UpdateConfigResponseTy
         channel: 'webhook',
         configs: [
             {
-                id: (Number)(data.id),
+                id: update ? (Number)(data.id) : 0,
                 configName: data.configName,
                 webhookUrl: data.webhookUrl,
                 header: headerObj,

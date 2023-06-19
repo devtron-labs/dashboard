@@ -4,7 +4,7 @@ import { copyToClipboard } from '../common';
 import { showError, Progressing, getTeamListMin as getProjectListMin, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
-import { getWebhookAttributes, updateWebhookConfiguration, saveWebhookConfiguration, getWebhookConfiguration } from './notifications.service';
+import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service';
 import Tippy from '@tippyjs/react';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
@@ -62,11 +62,9 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     const _headers = [...this.state.form.header]
                     state.view = ViewType.FORM;
                     const _responseKeys = response.result?.header ? Object.keys(response.result.header) : []
-                    {
-                        _responseKeys.forEach((_key) => {
-                            _headers.push({ key: _key, value: response.result.header[_key] })
-                        })
-                    }
+                    _responseKeys.forEach((_key) => {
+                        _headers.push({ key: _key, value: response.result.header[_key] })
+                    })
                     const _responsePayload = response.result?.payload ? JSON.stringify(response.result.payload) : ""
                     state.form = {
                         ...response.result,
@@ -153,7 +151,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         }
         let requestBody = this.state.form;
         if (this.props.webhookConfigId) requestBody['id'] = this.props.webhookConfigId;
-        let promise = this.props.webhookConfigId ? updateWebhookConfiguration(requestBody) : saveWebhookConfiguration(requestBody);
+        let promise = this.props.webhookConfigId ? saveUpdateWebhookConfiguration(requestBody, true) : saveUpdateWebhookConfiguration(requestBody, false);
         promise.then((response) => {
             let state = { ...this.state };
             state.form.isLoading = false;
@@ -237,11 +235,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
 
     renderConfigureLinkInfoColumn() {
         let keys = Object.keys(this.state.webhookAttribute)
-        let installationType
-        this.getServer()
-            .then((res) => {
-                installationType = res
-            })
         return (
             <div className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16 dc__overflow-scroll" data-testid="available-webhook-data">
                 <div className="flex dc__align-items-center p-0 mb-16">
@@ -250,8 +243,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                 </div>
                 <span className="fw-4 fs-13 lh-20 mb-16">Following data are available to be shared through Webhook. Use Payload to configure.</span>
                 {keys.map((attribute, index) => (
-                    this.state.webhookAttribute[attribute] != "{{devtronApprovedByEmail}}" ? this.renderDataList(attribute, index)
-                        : installationType === InstallationType.ENTERPRISE && this.renderDataList(attribute, index)
+                    this.renderDataList(attribute, index)
                 ))}
             </div>
         )
