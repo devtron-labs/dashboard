@@ -115,30 +115,6 @@ export interface ImageComment {
     artifactId: number
 }
 
-
-export interface ImageTaggingContainerType {
-    ciPipelineId?: number
-    artifactId?: number
-    imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[] 
-    appReleaseTagNames?: string[]
-    tagsEditable?: boolean
-    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
-    setTagsEditable?: (tagsEditable: boolean) => void
-    toggleCardMode?: (id: number) => void
-}
-
-export interface ImageButtonType {
-    text: string
-    isSoftDeleted: boolean
-    isEditing: boolean
-    onSoftDeleteClick?: any
-    onHardDeleteClick?: any
-    tagId: number
-    softDeleteTags: any
-    isSuperAdmin: any
-}
-
 export interface LogsRendererType {
     triggerDetails: History
     isBlobStorageConfigured: boolean
