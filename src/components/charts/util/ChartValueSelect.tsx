@@ -59,7 +59,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 value={this.props.chartValues}
                 onChange={this.onChange}
             >
-                <Select.Button>
+                <Select.Button dataTestIdDropdown="chart-values-dropdown">
                     <div className="w-90 flexbox">
                         {selectedChartValue ? (
                             <>
