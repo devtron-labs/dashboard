@@ -116,14 +116,10 @@ export default function TerminalView({
             return true
         })
     }
-    // TODO: Verify
+
     const generateSocketURL = () => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||  serverMode === SERVER_MODE.EA_ONLY) {
-            socketURL += '/k8s/pod/exec/sockjs/ws/'
-        } else {
-            socketURL += '/api/vi/pod/exec/ws/'
-        }
+        socketURL += '/k8s/pod/exec/sockjs/ws/'
         return socketURL
     }
 

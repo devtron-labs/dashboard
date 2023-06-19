@@ -111,8 +111,6 @@ function ManifestComponent({
                     ) {
                         _manifest = JSON.stringify(response[0]?.result?.manifest)
                         setDesiredManifest(response[1]?.result?.manifest || '')
-                    } else {
-                        _manifest = response[0]?.result?.manifest
                     }
                     if (_manifest) {
                         setManifest(_manifest)
