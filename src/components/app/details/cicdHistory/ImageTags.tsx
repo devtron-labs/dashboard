@@ -325,7 +325,7 @@ export const ImageTagsContainer = ({
             ) : (
                 <div className="top br-4 bcn-0 image-tags-container flexbox">
                     <div className="flex left image-tag-left-border w-100 mt-8 mb-8 pr-10 pl-10"
-                    data-testid="image-tags-container">
+                    data-testid="image-tags-container-hover">
                         <div>
                             {initialDescription && <div className="mb-6 fs-13">{initialDescription}</div>}
                             <div className="flex-wrap flex left">
@@ -400,11 +400,11 @@ export const ImageTagButton = ({
         <div className={`br-4 en-2 bw-1 dc__w-fit-content dc__word-wrap-anywhere mr-8 bcn-0 flex h-24 ${ isSoftDeleted ? 'cy-7 bcy-1 dc__strike-through ey-2' : '' }`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <div className="flex pt-2 pl-8 pr-8 pb-2">
                 {isHovered && isEditing && (isInSoftDeleteTags || (tagId !== 0 && !isSoftDeleted)) && (
-                    <IconComponent className={`icon-dim-12 mr-4 cursor ${isSoftDeleted ? 'scn-6' : 'fcn-6' }`} onClick={onSoftDeleteClick} />
+                    <IconComponent className={`icon-dim-12 mr-4 cursor ${isSoftDeleted ? 'scn-6' : 'fcn-6' }`} data-testid={`${text}-tag-soft-delete`} onClick={onSoftDeleteClick} />
                 )}
                 {text}
                 {isHovered && isEditing && canTagBeHardDelete && (
-                    <Close className="icon-dim-12 ml-4 fcn-6 cn-5 cursor" onClick={onHardDeleteClick} />
+                    <Close className="icon-dim-12 ml-4 fcn-6 cn-5 cursor" data-testid={`${text}-tag-hard-delete`} onClick={onHardDeleteClick} />
                 )}
             </div>
         </div>

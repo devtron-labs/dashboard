@@ -230,8 +230,6 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     renderCIPipelineBody() {
-        let l = this.state.ciPipeline.name.lastIndexOf('-');
-        let name = this.state.ciPipeline.name.substring(0, l) || this.state.ciPipeline.name;
         if (this.state.view == ViewType.LOADING) {
             return <div style={{ minHeight: "380px" }} className="flex"><Progressing pageLoader /></div>
         }
@@ -240,7 +238,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 <label className="form__row">
                     <span className="form__label dc__required-field">Pipeline Name</span>
                     <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text"
-                        value={name} />
+                        value={this.state.ciPipeline.name} />
                 </label>
                 {this.renderTriggerType()}
                 {this.renderMaterials()}

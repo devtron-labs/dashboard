@@ -442,13 +442,6 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
-    let isExternalCI = ciPipeline.isExternal
-    let isLinkedCI = !!ciPipeline.parentCiPipeline
-    let l = (ciPipeline.name?.length ?? 1) - 1
-    if (isLinkedCI) {
-        l = (ciPipeline.name ?? '').lastIndexOf('-')
-    }
-    let ciNodeHeight = getCINodeHeight(dimensions.type, ciPipeline)
     let ciNode = {
         isSource: true,
         isGitSource: false,
@@ -459,16 +452,16 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         y: 0,
         parentAppId: ciPipeline.parentAppId,
         parentCiPipeline: ciPipeline.parentCiPipeline,
-        height: ciNodeHeight,
+        height: getCINodeHeight(dimensions.type, ciPipeline),
         width: dimensions.cINodeSizes.nodeWidth,
-        title: isLinkedCI ? (ciPipeline.name ?? '').substring(0, l) || ciPipeline.name : ciPipeline.name, //show parent CI name if Linked CI
+        title: ciPipeline.name,
         triggerType: TriggerTypeMap[trigger],
         status: DEFAULT_STATUS,
         type: WorkflowNodeType.CI,
         inputMaterialList: [],
         downstreams: [],
-        isExternalCI: isExternalCI,
-        isLinkedCI: isLinkedCI,
+        isExternalCI: ciPipeline.isExternal,
+        isLinkedCI: !!ciPipeline.parentCiPipeline,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
