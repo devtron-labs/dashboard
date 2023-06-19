@@ -100,23 +100,20 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     saveProject(index: number, key: 'name'): void {
         let { projects, isValid, errorMessage } = { ...this.state };
         let project = this.state.projects[index];
-        if (!project.name) {
-            isValid[key] = false;
-            errorMessage[key] = REQUIRED_FIELD_MSG
-            this.setState({ isValid });
+        if (!isValid?.[key]) {
             return
-        }
-        else if (this.isProjectNameExists(index, project.name)) {
-            isValid[key] = false;
-            errorMessage[key] = PROJECT_EXIST_MSG
-            this.setState({ isValid });
-            return
-        }
-        else if(isValid?.[key]) {
-            isValid[key] = true;
-            errorMessage[key]= ""
-        }else{
-            return
+        } else {
+            if (!project.name) {
+                isValid[key] = false
+                errorMessage[key] = REQUIRED_FIELD_MSG
+                this.setState({ isValid })
+                return
+            } else if (this.isProjectNameExists(index, project.name)) {
+                isValid[key] = false
+                errorMessage[key] = PROJECT_EXIST_MSG
+                this.setState({ isValid })
+                return
+            }
         }
         this.setState({ loadingData: true, isValid });
         createProject(project).then((response) => {
