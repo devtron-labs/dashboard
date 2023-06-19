@@ -247,7 +247,7 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
             .flatMap((_cn) => _cn.childNodes ?? [])
             .find((_cn, index) => index === 0);
         if (leafNode) {
-            return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
+            return (isDevtronApp? '/pod/':'/pod/group/' + leafNode.name.toLowerCase());
         }
         leafNode = _treeNodes.flatMap((_tn) => _tn.childNodes ?? []).find((_cn, index) => index === 0);
         if (leafNode) {
@@ -273,11 +273,11 @@ export function getRedirectURLExtension(clickedNodes: Map<string, string>, _tree
                 .flatMap((_ln) => _ln.childNodes ?? [])
                 .find((_ln) => clickedNodes.has(_ln.name.toLowerCase()));
             if (leafNode) {
-                return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
+                return (isDevtronApp? '/pod/':'/pod/group/' + leafNode.name.toLowerCase());
             } else {
                 leafNode = leafPodNode.flatMap((_ln) => _ln.childNodes ?? []).find((_ln, index) => index === 0);
                 if (leafNode) {
-                    return (isDevtronApp? '/pod':'/pod/group/' + leafNode.name.toLowerCase());
+                    return (isDevtronApp? '/pod/':'/pod/group/' + leafNode.name.toLowerCase());
                 }
             }
             // case when clicked is not pod group
