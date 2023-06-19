@@ -271,6 +271,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             })
     }
 
+    getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
+        if (isVirtualEnvironment) {
+            return true
+        } else {
+            return isRunPrePostStageInEnv ?? false
+        }
+    }
+
     updateStateFromResponse(pipelineConfigFromRes, environments): void {
         let { pipelineConfig, strategies } = { ...this.state }
         sortObjectArrayAlphabetically(environments, 'name')
@@ -333,8 +341,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
                     : [],
             },
-            runPreStageInEnv: this.state.pipelineConfig.isVirtualEnvironment ? true : (pipelineConfigFromRes.runPreStageInEnv || false),
-            runPostStageInEnv: this.state.pipelineConfig.isVirtualEnvironment ? true : (pipelineConfigFromRes.runPostStageInEnv || false),
+            runPreStageInEnv: this.getPrePostStageInEnv(this.state.pipelineConfig.isVirtualEnvironment, pipelineConfigFromRes.runPreStageInEnv),
+            runPostStageInEnv: this.getPrePostStageInEnv(this.state.pipelineConfig.isVirtualEnvironment, pipelineConfigFromRes.runPostStageInEnv),
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
             deploymentAppType: pipelineConfigFromRes.deploymentAppType || '',
         }
@@ -471,8 +479,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 secrets: [],
             }
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
-            pipelineConfig.runPreStageInEnv =  selection.isVirtualEnvironment ? true : pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv
-            pipelineConfig.runPostStageInEnv = selection.isVirtualEnvironment ? true : pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv
+            pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv)
+            pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv)
             this.setState({ environments: list, pipelineConfig, errorForm }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
@@ -517,8 +525,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     handleRunInEnvCheckbox(event, stageType: 'preStage' | 'postStage') {
         let { pipelineConfig } = { ...this.state }
-        if (stageType === 'preStage') pipelineConfig.runPreStageInEnv = this.state.pipelineConfig.isVirtualEnvironment ? true : !pipelineConfig.runPreStageInEnv
-        if (stageType === 'postStage') pipelineConfig.runPostStageInEnv = this.state.pipelineConfig.isVirtualEnvironment ? true : !pipelineConfig.runPostStageInEnv
+        if (stageType === 'preStage')
+            pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(this.state.pipelineConfig.isVirtualEnvironment, !pipelineConfig.runPreStageInEnv)
+        if (stageType === 'postStage')
+            pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(this.state.pipelineConfig.isVirtualEnvironment, !pipelineConfig.runPostStageInEnv)
         this.setState({ pipelineConfig })
     }
 
@@ -888,35 +898,35 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             return null
         }
 
-     const renderDeploymentStrategyTippy = () => {
-         return (
-             <TippyCustomized
-                 theme={TippyTheme.white}
-                 className="flex w-300 h-100 fcv-5"
-                 placement="right"
-                 Icon={Help}
-                 heading="Deployment strategy"
-                 infoText="Add one or more deployment strategies. You can choose from selected strategy while deploying manually to this environment."
-                 showCloseButton={true}
-                 trigger="click"
-                 interactive={true}
-                 documentationLinkText="View Documentation"
-             >
-                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                     <Question />
-                 </div>
-             </TippyCustomized>
-         )
-     }
+        const renderDeploymentStrategyTippy = () => {
+            return (
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="flex w-300 h-100 fcv-5"
+                    placement="right"
+                    Icon={Help}
+                    heading="Deployment strategy"
+                    infoText="Add one or more deployment strategies. You can choose from selected strategy while deploying manually to this environment."
+                    showCloseButton={true}
+                    trigger="click"
+                    interactive={true}
+                    documentationLinkText="View Documentation"
+                >
+                    <div className="icon-dim-16 fcn-9 ml-8 cursor">
+                        <Question />
+                    </div>
+                </TippyCustomized>
+            )
+        }
 
         return (
             <div className="form__row">
                 <p className="form__label form__label--caps mb-8-imp">
                     <div className="flex  dc__content-space mt-16">
                         <div className="flex left">
-                          <span>Deployment Strategy</span>
-                          {renderDeploymentStrategyTippy()}
-                          </div>
+                            <span>Deployment Strategy</span>
+                            {renderDeploymentStrategyTippy()}
+                        </div>
                         {this.renderStrategyOptions()}
                     </div>
                 </p>
@@ -1177,7 +1187,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     name="deployment-app-type"
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
-                    className={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? "bcb-5" : ""}`}
+                    className={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? 'bcb-5' : ''}`}
                 >
                     <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
                         Helm

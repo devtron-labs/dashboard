@@ -3,7 +3,7 @@
     align-items: center;
     padding: 0 20px;
     max-height: 30px;
-/*
+    /*
     .pod-selector-button,
     .container-selector-button {
         width: 200px;
@@ -24,6 +24,20 @@
     .popup-button {
         border: unset;
     } */
+}
+
+.helm-delete-wrapper{
+  padding: 0 4px !important;
+}
+
+.helm-delete-pop-up {
+    position: fixed;
+    left: unset;
+    top: 130px;
+    opacity: 1;
+    right: 20px;
+    z-index: var(--modal-index);
+    box-shadow: 0 2px 4px 0 rgba(21, 21, 21, 0.3);
 }
 
 .events-logs__label {
