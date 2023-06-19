@@ -324,10 +324,10 @@ export const ImageTagsContainer = ({
                 </div>
             ) : (
                 <div className="top br-4 bcn-0 image-tags-container flexbox">
-                    <div className="flex left image-tag-left-border w-100 pt-8 pb-8 pr-10 pl-10"
+                    <div className="flex left image-tag-left-border w-100 mt-8 mb-8 pr-10 pl-10"
                     data-testid="image-tags-container">
                         <div>
-                            {initialDescription && <div className="mb-6">{initialDescription}</div>}
+                            {initialDescription && <div className="mb-6 fs-13">{initialDescription}</div>}
                             <div className="flex-wrap flex left">
                                 {initialTags?.map((tag, index) => (
                                     <ImageTagButton

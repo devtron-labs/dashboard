@@ -130,6 +130,9 @@
     background-color: transparent;
     padding: 0px;
     margin: 0 0 12px;
+    &:hover {
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
 }
 
 .material-history__header {
@@ -594,7 +597,11 @@
         border: solid 1px var(--N200);
         border-left: none;
         border-right: none;
-        border-radius: 0 0 4px 4px;
+        border-radius: 0;
+        &.tab-bottom-radius {
+            border-radius: 0 0 4px 4px;
+            border-bottom: 0;
+        }
     }
 }
 

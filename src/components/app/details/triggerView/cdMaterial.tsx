@@ -302,7 +302,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             mat.runningOnParentCd ||
             mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
             mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-            mat.artifactStatus === ARTIFACT_STATUS.Failed
+            mat.artifactStatus === ARTIFACT_STATUS.Failed ||
+            mat.index == 0
         ) {
             return (
                 <div>
@@ -437,7 +438,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }
                 >
                     <span className="dc__opacity-0_5" data-testid={`cd-approval-artifact-select-disabled-${mat.index}`}>
-                        Select
+                        SELECT
                     </span>
                 </Tippy>
             )
@@ -470,7 +471,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }}
                     data-testid={`cd-artifact-select-${mat.index}`}
                 >
-                    Select
+                    SELECT
                 </span>
             )
         }
@@ -522,18 +523,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="material-history__info flex left fs-13">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
-                        {!latestTagAdded && mat.index == 0 && (
-                            <div className="mt-6 ml-8">
-                                <ImageTagButton
-                                    text="Latest"
-                                    isSoftDeleted={false}
-                                    isEditing={false}
-                                    tagId={0}
-                                    softDeleteTags={[]}
-                                    isSuperAdmin={[]}
-                                />
-                            </div>
-                        )}
                     </div>
                 )}
 
@@ -614,7 +603,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => { 
         return materialList.map((mat) => {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
-            const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
             const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
             const latestTagAdded =
                 (mat.latest ||
@@ -630,19 +618,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history bcn-0 material-history--cd ${
+                    className={`material-history material-history--cd ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
                     }`}
                 >
-                    <div className="p-12">
+                    <div className="p-12 bcn-0 br-4">
                         <div className="dc__content-space flexbox dc__align-start">
                             <div>
                                 {this.renderSequentialCDCardTitle(mat)}
                                 <div
                                     data-testid={`cd-material-history-image-${mat.index}`}
-                                    className={`material-history__top cursor-default mb-8 ${borderBottom} ${approvedImageClass}`}
+                                    className={`material-history__top cursor-default ${approvedImageClass}`}
                                 >
                                     {this.renderMaterialInfo(
                                         mat,
@@ -684,11 +672,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         </div>
                     </div>
                     {mat.materialInfo.length > 0 && isMaterialInfoAvailable && hideSourceInfo && (
-                        <div>
-                            <ul className="tab-list tab-list--vulnerability">
+                        <>
+                            <ul
+                                className={`tab-list tab-list--vulnerability ${
+                                    mat.showSourceInfo ? '' : 'tab-bottom-radius'
+                                }`}
+                            >
                                 {mat.showSourceInfo &&
-                                    this.state.isSecurityModuleInstalled &&
-                                    !this.props.hideInfoTabsContainer && (
+                                    (this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer ? (
                                         <>
                                             <li className="tab-list__tab">
                                                 <button
@@ -742,8 +733,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                                 </button>
                                             </li>
                                         </>
-                                    )}
-                                <li className='flex dc__align-right'>
+                                    ) : (
+                                        <div className="fs-13 fw-6 flex">Source</div>
+                                    ))}
+                                <li className="flex dc__align-right">
                                     <button
                                         type="button"
                                         className="material-history__changes-btn"
@@ -771,7 +764,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 (mat.tab === CDModalTab.Changes
                                     ? this.renderGitMaterialInfo(mat.materialInfo)
                                     : this.renderVulnerabilities(mat))}
-                        </div>
+                        </>
                     )}
                 </div>
             )
