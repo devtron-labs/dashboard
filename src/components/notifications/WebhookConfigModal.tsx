@@ -248,7 +248,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             <div className="mb-8">
                 {this.state.form.header?.map((headerData, index) => (
                     <CreateHeaderDetails
-                        key={`tag-${headerData.key}`}
+                        key={`tag-${index}`}
                         index={index}
                         headerData={headerData}
                         setHeaderData={this.setHeaderData}
