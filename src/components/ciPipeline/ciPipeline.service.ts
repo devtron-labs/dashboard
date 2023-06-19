@@ -1,8 +1,17 @@
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    MaterialType,
+    Githost,
+    ScriptType,
+    PluginType,
+    BuildStageType,
+    RefVariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
-import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
+import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
@@ -475,6 +484,8 @@ function parseCIResponse(
                 postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
                 dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
+                isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
+                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
