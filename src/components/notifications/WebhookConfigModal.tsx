@@ -110,8 +110,11 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             isValid[key] = event.target.value.length !== 0;
         } else if (this.state.form.payload != '') {
             try {
-                JSON.parse(this.state.form.payload)
-                isValid[key] = true
+                isValid[key] = event.target.value.length !== 0;
+                if(isValid[key]) {
+                    JSON.parse(this.state.form.payload)
+                    isValid[key] = true
+                }
             } catch (err) {
                 isValid[key] = false
             }
@@ -349,7 +352,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                                 ></CodeEditor>
                             </div>
                             <span className="form__error">
-                                {!this.state.isValid.payload && <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></>}
+                                {!this.state.isValid.payload ? this.state.form.payload!=="" && <><Error className="form__icon form__icon--error" />Write valid JSON.<br /></> : <><Error className="form__icon form__icon--error" />This is a required field.<br /></>}
                             </span>
                         </label>
                     </div>
