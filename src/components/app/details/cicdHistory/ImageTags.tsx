@@ -321,7 +321,7 @@ export const ImageTagsContainer = ({
             ) : (
                 <div className="top br-4 bcn-0 image-tags-container"  style={{ display: 'flex' }}>
                     <div className="flex left image-tag-left-border w-100 "
-                    data-testid="hello">
+                    data-testid="image-tags-container-hover">
                         <div className="ml-10">
                             <div className="mb-8 mt-8">{initialDescription}</div>
                             <div className="flex-wrap flex left">
