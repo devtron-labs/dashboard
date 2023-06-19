@@ -293,7 +293,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                     className="dc__transparent dc__align-right mr-16"
                                                     data-webhookid={webhookConfig.id}
                                                     onClick={this.editWebhookHandler}
-                                                    data-testid="webhook-configure-edit-button"
+                                                    data-testid={`webhook-configure-edit-button-${webhookConfig.name}`}
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -313,7 +313,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.WebhookConfigurationTab,
                                                         )
                                                     }}
-                                                    data-testid="webhook-configure-delete-button"
+                                                    data-testid={`webhook-configure-delete-button-${webhookConfig.name}`}
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>

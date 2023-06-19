@@ -13,7 +13,8 @@ import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types';
 import CreateHeaderDetails from './CreateHeaderDetails';
-
+import { getServerInfo } from '../v2/devtronStackManager/DevtronStackManager.service';
+import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type';
 export class WebhookConfigModal extends Component<WebhookConfigModalProps, WebhhookConfigModalState> {
 
     constructor(props) {
@@ -50,6 +51,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.onSaveClickHandler = this.onSaveClickHandler.bind(this);
         this.onClickSave = this.onClickSave.bind(this);
         this.onBlur = this.onBlur.bind(this);
+        this.getServer = this.getServer.bind(this);
     }
 
     componentDidMount() {
@@ -60,9 +62,11 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     const _headers = [...this.state.form.header]
                     state.view = ViewType.FORM;
                     const _responseKeys = response.result?.header ? Object.keys(response.result.header) : []
-                    {_responseKeys.forEach((_key) => {
+                    {
+                        _responseKeys.forEach((_key) => {
                             _headers.push({ key: _key, value: response.result.header[_key] })
-                    })}
+                        })
+                    }
                     const _responsePayload = response.result?.payload ? JSON.stringify(response.result.payload) : ""
                     state.form = {
                         ...response.result,
@@ -198,8 +202,46 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         copyToClipboard(e.currentTarget.dataset.value, () => this.setCopied(true))
     }
 
+    getServer = async () => {
+        const { result } = await getServerInfo(true, true)
+        return result.installationType
+    }
+
+    renderDataList(attribute, index) {
+        return (
+            <div className="w-100-imp cn-7 fs-12 mb-8 flex left data-conatiner hover-trigger" data-testid={`${this.state.webhookAttribute[attribute]}-${index}`} key={`${index}-${attribute}`}>
+                <span className="bcn-1 br-4 fs-12 fw-4 lh-16 p-4">{this.state.webhookAttribute[attribute]}</span>
+                <Tippy
+                    className="default-tt"
+                    arrow={false}
+                    placement="bottom"
+                    content={this.state.copyAttribute ? 'Copied!' : 'Copy'}
+                    trigger="mouseenter click"
+                    onShow={(_tippy) => {
+                        setTimeout(() => {
+                            _tippy.hide()
+                            this.setCopied(false)
+                        }, 4000)
+                    }}
+                    interactive={true}
+                >
+                    <Clipboard
+                        data-value={this.state.webhookAttribute[attribute]}
+                        className="ml-8 pointer hover-only icon-dim-16"
+                        onClick={this.copyToClipboard}
+                    />
+                </Tippy>
+            </div>
+        )
+    }
+
     renderConfigureLinkInfoColumn() {
         let keys = Object.keys(this.state.webhookAttribute)
+        let installationType
+        this.getServer()
+            .then((res) => {
+                installationType = res
+            })
         return (
             <div className="h-100 w-280 flex column dc__border-left dc__align-start dc__content-start p-16 dc__overflow-scroll" data-testid="available-webhook-data">
                 <div className="flex dc__align-items-center p-0 mb-16">
@@ -207,31 +249,9 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     <span className="ml-8 fw-6 fs-13 lh-20"> Available data</span>
                 </div>
                 <span className="fw-4 fs-13 lh-20 mb-16">Following data are available to be shared through Webhook. Use Payload to configure.</span>
-                {keys.map((atrribute, index) => (
-                    <div className="w-100-imp cn-7 fs-12 mb-8 flex left data-conatiner hover-trigger" data-testid={`${this.state.webhookAttribute[atrribute]}-${index}`} key={`${index}-${atrribute}`}>
-                        <span className="bcn-1 br-4 fs-12 fw-4 lh-16 p-4">{this.state.webhookAttribute[atrribute]}</span>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={this.state.copyAttribute ? 'Copied!' : 'Copy'}
-                            trigger="mouseenter click"
-                            onShow={(_tippy) => {
-                                setTimeout(() => {
-                                    _tippy.hide()
-                                    this.setCopied(false)
-                                }, 4000)
-                            }}
-                            interactive={true}
-                        >
-                            <Clipboard
-                                data-value={this.state.webhookAttribute[atrribute]}
-                                className="ml-8 pointer hover-only icon-dim-16"
-                                onClick={this.copyToClipboard}
-                            />
-                        </Tippy>
-                    </div>
-
+                {keys.map((attribute, index) => (
+                    this.state.webhookAttribute[attribute] != "{{devtronApprovedByEmail}}" ? this.renderDataList(attribute, index)
+                        : installationType === InstallationType.ENTERPRISE && this.renderDataList(attribute, index)
                 ))}
             </div>
         )
@@ -268,12 +288,12 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
     }
 
     onSaveClickHandler(event) {
-        event.preventDefault(); 
+        event.preventDefault();
         this.saveWebhookConfig();
     }
 
     onClickSave(event) {
-        event.preventDefault(); 
+        event.preventDefault();
         this.saveWebhookConfig();
     }
 
