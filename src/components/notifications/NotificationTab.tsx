@@ -28,8 +28,6 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
-import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
@@ -38,6 +36,7 @@ import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
+import { renderPipelineTypeIcon } from './notifications.util';
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
@@ -57,6 +56,7 @@ export interface NotificationConfiguration {
         environment: { id: number, name: string }[],
     };
     singleDeletedId: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface NotificationTabState {
@@ -197,22 +197,18 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    changePage(pageNo): void {
-        let state = { ...this.state };
-        state.view = ViewType.LOADING;
-        state.pagination.offset = (pageNo - 1) * this.state.pagination.pageSize;
+    changePage(pageNo, pageSize?): void {
+        let state = { ...this.state }
+        state.view = ViewType.LOADING
+        state.pagination.offset = pageSize ? 0 : (pageNo - 1) * this.state.pagination.pageSize
+        state.pagination.pageSize = pageSize ?? state.pagination.pageSize
         this.setState(state, () => {
             this.getAllNotifications();
         });
     }
 
     changePageSize(pageSize): void {
-        let state = { ...this.state };
-        state.view = ViewType.LOADING;
-        state.pagination.pageSize = pageSize;
-        this.setState(state, () => {
-            this.getAllNotifications();
-        });
+        this.changePage(1, pageSize)
     }
 
     toggleNotification(id: number): void {
@@ -537,8 +533,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </td>
                         <td className="pipeline-list__pipeline-name">{row?.appName}</td>
                         <td className="pipeline-list__type">
-                            {row.pipelineType === "CI" ? <CI className="icon-dim-20" /> : ''}
-                            {row.pipelineType === "CD" ? <CD className="icon-dim-20" /> : ''}
+                         {renderPipelineTypeIcon(row)}
                         </td>
                         <td className="pipeline-list__environment">
                             {_isCi &&
@@ -597,6 +592,20 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     }
 
+    renderPagination() {
+        if (this.state.pagination.size) {
+            return (
+                <Pagination
+                    offset={this.state.pagination.offset}
+                    pageSize={this.state.pagination.pageSize}
+                    size={this.state.pagination.size}
+                    changePage={this.changePage}
+                    changePageSize={this.changePageSize}
+                />
+            )
+        } else return null
+    }
+
     renderBody() {
         return <div className="notification-tab">
             <div data-testid="add-new-notification-button" onClick={this.CreateNewNotification} style={{ width: "100px" }}
@@ -605,11 +614,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             </div>
             {this.renderOptions()}
             {this.renderPipelineList()}
-            {this.state.pagination.size > 0 ? <Pagination offset={this.state.pagination.offset}
-                pageSize={this.state.pagination.pageSize}
-                size={this.state.pagination.size}
-                changePage={this.changePage}
-                changePageSize={this.changePageSize} /> : null}
+            {this.renderPagination()}
         </div>
     }
 

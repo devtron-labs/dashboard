@@ -47,6 +47,7 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
             <div>
                 <CreatableSelect
                     placeholder={selectData.placeholder}
+                    classNamePrefix={selectData.classNamePrefix}
                     options={selectData.options}
                     defaultValue={selectData.defaultValue}
                     value={selectData.value}
@@ -68,6 +69,7 @@ const reactSelect = (selectData: ReactSelectType) => {
             <div style={{ minWidth: '145px' }}>
                 <ReactSelect
                     placeholder={selectData.placeholder}
+                    classNamePrefix={selectData.classNamePrefix}
                     options={selectData.options}
                     defaultValue={selectData.defaultValue}
                     value={selectData.value}
@@ -85,7 +87,7 @@ const titleName = (titleData: WrapperTitleType) => {
     return (
         <>
             <div className="cn-6 mr-16">{titleData.title}</div>
-            <div className="flex fw-6 fs-13 mr-20">{titleData.value}</div>
+            <div className="flex fw-6 fs-13 mr-20" data-testid={titleData.dataTestId} >{titleData.value}</div>
             <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
         </>
     )
@@ -127,11 +129,13 @@ const closeExpandView = (viewData: CloseExpandView) => {
                     {viewData.isFullScreen ? (
                         <ExitScreen
                             className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+                            data-testid="cluster-terminal-exit-screen-button"
                             onClick={viewData.toggleScreenView}
                         />
                     ) : (
                         <FullScreen
                             className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+                            data-testid="cluster-terminal-full-screen-button"
                             onClick={viewData.toggleScreenView}
                         />
                     )}
@@ -140,6 +144,7 @@ const closeExpandView = (viewData: CloseExpandView) => {
             <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
                 <Close
                     className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
+                    data-testid="cluster-terminal-close-screen-button"
                     onClick={viewData.closeTerminalModal}
                 />
             </Tippy>
@@ -159,14 +164,14 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
                 content={switchProps.toggleButton ? 'Disconnect from pod' : 'Reconnect to pod'}
             >
                 {switchProps.toggleButton ? (
-                    <span className="mr-8 cursor">
+                    <span className="mr-8 cursor" data-testid="disconnect-button">
                         <div
                             className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
                             onClick={switchProps.stopTerminalConnection}
                         />
                     </span>
                 ) : (
-                    <span className="mr-8 flex">
+                    <span className="mr-8 flex" data-testid="play-button">
                         <Play className="icon-dim-16 mr-4 cursor" onClick={switchProps.resumePodConnection} />
                     </span>
                 )}
@@ -179,7 +184,7 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     if (clearProps.hideTerminalStripComponent) return null
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-            <div className="flex mr-8">
+            <div className="flex mr-8" data-testid={clearProps.dataTestId}>
                 <Abort className="icon-dim-16 mr-4 fcn-6 cursor" onClick={clearProps.setTerminalCleared} />
             </div>
         </Tippy>

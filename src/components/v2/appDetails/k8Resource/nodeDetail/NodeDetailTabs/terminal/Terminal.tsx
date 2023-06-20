@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { elementDidMount, useHeightObserver } from '../../../../../../common'
+import React, { useEffect, useState,  useContext} from 'react'
+import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
@@ -13,6 +13,8 @@ import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
+import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
+import { SERVER_MODE } from '../../../../../../../config'
 
 let socket 
 let terminal 
@@ -29,7 +31,9 @@ export default function TerminalView({
     registerLinkMatcher,
     terminalMessageData,
     clearTerminal,
+    dataTestId
 }: TerminalViewType) {
+    const { serverMode } = useContext(mainContext)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const appDetails = IndexStore.getAppDetails()
@@ -115,10 +119,10 @@ export default function TerminalView({
 
     const generateSocketURL = () => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
-        if (appDetails.appType !== AppType.EXTERNAL_HELM_CHART) {
-            socketURL += '/api/vi/pod/exec/ws/'
-        } else {
+        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||  serverMode === SERVER_MODE.EA_ONLY) {
             socketURL += '/k8s/pod/exec/sockjs/ws/'
+        } else {
+            socketURL += '/api/vi/pod/exec/ws/'
         }
         return socketURL
     }
@@ -240,9 +244,9 @@ export default function TerminalView({
     }, [clearTerminal])
 
     return (
-        <div className="terminal-wrapper">
+        <div className="terminal-wrapper" data-testid={dataTestId}>
             {renderConnectionStrip()}
-            <div ref={myDivRef} id="terminal-id" className="mt-8 mb-4 terminal-component ml-20">
+            <div ref={myDivRef} id="terminal-id" data-testid="terminal-editor-container" className="mt-8 mb-4 terminal-component ml-20">
                 <CopyToast showCopyToast={popupText} />
             </div>
         </div>

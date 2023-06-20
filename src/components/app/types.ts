@@ -67,6 +67,7 @@ export interface AppDetails {
     clusterId?: number
     deploymentAppType?: DeploymentAppType
     deploymentAppDeleteRequest: boolean
+    imageTag?: string
 }
 
 export interface LabelTag {
@@ -445,6 +446,7 @@ export interface AppStatusType {
     appStatus: string
     isDeploymentStatus?: boolean
     isJobView?: boolean
+    isVirtualEnv?: boolean
 }
 export interface JobPipeline {
     ci_pipeline_id: number
@@ -458,7 +460,7 @@ export interface TagChipsContainerType {
   labelTags: TagType[]
 }
 export interface SourceInfoType {
-  appDetails
+  appDetails: AppDetails
   setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
   environment: AppEnvironment
   environments: AppEnvironment[]
@@ -468,4 +470,21 @@ export interface SourceInfoType {
   deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
   loadingDetails?: boolean
   loadingResourceTree?: boolean
+  isVirtualEnvironment?: boolean
+  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
+
+export interface EnvironmentListMinType {
+    active?: boolean
+    appCount?: number
+    cluster_name?: string
+    default?: boolean
+    description?: boolean
+    environmentIdentifier?: string
+    environment_name: string
+    id?: number
+    isClusterCdActive?: boolean
+    isVirtualEnvironment?: boolean
+    namespace?: string
+}
+

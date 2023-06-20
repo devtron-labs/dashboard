@@ -77,7 +77,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
             if (isSuperAdmin) {
                 toast.info(NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN)
             } else {
-                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT ,NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
+                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT, NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
             }
         }
     }
@@ -142,7 +142,9 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
                         <div className="dc__truncate-text" data-testid={`${envData.namespace}-namespace`}>
                             {envData.namespace}
                         </div>
-                        <div data-testid={`${envData.cluster_name}-cluster`}>{envData.cluster_name}</div>
+                        <div data-testid={`${envData.cluster_name}-cluster`} className="dc__truncate-text">
+                            {envData.cluster_name}
+                        </div>
                         {renderApplicationCount(envData)}
                     </div>
                 ))}

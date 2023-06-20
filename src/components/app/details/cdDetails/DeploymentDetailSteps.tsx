@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreakdown'
@@ -10,10 +10,12 @@ import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from '../appDetails/appDetails.type'
 import { importComponentFromFELibrary } from '../../../common'
 
 const DeploymentApprovalInfo = importComponentFromFELibrary('DeploymentApprovalInfo')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary('processVirtualEnvironmentDeploymentData', null, 'function')
 
 let deploymentStatusTimer = null
 export default function DeploymentDetailSteps({
@@ -22,7 +24,8 @@ export default function DeploymentDetailSteps({
     isHelmApps = false,
     installedAppVersionHistoryId,
     isGitops,
-    userApprovalMetadata
+    userApprovalMetadata,
+    isVirtualEnvironment
 }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -30,8 +33,10 @@ export default function DeploymentDetailSteps({
     const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(
         deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED,
     )
+    const isVirtualEnv = useRef(isVirtualEnvironment)
+    const processedData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData() :  processDeploymentStatusDetailsData()
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
-        useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
+        useState<DeploymentStatusDetailsBreakdownDataType>(processedData)
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppType.helm) {
@@ -45,6 +50,10 @@ export default function DeploymentDetailSteps({
             clearDeploymentStatusTimer()
         }
     }, [installedAppVersionHistoryId])
+
+    useEffect(() => {
+        isVirtualEnv.current = isVirtualEnvironment
+    },[isVirtualEnvironment])
 
     const getDeploymentDetailStepsData = (): void => {
         getDeploymentStatusDetail(appId, envId, triggerId, isHelmApps, installedAppVersionHistoryId).then(
@@ -66,7 +75,7 @@ export default function DeploymentDetailSteps({
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
 
@@ -96,23 +105,23 @@ export default function DeploymentDetailSteps({
 
     return deploymentStatus?.toUpperCase() === TIMELINE_STATUS.ABORTED ||
         deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
-        <div className="flexbox deployment-aborted h-100 flex" data-testid="deployment-history-steps-failed-message">
-            <CDEmptyState
-                title="Deployment failed"
-                subtitle="A new deployment was initiated before this deployment completed."
+        <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.TITLE}
+                subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.SUBTITLE}
             />
         </div>
     ) : deploymentListLoader ? (
         <Progressing pageLoader />
-    ) : !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
+    ) : !isVirtualEnv.current && !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
         <div className="h-100 flex">
             <CDEmptyState
-                title="Deployment in progress"
+                title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.TITLE}
                 imgSource={mechanicalOperation}
                 actionButtonClass="bcb-5 cn-0"
                 ActionButtonIcon={Arrow}
                 actionHandler={redirectToDeploymentStatus}
-                subtitle="This deployment is in progress. Click on Check status to know the live status."
+                subtitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.SUBTITLE}
                 actionButtonText="Check live status"
                 actionButtonIconRight={true}
                 dataTestId="deployment-progress"
@@ -126,6 +135,7 @@ export default function DeploymentDetailSteps({
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 streamData={null}
+                isVirtualEnvironment={isVirtualEnv.current}
             />
         </div>
     )

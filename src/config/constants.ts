@@ -22,6 +22,8 @@ export const Routes = {
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    VALIDATE: 'cluster/validate',
+    SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
     CLUSTER_NOTE: 'cluster/description/note',
 
@@ -224,6 +226,8 @@ export const Routes = {
     CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
+    ROTATE_PODS: 'app/rotate-pods',
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
 }
 
 export const ViewType = {
@@ -258,7 +262,7 @@ export const PATTERNS = {
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
-    URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
+    URL: /^(http:\/\/|https:\/\/)?[A-Za-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
     KUBERNETES_KEY:
         /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
@@ -338,7 +342,9 @@ export const DOCUMENTATION = {
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
+export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
+
+export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
 
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
@@ -638,14 +644,21 @@ export const EXTERNAL_TYPES = {
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
+export const MODULE_TYPE_SECURITY = 'security'
+export const SCAN_TOOL_ID_TRIVY = 3
+export const TRIVY_TOOL_VERSION = 'V1'
+export const CLAIR_TOOL_VERSION_V4 = 'V4'
+export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',
-    SECURITY: 'security.clair',
+    SECURITY: 'security',
     BLOB_STORAGE: 'blob-storage',
     GRAFANA: 'monitoring.grafana',
     NOTIFICATION: 'notifier',
+    SECURITY_TRIVY: 'security.trivy',
+    SECURITY_CLAIR: 'security.clair',
 }
 
 export const BUILD_STATUS = {
@@ -704,6 +717,11 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
+export const MODULE_STATUS = {
+    Installed: 'Installed',
+    Failed: 'Failed',
+    NotEnabled: 'Not enabled',
+}
 
 export const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -764,7 +782,8 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
-    INPROGRESS= 'INPROGRESS'
+    INPROGRESS= 'INPROGRESS',
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -808,3 +827,12 @@ export enum CONFIGURATION_TYPES {
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
 }
+
+export enum DeploymentAppTypes {
+  HELM = 'helm',
+  GITOPS = 'argo_cd',
+  MANIFEST_DOWNLOAD = 'manifest_download'
+}
+export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
+
+export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

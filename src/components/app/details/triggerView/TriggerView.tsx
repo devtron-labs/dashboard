@@ -22,7 +22,7 @@ import {
 import { createGitCommitUrl, importComponentFromFELibrary, ISTTimeModal, preventBodyScroll } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import {
@@ -47,11 +47,13 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
+import { getBranchValues, handleSourceNotConfigured, processConsequenceData, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
+const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -84,6 +86,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
             loader: false,
+            isSaveLoading: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -185,8 +188,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
-                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
+                    _selectedMaterial.materialSelectionErrorMsg = _selectedMaterial.history[0].excluded
+                        ? NO_COMMIT_SELECTED
+                        : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
@@ -239,9 +244,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
                 _selectedMaterial.showAllCommits = false
-                if(commitInLocalHistory.excluded){
+                if (commitInLocalHistory.excluded) {
                     _selectedMaterial.isMaterialSelectionError = true
-                    _selectedMaterial.materialSelectionErrorMsg =  NO_COMMIT_SELECTED
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 this.setState({
                     workflows: workflows,
@@ -514,7 +519,39 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ loader: true, showCIModal: true })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.abortController = new AbortController()
-        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal)
+
+        Promise.all([
+            this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
+            getCIBlockState && !this.props.isJobView
+                ? getCIBlockState(
+                      ciNodeId,
+                      this.props.match.params.appId,
+                      getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
+                  )
+                : { result: null },
+        ])
+            .then((resp) => {
+                // need to set result for getCIBlockState call only as for updateCIMaterialList
+                // it's already being set inside the same function
+                if (resp[1].result) {
+                    const workflows = [...this.state.workflows].map((workflow) => {
+                        workflow.nodes.map((node) => {
+                            if (node.type === 'CI' && node.id == ciNodeId) {
+                                node.ciBlockState = processConsequenceData(resp[1].result)
+                                node.isCITriggerBlocked = resp[1].result.isCITriggerBlocked
+                                return node
+                            }
+                            return node
+                        })
+
+                        return workflow
+                    })
+
+                    this.setState({
+                        workflows,
+                    })
+                }
+            })
             .catch((errors: ServerErrors) => {
                 if (!this.abortController.signal.aborted) {
                     showError(errors)
@@ -637,6 +674,28 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
+    getHelmPackageName = (helmPackageName: string, cdWorkflowType: string) => {
+        if (cdWorkflowType === WorkflowNodeType.PRE_CD) {
+            return `${helmPackageName} (Pre)`
+        } else if (cdWorkflowType === WorkflowNodeType.POST_CD) {
+            return `${helmPackageName} (Post)`
+        } else {
+            return helmPackageName
+        }
+    }
+
+    onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
+        const downloadManifetsDownload = {
+            appId: appId,
+            envId: envId,
+            appName: this.getHelmPackageName(helmPackageName, cdWorkflowType),
+            cdWorkflowType: cdWorkflowType,
+        }
+        if (getDeployManifestDownload) {
+            getDeployManifestDownload(downloadManifetsDownload)
+        }
+    }
+
     onClickTriggerCDNode = (
         nodeType: DeploymentNodeType,
         _appId: number,
@@ -644,8 +703,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         wfrId?: number,
     ): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        this.setState({ isLoading: true })
-        let node
+        this.setState({ isSaveLoading: true, isLoading: true })
+        let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
             let workflow = this.state.workflows[i]
             node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
@@ -658,6 +717,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
+                        this.onClickManifestDownload(
+                            _appId,
+                            node.environmentId,
+                            response.result.helmPackageName,
+                            nodeType,
+                        )
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -667,6 +732,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             {
                                 code: response.code,
                                 showCDModal: false,
+                                isSaveLoading: false,
                                 isLoading: false,
                             },
                             () => {
@@ -678,7 +744,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    this.setState({ code: errors.code, isLoading: false })
+                    this.setState({ code: errors.code, isLoading: false, isSaveLoading: false })
                 })
         } else {
             let message = _appId ? '' : 'app id missing '
@@ -781,9 +847,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                        if (hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
                                             hist.isSelected = true
-                                        }else {
+                                        } else {
                                             hist.isSelected = false
                                         }
                                     } else {
@@ -921,6 +987,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node[this.state.materialType][materialIndex]['lastExecution'] =
                                     response.result.lastExecution
                                 node[this.state.materialType][materialIndex]['vulnerabilitiesLoading'] = false
+                                node[this.state.materialType][materialIndex]['scanToolId'] = response.result.scanToolId
                             }
                             return node
                         })
@@ -1092,6 +1159,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isCacheAvailable={nd?.storageConfigured}
                                 appId={this.props.match.params.appId}
                                 isJobView={this.props.isJobView}
+                                isCITriggerBlocked={nd?.isCITriggerBlocked}
+                                ciBlockState={nd?.ciBlockState}
                             />
                         )}
                     </div>
@@ -1120,7 +1189,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
             const material = node[this.state.materialType] || []
-
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
@@ -1161,6 +1229,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 parentEnvironmentName={node.parentEnvironmentName}
                                 userApprovalConfig={node.userApprovalConfig}
                                 requestedUserId={node.requestedUserId}
+                                isVirtualEnvironment={node.isVirtualEnvironment}
+                                isSaveLoading={this.state.isSaveLoading}
                             />
                         )}
                     </div>

@@ -11,6 +11,7 @@ export default function DeploymentStatusDetailModal({
     environmentName,
     streamData,
     deploymentStatusDetailsBreakdownData,
+    isVirtualEnvironment
 }: DeploymentStatusDetailModalType) {
     const history = useHistory()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
@@ -52,7 +53,7 @@ export default function DeploymentStatusDetailModal({
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="deployment-status-breakdown-modal-container bcn-0" data-test-id="deployment-status-drawer" ref={appStatusDetailRef}>
+            <div className="deployment-status-breakdown-modal-container bcn-0" data-testid="deployment-status-drawer" ref={appStatusDetailRef}>
                 <div className="dc__box-shadow pb-12 pt-12 bcn-0">
                     <div className="title flex dc__content-space pl-20 pr-20 " data-testid="app-status-cross">
                         <div>
@@ -76,6 +77,7 @@ export default function DeploymentStatusDetailModal({
                     <DeploymentStatusDetailBreakdown
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         streamData={streamData}
+                        isVirtualEnvironment={isVirtualEnvironment}
                     />
                 </div>
             </div>

@@ -18,10 +18,12 @@ import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL } from '../common'
+import { getCIPipelineURL, importComponentFromFELibrary } from '../common'
 import { useHistory } from 'react-router'
 import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
+
+const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
 
 export default function GitInfoMaterial({
     dataTestId = '',
@@ -42,6 +44,8 @@ export default function GitInfoMaterial({
     fromBulkCITrigger,
     hideSearchHeader,
     isJobView = false,
+    isCITriggerBlocked = false,
+    ciBlockState = null,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -279,6 +283,7 @@ export default function GitInfoMaterial({
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
         let anyCommit = selectedMaterial.history?.length > 0
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
+        const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
         return (
             <div className="select-material select-material--trigger-view">
                 {!isWebhook && !hideSearchHeader && (
@@ -288,9 +293,9 @@ export default function GitInfoMaterial({
                     >
                         {renderBranchChangeHeader(selectedMaterial)}
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                            <div className="flex right mr-20">
+                            <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
                                 {renderSearch()}
-                                {renderExcludedCommitsOption()}
+                                {excludeIncludeEnv && renderExcludedCommitsOption()}
                             </div>
                         )}
                     </div>
@@ -376,19 +381,32 @@ export default function GitInfoMaterial({
         )
     }
 
+    const redirectToCIPipeline = () => {
+        const ciPipelineURL = `/app/${appId}/edit/workflow/${workflowId}/ci-pipeline/${pipelineId}/build`
+        if (fromAppGrouping) {
+            window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
+        } else {
+            push(ciPipelineURL)
+        }
+    }
+
     return (
         <>
             {(!fromBulkCITrigger || showWebhookModal) && renderMaterialHeader()}
-            <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
-                {showWebhookModal == true ? (
-                    renderWebhookModal()
-                ) : (
-                    <>
-                        {!fromBulkCITrigger && renderMaterialSource()}
-                        {renderMaterialHistory(selectedMaterial ?? material)}
-                    </>
-                )}
-            </div>
+            {BuildTriggerBlockedState && isCITriggerBlocked ? (
+                <BuildTriggerBlockedState clickHandler={redirectToCIPipeline} />
+            ) : (
+                <div className={`m-lr-0 ${showWebhookModal || fromBulkCITrigger ? '' : 'flexbox'}`}>
+                    {showWebhookModal == true ? (
+                        renderWebhookModal()
+                    ) : (
+                        <>
+                            {!fromBulkCITrigger && renderMaterialSource()}
+                            {renderMaterialHistory(selectedMaterial ?? material)}
+                        </>
+                    )}
+                </div>
+            )}
         </>
     )
 }

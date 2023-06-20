@@ -218,7 +218,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     }}
                     styles={{ ...styles }}
                     onChange={(selected) => { this.handleEnvironmentChange(selected) }}
-                    options={this.state.filteredEnvironment} />
+                    options={this.state.filteredEnvironment.sort((a,b)=>(a.label>b.label)?1:-1)} />
             </div>
             <div className="dc__align-right ">
                 {this.props.match.params.envId ?

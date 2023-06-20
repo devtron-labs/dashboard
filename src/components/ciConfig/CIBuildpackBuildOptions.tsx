@@ -17,7 +17,7 @@ import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.s
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getAbsoluteProjectPath, _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
-import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
     BuilderIdOptionType,
     CIBuildpackBuildOptionsProps,
@@ -26,7 +26,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -65,6 +65,14 @@ export const repositoryOption = (props): JSX.Element => {
     )
 }
 
+export const checkoutPathOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            {props.value}
+        </components.Option>
+    )
+}
 export const repositoryControls = (props): JSX.Element => {
     let value = ''
     if (props.hasValue) {

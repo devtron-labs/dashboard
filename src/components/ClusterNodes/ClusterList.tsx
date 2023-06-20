@@ -17,7 +17,7 @@ import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
+export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: ClusterListType) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -42,7 +42,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             setLastDataSync(!lastDataSync)
             if (result) {
                 const sortedResult = result
-                    .sort((a, b) => a['name'].localeCompare(b['name']))
+                    .sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
                 if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)
                     setFilteredClusterList(sortedResult)
@@ -62,7 +62,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             completeDataLoadedRef.current = true
             setLastDataSync(!lastDataSync)
             if (result) {
-                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name']))
+                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
                 setClusterList(sortedResult)
                 setFilteredClusterList(sortedResult)
             }
@@ -113,7 +113,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredClusterList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }

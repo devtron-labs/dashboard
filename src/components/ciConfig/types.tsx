@@ -1,16 +1,20 @@
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerError,
+    CIBuildConfigType,
+    CIBuildType,
+    DockerConfigOverrideType,
+    FormType,
+    MandatoryPluginDataType,
+    PluginDetailType,
+    VariableType,
+    MandatoryPluginDetailType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import {
-    CIBuildConfigType,
-    CIBuildType,
-    CIPipelineDataType,
-    DockerConfigOverrideType,
-    FormType,
-} from '../ciPipeline/types'
+import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 
 export interface ArgsFieldSetProps {
@@ -266,6 +270,14 @@ export interface CICreateDockerfileOptionProps {
     handleOnChangeConfig: (e) => void
     renderInfoCard: () => JSX.Element
     isDefaultBuildContext: () => boolean
+    handleBuildContextCheckoutPathChange: (checkoutPath: any) => void
+    getCheckoutPathValue: (
+        selectedBuildContextGitMaterial: any,
+        currentMaterial: any,
+        useRootBuildContextFlag: boolean,
+    ) => OptionType
+    useRootBuildContextFlag: boolean
+    checkoutPathOptions: OptionType[]
 }
 
 export interface CIBuildpackBuildOptionsProps {
@@ -310,15 +322,15 @@ export interface CIBuildConfigDiffProps {
 }
 
 export interface TargetPlatformSelectorType {
-  allowOverride?: boolean
-  selectedTargetPlatforms: OptionType[]
-  setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
-  showCustomPlatformWarning: boolean
-  setShowCustomPlatformWarning: (value: boolean) => void
-  targetPlatformMap: Map<string, boolean>
-  targetPlatform?: string
-  configOverrideView?: boolean
-  updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
+    allowOverride?: boolean
+    selectedTargetPlatforms: OptionType[]
+    setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
+    showCustomPlatformWarning: boolean
+    setShowCustomPlatformWarning: (value: boolean) => void
+    targetPlatformMap: Map<string, boolean>
+    targetPlatform?: string
+    configOverrideView?: boolean
+    updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }
 
 export interface BuildContextProps {
@@ -327,6 +339,31 @@ export interface BuildContextProps {
     formState: any
     configOverrideView: boolean
     allowOverride: boolean
-    ciConfig:  CiPipelineResult
+    ciConfig: CiPipelineResult
     handleOnChangeConfig: (e) => void
+}
+
+export interface CIPipelineSidebarType {
+    isJobView?: boolean
+    mandatoryPluginData: MandatoryPluginDataType
+    pluginList: PluginDetailType[]
+    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+    setInputVariablesListFromPrevStep: React.Dispatch<
+        React.SetStateAction<{
+            preBuildStage: Map<string, VariableType>[]
+            postBuildStage: Map<string, VariableType>[]
+        }>
+    >
+}
+
+export interface TaskListType {
+    withWarning: boolean
+    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+    setInputVariablesListFromPrevStep: React.Dispatch<
+        React.SetStateAction<{
+            preBuildStage: Map<string, VariableType>[]
+            postBuildStage: Map<string, VariableType>[]
+        }>
+    >
+    isJobView: boolean
 }

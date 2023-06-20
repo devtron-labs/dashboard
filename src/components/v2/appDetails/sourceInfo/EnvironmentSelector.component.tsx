@@ -8,8 +8,6 @@ import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { useSharedState } from '../../utils/useSharedState'
 import { AppType, DeploymentAppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
-import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
 import Tippy from '@tippyjs/react'
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
@@ -24,15 +22,18 @@ import { checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
     _init,
     loadingResourceTree,
+    isVirtualEnvironment,
 }: {
     isExternalApp: boolean
     _init?: () => void
     loadingResourceTree: boolean
+    isVirtualEnvironment?: boolean
 }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -203,22 +204,19 @@ function EnvironmentSelectorComponent({
                         <Tippy
                             className="default-tt"
                             arrow={false}
+                            disabled={isVirtualEnvironment}
                             placement="top"
                             content={`Deployed using ${
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            {isGitops ? (
-                                <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
-                            ) : (
-                                <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                            )}
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
                             <BinWithDots className="icon-dim-16 mr-8 ml-12" />
-                            <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="cr-5 fw-6" data-testid = "delete-progress">{DELETE_DEPLOYMENT_PIPELINE}</span>
                             <span className="dc__loading-dots cr-5" />
                         </>
                     )}
@@ -227,13 +225,17 @@ function EnvironmentSelectorComponent({
 
             {!loadingResourceTree && (
                 <div className="flex">
-                    {!appDetails.deploymentAppDeleteRequest && (
-                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl} data-testid="url-button-app-details">
+                    {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
+                        <button
+                            className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                            onClick={showInfoUrl}
+                            data-testid="url-button-app-details"
+                        >
                             <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                             Urls
                         </button>
                     )}
-                    {!showWorkloadsModal && (
+                    {!showWorkloadsModal && !isVirtualEnvironment && (
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={() => setWorkloadsModal(true)}
@@ -251,13 +253,13 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div data-testid="dot-button-app-details">
+                        <div data-testid="dot-button-app-details" className="helm-delete-wrapper flex ml-8 mw-none cta cancel small">
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
-                                    <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
+                                    <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <Popup />
+                                   <div className="helm-delete-pop-up bcn-0 br-4"> <Popup /></div>
                                 </PopupMenu.Body>
                             </PopupMenu>
                             {showDeleteConfirmation && (
