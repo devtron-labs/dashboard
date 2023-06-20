@@ -5,8 +5,8 @@
   <meta charset="utf-8" />
   <link rel="preload" as="style" href='//fonts.googleapis.com/css?family=Open+Sans' type='text/css'>
   <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
-  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-  <script src="%PUBLIC_URL%/env-config.js"></script>
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <!-- <script src="/env-config.js"></script> -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="theme-color" content="#06c" />
   <meta name="robots" content="noindex, nofollow" />
@@ -47,14 +47,14 @@
 </body>
 <!-- Discord widget -->
 <script type="text/javascript">
-  if (!window._env_.HIDE_DISCORD) {
-    document.write('<script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>const crate = new Crate({server: "769482988882493450",channel: "769508553118842881", location: ["bottom", "left"], color: "#023263"});crate.notify({content: "Need help?",timeout: 8000,avatar: "https://i.postimg.cc/MK5M3H87/1516624713231.jpg"});<\/script>');
-  }
+  // if (!window._env_.HIDE_DISCORD) {
+  //   document.write('<script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>const crate = new Crate({server: "769482988882493450",channel: "769508553118842881", location: ["bottom", "left"], color: "#023263"});crate.notify({content: "Need help?",timeout: 8000,avatar: "https://i.postimg.cc/MK5M3H87/1516624713231.jpg"});<\/script>');
+  // }
 </script>
 <script>
   let title_el = document.querySelector("title");
   if (window.location.origin === "https://preview.devtron.ai")
     title_el.innerHTML = "Devtron Sandbox";
 </script>
-
+<script type="module" src="/src/index.tsx"></script>
 </html>
