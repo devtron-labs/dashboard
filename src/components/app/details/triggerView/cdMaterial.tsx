@@ -619,7 +619,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history material-history--cd ${
+                    className={`material-history material-history--cd image-tag-parent-card ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
