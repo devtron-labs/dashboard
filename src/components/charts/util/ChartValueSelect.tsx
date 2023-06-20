@@ -131,7 +131,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                         : this.renderNoResultsOption()}
                 </Select.OptGroup>
                 {!this.props.hideCreateNewOption && (
-                    <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues}>
+                    <div className="select__sticky-bottom" onClick={this.props.redirectToChartValues} data-testid="add-preset-values-button-dropdown">
                         <Add className="icon-dim-20 mr-5" />
                         Create preset value
                     </div>
