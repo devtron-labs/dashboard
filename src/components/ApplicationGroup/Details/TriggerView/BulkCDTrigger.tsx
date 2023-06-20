@@ -3,6 +3,7 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
+    multiSelectStyles,
     noop,
     Progressing,
     showError,
@@ -13,7 +14,7 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as Tag} from '../../../../assets/icons/ic-tag.svg'
+import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
@@ -24,8 +25,7 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import ReactSelect, { components } from 'react-select'
-import { Option as releaseTagOption} from '../../../v2/common/ReactSelect.utils'
-import {imageTaggingSelectorStyle} from "../../AppGroup.utils";
+import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 
 export default function BulkCDTrigger({
     stage,
@@ -46,12 +46,11 @@ export default function BulkCDTrigger({
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
-    const [tagNotFoundWarningsMap,setTagNotFoundWarningsMap] = useState<Map<number,string>>(new Map())
+    const [tagNotFoundWarningsMap, setTagNotFoundWarningsMap] = useState<Map<number, string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
     const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
-
 
     const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
         setCurrentAppReleaseTags(appReleaseTags)
@@ -199,7 +198,7 @@ export default function BulkCDTrigger({
         }
 
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
-        uniqueReleaseTags.sort((a,b)=> a.localeCompare(b))
+        uniqueReleaseTags.sort((a, b) => a.localeCompare(b))
         let tagsList = ['latest']
         tagsList.push(...uniqueReleaseTags)
         const options = tagsList.map((tag) => {
@@ -218,13 +217,18 @@ export default function BulkCDTrigger({
             appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
         })
 
-        const selectImageLocal = ( index: number, materialType: string, selectedCDDetail?: { id: number; type: DeploymentNodeType }, appId?: number)=> {
-            selectImage(index,materialType,selectedCDDetail)
-            if((appWiseTagsToArtifactIdMapMappings[appId][selectedTagName.value] !== index)) {
+        const selectImageLocal = (
+            index: number,
+            materialType: string,
+            selectedCDDetail?: { id: number; type: DeploymentNodeType },
+            appId?: number,
+        ) => {
+            selectImage(index, materialType, selectedCDDetail)
+            if (appWiseTagsToArtifactIdMapMappings[appId][selectedTagName.value] !== index) {
                 let _tagNotFoundWarningsMap = tagNotFoundWarningsMap
                 _tagNotFoundWarningsMap.delete(appId)
                 setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
-                setSelectedTagName({value: 'Multiple tags', label: 'Multiple tags'})
+                setSelectedTagName({ value: 'Multiple tags', label: 'Multiple tags' })
             }
         }
 
@@ -235,18 +239,20 @@ export default function BulkCDTrigger({
                 const app = appList[i]
                 const tagsToArtifactIdMap = appWiseTagsToArtifactIdMapMappings[app.appId]
                 let artifactIndex = -1
-                if (typeof (tagsToArtifactIdMap[selectedTag.value]) !== 'undefined') {
+                if (typeof tagsToArtifactIdMap[selectedTag.value] !== 'undefined') {
                     artifactIndex = tagsToArtifactIdMap[selectedTag.value]
                 }
                 if (artifactIndex === -1) {
-                    _tagNotFoundWarningsMap.set(app.appId,"Tag '" + selectedTag.value + "' not found")
+                    _tagNotFoundWarningsMap.set(app.appId, "Tag '" + selectedTag.value + "' not found")
                 }
 
-                if (artifactIndex !== -1 && selectedTag.value!== 'latest') {
-                    const releaseTag = app.material[artifactIndex]?.imageReleaseTags.find((releaseTag)=> releaseTag.tagName === selectedTag.value)
-                    if(releaseTag?.deleted) {
+                if (artifactIndex !== -1 && selectedTag.value !== 'latest') {
+                    const releaseTag = app.material[artifactIndex]?.imageReleaseTags.find(
+                        (releaseTag) => releaseTag.tagName === selectedTag.value,
+                    )
+                    if (releaseTag?.deleted) {
                         artifactIndex = -1
-                        _tagNotFoundWarningsMap.set(app.appId,"Tag '" + selectedTag.value + "' is soft-deleted")
+                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + selectedTag.value + "' is soft-deleted")
                     }
                 }
 
@@ -263,12 +269,12 @@ export default function BulkCDTrigger({
             Option: releaseTagOption,
             Control: (props) => {
                 return (
-                    <components.Control {...props} >
-                        {<Tag className="ml-8 mr-8 dc__vertical-align-middle icon-dim-20"></Tag>}
+                    <components.Control {...props}>
+                        {<Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />}
                         {props.children}
                     </components.Control>
                 )
-            }
+            },
         }
 
         return (
@@ -276,13 +282,13 @@ export default function BulkCDTrigger({
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                     <div className="pb-12"></div>
                     <span className="pl-16 pr-16">Select image by release tag</span>
-                    <div style={{ zIndex: 1 }} className="tag-selection-dropdown">
+                    <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
                         <ReactSelect
                             tabIndex={1}
                             isSearchable={true}
                             options={options}
                             value={selectedTagName}
-                            styles={imageTaggingSelectorStyle}
+                            styles={multiSelectStyles}
                             components={imageTaggingControls}
                             onChange={handleTagChange}
                             isDisabled={false}
@@ -305,7 +311,7 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
-                            { (app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
+                            {(app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <Error className="icon-dim-12 warning-icon-y7 mr-4" />
                                     {app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}
@@ -363,7 +369,9 @@ export default function BulkCDTrigger({
     }
 
     const isDeployDisabled = (): boolean => {
-        return appList.every((app) => (app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) || !app.material?.length)
+        return appList.every(
+            (app) => app.warningMessage || tagNotFoundWarningsMap.has(app.appId) || !app.material?.length,
+        )
     }
 
     const renderFooterSection = (): JSX.Element => {
