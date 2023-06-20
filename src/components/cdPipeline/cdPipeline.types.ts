@@ -88,6 +88,8 @@ export interface CDPipelineState {
     forceDeleteDialogMessage: string
     forceDeleteDialogTitle: string
     isVirtualEnvironmentOnEnvSelection?: boolean
+    showNonCascadeDeleteDialog: boolean
+    clusterName: string
 }
 
 export interface PipelineConfig {

@@ -4,6 +4,7 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import {AppMetaInfo} from "../../../app/types";
+import { DELETE_ACTION } from '../../../../config'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -252,6 +253,10 @@ export interface ChartValuesViewState {
         title: string
         message: string
     }
+    nonCascadeDeleteData: {
+        nonCascade: boolean,
+        clusterName: string,
+    },
     errorResponseCode: number
     invalidAppName: boolean
     invalidAppNameMessage: string
@@ -301,6 +306,7 @@ export enum ChartValuesViewActionTypes {
     projects = 'projects',
     environments = 'environments',
     forceDeleteData = 'forceDeleteData',
+    nonCascadeDeleteData = 'nonCascadeDeleteData',
     errorResponseCode = 'errorResponseCode',
     invalidValueName = 'invalidValueName',
     invalidValueNameMessage = 'invalidValueNameMessage',
@@ -385,8 +391,8 @@ export interface ValuesForDiffStateType {
 
 export interface DeleteChartDialogProps {
     appName: string
-    handleDelete: (force?: boolean) => void
-    toggleConfirmation: () => void
+    handleDelete: (deleteAction: DELETE_ACTION) => void
+    toggleConfirmation: (isDeleteConfirmation:boolean) => void
     isCreateValueView?: boolean
 }
 
