@@ -1279,6 +1279,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     onClickCDMaterial={this.onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
+                    ciPipelineId={node.connectingCiPipelineId}
+                    appReleaseTagNames={this.state.appReleaseTags}
+                    setAppReleaseTagNames={this.setAppReleaseTags}
+                    tagsEditable={this.state.tagsEditable}
+                    setTagsEditable={this.setTagsEditable}
                 />
             )
         }
