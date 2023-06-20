@@ -520,8 +520,19 @@ const HistoryLogs: React.FC<{
                                 userApprovalMetadata={userApprovalMetadata}
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
+                                ciPipelineId={ciPipelineId}
+                                imageComment={
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        .imageComment
+                                }
+                                imageReleaseTags={
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        .imageReleaseTags
+                                }
+                                appReleaseTagNames={appReleaseTags}
+                                tagsEditable={tagsEditable}
                             />
-                            { artifactId && (
+                            { (artifactId && !userApprovalMetadata) && (
                                 <div>
                                     <div className="mt-8" style={{ width: '832px' }} >
                                         <div className="dc__dashed_icon_grid-container">

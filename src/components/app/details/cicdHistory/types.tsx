@@ -141,6 +141,9 @@ export interface GitChangesType {
     imageComment?: ImageComment
     imageReleaseTags?: ReleaseTag[]
     artifactId?: number
+    ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 export interface EmptyViewType {
     imgSrc?: string

@@ -189,6 +189,12 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
                 userApprovalMetadata={userApprovalMetadata}
                 triggeredBy={triggeredBy}
                 children={children}
+                ciPipelineId={ciPipelineId}
+                artifactId={artifactId}
+                imageComment={imageComment}
+                imageReleaseTags={imageReleaseTags}
+                appReleaseTagNames={appReleaseTagNames}
+                tagsEditable={tagsEditable}
             />
         ) : null
     }

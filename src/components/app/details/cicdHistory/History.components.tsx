@@ -78,6 +78,12 @@ export const GitChanges = ({
     artifact,
     userApprovalMetadata,
     triggeredByEmail,
+    ciPipelineId,
+    artifactId,
+    imageComment,
+    imageReleaseTags,
+    appReleaseTagNames,
+    tagsEditable,
 }: GitChangesType) => {
     const [copied, setCopied] = useState(false)
 
@@ -120,6 +126,12 @@ export const GitChanges = ({
                     type="approved-artifact"
                     userApprovalMetadata={userApprovalMetadata}
                     triggeredBy={triggeredByEmail}
+                    artifactId={artifactId}
+                    ciPipelineId={ciPipelineId}
+                    imageComment={imageComment}
+                    imageReleaseTags={imageReleaseTags}
+                    appReleaseTagNames={appReleaseTagNames}
+                    tagsEditable={tagsEditable}
                 >
                     <div className="flex column left hover-trigger">
                         <div className="cn-9 fs-14 flex left">
