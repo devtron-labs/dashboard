@@ -278,6 +278,7 @@ function ChartForm({
                 required: true,
                 validators: [
                   { error: 'Name is required', regex: /^.*$/ },
+                  {error:"Min 3 chars, spaces not allowed ",regex:/^.\S{2,}$/}
               ]
             },
             url: {
