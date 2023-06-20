@@ -195,7 +195,7 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
 
     return (
         <div
-            className={`dc__h-fit-content ci-artifact w-100 ci-artifact--${type}`}
+            className={`dc__h-fit-content ci-artifact w-100 ci-artifact--${type} image-tag-parent-card`}
             data-testid="hover-on-report-artifact"
         >
             <div className="ci-artifacts-grid flex left">
