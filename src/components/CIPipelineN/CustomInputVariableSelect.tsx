@@ -6,10 +6,10 @@ import {
     FormType,
     VariableType,
     RefVariableStageType,
-    FormErrorObjectType,
     StepType,
+    FormErrorObjectType,
     TaskErrorObj,
-} from '../ciPipeline/types'
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'

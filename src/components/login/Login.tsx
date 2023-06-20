@@ -4,7 +4,7 @@ import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getCookie, ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
+import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
@@ -122,6 +122,17 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             })
     }
 
+    renderLoginPrivacyText = () => {
+        if (window.location.origin === PREVIEW_DEVTRON) {
+            return <div className="flex mt-12">
+                By logging in, you agree to our
+                <a href={PRIVACY_POLICY} target="blank" className="ml-4 bc-5">
+                    Privacy Policy
+                </a>
+            </div>
+        }
+    }
+
     renderSSOLoginPage() {
         const search = this.props.location.search
 
@@ -148,6 +159,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
+                {this.renderLoginPrivacyText()}
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>

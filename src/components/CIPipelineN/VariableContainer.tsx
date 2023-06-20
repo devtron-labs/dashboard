@@ -1,10 +1,11 @@
 import React, { useState, useContext, Fragment, useEffect } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { FormErrorObjectType, FormType, PluginVariableType } from '../ciPipeline/types'
+import { PluginVariableType } from '../ciPipeline/types'
 import { ciPipelineContext } from './CIPipeline'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import Tippy from '@tippyjs/react'
+import { FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 
 export function VariableContainer({ type }: { type: PluginVariableType }) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)

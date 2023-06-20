@@ -25,6 +25,7 @@ export interface CINodeProps extends RouteComponentProps<{}> {
     inputMaterialsNew?: any[];
     colorCode?: string;
     fromAppGrouping: boolean
+    isCITriggerBlocked?: boolean
 }
 
 export class TriggerLinkedCINode extends Component<CINodeProps> {
@@ -71,7 +72,16 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                 <img src={link} className="icon-dim-12 mr-5" alt="" />
                 {this.props.linkedCount}
             </span> : null}
-            <div className="workflow-node__trigger-type  workflow-node-trigger-type--external-ci">{this.props.triggerType}</div>
+            <div
+                className={`workflow-node__trigger-type workflow-node-trigger-type--external-ci ${
+                    this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
+                }`}
+                style={{
+                    opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
+                }}
+            >
+                {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
+            </div>
             <div className="workflow-node__title flex">
                 <div className="workflow-node__full-width-minus-Icon">
                     <span className="workflow-node__text-light" data-testid="linked-indication-name">Build: Linked</span>
