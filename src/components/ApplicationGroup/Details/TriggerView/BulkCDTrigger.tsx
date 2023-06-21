@@ -138,6 +138,8 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
+                setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false) 
+                setCurrentAppReleaseTags(_cdMaterialResponse[selectedApp.appId].appReleaseTagNames ?? [])
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -168,9 +170,10 @@ export default function BulkCDTrigger({
     }
 
     const changeApp = (e): void => {
-        setSelectedApp(appList[e.currentTarget.dataset.index])
-        setCurrentAppReleaseTags(selectedApp.appReleaseTags)
-        setCurrentAppTagsEditable(selectedApp.tagsEditable)
+        const _selectedApp = appList[e.currentTarget.dataset.index]
+        setSelectedApp(_selectedApp)
+        setCurrentAppReleaseTags(_selectedApp.appReleaseTags)
+        setCurrentAppTagsEditable(_selectedApp.tagsEditable)
     }
 
     const renderEmptyView = (): JSX.Element => {
