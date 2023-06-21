@@ -1,4 +1,4 @@
-import React, { useEffect, useState,  useContext} from 'react'
+import React, { useEffect, useState} from 'react'
 import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
@@ -6,13 +6,11 @@ import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import { SocketConnectionType } from '../node.type'
-import IndexStore from '../../../../index.store'
 import moment from 'moment'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
-import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 
 let socket 
 let terminal 
