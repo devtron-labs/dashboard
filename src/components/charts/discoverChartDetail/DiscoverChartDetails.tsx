@@ -332,10 +332,10 @@ const Deployment: React.FC<DeploymentProps> = ({
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
             <div className="dc__chart-grid-item__icon-wrapper">
-                <img src={icon} onError={handleImageError} className="dc__chart-grid-item__icon" alt="chart icon" />
+                <img src={icon} onError={handleImageError} className="dc__chart-grid-item__icon" alt="chart icon" data-testid="chart-type-image" />
             </div>
             <div className="mb-16">
-                <div className="repository">
+                <div className="repository" data-testid="chart-type">
                     <div className="user anchor">{chartName}</div>
                     <div className="repo">{appStoreApplicationName}</div>
                 </div>
@@ -358,7 +358,7 @@ const Deployment: React.FC<DeploymentProps> = ({
 function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     const [collapsed, toggleCollapse] = useState(true)
     return (
-        <div className="discover__readme discover__readme--horizontal">
+        <div className="discover__readme discover__readme--horizontal" data-testid="readme-file-button">
             <List onClick={readme ? (e) => toggleCollapse((t) => !t) : (e) => {}}>
                 <List.Logo src={fileIcon} />
                 <List.Title
