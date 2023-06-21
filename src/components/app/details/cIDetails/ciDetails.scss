@@ -9,7 +9,7 @@
     .ci-artifact {
         border: 1px solid var(--N200);
         border-radius: 4px;
-        padding: 8px;
+        padding: 12px;
         height: 72px;
         max-width: 800px;
         width: 100%;
@@ -23,19 +23,6 @@
         &.ci-artifact--report {
             svg path {
                 fill: currentColor;
-            }
-        }
-
-        &.ci-artifact--approved-artifact {
-            grid-template-columns: 1fr;
-            grid-template-rows: 36px 1px 72px;
-            padding: 0;
-            height: 100%;
-
-            .approved-artifact {
-                display: grid;
-                grid-template-columns: 40px 1fr;
-                grid-column-gap: 8px;
             }
         }
     }
@@ -63,7 +50,7 @@
         border-right: 1px solid var(--N200);
         display: grid;
         grid-template-rows: 80px 1fr;
-        overflow: hidden; 
+        overflow: hidden;
         flex-basis: 280px;
         transition: flex-basis 0.3s;
     }
@@ -433,7 +420,7 @@
     width: fit-content;
     height: 24px;
     border: 1px dashed #B1B7BC;
-    border-radius: 4px; 
+    border-radius: 4px;
     cursor: pointer;
 }
 

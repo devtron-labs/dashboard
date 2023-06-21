@@ -18,8 +18,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
-
-const ApprovedArtifactInfo = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifactInfo')
+const ApprovalInfoTippy = importComponentFromFELibrary && importComponentFromFELibrary('ApprovalInfoTippy')
 
 export default function Artifacts({
     status,
@@ -104,7 +103,15 @@ export default function Artifacts({
         return (
             <div className="flex left column p-16">
                 {!isJobView && type !== HistoryComponentType.CD && (
-                    <CIListItem type="artifact" ciPipelineId={ciPipelineId} artifactId={artifactId} imageComment={imageComment} imageReleaseTags={imageReleaseTags} appReleaseTagNames={appReleaseTagNames} tagsEditable={tagsEditable}>
+                    <CIListItem
+                        type="artifact"
+                        ciPipelineId={ciPipelineId}
+                        artifactId={artifactId}
+                        imageComment={imageComment}
+                        imageReleaseTags={imageReleaseTags}
+                        appReleaseTagNames={appReleaseTagNames}
+                        tagsEditable={tagsEditable}
+                    >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
                                 <CopyTippyWithText
@@ -183,39 +190,51 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, ciPipelineId, artifactId, imageComment, imageReleaseTags, appReleaseTagNames, tagsEditable}: CIListItemType) => {
-    if(type === 'deployed-artifact'){
-        return (
-            <>
-                <div className="flex mb-12" style={{ width: 'min(100%, 800px)' }}>
+export const CIListItem = ({
+    type,
+    userApprovalMetadata,
+    triggeredBy,
+    children,
+    ciPipelineId,
+    artifactId,
+    imageComment,
+    imageReleaseTags,
+    appReleaseTagNames,
+    tagsEditable,
+}: CIListItemType) => {
+    return (
+        <>
+            {type === 'deployed-artifact' && (
+                <div className="flex mb-12 dc__width-inherit">
                     <div className="w-50 text-underline-dashed-300" />
-                    <Down className="icon-dim-16 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
+                    <Down className="icon-dim-16 ml-8 mr-8" />
                     <div className="w-50 text-underline-dashed-300" />
                 </div>
-                <div
-                    className="mb-16 ci-artifact ci-artifact--approved-artifact"
-                    data-testid="hover-on-report-artifact"
-                >
-                    {ApprovedArtifactInfo && (
-                        <ApprovedArtifactInfo
+            )}
+            {ApprovalInfoTippy && userApprovalMetadata && (
+                <div className="dc__width-inherit bcn-0 dc__border dc__top-radius-4">
+                    <div className="pt-8 pr-16 pb-8 pl-16 lh-20">
+                        <ApprovalInfoTippy
+                            showCount={true}
                             userApprovalMetadata={userApprovalMetadata}
                             triggeredBy={triggeredBy}
-                            children={children}
-                            ciPipelineId={ciPipelineId}
-                            artifactId={artifactId}
-                            imageComment={imageComment}
-                            imageReleaseTags={imageReleaseTags}
-                            appReleaseTagNames={appReleaseTagNames}
-                            tagsEditable={tagsEditable}
                         />
-                    )}
-                    <div className="dc__border-bottom-n1" />
-                    <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">
-                        <div className="bcn-1 flex br-4 icon-dim-40">
-                            <img src={docker} className="icon-dim-24" />
-                        </div>
-                        {children}
                     </div>
+                </div>
+            )}
+            <div
+                className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card ${
+                    ApprovalInfoTippy && userApprovalMetadata ? 'dc__no-top-radius dc__no-top-border' : ''
+                }`}
+                data-testid="hover-on-report-artifact"
+            >
+                <div className="ci-artifacts-grid flex left">
+                    <div className="bcn-1 flex br-4 icon-dim-40">
+                        <img src={type === 'report' ? folder : docker} className="icon-dim-20" />
+                    </div>
+                    {children}
+                </div>
+                {type !== 'report' && (
                     <ImageTagsContainer
                         ciPipelineId={ciPipelineId}
                         artifactId={artifactId}
@@ -224,33 +243,8 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                     />
-                </div>
-            </>
-        )
-    }
-
-    return (
-        <div
-            className={`dc__h-fit-content ci-artifact w-100 ci-artifact--${type} image-tag-parent-card`}
-            data-testid="hover-on-report-artifact"
-        >
-            <div className="ci-artifacts-grid flex left">
-                <div className="bcn-1 flex br-4 icon-dim-40">
-                    <img src={type === 'artifact' ? docker : folder} className="icon-dim-20" />
-                </div>
-                {children}
+                )}
             </div>
-            {type === 'artifact' && (
-                <ImageTagsContainer
-                    ciPipelineId={ciPipelineId}
-                    artifactId={artifactId}
-                    imageComment={imageComment}
-                    imageReleaseTags={imageReleaseTags}
-                    appReleaseTagNames={appReleaseTagNames}
-                    tagsEditable={tagsEditable}
-                />
-            )}
-        </div>
+        </>
     )
 }
-
