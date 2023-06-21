@@ -3378,3 +3378,9 @@ textarea::placeholder {
         color: var(--B700);
     }
 }
+
+.line_separator {
+    width: 1px;
+    height: 16px; 
+    background: var(--terminal-bg);
+}
