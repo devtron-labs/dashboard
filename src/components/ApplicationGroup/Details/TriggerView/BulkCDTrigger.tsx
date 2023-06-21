@@ -243,7 +243,7 @@ export default function BulkCDTrigger({
                     artifactIndex = tagsToArtifactIdMap[selectedTag.value]
                 }
                 if (artifactIndex === -1) {
-                    _tagNotFoundWarningsMap.set(app.appId, "Tag '" + selectedTag.value + "' not found")
+                    _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' not found")
                 }
 
                 if (artifactIndex !== -1 && selectedTag.value !== 'latest') {
@@ -252,7 +252,7 @@ export default function BulkCDTrigger({
                     )
                     if (releaseTag?.deleted) {
                         artifactIndex = -1
-                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + selectedTag.value + "' is soft-deleted")
+                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' is soft-deleted")
                     }
                 }
 
