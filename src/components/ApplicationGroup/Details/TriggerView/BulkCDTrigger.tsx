@@ -280,26 +280,27 @@ export default function BulkCDTrigger({
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
-                    <div className="pb-12"></div>
-                    <span className="pl-16 pr-16">Select image by release tag</span>
-                    <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
-                        <ReactSelect
-                            tabIndex={1}
-                            isSearchable={true}
-                            options={options}
-                            value={selectedTagName}
-                            styles={multiSelectStyles}
-                            components={imageTaggingControls}
-                            onChange={handleTagChange}
-                            isDisabled={false}
-                            classNamePrefix="build-config__select-repository-containing-code"
-                        />
-                    </div>
-                    <div
-                        className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 pt-12 pr-16 pb-12 pl-16"
-                        style={{ zIndex: 0 }}
-                    >
-                        Applications
+                    <div className="dc__position-sticky dc__top-0 pt-12">
+                        <span className="pl-16 pr-16">Select image by release tag</span>
+                        <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
+                            <ReactSelect
+                                tabIndex={1}
+                                isSearchable={true}
+                                options={options}
+                                value={selectedTagName}
+                                styles={multiSelectStyles}
+                                components={imageTaggingControls}
+                                onChange={handleTagChange}
+                                isDisabled={false}
+                                classNamePrefix="build-config__select-repository-containing-code"
+                            />
+                        </div>
+                        <div
+                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 pt-8 pr-16 pb-8 pl-16"
+                            style={{ zIndex: 0 }}
+                        >
+                            APPLICATIONS
+                        </div>
                     </div>
                     {appList.map((app, index) => (
                         <div
@@ -312,8 +313,18 @@ export default function BulkCDTrigger({
                         >
                             {app.name}
                             {(app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
-                                <span className={`flex left fw-4 fs-12 ${tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'}`}>
-                                    <Error className={`icon-dim-12 mr-4 ${tagNotFoundWarningsMap.has(app.appId) ? 'alert-icon-r5-imp' : 'warning-icon-y7'}`} />
+                                <span
+                                    className={`flex left fw-4 fs-12 ${
+                                        tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
+                                    }`}
+                                >
+                                    <Error
+                                        className={`icon-dim-12 mr-4 ${
+                                            tagNotFoundWarningsMap.has(app.appId)
+                                                ? 'alert-icon-r5-imp'
+                                                : 'warning-icon-y7'
+                                        }`}
+                                    />
                                     {app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}
                                 </span>
                             )}
