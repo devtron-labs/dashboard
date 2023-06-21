@@ -217,7 +217,7 @@ export const Details = ({
     isBlobStorageConfigured,
     isJobView,
     appIdFromParent,
-    tagsEditable, 
+    tagsEditable,
     appReleaseTags,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
@@ -236,7 +236,12 @@ export const Details = ({
     )
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
-        if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerDetailsResult?.result)
+        const triggerHistoryWithTags = {
+            ...triggerDetailsResult?.result,
+            imageComment: triggerDetails.imageComment,
+            imageReleaseTags: triggerDetails.imageReleaseTags,
+        }
+        if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerHistoryWithTags)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
@@ -380,11 +385,11 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
                         imageComment={triggerDetails.imageComment}
-                        imageReleaseTags ={triggerDetails.imageReleaseTags} 
+                        imageReleaseTags ={triggerDetails.imageReleaseTags}
                         ciPipelineId={triggerDetails.ciPipelineId}
                         artifactId={triggerDetails.artifactId}
                         tagsEditable={tagsEditable}
-                        appReleaseTagNames={appReleaseTags} 
+                        appReleaseTagNames={appReleaseTags}
                         type={HistoryComponentType.CI}
                     />
                 </Route>

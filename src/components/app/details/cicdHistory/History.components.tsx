@@ -121,9 +121,9 @@ export const GitChanges = ({
                         </div>
                 ) : null
             })}
-            {artifact && userApprovalMetadata && (
+            {artifact && (
                 <CIListItem
-                    type="approved-artifact"
+                    type="deployed-artifact"
                     userApprovalMetadata={userApprovalMetadata}
                     triggeredBy={triggeredByEmail}
                     artifactId={artifactId}

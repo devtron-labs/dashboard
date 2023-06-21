@@ -89,7 +89,7 @@ export interface CopyTippyWithTextType {
 }
 
 export interface CIListItemType {
-    type: 'report' | 'artifact' | 'approved-artifact'
+    type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
     children: any

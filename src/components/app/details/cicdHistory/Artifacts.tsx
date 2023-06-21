@@ -7,6 +7,7 @@ import { ReactComponent as Download } from '../../../../assets/icons/ic-download
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -18,7 +19,7 @@ import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 
-const ApprovedArtifact = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifact')
+const ApprovedArtifactInfo = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifactInfo')
 
 export default function Artifacts({
     status,
@@ -183,20 +184,49 @@ const CIProgressView = (): JSX.Element => {
 }
 
 export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, ciPipelineId, artifactId, imageComment, imageReleaseTags, appReleaseTagNames, tagsEditable}: CIListItemType) => {
-    if (type === 'approved-artifact') {
-        return ApprovedArtifact ? (
-            <ApprovedArtifact
-                userApprovalMetadata={userApprovalMetadata}
-                triggeredBy={triggeredBy}
-                children={children}
-                ciPipelineId={ciPipelineId}
-                artifactId={artifactId}
-                imageComment={imageComment}
-                imageReleaseTags={imageReleaseTags}
-                appReleaseTagNames={appReleaseTagNames}
-                tagsEditable={tagsEditable}
-            />
-        ) : null
+    if(type === 'deployed-artifact'){
+        return (
+            <>
+                <div className="flex mb-12" style={{ width: 'min(100%, 800px)' }}>
+                    <div className="w-50 text-underline-dashed-300" />
+                    <Down className="icon-dim-16 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
+                    <div className="w-50 text-underline-dashed-300" />
+                </div>
+                <div
+                    className="mb-16 ci-artifact ci-artifact--approved-artifact"
+                    data-testid="hover-on-report-artifact"
+                >
+                    {ApprovedArtifactInfo && (
+                        <ApprovedArtifactInfo
+                            userApprovalMetadata={userApprovalMetadata}
+                            triggeredBy={triggeredBy}
+                            children={children}
+                            ciPipelineId={ciPipelineId}
+                            artifactId={artifactId}
+                            imageComment={imageComment}
+                            imageReleaseTags={imageReleaseTags}
+                            appReleaseTagNames={appReleaseTagNames}
+                            tagsEditable={tagsEditable}
+                        />
+                    )}
+                    <div className="dc__border-bottom-n1" />
+                    <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">
+                        <div className="bcn-1 flex br-4 icon-dim-40">
+                            <img src={docker} className="icon-dim-24" />
+                        </div>
+                        {children}
+                    </div>
+                    <ImageTagsContainer
+                        ciPipelineId={ciPipelineId}
+                        artifactId={artifactId}
+                        imageComment={imageComment}
+                        imageReleaseTags={imageReleaseTags}
+                        appReleaseTagNames={appReleaseTagNames}
+                        tagsEditable={tagsEditable}
+                    />
+                </div>
+            </>
+        )
     }
 
     return (
