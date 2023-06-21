@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../service'
 import { ViewType } from '../../../config'
 import close from '../../../assets/icons/ic-close.svg'
 import { MaterialHistory, CIMaterialType } from '../details/triggerView/MaterialHistory'
 import Artifacts from '../details/cicdHistory/Artifacts'
-import { HistoryComponentType, ImageComment, ReleaseTag } from '../details/cicdHistory/types'
+import { HistoryComponentType, ImageComment } from '../details/cicdHistory/types'
 import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
 
 interface TriggerInfoModalState {
@@ -48,7 +48,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             image: '',
             appReleaseTags:[],
             tagsEditable: false,
-        } 
+        }
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
     }

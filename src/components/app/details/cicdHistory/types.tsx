@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string
@@ -32,7 +32,7 @@ export interface History {
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
     imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[] 
+    imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
 }
@@ -77,7 +77,7 @@ export interface ArtifactType {
     ciPipelineId?: number
     artifactId?: number
     imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[] 
+    imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
 }
@@ -96,17 +96,9 @@ export interface CIListItemType {
     ciPipelineId?: number
     artifactId?: number
     imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[] 
+    imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
-}
-
-export interface ReleaseTag {
-    id: number
-    tagName: string
-    appId: number
-    deleted: boolean
-    artifactId: number
 }
 
 export interface ImageComment {

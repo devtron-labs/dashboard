@@ -1,6 +1,6 @@
 import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
-import { UserApprovalMetadataType } from "@devtron-labs/devtron-fe-common-lib"
-import { ImageComment, ReleaseTag } from "../cicdHistory/types"
+import { UserApprovalMetadataType, ReleaseTag } from "@devtron-labs/devtron-fe-common-lib"
+import { ImageComment } from "../cicdHistory/types"
 
 export interface DeploymentHistorySingleValue {
     displayName: string
@@ -41,7 +41,7 @@ export interface DeploymentHistory {
     image: string
     workflow_type?: string
     imageComment?: ImageComment
-    imageReleaseTags?: ReleaseTag[] 
+    imageReleaseTags?: ReleaseTag[]
     ci_artifact_id?: number
 }
 
