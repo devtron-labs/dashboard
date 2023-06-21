@@ -1,19 +1,15 @@
-import React, { useEffect, useState,  useContext} from 'react'
+import React, { useEffect, useState} from 'react'
 import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import IndexStore from '../../../../index.store'
-import { AppType } from '../../../../appDetails.type'
 import moment from 'moment'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
-import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
-import { SERVER_MODE } from '../../../../../../../config'
 
 let socket
 let terminal
@@ -32,10 +28,8 @@ export default function TerminalView({
     clearTerminal,
     dataTestId
 }: TerminalViewType) {
-    const { serverMode } = useContext(mainContext)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
-    const appDetails = IndexStore.getAppDetails()
     const [popupText, setPopupText] = useState<boolean>(false)
 
     function resizeSocket() {
@@ -118,11 +112,7 @@ export default function TerminalView({
 
     const generateSocketURL = () => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART ||  serverMode === SERVER_MODE.EA_ONLY) {
-            socketURL += '/k8s/pod/exec/sockjs/ws/'
-        } else {
-            socketURL += '/api/vi/pod/exec/ws/'
-        }
+        socketURL += '/k8s/pod/exec/sockjs/ws/'
         return socketURL
     }
 

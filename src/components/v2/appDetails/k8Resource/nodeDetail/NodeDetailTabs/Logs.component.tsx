@@ -9,7 +9,7 @@ import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Host } from '@devtron-labs/devtron-fe-common-lib';
+import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -67,7 +67,12 @@ function LogsComponent({
     const [logState, setLogState] = useState(() =>
         getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
     )
+    const[prevContainer, setPrevContainer] = useState(false)
+    const[showNoPrevContainer, setNoPrevContainer] = useState('')
 
+    const getPrevContainerLogs = () => {
+        setPrevContainer(!prevContainer)
+    }
     const handlePodSelection = (selectedOption: string) => {
         const pods = getSelectedPodList(selectedOption)
         const containers = new Set(pods[0].containers ?? [])
@@ -88,6 +93,7 @@ function LogsComponent({
             selectedContainerOption: selectedContainer,
             grepTokens: logState.grepTokens,
         })
+        setPrevContainer(false)
     }
 
     const handleSearchTextChange = (searchText: string) => {
@@ -133,7 +139,16 @@ function LogsComponent({
     }
 
     const updateLogsAndReadyState = (event: any) => {
-        event.data.result.forEach((log: string) => subject.publish(log))
+        event.data.result.forEach((log: string) => {
+            subject.publish(log)
+            if (prevContainer) {
+                for (const _co of podContainerOptions.containerOptions) {
+                    if ( _co.selected && log.toString() === `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`) {
+                        setNoPrevContainer(log.toString())
+                    }
+                }
+            } else setNoPrevContainer('')
+        })
         if (event.data.readyState) {
             setReadyState(event.data.readyState)
         }
@@ -194,6 +209,7 @@ function LogsComponent({
                             nodeName,
                             Host,
                             _co.name,
+                            prevContainer,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -213,7 +229,7 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 pods.push(_pwc[0])
-                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1]))
+                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer))
             }
 
             if (urls.length == 0) {
@@ -301,7 +317,7 @@ function LogsComponent({
         fetchLogs()
 
         return () => stopWorker()
-    }, [logState])
+    }, [logState, prevContainer])
 
     const podContainerOptions = getPodContainerOptions(
         isLogAnalyzer,
@@ -496,6 +512,18 @@ function LogsComponent({
                                 </div>
                             </React.Fragment>
                         )}
+                            <div
+                                className="cn-2 ml-8 mr-12 line_separator"
+                            ></div>
+                            <Checkbox
+                                dataTestId="prev-container-logs"
+                                isChecked={prevContainer}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={getPrevContainerLogs}
+                                rootClassName="fs-12 cn-9 mt-4"
+                            >
+                                <span className="fs-12">Prev. container</span>
+                            </Checkbox>
                     </div>
 
                     <form
@@ -578,14 +606,24 @@ function LogsComponent({
                             )}
                         </div>
 
-                        <div className="log-viewer">
-                            <LogViewerComponent
-                                subject={subject}
-                                highlightString={highlightString}
-                                rootClassName="event-logs__logs"
-                                reset={logsCleared}
+                        {(prevContainer && showNoPrevContainer != '') ? (
+                            <MessageUI
+                                dataTestId="no-prev-container-logs"
+                                msg={showNoPrevContainer}
+                                size={24}
+                                minHeight={isResourceBrowserView ? '200px' : ''}
+                                msgStyle={{ maxWidth: '300px', margin: '8px auto' }}
                             />
-                        </div>
+                        ) :
+                            <div className="log-viewer">
+                                <LogViewerComponent
+                                    subject={subject}
+                                    highlightString={highlightString}
+                                    rootClassName="event-logs__logs"
+                                    reset={logsCleared}
+                                />
+                            </div>
+                        }
 
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${

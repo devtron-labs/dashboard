@@ -438,10 +438,10 @@ const HistoryLogs: React.FC<{
         const paramsData = {
         appId,
         envId,
-        appName: triggerDetails.helmPackageName,
+        appName: `${triggerDetails.helmPackageName}.tgz`,
         workflowId: triggerDetails.id,
     }
-        
+
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
@@ -512,7 +512,7 @@ const HistoryLogs: React.FC<{
                                 {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
                                     <VirtualHistoryArtifact
                                         status={triggerDetails.status}
-                                        titleName={triggerDetails.helmPackageName}
+                                        titleName={`${triggerDetails.helmPackageName}.tgz`}
                                         params={paramsData}
                                     />
                                 ) : (

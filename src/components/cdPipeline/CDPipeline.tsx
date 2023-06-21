@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeploymentAppTypes, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { DeploymentAppTypes, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     Select,
     ButtonWithLoader,
@@ -72,6 +72,7 @@ import {
 } from '../../config/constantMessaging'
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -155,9 +156,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showDeleteModal: false,
             shouldDeleteApp: true,
             showForceDeleteDialog: false,
+            showNonCascadeDeleteDialog: false,
             isAdvanced: false,
             forceDeleteDialogMessage: '',
             forceDeleteDialogTitle: '',
+            clusterName: '',
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -726,7 +729,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    deleteCD = (force) => {
+    deleteCD = (force: boolean, cascadeDelete: boolean) => {
         const isPartialDelete =
             this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps &&
             this.state.pipelineConfig.deploymentAppCreated &&
@@ -738,17 +741,30 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 id: this.state.pipelineConfig.id,
             },
         }
-
-        deleteCDPipeline(payload, force)
+        deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
                 if (response.result) {
-                    toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
-                    this.setState({ loadingData: false })
-                    this.props.close()
-                    if (this.isWebhookCD) {
-                        this.props.refreshParentWorkflows()
+                    if (cascadeDelete && !response.result.deleteResponse?.clusterReachable && !response.result.deleteResponse?.deleteInitiated) {
+                        this.setState({
+                            loadingData: false,
+                            showDeleteModal: false,
+                            showNonCascadeDeleteDialog: true,
+                            clusterName: response.result.deleteResponse?.clusterName,
+                        })
+                    } else {
+                        toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
+                        this.setState({
+                            loadingData: false,
+                            showDeleteModal: false,
+                            showForceDeleteDialog: false,
+                            showNonCascadeDeleteDialog: false,
+                        })
+                        this.props.close()
+                        if (this.isWebhookCD) {
+                            this.props.refreshParentWorkflows()
+                        }
+                        this.props.getWorkflows()
                     }
-                    this.props.getWorkflows()
                 }
             })
             .catch((error: ServerErrors) => {
@@ -758,12 +774,35 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         code: error.code,
                         loadingData: false,
                         showDeleteModal: false,
+                        showNonCascadeDeleteDialog: false,
                         showForceDeleteDialog: true,
                     })
                 } else {
                     showError(error)
                 }
             })
+    }
+
+    handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
+        switch (deleteAction) {
+            case DELETE_ACTION.DELETE:
+                return this.deleteCD(false, true)
+            case DELETE_ACTION.NONCASCADE_DELETE:
+                return this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps
+                    ? this.deleteCD(false, false)
+                    : this.deleteCD(false, true)
+            case DELETE_ACTION.FORCE_DELETE:
+                return this.deleteCD(true, false)
+        }
+    }
+
+    onClickHideNonCascadeDeletePopup = () => {
+        this.setState({ showNonCascadeDeleteDialog: false })
+    }
+
+    onClickNonCascadeDelete = () => {
+        this.setState({ showNonCascadeDeleteDialog: false })
+        this.handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
     deleteStage(key: 'preStage' | 'postStage') {
@@ -1168,7 +1207,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <DeleteDialog
                         title={`Delete '${this.state.pipelineConfig.name}' ?`}
                         description={`Are you sure you want to delete this CD Pipeline from '${this.props.appName}' ?`}
-                        delete={() => this.deleteCD(false)}
+                        delete={() => this.handleDeletePipeline(DELETE_ACTION.DELETE)}
                         closeDelete={this.closeCDDeleteModal}
                     />
                 )
@@ -1177,9 +1216,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 return (
                     <ForceDeleteDialog
                         forceDeleteDialogTitle={this.state.forceDeleteDialogTitle}
-                        onClickDelete={() => this.deleteCD(true)}
+                        onClickDelete={() => this.handleDeletePipeline(DELETE_ACTION.FORCE_DELETE)}
                         closeDeleteModal={() => this.setState({ showForceDeleteDialog: false })}
                         forceDeleteDialogMessage={this.state.forceDeleteDialogMessage}
+                    />
+                )
+            }
+            if (!this.state.showDeleteModal && this.state.showNonCascadeDeleteDialog) {
+                return ( 
+                    <ClusterNotReachableDailog
+                        clusterName={this.state.clusterName}
+                        onClickCancel={this.onClickHideNonCascadeDeletePopup}
+                        onClickDelete={this.onClickNonCascadeDelete}
                     />
                 )
             }
