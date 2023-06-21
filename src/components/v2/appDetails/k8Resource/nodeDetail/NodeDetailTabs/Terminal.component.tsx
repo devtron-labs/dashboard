@@ -13,7 +13,7 @@ import {
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import { AppDetails, AppType, DeploymentAppType, Options, TerminalComponentProps } from '../../../appDetails.type'
+import { AppType, Options, TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'

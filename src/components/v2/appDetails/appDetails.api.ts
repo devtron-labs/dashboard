@@ -1,5 +1,5 @@
 import { Routes } from '../../../config/constants'
-import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
@@ -34,13 +34,12 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
 
     const { appName, environmentName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
     const { group, version, kind, name } = nodeDetails
+    const applicationObject = deploymentAppType == DeploymentAppType.argo_cd ? `${appName}-${environmentName}` : appName
     
     const data = {
         appId : appType == AppType.DEVTRON_APP
         ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-        : getAppId(clusterId, namespace, deploymentAppType == DeploymentAppType.argo_cd
-            ? `${appName}-${environmentName}`
-            : appName,),
+        : getAppId(clusterId, namespace, applicationObject),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {

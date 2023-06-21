@@ -1,5 +1,5 @@
 import { Routes } from '../../../../../config';
-import { get, post, put } from '@devtron-labs/devtron-fe-common-lib';
+import { post, put } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
@@ -75,17 +75,13 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
-
+    const applicationObject =
+        appDetails.deploymentAppType == DeploymentAppType.argo_cd ? `${appDetails.appName}` : appDetails.appName
+    
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-            : getAppId(
-                  appDetails.clusterId,
-                  appDetails.namespace,
-                  appDetails.deploymentAppType == DeploymentAppType.argo_cd
-                      ? `${appDetails.appName}`
-                      : appDetails.appName,
-              )
+            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
 
     const requestBody = {
         appId: appId,
@@ -147,13 +143,11 @@ export const getLogsURL = (
     clusterId?: number,
     namespace?: string,
 ) => {
-    //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
+    const applicationObject = ad.deploymentAppType == DeploymentAppType.argo_cd ? `${ad.appName}` : ad.appName
     const appId =
         ad.appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
-            : getAppId(ad.clusterId, ad.namespace, ad.deploymentAppType == DeploymentAppType.argo_cd
-                ? `${ad.appName}`
-                : ad.appName)
+            : getAppId(ad.clusterId, ad.namespace, applicationObject)
 
     let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
 
