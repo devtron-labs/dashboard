@@ -458,18 +458,19 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-              <ButtonWithLoader
+                <ButtonWithLoader
                     rootClassName="flex cta h-36"
                     onClick={this.createApp}
                     data-testid={`${
-                      this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
+                        this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
                     }-${this.props.isJobView ? 'job' : 'app'}-button-on-drawer`}
                     disabled={this.state.createAppLoader}
                     isLoading={this.state.createAppLoader}
                     loaderColor="white"
                 >
-                    {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}
-                    {this.props.isJobView ? 'Job' : 'App'}
+                    {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
+                        this.props.isJobView ? 'Job' : 'App'
+                    }`}
                 </ButtonWithLoader>
             </div>
         )
