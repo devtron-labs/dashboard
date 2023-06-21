@@ -63,6 +63,7 @@ export interface CDMaterialProps {
     appReleaseTagNames?: string[]
     setAppReleaseTagNames?: (appReleaseTags: string[]) => void
     tagsEditable?: boolean
+    hideHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
 }
 

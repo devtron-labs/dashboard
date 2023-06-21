@@ -234,6 +234,7 @@ export default function CDDetails() {
                                 deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
                                 appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
                                 tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
+                                hideHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
                             />
                         </Route>
                     ) : !envId ? (
@@ -266,6 +267,7 @@ export const TriggerOutput: React.FC<{
     deploymentHistoryResult: History[]
     appReleaseTags: string[]
     tagsEditable: boolean
+    hideHardDelete: boolean
 }> = ({
     fullScreenView,
     syncState,
@@ -278,6 +280,7 @@ export const TriggerOutput: React.FC<{
     deploymentHistoryResult,
     appReleaseTags,
     tagsEditable,
+    hideHardDelete,
 }) => {
         const { appId, triggerId, envId, pipelineId } = useParams<{
             appId: string
@@ -415,6 +418,7 @@ export const TriggerOutput: React.FC<{
                 ciPipelineId = {triggerDetailsResult?.result?.ciPipelineId}
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
+                hideHardDelete={hideHardDelete}
             />
         </>
     )
@@ -436,6 +440,7 @@ const HistoryLogs: React.FC<{
     ciPipelineId: number
     appReleaseTags: string[]
     tagsEditable: boolean
+    hideHardDelete: boolean
 }> = ({
     triggerDetails,
     loading,
@@ -451,6 +456,7 @@ const HistoryLogs: React.FC<{
     ciPipelineId,
     appReleaseTags,
     tagsEditable,
+    hideHardDelete,
 }) => {
         let { path } = useRouteMatch()
         const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -567,8 +573,14 @@ const HistoryLogs: React.FC<{
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                         ciPipelineId={triggerDetails.ciPipelineId}
                                         artifactId={triggerDetails.artifactId}
-                                        imageComment={triggerDetails.imageComment}
-                                        imageReleaseTags={triggerDetails.imageReleaseTags}
+                                        imageComment={
+                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                                .imageComment
+                                        }
+                                        imageReleaseTags={
+                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                                .imageReleaseTags
+                                        }
                                         getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
                                         type={HistoryComponentType.CD}
                                     />

@@ -18,6 +18,7 @@ export interface DeploymentHistoryResultObject {
     cdWorkflows: History[]
     appReleaseTagNames: string[]
     tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
 }
 
 export async function getTriggerHistory(
@@ -49,7 +50,8 @@ export async function getTriggerHistory(
                     artifactId: deploymentHistory?.ci_artifact_id
                 })),
                 appReleaseTagNames:result.appReleaseTagNames,
-                tagsEditable: result.tagsEditable
+                tagsEditable: result.tagsEditable,
+                hideImageTaggingHardDelete: result.hideHardDelete
             },
             code,
             status,

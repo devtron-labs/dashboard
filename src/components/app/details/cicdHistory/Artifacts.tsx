@@ -34,6 +34,7 @@ export default function Artifacts({
     type,
     appReleaseTagNames,
     tagsEditable,
+    hideHardDelete,
 }: ArtifactType) {
     const { triggerId, buildId } = useParams<{
         triggerId: string
@@ -201,6 +202,7 @@ export const CIListItem = ({
     imageReleaseTags,
     appReleaseTagNames,
     tagsEditable,
+    hideHardDelete,
 }: CIListItemType) => {
     return (
         <>
@@ -242,6 +244,7 @@ export const CIListItem = ({
                         imageReleaseTags={imageReleaseTags}
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
+                        hideHardDelete={hideHardDelete}
                     />
                 )}
             </div>

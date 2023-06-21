@@ -80,6 +80,7 @@ export interface ArtifactType {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    hideHardDelete?: boolean
 }
 
 export interface CopyTippyWithTextType {
@@ -99,6 +100,7 @@ export interface CIListItemType {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    hideHardDelete?: boolean
 }
 
 export interface ImageComment {

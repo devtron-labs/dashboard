@@ -677,6 +677,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 toggleCardMode={this.toggleCardMode}
                                 setTagsEditable={this.props.setTagsEditable}
                                 forceReInit={true}
+                                hideHardDelete={this.props.hideHardDelete}
                             />
                         </div>
                     </div>
