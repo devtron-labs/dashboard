@@ -337,6 +337,7 @@ export default function ChartValuesEditor({
             className={`code-editor-container ${
                 showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
             }`}
+            data-testid="code-editor-container"
         >
             {comparisonView && (
                 <div className="code-editor__header chart-values-view__diff-view-header">
@@ -345,7 +346,7 @@ export default function ChartValuesEditor({
                             <span>Deployed manifest</span>
                         ) : (
                             <>
-                                <span style={{ width: '90px' }}>Compare with: </span>
+                                <span style={{ width: '90px' }} data-testid="compare-with-heading">Compare with: </span>
                                 <CompareWithDropdown
                                     deployedChartValues={valuesForDiffState.deployedChartValues}
                                     defaultChartValues={valuesForDiffState.defaultChartValues}
