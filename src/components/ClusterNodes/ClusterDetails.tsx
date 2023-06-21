@@ -542,7 +542,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         return (
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
-                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-100px'
+                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-150'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
                 } ${column.value === 'status' && 'w-180'}`}
@@ -553,7 +553,10 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
-                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />}
+                {column.isSortingAllowed ? sortByColumn.value === column.value ? (
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC && 'desc' } ml-4`}></span>
+                ) : (
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>) : <></>}
             </div>
         )
     }
@@ -665,7 +668,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                             className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
                                 column.value === 'status'
                                     ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
-                                    : 'w-100px'
+                                    : 'w-150'
                             }`}
                         >
                             {renderNodeRow(column, nodeData)}

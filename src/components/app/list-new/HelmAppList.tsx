@@ -353,6 +353,11 @@ export default function HelmAppList({
         sortApplicationList('appNameSort')
     }
 
+    function sortByLastDeployed(e) {
+        e.preventDefault()
+        sortApplicationList('lastDeployedSort')
+    }
+
     function renderHeaders() {
         return (
             <div className="app-list__header">
@@ -365,7 +370,7 @@ export default function HelmAppList({
                             {sortBy == SortBy.APP_NAME ? (
                                 <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
                             ) : (
-                                <span className="sort-col ml-4"></span>
+                                <span className="sort-col dc__opacity-0_5 ml-4"></span>
                             )}
                         </button>
                     )}
@@ -393,7 +398,14 @@ export default function HelmAppList({
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.LastDeployedAt}</span>
+                    <button className="app-list__cell-header flex" onClick={sortByLastDeployed}>
+                        {APP_LIST_HEADERS.LastDeployedAt}
+                        {sortBy == SortBy.LAST_DEPLOYED ? (
+                            <span className={`sort ${sortOrder == OrderBy.DESC ? 'sort-up' : ''} ml-4`}></span>
+                        ) : (
+                            <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                        )}
+                    </button>
                 </div>
             </div>
         )

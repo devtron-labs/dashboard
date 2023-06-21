@@ -95,18 +95,16 @@ export class AppListView extends Component<AppListViewProps> {
                         </div>
                         <div className="app-list__cell app-list__cell--name  ">
                             <button
-                                className="app-list__cell-header flex  dc__visible-hover dc__visible-hover--parent  "
+                                className="app-list__cell-header flex"
                                 onClick={this.sortByAppName}
                                 data-testid="appname"
                             >
                                 {APP_LIST_HEADERS.AppName}
-
-                                <span
-                                    data-testid="sort-app-name-list"
-                                    className={` sort ${icon} ml-4 dc__visible-hover--child ${
-                                        this.props.sortRule.key === SortBy.APP_NAME ? 'dc__visible' : ''
-                                    } `}
-                                ></span>
+                                {this.props.sortRule.key === SortBy.APP_NAME ? (
+                                    <span data-testid="sort-app-name-list" className={` sort ${icon} ml-4`}></span>
+                                ) : (
+                                    <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                                )}
                             </button>
                         </div>
                         {this.props.isArgoInstalled && (
@@ -148,11 +146,11 @@ export class AppListView extends Component<AppListViewProps> {
                             >
                                 {APP_LIST_HEADERS.LastDeployedAt}
 
-                                <span
-                                    className={` sort ${icon} ml-4  dc__visible-hover--child${
-                                        this.props.sortRule.key === SortBy.LAST_DEPLOYED ? 'dc__visible' : ''
-                                    } `}
-                                ></span>
+                                {this.props.sortRule.key === SortBy.LAST_DEPLOYED ? (
+                                    <span data-testid="sort-app-name-list" className={` sort ${this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                                ) : (
+                                    <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                                )}
                             </button>
                         </div>
                         <div className="app-list__cell app-list__cell--action"></div>

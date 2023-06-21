@@ -651,7 +651,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {columnName}
                     </span>
                 </Tippy>
-                <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />
+                {sortByColumnName === sortingFieldName ? (
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC && 'desc' } ml-4`}></span>
+                ) : (
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>)}
             </div>
         )
     }
