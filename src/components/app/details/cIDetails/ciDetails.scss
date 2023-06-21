@@ -15,6 +15,10 @@
         width: 100%;
         background: var(--N000);
 
+        .add-image-button {
+            margin-left: 52px;
+        }
+
 
         &.ci-artifact--report {
             svg path {
@@ -127,8 +131,8 @@
 
 .ci-artifacts-grid {
     display: grid;
-    grid-template-columns: 56px 1fr;
-    grid-column-gap: 8px;
+    grid-template-columns: 40px 1fr;
+    grid-column-gap: 12px;
 }
 
 .trigger-outputs-container {

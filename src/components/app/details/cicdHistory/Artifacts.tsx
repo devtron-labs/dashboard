@@ -205,8 +205,8 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children, 
             data-testid="hover-on-report-artifact"
         >
             <div className="ci-artifacts-grid flex left">
-                <div className="bcn-1 flex br-4 w-56 h-100">
-                    <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
+                <div className="bcn-1 flex br-4 icon-dim-40">
+                    <img src={type === 'artifact' ? docker : folder} className="icon-dim-20" />
                 </div>
                 {children}
             </div>
