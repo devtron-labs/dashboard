@@ -1930,6 +1930,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     onClickCDMaterial={onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
+                    ciPipelineId = {node?.connectingCiPipelineId}
+                    appReleaseTagNames = {appReleaseTags}
+                    setAppReleaseTagNames = {setAppReleaseTagsNames}
+                    tagsEditable = {tagsEditableVal}
+                    setTagsEditable = {setTagsEditableVal}
                 />
             )
         }
