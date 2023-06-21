@@ -312,8 +312,8 @@ export default function BulkCDTrigger({
                         >
                             {app.name}
                             {(app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
-                                <span className="flex left cy-7 fw-4 fs-12">
-                                    <Error className="icon-dim-12 warning-icon-y7 mr-4" />
+                                <span className={`flex left fw-4 fs-12 ${tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'}`}>
+                                    <Error className={`icon-dim-12 mr-4 ${tagNotFoundWarningsMap.has(app.appId) ? 'alert-icon-r5-imp' : 'warning-icon-y7'}`} />
                                     {app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}
                                 </span>
                             )}
