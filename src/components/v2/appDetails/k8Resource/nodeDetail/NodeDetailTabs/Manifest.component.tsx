@@ -103,15 +103,10 @@ function ManifestComponent({
             ])
                 .then((response) => {
                     let _manifest: string
-                    if (
-                        appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-                        appDetails.deploymentAppType === DeploymentAppType.helm ||
-                        appDetails.deploymentAppType === DeploymentAppType.argo_cd ||
-                        isResourceBrowserView
-                    ) {
-                        _manifest = JSON.stringify(response[0]?.result?.manifest)
-                        setDesiredManifest(response[1]?.result?.manifest || '')
-                    }
+
+                    _manifest = JSON.stringify(response[0]?.result?.manifest)
+                    setDesiredManifest(response[1]?.result?.manifest || '')
+
                     if (_manifest) {
                         setManifest(_manifest)
                         setActiveManifestEditorData(_manifest)
