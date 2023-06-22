@@ -6,6 +6,8 @@ import {
     multiSelectStyles,
     noop,
     Progressing,
+    ReleaseTag,
+    ImageComment,
     showError,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -200,6 +202,17 @@ export default function BulkCDTrigger({
             return <Progressing pageLoader />
         }
 
+        const updateCurrentAppMaterial = (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => {
+            let updatedCurrentApp = selectedApp
+            updatedCurrentApp?.material.forEach((mat)=>{
+                if(mat.id === matId){
+                    if(releaseTags)mat.imageReleaseTags = releaseTags
+                    if(imageComment)mat.imageComment = imageComment
+                }
+            })
+            updatedCurrentApp && setSelectedApp(updatedCurrentApp)
+        }
+
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         uniqueReleaseTags.sort((a, b) => a.localeCompare(b))
         let tagsList = ['latest']
@@ -370,6 +383,7 @@ export default function BulkCDTrigger({
                             tagsEditable={currentAppTagsEditable}
                             setTagsEditable={setCurrentAppTagsEditableWrapper}
                             ciPipelineId={_currentApp.ciPipelineId}
+                            updateCurrentAppMaterial={updateCurrentAppMaterial}
                         />
                     )}
                 </div>

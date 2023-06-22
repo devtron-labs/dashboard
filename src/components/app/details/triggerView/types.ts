@@ -10,6 +10,8 @@ import {
     UserApprovalConfigType,
     CIBuildConfigType,
     DockerConfigOverrideType,
+    ReleaseTag,
+    ImageComment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from "react";
 
@@ -65,6 +67,7 @@ export interface CDMaterialProps {
     tagsEditable?: boolean
     hideHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
+    updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
 }
 
 export enum DeploymentWithConfigType {

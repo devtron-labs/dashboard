@@ -678,6 +678,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 setTagsEditable={this.props.setTagsEditable}
                                 forceReInit={true}
                                 hideHardDelete={this.props.hideHardDelete}
+                                updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
                             />
                         </div>
                     </div>
