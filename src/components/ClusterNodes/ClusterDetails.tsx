@@ -655,7 +655,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         >
                             <div className="w-100 flex left">
                                 <div className="w-250 pr-4 dc__ellipsis-right">
-                                    <NavLink to={`${match.url}/${nodeData[column.value]}`} >
+                                    <NavLink data-testid="cluster-node-link" to={`${match.url}/${nodeData[column.value]}`} >
                                         {nodeData[column.value]}
                                     </NavLink>
                                 </div>

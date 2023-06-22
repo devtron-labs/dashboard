@@ -217,6 +217,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                             className={`mb-6 flexbox fs-13 tab-hover${
                                 selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
                             }`}
+                            data-testid="node-details-terminal-tab"
                         >
                             <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
                             {NODE_DETAILS_TABS.debug}

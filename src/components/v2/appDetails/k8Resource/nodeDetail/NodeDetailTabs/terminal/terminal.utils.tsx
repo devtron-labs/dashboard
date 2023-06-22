@@ -112,11 +112,11 @@ const connectionButton = (connectData: ConnectionButtonType) => {
         >
             {connectData.connectTerminal ? (
                 <span className="flex mr-8">
-                    <Disconnect className="icon-dim-16 mr-4 cursor" onClick={connectData.closeTerminalModal} />
+                    <Disconnect className="icon-dim-16 mr-4 cursor" data-testid="node-details-terminal-disconnect" onClick={connectData.closeTerminalModal} />
                 </span>
             ) : (
                 <span className="flex mr-8">
-                    <Connect className="icon-dim-16 mr-4 cursor" onClick={connectData.reconnectTerminal} />
+                    <Connect className="icon-dim-16 mr-4 cursor" data-testid="node-details-terminal-connect" onClick={connectData.reconnectTerminal} />
                 </span>
             )}
         </Tippy>
