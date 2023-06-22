@@ -462,7 +462,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         {isSuperAdmin && (
                             <>
                                 <span className="dc__divider ml-12 h-16"></span>
-                                <div className="flex left cursor pl-12 pr-12 cb-5" onClick={headerTerminalIcon}>
+                                <div className="flex left cursor pl-12 pr-12 cb-5" data-testid="node-list-header-terminal" onClick={headerTerminalIcon}>
                                     <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
                                     <span className="h-20">Terminal</span>
                                 </div>

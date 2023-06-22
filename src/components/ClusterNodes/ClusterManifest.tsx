@@ -159,10 +159,11 @@ export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeleteP
                         tabIndex={3}
                         className="cta cancel sso__warn-button"
                         onClick={closePopupDoNothing}
+                        data-testid="terminate-existing-pod-cancel-button"
                     >
                         {ManifestMessaging.CANCEL}
                     </button>
-                    <button className="cta sso__warn-button btn-confirm" onClick={forceDelete}>
+                    <button className="cta sso__warn-button btn-confirm" data-testid="terminate-existing-pod-button" onClick={forceDelete}>
                         {ManifestMessaging.TERMINATE_EXISTING_POD}
                     </button>
                 </div>
