@@ -38,6 +38,7 @@ export const enum DeleteComponentsName {
     SlackConfigurationTab = 'slack',
     SesConfigurationTab = 'ses',
     SMTPConfigurationTab = 'smtp',
+    WebhookConfigurationTab = 'webhook',
     Project = 'project',
     GitRepo = 'Repo',
 }
