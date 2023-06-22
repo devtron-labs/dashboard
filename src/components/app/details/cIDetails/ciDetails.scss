@@ -7,19 +7,9 @@
     display: flex;
 
     .ci-artifact {
-        border: 1px solid var(--N200);
-        border-radius: 4px;
-        padding: 12px;
-        height: 72px;
-        max-width: 800px;
-        width: 100%;
-        background: var(--N000);
-
         .add-image-button {
             margin-left: 52px;
         }
-
-
         &.ci-artifact--report {
             svg path {
                 fill: currentColor;

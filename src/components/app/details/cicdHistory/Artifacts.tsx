@@ -225,7 +225,7 @@ export const CIListItem = ({
                 </div>
             )}
             <div
-                className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card ${
+                className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card bcn-0 br-4 dc__border p-12 w-100 dc__mxw-800 ${
                     ApprovalInfoTippy && userApprovalMetadata ? 'dc__no-top-radius dc__no-top-border' : ''
                 }`}
                 data-testid="hover-on-report-artifact"
