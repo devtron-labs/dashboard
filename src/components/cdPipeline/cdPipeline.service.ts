@@ -22,15 +22,16 @@ export function updateCDPipeline(request) {
     return post(URL, request);
 }
 
-export function deleteCDPipeline(request, force?: boolean) {
+export function deleteCDPipeline(request, force?: boolean, cascadeDelete?: boolean){
     let URL;
-    if(force){
-     URL = `${Routes.CD_CONFIG_PATCH}?force=${force}`;
+    if (force) {
+        URL = `${Routes.CD_CONFIG_PATCH}?force=${force}`
+    } else if (!cascadeDelete) {
+        URL = `${Routes.CD_CONFIG_PATCH}?cascade=${cascadeDelete}`
+    } else {
+        URL = `${Routes.CD_CONFIG_PATCH}`
     }
-    else{
-        URL = `${Routes.CD_CONFIG_PATCH}`;
-    }
-    return post(URL, request);
+    return post(URL, request)
 }
 
 export function getCDPipeline(appId: string, pipelineId: string) {
