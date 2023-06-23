@@ -141,7 +141,7 @@ export function getAppFilters() {
 
 export function getEnvironmentListMinPublic(includeAllowedDeploymentAppType?:boolean) {
     return get(`${Routes.ENVIRONMENT_LIST_MIN}?auth=false${
-      includeAllowedDeploymentAppType ? '&isDeploymentTypeParam=true' : ''
+      includeAllowedDeploymentAppType ? '&isDeploymentType=true' : ''
   }`)
 }
 
