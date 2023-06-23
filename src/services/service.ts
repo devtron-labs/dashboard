@@ -139,8 +139,10 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
-export function getEnvironmentListMinPublic() {
-    return get(`${Routes.ENVIRONMENT_LIST_MIN}?auth=false`)
+export function getEnvironmentListMinPublic(includeAllowedDeploymentAppType?:boolean) {
+    return get(`${Routes.ENVIRONMENT_LIST_MIN}?auth=false${
+      includeAllowedDeploymentAppType ? '&isDeploymentTypeParam=true' : ''
+  }`)
 }
 
 export function getClusterListMin() {
