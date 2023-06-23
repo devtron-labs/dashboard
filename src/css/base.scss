@@ -2392,6 +2392,10 @@ textarea,
     width: 0px;
 }
 
+.mw-none {
+  min-width: 0px !important;
+}
+
 .mw-4 {
     min-width: 4px !important;
 }
@@ -2824,6 +2828,10 @@ textarea,
 
 .mxh-210 {
     max-height: 210px;
+}
+
+.mxh-300 {
+  max-height: 300px;
 }
 
 // Height in percentage
@@ -3369,4 +3377,10 @@ textarea::placeholder {
         background: #eee;
         color: var(--B700);
     }
+}
+
+.line_separator {
+    width: 1px;
+    height: 16px; 
+    background: var(--terminal-bg);
 }

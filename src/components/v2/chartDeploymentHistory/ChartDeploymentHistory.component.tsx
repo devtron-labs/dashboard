@@ -296,7 +296,7 @@ function ChartDeploymentHistory({
                                         }`}
                                     ></div>
                                     <div className="flex column left dc__ellipsis-right">
-                                        <div className="cn-9 fs-14">
+                                        <div className="cn-9 fs-14" data-testid = "chart-deployment-time">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
                                                 Moment12HourFormat,
                                             )}
@@ -545,7 +545,7 @@ function ChartDeploymentHistory({
                     renderCodeEditor()}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && VirtualHistoryArtifact && (
                     <VirtualHistoryArtifact
-                        titleName={helmAppPackageName}
+                        titleName={`${helmAppPackageName}.tgz`}
                         params={paramsData}
                         status={deployment.status}
                     />
@@ -569,7 +569,7 @@ function ChartDeploymentHistory({
                             Deployed at
                         </div>
                         <div className="flex left">
-                            <time className="cn-7 fs-12">
+                            <time className="cn-7 fs-12" data-testid = "deployment-history-time">
                                 {moment(new Date(deployment.deployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(
                                     Moment12HourFormat,
                                 )}
@@ -577,7 +577,7 @@ function ChartDeploymentHistory({
                             {deployment?.deployedBy && (
                                 <div className="flex">
                                     <div className="dc__bullet mr-6 ml-6"></div>
-                                    <div className="cn-7 fs-12 mr-12">{deployment.deployedBy}</div>
+                                    <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
                                 </div>
                             )}
                             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
@@ -609,6 +609,7 @@ function ChartDeploymentHistory({
                             <button
                                 className="flex cta deploy-button"
                                 onClick={() => setShowRollbackConfirmation(true)}
+                                data-testid = "re-deployment-button"
                             >
                                 <DeployButton className="deploy-button-icon" />
                                 <span className="ml-4">Deploy</span>
@@ -671,7 +672,7 @@ function ChartDeploymentHistory({
                         >
                             Cancel
                         </button>
-                        <button className="flex cta deploy-button" onClick={handleDeployClick} disabled={deploying}>
+                        <button className="flex cta deploy-button" onClick={handleDeployClick} disabled={deploying} data-testid = "re-deployment-dialog-box-button">
                             {deploying ? (
                                 <Progressing />
                             ) : (
@@ -709,7 +710,7 @@ function ChartDeploymentHistory({
                     <span className="pl-16 pr-16 dc__uppercase" data-testid="deployment-history-deployments-heading">
                         Deployments
                     </span>
-                    <div className="flex column top left" style={{ overflowY: 'auto' }}>
+                    <div className="flex column top left" style={{ overflowY: 'auto' }} data-testid = "previous-deployments-list">
                         {renderDeploymentCards()}
                     </div>
                 </div>

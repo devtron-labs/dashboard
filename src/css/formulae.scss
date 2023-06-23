@@ -264,7 +264,7 @@ $color-suffix: 00;
         @include cta(white, var(--N700), var(--N200));
 
         &:hover {
-            @include cta(white, var(--N700), var(--N700));
+            @include cta(white, var(--N700), var(--N300));
         }
 
         &:active,

@@ -3,6 +3,7 @@ import { components } from 'react-select';
 import { validateEmail } from '../common';
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
 import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
@@ -33,9 +34,9 @@ export const multiSelectStyles = {
     multiValue: (base, state) => {
         return ({
             ...base,
-            border: (state.data.data.dest !== "slack") && !validateEmail(state.data.label) ? `1px solid var(--R500)` : `1px solid var(--N200)`,
+            border: (state.data.data.dest !== "slack") && (state.data.data.dest !== "webhook") && !validateEmail(state.data.label) ? `1px solid var(--R500)` : `1px solid var(--N200)`,
             borderRadius: `4px`,
-            background: (state.data.data.dest !== "slack") && !validateEmail(state.data.label) ? 'var(--R100)' : 'var(--N000)',
+            background: (state.data.data.dest !== "slack") && (state.data.data.dest !== "webhook") && !validateEmail(state.data.label) ? 'var(--R100)' : 'var(--N000)',
             padding: `2px`,
             textTransform: `lowercase`,
             fontSize: `12px`,
@@ -70,6 +71,7 @@ export function MultiValueLabel(props) {
         {item.data.dest === "" && validateEmail(props.children) ? <Email className="icon-dim-20 mr-5" /> : null}
         {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
         {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
+        {item.data.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
         {props.children}
     </components.MultiValueLabel>
 }
@@ -92,7 +94,8 @@ export const MultiValueContainer = ({ validator, ...props }) => {
     else {
         return <components.MultiValueContainer {...{ data, innerProps, selectProps }} >
             <div className="flex fs-12 ml-4">
-                <Slack className="icon-dim-20 mr-5" />
+                {data.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
+                {data.data.dest === "webhook" && <Webhook className="icon-dim-20 mr-5" /> }
                 <div className="cn-9">{label}</div>
             </div>
             {children[1]}
@@ -109,7 +112,8 @@ export function Option(props) {
     }
     else return <components.Option {...props} >
         {item.data.dest === "ses" || item.data.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
-        {item.data.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
+        {item.data.dest === "slack" && <Slack className="icon-dim-20 mr-5" /> }
+        {item.data.dest === "webhook" && <Webhook className="icon-dim-20 mr-5" /> }
         {props.children}
     </components.Option>
 }
@@ -117,7 +121,7 @@ export function Option(props) {
   export const renderPipelineTypeIcon = (row) => {
       if (row.isVirtualEnvironment) {
           return <Rocket className="icon-dim-24" />
-      } else if (row.type === 'CI') {
+      } else if (row.pipelineType === 'CI' || row.type === 'CI') {
           return <CI className="icon-dim-20 dc__flip" />
       } else {
           return <CD className="icon-dim-20 dc__flip" />

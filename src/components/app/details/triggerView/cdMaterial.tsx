@@ -262,7 +262,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                         <div className="fw-4 fs-11 lh-16 flex">
                             <World className="icon-dim-16 mr-4 scg-5" />
-                            {this.props.isVirtualEnvironment ? 'Last deployed ' : 'Active '} on
+                            {mat?.isVirtualEnvironment ? 'Last deployed ' : 'Active '} on
                             <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
                         </div>
                     </span>

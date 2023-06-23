@@ -278,6 +278,7 @@ function ChartForm({
                 required: true,
                 validators: [
                   { error: 'Name is required', regex: /^.*$/ },
+                  {error:"Min 3 chars, spaces not allowed ",regex:/^.\S{2,}$/}
               ]
             },
             url: {
@@ -471,7 +472,7 @@ function ChartForm({
                     onChange={toggleIsPublicChartType}
                 >
                     {CHART_REPO_LABEL.map(({ label, value }) => (
-                        <RadioGroupItem value={value}>
+                        <RadioGroupItem dataTestId={`${label}`} value={value}>
                             <span className={`dc__no-text-transform ${chartRepoType === value ? 'fw-6' : 'fw-4'}`}>
                                 {label}
                             </span>
@@ -536,7 +537,12 @@ function ChartForm({
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
-                <button data-testid="chart-repo-cancel-button" className="cta cancel" type="button" onClick={handleCancelClick}>
+                <button
+                    data-testid="chart-repo-cancel-button"
+                    className="cta cancel"
+                    type="button"
+                    onClick={handleCancelClick}
+                >
                     Cancel
                 </button>
                 <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
