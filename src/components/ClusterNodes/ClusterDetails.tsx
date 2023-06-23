@@ -537,6 +537,24 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         )
     }
 
+    const renderSortDirection = (column: ColumnMetadataType) : JSX.Element => {
+        if(column.isSortingAllowed) {
+            if(sortByColumn.value === column.value) {
+                return (
+                    <>
+                        <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
+                    </>
+                )
+            } else {
+                return (
+                    <>
+                        <span className="sort-column dc__opacity-0_5 ml-4"></span>
+                    </>
+                )
+            }
+        }
+    }
+
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
         const nodeColumnClassName = fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
         return (
@@ -553,10 +571,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
-                {column.isSortingAllowed ? sortByColumn.value === column.value ? (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
-                ) : (
-                    <span className="sort-column dc__opacity-0_5 ml-4"></span>) : <></>}
+                {renderSortDirection(column)}
             </div>
         )
     }
