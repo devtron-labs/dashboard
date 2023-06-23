@@ -90,6 +90,15 @@ export interface DeploymentAppSelectorType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
+export interface DeploymentAppRadioGroupType {
+    isDisabled: boolean
+    deploymentAppType: string
+    handleOnChange?: (event) => void
+    allowedDeploymentTypes?: DeploymentAppTypes[]
+    rootClassName?: string
+    isFromCDPipeline?: boolean
+}
+
 export interface ChartProjectSelectorType {
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void

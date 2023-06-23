@@ -73,6 +73,7 @@ import {
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -1197,60 +1198,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <div className="cd-pipeline__deployment-type mt-16">
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-                <RadioGroup
-                    value={this.state.pipelineConfig.deploymentAppType ?? DeploymentAppType.Helm}
-                    name="deployment-app-type"
-                    onChange={this.handleDeploymentAppTypeChange}
-                    disabled={!!this.props.match.params.cdPipelineId}
-                    className={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? 'bcb-5' : ''}`}
-                >
-                    <ConditionalWrap
-                        condition={
-                            this.state.allowedDeploymentTypes.length &&
-                            this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1
-                        }
-                        wrap={(children) => (
-                            <Tippy
-                                className="default-tt w-200"
-                                arrow={false}
-                                content="Deployment to this environment is not allowed via Helm"
-                            >
-                                <div>{children}</div>
-                            </Tippy>
-                        )}
-                    >
-                        <RadioGroupItem
-                            dataTestId="helm-deployment-type-button"
-                            value={DeploymentAppType.Helm}
-                            disabled={this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                        >
-                            Helm
-                        </RadioGroupItem>
-                    </ConditionalWrap>
-                    <ConditionalWrap
-                        condition={
-                            this.state.allowedDeploymentTypes.length &&
-                            this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1
-                        }
-                        wrap={(children) => (
-                            <Tippy
-                                className="default-tt w-200"
-                                arrow={false}
-                                content="Deployment to this environment is not allowed via GitOps"
-                            >
-                                <div>{children}</div>
-                            </Tippy>
-                        )}
-                    >
-                        <RadioGroupItem
-                            dataTestId="gitOps-deployment-type-button"
-                            value={DeploymentAppType.GitOps}
-                            disabled={this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                        >
-                            GitOps
-                        </RadioGroupItem>
-                    </ConditionalWrap>
-                </RadioGroup>
+                <DeploymentAppRadioGroup
+                    isDisabled={!!this.props.match.params.cdPipelineId}
+                    deploymentAppType={this.state.pipelineConfig.deploymentAppType ?? DeploymentAppType.Helm}
+                    handleOnChange={this.handleDeploymentAppTypeChange}
+                    allowedDeploymentTypes={this.state.allowedDeploymentTypes}
+                    rootClassName={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? 'bcb-5' : ''}`}
+                    isFromCDPipeline={true}
+                />
             </div>
         )
     }
