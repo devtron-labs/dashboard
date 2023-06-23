@@ -554,7 +554,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
                 {column.isSortingAllowed ? sortByColumn.value === column.value ? (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC && 'desc' } ml-4`}></span>
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
                 ) : (
                     <span className="sort-column dc__opacity-0_5 ml-4"></span>) : <></>}
             </div>
