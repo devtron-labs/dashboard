@@ -469,7 +469,7 @@ const HistoryLogs: React.FC<{
         const paramsData = {
         appId,
         envId,
-        appName: triggerDetails.helmPackageName,
+        appName: `${triggerDetails.helmPackageName}.tgz`,
         workflowId: triggerDetails.id,
     }
 
@@ -563,7 +563,7 @@ const HistoryLogs: React.FC<{
                                 {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
                                     <VirtualHistoryArtifact
                                         status={triggerDetails.status}
-                                        titleName={triggerDetails.helmPackageName}
+                                        titleName={`${triggerDetails.helmPackageName}.tgz`}
                                         params={paramsData}
                                     />
                                 ) : (

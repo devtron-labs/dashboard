@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Td } from '../../common';
 import moment from 'moment';
-import { get, ServerErrors, showError, Progressing, ConfirmationDialog, ForceDeleteDialog, PopupMenu } from '@devtron-labs/devtron-fe-common-lib';
-import { Routes, URLS, ViewType, SERVER_MODE } from '../../../config';
+import { get, ServerErrors, showError, Progressing, ConfirmationDialog, ForceDeleteDialog, PopupMenu, ResponseType } from '@devtron-labs/devtron-fe-common-lib';
+import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config';
 import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
@@ -10,6 +10,9 @@ import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
+import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog';
+import { DeploymentAppType } from '../../v2/appDetails/appDetails.type';
+import AppStatus from '../../app/AppStatus';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
@@ -40,13 +43,14 @@ export function ChartDeploymentList({ chartId }) {
             <Progressing pageLoader={true} />
         </div>
     }
-    return <div className="white-card white-card--no-padding deployments">
-        <div className="chart-store-card__header">Deployments</div>
+    return <div className="white-card white-card--no-padding deployments" >
+        <div className="chart-store-card__header" data-testid="deployments-heading">Deployments</div>
         {installs.length !== 0 &&
-            <table className="deployments-table">
+            <table className="deployments-table" data-testid="deployments-table">
                 <thead className="deployment-table-header">
                     <tr>
                         <th>App name</th>
+                        <th>App Status</th>
                         <th>Environment</th>
                         <th>Deployed By</th>
                         <th>Deployed at</th>
@@ -62,14 +66,15 @@ export function ChartDeploymentList({ chartId }) {
     </div>
 }
 
-
-export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace, setView, fetchDeployments }) {
+export function DeploymentRow({ installedAppId, appName, status, deploymentAppType, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace, setView, fetchDeployments }) {
     const link = _buildAppDetailUrl();
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
     const [showForceDeleteDialog, setForceDeleteDialog] = useState(false)
     const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState("")
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState("")
+    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false);
+    const [clusterName, setClusterName] = useState<string>('');
 
     function setForceDeleteDialogData(serverError) {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
@@ -88,23 +93,27 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         }
     }
 
-    async function handleDelete(force) {
+    async function handleDelete(deleteAction: DELETE_ACTION) {
         setDeleting(true)
         try {
-            if (force === true) {
-                await deleteInstalledChart(Number(installedAppId), force)
-            } else {
-                await deleteInstalledChart(Number(installedAppId))
+            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), deploymentAppType === DeploymentAppType.argo_cd, deleteAction)
+            if (response.result.deleteResponse?.deleteInitiated) {
+                toast.success('Successfully deleted')
+                toggleConfirmation(false)
+                showNonCascadeDeleteDialog(false)
+                setForceDeleteDialog(false)
+                setView(ViewType.LOADING)
+                fetchDeployments()
+            } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                setClusterName(response.result.deleteResponse?.clusterName)
+                toggleConfirmation(false)
+                showNonCascadeDeleteDialog(true)
             }
-            toast.success('Successfully deleted');
-            toggleConfirmation(false)
-            setForceDeleteDialog(false)
-            setView(ViewType.LOADING)
-            fetchDeployments()
         }
         catch (err: any) {
-            if (!force && err.code != 403) {
-                toggleConfirmation(false);
+            if (deleteAction !== DELETE_ACTION.FORCE_DELETE && err.code != 403) {
+                toggleConfirmation(false)
+                showNonCascadeDeleteDialog(false)
                 setForceDeleteDialog(true);
                 setForceDeleteDialogData(err);
             } else {
@@ -115,6 +124,18 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             setDeleting(false);
         }
     }
+    
+    const onClickHideNonCascadeDeletePopup = () => {
+        showNonCascadeDeleteDialog(false)
+    }
+    
+    const onClickNonCascadeDelete = async() => {
+        showNonCascadeDeleteDialog(false)
+        await handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
+    }
+
+    const handleForceDelete = () => {handleDelete(DELETE_ACTION.FORCE_DELETE)}
+    const handleCascadeDelete = () => {handleDelete(DELETE_ACTION.DELETE)}
 
     const renderChartStatus = (status: string) => {
         if (status === 'Not Found') {
@@ -125,47 +146,78 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
 
     return (
         <>
-            <tr className="deployment-table-row" >
+            <tr className="deployment-table-row">
                 <Td to={link} className="app-detail">
-                    <div className="deployed-app-name dc__ellipsis-right" >{appName}</div>
-                    <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{
-                    renderChartStatus(status)
-                    }</div>
+                    <div className="deployed-app-name dc__ellipsis-right">{appName}</div>
                 </Td>
-                <Td to={link} className="dc__ellipsis-right">{environmentName}</Td>
-                <Td to={link} className="dc__ellipsis-right">{deployedBy}</Td>
-                <Td to={link} className="dc__ellipsis-right">{moment(deployedAt).fromNow()}</Td>
+                <Td to={link} className="dc__ellipsis-right">
+                    <AppStatus appStatus={status} />
+                </Td>
+                <Td to={link} className="dc__ellipsis-right">
+                    {environmentName}
+                </Td>
+                <Td to={link} className="dc__ellipsis-right">
+                    {deployedBy}
+                </Td>
+                <Td to={link} className="dc__ellipsis-right">
+                    {moment(deployedAt).fromNow()}
+                </Td>
                 <Td>
                     <PopupMenu autoClose>
                         <PopupMenu.Button isKebab>
                             <img src={dots} alt="" />
                         </PopupMenu.Button>
                         <PopupMenu.Body rootClassName="deployment-table-row__delete">
-                            <div className="flex left" onClick={e => toggleConfirmation(true)}><img src={trash} alt="delete" />Delete</div>
+                            <div className="flex left" onClick={(e) => toggleConfirmation(true)}>
+                                <img src={trash} alt="delete" />
+                                Delete
+                            </div>
                         </PopupMenu.Body>
                     </PopupMenu>
                 </Td>
             </tr>
-            {
-                confirmation && <ConfirmationDialog>
+            {confirmation && (
+                <ConfirmationDialog>
                     <ConfirmationDialog.Icon src={deleteIcon} />
-                    <ConfirmationDialog.Body title={`Delete app ‘${appName}’`} subtitle={`This will delete all resources associated with this application.`}>
+                    <ConfirmationDialog.Body
+                        title={`Delete app ‘${appName}’`}
+                        subtitle={`This will delete all resources associated with this application.`}
+                    >
                         <p className="mt-20">Deleted applications cannot be restored.</p>
                     </ConfirmationDialog.Body>
                     <ConfirmationDialog.ButtonGroup>
-                        <button className="cta cancel" type="button" onClick={e => toggleConfirmation(false)}>Cancel</button>
-                        <button className="cta delete" type="button" onClick={() => handleDelete(false)} disabled={deleting}>{deleting ? <Progressing /> : 'Delete'}</button>
+                        <button className="cta cancel" type="button" onClick={(e) => toggleConfirmation(false)}>
+                            Cancel
+                        </button>
+                        <button
+                            className="cta delete"
+                            type="button"
+                            onClick={handleCascadeDelete}
+                            disabled={deleting}
+                        >
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
-            }
-            {
-                showForceDeleteDialog && <ForceDeleteDialog
-                    onClickDelete={() => handleDelete(true)}
-                    closeDeleteModal={() => { toggleConfirmation(false); setForceDeleteDialog(false) }}
+            )}
+            {showForceDeleteDialog && (
+                <ForceDeleteDialog
+                    onClickDelete={handleForceDelete}
+                    closeDeleteModal={() => {
+                        toggleConfirmation(false)
+                        setForceDeleteDialog(false)
+                    }}
                     forceDeleteDialogTitle={forceDeleteDialogTitle}
                     forceDeleteDialogMessage={forceDeleteDialogMessage}
                 />
-            }
+            )}
+            {nonCascadeDeleteDialog && (
+                <ClusterNotReachableDailog
+                    clusterName={clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                />
+            )}
         </>
     )
 }

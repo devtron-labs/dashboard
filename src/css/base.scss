@@ -3402,6 +3402,12 @@ textarea::placeholder {
     }
 }
 
+.line_separator {
+    width: 1px;
+    height: 16px;
+    background: var(--terminal-bg);
+}
+
 .flex-wrap {
     flex-wrap: wrap;
 }

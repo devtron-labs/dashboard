@@ -1,9 +1,12 @@
 import { Routes } from '../../../../../config';
-import { get, post, put } from '@devtron-labs/devtron-fe-common-lib';
-import { AppDetails, AppType, DeploymentAppType, SelectedResourceType } from '../../appDetails.type'
+import { post, put } from '@devtron-labs/devtron-fe-common-lib';
+import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
+}
+export const generateDevtronAppIdentiferForK8sRequest = (clusterId: number, appId: number, envId: number) => {
+    return `${clusterId}|${appId}|${envId}`
 }
 
 export const getManifestResource = (
@@ -13,20 +16,10 @@ export const getManifestResource = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    if (
-        ad.appType === AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.helm ||
-        isResourceBrowserView
-    ) {
-        return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
-    }
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
-
-    return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${
-            cn.namespace || ''
-        }&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`,
-    )
+    const requestData = isResourceBrowserView
+        ? createResourceRequestBody(selectedResource)
+        : createBody(ad, podName, nodeType)
+    return post(Routes.MANIFEST, requestData)
 }
 
 export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
@@ -53,19 +46,7 @@ export const getEvent = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    if (
-        ad.appType === AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.helm ||
-        isResourceBrowserView
-    ) {
-        return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
-    }
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-    return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${
-            cn.namespace || ''
-        }&resourceUID=${cn.uid}&resourceName=${cn.name}`,
-    )
+    return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
 function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
@@ -94,23 +75,16 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
-
-    const getAppName = (): string => {
-        if (appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP) {
-            return `${appDetails.appName}-${appDetails.environmentName}`
-        } else {
-            return appDetails.appName
-        }
-    }
-
+    const applicationObject =
+        appDetails.deploymentAppType == DeploymentAppType.argo_cd ? `${appDetails.appName}` : appDetails.appName
+    
     const appId =
-        appDetails.deploymentAppType == DeploymentAppType.argo_cd
-            ? ''
-            : getAppId(appDetails.clusterId, appDetails.namespace, getAppName())
+        appDetails.appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
 
     const requestBody = {
         appId: appId,
-        clusterId: appDetails.clusterId,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -122,6 +96,8 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
+        appType: appDetails.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP,
+        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -129,18 +105,6 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     return requestBody
 }
 
-function getManifestResourceHelmApps(
-    ad: AppDetails,
-    nodeName: string,
-    nodeType: string,
-    isResourceBrowserView?: boolean,
-    selectedResource?: SelectedResourceType,
-) {
-    const requestData = isResourceBrowserView
-        ? createResourceRequestBody(selectedResource)
-        : createBody(ad, nodeName, nodeType)
-    return post(Routes.MANIFEST, requestData)
-}
 
 export const updateManifestResourceHelmApps = (
     ad: AppDetails,
@@ -174,45 +138,30 @@ export const getLogsURL = (
     nodeName: string,
     Host: string,
     container: string,
+    prevContainerLogs: boolean,
     isResourceBrowserView?: boolean,
     clusterId?: number,
     namespace?: string,
 ) => {
-    //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
-    let prefix = ''
-    if (process.env.NODE_ENV === 'production') {
-        prefix = `${location.protocol}//${location.host}` // eslint-disable-line
+    const applicationObject = ad.deploymentAppType == DeploymentAppType.argo_cd ? `${ad.appName}` : ad.appName
+    const appId =
+        ad.appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
+            : getAppId(ad.clusterId, ad.namespace, applicationObject)
+
+    let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+
+    if (isResourceBrowserView) {
+        logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
-        prefix = `${location.protocol}//${location.host}` // eslint-disable-line
-    }
-
-    if (
-        ad.appType === AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.helm ||
-        isResourceBrowserView
-    ) {
-        let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
-
-        if (isResourceBrowserView) {
-            logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
-        } else {
-            logsURL += `&appId=${getAppId(
-                ad.clusterId,
-                ad.namespace,
-                ad.deploymentAppType === DeploymentAppType.helm && ad.appType === AppType.DEVTRON_APP
-                    ? `${ad.appName}-${ad.environmentName}`
-                    : ad.appName,
-            )}`
+        const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        if (appType  === 0){
+            logsURL += `&namespace=${ad.namespace}`
         }
-        return `${logsURL}&follow=true&tailLines=500`
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
-    return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`
-}
-
-export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const _url = `api/v1/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
-    return get(_url)
+    return `${logsURL}&follow=true&tailLines=500`
 }
 
 export const createResource = (
