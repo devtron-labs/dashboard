@@ -4,7 +4,7 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import {AppMetaInfo} from "../../../app/types";
-import { DELETE_ACTION } from '../../../../config'
+import { DELETE_ACTION, DeploymentAppTypes } from '../../../../config'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -47,6 +47,7 @@ export interface ChartEnvironmentOptionType {
     clusterId?: number
     active?: boolean
     isVirtualEnvironment?: boolean
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ChartEnvironmentListType {
@@ -86,6 +87,7 @@ export interface DeploymentAppSelectorType {
     isUpdate: boolean
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ChartProjectSelectorType {

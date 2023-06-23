@@ -155,7 +155,7 @@ export async function fetchProjectsAndEnvironments(
 ): Promise<void> {
     Promise.allSettled([
         getTeamListMin(),
-        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin() : getEnvironmentListHelmApps(),
+        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin(true) : getEnvironmentListHelmApps(),
     ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
         const projectListRes: Teams[] = responses[0].value?.result || []
         const environmentListRes: EnvironmentListMinType[] = responses[1].value?.result || []

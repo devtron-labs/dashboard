@@ -13,7 +13,14 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
-import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    DeleteDialog,
+    EmptyState,
+    RadioGroup,
+    RadioGroupItem,
+    ConditionalWrap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -42,6 +49,7 @@ import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DeploymentAppTypes } from '../../../../config/constants'
 import { DELETE_ACTION } from '../../../../config'
+import Tippy from '@tippyjs/react'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -131,6 +139,7 @@ export const DeploymentAppSelector = ({
     isUpdate,
     handleDeploymentAppTypeSelection,
     isDeployChartView,
+    allowedDeploymentTypes
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -158,16 +167,59 @@ export const DeploymentAppSelector = ({
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
                 </label>
-                <p className="fs-12px cr-5" data-testid="deployment-alert-message"> Cannot be changed after deployment </p>
+                <p className="fs-12px cr-5" data-testid="deployment-alert-message">
+                    Cannot be changed after deployment
+                </p>
                 <RadioGroup
                     value={commonState.deploymentAppType}
                     name="DeploymentAppTypeGroup"
                     onChange={handleDeploymentAppTypeSelection}
                     disabled={isUpdate}
                 >
-                    <RadioGroupItem value={DeploymentAppTypes.HELM} dataTestId="helm-deployment"> Helm </RadioGroupItem>
-
-                    <RadioGroupItem value={DeploymentAppTypes.GITOPS} dataTestId="gitops-deployment"> GitOps </RadioGroupItem>
+                    <ConditionalWrap
+                        condition={
+                            allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1
+                        }
+                        wrap={(children) => (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                content="Deployment to this environment is not allowed via Helm"
+                            >
+                                <div>{children}</div>
+                            </Tippy>
+                        )}
+                    >
+                        <RadioGroupItem
+                            dataTestId="helm-deployment"
+                            value={DeploymentAppTypes.HELM}
+                            disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                        >
+                            Helm
+                        </RadioGroupItem>
+                    </ConditionalWrap>
+                    <ConditionalWrap
+                        condition={
+                            allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1
+                        }
+                        wrap={(children) => (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                content="Deployment to this environment is not allowed via GitOps"
+                            >
+                                <div>{children}</div>
+                            </Tippy>
+                        )}
+                    >
+                        <RadioGroupItem
+                            dataTestId="gitops-deployment"
+                            value={DeploymentAppTypes.GITOPS}
+                            disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                        >
+                            GitOps
+                        </RadioGroupItem>
+                    </ConditionalWrap>
                 </RadioGroup>
             </div>
         </div>
