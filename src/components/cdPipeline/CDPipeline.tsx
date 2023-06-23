@@ -161,7 +161,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             forceDeleteDialogMessage: '',
             forceDeleteDialogTitle: '',
             clusterName: '',
-            allowedDeploymentAppType: []
+            allowedDeploymentTypes: []
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -228,7 +228,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             isClusterCdActive: env.isClusterCdActive,
                                             description: env.description,
                                             isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
-                                            allowedDeploymentAppType: env.allowedDeploymentAppType || [],
+                                            allowedDeploymentTypes: env.allowedDeploymentTypes || [],
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -370,7 +370,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPostStage,
             showError: false,
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
-            allowedDeploymentAppType: env.allowedDeploymentAppType || []
+            allowedDeploymentTypes: env.allowedDeploymentTypes || []
         })
     }
 
@@ -457,18 +457,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    getDeploymentAppType(allowedDeploymentAppType): string{
+    getDeploymentAppType(allowedDeploymentTypes): string{
       if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
           return ''
       } else if (
           this.state.pipelineConfig.deploymentAppType &&
-          allowedDeploymentAppType.indexOf(
+          allowedDeploymentTypes.indexOf(
               this.state.pipelineConfig.deploymentAppType as DeploymentAppTypes,
           ) >= 0
       ) {
           return this.state.pipelineConfig.deploymentAppType
       }
-      return allowedDeploymentAppType[0]
+      return allowedDeploymentTypes[0]
     }
 
     selectEnvironment = (selection: Environment): void => {
@@ -499,8 +499,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
             pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv)
             pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv)
-            pipelineConfig.deploymentAppType = this.getDeploymentAppType(selection.allowedDeploymentAppType)
-            this.setState({ environments: list, pipelineConfig, errorForm, allowedDeploymentAppType: selection.allowedDeploymentAppType }, () => {
+            pipelineConfig.deploymentAppType = this.getDeploymentAppType(selection.allowedDeploymentTypes)
+            this.setState({ environments: list, pipelineConfig, errorForm, allowedDeploymentTypes: selection.allowedDeploymentTypes }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
                         this.configMapAndSecrets = response.result
@@ -1206,8 +1206,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 >
                     <ConditionalWrap
                         condition={
-                            this.state.allowedDeploymentAppType.length &&
-                            this.state.allowedDeploymentAppType.indexOf(DeploymentAppTypes.HELM) === -1
+                            this.state.allowedDeploymentTypes.length &&
+                            this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1
                         }
                         wrap={(children) => (
                             <Tippy
@@ -1222,15 +1222,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <RadioGroupItem
                             dataTestId="helm-deployment-type-button"
                             value={DeploymentAppType.Helm}
-                            disabled={this.state.allowedDeploymentAppType.indexOf(DeploymentAppTypes.HELM) === -1}
+                            disabled={this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
                         >
                             Helm
                         </RadioGroupItem>
                     </ConditionalWrap>
                     <ConditionalWrap
                         condition={
-                            this.state.allowedDeploymentAppType.length &&
-                            this.state.allowedDeploymentAppType.indexOf(DeploymentAppTypes.GITOPS) === -1
+                            this.state.allowedDeploymentTypes.length &&
+                            this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1
                         }
                         wrap={(children) => (
                             <Tippy
@@ -1245,7 +1245,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <RadioGroupItem
                             dataTestId="gitOps-deployment-type-button"
                             value={DeploymentAppType.GitOps}
-                            disabled={this.state.allowedDeploymentAppType.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                            disabled={this.state.allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
                         >
                             GitOps
                         </RadioGroupItem>
@@ -1570,7 +1570,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {this.renderEnvNamespaceAndTriggerType()}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !this.state.pipelineConfig.isVirtualEnvironment &&
-                            this.state.allowedDeploymentAppType.length>0 &&
+                            this.state.allowedDeploymentTypes.length>0 &&
                             this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </div>
@@ -1655,7 +1655,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.renderEnvNamespaceAndTriggerType()}
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !this.state.pipelineConfig.isVirtualEnvironment &&
-                    this.state.allowedDeploymentAppType.length>0 &&
+                    this.state.allowedDeploymentTypes.length>0 &&
                     this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>

@@ -55,7 +55,7 @@ export interface Environment {
     clusterName: string
     isClusterCdActive: boolean
     isVirtualEnvironment?: boolean
-    allowedDeploymentAppType?: DeploymentAppTypes[]
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 export interface CommonError {
     isValid: boolean
@@ -92,7 +92,7 @@ export interface CDPipelineState {
     isVirtualEnvironmentOnEnvSelection?: boolean
     showNonCascadeDeleteDialog: boolean
     clusterName: string
-    allowedDeploymentAppType: DeploymentAppTypes[]
+    allowedDeploymentTypes: DeploymentAppTypes[]
 }
 
 export interface PipelineConfig {

@@ -139,9 +139,9 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
-export function getEnvironmentListMinPublic(includeAllowedDeploymentAppType?:boolean) {
+export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?:boolean) {
     return get(`${Routes.ENVIRONMENT_LIST_MIN}?auth=false${
-      includeAllowedDeploymentAppType ? '&isDeploymentType=true' : ''
+      includeAllowedDeploymentTypes ? '&isDeploymentType=true' : ''
   }`)
 }
 
