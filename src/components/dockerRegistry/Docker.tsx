@@ -420,7 +420,7 @@ function DockerForm({
             ...(selectedDockerRegistryType.value === 'artifact-registry' || selectedDockerRegistryType.value === 'gcr'
                 ? {
                       username: trimmedUsername,
-                      password: customState.password.value ? `'${parsePassword(customState.password.value)}'` : parsePassword(customState.password.value),
+                      password: customState.password.value === DEFAULT_SECRET_PLACEHOLDER ? parsePassword(customState.password.value) : `'${parsePassword(customState.password.value)}'`,
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'docker-hub' ||
