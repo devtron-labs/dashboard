@@ -228,7 +228,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             isClusterCdActive: env.isClusterCdActive,
                                             description: env.description,
                                             isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
-                                            allowedDeploymentAppType: env.allowedDeploymentAppType,
+                                            allowedDeploymentAppType: env.allowedDeploymentAppType || [],
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -370,7 +370,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPostStage,
             showError: false,
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
-            allowedDeploymentAppType: env.allowedDeploymentAppType
+            allowedDeploymentAppType: env.allowedDeploymentAppType || []
         })
     }
 
