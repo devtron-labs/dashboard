@@ -311,6 +311,7 @@ export const EMPTY_STATE_STATUS = {
 
     CHART_EMPTY_STATE: {
         TITLE: 'No matching charts',
+        SUBTITLE: "We couldn't find any matching results",
     },
 
     CHART_VALUES_GUIT_VIEW: {

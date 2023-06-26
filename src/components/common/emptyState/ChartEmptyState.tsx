@@ -34,7 +34,7 @@ function ChartEmptyState({
             <GenericEmptyState
                 image={emptyImage}
                 title={title || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
-                subTitle={subTitle || "We couldn't find any matching results"}
+                subTitle={subTitle || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.SUBTITLE}
                 isButtonAvailable={true}
                 renderButton={renderButton}
             ></GenericEmptyState>
