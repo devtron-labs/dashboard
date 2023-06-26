@@ -182,6 +182,16 @@ export const DeploymentAppSelector = ({
     )
 }
 
+const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: string): JSX.Element=>{
+  return (
+      <Tippy className="default-tt w-200" arrow={false} content={tippyContent}>
+          <div className={`${isFromCDPipeline ? '' : 'bcn-1'}`} style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}>
+              {children}
+          </div>
+      </Tippy>
+  )
+}
+
 export const DeploymentAppRadioGroup = ({
   isDisabled,
   deploymentAppType,
@@ -200,20 +210,9 @@ export const DeploymentAppRadioGroup = ({
       >
           <ConditionalWrap
               condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              wrap={(children) => (
-                  <Tippy
-                      className="default-tt w-200"
-                      arrow={false}
-                      content="Deployment to this environment is not allowed via Helm"
-                  >
-                      <div
-                          className={`${isFromCDPipeline ? '' : 'bcn-1'}`}
-                          style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}
-                      >
-                          {children}
-                      </div>
-                  </Tippy>
-              )}
+              wrap={(children) =>
+                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
+              }
           >
               <RadioGroupItem
                   dataTestId="helm-deployment"
@@ -225,20 +224,9 @@ export const DeploymentAppRadioGroup = ({
           </ConditionalWrap>
           <ConditionalWrap
               condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              wrap={(children) => (
-                  <Tippy
-                      className="default-tt w-200"
-                      arrow={false}
-                      content="Deployment to this environment is not allowed via GitOps"
-                  >
-                      <div
-                          className={`${isFromCDPipeline ? '' : 'bcn-1'}`}
-                          style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}
-                      >
-                          {children}
-                      </div>
-                  </Tippy>
-              )}
+              wrap={(children) =>
+                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
+              }
           >
               <RadioGroupItem
                   dataTestId="gitops-deployment"

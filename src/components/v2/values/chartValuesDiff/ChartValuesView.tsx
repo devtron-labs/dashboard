@@ -1499,7 +1499,7 @@ function ChartValuesView({
                             !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
-                            allowedDeploymentTypes.length > 0 &&
+                            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
                             !appDetails?.isVirtualEnvironment && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
