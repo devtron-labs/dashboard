@@ -589,7 +589,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     let cipipId = 0
                     workflow.nodes.map((node) => {
-                        console.log(node.type)
                         if(node.type == 'CI'){
                             cipipId = +node.id
                         }
