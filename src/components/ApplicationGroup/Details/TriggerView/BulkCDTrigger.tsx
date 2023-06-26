@@ -378,9 +378,9 @@ export default function BulkCDTrigger({
                             userApprovalConfig={_currentApp.userApprovalConfig}
                             requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
-                            appReleaseTagNames={currentAppReleaseTags}
+                            appReleaseTagNames={currentAppReleaseTags ? currentAppReleaseTags : []}
                             setAppReleaseTagNames={setCurrentAppReleaseTagsWrapper}
-                            tagsEditable={currentAppTagsEditable}
+                            tagsEditable={currentAppTagsEditable ? currentAppTagsEditable : false}
                             setTagsEditable={setCurrentAppTagsEditableWrapper}
                             ciPipelineId={_currentApp.ciPipelineId}
                             updateCurrentAppMaterial={updateCurrentAppMaterial}

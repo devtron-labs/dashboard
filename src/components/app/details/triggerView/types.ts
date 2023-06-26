@@ -167,7 +167,9 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr extends CommonNodeAttr {}
+export interface NodeAttr extends CommonNodeAttr {
+    cipipelineId?: number
+}
 
 export interface DownStreams {
     id: string
@@ -317,7 +319,7 @@ export interface TriggerViewState {
     showCDModal: boolean
     showCIModal: boolean
     showApprovalModal: boolean
-    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
+    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL' | 'GIT'
     ciPipelineName: string
     ciNodeId: number | null
     cdNodeId: number

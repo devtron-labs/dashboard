@@ -587,6 +587,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
+                    let cipipId = 0
+                    workflow.nodes.map((node) => {
+                        console.log(node.type)
+                        if(node.type == 'CI'){
+                            cipipId = +node.id
+                        }
+                        return node
+                    })
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
@@ -599,6 +607,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node.requestedUserId = data.requestedUserId
                             }
                         }
+                        node.connectingCiPipelineId =  cipipId
                         return node
                     })
                     workflow.appReleaseTags = data.appReleaseTagNames
