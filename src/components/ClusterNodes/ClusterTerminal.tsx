@@ -803,6 +803,7 @@ export default function ClusterTerminal({
                 <div className="bcr-7 pl-20 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.CONCURRENT_LIMIT_REACH}&nbsp;
                     <button
+                        data-testid="concurrent-limit-reach-link"
                         type="button"
                         onClick={disconnectRetry}
                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
