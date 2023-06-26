@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
+import { getDeploymentAppType, importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -1168,15 +1168,28 @@ function ChartValuesView({
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
-        dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-        setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
-        setAllowedDeploymentTypes(selected.allowedDeploymentTypes ?? [])
-        if (commonState.invalidaEnvironment) {
-            dispatch({
-                type: ChartValuesViewActionTypes.invalidaEnvironment,
-                payload: false,
-            })
-        }
+      if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
+          dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
+      } else {
+          dispatch({
+              type: ChartValuesViewActionTypes.multipleOptions,
+              payload: {
+                  selectedEnvironment: selected,
+                  deploymentAppType: getDeploymentAppType(
+                      selected.allowedDeploymentTypes,
+                      commonState.deploymentAppType,
+                  ),
+              },
+          })
+      }
+      setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
+      setAllowedDeploymentTypes(selected.allowedDeploymentTypes ?? [])
+      if (commonState.invalidaEnvironment) {
+          dispatch({
+              type: ChartValuesViewActionTypes.invalidaEnvironment,
+              payload: false,
+          })
+      }
     }
 
     const handleDeploymentAppTypeSelection = (event) => {

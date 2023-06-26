@@ -57,7 +57,7 @@ import { styles, DropdownIndicator, Option } from './cdpipeline.util'
 import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap, createClusterEnvGroup, importComponentFromFELibrary } from '../common/helpers/Helpers'
+import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
@@ -169,7 +169,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.savePipeline = this.savePipeline.bind(this)
         this.selectEnvironment = this.selectEnvironment.bind(this)
         this.escFunction = this.escFunction.bind(this)
-        this.getDeploymentAppType = this.getDeploymentAppType.bind(this)
     }
 
     componentDidMount() {
@@ -458,20 +457,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    getDeploymentAppType(allowedDeploymentTypes): string{
-      if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
-          return ''
-      } else if (
-          this.state.pipelineConfig.deploymentAppType &&
-          allowedDeploymentTypes.indexOf(
-              this.state.pipelineConfig.deploymentAppType as DeploymentAppTypes,
-          ) >= 0
-      ) {
-          return this.state.pipelineConfig.deploymentAppType
-      }
-      return allowedDeploymentTypes[0]
-    }
-
     selectEnvironment = (selection: Environment): void => {
         const { pipelineConfig, errorForm } = { ...this.state }
 
@@ -500,7 +485,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
             pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv)
             pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv)
-            pipelineConfig.deploymentAppType = this.getDeploymentAppType(selection.allowedDeploymentTypes)
+            pipelineConfig.deploymentAppType = getDeploymentAppType(selection.allowedDeploymentTypes, this.state.pipelineConfig.deploymentAppType)
             this.setState({ environments: list, pipelineConfig, errorForm, allowedDeploymentTypes: selection.allowedDeploymentTypes }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
