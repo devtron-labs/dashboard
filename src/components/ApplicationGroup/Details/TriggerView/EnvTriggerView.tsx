@@ -1289,8 +1289,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (_selectedNode) {
                     _selectedNode.inputMaterialList = _materialData.materials
                 }
-                wf.appReleaseTags = _materialData.appReleaseTagNames
-                wf.tagsEditable = _materialData.tagsEditable
+                wf.appReleaseTags = _materialData?.appReleaseTagNames
+                wf.tagsEditable = _materialData?.tagsEditable
             }
 
             return wf
