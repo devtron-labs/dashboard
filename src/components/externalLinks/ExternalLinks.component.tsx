@@ -104,7 +104,7 @@ export const NoMatchingResults = (): JSX.Element => {
         <GenericEmptyState
             image={NoResults}
             title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-            subTitle={"We couldn't find any matching external link configuration"}
+            subTitle={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.SUBTITLE}
         />
     )
 }

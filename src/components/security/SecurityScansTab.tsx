@@ -394,7 +394,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 <GenericEmptyState
                     image={NoResults}
                     title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-                    subTitle={'No results found for the applied filters.'}
+                    subTitle={EMPTY_STATE_STATUS.SECURITY_SCANS.SUBTITLE}
                     isButtonAvailable={true}
                     renderButton={handleButton}
                 />
@@ -406,7 +406,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
           <div className='dc__position-rel' style={{ height: 'calc(100vh - 175px)' }}>
               <GenericEmptyState
                 image={AppNotDeployed}
-                title={"No Scans Performed"}
+                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
                 subTitle={<span></span>}
               />
 

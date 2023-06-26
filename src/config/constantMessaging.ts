@@ -344,7 +344,26 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No Linked pipelines created',
         SUBTITLE: 'Deployment groups can only be created for applications and environments using Linked CI Pipelines.',
     },
+
+    SECURITY_SCANS: {
+        TITLE: "No Scans Performed",
+        SUBTITLE: 'No results found for the applied filters.',
+    },
+
+    NOTIFICATION_TAB: {
+        TITLE: 'Notification',
+        SUBTITL: 'Receive alerts when a pipeline triggers, completes successfully or fails.',
+    },
+
+    CONFIGURATION_TAB: {
+        TITLE: 'No Configurations',
+    },
     
+    EXTERNAL_LINK_COMPONENT: {
+        TITLE: 'Add external links',
+        SUBTITLE: "We couldn't find any matching external link configuration",
+    },
+
 }
 
 export const INVALID_YAML_MSG = "Please provide data in valid YAML format";

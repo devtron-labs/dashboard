@@ -39,6 +39,7 @@ import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { renderPipelineTypeIcon } from './notifications.util';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
@@ -396,8 +397,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         return (
             <GenericEmptyState
                 image={EmptyImage}
-                title={'Notification'}
-                subTitle={'Receive alerts when a pipeline triggers, completes successfully or fails.'}
+                title={EMPTY_STATE_STATUS.NOTIFICATION_TAB.TITLE}
+                subTitle={EMPTY_STATE_STATUS.NOTIFICATION_TAB.SUBTITL}
                 isButtonAvailable={true}
                 renderButton={renderGenericStateButton}
             />
