@@ -104,7 +104,7 @@ export const ChartEnvironmentSelector = ({
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field">Deploy to environment</span>
+            <span className="form__label required-field" data-testid="environment-name-heading">Deploy to environment</span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
@@ -158,16 +158,16 @@ export const DeploymentAppSelector = ({
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
                 </label>
-                <p className="fs-12px cr-5"> Cannot be changed after deployment </p>
+                <p className="fs-12px cr-5" data-testid="deployment-alert-message"> Cannot be changed after deployment </p>
                 <RadioGroup
                     value={commonState.deploymentAppType}
                     name="DeploymentAppTypeGroup"
                     onChange={handleDeploymentAppTypeSelection}
                     disabled={isUpdate}
                 >
-                    <RadioGroupItem value={DeploymentAppTypes.HELM}> Helm </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppTypes.HELM} dataTestId="helm-deployment"> Helm </RadioGroupItem>
 
-                    <RadioGroupItem value={DeploymentAppTypes.GITOPS}> GitOps </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppTypes.GITOPS} dataTestId="gitops-deployment"> GitOps </RadioGroupItem>
                 </RadioGroup>
             </div>
         </div>
@@ -182,7 +182,7 @@ export const ChartProjectSelector = ({
 }: ChartProjectSelectorType): JSX.Element => {
     return (
         <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field">Project</span>
+            <span className="form__label required-field" data-testid="project-name-heading">Project</span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
@@ -305,7 +305,7 @@ export const ChartVersionValuesSelector = ({
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
         <div className="chart-values-view__readme">
-            <div className="code-editor__header flex left fs-12 fw-6 cn-7">Readme</div>
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">Readme</div>
             {fetchingReadMe ? (
                 <Progressing pageLoader />
             ) : (
@@ -395,7 +395,7 @@ export const AppNameInput = ({
 }: AppNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
-            <span className="form__label required-field">App Name</span>
+            <span className="form__label required-field" data-testid="app-name-heading">App Name</span>
             <input
                 autoComplete="off"
                 tabIndex={1}

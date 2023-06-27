@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { validateEmail } from '../common'
-import { showError, Progressing, VisibleModal, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Checkbox, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { saveEmailConfiguration, getSESConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -77,6 +77,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
         this.handleEmailChange = this.handleEmailChange.bind(this)
         this.handleCheckbox = this.handleCheckbox.bind(this)
         this.handleBlur = this.handleBlur.bind(this)
+        this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
     }
 
     componentDidMount() {
@@ -219,25 +220,27 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
 
     renderWithBackdrop(body) {
         return (
-            <VisibleModal className="">
-                <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
-                    <div className="modal__header m-24">
-                        <h1 className="modal__title">Configure SES</h1>
+            <Drawer position="right">
+                <div className="h-100 modal__body modal__body--w-600 modal__body--p-0 dc__no-border-radius mt-0">
+                    <div className="h-48 flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                        <h1 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Configure SES</h1>
                         <button type="button" className="dc__transparent" onClick={this.props.closeSESConfigModal}>
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
                     <form
-                        onSubmit={(event) => {
-                            event.preventDefault()
-                            this.saveSESConfig()
-                        }}
+                        
                     >
                         {body}
                     </form>
                 </div>
-            </VisibleModal>
+            </Drawer>
         )
+    }
+
+    onSaveClickHandler(event) {
+        event.preventDefault()
+        this.saveSESConfig()
     }
 
     render() {
@@ -251,7 +254,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
         } else
             body = (
                 <>
-                    <div className="m-24 mb-32">
+                    <div className="m-20" style={{ height: 'calc(100vh - 160px'}}>
                         <label className="form__row">
                             <span className="form__label">Configuration Name*</span>
                             <input
@@ -409,7 +412,8 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             >
                                 Cancel
                             </button>
-                            <button data-testid="add-ses-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button onClick={this.onSaveClickHandler}
+                                data-testid="add-ses-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>

@@ -10,7 +10,7 @@ export function About({ description = "", home = "", chartYaml, appVersion = "",
             <div className="chart-store-card__text">{description}</div>
             <span className="chart-store-card__subtitle">Home</span>
             <div className="mb-16">
-                <a rel="noreferrer noopener" className="chart-store-card__text homepage anchor" href={home} target="_blank">{home}</a>
+                <a rel="noreferrer noopener" className="chart-store-card__text homepage anchor" href={home} target="_blank" data-testid="home-chart-deploy-link">{home}</a>
             </div>
             <Detailed {...{ appVersion, created, digest, home, source, chartYaml }} />
         </div>
@@ -30,10 +30,10 @@ function Detailed({ appVersion = "", created = "", digest = "", home = "", sourc
                 <div className="chart-store-card__text digest">{digest}</div>
                 {chartYaml && <>
                     <span className="chart-store-card__subtitle">Source</span>
-                    {Array.isArray(chartYaml.sources) && chartYaml.sources.map(source => <a className="chart-store-card__text anchor" href={source} rel="noopener noreferrer"  target="_blank">{source}</a>)}
+                    {Array.isArray(chartYaml.sources) && chartYaml.sources.map(source => <a className="chart-store-card__text anchor" href={source} rel="noopener noreferrer"  target="_blank" data-testid="chart-source-link">{source}</a>)}
                 </>}
             </>}
-            <div className="chart-store-card__text chart-store-card__text--see-more pointer anchor flex" onClick={e => toggleDetailed(d => !d)}><span>{detailed ? 'Read less' : 'Read more'}</span><DropdownIcon className="rotate" style={{ ['--rotateBy' as any]: `${Number(detailed) * 180}deg` }} /></div>
+            <div className="chart-store-card__text chart-store-card__text--see-more pointer anchor flex" onClick={e => toggleDetailed(d => !d)} data-testid="extend-read-more"><span>{detailed ? 'Read less' : 'Read more'}</span><DropdownIcon className="rotate" style={{ ['--rotateBy' as any]: `${Number(detailed) * 180}deg` }} /></div>
         </div>
     )
 }

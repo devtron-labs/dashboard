@@ -43,10 +43,10 @@ export function ChartDeploymentList({ chartId }) {
             <Progressing pageLoader={true} />
         </div>
     }
-    return <div className="white-card white-card--no-padding deployments">
-        <div className="chart-store-card__header">Deployments</div>
+    return <div className="white-card white-card--no-padding deployments" >
+        <div className="chart-store-card__header" data-testid="deployments-heading">Deployments</div>
         {installs.length !== 0 &&
-            <table className="deployments-table">
+            <table className="deployments-table" data-testid="deployments-table">
                 <thead className="deployment-table-header">
                     <tr>
                         <th>App name</th>
