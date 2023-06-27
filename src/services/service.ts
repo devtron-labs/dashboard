@@ -127,11 +127,8 @@ export function getAvailableCharts(
     })
 }
 
-export function getEnvironmentListMin(isNamespaceReq = false): Promise<any> {
-    let url = `${Routes.ENVIRONMENT_LIST_MIN}`
-    if (isNamespaceReq) {
-        url = `${url}`
-    }
+export function getEnvironmentListMin(includeAllowedDeploymentTypes?:boolean): Promise<any> {
+    const url = `${Routes.ENVIRONMENT_LIST_MIN}${includeAllowedDeploymentTypes ? '?showDeploymentOptions=true' : ''}`
     return get(url)
 }
 
@@ -139,8 +136,10 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
-export function getEnvironmentListMinPublic() {
-    return get(`${Routes.ENVIRONMENT_LIST_MIN}?auth=false`)
+export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?:boolean) {
+    return get(
+        `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
+    )
 }
 
 export function getClusterListMin() {

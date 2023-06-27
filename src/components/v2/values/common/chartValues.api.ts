@@ -155,7 +155,7 @@ export async function fetchProjectsAndEnvironments(
 ): Promise<void> {
     Promise.allSettled([
         getTeamListMin(),
-        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin() : getEnvironmentListHelmApps(),
+        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin(true) : getEnvironmentListHelmApps(),
     ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
         const projectListRes: Teams[] = responses[0].value?.result || []
         const environmentListRes: EnvironmentListMinType[] = responses[1].value?.result || []
@@ -172,6 +172,7 @@ export async function fetchProjectsAndEnvironments(
                     clusterName: env.cluster_name,
                     description: env.description,
                     isVirtualEnvironment: env.isVirtualEnvironment,
+                    allowedDeploymentTypes: env.allowedDeploymentTypes ?? []
                 }
             }), 'clusterName')
         } else {
@@ -188,6 +189,7 @@ export async function fetchProjectsAndEnvironments(
                         clusterName: cluster.clusterName,
                         clusterId: cluster.clusterId,
                         isVirtualEnvironment: env?.isVirtualEnvironment,
+                        allowedDeploymentTypes: env.allowedDeploymentTypes ?? []
                     })),
                 ],
             }))
