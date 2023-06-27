@@ -319,7 +319,7 @@ export interface TriggerViewState {
     showCDModal: boolean
     showCIModal: boolean
     showApprovalModal: boolean
-    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL' | 'GIT'
+    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
     cdNodeId: number
