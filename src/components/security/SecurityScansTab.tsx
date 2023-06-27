@@ -194,7 +194,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     const searchParams = new URLSearchParams(this.props.location.search)
     const searchText = searchParams.get('search')
     searchParams.set('search', searchText)
-    searchParams.set('offset', '20')
+    searchParams.set('offset', '0')
     this.setState({ searchApplied: true }, () => {
       this.callGetSecurityScanList();
     });
