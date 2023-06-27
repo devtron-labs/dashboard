@@ -53,7 +53,7 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 
@@ -951,7 +951,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <div
                 className={`trigger-modal__trigger ${
-                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) || this.state.showConfigDiffView
+                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) ||
+                    this.state.showConfigDiffView ||
+                    this.props.stageType === DeploymentNodeType.PRECD ||
+                    this.props.stageType === DeploymentNodeType.POSTCD
                         ? 'flex right'
                         : ''
                 }`}
