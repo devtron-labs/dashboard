@@ -143,7 +143,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">{chartName}</h1>
                     {handleNameChange && <div className="flex column left top mb-16">
                         <label htmlFor="" className="form__label" data-testid="advanced-option-app-name">App name*</label>
-                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} data-testid="advanced-option-app-name-box" />
+                        <input type="text" autoComplete="off" data-testid="advanced-option-app-name-box" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
                         {appName?.error &&
                             <span className="form__error flex left">
                                 <WarningIcon className="mr-5 icon-dim-16" />{appName?.error || ""}
