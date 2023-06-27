@@ -225,7 +225,7 @@ export const DeploymentAppRadioGroup = ({
           <ConditionalWrap
               condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
               wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
+                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via GitOps')
               }
           >
               <RadioGroupItem
