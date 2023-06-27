@@ -1,5 +1,6 @@
 import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
+import { DeploymentAppTypes } from '../../config'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
@@ -486,5 +487,6 @@ export interface EnvironmentListMinType {
     isClusterCdActive?: boolean
     isVirtualEnvironment?: boolean
     namespace?: string
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
