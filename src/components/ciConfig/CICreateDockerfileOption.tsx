@@ -33,7 +33,7 @@ export default function CICreateDockerfileOption({
     handleFileLocationChange,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
-    setInProgress,
+    setLoadingState,
     selectedBuildContextGitMaterial,
     handleBuildContextPathChange,
     currentBuildContextGitMaterial,
@@ -151,7 +151,10 @@ export default function CICreateDockerfileOption({
             })
             setEditorValue(_currentData.data)
         } else if (_selectedFramework?.templateUrl) {
-            setInProgress(true)
+            setLoadingState((prevState) => ({
+                ...prevState,
+                loading: true
+            }))
             setTemplateData({
                 ...templateData,
                 [templateKey]: {
@@ -186,7 +189,10 @@ export default function CICreateDockerfileOption({
                         languageFramework: _selectedFramework.value,
                     },
                 })
-                setInProgress(false)
+                setLoadingState((prevState) => ({
+                    ...prevState,
+                    loading: false
+                }))
             } catch (err) {
                 // Don't show error toast or log the error as user aborted the request
                 if (!signal.aborted) {
@@ -200,7 +206,10 @@ export default function CICreateDockerfileOption({
                     },
                 })
                 setEditorValue('')
-                setInProgress(false)
+                setLoadingState((prevState) => ({
+                    ...prevState,
+                    loading: false
+                }))
             }
         } else {
             setTemplateData({
