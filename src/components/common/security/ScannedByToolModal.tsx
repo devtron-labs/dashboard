@@ -10,7 +10,7 @@ export function ScannedByToolModal({ scanToolId }: { scanToolId: number }) {
         <>
             <span className="dc__italic-font-style fs-13">
                 Scanned by
-                <span className="fw-6" data-testid="scanned-by-tool">
+                <span className="fw-6 ml-4" data-testid="scanned-by-tool">
                     {isTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
                 </span>
             </span>

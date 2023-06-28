@@ -143,7 +143,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">{chartName}</h1>
                     {handleNameChange && <div className="flex column left top mb-16">
                         <label htmlFor="" className="form__label" data-testid="advanced-option-app-name">App name*</label>
-                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} data-testid="advanced-option-app-name-box" />
+                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} data-testid="advanced-option-app-name-box"/>
                         {appName?.error &&
                             <span className="form__error flex left">
                                 <WarningIcon className="mr-5 icon-dim-16" />{appName?.error || ""}
@@ -284,7 +284,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
     return (
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
-            <div className="readme-config-container">
+            <div className="readme-config-container" data-testid="readme-container">
                 <div className="readme-config--header">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
@@ -309,7 +309,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose}>Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="readme-done-button">Done</button>
             </div>
         </div>
     )
@@ -354,7 +354,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
     return (
         <div className="advanced-config__diff">
             <h3>{chartName}</h3>
-            <div className="readme-config-container">
+            <div className="readme-config-container" data-testid="check-diff-container">
                 {/* TODO: use code editor header */}
                 <div className="readme-config--header">
                     <h5 className="flex left">
@@ -404,7 +404,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose}>Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="check-diff-done-button">Done</button>
             </div>
         </div>
     )
