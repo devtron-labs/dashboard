@@ -541,15 +541,11 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         if(column.isSortingAllowed) {
             if(sortByColumn.value === column.value) {
                 return (
-                    <>
-                        <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
-                    </>
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
                 )
             } else {
                 return (
-                    <>
-                        <span className="sort-column dc__opacity-0_5 ml-4"></span>
-                    </>
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>
                 )
             }
         }
