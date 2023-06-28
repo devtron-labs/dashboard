@@ -406,6 +406,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     <div className="m-tb-8">Pipeline name</div>
                     <div className="flex">
                         <div className="m-tb-8 mr-16 w-150">Last run status</div>
+                        <div className="m-tb-8 mr-16 w-150">Run in environment</div>
                         <div className="w-150 m-tb-8">Last run at</div>
                     </div>
                 </div>
@@ -431,6 +432,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 ) : (
                                     <div>{jobPipeline.status}</div>
                                 )}
+                            </div>
+                            <div
+                                data-testid={`${jobPipeline.environment_name}-${index}`}
+                                className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
+                            >
+                                {jobPipeline.environment_name}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
                                 {jobPipeline.started_on !== '0001-01-01T00:00:00Z'

@@ -454,6 +454,8 @@ export interface JobPipeline {
     started_on: string
     status: string
     dataTestId?: string
+    environment_name?: string
+    environment_id?: string 
 }
 
 export interface TagChipsContainerType {

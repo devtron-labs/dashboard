@@ -35,6 +35,8 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
         action: any
         metadataField: string
     }
+    filteredCIPipelines?: any[]
+    environmentLists?: any[]
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -100,7 +102,9 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
 
     renderCardContent(context) {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
-
+        let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
+        let envId = _selectedPipeline?.environmentId ? _selectedPipeline?.environmentId : _selectedPipeline?.lastTriggeredEnvId;
+        const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         return (
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
@@ -129,10 +133,11 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        <span className="workflow-node__text-light">{this.props.isJobView ? 'Job' : 'Build'}</span>
+                        {!this.props.isJobView && <span className="workflow-node__text-light">Build</span>}
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
+                        {this.props.isJobView && _selectedEnv && <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>}
                     </div>
                     <div
                         className={`workflow-node__icon-common ml-8 ${

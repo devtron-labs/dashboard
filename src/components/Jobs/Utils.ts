@@ -92,6 +92,7 @@ const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
                         ? handleUTCTime(ciPipeline.lastSuccessAt, true)
                         : '-',
                 status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
+                environment_name: ciPipeline.environment_name || '-'
             }
         }) ?? []
     )
@@ -114,6 +115,7 @@ const getDefaultPipeline = (ciPipelines) => {
                     ? handleUTCTime(ciPipeline.lastSuccessAt, true)
                     : '-',
             status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
+            environment_name: ciPipeline.environment_name || '-',
         }
     }
     return {

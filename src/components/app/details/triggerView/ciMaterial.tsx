@@ -6,7 +6,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
+import { ButtonWithLoader, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -14,7 +14,7 @@ import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
-
+import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
@@ -39,6 +39,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
+        let envId = this.state.selectedCIPipeline?.environmentId ? this.state.selectedCIPipeline?.environmentId : this.state.selectedCIPipeline?.lastTriggeredEnvId;
+        const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+        this.props.setSelectedEnv(_selectedEnv)
     }
 
     async getSecurityModuleStatus(): Promise<void> {
@@ -114,6 +117,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
     }
 
+    renderEnvironments = () => {
+        return <EnvironmentList environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
+    }
+
     handleStartBuildAction = (e) => {
         e.stopPropagation()
         this.context.onClickTriggerCINode()
@@ -175,7 +182,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderMaterialStartBuild = (canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
-                {!this.props.isJobView && this.renderIgnoreCache()}
+                {!this.props.isJobView ? this.renderIgnoreCache() : this.renderEnvironments()}
                 {this.renderCTAButton(canTrigger)}
             </div>
         )

@@ -28,6 +28,8 @@ export interface JobCIPipeline {
     lastRunAt: string
     lastSuccessAt: string
     status: string
+    environment_name?: string
+    environment_id?: number
 }
 
 export interface Job {

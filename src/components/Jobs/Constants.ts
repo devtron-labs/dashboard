@@ -39,6 +39,7 @@ export const JOB_LIST_HEADERS = {
     LastRunAt: 'LAST RUN AT',
     LastSuccessAt: 'LAST SUCCESS AT',
     Description: 'Description',
+    RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT'
 }
 
 export const YET_TO_RUN = 'Yet to run'

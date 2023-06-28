@@ -16,6 +16,7 @@ import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/det
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { Environment } from '../cdPipeline/cdPipeline.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]
@@ -354,6 +355,9 @@ export interface CIPipelineSidebarType {
             postBuildStage: Map<string, VariableType>[]
         }>
     >
+    environments?: any[]
+    selectedEnv?: Environment
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
 }
 
 export interface TaskListType {

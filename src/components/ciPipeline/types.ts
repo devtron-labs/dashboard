@@ -279,6 +279,7 @@ export interface CIPipelineDataType {
     scanEnabled?: boolean
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    environmentId?: any
 }
 export interface CIPipelineState {
     code: number

@@ -30,6 +30,9 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <AppStatus appStatus={ciPipeline.status} isJobView={true} />
                     </div>
                     <div className="app-list__cell app-list__cell--time">
+                        <p className="dc__truncate-text m-0">{ciPipeline.environment_name}</p>
+                    </div>
+                    <div className="app-list__cell app-list__cell--time">
                         <p className="dc__truncate-text m-0">{ciPipeline.lastRunAt}</p>
                     </div>
                     <div className="app-list__cell app-list__cell--time">

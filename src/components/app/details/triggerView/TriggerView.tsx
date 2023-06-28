@@ -19,7 +19,7 @@ import {
     refreshGitMaterial,
     getGitMaterialByCommitHash,
 } from '../../service'
-import { createGitCommitUrl, importComponentFromFELibrary, ISTTimeModal, preventBodyScroll } from '../../../common'
+import { createGitCommitUrl, importComponentFromFELibrary, ISTTimeModal, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
@@ -38,7 +38,7 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink } from 'react-router-dom'
-import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
+import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration } from '../../../../services/service'
@@ -50,6 +50,7 @@ import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../confi
 import { getBranchValues, handleSourceNotConfigured, processConsequenceData, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -87,6 +88,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isChangeBranchClicked: false,
             loader: false,
             isSaveLoading: false,
+            environmentLists: [],
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -105,6 +107,25 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidMount() {
         this.getHostURLConfig()
         this.getWorkflows()
+        this.getEnvironments()
+    }
+
+    getEnvironments = () => {
+        getEnvironmentListMinPublic()
+            .then((response) => {
+                let list = []
+                list.push({ id: 0, clusterName: '', name: "default-ci", active: false, isClusterActive: false, description: "System default" })
+                response.result?.forEach((env) => {
+                    if(env.cluster_name!=="default_cluster") {
+                        list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
+                    }
+                })
+                sortObjectArrayAlphabetically(list, 'name')
+                this.setState({ environmentLists: list })
+            })
+            .catch((error) => {
+                showError(error)
+            })
     }
 
     getWorkflows = () => {
@@ -808,10 +829,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             this.setState({ isLoading: false })
             return
         }
+        let envId
+        if(this.state.selectedEnv.id!==0){
+            envId = this.state.selectedEnv.id
+        }
         const payload = {
             pipelineId: +this.state.ciNodeId,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: this.state.invalidateCache,
+            environmentId: envId,
         }
 
         triggerCINode(payload)
@@ -828,9 +854,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         () => {
                             preventBodyScroll(false)
                             this.getWorkflowStatus()
+                            this.getWorkflows()
                         },
                     )
                 }
+               
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -1080,6 +1108,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
+    setSelectedEnv = ( _selectedEnv: Environment ) => {
+        this.setState({selectedEnv: _selectedEnv})
+    }
+
     getCINode = (): NodeAttr => {
         let nd: NodeAttr
         if (this.state.ciNodeId) {
@@ -1161,6 +1193,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isJobView={this.props.isJobView}
                                 isCITriggerBlocked={nd?.isCITriggerBlocked}
                                 ciBlockState={nd?.ciBlockState}
+                                selectedEnv={this.state.selectedEnv}
+                                setSelectedEnv={this.setSelectedEnv}
+                                environmentLists={this.state.environmentLists}
                             />
                         )}
                     </div>
@@ -1285,6 +1320,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             match={this.props.match}
                             isJobView={this.props.isJobView}
                             index={index}
+                            filteredCIPipelines={this.state.filteredCIPipelines}
+                            environmentLists={this.state.environmentLists}
                         />
                     )
                 })}

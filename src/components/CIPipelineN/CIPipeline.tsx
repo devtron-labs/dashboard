@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
+import { ButtonWithLoader, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import {
     ServerErrors,
     showError,
@@ -53,6 +53,8 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+import { Environment } from '../cdPipeline/cdPipeline.types'
+import { getEnvironmentListMinPublic } from '../../services/service'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -99,6 +101,8 @@ export default function CIPipeline({
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
+    const [selectedEnv, setSelectedEnv] = useState<Environment>()
+    const [environments, setEnvironments] = useState([])
     const [formData, setFormData] = useState<FormType>({
         name: '',
         args: [],
@@ -144,6 +148,7 @@ export default function CIPipeline({
         name: '',
         linkedCount: 0,
         scanEnabled: false,
+        environmentId: 0,
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
@@ -176,6 +181,28 @@ export default function CIPipeline({
         }
     }, [location.pathname])
 
+    const getEnvironments = (envId) => {
+        envId = envId || 0
+        getEnvironmentListMinPublic()
+            .then((response) => {
+                let list =[]
+                list.push({ id: 0, clusterName: '', name: "default-ci", active: false, isClusterActive: false, description: "System default" })
+                response.result?.forEach((env) => {
+                    if(env.cluster_name!=="default_cluster") {
+                        list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
+                        const _selectedEnv = list.find((env) => env.id == envId)
+                        setSelectedEnv(_selectedEnv)
+                    }
+                })
+                sortObjectArrayAlphabetically(list, 'name')
+                setEnvironments(list)
+                
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
+
     const getInitialData = (): void => {
         setPageState(ViewType.LOADING)
         getSecurityModuleStatus()
@@ -204,6 +231,7 @@ export default function CIPipeline({
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
                     getAvailablePlugins(ciResponse.form)
+                    getEnvironments(ciResponse.ciPipeline.environmentId)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
@@ -215,6 +243,7 @@ export default function CIPipeline({
                     setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
                     getAvailablePlugins(ciResponse.form)
+                    getEnvironments(0)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
@@ -477,13 +506,19 @@ export default function CIPipeline({
             }
         }
 
+        let _ciPipeline = ciPipeline
+        if(selectedEnv.id !== 0) {
+            _ciPipeline.environmentId = selectedEnv.id
+        }
+        
+
         saveCIPipeline(
             {
                 ...formData,
                 materials: _materials,
                 scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false,
             },
-            ciPipeline,
+            _ciPipeline,
             _materials,
             +appId,
             +workflowId,
@@ -890,6 +925,9 @@ export default function CIPipeline({
                                     pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                                     mandatoryPluginsMap={mandatoryPluginsMap}
+                                    environments={environments}
+                                    selectedEnv={selectedEnv}
+                                    setSelectedEnv={setSelectedEnv}
                                 />
                             </div>
                         )}
