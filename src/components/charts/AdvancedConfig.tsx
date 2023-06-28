@@ -284,7 +284,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
     return (
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
-            <div className="readme-config-container">
+            <div className="readme-config-container" data-testid="readme-container">
                 <div className="readme-config--header">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
@@ -309,7 +309,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose}>Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="readme-done-button">Done</button>
             </div>
         </div>
     )
@@ -354,7 +354,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
     return (
         <div className="advanced-config__diff">
             <h3>{chartName}</h3>
-            <div className="readme-config-container">
+            <div className="readme-config-container" data-testid="check-diff-container">
                 {/* TODO: use code editor header */}
                 <div className="readme-config--header">
                     <h5 className="flex left">
@@ -404,7 +404,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose}>Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="check-diff-done-button">Done</button>
             </div>
         </div>
     )
