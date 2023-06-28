@@ -13,7 +13,7 @@ import {
     ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, ProcessedWorkflowsType } from './types'
+import { CIBuildArgType, CIConfigFormProps, LoadingState, ProcessedWorkflowsType } from './types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
@@ -49,7 +49,8 @@ export default function CIConfigForm({
     navItems,
     parentState,
     setParentState,
-    setLoadingData,
+    loadingStateFromParent,
+    setLoadingStateFromParent,
 }: CIConfigFormProps) {
     const history = useHistory()
     const currentMaterial =
@@ -67,8 +68,10 @@ export default function CIConfigForm({
                       material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
               )
             : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
-                ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId)
-                : sourceConfig.material[0]
+            ? sourceConfig.material.find(
+                  (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
+              )
+            : sourceConfig.material[0]
     const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
@@ -86,7 +89,11 @@ export default function CIConfigForm({
     )
     const [args, setArgs] = useState<CIBuildArgType[]>([])
     const [buildEnvArgs, setBuildEnvArgs] = useState<CIBuildArgType[]>([])
-    const [loading, setLoading] = useState(false)
+    const [loadingDataState, setLoadingDataState] = useState<LoadingState>({
+        loading: false,
+        failed: false,
+    })
+    const [apiInProgress, setApiInProgress] = useState(false)
     const targetPlatformMap = getTargetPlatformMap()
     let _selectedPlatforms = []
     let _customTargetPlatorm = false
@@ -106,7 +113,16 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, selectedBuildContextGitMaterial, state.dockerfile.value, state.buildContext.value, state.useRootBuildContext.value),
+        initCurrentCIBuildConfig(
+            allowOverride,
+            ciConfig,
+            selectedCIPipeline,
+            selectedMaterial,
+            selectedBuildContextGitMaterial,
+            state.dockerfile.value,
+            state.buildContext.value,
+            state.useRootBuildContext.value,
+        ),
     )
 
     useEffect(() => {
@@ -203,7 +219,7 @@ export default function CIConfigForm({
             appName: '',
             ...(ciConfig && ciConfig.version ? { version: ciConfig.version } : {}),
         }
-        setLoading(true)
+        setApiInProgress(true)
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
@@ -217,7 +233,7 @@ export default function CIConfigForm({
         } catch (err) {
             showError(err)
         } finally {
-            setLoading(false)
+            setApiInProgress(false)
         }
     }
 
@@ -386,7 +402,7 @@ export default function CIConfigForm({
                     setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
-                    setInProgress={configOverrideView ? setLoadingData : setLoading}
+                    setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
                 />
             </div>
             {!configOverrideView && (
@@ -397,21 +413,22 @@ export default function CIConfigForm({
                         type="button"
                         className="flex cta h-36"
                         onClick={handleOnSubmit}
-                        disabled={loading}
+                        disabled={
+                            apiInProgress ||
+                            (currentCIBuildConfig.ciBuildType !== CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                                (loadingDataState.loading ||
+                                    loadingDataState.failed ||
+                                    loadingStateFromParent?.loading ||
+                                    loadingStateFromParent?.failed))
+                        }
                     >
-                        {loading ? (
-                            <Progressing />
-                        ) : (
+                        {!isCiPipeline ? (
                             <>
-                                {!isCiPipeline ? (
-                                    <>
-                                        Save & Next
-                                        <NextIcon className="icon-dim-16 ml-5 scn-0" />
-                                    </>
-                                ) : (
-                                    'Save Configuration'
-                                )}
+                                Save & Next
+                                <NextIcon className="icon-dim-16 ml-5 scn-0" />
                             </>
+                        ) : (
+                            'Save Configuration'
                         )}
                     </button>
                 </div>

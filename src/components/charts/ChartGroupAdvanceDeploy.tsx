@@ -177,6 +177,7 @@ export default function ChartGroupAdvanceDeploy() {
                                         rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                         value={project.id}
                                         onChange={(e) => setProject({ id: e.target.value, error: '' })}
+                                        dataTestId="select-project-button"
                                     >
                                         <Select.Button>
                                             {project.id && projectsMap.has(project.id)
