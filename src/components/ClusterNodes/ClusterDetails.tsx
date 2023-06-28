@@ -15,7 +15,6 @@ import {
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFilter'
