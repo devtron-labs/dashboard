@@ -57,6 +57,7 @@ export const TriggerDetails = React.memo(
         type,
         stage,
         artifact,
+        environmentName,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -72,6 +73,7 @@ export const TriggerDetails = React.memo(
                         gitTriggers={gitTriggers}
                         artifact={artifact}
                         type={type}
+                        environmentName={environmentName}
                     />
                     <CurrentStatus
                         status={status}
@@ -239,6 +241,7 @@ const StartDetails = ({
     gitTriggers,
     artifact,
     type,
+    environmentName,
 }: StartDetailsType): JSX.Element => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
@@ -298,6 +301,11 @@ const StartDetails = ({
                     </Link>
                 )}
             </div>
+            <div className="pt-4 pb-4 pr-0 pl-0">
+                <span className="fw-6 fs-12">Env</span>
+                <span className="fs-12 mb-4 ml-8">{environmentName}</span>
+            </div>
+
         </div>
     )
 }

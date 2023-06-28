@@ -30,6 +30,7 @@ export interface JobCIPipeline {
     status: string
     environment_name?: string
     environment_id?: number
+    last_triggered_environment_name?: string
 }
 
 export interface Job {

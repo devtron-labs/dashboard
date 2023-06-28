@@ -136,7 +136,7 @@ export function Sidebar({
                         )}
                     </div>
                     <div>
-                        {isJobView && <EnvironmentList environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
+                        {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
                     </div>
                 </>
             ) : (

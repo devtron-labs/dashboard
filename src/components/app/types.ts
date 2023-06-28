@@ -458,6 +458,7 @@ export interface JobPipeline {
     dataTestId?: string
     environment_name?: string
     environment_id?: string 
+    last_triggered_environment_name?: string
 }
 
 export interface TagChipsContainerType {

@@ -287,6 +287,7 @@ export const TriggerOutput: React.FC<{
             if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
         }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
+
         const timeout = useMemo(() => {
             if (
                 !triggerDetails ||

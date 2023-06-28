@@ -72,7 +72,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             return (
                 <div
                     data-testid={`ci-trigger-status-${this.props.index}`}
-                    className="dc__cd-trigger-status"
+                    className="dc__cd-trigger-status mb-6"
                     style={{ color: TriggerStatus[status] }}
                 >
                     {this.props.status ? this.props.status : BUILD_STATUS.NOT_TRIGGERED}
@@ -82,7 +82,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             return (
                 <div
                     data-testid={`ci-trigger-status-${this.props.index}`}
-                    className="dc__cd-trigger-status"
+                    className="dc__cd-trigger-status mb-6"
                     style={{ color: TriggerStatus[status] }}
                 >
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
@@ -103,7 +103,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     renderCardContent(context) {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
         let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
-        let envId = _selectedPipeline?.environmentId ? _selectedPipeline?.environmentId : _selectedPipeline?.lastTriggeredEnvId;
+        let envId = _selectedPipeline?.environmentId 
+        if( !_selectedPipeline?.environmentId && _selectedPipeline?.lastTriggeredEnvId === -1 ){
+            envId=0
+        }else if( _selectedPipeline?.lastTriggeredEnvId !== -1 ) {
+            envId=_selectedPipeline?.lastTriggeredEnvId
+        }
         const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         return (
             <div

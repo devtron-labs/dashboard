@@ -39,7 +39,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        let envId = this.state.selectedCIPipeline?.environmentId ? this.state.selectedCIPipeline?.environmentId : this.state.selectedCIPipeline?.lastTriggeredEnvId;
+        let envId = this.state.selectedCIPipeline?.environmentId
+        if( !this.state.selectedCIPipeline?.environmentId && this.state.selectedCIPipeline?.lastTriggeredEnvId === -1 ){
+            envId=0
+        }else if( this.state.selectedCIPipeline?.lastTriggeredEnvId !== -1 ) {
+            envId=this.state.selectedCIPipeline?.lastTriggeredEnvId
+        }
         const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         this.props.setSelectedEnv(_selectedEnv)
     }
@@ -118,7 +123,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     renderEnvironments = () => {
-        return <EnvironmentList environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
+        return <EnvironmentList isBuildStage={false} environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
     }
 
     handleStartBuildAction = (e) => {

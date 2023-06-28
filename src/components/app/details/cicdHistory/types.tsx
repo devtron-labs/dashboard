@@ -31,6 +31,8 @@ export interface History {
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
+    environmentId?: number
+    environmentName?: string
 }
 
 export interface CiMaterial {
@@ -161,6 +163,7 @@ export interface TriggerDetailsType {
     type: HistoryComponentType
     stage: DeploymentStageType
     artifact?: string
+    environmentName?: string
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -204,6 +207,7 @@ export interface StartDetailsType {
     gitTriggers: Map<number, GitTriggers>
     artifact: string
     type: HistoryComponentType
+    environmentName?: string
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {

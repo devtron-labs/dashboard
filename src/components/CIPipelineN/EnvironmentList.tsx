@@ -8,8 +8,8 @@ import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 
 
-export function EnvironmentList({ environments, selectedEnv, setSelectedEnv }:
-    { environments: any[], selectedEnv: Environment, setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>> }) {
+export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSelectedEnv }:
+    { isBuildStage: boolean, environments: any[], selectedEnv: Environment, setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>> }) {
 
     const selectEnvironment = (selection: Environment) => {
         const _selectedEnv = environments.find((env) => env.id == selection.id)
@@ -24,8 +24,10 @@ export function EnvironmentList({ environments, selectedEnv, setSelectedEnv }:
     }
 
     return (
-        <div className="sidebar-action-container sidebar-action-container-border">
-            <span>Execute tasks in environment</span>
+        <div className={`sidebar-action-container ${isBuildStage ? "sidebar-action-container-border" : "p-0" }`}>
+            {isBuildStage ? <span>Execute tasks in environment</span> : (
+                <div className="fs-12 fw-4">Execute job in</div>
+            ) }
             <ReactSelect
                 menuPlacement="auto"
                 closeMenuOnScroll={true}
