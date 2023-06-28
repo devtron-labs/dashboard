@@ -1,5 +1,6 @@
 import { ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
 import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
+import { DeploymentAppTypes } from '../config';
 
 export interface RootObject {
     code: number;
@@ -157,6 +158,7 @@ export interface EnvironmentHelmResult {
     namespace: string,
     environmentIdentifier: string
     isVirtualEnvironment?: boolean // Need to confirm for not full mode
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ClusterListResponse extends ResponseType {

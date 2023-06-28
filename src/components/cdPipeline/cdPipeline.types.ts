@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router'
+import { DeploymentAppTypes } from '../../config'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -54,6 +55,7 @@ export interface Environment {
     clusterName: string
     isClusterCdActive: boolean
     isVirtualEnvironment?: boolean
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 export interface CommonError {
     isValid: boolean
@@ -90,6 +92,7 @@ export interface CDPipelineState {
     isVirtualEnvironmentOnEnvSelection?: boolean
     showNonCascadeDeleteDialog: boolean
     clusterName: string
+    allowedDeploymentTypes: DeploymentAppTypes[]
 }
 
 export interface PipelineConfig {

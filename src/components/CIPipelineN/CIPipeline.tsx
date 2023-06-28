@@ -43,7 +43,7 @@ import {
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
+import { CIBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -53,6 +53,7 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+import { LoadingState } from '../ciConfig/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 
@@ -89,7 +90,11 @@ export default function CIPipeline({
         isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
     const [showFormError, setShowFormError] = useState<boolean>(false)
-    const [loadingData, setLoadingData] = useState<boolean>(false)
+    const [loadingState, setLoadingState] = useState<LoadingState>({
+        loading: false,
+        failed: false,
+    })
+    const [apiInProgress, setApiInProgress] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
@@ -462,14 +467,14 @@ export default function CIPipeline({
             toast.error('All task names must be unique')
             return
         }
-        setLoadingData(true)
+        setApiInProgress(true)
         validateStage(BuildStageVariable.PreBuild, formData)
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
             !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
-            setLoadingData(false)
+            setApiInProgress(false)
             toast.error('Scanning is mandatory, please enable scanning')
             return
         }
@@ -479,7 +484,7 @@ export default function CIPipeline({
             !formDataErrorObj.preBuildStage.isValid ||
             !formDataErrorObj.postBuildStage.isValid
         ) {
-            setLoadingData(false)
+            setApiInProgress(false)
             const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
@@ -529,14 +534,14 @@ export default function CIPipeline({
             .then((response) => {
                 if (response) {
                     toast.success(msg)
-                    setLoadingData(false)
+                    setApiInProgress(false)
                     close()
                     getWorkflows()
                 }
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                setLoadingData(false)
+                setApiInProgress(false)
             })
     }
 
@@ -899,7 +904,8 @@ export default function CIPipeline({
                     value={{
                         formData,
                         setFormData,
-                        setLoadingData,
+                        loadingState,
+                        setLoadingState,
                         addNewTask,
                         configurationType,
                         setConfigurationType,
@@ -981,7 +987,15 @@ export default function CIPipeline({
                                     loaderColor="white"
                                     dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
-                                    isLoading={loadingData}
+                                    disabled={
+                                        apiInProgress ||
+                                        (formData.isDockerConfigOverridden &&
+                                            formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
+                                            formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
+                                                CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                                            (loadingState.loading || loadingState.failed))
+                                    }
+                                    isLoading={apiInProgress}
                                 >
                                     {text}
                                 </ButtonWithLoader>

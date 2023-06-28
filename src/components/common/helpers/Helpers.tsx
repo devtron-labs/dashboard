@@ -13,6 +13,7 @@ import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
+import { DeploymentAppTypes } from '../../../config';
 
 const commandLineParser = require('command-line-parser')
 
@@ -1220,4 +1221,19 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
     }, [handleHeightChange, ref])
 
     return [ref]
+}
+
+export const getDeploymentAppType = (
+    allowedDeploymentTypes: DeploymentAppTypes[],
+    selectedDeploymentAppType: string,
+): string => {
+    if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+        return ''
+    } else if (
+        selectedDeploymentAppType &&
+        allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
+    ) {
+        return selectedDeploymentAppType
+    }
+    return allowedDeploymentTypes[0]
 }

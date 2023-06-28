@@ -75,6 +75,11 @@ export interface CIConfigParentState {
     currentCIBuildType?: CIBuildType
 }
 
+export interface LoadingState {
+    loading: boolean
+    failed: boolean
+}
+
 export interface CIConfigProps {
     respondOnSuccess: () => void
     configOverrideView?: boolean
@@ -85,7 +90,8 @@ export interface CIConfigProps {
     isCDPipeline?: boolean
     isCiPipeline?: boolean
     navItems?: CustomNavItemsType[]
-    setLoadingData?: React.Dispatch<React.SetStateAction<boolean>>
+    loadingStateFromParent?: LoadingState
+    setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 export interface CIConfigDiffViewProps {
@@ -116,7 +122,8 @@ export interface CIConfigFormProps {
     navItems: CustomNavItemsType[]
     parentState: CIConfigParentState
     setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
-    setLoadingData?: React.Dispatch<React.SetStateAction<boolean>>
+    loadingStateFromParent?: LoadingState
+    setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 export interface AdvancedConfigOptionsProps {
@@ -124,7 +131,8 @@ export interface AdvancedConfigOptionsProps {
     formData: FormType
     setFormData: React.Dispatch<React.SetStateAction<FormType>>
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
-    setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
+    loadingState?: LoadingState
+    setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 interface LanguageBuilderType {
@@ -248,7 +256,7 @@ export interface CIDockerFileConfigProps {
     setShowCustomPlatformWarning: any
     currentCIBuildConfig: CIBuildConfigType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
-    setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 export interface CICreateDockerfileOptionProps {
@@ -262,7 +270,7 @@ export interface CICreateDockerfileOptionProps {
     handleFileLocationChange: (selectedMaterial) => void
     repository?: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
-    setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
     currentBuildContextGitMaterial: any
     selectedBuildContextGitMaterial: any
     handleBuildContextPathChange: (selectedBuildContextGitMaterial) => void
