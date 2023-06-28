@@ -58,6 +58,7 @@ export const TriggerDetails = React.memo(
         stage,
         artifact,
         environmentName,
+        isJobView,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -74,6 +75,7 @@ export const TriggerDetails = React.memo(
                         artifact={artifact}
                         type={type}
                         environmentName={environmentName}
+                        isJobView={isJobView}
                     />
                     <CurrentStatus
                         status={status}
@@ -83,6 +85,7 @@ export const TriggerDetails = React.memo(
                         podStatus={podStatus}
                         stage={stage}
                         type={type}
+                        isJobView={isJobView}
                     />
                 </div>
             </div>
@@ -217,14 +220,14 @@ const ProgressingStatus = React.memo(
 )
 
 const CurrentStatus = React.memo(
-    ({ status, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
+    ({ status, finishedOn, artifact, message, podStatus, stage, type, isJobView }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
                 <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
-                <div className="flex left mb-12">
+                <div className={`flex left ${ isJobView ? "mb-12" : ""}`}>
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
@@ -242,11 +245,12 @@ const StartDetails = ({
     artifact,
     type,
     environmentName,
+    isJobView,
 }: StartDetailsType): JSX.Element => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
     return (
-        <div className="trigger-details__start flex column left mt-4">
+        <div className={`trigger-details__start flex column left ${isJobView ? "mt-4" : ""}`}>
             <div className="cn-9 fs-14 fw-6" data-testid="deployment-history-start-heading">
                 Start
             </div>
@@ -301,10 +305,10 @@ const StartDetails = ({
                     </Link>
                 )}
             </div>
-            <div className="pt-4 pb-4 pr-0 pl-0">
+            {isJobView && <div className="pt-4 pb-4 pr-0 pl-0">
                 <span className="fw-6 fs-12">Env</span>
                 <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : "default-ci"}</span>
-            </div>
+            </div>}
 
         </div>
     )

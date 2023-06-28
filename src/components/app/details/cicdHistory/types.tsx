@@ -164,6 +164,7 @@ export interface TriggerDetailsType {
     stage: DeploymentStageType
     artifact?: string
     environmentName?: string
+    isJobView?: boolean
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -197,6 +198,7 @@ export interface CurrentStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    isJobView?: boolean
 }
 
 export interface StartDetailsType {
@@ -208,6 +210,7 @@ export interface StartDetailsType {
     artifact: string
     type: HistoryComponentType
     environmentName?: string
+    isJobView?: boolean
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {
