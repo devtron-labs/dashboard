@@ -96,7 +96,7 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`} data-testid="deployment-status-text">
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>
-            <div className="flex left">
+            <div className="flex left mb">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
                     <time className="dc__vertical-align-middle">
                         {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
@@ -224,7 +224,7 @@ const CurrentStatus = React.memo(
             )
         } else {
             return (
-                <div className="flex left">
+                <div className="flex left mb-12">
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
@@ -246,7 +246,7 @@ const StartDetails = ({
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
     return (
-        <div className="trigger-details__start flex column left">
+        <div className="trigger-details__start flex column left mt-4">
             <div className="cn-9 fs-14 fw-6" data-testid="deployment-history-start-heading">
                 Start
             </div>
