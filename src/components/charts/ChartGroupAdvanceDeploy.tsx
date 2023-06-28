@@ -215,6 +215,7 @@ export default function ChartGroupAdvanceDeploy() {
                                         onClick={handleInstall}
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         className="cta dc__ellipsis-right"
+                                        data-testid="deploy_button"
                                     >
                                         {installing ? <Progressing /> : 'Deploy'}
                                     </button>
