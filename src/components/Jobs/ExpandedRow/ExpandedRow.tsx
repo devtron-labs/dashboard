@@ -12,6 +12,20 @@ export default function ExpandedRow(props: ExpandedRowProps) {
         props.handleEdit(props.job.id)
     }
 
+    const environmentName = (ciPipeline: JobCIPipeline): string => {
+        if(ciPipeline.status === "") {
+            if(ciPipeline.environment_name === ""){
+                return "default-ci"
+            }
+            return ciPipeline.environment_name
+        }else {
+            if(ciPipeline.last_triggered_environment_name === ""){
+                return "default-ci"
+            }
+            return ciPipeline.last_triggered_environment_name
+        }
+    }
+
     const redirectToJobPipelineDetails = (job: Job, ciPipeline: JobCIPipeline): string => {
         return `${URLS.JOB}/${job.id}/${URLS.APP_CI_DETAILS}/${ciPipeline.ciPipelineId}`
     }
@@ -30,7 +44,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <AppStatus appStatus={ciPipeline.status} isJobView={true} />
                     </div>
                     <div className="app-list__cell app-list__cell--time">
-                        <p className="dc__truncate-text m-0">{ciPipeline.last_triggered_environment_name === "" ? ciPipeline.environment_name : ciPipeline.last_triggered_environment_name}</p>
+                        <p className="dc__truncate-text m-0">{environmentName(ciPipeline)}</p>
                     </div>
                     <div className="app-list__cell app-list__cell--time">
                         <p className="dc__truncate-text m-0">{ciPipeline.lastRunAt}</p>

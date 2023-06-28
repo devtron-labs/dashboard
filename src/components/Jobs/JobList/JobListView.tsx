@@ -56,6 +56,20 @@ export default function JobListView(props: JobListViewProps) {
         return `${URLS.JOB}/${job.id}/${URLS.APP_OVERVIEW}`
     }
 
+    const environmentName = (job: Job): string => {
+        if(job.defaultPipeline.status === "") {
+            if(job.defaultPipeline.environment_name === ""){
+                return "default-ci"
+            }
+            return job.defaultPipeline.environment_name
+        }else {
+            if(job.defaultPipeline.last_triggered_environment_name === ""){
+                return "default-ci"
+            }
+            return job.defaultPipeline.last_triggered_environment_name
+        }
+    }
+
     const renderJobPipelines = () => {
         return props.jobs.map((job) => {
             const len = job.ciPipelines.length > 1
@@ -88,7 +102,7 @@ export default function JobListView(props: JobListViewProps) {
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">{job.defaultPipeline.last_triggered_environment_name === "" ? job.defaultPipeline.environment_name : job.defaultPipeline.last_triggered_environment_name}</p>
+                                <p className="dc__truncate-text m-0">{environmentName(job)}</p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>

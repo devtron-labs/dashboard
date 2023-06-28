@@ -388,6 +388,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         }
     }
 
+    const environmentName = (jobPipeline: JobPipeline): string => {
+        if(jobPipeline.status === "") {
+            if(jobPipeline.environment_name === ""){
+                return "default-ci"
+            }
+            return jobPipeline.environment_name
+        }else {
+            if(jobPipeline.last_triggered_environment_name === ""){
+                return "default-ci"
+            }
+            return jobPipeline.last_triggered_environment_name
+        }
+    }
+
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -437,7 +451,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 data-testid={`${jobPipeline.environment_name}-${index}`}
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
-                                {jobPipeline.last_triggered_environment_name === "" ? jobPipeline.environment_name : jobPipeline.last_triggered_environment_name}
+                                {environmentName(jobPipeline)}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
                                 {jobPipeline.started_on !== '0001-01-01T00:00:00Z'

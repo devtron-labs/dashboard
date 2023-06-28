@@ -303,7 +303,7 @@ const StartDetails = ({
             </div>
             <div className="pt-4 pb-4 pr-0 pl-0">
                 <span className="fw-6 fs-12">Env</span>
-                <span className="fs-12 mb-4 ml-8">{environmentName}</span>
+                <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : "default-ci"}</span>
             </div>
 
         </div>
