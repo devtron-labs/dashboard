@@ -97,9 +97,9 @@ useEffect(() => {
             className="global-configuration__component flex-1"
             data-testid="select-existing-container-registry-list"
         >
-            <h2 className="form__title">Container Registries</h2>
+            <h2 className="form__title">Registries</h2>
             <p className="form__subtitle">
-                Manage your organization’s container registries.&nbsp;
+                Manage your organization’s Container/ OCI registries.&nbsp;
                 <a
                     className="dc__link"
                     href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
