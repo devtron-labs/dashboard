@@ -96,18 +96,10 @@ useEffect(() => {
             className="global-configuration__component flex-1"
             data-testid="select-existing-container-registry-list"
         >
-            <h2 className="form__title">Registries</h2>
-            <p className="form__subtitle">
-                Manage your organization’s Container/ OCI registries.&nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    Learn more
-                </a>
-            </p>
+            <div className="flex left fs-16 cn-9 fw-6 mb-24">
+                Container / OCI Registry
+                <Question className="icon-dim-16 fcn-6 ml-8 cursor" />
+            </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
                     reload={reload}
@@ -183,7 +175,7 @@ function CollapsedList({
                 <div className="flex left">
                     <List.Title
                         style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
-                        title={id || 'Add Container Registry'}
+                        title={id || 'Add Registry'}
                         subtitle={registryUrl}
                         tag={isDefault ? 'DEFAULT' : ''}
                     />
@@ -435,7 +427,7 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: Isdefault,
+            isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) ? Isdefault: false,
             isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE,
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
@@ -816,7 +808,7 @@ function DockerForm({
                             onChange={onRegistryStorageTypeChange}
                         >
                             <span className="flex left cn-7 w-150 mr-16 fs-13 fw-6 lh-20">
-                                Regisrty Type
+                                Registry type
                                 <Question className="icon-dim-16 ml-4" />
                             </span>
                             <RadioGroupItem
@@ -1065,7 +1057,7 @@ function DockerForm({
                         <div className="mb-12">
                             <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
                                 <span className="flex left w-150">
-                                    <span className="dc__required-field">Use repository</span>
+                                    <span className="dc__required-field">Use repository to</span>
                                     <Question className="icon-dim-16 ml-4" />
                                 </span>
                                 {OCIRegisrtyInputError && (
@@ -1096,47 +1088,51 @@ function DockerForm({
                             </label>
                         </div>
                         {IsContainerStore && (
-                            <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                            <>
+                                <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                                <hr className="mt-0" />
+                            </>
                         )}
-                        <hr className="mt-0" />
                     </>
                 ) : (
                     renderRegistryCredentialsAutoInjectToClustersComponent()
                 )}
-                <div className="form__row form__buttons  ">
-                    <label
-                        htmlFor=""
-                        className="docker-default flex left "
-                        onClick={
-                            isDefault
-                                ? () => {
-                                      toast.success('Please mark another as default.')
-                                  }
-                                : (e) => toggleDefault((t) => !t)
-                        }
-                    >
-                        <input
-                            type="checkbox"
-                            className="cursor"
-                            name="default"
-                            checked={Isdefault}
-                            onChange={(e) => {}}
-                        />
-                        <div className="mr-4"> Set as default registry </div>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={
-                                <span style={{ display: 'block', width: '160px' }}>
-                                    Default container registry is automatically selected while creating an application.{' '}
-                                </span>
+                {(registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) && (
+                    <div className="form__row form__buttons">
+                        <label
+                            htmlFor=""
+                            className="docker-default flex left "
+                            onClick={
+                                isDefault
+                                    ? () => {
+                                        toast.success('Please mark another as default.')
+                                    }
+                                    : (e) => toggleDefault((t) => !t)
                             }
                         >
-                            <Question className="icon-dim-20" />
-                        </Tippy>
-                    </label>
-                </div>
+                            <input
+                                type="checkbox"
+                                className="cursor"
+                                name="default"
+                                checked={Isdefault}
+                                onChange={(e) => {}}
+                            />
+                            <div className="mr-4"> Set as default registry </div>
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={
+                                    <span style={{ display: 'block', width: '160px' }}>
+                                        Default container registry is automatically selected while creating an application.{' '}
+                                    </span>
+                                }
+                            >
+                                <Question className="icon-dim-20" />
+                            </Tippy>
+                        </label>
+                    </div>
+                )}
             </div>
             <div className="p-20 divider">
                 <div className="flex right">
