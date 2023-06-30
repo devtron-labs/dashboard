@@ -631,7 +631,7 @@ function DockerForm({
             } else if (e.currentTarget.dataset.name === 'CONTAINER_AND_CHART_STORE') {
                 setOCIRegistryStorageConfig({
                     CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
+                    CHART: OCIRegistryConfigConstants.PUSH,
                 })
             }
         } else {
