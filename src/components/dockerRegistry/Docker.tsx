@@ -34,14 +34,13 @@ import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
+const OCIRegistryUseActionHelmPushMessage = importComponentFromFELibrary('OCIRegistryUseActionHelmPushMessage','','function')
 
 enum CERTTYPE {
     SECURE = 'secure',
     INSECURE = 'insecure',
     SECURE_WITH_CERT = 'secure-with-cert',
 }
-
 
 export default function Docker({ ...props }) {
         const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
@@ -351,7 +350,7 @@ function DockerForm({
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     let InitialValueOfIsContainerStore: boolean = ociRegistryConfig?.CONTAINER === OCIRegistryConfigConstants.PULL_PUSH
-    InitialValueOfIsContainerStore = VirtualClusterSelectionTab
+    InitialValueOfIsContainerStore = OCIRegistryUseActionHelmPushMessage
         ? InitialValueOfIsContainerStore &&
           (ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
               ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PUSH)
@@ -1085,14 +1084,14 @@ function DockerForm({
                                     name="default"
                                     checked={IsContainerStore}
                                     data-name={
-                                        VirtualClusterSelectionTab ? 'CONTAINER_AND_CHART_STORE' : 'CONTAINER_STORE'
+                                        OCIRegistryUseActionHelmPushMessage ? 'CONTAINER_AND_CHART_STORE' : 'CONTAINER_STORE'
                                     }
                                     onChange={(e) => {
                                         handleOCIRegistryStorageAction(e)
                                     }}
                                 />
                                 <div className="mr-4">
-                                    Store container images {VirtualClusterSelectionTab ? '& helm packages' : ''}
+                                    Store container images {OCIRegistryUseActionHelmPushMessage ? `& ${OCIRegistryUseActionHelmPushMessage}` : ''}
                                 </div>
                             </label>
                         </div>
