@@ -556,6 +556,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.deploymentAppType = getDeploymentAppType(
                 selection.allowedDeploymentTypes,
                 this.state.pipelineConfig.deploymentAppType,
+                selection.isVirtualEnvironment
             )
             this.setState(
                 {
