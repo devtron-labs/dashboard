@@ -98,7 +98,7 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
-    isEditMode: Map<number,boolean>
+    materialInEditModeMap: Map<number,boolean>
 }
 
 export interface MaterialInfo {

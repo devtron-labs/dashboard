@@ -88,7 +88,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
-            isEditMode: new Map<number,boolean>(),
+            materialInEditModeMap: new Map<number,boolean>(),
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -600,11 +600,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     toggleCardMode = (index) => {
         this.setState((prevState) => {
-          const _isEditModeList = new Map(prevState.isEditMode);
-          _isEditModeList.set(index, !_isEditModeList.get(index));
-          return { isEditMode: _isEditModeList };
-        });
-      };
+            const _isEditModeList = new Map(prevState.materialInEditModeMap)
+            _isEditModeList.set(index, !_isEditModeList.get(index))
+            return {
+                materialInEditModeMap: _isEditModeList,
+            }
+        })
+    }
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
         return materialList.map((mat) => {
@@ -620,7 +622,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
             const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
             const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
-            const hideSourceInfo = !this.state.isEditMode.get(+mat.id)
+            const hideSourceInfo = !this.state.materialInEditModeMap.get(+mat.id)
             return (
                 <div
                     key={`material-history-${mat.index}`}

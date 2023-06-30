@@ -37,8 +37,6 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [aretagsEditable, setAreTagsEditable] = useState<boolean>(false)
-    const [allTagsOfApp, setAllTagsOfApp] = useState<[]>([])
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
@@ -67,9 +65,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-
-        setAreTagsEditable(triggerHistoryResult.result?.tagsEditable)
-        setAllTagsOfApp(triggerHistoryResult.result?.appReleaseTagNames)
+        
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -176,8 +172,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
                                             isJobView={isJobView}
-                                            tagsEditable = {aretagsEditable}
-                                            appReleaseTags = {allTagsOfApp}
+                                            tagsEditable = {triggerHistoryResult.result?.tagsEditable}
+                                            appReleaseTags = {triggerHistoryResult.result?.appReleaseTagNames}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (

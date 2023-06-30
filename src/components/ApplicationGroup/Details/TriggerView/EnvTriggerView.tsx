@@ -1837,8 +1837,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
                     })
                     if (node) {
-                        node.appReleaseTagNames = _wf.appReleaseTags
-                        node.tagsEditable = _wf.tagsEditable
                         _appID = _wf.appId
                         break
                     }
