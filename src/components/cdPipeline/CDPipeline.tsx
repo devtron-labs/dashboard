@@ -275,13 +275,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             getDockerRegistryMinAuth(this.props.match.params.appId, true)
                                 .then((response) => {
                                     let dockerRegistries = response.result || []
-                                    dockerRegistries = dockerRegistries.map((dockerRegistry) => {
+                                    dockerRegistries = dockerRegistries?.map((dockerRegistry) => {
                                         return {
                                             label: dockerRegistry.id,
                                             value: dockerRegistry.id,
                                         }
                                     })
-                                    sortObjectArrayAlphabetically(dockerRegistries, 'id')
+                                    // sortObjectArrayAlphabetically(dockerRegistries, 'id')
                                     console.log(dockerRegistries) // Ignore for now. Added just for the sake of testing
                                     this.setState({
                                         pipelineConfig: {
