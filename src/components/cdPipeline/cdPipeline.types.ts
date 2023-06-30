@@ -1,3 +1,4 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { DeploymentAppTypes } from '../../config'
 
@@ -61,6 +62,11 @@ export interface CommonError {
     isValid: boolean
     message: string
 }
+
+export enum GeneratedHelmPush {
+  PUSH = 'PUSH',
+  DO_NOT_PUSH = 'DO_NOT_PUSH',
+}
 export interface CDPipelineState {
     environments: Environment[]
     view: string
@@ -72,6 +78,10 @@ export interface CDPipelineState {
         deploymentAppType: string
         deploymentAppCreated: boolean
         isVirtualEnvironment?: boolean
+        generatedHelmPushAction: string
+        dockerRegistries
+        repoName: string
+        selectedRegistry: OptionType
     }
     showDeleteModal: boolean
     shouldDeleteApp: boolean

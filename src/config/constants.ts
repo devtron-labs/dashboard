@@ -805,7 +805,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
-export const RESOURCES_NOT_FOUND = 'Resources are not available' 
+export const RESOURCES_NOT_FOUND = 'Resources are not available'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
@@ -834,8 +834,10 @@ export enum CONFIGURATION_TYPES {
 export enum DeploymentAppTypes {
   HELM = 'helm',
   GITOPS = 'argo_cd',
-  MANIFEST_DOWNLOAD = 'manifest_download'
+  MANIFEST_DOWNLOAD = 'manifest_download',
+  MANIFEST_PUSH='manifest_push'
 }
+
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

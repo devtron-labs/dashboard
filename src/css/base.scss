@@ -386,6 +386,12 @@ a:focus {
     background-color: white;
 }
 
+.form__row--two-third {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-column-gap: 16px;
+}
+
 // ClassName of text area
 .dc__code-textarea {
     min-width: 100%;
@@ -3381,6 +3387,6 @@ textarea::placeholder {
 
 .line_separator {
     width: 1px;
-    height: 16px; 
+    height: 16px;
     background: var(--terminal-bg);
 }

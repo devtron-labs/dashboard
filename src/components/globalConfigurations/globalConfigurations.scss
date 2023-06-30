@@ -257,12 +257,6 @@
     }
 }
 
-.form__row--two-third {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-column-gap: 16px;
-}
-
 .form__row--auth-type {
     display: grid;
     width: 100%;
