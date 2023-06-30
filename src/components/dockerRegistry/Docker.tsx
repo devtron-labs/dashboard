@@ -596,7 +596,7 @@ function DockerForm({
                 return
             }
         }
-        if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
+        if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !IsContainerStore) {
             setOCIRegisrtyInputError(true)
             return
         }
