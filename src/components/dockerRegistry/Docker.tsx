@@ -149,7 +149,14 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    ociRegistryConfig = {},
+    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
+        ? {
+              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+              CHART: OCIRegistryConfigConstants.PUSH,
+          }
+        : {
+              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+          },
     ipsConfig = {
         id: 0,
         credentialType: '',
