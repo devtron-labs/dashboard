@@ -250,8 +250,14 @@ p.sentence-case:first-letter {
         }
     }
 
-    &.regisrty-form__radio-group .form__radio-item .form__radio-item-content {
-        padding: 16px 16px 16px 0;
+    &.regisrty-form__radio-group {
+        .form__radio-item.disabled {
+            background-color: var(--N000) !important;
+            opacity: 0.5;
+        }
+        .form__radio-item .form__radio-item-content {
+            padding: 16px 16px 16px 0;
+        }
     }
 
 }
