@@ -98,7 +98,29 @@ useEffect(() => {
         >
             <div className="flex left fs-16 cn-9 fw-6 mb-24">
                 Container / OCI Registry
-                <Question className="icon-dim-16 fcn-6 ml-8 cursor" />
+                <Tippy
+                    className="default-white ml-10"
+                    arrow={false}
+                    placement="top"
+                    interactive
+                    delay={200}
+                    animation="fade"
+                    content={
+                        <p className="form__subtitle">
+                            Manage your organization’s Container/ OCI registries.&nbsp;
+                            <a
+                                className="dc__link"
+                                href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                Learn more
+                            </a>
+                        </p>
+                    }
+                >
+                    <Question className="icon-dim-16 fcn-6 ml-8 cursor" />
+                </Tippy>
             </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
@@ -141,7 +163,7 @@ function CollapsedList({
 }) {
     const [collapsed, toggleCollapse] = useState(true)
     const history = useHistory()
-    const { url, path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const params = useParams<{ id: string }>()
 
     const setToggleCollapse = () => {
@@ -805,6 +827,7 @@ function DockerForm({
                             className="flex-wrap regisrty-form__radio-group"
                             value={registryStorageType}
                             name="registry-type"
+                            disabled={id}
                             onChange={onRegistryStorageTypeChange}
                         >
                             <span className="flex left cn-7 w-150 mr-16 fs-13 fw-6 lh-20">
