@@ -18,7 +18,7 @@ import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../servi
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, REGISTRY_TYPE_MAP, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType } from '../../config'
+import { DOCUMENTATION, REGISTRY_TYPE_MAP, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -91,36 +91,35 @@ useEffect(() => {
     let dockerRegistryList = result?.result || []
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
+
+    const additionalRegistryTitleTippyContent = () => {
+        return <p className="p-12 fs-13 fw-4 lh-20">{REGISTRY_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
+    }
+
     return (
         <section
             className="global-configuration__component flex-1"
             data-testid="select-existing-container-registry-list"
         >
-            <div className="flex left fs-16 cn-9 fw-6 mb-24">
+            <div className="flex left fs-16 cn-9 fw-6 mb-20">
                 Container / OCI Registry
-                <Tippy
-                    className="default-white ml-10"
-                    arrow={false}
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300"
                     placement="top"
-                    interactive
-                    delay={200}
-                    animation="fade"
-                    content={
-                        <p className="form__subtitle">
-                            Manage your organization’s Container/ OCI registries.&nbsp;
-                            <a
-                                className="dc__link"
-                                href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                            >
-                                Learn more
-                            </a>
-                        </p>
-                    }
+                    Icon={HelpIcon}
+                    iconClass="fcv-5"
+                    heading={REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
+                    infoText={REGISTRY_TITLE_DESCRIPTION_CONTENT.infoText}
+                    additionalContent={additionalRegistryTitleTippyContent()}
+                    documentationLinkText={REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                    documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                    showCloseButton={true}
+                    trigger="click"
+                    interactive={true}
                 >
-                    <Question className="icon-dim-16 fcn-6 ml-8 cursor" />
-                </Tippy>
+                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                </TippyCustomized>
             </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
