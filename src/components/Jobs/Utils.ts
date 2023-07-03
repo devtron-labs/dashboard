@@ -5,6 +5,7 @@ import * as queryString from 'query-string'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import moment from 'moment'
+import { JobPipeline } from '../app/types'
 
 export const getInitialJobListState = (payloadParsedFromUrl): JobListState => {
     return {
@@ -231,4 +232,18 @@ export const populateQueryString = (searchParams: string): Record<string, any> =
         query[key] = qs[key]
     }
     return query
+}
+
+export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): string => {
+    if(jobPipeline.status === "") {
+        if(jobPipeline.environment_name === ""){
+            return "default-ci"
+        }
+        return jobPipeline.environment_name
+    }else {
+        if(jobPipeline.last_triggered_environment_name === ""){
+            return "default-ci"
+        }
+        return jobPipeline.last_triggered_environment_name
+    }
 }

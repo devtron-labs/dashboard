@@ -6,24 +6,11 @@ import { ExpandedRowProps, Job, JobCIPipeline } from '../Types'
 import AppStatus from '../../app/AppStatus'
 import './ExpandedRow.scss'
 import { URLS } from '../../../config'
+import { environmentName } from '../Utils'
 
 export default function ExpandedRow(props: ExpandedRowProps) {
     const handleEditJob = () => {
         props.handleEdit(props.job.id)
-    }
-
-    const environmentName = (ciPipeline: JobCIPipeline): string => {
-        if(ciPipeline.status === "") {
-            if(ciPipeline.environment_name === ""){
-                return "default-ci"
-            }
-            return ciPipeline.environment_name
-        }else {
-            if(ciPipeline.last_triggered_environment_name === ""){
-                return "default-ci"
-            }
-            return ciPipeline.last_triggered_environment_name
-        }
     }
 
     const redirectToJobPipelineDetails = (job: Job, ciPipeline: JobCIPipeline): string => {

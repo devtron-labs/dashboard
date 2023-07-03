@@ -31,7 +31,6 @@ export interface History {
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
-    environmentId?: number
     environmentName?: string
 }
 

@@ -99,7 +99,7 @@ const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedTyp
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`} data-testid="deployment-status-text">
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>
-            <div className="flex left mb">
+            <div className="flex left">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
                     <time className="dc__vertical-align-middle">
                         {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}

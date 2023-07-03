@@ -41,6 +41,7 @@ import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.t
 import { createAppLabels } from '../service'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
+import { environmentName } from '../../Jobs/Utils'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
@@ -387,21 +388,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 )
         }
     }
-
-    const environmentName = (jobPipeline: JobPipeline): string => {
-        if(jobPipeline.status === "") {
-            if(jobPipeline.environment_name === ""){
-                return "default-ci"
-            }
-            return jobPipeline.environment_name
-        }else {
-            if(jobPipeline.last_triggered_environment_name === ""){
-                return "default-ci"
-            }
-            return jobPipeline.last_triggered_environment_name
-        }
-    }
-
+    
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (

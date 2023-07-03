@@ -116,7 +116,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 let list = []
                 list.push({ id: 0, clusterName: '', name: "default-ci", active: false, isClusterActive: false, description: "System default" })
                 response.result?.forEach((env) => {
-                    if(env.cluster_name!=="default_cluster") {
+                    if (env.cluster_name !== "default_cluster") {
                         list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
                     }
                 })
