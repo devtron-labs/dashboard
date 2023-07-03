@@ -1015,25 +1015,24 @@ function DockerForm({
                     </>
                 )}
                 {selectedDockerRegistryType.value === 'other' && (
-                    <hr className="cn-1 bcn-1 en-1" style={{ height: 0.5 }} />
-                )}
-                {selectedDockerRegistryType.value === 'other' && (
-                    <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-22'}`}>
-                        <Dropdown
-                            onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
-                            className="rotate icon-dim-18 pointer fcn-6"
-                            style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
-                        />
-                        <label
-                            className="fs-13 mb-0 ml-8 pointer"
-                            onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
-                        >
-                            Advanced Registry URL Connection Options
-                        </label>
-                        <a target="_blank" href="https://docs.docker.com/registry/insecure/">
-                            <Info className="icon-dim-16 ml-4 mt-5" />
-                        </a>
-                    </div>
+                    <>
+                        <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-16'}`}>
+                            <Dropdown
+                                onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
+                                className="rotate icon-dim-18 pointer fcn-6"
+                                style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
+                            />
+                            <label
+                                className="fs-13 mb-0 ml-8 pointer"
+                                onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
+                            >
+                                Advanced Registry URL Connection Options
+                            </label>
+                            <a target="_blank" href="https://docs.docker.com/registry/insecure/">
+                                <Info className="icon-dim-16 ml-4 mt-5" />
+                            </a>
+                        </div>
+                    </>
                 )}
                 {toggleCollapsedAdvancedRegistry && selectedDockerRegistryType.value === 'other' && (
                     <div className="form__row ml-3" style={{ width: '100%' }}>
@@ -1087,6 +1086,7 @@ function DockerForm({
                         ))}
                     </div>
                 )}
+                {selectedDockerRegistryType.value === 'other' && <hr className="mt-0 mb-16" />}
                 {registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                 selectedDockerRegistryType.value !== 'gcr' ? (
                     <>
