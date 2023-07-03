@@ -1116,10 +1116,7 @@ function DockerForm({
                             </Checkbox>
                         </div>
                         {IsContainerStore && (
-                            <>
-                                <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
-                                <hr className="mt-0 mb-16" />
-                            </>
+                            <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
                         )}
                     </>
                 ) : (
@@ -1145,7 +1142,8 @@ function DockerForm({
                                 placement="top"
                                 content={
                                     <span style={{ display: 'block', width: '160px' }}>
-                                        Default container registry is automatically selected while creating an application.
+                                        Default container registry is automatically selected while creating an
+                                        application.
                                     </span>
                                 }
                             >
