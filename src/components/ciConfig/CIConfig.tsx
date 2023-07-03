@@ -21,7 +21,8 @@ export default function CIConfig({
     isCDPipeline,
     isCiPipeline,
     navItems,
-    setLoadingData,
+    loadingStateFromParent,
+    setLoadingStateFromParent,
 }: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
@@ -69,11 +70,14 @@ export default function CIConfig({
                     dockerRegistries: dockerRegistries,
                     sourceConfig: sourceConfig,
                     ciConfig: ciConfig,
-                    defaultDockerConfigs: Object.assign({}, {
-                        dockerRegistry: ciConfig.dockerRegistry,
-                        dockerRepository: ciConfig.dockerRepository,
-                        ciBuildConfig: ciConfig.ciBuildConfig,
-                    }),
+                    defaultDockerConfigs: Object.assign(
+                        {},
+                        {
+                            dockerRegistry: ciConfig.dockerRegistry,
+                            dockerRepository: ciConfig.dockerRepository,
+                            ciBuildConfig: ciConfig.ciBuildConfig,
+                        },
+                    ),
                 })
             }
         } catch (err) {
@@ -141,7 +145,8 @@ export default function CIConfig({
             navItems={navItems}
             parentState={parentState}
             setParentState={setParentState}
-            setLoadingData={setLoadingData}
+            loadingStateFromParent={loadingStateFromParent}
+            setLoadingStateFromParent={setLoadingStateFromParent}
         />
     )
 }
