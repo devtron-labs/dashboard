@@ -699,14 +699,13 @@ function DockerForm({
         menu: (base, state) => ({
             ...base,
             marginTop: 'auto',
-            paddingBottom: '4px',
         }),
         menuList: (base) => {
             return {
                 ...base,
                 position: 'relative',
-                paddingBottom: '0px',
                 maxHeight: '250px',
+                paddingBottom: '4px',
             }
         },
     }
@@ -1129,28 +1128,31 @@ function DockerForm({
                 {(selectedDockerRegistryType.value === 'gcr' ||
                     registryStorageType !== RegistryStorageType.OCI_PRIVATE ||
                     IsContainerStore) && (
-                    <div className="flex left">
-                        <Checkbox
-                            rootClassName="docker-default mb-0"
-                            isChecked={Isdefault}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={handleDefaultChange}
-                        >
-                            Set as default registry
-                        </Checkbox>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={
-                                <span style={{ display: 'block', width: '160px' }}>
-                                    Default container registry is automatically selected while creating an application.
-                                </span>
-                            }
-                        >
-                            <Question className="icon-dim-20 ml-8" />
-                        </Tippy>
-                    </div>
+                    <>
+                        <hr className="mt-0 mb-16" />
+                        <div className="flex left">
+                            <Checkbox
+                                rootClassName="docker-default mb-0"
+                                isChecked={Isdefault}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={handleDefaultChange}
+                            >
+                                Set as default registry
+                            </Checkbox>
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={
+                                    <span style={{ display: 'block', width: '160px' }}>
+                                        Default container registry is automatically selected while creating an application.
+                                    </span>
+                                }
+                            >
+                                <Question className="icon-dim-20 ml-8" />
+                            </Tippy>
+                        </div>
+                    </>
                 )}
             </div>
             <div className="p-20 divider">
