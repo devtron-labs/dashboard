@@ -307,21 +307,16 @@
 
     .form__buttons {
         align-items: center;
-
-        .docker-default {
+    }
+    
+    .docker-default {
+        .form__checkbox-label {
             margin-right: auto;
-            color: var(--N700);
+            color: var(--N900);
             font-size: 13px;
             font-weight: normal;
-            line-height: 18px;
-
-            input[type='checkbox'] {
-                height: 16px;
-                width: 16px;
-                border-radius: 3px;
-                border: 1px solid var(--N200);
-                margin: 0 12px 0 0;
-            }
+            line-height: 20px;
+            font-weight: 400;
         }
     }
 }
