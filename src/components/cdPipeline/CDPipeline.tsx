@@ -26,6 +26,7 @@ import {
     RadioGroupItem,
     TippyCustomized,
     TippyTheme,
+    sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -193,6 +194,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
+      console.log(selectedGeneratedHelmValue)
         this.setState({
             pipelineConfig: {
                 ...this.state.pipelineConfig,
@@ -202,12 +204,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleRegistryChange = (selectedRegistry): void => {
-        console.log('selectedRegistry', selectedRegistry)
         this.setState({
-          pipelineConfig: {
-            ...this.state.pipelineConfig,
-            selectedRegistry: selectedRegistry,
-          }
+            pipelineConfig: {
+                ...this.state.pipelineConfig,
+                selectedRegistry: selectedRegistry,
+            },
         })
     }
 
@@ -221,6 +222,28 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     getDeploymentStrategies(): void {
+      getDockerRegistryMinAuth(this.props.match.params.appId, true)
+      .then((response) => {
+          let dockerRegistries = response.result || []
+          dockerRegistries = dockerRegistries?.map((dockerRegistry) => {
+              return {
+                  label: dockerRegistry.id,
+                  value: dockerRegistry.id,
+              }
+          })
+          console.log(dockerRegistries)
+
+          // sortObjectArrayAlphabetically(dockerRegistries, 'id')
+          this.setState({
+              pipelineConfig: {
+                  ...this.state.pipelineConfig,
+                  dockerRegistries: dockerRegistries,
+              },
+          })
+      })
+      .catch((error) => {
+          showError(error)
+      })
         getDeploymentStrategyList(this.props.match.params.appId)
             .then((response) => {
                 let strategies = response.result.pipelineStrategy || []
@@ -250,6 +273,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     })
                                 })
                                 .catch((error) => {})
+                                // this.getInit()
                             getEnvironmentListMinPublic(true)
                                 .then((response) => {
                                     let list = response.result || []
@@ -272,27 +296,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 .catch((error) => {
                                     showError(error)
                                 })
-                            getDockerRegistryMinAuth(this.props.match.params.appId, true)
-                                .then((response) => {
-                                    let dockerRegistries = response.result || []
-                                    dockerRegistries = dockerRegistries?.map((dockerRegistry) => {
-                                        return {
-                                            label: dockerRegistry.id,
-                                            value: dockerRegistry.id,
-                                        }
-                                    })
-                                    // sortObjectArrayAlphabetically(dockerRegistries, 'id')
-                                    console.log(dockerRegistries) // Ignore for now. Added just for the sake of testing
-                                    this.setState({
-                                        pipelineConfig: {
-                                            ...this.state.pipelineConfig,
-                                            dockerRegistries: dockerRegistries,
-                                        },
-                                    })
-                                })
-                                .catch((error) => {
-                                    showError(error)
-                                })
+
                             if (this.state.strategies.length > 0) {
                                 let defaultStrategy = this.state.strategies.find((strategy) => strategy.default)
                                 this.handleStrategy(defaultStrategy.deploymentTemplate)
@@ -370,6 +374,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             ...pipelineConfigFromRes,
             ...(pipelineConfigFromRes.environmentId && env ? { namespace: env.namespace } : {}),
             strategies: savedStrategies,
+            generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
+            repoName: pipelineConfigFromRes.repoName,
+            manifestStorageType: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : "helm_repo",
             preStage: {
                 ...pipelineConfigFromRes.preStage,
                 config: pipelineConfigFromRes.preStage.config || '',
@@ -1491,19 +1498,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.pipelineConfig.isVirtualEnvironment
                     ? VirtualEnvSelectionInfoBar && <VirtualEnvSelectionInfoBar />
                     : this.renderTriggerType()}
-                {this.state.pipelineConfig.isVirtualEnvironment
-                    ? HelmManifestPush && (
-                          <HelmManifestPush
-                              generatedHelmPushAction={this.state.pipelineConfig.generatedHelmPushAction}
-                              onChangeSetGeneratedHelmPush={this.onChangeSetGeneratedHelmPush}
-                              repositoryName={this.state.pipelineConfig.repoName}
-                              handleOnRepository={this.setRepositoryName}
-                              dockerRegistries={this.state.pipelineConfig.dockerRegistries}
-                              handleRegistryChange={this.handleRegistryChange}
-                              selectedRegistry={this.state.pipelineConfig.selectedRegistry}
-                          />
-                      )
-                    : null}
+                    {console.log(this.state.pipelineConfig.dockerRegistries)}
+                {this.state.pipelineConfig.isVirtualEnvironment && HelmManifestPush && (
+                    <HelmManifestPush
+                        generatedHelmPushAction={this.state.pipelineConfig.generatedHelmPushAction}
+                        onChangeSetGeneratedHelmPush={this.onChangeSetGeneratedHelmPush}
+                        repositoryName={this.state.pipelineConfig.repoName}
+                        handleOnRepository={this.setRepositoryName}
+                        dockerRegistries={this.state.pipelineConfig.dockerRegistries}
+                        handleRegistryChange={this.handleRegistryChange}
+                        selectedRegistry={this.state.pipelineConfig.selectedRegistry}
+                    />
+                )}
             </>
         )
     }
@@ -1665,6 +1671,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderAdvancedCD() {
         return (
             <>
+         {   console.log()}
                 {this.renderPipelineNameInput()}
                 <div className="divider mt-12 mb-12" />
                 {this.renderPreStage()}
@@ -1800,6 +1807,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     render() {
+      console.log('generated', this.state.pipelineConfig.generatedHelmPushAction)
         return this.props.match.params.cdPipelineId || this.state.isAdvanced ? (
             <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
                 {this.renderCDPipelineModal()}
