@@ -168,7 +168,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             clusterName: '',
             allowedDeploymentTypes: [],
             dockerRegistries: null,
-            selectedRegistry: { label: '', value: '' },
+            selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
         }
         this.validationRules = new ValidationRules()
@@ -217,14 +217,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     getDockerRegistry = () => {
       getDockerRegistryMinAuth(this.props.match.params.appId, true)
       .then((response) => {
-
           let dockerRegistries = response.result || []
-          dockerRegistries = dockerRegistries?.map((dockerRegistry) => {
-              return {
-                  label: dockerRegistry.id,
-                  value: dockerRegistry.id,
-              }
-          })
           this.setState({
                   dockerRegistries: dockerRegistries,
          })
@@ -441,7 +434,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
             allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
-            selectedRegistry: { label: pipelineConfigFromRes.containerRegistryName, value: pipelineConfigFromRes.containerRegistryName},
+            selectedRegistry: this.state.dockerRegistries
         })
     }
 
@@ -755,7 +748,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType = this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ?  DeploymentAppTypes.MANIFEST_PUSH : DeploymentAppTypes.MANIFEST_DOWNLOAD
-            pipeline.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.deploymentAppType
+            pipeline.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.triggerType
             pipeline.preStage.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.preStage.triggerType
             pipeline.postStage.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.postStage.triggerType
         }
