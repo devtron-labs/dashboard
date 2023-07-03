@@ -458,7 +458,7 @@ function DockerForm({
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
             isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) ? Isdefault: false,
-            isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE,
+            isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== 'gcr',
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
@@ -738,7 +738,7 @@ function DockerForm({
     const renderRegistryCredentialsAutoInjectToClustersComponent = () => {
         if (!showManageModal) {
             return (
-                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20 fs-13">
+                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-16 fs-13">
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
@@ -1087,9 +1087,10 @@ function DockerForm({
                         ))}
                     </div>
                 )}
-                {registryStorageType === RegistryStorageType.OCI_PRIVATE ? (
+                {registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                selectedDockerRegistryType.value !== 'gcr' ? (
                     <>
-                        <hr className="mt-0" />
+                        <hr className="mt-0 mb-16" />
                         <div className="mb-12">
                             <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
                                 <span className="flex left w-150">
@@ -1122,14 +1123,16 @@ function DockerForm({
                         {IsContainerStore && (
                             <>
                                 <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
-                                <hr className="mt-0" />
+                                <hr className="mt-0 mb-16" />
                             </>
                         )}
                     </>
                 ) : (
                     renderRegistryCredentialsAutoInjectToClustersComponent()
                 )}
-                {(registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) && (
+                {(selectedDockerRegistryType.value === 'gcr' ||
+                    registryStorageType !== RegistryStorageType.OCI_PRIVATE ||
+                    IsContainerStore) && (
                     <div className="flex left">
                         <Checkbox
                             rootClassName="docker-default mb-0"
