@@ -1178,6 +1178,7 @@ function ChartValuesView({
                   deploymentAppType: getDeploymentAppType(
                       selected.allowedDeploymentTypes,
                       commonState.deploymentAppType,
+                      selected.isVirtualEnvironment
                   ),
               },
           })

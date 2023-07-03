@@ -47,7 +47,6 @@ import {
     UpdateNodeRequestBody,
 } from './types'
 import { toast } from 'react-toastify'
-import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { OrderBy } from '../app/list/types'
 import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
@@ -651,7 +650,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {columnName}
                     </span>
                 </Tippy>
-                <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />
+                {sortByColumnName === sortingFieldName ? (
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
+                ) : (
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>)}
             </div>
         )
     }
