@@ -1103,7 +1103,7 @@ function DockerForm({
                                 )}
                             </span>
                         </div>
-                        <div className={`flex left ${IsContainerStore ? 'mb-20' : ''}`}>
+                        <div className={`flex left ${IsContainerStore ? 'mb-12' : ''}`}>
                             <Checkbox
                                 data-name={
                                     OCIRegistryUseActionHelmPushMessage
