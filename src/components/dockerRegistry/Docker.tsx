@@ -654,14 +654,14 @@ function DockerForm({
     }
     const handleOCIRegistryStorageAction = (e: any): void => {
         if (!IsContainerStore) {
-            if (e.currentTarget.dataset.name === 'CONTAINER_STORE') {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (e.currentTarget.dataset.name === 'CONTAINER_AND_CHART_STORE') {
+            if (OCIRegistryUseActionHelmPushMessage) {
                 setOCIRegistryStorageConfig({
                     CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                     CHART: OCIRegistryConfigConstants.PUSH,
+                })
+            } else {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                 })
             }
         } else {
@@ -699,6 +699,7 @@ function DockerForm({
         menu: (base, state) => ({
             ...base,
             marginTop: 'auto',
+            paddingBottom: '4px',
         }),
         menuList: (base) => {
             return {
@@ -1106,11 +1107,6 @@ function DockerForm({
                         </div>
                         <div className={`flex left ${IsContainerStore ? 'mb-12' : ''}`}>
                             <Checkbox
-                                data-name={
-                                    OCIRegistryUseActionHelmPushMessage
-                                        ? 'CONTAINER_AND_CHART_STORE'
-                                        : 'CONTAINER_STORE'
-                                }
                                 rootClassName="docker-default mb-0"
                                 isChecked={IsContainerStore}
                                 value={CHECKBOX_VALUE.CHECKED}
