@@ -78,10 +78,7 @@ export interface CDPipelineState {
         deploymentAppType: string
         deploymentAppCreated: boolean
         isVirtualEnvironment?: boolean
-        generatedHelmPushAction: string
-        dockerRegistries
         repoName: string
-        selectedRegistry: OptionType
     }
     showDeleteModal: boolean
     shouldDeleteApp: boolean
@@ -103,6 +100,9 @@ export interface CDPipelineState {
     showNonCascadeDeleteDialog: boolean
     clusterName: string
     allowedDeploymentTypes: DeploymentAppTypes[]
+    dockerRegistries
+    generatedHelmPushAction: string
+    selectedRegistry: OptionType
 }
 
 export interface PipelineConfig {
