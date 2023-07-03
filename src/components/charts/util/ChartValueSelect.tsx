@@ -75,16 +75,16 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 </Select.Button>
                 <Select.OptGroup label="DEPLOYED" key={'DEPLOYED'}>
                     {chartValues.deployedChartValues.length
-                        ? chartValues.deployedChartValues.map((chartValue) => {
+                        ? chartValues.deployedChartValues.map((chartValue,index) => {
                               let env = chartValue.environmentName || ''
                               return (
                                   <Select.Option key={chartValue.id} value={chartValue}>
                                       <div>
                                           <div className="w-100 flexbox">
-                                              <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
+                                              <div className="dc__ellipsis-right" data-testid={`chart-value-${index}`}>{chartValue.name}</div>&nbsp;(
                                               {chartValue.chartVersion})
                                           </div>
-                                          <div className="option-with-subtitle__subtitle">Deployed on:{`${env}`}</div>
+                                          {/* <div className="option-with-subtitle__subtitle">Deployed on:{`${env}`}</div> */}
                                       </div>
                                   </Select.Option>
                               )
@@ -118,10 +118,10 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 </Select.OptGroup>
                 <Select.OptGroup label="DEFAULT" key={'DEFAULT'}>
                     {chartValues.defaultChartValues.length
-                        ? chartValues.defaultChartValues.map((chartValue) => {
+                        ? chartValues.defaultChartValues.map((chartValue,index) => {
                               return (
                                   <Select.Option key={chartValue.id} value={chartValue}>
-                                      <div className="w-100 flexbox">
+                                      <div className="w-100 flexbox" data-testid={`chart-value-option${index}`}>
                                           <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
                                           {chartValue.chartVersion})
                                       </div>

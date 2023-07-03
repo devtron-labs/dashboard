@@ -134,7 +134,7 @@ export function ChartRepoSelector({
             <div className="form__row form__row--w-100">
                 <div className="flex dc__content-space">
                     <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="helm-chart-heading">
-                        Helm Chart
+                        Helm Charts
                     </span>
                     <Tippy
                         className="default-tt "
@@ -152,7 +152,7 @@ export function ChartRepoSelector({
                         </span>
                     </Tippy>
                 </div>
-                <div className="repo-chart-selector flex">
+                <div className="repo-chart-selector flex" data-testid="helm-chart-dropdown">
                     <AsyncSelect
                         cacheOptions
                         defaultOptions={repoChartOptions}

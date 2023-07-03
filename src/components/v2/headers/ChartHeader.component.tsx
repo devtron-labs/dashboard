@@ -57,6 +57,7 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                                 activeClassName="active"
                                 to={`${match.url}/${URLS.APP_VALUES}`}
                                 className="tab-list__tab-link flex"
+                                data-testid="configure-tab"
                                 onClick={(event) => {
                                     ReactGA.event({
                                         category: 'App',

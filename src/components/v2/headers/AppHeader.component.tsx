@@ -86,7 +86,7 @@ function AppHeaderComponent() {
                         App Details
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
+                <li className="tab-list__tab"  >
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_VALUES}/${envDetails.envId}`}

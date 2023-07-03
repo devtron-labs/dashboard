@@ -448,8 +448,8 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     color: isCurrentlySelected ? 'var(--B500)' : 'var(--N900)',
                 }}
             >
-                <div className="flex left">
-                    <span>
+                <div className="flex left" >
+                    <span data-testid="repochart-dropdown">
                         {props.data.chartRepoName}/{props.data.chartName}
                     </span>
                 </div>
