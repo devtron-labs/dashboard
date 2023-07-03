@@ -194,7 +194,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
-      console.log(selectedGeneratedHelmValue)
         this.setState({
             pipelineConfig: {
                 ...this.state.pipelineConfig,
@@ -231,8 +230,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                   value: dockerRegistry.id,
               }
           })
-          console.log(dockerRegistries)
-
           // sortObjectArrayAlphabetically(dockerRegistries, 'id')
           this.setState({
               pipelineConfig: {
@@ -1498,7 +1495,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.pipelineConfig.isVirtualEnvironment
                     ? VirtualEnvSelectionInfoBar && <VirtualEnvSelectionInfoBar />
                     : this.renderTriggerType()}
-                    {console.log(this.state.pipelineConfig.dockerRegistries)}
                 {this.state.pipelineConfig.isVirtualEnvironment && HelmManifestPush && (
                     <HelmManifestPush
                         generatedHelmPushAction={this.state.pipelineConfig.generatedHelmPushAction}
@@ -1671,7 +1667,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderAdvancedCD() {
         return (
             <>
-         {   console.log()}
                 {this.renderPipelineNameInput()}
                 <div className="divider mt-12 mb-12" />
                 {this.renderPreStage()}
@@ -1807,7 +1802,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     render() {
-      console.log('generated', this.state.pipelineConfig.generatedHelmPushAction)
         return this.props.match.params.cdPipelineId || this.state.isAdvanced ? (
             <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
                 {this.renderCDPipelineModal()}
