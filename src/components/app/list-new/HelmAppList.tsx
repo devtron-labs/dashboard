@@ -398,14 +398,14 @@ export default function HelmAppList({
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <button className="app-list__cell-header flex" onClick={sortByLastDeployed}>
+                    <span className="app-list__cell-header flex cursor" onClick={sortByLastDeployed}>
                         {APP_LIST_HEADERS.LastDeployedAt}
                         {sortBy == SortBy.LAST_DEPLOYED ? (
                             <span className={`sort ${sortOrder == OrderBy.DESC ? 'sort-up' : ''} ml-4`}></span>
                         ) : (
                             <span className="sort-col dc__opacity-0_5 ml-4"></span>
                         )}
-                    </button>
+                    </span>
                 </div>
             </div>
         )

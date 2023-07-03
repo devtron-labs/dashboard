@@ -555,7 +555,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         return (
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
-                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-150'
+                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-120'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
                 } ${column.value === 'status' && 'w-180'}`}
@@ -678,7 +678,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                             className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
                                 column.value === 'status'
                                     ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
-                                    : 'w-150'
+                                    : 'w-120'
                             }`}
                         >
                             {renderNodeRow(column, nodeData)}
