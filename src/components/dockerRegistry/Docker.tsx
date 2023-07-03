@@ -103,7 +103,7 @@ useEffect(() => {
             className="global-configuration__component flex-1"
             data-testid="select-existing-container-registry-list"
         >
-            <div className="flex left fs-16 cn-9 fw-6 mb-20">
+            <div className="flex left fs-16 cn-9 fw-6 mb-20" data-testid="container-oci-registry-heading">
                 Container / OCI Registry
                 <TippyCustomized
                     theme={TippyTheme.white}
@@ -187,7 +187,7 @@ function CollapsedList({
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List
-                dataTestId={id || 'Add'}
+                dataTestId={id || 'add-registry-button'}
                 onClick={setToggleCollapse}
                 className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
             >
@@ -1110,6 +1110,9 @@ function DockerForm({
                                 isChecked={IsContainerStore}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={handleOCIRegistryStorageAction}
+                                dataTestId={`store-${
+                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                                }-checkbox`}
                             >
                                 Store container images
                                 {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
@@ -1133,6 +1136,7 @@ function DockerForm({
                                 isChecked={Isdefault}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={handleDefaultChange}
+                                dataTestId="set-as-default-registry-checkbox"
                             >
                                 Set as default registry
                             </Checkbox>
