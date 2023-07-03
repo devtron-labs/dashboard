@@ -1086,11 +1086,10 @@ function DockerForm({
                         ))}
                     </div>
                 )}
-                {selectedDockerRegistryType.value === 'other' && <hr className="mt-0 mb-16" />}
+                <hr className="mt-0 mb-16" />
                 {registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                 selectedDockerRegistryType.value !== 'gcr' ? (
                     <>
-                        <hr className="mt-0 mb-16" />
                         <div className="mb-12">
                             <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
                                 <span className="flex left w-150">
@@ -1119,7 +1118,10 @@ function DockerForm({
                             </Checkbox>
                         </div>
                         {IsContainerStore && (
-                            <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                            <>
+                                <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                                <hr className="mt-0 mb-16" />
+                            </>
                         )}
                     </>
                 ) : (
@@ -1129,7 +1131,6 @@ function DockerForm({
                     registryStorageType !== RegistryStorageType.OCI_PRIVATE ||
                     IsContainerStore) && (
                     <>
-                        <hr className="mt-0 mb-16" />
                         <div className="flex left">
                             <Checkbox
                                 rootClassName="docker-default mb-0"
