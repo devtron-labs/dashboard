@@ -72,10 +72,10 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     useEffect(() => {
         if (appliedColumns.length > 0) {
             /*
-          116 is standard with of every column for calculations
+          136 is standard with of every column for calculations
           65 is width of left nav
-          180 is the diff of node column
-          80 is the diff of status column
+          160 is the diff of node column
+          60 is the diff of status column
           */
 
             const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60
