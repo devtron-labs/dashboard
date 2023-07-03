@@ -4,7 +4,7 @@ import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ciPipelineContext } from './CIPipeline'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 interface CustomScriptType {
     handleScriptChange: React.Dispatch<React.SetStateAction<unknown>>
@@ -21,7 +21,7 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         formData: FormType
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
 
     const [editorValue, setEditorValue] = useState<string>(
         formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.script,

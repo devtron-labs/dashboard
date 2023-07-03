@@ -13,7 +13,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
 import { TaskFieldDescription, VariableFieldType, PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
-import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import ReactSelect from 'react-select'
 import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
@@ -22,6 +21,7 @@ import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -50,7 +50,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
     const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({

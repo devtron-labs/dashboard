@@ -53,12 +53,11 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
-
-export const ciPipelineContext = createContext(null)
 
 export default function CIPipeline({
     appName,
@@ -860,7 +859,7 @@ export default function CIPipeline({
                     </ul>
                 )}
                 <hr className="divider m-0" />
-                <ciPipelineContext.Provider
+                <pipelineContext.Provider
                     value={{
                         formData,
                         setFormData,
@@ -928,7 +927,7 @@ export default function CIPipeline({
                             <Redirect to={`${path}/build`} />
                         </Switch>
                     </div>
-                </ciPipelineContext.Provider>
+                </pipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
                     <>
                         <div

@@ -10,13 +10,13 @@ import {
     FormErrorObjectType,
     TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ciPipelineContext } from './CIPipeline'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
 import { OptionType } from '../app/types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -42,7 +42,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
         value: '',

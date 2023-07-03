@@ -2,9 +2,9 @@ import React, { useContext } from 'react'
 import { PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ciPipelineContext } from './CIPipeline'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { FormType } from '@devtron-labs/devtron-fe-common-lib'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 function MultiplePort() {
     const {
@@ -17,7 +17,7 @@ function MultiplePort() {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         activeStageName: string
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const addMultiplePort = (): void => {
         const _formData = { ...formData }
 

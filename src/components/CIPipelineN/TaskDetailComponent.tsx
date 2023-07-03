@@ -9,9 +9,9 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
-import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function TaskDetailComponent() {
     const {
@@ -28,7 +28,7 @@ export function TaskDetailComponent() {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')

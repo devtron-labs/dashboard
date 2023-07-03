@@ -14,11 +14,11 @@ import {
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
-import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -37,7 +37,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
 
     const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },

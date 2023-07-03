@@ -5,7 +5,6 @@ import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dot
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
-import { ciPipelineContext } from './CIPipeline'
 import {
     PopupMenu,
     FormType,
@@ -20,6 +19,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -62,7 +62,7 @@ export function TaskList({
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
         validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
