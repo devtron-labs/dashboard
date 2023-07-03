@@ -78,7 +78,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
           80 is the diff of status column
           */
 
-            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 180 + 80
+            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
