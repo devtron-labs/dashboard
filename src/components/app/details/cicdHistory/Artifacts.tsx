@@ -34,7 +34,7 @@ export default function Artifacts({
     type,
     appReleaseTagNames,
     tagsEditable,
-    hideHardDelete,
+    hideImageTaggingHardDelete,
 }: ArtifactType) {
     const { triggerId, buildId } = useParams<{
         triggerId: string
@@ -112,6 +112,7 @@ export default function Artifacts({
                         imageReleaseTags={imageReleaseTags}
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
@@ -128,7 +129,7 @@ export default function Artifacts({
                     </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem type="report">
+                    <CIListItem type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
                         <div className="flex column left">
                             <div className="cn-9 fs-14">Reports.zip</div>
                             <button
@@ -202,7 +203,7 @@ export const CIListItem = ({
     imageReleaseTags,
     appReleaseTagNames,
     tagsEditable,
-    hideHardDelete,
+    hideImageTaggingHardDelete,
 }: CIListItemType) => {
     if(!ApprovalInfoTippy) importComponentFromFELibrary('ApprovalInfoTippy')
     return (
@@ -245,7 +246,7 @@ export const CIListItem = ({
                         imageReleaseTags={imageReleaseTags}
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
-                        hideHardDelete={hideHardDelete}
+                        hideHardDelete={hideImageTaggingHardDelete}
                     />
                 )}
             </div>

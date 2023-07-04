@@ -17,6 +17,7 @@ export interface BuildDetails {
     appIdFromParent?: string
     appReleaseTags?:[]
     tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
 }
 
 export interface HistoryLogsType {
@@ -26,6 +27,7 @@ export interface HistoryLogsType {
     appIdFromParent?: string
     appReleaseTags?: []
     tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
 }
 
 export interface SecurityTabType {

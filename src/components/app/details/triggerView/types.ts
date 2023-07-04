@@ -65,7 +65,7 @@ export interface CDMaterialProps {
     appReleaseTagNames?: string[]
     setAppReleaseTagNames?: (appReleaseTags: string[]) => void
     tagsEditable?: boolean
-    hideHardDelete?: boolean
+    hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
 }
@@ -296,6 +296,7 @@ export interface WorkflowType {
     imageReleaseTags: string[]
     appReleaseTags?: string[]
     tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -339,6 +340,7 @@ export interface TriggerViewState {
     isSaveLoading?: boolean
     appReleaseTags?: string[]
     tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 //-- begining of response type objects for trigger view

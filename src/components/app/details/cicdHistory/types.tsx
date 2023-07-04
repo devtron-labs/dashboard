@@ -80,7 +80,7 @@ export interface ArtifactType {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
-    hideHardDelete?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface CopyTippyWithTextType {
@@ -100,7 +100,7 @@ export interface CIListItemType {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
-    hideHardDelete?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface ImageComment {
@@ -138,6 +138,7 @@ export interface GitChangesType {
     ciPipelineId?: number
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 export interface EmptyViewType {
     imgSrc?: string

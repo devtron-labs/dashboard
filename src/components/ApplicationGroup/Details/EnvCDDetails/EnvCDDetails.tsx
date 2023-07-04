@@ -168,7 +168,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentHistoryResult = {deploymentHistoryResult.result?.cdWorkflows}
                         appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
                         tagsEditable={deploymentHistoryResult.result?.tagsEditable}
-                        hideHardDelete={deploymentHistoryResult.result?.hideImageTaggingHardDelete}
+                        hideImageTaggingHardDelete={deploymentHistoryResult.result?.hideImageTaggingHardDelete}
                     />
                 </Route>
             )

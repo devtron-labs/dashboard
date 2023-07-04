@@ -51,6 +51,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     appReleaseTags?: string[]
     tagsEditable?: boolean
     ciPipelineId?: number
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface ResponseRowType {

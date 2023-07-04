@@ -53,7 +53,7 @@ export default function BulkCDTrigger({
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
     const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
-
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
         setCurrentAppReleaseTags(appReleaseTags)
     }
@@ -131,6 +131,7 @@ export default function BulkCDTrigger({
                             requestedUserId: response.value['requestedUserId'],
                             tagsEditable: response.value['tagsEditable'],
                             appReleaseTagNames: response.value['appReleaseTagNames'],
+                            hideImageTaggingHardDelete: response.value['hideImageTaggingHardDelete']
                         }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
@@ -142,6 +143,7 @@ export default function BulkCDTrigger({
                 })
                 setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false) 
                 setCurrentAppReleaseTags(_cdMaterialResponse[selectedApp.appId].appReleaseTagNames ?? [])
+                setHideImageTaggingHardDelete(_cdMaterialResponse[selectedApp.appId].hideImageTaggingHardDelete ?? false)
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -384,6 +386,7 @@ export default function BulkCDTrigger({
                             setTagsEditable={setCurrentAppTagsEditableWrapper}
                             ciPipelineId={_currentApp.ciPipelineId}
                             updateCurrentAppMaterial={updateCurrentAppMaterial}
+                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         />
                     )}
                 </div>

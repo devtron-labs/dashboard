@@ -51,7 +51,7 @@ export async function getTriggerHistory(
                 })),
                 appReleaseTagNames:result.appReleaseTagNames,
                 tagsEditable: result.tagsEditable,
-                hideImageTaggingHardDelete: result.hideHardDelete
+                hideImageTaggingHardDelete: result.hideImageTaggingHardDelete
             },
             code,
             status,

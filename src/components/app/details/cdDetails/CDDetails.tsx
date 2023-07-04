@@ -234,7 +234,7 @@ export default function CDDetails() {
                                 deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
                                 appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
                                 tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
-                                hideHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
+                                hideImageTaggingHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
                             />
                         </Route>
                     ) : !envId ? (
@@ -267,7 +267,7 @@ export const TriggerOutput: React.FC<{
     deploymentHistoryResult: History[]
     appReleaseTags: string[]
     tagsEditable: boolean
-    hideHardDelete: boolean
+    hideImageTaggingHardDelete: boolean
 }> = ({
     fullScreenView,
     syncState,
@@ -280,7 +280,7 @@ export const TriggerOutput: React.FC<{
     deploymentHistoryResult,
     appReleaseTags,
     tagsEditable,
-    hideHardDelete,
+    hideImageTaggingHardDelete,
 }) => {
         const { appId, triggerId, envId, pipelineId } = useParams<{
             appId: string
@@ -418,7 +418,7 @@ export const TriggerOutput: React.FC<{
                 ciPipelineId = {triggerDetailsResult?.result?.ciPipelineId}
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
-                hideHardDelete={hideHardDelete}
+                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
             />
         </>
     )
@@ -440,7 +440,7 @@ const HistoryLogs: React.FC<{
     ciPipelineId: number
     appReleaseTags: string[]
     tagsEditable: boolean
-    hideHardDelete: boolean
+    hideImageTaggingHardDelete: boolean
 }> = ({
     triggerDetails,
     loading,
@@ -456,7 +456,7 @@ const HistoryLogs: React.FC<{
     ciPipelineId,
     appReleaseTags,
     tagsEditable,
-    hideHardDelete,
+    hideImageTaggingHardDelete,
 }) => {
         let { path } = useRouteMatch()
         const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -536,6 +536,7 @@ const HistoryLogs: React.FC<{
                                 }
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
@@ -581,6 +582,9 @@ const HistoryLogs: React.FC<{
                                             deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
                                                 .imageReleaseTags
                                         }
+                                        tagsEditable={tagsEditable}
+                                        appReleaseTagNames={appReleaseTags}
+                                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                         getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
                                         type={HistoryComponentType.CD}
                                     />

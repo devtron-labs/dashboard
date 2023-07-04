@@ -174,6 +174,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                             isJobView={isJobView}
                                             tagsEditable = {triggerHistoryResult.result?.tagsEditable}
                                             appReleaseTags = {triggerHistoryResult.result?.appReleaseTagNames}
+                                            hideImageTaggingHardDelete = {triggerHistoryResult.result?.hideImageTaggingHardDelete}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -215,6 +216,7 @@ export const Details = ({
     appIdFromParent,
     tagsEditable,
     appReleaseTags,
+    hideImageTaggingHardDelete,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -338,12 +340,13 @@ export const Details = ({
                 appIdFromParent={appIdFromParent}
                 appReleaseTags = {appReleaseTags}
                 tagsEditable={tagsEditable}
+                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
             />
         </>
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent, appReleaseTags, tagsEditable}: HistoryLogsType) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent, appReleaseTags, tagsEditable, hideImageTaggingHardDelete}: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -386,6 +389,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         artifactId={triggerDetails.artifactId}
                         tagsEditable={tagsEditable}
                         appReleaseTagNames={appReleaseTags}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         type={HistoryComponentType.CI}
                     />
                 </Route>

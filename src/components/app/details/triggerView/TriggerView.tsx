@@ -623,6 +623,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isLoading: false,
                     appReleaseTags: data.appReleaseTagNames,
                     tagsEditable: data.tagsEditable,
+                    hideImageTaggingHardDelete: data.hideImageTaggingHardDelete,
                 })
                 preventBodyScroll(true)
             })
@@ -1259,6 +1260,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 setAppReleaseTagNames={this.setAppReleaseTags}
                                 tagsEditable={this.state.tagsEditable}
                                 setTagsEditable={this.setTagsEditable}
+                                hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                             />
                         )}
                     </div>

@@ -84,6 +84,7 @@ export const GitChanges = ({
     imageReleaseTags,
     appReleaseTagNames,
     tagsEditable,
+    hideImageTaggingHardDelete
 }: GitChangesType) => {
     const [copied, setCopied] = useState(false)
 
@@ -136,6 +137,7 @@ export const GitChanges = ({
                         imageReleaseTags={imageReleaseTags}
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left">

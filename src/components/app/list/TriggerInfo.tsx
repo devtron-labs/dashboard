@@ -22,7 +22,7 @@ interface TriggerInfoModalState {
     image: string
     appReleaseTags?: string[]
     tagsEditable?: boolean
-    hideHardDelete?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 interface TriggerInfoModalProps {
@@ -49,7 +49,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             image: '',
             appReleaseTags: [],
             tagsEditable: false,
-            hideHardDelete: false,
+            hideImageTaggingHardDelete: false,
         }
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
@@ -164,7 +164,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             artifactId={this.props.ciArtifactId}
                             appReleaseTagNames={this.state.appReleaseTags}
                             tagsEditable={this.state.tagsEditable}
-                            hideHardDelete={this.state.hideHardDelete}
+                            hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                         />
                     </div>
                 </div>

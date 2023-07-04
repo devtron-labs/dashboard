@@ -288,6 +288,7 @@ export function getCDMaterialList(
                 requestedUserId: 0,
                 tagsEditable: false,
                 appReleaseTagNames: [],
+                hideImageTaggingHardDelete: false
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
@@ -304,6 +305,7 @@ export function getCDMaterialList(
                 requestedUserId: response.result.requestedUserId,
                 appReleaseTagNames: response.result.appReleaseTagNames,
                 tagsEditable: response.result.tagsEditable,
+                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
             }
         } else {
             return {
@@ -320,6 +322,7 @@ export function getCDMaterialList(
                 requestedUserId: 0,
                 appReleaseTagNames: response.result.appReleaseTagNames,
                 tagsEditable: response.result.tagsEditable,
+                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
             }
         }
     })

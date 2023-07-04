@@ -130,6 +130,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
     const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
     const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
+    const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -750,6 +751,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 })
                 setAppReleaseTags(data.appReleaseTagNames)
                 setTagsEditable(data.tagsEditable)
+                setHideImageTaggingHardDelete(data.hideImageTaggingHardDelete)
                 setWorkflowID(_workflowId)
                 setSelectedAppID(_appID)
                 setFilteredWorkflows(_workflows)
@@ -1553,6 +1555,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         appReleaseTags: wf.appReleaseTags,
                         tagsEditable: wf.tagsEditable,
                         ciPipelineId: _selectedNode.connectingCiPipelineId,
+                        hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete
                     })
                 } else {
                     let warningMessage = ''
@@ -1889,6 +1892,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 setAppReleaseTagNames = {setAppReleaseTagsNames}
                                 tagsEditable = {tagsEditableVal}
                                 setTagsEditable = {setTagsEditableVal}
+                                hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
                             />
                         )}
                     </div>

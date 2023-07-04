@@ -30,6 +30,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [blobStorageConfigured, setBlobStorageConfigured] = useState(false)
     const [appReleaseTags,setAppReleaseTags] = useState<[]>([])
     const [tagsEditable,setTagsEditable] = useState<boolean>(false)
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
 
     useEffect(() => {
         try {
@@ -85,6 +86,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
         const appReleaseTags = triggerHistoryResult.result?.appReleaseTagNames
         const tagsEditable = triggerHistoryResult.result?.tagsEditable
+        setHideImageTaggingHardDelete(triggerHistoryResult.result?.hideImageTaggingHardDelete)
         setTagsEditable(tagsEditable)
         setAppReleaseTags(appReleaseTags)
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
@@ -123,6 +125,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
         setAppReleaseTags(result?.result.appReleaseTagNames)
         setTagsEditable(result?.result.tagsEditable)
+        setHideImageTaggingHardDelete(result?.result.hideImageTaggingHardDelete)
         setTriggerHistory(mapByKey(result?.result.ciWorkflows || [], 'id'))
     }
 
@@ -154,6 +157,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         appIdFromParent={pipeline.appId}
                         appReleaseTags={appReleaseTags}
                         tagsEditable={tagsEditable}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     />
                 </Route>
             )
