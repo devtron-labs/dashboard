@@ -854,7 +854,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         () => {
                             preventBodyScroll(false)
                             this.getWorkflowStatus()
-                            this.getWorkflows()
+                            if(this.props.isJobView) {
+                                this.getWorkflows()
+                            }
                         },
                     )
                 }

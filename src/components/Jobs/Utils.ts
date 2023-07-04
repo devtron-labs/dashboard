@@ -93,8 +93,8 @@ const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
                         ? handleUTCTime(ciPipeline.lastSuccessAt, true)
                         : '-',
                 status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
-                environment_name: ciPipeline.environment_name || '-',
-                last_triggered_environment_name: ciPipeline.last_triggered_environment_name
+                environmentName: ciPipeline.environmentName || '-',
+                lastTriggeredEnvironmentName: ciPipeline.lastTriggeredEnvironmentName
             }
         }) ?? []
     )
@@ -117,8 +117,8 @@ const getDefaultPipeline = (ciPipelines) => {
                     ? handleUTCTime(ciPipeline.lastSuccessAt, true)
                     : '-',
             status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
-            environment_name: ciPipeline.environment_name || '-',
-            last_triggered_environment_name: ciPipeline.last_triggered_environment_name,
+            environmentName: ciPipeline.environmentName || '-',
+            lastTriggeredEnvironmentName: ciPipeline.lastTriggeredEnvironmentName,
         }
     }
     return {
@@ -236,14 +236,14 @@ export const populateQueryString = (searchParams: string): Record<string, any> =
 
 export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): string => {
     if(jobPipeline.status === "") {
-        if(jobPipeline.environment_name === ""){
+        if(jobPipeline.environmentName === ""){
             return "default-ci"
         }
-        return jobPipeline.environment_name
+        return jobPipeline.environmentName
     }else {
-        if(jobPipeline.last_triggered_environment_name === ""){
+        if(jobPipeline.lastTriggeredEnvironmentName === ""){
             return "default-ci"
         }
-        return jobPipeline.last_triggered_environment_name
+        return jobPipeline.lastTriggeredEnvironmentName
     }
 }

@@ -412,14 +412,14 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                 </div>
                 {jobPipelines.map((jobPipeline, index) => (
-                    <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex">
+                    <div key={jobPipeline.ciPipelineID} className="dc__content-space flex">
                         <div className="h-20 m-tb-8 cb-5 fs-13">
                             <Link
-                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
+                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineName}/`}
                                 className="fs-13"
                                 data-testid={`overview-link-pipeline${index}`}
                             >
-                                {jobPipeline.ci_pipeline_name}
+                                {jobPipeline.ciPipelineName}
                             </Link>
                         </div>
                         <div className="flex">
@@ -435,14 +435,14 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 )}
                             </div>
                             <div
-                                data-testid={`${jobPipeline.environment_name}-${index}`}
+                                data-testid={`${jobPipeline.environmentName}-${index}`}
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {environmentName(jobPipeline)}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
-                                {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
-                                    ? handleUTCTime(jobPipeline.started_on, true)
+                                {jobPipeline.startedOn !== '0001-01-01T00:00:00Z'
+                                    ? handleUTCTime(jobPipeline.startedOn, true)
                                     : '-'}
                             </div>
                         </div>

@@ -102,14 +102,17 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
 
     renderCardContent(context) {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
-        let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
-        let envId = _selectedPipeline?.environmentId 
-        if( !_selectedPipeline?.environmentId && _selectedPipeline?.lastTriggeredEnvId === -1 ){
-            envId=0
-        }else if( _selectedPipeline?.lastTriggeredEnvId !== -1 ) {
-            envId=_selectedPipeline?.lastTriggeredEnvId
+        let _selectedEnv
+        if (this.props.isJobView) {
+            let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
+            let envId = _selectedPipeline?.environmentId
+            if (!_selectedPipeline?.environmentId && _selectedPipeline?.lastTriggeredEnvId === -1) {
+                envId = 0
+            } else if (_selectedPipeline?.lastTriggeredEnvId !== -1) {
+                envId = _selectedPipeline?.lastTriggeredEnvId
+            }
+            _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         }
-        const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         return (
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
