@@ -180,6 +180,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     componentDidMount() {
         this.getDeploymentStrategies()
+        // this.getInit()
         document.addEventListener('keydown', this.escFunction)
     }
 
@@ -258,7 +259,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     })
                                 })
                                 .catch((error) => {})
-                                // this.getInit()
+
                             getEnvironmentListMinPublic(true)
                                 .then((response) => {
                                     let list = response.result || []
@@ -434,7 +435,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
             allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
-            selectedRegistry: this.state.dockerRegistries
+            selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName)
         })
     }
 
@@ -736,7 +737,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                           requiredCount: +this.state.requiredApprovals,
                       }
                     : null,
-            containerRegistryName: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.selectedRegistry.value : '',
+            containerRegistryName: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.selectedRegistry?.id : '',
             repoName: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
             manifestStorageType: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? "helm_repo" : ""
         }
@@ -1131,7 +1132,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="delete-stage-icon cursor"
                         onClick={(e) => this.deleteStage(key)}
                     />
-                    {!this.state.pipelineConfig.isVirtualEnvironment && (
+                    {!(this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH) && (
                         <>
                             <label className="form__label form__label--sentence dc__bold">
                                 When do you want this stage to trigger?
@@ -1502,6 +1503,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         handleRegistryChange={this.handleRegistryChange}
                         selectedRegistry={this.state.selectedRegistry}
                     />
+                )}
+                {this.state.pipelineConfig.isVirtualEnvironment && this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
+                    <div className="mt-16">{this.renderTriggerType()}</div>
                 )}
             </>
         )
