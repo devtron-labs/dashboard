@@ -79,6 +79,7 @@ export interface CDPipelineState {
         deploymentAppCreated: boolean
         isVirtualEnvironment?: boolean
         repoName: string
+        containerRegistryName: string
     }
     showDeleteModal: boolean
     shouldDeleteApp: boolean
