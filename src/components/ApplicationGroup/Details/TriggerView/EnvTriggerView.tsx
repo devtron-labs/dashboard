@@ -1937,6 +1937,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     setAppReleaseTagNames = {setAppReleaseTagsNames}
                     tagsEditable = {tagsEditableVal}
                     setTagsEditable = {setTagsEditableVal}
+                    hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
                 />
             )
         }

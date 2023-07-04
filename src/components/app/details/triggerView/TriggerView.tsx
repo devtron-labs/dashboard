@@ -1294,6 +1294,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     setAppReleaseTagNames={this.setAppReleaseTags}
                     tagsEditable={this.state.tagsEditable}
                     setTagsEditable={this.setTagsEditable}
+                    hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                 />
             )
         }
