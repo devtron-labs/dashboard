@@ -1052,7 +1052,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <div
                 className={`trigger-modal__trigger ${
-                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) || this.state.showConfigDiffView
+                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) ||
+                    this.state.showConfigDiffView ||
+                    this.props.stageType === DeploymentNodeType.PRECD ||
+                    this.props.stageType === DeploymentNodeType.POSTCD
                         ? 'flex right'
                         : ''
                 }`}
