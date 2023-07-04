@@ -170,6 +170,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries: null,
             selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
+            containerRegistryName: ''
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -427,7 +428,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
             allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
-            selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName)
+            selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName),
+            containerRegistryName: pipelineConfigFromRes.containerRegistryName
         })
     }
 
@@ -1494,6 +1496,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         dockerRegistries={this.state.dockerRegistries}
                         handleRegistryChange={this.handleRegistryChange}
                         selectedRegistry={this.state.selectedRegistry}
+                        containerRegistryName ={this.state.containerRegistryName}
                     />
                 )}
                 {this.state.pipelineConfig.isVirtualEnvironment && this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
