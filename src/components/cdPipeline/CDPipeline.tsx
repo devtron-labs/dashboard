@@ -235,10 +235,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
           getDockerRegistryMinAuth(this.props.match.params.appId, true),
       ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
           let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+          let defaultStrategy
           for (let i = 0; i < strategies.length; i++) {
               if (!this.allStrategies[strategies[i].deploymentTemplate])
                   this.allStrategies[strategies[i].deploymentTemplate] = {}
               this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
+              if (strategies[i].default) defaultStrategy = strategies[i]
+          }
+          if (defaultStrategy) {
+              this.handleStrategy(defaultStrategy.deploymentTemplate)
           }
           this.noStrategyAvailable = strategies.length === 0
           this.setState({
