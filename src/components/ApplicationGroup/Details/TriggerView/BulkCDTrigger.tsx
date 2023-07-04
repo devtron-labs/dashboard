@@ -298,7 +298,7 @@ export default function BulkCDTrigger({
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
-                    <div className="dc__position-sticky dc__top-0 pt-12">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
                         <span className="pl-16 pr-16">Select image by release tag</span>
                         <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
                             <ReactSelect
