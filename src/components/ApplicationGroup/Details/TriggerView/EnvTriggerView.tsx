@@ -758,8 +758,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     ) => {
         if (!offset && !size) {
             ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
+            setCDLoading(true)
         }
-        setCDLoading(true)
         setShowCDModal(true)
 
         const _offset = offset || 1
