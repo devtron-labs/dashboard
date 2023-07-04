@@ -153,6 +153,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 userApprovalConfig: null,
                 isVirtualEnvironment: false,
                 repoName: '',
+                containerRegistryName: ''
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -170,7 +171,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries: null,
             selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
-            containerRegistryName: ''
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -363,6 +363,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             ...(pipelineConfigFromRes.environmentId && env ? { namespace: env.namespace } : {}),
             strategies: savedStrategies,
             repoName: pipelineConfigFromRes.repoName,
+            containerRegistryName: pipelineConfigFromRes.containerRegistryName || '',
             manifestStorageType: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : "helm_repo",
             preStage: {
                 ...pipelineConfigFromRes.preStage,
@@ -429,7 +430,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
             selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName),
-            containerRegistryName: pipelineConfigFromRes.containerRegistryName
         })
     }
 
@@ -1484,10 +1484,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
-                {this.state.pipelineConfig.isVirtualEnvironment
-                    ? VirtualEnvSelectionInfoBar && <VirtualEnvSelectionInfoBar />
-                    : this.renderTriggerType()}
-                {this.state.pipelineConfig.isVirtualEnvironment && HelmManifestPush && (
+                {this.state.pipelineConfig.isVirtualEnvironment ? HelmManifestPush && (
                     <HelmManifestPush
                         generatedHelmPushAction={this.state.generatedHelmPushAction}
                         onChangeSetGeneratedHelmPush={this.onChangeSetGeneratedHelmPush}
@@ -1496,9 +1493,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         dockerRegistries={this.state.dockerRegistries}
                         handleRegistryChange={this.handleRegistryChange}
                         selectedRegistry={this.state.selectedRegistry}
-                        containerRegistryName ={this.state.containerRegistryName}
+                        containerRegistryName ={this.state.pipelineConfig.containerRegistryName}
                     />
-                )}
+                ): this.renderTriggerType()}
                 {this.state.pipelineConfig.isVirtualEnvironment && this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
                     <div className="mt-16">{this.renderTriggerType()}</div>
                 )}

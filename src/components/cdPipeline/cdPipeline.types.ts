@@ -79,6 +79,7 @@ export interface CDPipelineState {
         deploymentAppCreated: boolean
         isVirtualEnvironment?: boolean
         repoName: string
+        containerRegistryName: string
     }
     showDeleteModal: boolean
     shouldDeleteApp: boolean
@@ -103,7 +104,6 @@ export interface CDPipelineState {
     dockerRegistries
     generatedHelmPushAction: string
     selectedRegistry: any
-    containerRegistryName: string
 }
 
 export interface PipelineConfig {
