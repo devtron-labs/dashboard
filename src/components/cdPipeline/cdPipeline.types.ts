@@ -102,7 +102,7 @@ export interface CDPipelineState {
     allowedDeploymentTypes: DeploymentAppTypes[]
     dockerRegistries
     generatedHelmPushAction: string
-    selectedRegistry: OptionType
+    selectedRegistry: any
 }
 
 export interface PipelineConfig {
