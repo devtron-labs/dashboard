@@ -19,9 +19,10 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
-import { ciPipelineContext } from './CIPipeline'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
+import { CDFormType } from '../cdPipeline/cdPipeline.types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
@@ -39,8 +40,8 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         calculateLastStepDetail,
         validateStage,
     }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
+        formData: FormType | CDFormType
+        setFormData: React.Dispatch<React.SetStateAction<FormType | CDFormType>>
         addNewTask: () => void
         selectedTaskIndex: number
         setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
@@ -51,15 +52,15 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         calculateLastStepDetail: (
             isFromAddNewTask: boolean,
-            _formData: FormType,
+            _formData: FormType | CDFormType,
             activeStageName: string,
             startIndex?: number,
         ) => {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
-        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
-    } = useContext(ciPipelineContext)
+        validateStage: (stageName: string, _formData: FormType | CDFormType, formDataErrorObject?: FormErrorObjectType) => void
+    } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
         if (configurationType === ConfigurationType.YAML) {

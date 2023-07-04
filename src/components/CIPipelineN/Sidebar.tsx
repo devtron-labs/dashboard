@@ -8,9 +8,11 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
-import { ciPipelineContext } from './CIPipeline'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
+import { CDFormType } from '../cdPipeline/cdPipeline.types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import ReactSelect from 'react-select'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
@@ -32,26 +34,10 @@ export function Sidebar({
         setSelectedTaskIndex,
         calculateLastStepDetail,
         validateStage,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        configurationType: string
-        setConfigurationType: React.Dispatch<React.SetStateAction<string>>
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
-    } = useContext(ciPipelineContext)
+        isCdPipeline,
+        configMapAndSecrets
+    } = useContext(pipelineContext)
+
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
         docLink: DOCUMENTATION.BUILD_STAGE,
@@ -75,6 +61,7 @@ export function Sidebar({
     }, [activeStageName])
 
     const showMandatoryWarning = (): boolean => {
+        if(isCdPipeline) return true
         return (
             mandatoryPluginData &&
             ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
@@ -102,13 +89,73 @@ export function Sidebar({
         validateStage(BuildStageVariable.PostBuild, _formData)
     }
 
+    const addConfigSecrets = (selected) => {
+        const _form  = {...formData}
+        const preConfigMaps = []
+        const preSecrets = []
+        const postConfigsMaps = []
+        const postSecrets = []
+        selected.forEach((item) => {
+            if(item.type === 'configmaps'){
+                if(activeStageName === BuildStageVariable.PreBuild){
+                    preConfigMaps.push(item)
+                }else if(activeStageName === BuildStageVariable.PostBuild) {
+                    postConfigsMaps.push(item)
+                }
+            } else {
+                if(activeStageName === BuildStageVariable.PreBuild){
+                    preSecrets.push(item)
+                }else if(activeStageName === BuildStageVariable.PostBuild) {
+                    postSecrets.push(item)
+                }
+            }
+        }) 
+        if(activeStageName === BuildStageVariable.PreBuild){
+            _form.preStageConfigMapSecretNames.configMaps = preConfigMaps
+            _form.preStageConfigMapSecretNames.secrets = preSecrets
+        } else {
+            _form.postStageConfigMapSecretNames.configMaps = postConfigsMaps
+            _form.postStageConfigMapSecretNames.secrets = postSecrets    
+        }       
+        setFormData(_form)
+    }
+
+
+    const renderConfigSecret = () => {
+
+        const preStageValue = [...formData.preStageConfigMapSecretNames.configMaps, ...formData.preStageConfigMapSecretNames.secrets]
+        const postStageValue = [...formData.postStageConfigMapSecretNames.configMaps,...formData.postStageConfigMapSecretNames.secrets]
+        const valueList = activeStageName === BuildStageVariable.PreBuild ? preStageValue : postStageValue
+        console.log(valueList);
+        
+
+        return (
+            <div className="sidebar-action-container-border pr-20">
+                <ReactSelect
+                    options={configMapAndSecrets}
+                    value={valueList}
+                    isSearchable={false}
+                    components={{
+                        IndicatorSeparator: null,
+                    }}
+                    onChange={addConfigSecrets}
+                    isMulti
+                    isClearable
+                />
+                <div>
+                    
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="dc__position-rel">
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container sidebar-action-container-border">
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            {!isJobView && MandatoryPluginWarning && showMandatoryWarning() && (
+                            {!isCdPipeline && !isJobView && MandatoryPluginWarning && showMandatoryWarning() && (
                                 <MandatoryPluginWarning
                                     stage={activeStageName}
                                     mandatoryPluginData={mandatoryPluginData}
@@ -160,6 +207,7 @@ export function Sidebar({
                     </div>
                 </div>
             )}
+            {activeStageName !== BuildStageVariable.Build && renderConfigSecret()}
             <div className="sidebar-action-container pr-20">
                 <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
                 <div>

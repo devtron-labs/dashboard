@@ -1,3 +1,4 @@
+import { ErrorObj, MaterialType, TaskErrorObj } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 
 export const CD_PATCH_ACTION = {
@@ -170,4 +171,38 @@ export interface AdvanceCDPipelineModalProps {
     selectStrategy: (selection: string) => void
     deleteStage: (key: 'preStage' | 'postStage') => void
     renderAddStage: (key: 'preStage' | 'postStage') => void
+}
+
+export interface CDFormType {
+    name: string
+    environmentId: number
+    namespace: string
+    materials: MaterialType[]
+    environments: Environment[]
+    deploymentAppType: string
+    triggerType: string
+    preBuildStage: any
+    postBuildStage: any
+    strategies: DeploymentStrategy[]
+    savedStrategies: SavedDeploymentStrategy[]
+    preStageConfigMapSecretNames: { configMaps: string[], secrets: string[] },
+    postStageConfigMapSecretNames: { configMaps: string[], secrets: string[] },
+}
+
+export interface CDFormErrorObjectType {
+    name: ErrorObj;
+    envNameError: ErrorObj,
+    nameSpaceError: ErrorObj,
+    preBuildStage?: {
+        isValid: boolean;
+        steps: TaskErrorObj[];
+    };
+    buildStage?: {
+        isValid: boolean;
+        name: ErrorObj;
+    };
+    postBuildStage?: {
+        isValid: boolean;
+        steps: TaskErrorObj[];
+    };
 }

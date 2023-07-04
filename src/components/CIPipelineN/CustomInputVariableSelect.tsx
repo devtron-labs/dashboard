@@ -29,6 +29,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
+        isCdPipeline
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -42,6 +43,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+        isCdPipeline: boolean
     } = useContext(pipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
@@ -65,7 +67,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         if (activeStageName === BuildStageVariable.PostBuild) {
             const preBuildStageVariables = []
             const preBuildTaskLength = formData[BuildStageVariable.PreBuild]?.steps?.length
-            if (preBuildTaskLength >= 1) {
+            if (preBuildTaskLength >= 1 && !isCdPipeline) {
                 if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
                     inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
                         (element) => {
