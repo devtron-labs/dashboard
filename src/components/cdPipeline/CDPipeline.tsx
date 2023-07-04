@@ -153,7 +153,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 userApprovalConfig: null,
                 isVirtualEnvironment: false,
                 repoName: '',
-                containerRegistryName: ''
+                containerRegistryName: '',
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -196,110 +196,110 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
         this.setState({
-                generatedHelmPushAction: selectedGeneratedHelmValue,
+            generatedHelmPushAction: selectedGeneratedHelmValue,
         })
     }
 
     handleRegistryChange = (selectedRegistry): void => {
         this.setState({
-                selectedRegistry: selectedRegistry,
+            selectedRegistry: selectedRegistry,
         })
     }
 
     setRepositoryName = (event): void => {
         this.setState({
-          pipelineConfig: {
-            ...this.state.pipelineConfig,
-            repoName: event.target.value,
-        },
-      })
+            pipelineConfig: {
+                ...this.state.pipelineConfig,
+                repoName: event.target.value,
+            },
+        })
     }
 
     getDockerRegistry = () => {
-      getDockerRegistryMinAuth(this.props.match.params.appId, true)
-      .then((response) => {
-          let dockerRegistries = response.result || []
-          this.setState({
-                  dockerRegistries: dockerRegistries,
-         })
-        })
-      .catch((error) => {
-          showError(error)
-      })
+        getDockerRegistryMinAuth(this.props.match.params.appId, true)
+            .then((response) => {
+                let dockerRegistries = response.result || []
+                this.setState({
+                    dockerRegistries: dockerRegistries,
+                })
+            })
+            .catch((error) => {
+                showError(error)
+            })
     }
 
     getInit = () => {
-      Promise.all([
-          getDeploymentStrategyList(this.props.match.params.appId),
-          getEnvironmentListMinPublic(true),
-          getDockerRegistryMinAuth(this.props.match.params.appId, true),
-      ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
-          let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
-          let defaultStrategy
-          for (let i = 0; i < strategies.length; i++) {
-              if (!this.allStrategies[strategies[i].deploymentTemplate])
-                  this.allStrategies[strategies[i].deploymentTemplate] = {}
-              this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
-              if (strategies[i].default) defaultStrategy = strategies[i]
-          }
-          if (defaultStrategy) {
-              this.handleStrategy(defaultStrategy.deploymentTemplate)
-          }
-          this.noStrategyAvailable = strategies.length === 0
-          this.setState({
-              strategies,
-              isAdvanced: this.props.match.params.cdPipelineId ? true : false,
-              view: this.props.match.params.cdPipelineId ? ViewType.LOADING : ViewType.FORM,
-          })
+        Promise.all([
+            getDeploymentStrategyList(this.props.match.params.appId),
+            getEnvironmentListMinPublic(true),
+            getDockerRegistryMinAuth(this.props.match.params.appId, true),
+        ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+            let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+            let defaultStrategy
+            for (let i = 0; i < strategies.length; i++) {
+                if (!this.allStrategies[strategies[i].deploymentTemplate])
+                    this.allStrategies[strategies[i].deploymentTemplate] = {}
+                this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
+                if (strategies[i].default) defaultStrategy = strategies[i]
+            }
+            if (defaultStrategy) {
+                this.handleStrategy(defaultStrategy.deploymentTemplate)
+            }
+            this.noStrategyAvailable = strategies.length === 0
+            this.setState({
+                strategies,
+                isAdvanced: this.props.match.params.cdPipelineId ? true : false,
+                view: this.props.match.params.cdPipelineId ? ViewType.LOADING : ViewType.FORM,
+            })
 
-          let environments = envResponse.result || []
-          environments = environments.map((env) => {
-              return {
-                  id: env.id,
-                  clusterName: env.cluster_name,
-                  name: env.environment_name,
-                  namespace: env.namespace || '',
-                  active: false,
-                  isClusterCdActive: env.isClusterCdActive,
-                  description: env.description,
-                  isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
-                  allowedDeploymentTypes: env.allowedDeploymentTypes || [],
-              }
-          })
-          environments = environments.sort((a, b) => {
-              return sortCallback('name', a, b)
-          })
+            let environments = envResponse.result || []
+            environments = environments.map((env) => {
+                return {
+                    id: env.id,
+                    clusterName: env.cluster_name,
+                    name: env.environment_name,
+                    namespace: env.namespace || '',
+                    active: false,
+                    isClusterCdActive: env.isClusterCdActive,
+                    description: env.description,
+                    isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
+                    allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                }
+            })
+            environments = environments.sort((a, b) => {
+                return sortCallback('name', a, b)
+            })
 
-          let dockerRegistries = dockerResponse.result || []
-          dockerRegistries = dockerRegistries.sort((a, b) => {
-              return sortCallback('id', a, b)
-          })
-          this.setState({
-              environments: environments,
-              dockerRegistries: dockerRegistries,
-          })
+            let dockerRegistries = dockerResponse.result || []
+            dockerRegistries = dockerRegistries.sort((a, b) => {
+                return sortCallback('id', a, b)
+            })
+            this.setState({
+                environments: environments,
+                dockerRegistries: dockerRegistries,
+            })
 
-          if (this.props.match.params.cdPipelineId) {
-              this.getCDPipeline()
-          } else {
-              getCDPipelineNameSuggestion(this.props.match.params.appId)
-                  .then((response) => {
-                      this.setState({
-                          pipelineConfig: {
-                              ...this.state.pipelineConfig,
-                              name: response.result,
-                          },
-                      })
-                  })
-                  .catch((error) => {})
-          }
-      })
- }
+            if (this.props.match.params.cdPipelineId) {
+                this.getCDPipeline()
+            } else {
+                getCDPipelineNameSuggestion(this.props.match.params.appId)
+                    .then((response) => {
+                        this.setState({
+                            pipelineConfig: {
+                                ...this.state.pipelineConfig,
+                                name: response.result,
+                            },
+                        })
+                    })
+                    .catch((error) => {})
+            }
+        })
+    }
 
     getCDPipeline(): void {
-      this.setState({
-        view: ViewType.LOADING,
-      })
+        this.setState({
+            view: ViewType.LOADING,
+        })
         getCDPipelineConfig(this.props.match.params.appId, this.props.match.params.cdPipelineId)
             .then((data) => {
                 let pipelineConfigFromRes = data.pipelineConfig
@@ -320,10 +320,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 showError(error)
                 this.setState({ code: error.code, view: ViewType.ERROR, loadingData: false })
             })
-            .finally(() =>{
-              this.setState({
-                view: ViewType.FORM,
-              })
+            .finally(() => {
+                this.setState({
+                    view: ViewType.FORM,
+                })
             })
     }
 
@@ -369,7 +369,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             strategies: savedStrategies,
             repoName: pipelineConfigFromRes.repoName,
             containerRegistryName: pipelineConfigFromRes.containerRegistryName || '',
-            manifestStorageType: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : "helm_repo",
+            manifestStorageType:
+                pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
+                    ? GeneratedHelmPush.PUSH
+                    : 'helm_repo',
             preStage: {
                 ...pipelineConfigFromRes.preStage,
                 config: pipelineConfigFromRes.preStage.config || '',
@@ -433,8 +436,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showError: false,
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
             allowedDeploymentTypes: env.allowedDeploymentTypes || [],
-            generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
-            selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName),
+            generatedHelmPushAction:
+                pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
+                    ? GeneratedHelmPush.PUSH
+                    : GeneratedHelmPush.DO_NOT_PUSH,
+            selectedRegistry: this.state.dockerRegistries.filter(
+                (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
+            ),
         })
     }
 
@@ -736,9 +744,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                           requiredCount: +this.state.requiredApprovals,
                       }
                     : null,
-            containerRegistryName: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.selectedRegistry?.id : '',
-            repoName: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
-            manifestStorageType: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? "helm_repo" : ""
+            containerRegistryName:
+                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.selectedRegistry?.id : '',
+            repoName:
+                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
+            manifestStorageType: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
         }
         let request = {
             appId: parseInt(this.props.match.params.appId),
@@ -747,10 +757,22 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
-            pipeline.deploymentAppType = this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ?  DeploymentAppTypes.MANIFEST_PUSH : DeploymentAppTypes.MANIFEST_DOWNLOAD
-            pipeline.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.triggerType
-            pipeline.preStage.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.preStage.triggerType
-            pipeline.postStage.triggerType = this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH ? TriggerType.Manual : this.state.pipelineConfig.postStage.triggerType
+            pipeline.deploymentAppType =
+                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
+                    ? DeploymentAppTypes.MANIFEST_PUSH
+                    : DeploymentAppTypes.MANIFEST_DOWNLOAD
+            pipeline.triggerType =
+                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ? TriggerType.Manual
+                    : this.state.pipelineConfig.triggerType
+            pipeline.preStage.triggerType =
+                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ? TriggerType.Manual
+                    : this.state.pipelineConfig.preStage.config
+            pipeline.postStage.triggerType =
+                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ? TriggerType.Manual
+                    : this.state.pipelineConfig.postStage.config
         }
 
         let msg
@@ -1489,21 +1511,24 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
-                {this.state.pipelineConfig.isVirtualEnvironment ? HelmManifestPush && (
-                    <HelmManifestPush
-                        generatedHelmPushAction={this.state.generatedHelmPushAction}
-                        onChangeSetGeneratedHelmPush={this.onChangeSetGeneratedHelmPush}
-                        repositoryName={this.state.pipelineConfig.repoName}
-                        handleOnRepository={this.setRepositoryName}
-                        dockerRegistries={this.state.dockerRegistries}
-                        handleRegistryChange={this.handleRegistryChange}
-                        selectedRegistry={this.state.selectedRegistry}
-                        containerRegistryName ={this.state.pipelineConfig.containerRegistryName}
-                    />
-                ): this.renderTriggerType()}
-                {this.state.pipelineConfig.isVirtualEnvironment && this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
-                    <div className="mt-16">{this.renderTriggerType()}</div>
-                )}
+                {this.state.pipelineConfig.isVirtualEnvironment
+                    ? HelmManifestPush && (
+                          <HelmManifestPush
+                              generatedHelmPushAction={this.state.generatedHelmPushAction}
+                              onChangeSetGeneratedHelmPush={this.onChangeSetGeneratedHelmPush}
+                              repositoryName={this.state.pipelineConfig.repoName}
+                              handleOnRepository={this.setRepositoryName}
+                              dockerRegistries={this.state.dockerRegistries}
+                              handleRegistryChange={this.handleRegistryChange}
+                              selectedRegistry={this.state.selectedRegistry}
+                              containerRegistryName={this.state.pipelineConfig.containerRegistryName}
+                          />
+                      )
+                    : this.renderTriggerType()}
+                {this.state.pipelineConfig.isVirtualEnvironment &&
+                    this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
+                        <div className="mt-16">{this.renderTriggerType()}</div>
+                    )}
             </>
         )
     }
