@@ -514,7 +514,7 @@ function DockerForm({
             toast.success('Please mark another as default.')
             return
         }
-        toggleDefault((t) => !t)                    
+        toggleDefault(not)                    
     }
 
     async function onSave() {
