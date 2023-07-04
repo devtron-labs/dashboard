@@ -205,7 +205,7 @@ export const CIListItem = ({
     tagsEditable,
     hideImageTaggingHardDelete,
 }: CIListItemType) => {
-    if(!ApprovalInfoTippy) importComponentFromFELibrary('ApprovalInfoTippy')
+    if(!ApprovalInfoTippy) ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
     return (
         <>
             {type === 'deployed-artifact' && (
