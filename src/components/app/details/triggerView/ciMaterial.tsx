@@ -6,7 +6,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
+import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
