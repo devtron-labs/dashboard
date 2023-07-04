@@ -461,13 +461,11 @@ export default function HelmAppList({
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
                     <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.clusterName}`}>
-                        {' '}
                         {app.environmentDetail.clusterName}
                     </p>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
                     <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.namespace}`}>
-                        {' '}
                         {app.environmentDetail.namespace}
                     </p>
                 </div>
