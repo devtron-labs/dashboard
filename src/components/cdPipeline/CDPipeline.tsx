@@ -745,7 +745,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                       }
                     : null,
             containerRegistryName:
-                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.selectedRegistry?.id : '',
+                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.containerRegistryName : '',
             repoName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
             manifestStorageType: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
@@ -753,8 +753,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let request = {
             appId: parseInt(this.props.match.params.appId),
         }
-        pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
-        pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
+        pipeline.preStage.config = (this.state.generatedHelmPushAction !== GeneratedHelmPush.DO_NOT_PUSH ) &&  pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
+        pipeline.postStage.config = (this.state.generatedHelmPushAction !== GeneratedHelmPush.DO_NOT_PUSH ) && pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType =
@@ -765,14 +765,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
                     ? TriggerType.Manual
                     : this.state.pipelineConfig.triggerType
-            pipeline.preStage.triggerType =
-                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
-                    ? TriggerType.Manual
-                    : this.state.pipelineConfig.preStage.config
-            pipeline.postStage.triggerType =
-                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
-                    ? TriggerType.Manual
-                    : this.state.pipelineConfig.postStage.config
+
         }
 
         let msg
