@@ -170,6 +170,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries: null,
             selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
+            containerRegistryName: ''
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -179,8 +180,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     componentDidMount() {
-        this.getDeploymentStrategies()
-        // this.getInit()
+        this.getInit()
         document.addEventListener('keydown', this.escFunction)
     }
 
@@ -227,76 +227,69 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
           showError(error)
       })
     }
-    getDeploymentStrategies(): void {
-        getDeploymentStrategyList(this.props.match.params.appId)
-            .then((response) => {
-                let strategies = response.result.pipelineStrategy || []
-                for (let i = 0; i < strategies.length; i++) {
-                    if (!this.allStrategies[strategies[i].deploymentTemplate])
-                        this.allStrategies[strategies[i].deploymentTemplate] = {}
-                    this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
-                }
-                this.noStrategyAvailable = strategies.length === 0
-                this.setState(
-                    {
-                        strategies,
-                        isAdvanced: this.props.match.params.cdPipelineId ? true : false,
-                        view: this.props.match.params.cdPipelineId ? ViewType.LOADING : ViewType.FORM,
-                    },
-                    () => {
 
-                        if (this.props.match.params.cdPipelineId) {
-                            this.getCDPipeline()
+    getInit = () => {
+      Promise.all([
+          getDeploymentStrategyList(this.props.match.params.appId),
+          getEnvironmentListMinPublic(true),
+          getDockerRegistryMinAuth(this.props.match.params.appId, true),
+      ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+          let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+          for (let i = 0; i < strategies.length; i++) {
+              if (!this.allStrategies[strategies[i].deploymentTemplate])
+                  this.allStrategies[strategies[i].deploymentTemplate] = {}
+              this.allStrategies[strategies[i].deploymentTemplate] = strategies[i].config
+          }
+          this.noStrategyAvailable = strategies.length === 0
+          this.setState({
+              strategies,
+              isAdvanced: this.props.match.params.cdPipelineId ? true : false,
+              view: this.props.match.params.cdPipelineId ? ViewType.LOADING : ViewType.FORM,
+          })
 
-                        } else {
-                            getCDPipelineNameSuggestion(this.props.match.params.appId)
-                                .then((response) => {
-                                    this.setState({
-                                        pipelineConfig: {
-                                            ...this.state.pipelineConfig,
-                                            name: response.result,
-                                        },
-                                    })
-                                })
-                                .catch((error) => {})
+          let environments = envResponse.result || []
+          environments = environments.map((env) => {
+              return {
+                  id: env.id,
+                  clusterName: env.cluster_name,
+                  name: env.environment_name,
+                  namespace: env.namespace || '',
+                  active: false,
+                  isClusterCdActive: env.isClusterCdActive,
+                  description: env.description,
+                  isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
+                  allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+              }
+          })
+          environments = environments.sort((a, b) => {
+              return sortCallback('name', a, b)
+          })
 
-                            getEnvironmentListMinPublic(true)
-                                .then((response) => {
-                                    let list = response.result || []
-                                    list = list.map((env) => {
-                                        return {
-                                            id: env.id,
-                                            clusterName: env.cluster_name,
-                                            name: env.environment_name,
-                                            namespace: env.namespace || '',
-                                            active: false,
-                                            isClusterCdActive: env.isClusterCdActive,
-                                            description: env.description,
-                                            isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
-                                            allowedDeploymentTypes: env.allowedDeploymentTypes || [],
-                                        }
-                                    })
-                                    sortObjectArrayAlphabetically(list, 'name')
-                                    this.setState({ environments: list })
-                                })
-                                .catch((error) => {
-                                    showError(error)
-                                })
+          let dockerRegistries = dockerResponse.result || []
+          dockerRegistries = dockerRegistries.sort((a, b) => {
+              return sortCallback('id', a, b)
+          })
+          this.setState({
+              environments: environments,
+              dockerRegistries: dockerRegistries,
+          })
 
-                            if (this.state.strategies.length > 0) {
-                                let defaultStrategy = this.state.strategies.find((strategy) => strategy.default)
-                                this.handleStrategy(defaultStrategy.deploymentTemplate)
-                            }
-                        }
-                        this.getDockerRegistry()
-                    },
-                )
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-                this.setState({ code: error.code, view: ViewType.ERROR, loadingData: false })
-            })
-    }
+          if (this.props.match.params.cdPipelineId) {
+              this.getCDPipeline()
+          } else {
+              getCDPipelineNameSuggestion(this.props.match.params.appId)
+                  .then((response) => {
+                      this.setState({
+                          pipelineConfig: {
+                              ...this.state.pipelineConfig,
+                              name: response.result,
+                          },
+                      })
+                  })
+                  .catch((error) => {})
+          }
+      })
+ }
 
     getCDPipeline(): void {
       this.setState({
@@ -435,7 +428,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
             allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             generatedHelmPushAction: pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH ,
-            selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName)
+            selectedRegistry: this.state.dockerRegistries.filter((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName),
+            containerRegistryName: pipelineConfigFromRes.containerRegistryName
         })
     }
 
@@ -1503,6 +1497,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         dockerRegistries={this.state.dockerRegistries}
                         handleRegistryChange={this.handleRegistryChange}
                         selectedRegistry={this.state.selectedRegistry}
+                        containerRegistryName ={this.state.containerRegistryName}
                     />
                 )}
                 {this.state.pipelineConfig.isVirtualEnvironment && this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH && (

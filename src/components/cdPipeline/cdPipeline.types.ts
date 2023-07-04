@@ -103,6 +103,7 @@ export interface CDPipelineState {
     dockerRegistries
     generatedHelmPushAction: string
     selectedRegistry: any
+    containerRegistryName: string
 }
 
 export interface PipelineConfig {
