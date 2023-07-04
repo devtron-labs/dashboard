@@ -1226,14 +1226,17 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
 export const getDeploymentAppType = (
     allowedDeploymentTypes: DeploymentAppTypes[],
     selectedDeploymentAppType: string,
+    isVirtualEnvironment: boolean
 ): string => {
-    if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
-        return ''
-    } else if (
-        selectedDeploymentAppType &&
-        allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
-    ) {
-        return selectedDeploymentAppType
-    }
-    return allowedDeploymentTypes[0]
+  if (isVirtualEnvironment) {
+      return DeploymentAppTypes.MANIFEST_DOWNLOAD
+  } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+      return ''
+  } else if (
+      selectedDeploymentAppType &&
+      allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
+  ) {
+      return selectedDeploymentAppType
+  }
+  return allowedDeploymentTypes[0]
 }

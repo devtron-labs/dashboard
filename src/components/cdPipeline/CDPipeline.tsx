@@ -485,7 +485,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
             pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv)
             pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv)
-            pipelineConfig.deploymentAppType = getDeploymentAppType(selection.allowedDeploymentTypes, this.state.pipelineConfig.deploymentAppType)
+            pipelineConfig.deploymentAppType = getDeploymentAppType(selection.allowedDeploymentTypes, this.state.pipelineConfig.deploymentAppType, selection.isVirtualEnvironment)
             this.setState({ environments: list, pipelineConfig, errorForm, allowedDeploymentTypes: selection.allowedDeploymentTypes }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
