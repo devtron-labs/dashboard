@@ -1,6 +1,5 @@
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { DeploymentAppTypes } from '../../config'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,

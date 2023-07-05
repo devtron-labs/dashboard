@@ -17,6 +17,7 @@ export const Routes = {
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
+    IMAGE_TAGGING:'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
@@ -402,22 +403,6 @@ export enum MODES {
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
-export interface InputDetailType {
-    label: string
-    defaultValue: string
-    placeholder: string
-}
-export interface RegistryTypeDetailType {
-    value: string
-    label: string
-    desiredFormat: string
-    placeholderText: string
-    gettingStartedLink: string
-    defaultRegistryURL: string
-    registryURL: InputDetailType
-    id: InputDetailType
-    password: InputDetailType
-}
 export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
 export type OCIRegistryStorageConfigType = {
     CONTAINER ?: OCIRegistryStorageActionType,
@@ -468,171 +453,6 @@ export interface RegistryPayloadType {
 export const RegistryTypeName = {
     'CONTAINER': 'Container registry',
     'OCI_PRIVATE': 'OCI Registry (Private)',
-}
-
-export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
-    ecr: {
-        value: 'ecr',
-        label: 'ECR',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL',
-            defaultValue: '',
-            placeholder: 'Eg. xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
-        },
-        id: {
-            label: 'Access key ID',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Secret access key',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    'docker-hub': {
-        value: 'docker-hub',
-        label: 'Docker',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: 'https://docs.docker.com/docker-hub/',
-        defaultRegistryURL: 'docker.io',
-        registryURL: {
-            label: 'Registry URL',
-            defaultValue: 'docker.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token (Recommended: Token)',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    acr: {
-        value: 'acr',
-        label: 'Azure',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink:
-            'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL/Login Server',
-            defaultValue: '',
-            placeholder: 'Eg. xxx.azurecr.io',
-        },
-        id: {
-            label: 'Username/Registry Name',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    'artifact-registry': {
-        value: 'artifact-registry',
-        label: 'Artifact Registry (GCP)',
-        desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
-        placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
-        gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL',
-            defaultValue: '',
-            placeholder: 'Eg. region-docker.pkg.dev',
-        },
-        id: {
-            label: 'Username',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    gcr: {
-        value: 'gcr',
-        label: 'GCR',
-        desiredFormat: '(desired format: project-id/repo-name)',
-        placeholderText: 'Eg. project-id/repo_name',
-        gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
-        defaultRegistryURL: 'gcr.io',
-        registryURL: {
-            label: 'Registry URL',
-            defaultValue: 'gcr.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    quay: {
-        value: 'quay',
-        label: 'Quay',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: '',
-        defaultRegistryURL: 'quay.io',
-        registryURL: {
-            label: 'Registry URL',
-            defaultValue: 'quay.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Token',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    other: {
-        value: 'other',
-        label: 'Other',
-        desiredFormat: '',
-        placeholderText: '',
-        gettingStartedLink: '',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL',
-            defaultValue: '',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
 }
 
 export const AppCreationType = {
@@ -882,12 +702,6 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
-export enum DeploymentAppTypes {
-  HELM = 'helm',
-  GITOPS = 'argo_cd',
-  MANIFEST_DOWNLOAD = 'manifest_download',
-  MANIFEST_PUSH='manifest_push'
-}
 
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 

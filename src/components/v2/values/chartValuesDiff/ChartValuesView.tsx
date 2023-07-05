@@ -11,6 +11,7 @@ import {
     ServerErrors,
     ForceDeleteDialog,
     ResponseType,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,
@@ -40,7 +41,6 @@ import {
     SERVER_MODE,
     URLS,
     checkIfDevtronOperatorHelmRelease,
-    DeploymentAppTypes,
 } from '../../../../config'
 import YAML from 'yaml'
 import {
@@ -108,7 +108,6 @@ import {
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
-import { DeploymentAppType } from '../../appDetails/appDetails.type'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
@@ -142,7 +141,7 @@ function ChartValuesView({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
 
@@ -835,7 +834,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
-                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppType.manifest_download : commonState.deploymentAppType,
+                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {

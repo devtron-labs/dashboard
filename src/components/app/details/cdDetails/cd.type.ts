@@ -1,5 +1,5 @@
-import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
-import { UserApprovalMetadataType } from "@devtron-labs/devtron-fe-common-lib"
+import { DeploymentAppTypes, UserApprovalMetadataType, ReleaseTag } from "@devtron-labs/devtron-fe-common-lib"
+import { ImageComment } from "../cicdHistory/types"
 
 export interface DeploymentHistorySingleValue {
     displayName: string
@@ -39,11 +39,14 @@ export interface DeploymentHistory {
     email_id?: string
     image: string
     workflow_type?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    ci_artifact_id?: number
 }
 
 export interface DeploymentDetailStepsType{
   deploymentStatus?: string
-  deploymentAppType?: DeploymentAppType
+  deploymentAppType?: DeploymentAppTypes
   isHelmApps?: boolean
   installedAppVersionHistoryId?: number
   isGitops?: boolean

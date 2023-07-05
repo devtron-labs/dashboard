@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router'
-import { GenericEmptyState, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
+import { DeploymentAppTypes, GenericEmptyState, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreakdown'
 import { processDeploymentStatusDetailsData } from '../appDetails/utils'
@@ -39,7 +38,7 @@ export default function DeploymentDetailSteps({
         useState<DeploymentStatusDetailsBreakdownDataType>(processedData)
 
     useEffect(() => {
-        if (deploymentAppType === DeploymentAppType.helm) {
+        if (deploymentAppType === DeploymentAppTypes.HELM) {
             history.replace(`${url.replace('deployment-steps', 'source-code')}`)
         }
         if (isGitops) {

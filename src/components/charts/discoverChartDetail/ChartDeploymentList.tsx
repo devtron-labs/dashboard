@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Td } from '../../common';
 import moment from 'moment';
-import { get, ServerErrors, showError, Progressing, ConfirmationDialog, ForceDeleteDialog, PopupMenu, ResponseType } from '@devtron-labs/devtron-fe-common-lib';
+import { get, ServerErrors, showError, Progressing, ConfirmationDialog, ForceDeleteDialog, PopupMenu, ResponseType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config';
 import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
@@ -11,7 +11,6 @@ import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog';
-import { DeploymentAppType } from '../../v2/appDetails/appDetails.type';
 import AppStatus from '../../app/AppStatus';
 
 export function ChartDeploymentList({ chartId }) {
@@ -96,7 +95,7 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
     async function handleDelete(deleteAction: DELETE_ACTION) {
         setDeleting(true)
         try {
-            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), deploymentAppType === DeploymentAppType.argo_cd, deleteAction)
+            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), deploymentAppType === DeploymentAppTypes.GITOPS, deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {
                 toast.success('Successfully deleted')
                 toggleConfirmation(false)

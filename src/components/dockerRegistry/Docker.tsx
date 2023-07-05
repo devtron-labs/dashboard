@@ -12,6 +12,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     not,
+    REGISTRY_TYPE_MAP,
     CHECKBOX_VALUE,
     Checkbox,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -20,7 +21,7 @@ import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../servi
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, REGISTRY_TYPE_MAP, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
+import { DOCUMENTATION, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
