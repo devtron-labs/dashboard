@@ -219,30 +219,26 @@
         .mw-85px {
             max-width: 85px;
         }
-        .sort-icon {
-            display: none;
-            transform: rotate(0);
-            top: -2px;
+        .sort-column {
+            background-image: url('../../assets/icons/misc/sort.svg');
+            display: inline-block;
+            height: 20px;
+            width: 16px;
+            background-size: 100% 100%;
+            -o-background-size: 100% 100%;
+            -webkit-background-size: 100% 100%;
         }
         &.sort-by {
             .sort-icon {
-                display: inline;
-                path {
-                    fill: var(--N700) !important;
-                }
+                background-image: url('../../assets/icons/ic-sort-arrow-down.svg');
+                display: inline-block;
+                height: 12px;
+                width: 12px;
+                position: relative;
+                top: -4px;
             }
-            &.desc {
-                .sort-icon {
-                    transform: rotate(180deg);
-                }
-            }
-        }
-        &:hover {
-            .sort-icon {
-                display: inline;
-                path {
-                    fill: var(--N400);
-                }
+            .desc {
+                transform: rotate(180deg);
             }
         }
     }

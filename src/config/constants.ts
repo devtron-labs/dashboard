@@ -17,6 +17,7 @@ export const Routes = {
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
+    IMAGE_TAGGING:'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 

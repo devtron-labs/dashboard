@@ -1875,7 +1875,7 @@ button.anchor {
 }
 
 .dc__align-self-center {
-    align-self: center
+    align-self: center;
 }
 
 .dc__align-center {
@@ -1914,6 +1914,10 @@ button.anchor {
 
 .dc__border-bottom {
     border-bottom: solid 1px var(--N200);
+}
+
+.dc__border-bottom-2 {
+    border-bottom: 2px solid var(--N200);
 }
 
 .dc__border-left {
@@ -2354,6 +2358,9 @@ textarea,
     word-wrap: break-word;
 }
 
+.dc__word-wrap-anywhere {
+    word-wrap: anywhere;
+}
 .dc__ff-monospace {
     font-family: monospace;
 }
@@ -2396,7 +2403,7 @@ textarea,
 }
 
 .mw-none {
-  min-width: 0px !important;
+    min-width: 0px !important;
 }
 
 .mw-4 {
@@ -2457,6 +2464,10 @@ textarea,
 
 .w-54 {
     width: 54px;
+}
+
+.w-56 {
+    width: 56px;
 }
 
 .w-60 {
@@ -2655,6 +2666,10 @@ textarea,
     width: fit-content;
 }
 
+.dc__width-inherit {
+    width: inherit;
+}
+
 // Height in pixels
 .dc__height-inherit {
     height: inherit;
@@ -2662,6 +2677,10 @@ textarea,
 
 .dc__min-width-fit-content {
     min-width: fit-content !important;
+}
+
+.dc__h-fit-content {
+    height: fit-content !important;
 }
 
 .h-0 {
@@ -2834,7 +2853,7 @@ textarea,
 }
 
 .mxh-300 {
-  max-height: 300px;
+    max-height: 300px;
 }
 
 // Height in percentage
@@ -2889,6 +2908,10 @@ textarea,
 
 .lh-28-imp {
     line-height: 28px !important;
+}
+
+.lh-32-imp {
+    line-height: 32px !important;
 }
 
 .lh-32 {
@@ -3107,7 +3130,7 @@ textarea,
 }
 
 .dc__flip {
-  transform: scaleX(-1)
+    transform: scaleX(-1);
 }
 
 textarea::-webkit-input-placeholder {
@@ -3252,7 +3275,7 @@ textarea::placeholder {
 
 .dc__description-textarea {
     width: 100% !important;
-    min-height: 100px;
+    min-height: 90px;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -3384,6 +3407,38 @@ textarea::placeholder {
 
 .line_separator {
     width: 1px;
-    height: 16px; 
+    height: 16px;
     background: var(--terminal-bg);
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.dc__dashed_icon_grid-container {
+    display: grid;
+    grid-template-columns: 48% 4% 48%;
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 0;
+    width: 100%;
+}
+
+.dc__dotted-line {
+    border: none;
+    border-top: 1px dashed var(--N300);
+    margin: 10px 0;
+}
+
+.tag-class {
+    .action-icon {
+        display: none;
+    }
+    &.icon-hover {
+        &:hover {
+            .show-icon {
+                display: block;
+            }
+        }
+    }
 }
