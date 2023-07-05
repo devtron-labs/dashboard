@@ -16,6 +16,7 @@ import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
+import { createTaintsList } from '../cluster/cluster.util'
 
 export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: ClusterListType) {
     const match = useRouteMatch()
@@ -311,6 +312,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: C
                     clusterName={terminalclusterData.name}
                     nodeGroups={createGroupSelectList(terminalclusterData?.nodeDetails, 'nodeName')}
                     closeTerminal={closeTerminal}
+                    taints={createTaintsList(terminalclusterData?.nodeDetails, 'nodeName')}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[terminalclusterData.name]}
                 />
