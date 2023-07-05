@@ -407,7 +407,7 @@ export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
 export type OCIRegistryStorageConfigType = {
     CONTAINER ?: OCIRegistryStorageActionType,
     CHART ?: OCIRegistryStorageActionType,
-} 
+}
 export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
     PULL: "PULL",
     PUSH: "PUSH",
@@ -656,7 +656,9 @@ export enum TIMELINE_STATUS {
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
     INPROGRESS= 'INPROGRESS',
-    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED= 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED'
 }
 
 export const DEPLOYMENT_STATUS = {
