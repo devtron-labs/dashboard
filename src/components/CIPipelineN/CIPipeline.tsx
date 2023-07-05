@@ -190,10 +190,10 @@ export default function CIPipeline({
         envId = envId || 0
         getEnvironmentListMinPublic()
             .then((response) => {
-                let list =[]
+                let list = []
                 list.push({ id: 0, clusterName: '', name: "default-ci", active: false, isClusterActive: false, description: "System default" })
                 response.result?.forEach((env) => {
-                    if(env.cluster_name!=="default_cluster") {
+                    if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
                         list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
                         const _selectedEnv = list.find((env) => env.id == envId)
                         setSelectedEnv(_selectedEnv)
@@ -201,7 +201,7 @@ export default function CIPipeline({
                 })
                 sortObjectArrayAlphabetically(list, 'name')
                 setEnvironments(list)
-                
+
             })
             .catch((error) => {
                 showError(error)

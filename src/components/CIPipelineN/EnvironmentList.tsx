@@ -52,7 +52,7 @@ export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSe
                     getOptionLabel={(option) => `${option.name}`}
                     getOptionValue={(option) => `${option.id}`}
                     isMulti={false}
-                    onChange={(selected: any) => selectEnvironment(selected)}
+                    onChange={selectEnvironment}
                     components={{
                         IndicatorSeparator: null,
                         DropdownIndicator,

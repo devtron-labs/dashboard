@@ -135,9 +135,7 @@ export function Sidebar({
                             </>
                         )}
                     </div>
-                    <div>
-                        {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
-                    </div>
+                    {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
                 </>
             ) : (
                 <div className="sidebar-action-container sidebar-action-container-border pr-20">
