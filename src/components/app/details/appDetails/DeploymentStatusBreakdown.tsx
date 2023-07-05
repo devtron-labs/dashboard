@@ -15,7 +15,7 @@ export default function DeploymentStatusDetailBreakdown({
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
     const { url } = useRouteMatch()
-    
+    const isHelmManifestPushed = deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO]?.showHelmManifest
     return (
         <>
             {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
@@ -27,7 +27,12 @@ export default function DeploymentStatusDetailBreakdown({
                     type={TIMELINE_STATUS.DEPLOYMENT_INITIATED}
                     deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                 />
-                {!(isVirtualEnvironment && deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[TIMELINE_STATUS.HELM_PACKAGE_GENERATED]) ? (
+                {!(
+                    isVirtualEnvironment &&
+                    deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[
+                        TIMELINE_STATUS.HELM_PACKAGE_GENERATED
+                    ]
+                ) ? (
                     <>
                         <ErrorInfoStatusBar
                             type={TIMELINE_STATUS.GIT_COMMIT}
@@ -55,11 +60,20 @@ export default function DeploymentStatusDetailBreakdown({
                         />
                     </>
                 ) : (
-                    <DeploymentStatusDetailRow
-                        type={TIMELINE_STATUS.HELM_PACKAGE_GENERATED}
-                        hideVerticalConnector={true}
-                        deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                    />
+                    <>
+                        <DeploymentStatusDetailRow
+                            type={TIMELINE_STATUS.HELM_PACKAGE_GENERATED}
+                            hideVerticalConnector={!isHelmManifestPushed}
+                            deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                        />
+                        {isHelmManifestPushed && (
+                            <DeploymentStatusDetailRow
+                                type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
+                                hideVerticalConnector={true}
+                                deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                            />
+                        )}
+                    </>
                 )}
             </div>
         </>

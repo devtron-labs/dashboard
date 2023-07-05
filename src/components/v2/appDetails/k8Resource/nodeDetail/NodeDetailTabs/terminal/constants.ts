@@ -19,7 +19,7 @@ export const TERMINAL_STATUS = {
     FAILED: 'failed',
     SUCCEDED: 'Succeded',
     TERMINATED: 'Terminated',
-    RUNNING: 'Running', 
+    RUNNING: 'Running',
 }
 
 export const TERMINAL_RESOURCE_GA = {
@@ -49,4 +49,31 @@ export const termialGAEvents = (actionType, terminalViewProps) => {
                 label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
             }
     }
+}
+
+export const MANIFEST_SELECTION_MESSAGE = {
+    EDIT_MANIFEST: 'Edit manifest',
+    REVIEW_CHANGES: 'Review & Save changes',
+    APPLY_CHANGES: 'Apply changes',
+    CANCEL: 'Cancel',
+}
+
+export enum EditModeType {
+    EDIT = 'edit',
+    REVIEW = 'review',
+    APPLY = 'apply',
+    NON_EDIT = 'nonEdit',
+}
+
+export enum TerminalWrapperType {
+    CREATABLE_SELECT = 'creatableSelect',
+    CONNECTION_BUTTON = 'connectionButton',
+    TITLE_NAME = 'titleName',
+    CLOSE_EXPAND_VIEW = 'closeExpandView',
+    REACT_SELECT = 'reactSelect',
+    CONNCTION_SWITCH = 'connectionSwitch',
+    CLEAR_BUTTON = 'clearButton',
+    MANIFEST_EDIT_BUTTONS = 'manifestEditButtons',
+    DEBUG_MODE_TOGGLE_BUTTON = 'debugModeToggleButton',
+    CUSTOM_COMPONENT = 'customComponent',
 }
