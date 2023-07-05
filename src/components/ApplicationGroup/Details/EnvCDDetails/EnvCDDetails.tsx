@@ -69,13 +69,13 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
-        if (deploymentHistoryResult.result?.length !== pagination.size) {
+        if (deploymentHistoryResult.result?.cdWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
+        const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -100,7 +100,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
 
-        const triggerHistoryMap = mapByKey(result?.result || [], 'id')
+        const triggerHistoryMap = mapByKey(result?.result?.cdWorkflows || [], 'id')
         const newTriggerHistory = Array.from(triggerHistoryMap).reduce((agg, [triggerId, curr]) => {
             const detailedTriggerHistory = triggerHistory.has(triggerId) ? triggerHistory.get(triggerId) : {}
             agg.set(curr.id, { ...detailedTriggerHistory, ...curr })
@@ -126,13 +126,13 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         return null
     }
 
-    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.length) {
+    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.cdWorkflows?.length) {
         replace(
             generatePath(path, {
                 appId,
                 envId,
                 pipelineId,
-                triggerId: deploymentHistoryResult.result[0].id,
+                triggerId: deploymentHistoryResult.result.cdWorkflows?.[0].id,
             }),
         )
     }
@@ -165,6 +165,10 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
+                        deploymentHistoryResult = {deploymentHistoryResult.result?.cdWorkflows}
+                        appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
+                        tagsEditable={deploymentHistoryResult.result?.tagsEditable}
+                        hideImageTaggingHardDelete={deploymentHistoryResult.result?.hideImageTaggingHardDelete}
                     />
                 </Route>
             )

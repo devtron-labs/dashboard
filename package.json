@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.11",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.14",
         "@sentry/browser": "^7.3.1",
         "@sentry/integrations": "^7.3.1",
         "@sentry/tracing": "^7.3.1",
@@ -53,7 +53,7 @@
         "lint": "eslint src/**/*.tsx",
         "lint-fix": "eslint --fix src/**/*.tsx",
         "start": "react-app-rewired start",
-        "build": "react-app-rewired build",
+        "build": "react-app-rewired --openssl-legacy-provider build",
         "build-light": "GENERATE_SOURCEMAP=false react-app-rewired build",
         "build-k8s-app": "GENERATE_SOURCEMAP=false REACT_APP_K8S_CLIENT=true react-app-rewired build",
         "test": "react-app-rewired test",

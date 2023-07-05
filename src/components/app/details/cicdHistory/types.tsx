@@ -1,7 +1,7 @@
-import { CSSProperties } from 'react'
+import React, { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string
@@ -31,6 +31,10 @@ export interface History {
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface CiMaterial {
@@ -70,6 +74,13 @@ export interface ArtifactType {
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
     type: HistoryComponentType
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface CopyTippyWithTextType {
@@ -79,10 +90,23 @@ export interface CopyTippyWithTextType {
 }
 
 export interface CIListItemType {
-    type: 'report' | 'artifact' | 'approved-artifact'
+    type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
     children: any
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
+}
+
+export interface ImageComment {
+    id: number
+    comment: string
+    artifactId: number
 }
 
 export interface LogsRendererType {
@@ -108,6 +132,13 @@ export interface GitChangesType {
     artifact?: string
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredByEmail?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    artifactId?: number
+    ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 export interface EmptyViewType {
     imgSrc?: string
