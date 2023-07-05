@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
+import { get } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -199,12 +200,24 @@ export default class Navigation extends Component<
             return
         }
         try {
-            const { result: trivyResponse } = await getModuleInfo(
+            const { result: trivyResponse } = await get(
                 `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_TRIVY}`,
-                true,
             )
-            const isTrivyInstalled = trivyResponse?.status === ModuleStatus.INSTALLED
-            if (isTrivyInstalled) {
+            const { result: clairResponse } = await get(
+                `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_CLAIR}`,
+            )
+            if (clairResponse?.status === ModuleStatus.INSTALLED) {
+                this.props.installedModuleMap.current = {
+                    ...this.props.installedModuleMap.current,
+                    [ModuleNameMap.SECURITY_CLAIR]: true,
+                }
+                this.setState({ forceUpdateTime: Date.now() })
+            } else if (clairResponse?.status === ModuleStatus.INSTALLING) {
+                this.securityModuleStatusTimer = setTimeout(() => {
+                    this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
+                }, MODULE_STATUS_POLLING_INTERVAL)
+            }
+            if (trivyResponse?.status === ModuleStatus.INSTALLED) {
                 this.props.installedModuleMap.current = {
                     ...this.props.installedModuleMap.current,
                     [ModuleNameMap.SECURITY_TRIVY]: true,
@@ -214,23 +227,6 @@ export default class Navigation extends Component<
                 this.securityModuleStatusTimer = setTimeout(() => {
                     this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
                 }, MODULE_STATUS_POLLING_INTERVAL)
-            }
-            if (!isTrivyInstalled) {
-                const { result: clairResponse } = await getModuleInfo(
-                    `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_CLAIR}`,
-                    true,
-                )
-                if (clairResponse?.status === ModuleStatus.INSTALLED) {
-                    this.props.installedModuleMap.current = {
-                        ...this.props.installedModuleMap.current,
-                        [ModuleNameMap.SECURITY_CLAIR]: true,
-                    }
-                    this.setState({ forceUpdateTime: Date.now() })
-                } else if (clairResponse?.status === ModuleStatus.INSTALLING) {
-                    this.securityModuleStatusTimer = setTimeout(() => {
-                        this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
-                    }, MODULE_STATUS_POLLING_INTERVAL)
-                }
             }
         } catch (error) {
             if (retryOnError >= 0) {
