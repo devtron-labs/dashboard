@@ -231,6 +231,7 @@ export const Routes = {
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
+    EDIT: 'edit',
 }
 
 export const ViewType = {
@@ -845,4 +846,15 @@ export enum DELETE_ACTION {
     DELETE= 'delete',
     FORCE_DELETE= 'force_delete',
     NONCASCADE_DELETE= 'noncascade_delete',
+}
+export const ManifestMessaging = {
+    POD_NAME_EXIST_IN_NAMESPACE: 'Pod with provided name already exists in namespace',
+    POD_NAME: 'A pod named',
+    ALREADY_EXIST: 'already exists in',
+    NAMESPACE: 'namespace',
+    CONTINUE_TERMINATE_EXISTING_POD:
+        'Continuing will terminate the existing pod and create a new one with the provided manifest.',
+    SURE_WANT_TO_CONTINUE: 'Are you sure you want to continue?',
+    CANCEL: 'Cancel',
+    TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }
