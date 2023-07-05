@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeploymentAppTypes, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     Select,
     ButtonWithLoader,
@@ -27,6 +27,7 @@ import {
     TippyCustomized,
     TippyTheme,
     sortCallback,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -61,7 +62,6 @@ import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import { PipelineType } from '../app/details/triggerView/types'
-import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
 import {
     DEPLOY_IMAGE_EXTERNALSOURCE,
@@ -149,7 +149,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 isClusterCdActive: false,
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
-                deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
+                deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
                 deploymentAppCreated: false,
                 userApprovalConfig: null,
                 isVirtualEnvironment: false,
@@ -867,7 +867,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     deleteCD = (force: boolean, cascadeDelete: boolean) => {
         const isPartialDelete =
-            this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps &&
+            this.state.pipelineConfig?.deploymentAppType === DeploymentAppTypes.GITOPS &&
             this.state.pipelineConfig.deploymentAppCreated &&
             !force
         const payload = {
@@ -928,7 +928,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             case DELETE_ACTION.DELETE:
                 return this.deleteCD(false, true)
             case DELETE_ACTION.NONCASCADE_DELETE:
-                return this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps
+                return this.state.pipelineConfig?.deploymentAppType === DeploymentAppTypes.GITOPS
                     ? this.deleteCD(false, false)
                     : this.deleteCD(false, true)
             case DELETE_ACTION.FORCE_DELETE:
@@ -1320,7 +1320,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <DeploymentAppRadioGroup
                     isDisabled={!!this.props.match.params.cdPipelineId}
-                    deploymentAppType={this.state.pipelineConfig.deploymentAppType ?? DeploymentAppType.Helm}
+                    deploymentAppType={this.state.pipelineConfig.deploymentAppType ?? DeploymentAppTypes.HELM}
                     handleOnChange={this.handleDeploymentAppTypeChange}
                     allowedDeploymentTypes={this.state.allowedDeploymentTypes}
                     rootClassName={`chartrepo-type__radio-group ${

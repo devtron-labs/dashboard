@@ -5,6 +5,7 @@ import {
     Reload,
     UserApprovalMetadataType,
     GenericEmptyState,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
@@ -18,7 +19,6 @@ import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
 import { DeploymentTemplateList } from './cd.type'
 import DeploymentDetailSteps from './DeploymentDetailSteps'
-import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
@@ -63,7 +63,7 @@ export default function CDDetails() {
     )
     const [envOptions, setEnvOptions] = useState<CICDSidebarFilterOptionType[]>([])
     const [selectedEnv, setSelectedEnv] = useState<AppEnvironment>(null)
-    const [deploymentAppType, setDeploymentAppType] = useState<DeploymentAppType>(null)
+    const [deploymentAppType, setDeploymentAppType] = useState<DeploymentAppTypes>(null)
     const { path } = useRouteMatch()
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
@@ -262,7 +262,7 @@ export const TriggerOutput: React.FC<{
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
-    deploymentAppType: DeploymentAppType
+    deploymentAppType: DeploymentAppTypes
     isBlobStorageConfigured: boolean
     deploymentHistoryResult: History[]
     appReleaseTags: string[]
@@ -340,7 +340,7 @@ export const TriggerOutput: React.FC<{
                             artifact={triggerDetails.artifact}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
-                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
+                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppTypes.HELM && (
                                 <li className="tab-list__tab" data-testid="deployment-history-steps-link">
                                     <NavLink
                                         replace
@@ -431,7 +431,7 @@ const HistoryLogs: React.FC<{
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
-    deploymentAppType: DeploymentAppType
+    deploymentAppType: DeploymentAppTypes
     isBlobStorageConfigured: boolean
     userApprovalMetadata: UserApprovalMetadataType
     triggeredByEmail: string
@@ -509,8 +509,8 @@ const HistoryLogs: React.FC<{
                                     deploymentAppType={deploymentAppType}
                                     userApprovalMetadata={userApprovalMetadata}
                                     isGitops={
-                                        deploymentAppType === DeploymentAppType.argo_cd ||
-                                        deploymentAppType === DeploymentAppType.manifest_download
+                                        deploymentAppType === DeploymentAppTypes.GITOPS ||
+                                        deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
                                     }
                                     isHelmApps={false}
                                     isVirtualEnvironment={triggerDetails.IsVirtualEnvironment}
