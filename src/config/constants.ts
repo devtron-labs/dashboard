@@ -423,7 +423,7 @@ export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
 export type OCIRegistryStorageConfigType = {
     CONTAINER ?: OCIRegistryStorageActionType,
     CHART ?: OCIRegistryStorageActionType,
-} 
+}
 export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
     PULL: "PULL",
     PUSH: "PUSH",
@@ -828,7 +828,9 @@ export enum TIMELINE_STATUS {
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
     INPROGRESS= 'INPROGRESS',
-    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED= 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -848,7 +850,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
-export const RESOURCES_NOT_FOUND = 'Resources are not available' 
+export const RESOURCES_NOT_FOUND = 'Resources are not available'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
