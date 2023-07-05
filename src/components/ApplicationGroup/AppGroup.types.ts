@@ -31,6 +31,11 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     filteredCIPipelines: any
 }
 
+export interface BulkCDDetailTypeResponse{
+    bulkCDDetailType: BulkCDDetailType[],
+    uniqueReleaseTags: string[],
+}
+
 export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
@@ -43,6 +48,10 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     approvalUsers?: string[]
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    ciPipelineId?: number
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface ResponseRowType {
@@ -93,6 +102,7 @@ export interface BulkCDTriggerType {
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
+    uniqueReleaseTags: string[]
 }
 
 export interface ProcessWorkFlowStatusType {

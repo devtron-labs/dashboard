@@ -56,16 +56,17 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
-        if (!triggerHistoryResult) {
+        if (!triggerHistoryResult?.result?.ciWorkflows) {
             return
         }
-        if (triggerHistoryResult.result?.length !== pagination.size) {
+        if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (triggerHistoryResult.result || []).reduce((agg, curr) => {
+        
+        const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -97,7 +98,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             showError(error)
             return
         }
-        setTriggerHistory(mapByKey(result?.result || [], 'id'))
+        setTriggerHistory(mapByKey(result?.result?.ciWorkflows || [], 'id'))
     }
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
@@ -171,6 +172,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
                                             isJobView={isJobView}
+                                            tagsEditable = {triggerHistoryResult.result?.tagsEditable}
+                                            appReleaseTags = {triggerHistoryResult.result?.appReleaseTagNames}
+                                            hideImageTaggingHardDelete = {triggerHistoryResult.result?.hideImageTaggingHardDelete}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -210,6 +214,9 @@ export const Details = ({
     isBlobStorageConfigured,
     isJobView,
     appIdFromParent,
+    tagsEditable,
+    appReleaseTags,
+    hideImageTaggingHardDelete,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -227,7 +234,12 @@ export const Details = ({
     )
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
-        if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerDetailsResult?.result)
+        const triggerHistoryWithTags = {
+            ...triggerDetailsResult?.result,
+            imageComment: triggerDetails.imageComment,
+            imageReleaseTags: triggerDetails.imageReleaseTags,
+        }
+        if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerHistoryWithTags)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
@@ -328,12 +340,15 @@ export const Details = ({
                 isBlobStorageConfigured={isBlobStorageConfigured}
                 isJobView={isJobView}
                 appIdFromParent={appIdFromParent}
+                appReleaseTags = {appReleaseTags}
+                tagsEditable={tagsEditable}
+                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
             />
         </>
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent }: HistoryLogsType) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent, appReleaseTags, tagsEditable, hideImageTaggingHardDelete}: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -370,6 +385,13 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         getArtifactPromise={_getArtifactPromise}
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
+                        imageComment={triggerDetails.imageComment}
+                        imageReleaseTags ={triggerDetails.imageReleaseTags}
+                        ciPipelineId={triggerDetails.ciPipelineId}
+                        artifactId={triggerDetails.artifactId}
+                        tagsEditable={tagsEditable}
+                        appReleaseTagNames={appReleaseTags}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         type={HistoryComponentType.CI}
                     />
                 </Route>

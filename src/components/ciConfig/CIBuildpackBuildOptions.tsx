@@ -26,7 +26,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { CIBuildType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -61,6 +61,15 @@ export const repositoryOption = (props): JSX.Element => {
         <components.Option {...props}>
             {props.data.url && renderOptionIcon(props.data.url)}
             {props.label}
+        </components.Option>
+    )
+}
+
+export const releaseTagOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props} onClick={stopPropagation}>
+            {props.value}
         </components.Option>
     )
 }

@@ -10,8 +10,11 @@ import {
     UserApprovalConfigType,
     CIBuildConfigType,
     DockerConfigOverrideType,
+    ReleaseTag,
+    ImageComment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import React from "react";
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -37,6 +40,7 @@ export interface CDMaterialProps {
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
+        appId?:number,
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeCDModal: (e) => void
@@ -58,6 +62,13 @@ export interface CDMaterialProps {
     triggerType?: string
     isVirtualEnvironment?: boolean
     isSaveLoading?: boolean
+    ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
+    setTagsEditable?: (tagsEditable: boolean) => void
+    updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
 }
 
 export enum DeploymentWithConfigType {
@@ -88,6 +99,7 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
+    materialInEditModeMap: Map<number,boolean>
 }
 
 export interface MaterialInfo {
@@ -159,7 +171,9 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr extends CommonNodeAttr {}
+export interface NodeAttr extends CommonNodeAttr {
+    cipipelineId?: number
+}
 
 export interface DownStreams {
     id: string
@@ -285,6 +299,10 @@ export interface WorkflowType {
     appId?: number
     isSelected?: boolean
     approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
+    imageReleaseTags: string[]
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -328,6 +346,9 @@ export interface TriggerViewState {
     isSaveLoading?: boolean
     selectedEnv?: Environment
     environmentLists?: any[]
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 //-- begining of response type objects for trigger view
