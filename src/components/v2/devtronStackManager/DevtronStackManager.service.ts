@@ -54,23 +54,22 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
     }
     let installedResponseFlag=false
     try {
-        const [clairResponse, trivyResponse] = await Promise.all([
-            getModuleInfo(ModuleNameMap.SECURITY_CLAIR),
-            getModuleInfo(ModuleNameMap.SECURITY_TRIVY),
-        ])
-        if (clairResponse && trivyResponse) {
-            if (
-                clairResponse?.result?.status === ModuleStatus.INSTALLED ||
-                trivyResponse?.result?.status === ModuleStatus.INSTALLED
-            ) {
-                installedResponseFlag=true
+        const { result: trivyResponse } = await get(`${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_TRIVY}`)
+        const isTrivyInstalled = trivyResponse && trivyResponse.status === ModuleStatus.INSTALLED
+        if (!isTrivyInstalled) {
+            const { result: clairResponse } = await get(
+                `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_CLAIR}`,
+            )
+            if (clairResponse && clairResponse?.status === ModuleStatus.INSTALLED) {
+                installedResponseFlag = true
             }
+        } else {
+            installedResponseFlag = true
         }
     } catch {
-        installedResponseFlag=false
-    }
-    finally{
-        if (installedResponseFlag){
+        installedResponseFlag = false
+    } finally {
+        if (installedResponseFlag) {
             return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.INSTALLED } })
         }
         return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.NOT_INSTALLED } })
