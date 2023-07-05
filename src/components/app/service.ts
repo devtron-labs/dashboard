@@ -87,6 +87,11 @@ export function getCITriggerInfoModal(
                 environmentName: response.result.environmentName || '',
                 environmentId: response.result.environmentId || 0,
                 appName: response.result.appName || '',
+                appReleaseTags: response?.result?.imageTaggingData?.appReleaseTags,
+                imageComment: response?.result?.imageTaggingData?.imageComment,
+                imageReleaseTags: response?.result?.imageTaggingData?.imageReleaseTags,
+                image: response?.result?.image,
+                tagsEditable: response?.result?.imageTaggingData?.tagsEditable,
             },
         }
     })
@@ -281,6 +286,9 @@ export function getCDMaterialList(
                 materials: [],
                 userApprovalConfig: null,
                 requestedUserId: 0,
+                tagsEditable: false,
+                appReleaseTagNames: [],
+                hideImageTaggingHardDelete: false
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
@@ -290,9 +298,14 @@ export function getCDMaterialList(
                     true,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
+                    response.result.appReleaseTagNames,
+                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
+                appReleaseTagNames: response.result.appReleaseTagNames,
+                tagsEditable: response.result.tagsEditable,
+                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
             }
         } else {
             return {
@@ -302,9 +315,14 @@ export function getCDMaterialList(
                     true,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
+                    response.result.appReleaseTagNames,
+                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
+                appReleaseTagNames: response.result.appReleaseTagNames,
+                tagsEditable: response.result.tagsEditable,
+                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
             }
         }
     })
@@ -340,6 +358,8 @@ function cdMaterialListModal(
     markFirstSelected: boolean,
     artifactId?: number,
     artifactStatus?: string,
+    appReleaseTagNames?: string[],
+    tagsEditable?: boolean
 ) {
     if (!artifacts || !artifacts.length) return []
 
@@ -375,6 +395,8 @@ function cdMaterialListModal(
             userApprovalMetadata: material.userApprovalMetadata,
             triggeredBy: material.triggeredBy,
             isVirtualEnvironment: material.isVirtualEnvironment,
+            imageComment: material.imageComment,
+            imageReleaseTags: material.imageReleaseTags,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {
@@ -514,6 +536,14 @@ export function getTriggerHistory(pipelineId, params) {
     let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
+export function setImageTags(request, pipelineId: number, artifactId: number){
+    return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`,request )
+}
+
+export function getImageTags(pipelineId: number, artifactId: number){
+    return get (`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
+}
+
 
 function handleTime(ts: string) {
     let timestamp = ''
