@@ -89,6 +89,8 @@ export interface CDPipelineState {
         pipelineNameError: CommonError
         envNameError: CommonError
         nameSpaceError: CommonError
+        containerRegistryError: CommonError
+        repositoryError: CommonError
     }
     showPreStage: boolean
     showDeploymentStage: boolean
@@ -104,6 +106,7 @@ export interface CDPipelineState {
     dockerRegistries
     generatedHelmPushAction: string
     selectedRegistry: any
+    defaultContainerName: string
 }
 
 export interface PipelineConfig {

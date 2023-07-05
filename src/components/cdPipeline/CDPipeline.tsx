@@ -78,7 +78,6 @@ import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValue
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
-const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 
@@ -114,6 +113,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 pipelineNameError: { isValid: true, message: '' },
                 envNameError: { isValid: true, message: '' },
                 nameSpaceError: { isValid: true, message: '' },
+                containerRegistryError: { isValid: true, message: '' },
+                repositoryError: { isValid: true, message: '' },
             },
             environments: [],
             strategies: [],
@@ -171,6 +172,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries: null,
             selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
+            defaultContainerName: ''
+
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -201,12 +204,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleRegistryChange = (selectedRegistry): void => {
+        this.state.errorForm.containerRegistryError = this.validationRules.containerRegistry(selectedRegistry.id) || this.state.pipelineConfig.containerRegistryName
         this.setState({
             selectedRegistry: selectedRegistry,
+            pipelineConfig: {
+                ...this.state.pipelineConfig,
+                containerRegistryName: selectedRegistry.id,
+            },
         })
     }
 
     setRepositoryName = (event): void => {
+      this.state.errorForm.repositoryError = this.validationRules.repository(event.target.value)
         this.setState({
             pipelineConfig: {
                 ...this.state.pipelineConfig,
@@ -277,6 +286,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.setState({
                 environments: environments,
                 dockerRegistries: dockerRegistries,
+                defaultContainerName: dockerRegistries.find((docker) => docker.isDefault === true).id
             })
 
             if (this.props.match.params.cdPipelineId) {
@@ -368,7 +378,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             ...(pipelineConfigFromRes.environmentId && env ? { namespace: env.namespace } : {}),
             strategies: savedStrategies,
             repoName: pipelineConfigFromRes.repoName,
-            containerRegistryName: pipelineConfigFromRes.containerRegistryName || '',
+            containerRegistryName: pipelineConfigFromRes.containerRegistryName,
             manifestStorageType:
                 pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                     ? GeneratedHelmPush.PUSH
@@ -706,6 +716,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         if (!this.state.pipelineConfig.isVirtualEnvironment) {
             errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
         }
+        if(this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH){
+          errorForm.containerRegistryError = this.validationRules.containerRegistry(pipelineConfig.containerRegistryName || this.state.defaultContainerName)
+          errorForm.repositoryError = this.validationRules.repository(pipelineConfig.repoName)
+        }
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
         let valid =
@@ -713,7 +727,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             errorForm.pipelineNameError.isValid &&
             (!!pipelineConfig.isVirtualEnvironment || !!pipelineConfig.namespace) &&
             !!pipelineConfig.triggerType &&
-            !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
+            !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION) &&
+            !!(pipelineConfig.containerRegistryName || this.state.defaultContainerName) &&
+            !!pipelineConfig.repoName
         if (!pipelineConfig.name || (!pipelineConfig.isVirtualEnvironment && !pipelineConfig.namespace)) {
             toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return
@@ -746,7 +762,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                       }
                     : null,
             containerRegistryName:
-                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.containerRegistryName : '',
+                this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
+                    ? this.state.pipelineConfig.containerRegistryName
+                    : '',
             repoName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
             manifestStorageType: this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
@@ -754,8 +772,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let request = {
             appId: parseInt(this.props.match.params.appId),
         }
-        pipeline.preStage.config = (this.state.generatedHelmPushAction !== GeneratedHelmPush.DO_NOT_PUSH ) &&  pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
-        pipeline.postStage.config = (this.state.generatedHelmPushAction !== GeneratedHelmPush.DO_NOT_PUSH ) && pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
+        pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
+        pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType =
@@ -766,7 +784,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
                     ? TriggerType.Manual
                     : this.state.pipelineConfig.triggerType
-
+            pipeline.preStage.triggerType =
+                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ? TriggerType.Manual
+                    : this.state.pipelineConfig.preStage.triggerType
+            pipeline.postStage.triggerType =
+                this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ? TriggerType.Manual
+                    : this.state.pipelineConfig.postStage.triggerType
         }
 
         let msg
@@ -1516,6 +1541,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                               handleRegistryChange={this.handleRegistryChange}
                               selectedRegistry={this.state.selectedRegistry}
                               containerRegistryName={this.state.pipelineConfig.containerRegistryName}
+                              containerRegistryErrorForm={this.state.errorForm.containerRegistryError}
+                              repositoryErrorForm={this.state.errorForm.repositoryError}
                           />
                       )
                     : this.renderTriggerType()}
