@@ -200,10 +200,10 @@ export default class Navigation extends Component<
         }
         try {
             const { result: trivyResponse } = await getModuleInfo(
-                `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_TRIVY}`,
+                ModuleNameMap.SECURITY_TRIVY,true
             )
             const { result: clairResponse } = await getModuleInfo(
-                `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_CLAIR}`,
+               ModuleNameMap.SECURITY_CLAIR,true
             )
             if (clairResponse?.status === ModuleStatus.INSTALLED) {
                 this.props.installedModuleMap.current = {
