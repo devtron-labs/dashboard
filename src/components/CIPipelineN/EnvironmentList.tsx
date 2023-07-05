@@ -1,6 +1,6 @@
 import React from 'react'
 import { createClusterEnvGroup } from '../common'
-import ReactSelect from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { groupStyle } from '../secrets/secret.utils'
 import { GroupHeading } from '../v2/common/ReactSelect.utils'
@@ -19,6 +19,15 @@ export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSe
 
     const groupHeading = (props) => {
         return <GroupHeading {...props} />
+    }
+
+    const environmentListControl = (props): JSX.Element => {
+        return (
+            <components.Control {...props}>
+                {!isBuildStage && <div className={'dc__environment-icon ml-10'}></div>}
+                {props.children}
+            </components.Control>
+        )
     }
 
     const buildStageStyles = {
@@ -57,6 +66,7 @@ export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSe
                         IndicatorSeparator: null,
                         DropdownIndicator,
                         GroupHeading: groupHeading,
+                        Control: environmentListControl,
                     }}
                     styles={isBuildStage ? buildStageStyles : triggerStageStyles}
                 />
