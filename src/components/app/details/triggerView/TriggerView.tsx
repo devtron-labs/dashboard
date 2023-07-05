@@ -55,6 +55,7 @@ import {
 } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { workflow } from './__mocks__/workflow.mock'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -92,6 +93,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isChangeBranchClicked: false,
             loader: false,
             isSaveLoading: false,
+            appReleaseTags:[],
+            tagsEditable:false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -110,6 +113,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidMount() {
         this.getHostURLConfig()
         this.getWorkflows()
+    }
+
+    setAppReleaseTags = (appReleaseTags: string[]) => {
+        this.setState({appReleaseTags: appReleaseTags})
+    }
+
+    setTagsEditable = (tagsEditable: boolean) => {
+        this.setState({tagsEditable: tagsEditable})
     }
 
     getWorkflows = () => {
@@ -572,6 +583,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
+        
         getCDMaterialList(
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
@@ -580,10 +592,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
+                    let cipipId = 0
+                    workflow.nodes.map((node) => {
+                        if(node.type == 'CI'){
+                            cipipId = +node.id
+                        }
+                        return node
+                    })
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
-
+                            node.appReleaseTagNames= data.appReleaseTagNames
+                            node.tagsEditable = data.tagsEditable
                             if (node.type === 'CD') {
                                 node.approvalUsers = data.approvalUsers
                                 node.userApprovalConfig =
@@ -591,8 +611,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node.requestedUserId = data.requestedUserId
                             }
                         }
+                        node.connectingCiPipelineId =  cipipId
                         return node
                     })
+                    workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.nodes = nodes
                     return workflow
                 })
@@ -604,6 +626,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     showApprovalModal: isApprovalNode,
                     showCDModal: !isApprovalNode,
                     isLoading: false,
+                    appReleaseTags: data.appReleaseTagNames,
+                    tagsEditable: data.tagsEditable,
+                    hideImageTaggingHardDelete: data.hideImageTaggingHardDelete,
                 })
                 preventBodyScroll(true)
             })
@@ -1118,7 +1143,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (this.state.showCIModal || this.state.showMaterialRegexModal) {
             const nd: NodeAttr = this.getCINode()
             const material = nd?.[this.state.materialType] || []
-
             return (
                 <VisibleModal className="" close={this.closeCIModal}>
                     <div className="modal-body--ci-material h-100" onClick={stopPropagation}>
@@ -1237,6 +1261,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 requestedUserId={node.requestedUserId}
                                 isVirtualEnvironment={node.isVirtualEnvironment}
                                 isSaveLoading={this.state.isSaveLoading}
+                                ciPipelineId={node.connectingCiPipelineId}
+                                appReleaseTagNames={this.state.appReleaseTags}
+                                setAppReleaseTagNames={this.setAppReleaseTags}
+                                tagsEditable={this.state.tagsEditable}
+                                setTagsEditable={this.setTagsEditable}
+                                hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                             />
                         )}
                     </div>
@@ -1265,6 +1295,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     onClickCDMaterial={this.onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
+                    ciPipelineId={node.connectingCiPipelineId}
+                    appReleaseTagNames={this.state.appReleaseTags}
+                    setAppReleaseTagNames={this.setAppReleaseTags}
+                    tagsEditable={this.state.tagsEditable}
+                    setTagsEditable={this.setTagsEditable}
+                    hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                 />
             )
         }
