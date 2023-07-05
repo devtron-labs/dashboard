@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
-import { get } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -200,10 +199,10 @@ export default class Navigation extends Component<
             return
         }
         try {
-            const { result: trivyResponse } = await get(
+            const { result: trivyResponse } = await getModuleInfo(
                 `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_TRIVY}`,
             )
-            const { result: clairResponse } = await get(
+            const { result: clairResponse } = await getModuleInfo(
                 `${Routes.MODULE_INFO_API}?name=${ModuleNameMap.SECURITY_CLAIR}`,
             )
             if (clairResponse?.status === ModuleStatus.INSTALLED) {
