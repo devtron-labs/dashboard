@@ -235,13 +235,14 @@ export const populateQueryString = (searchParams: string): Record<string, any> =
 }
 
 export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): string => {
-    if(jobPipeline.status === "") {
-        if(jobPipeline.environmentName === ""){
+    const status = jobPipeline.status === "notdeployed" ? "" : jobPipeline.status;
+    if (status === "") {
+        if (jobPipeline.environmentName === "") {
             return "default-ci"
         }
         return jobPipeline.environmentName
-    }else {
-        if(jobPipeline.lastTriggeredEnvironmentName === ""){
+    } else {
+        if (jobPipeline.lastTriggeredEnvironmentName === "") {
             return "default-ci"
         }
         return jobPipeline.lastTriggeredEnvironmentName
