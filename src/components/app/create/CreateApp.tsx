@@ -461,7 +461,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <ButtonWithLoader
                     rootClassName="flex cta h-36"
                     onClick={this.createApp}
-                    data-testid={`${
+                    dataTestId={`${
                         this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
                     }-${this.props.isJobView ? 'job' : 'app'}-button-on-drawer`}
                     disabled={this.state.createAppLoader}
