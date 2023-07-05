@@ -8,21 +8,23 @@ import {
     selectionListData,
     selectionListDataWithSecondStrip,
     selectionListDataWithTerminalWrapper,
+    terminalContextWrapper,
 } from '../__mocks__/terminalWrapper.mock'
-import { SocketConnectionType } from '../../node.type'
 import * as data from '../../../../../../../../components/common/helpers/Helpers'
+import { SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
 
 describe('TerminalWrapper', () => {
     it('renders without crashing', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
 
         const { container } = render(
-            <TerminalWrapper
-                selectionListData={selectionListData}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-            />,
-            { wrapper: BrowserRouter },
+            terminalContextWrapper(
+                <TerminalWrapper
+                    selectionListData={selectionListData}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                />,
+            )
         )
 
         expect(container).toBeInTheDocument()
@@ -34,12 +36,13 @@ describe('TerminalWrapper', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
 
         const { container } = render(
-            <TerminalWrapper
-                selectionListData={selectionListData}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-            />,
-            { wrapper: BrowserRouter },
+            terminalContextWrapper(
+                <TerminalWrapper
+                    selectionListData={selectionListData}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                />,
+            )
         )
 
         expect(container).toBeInTheDocument()
@@ -57,12 +60,13 @@ describe('TerminalWrapper', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
 
         const { container } = render(
-            <TerminalWrapper
-                selectionListData={selectionListDataWithSecondStrip}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-            />,
-            { wrapper: BrowserRouter },
+            terminalContextWrapper(
+                <TerminalWrapper
+                    selectionListData={selectionListDataWithSecondStrip}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                />,
+            )
         )
 
         expect(container).toBeInTheDocument()
@@ -80,12 +84,13 @@ describe('TerminalWrapper', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
 
         const { container } = render(
-            <TerminalWrapper
-                selectionListData={selectionListDataWithTerminalWrapper}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-            />,
-            { wrapper: BrowserRouter },
+            terminalContextWrapper(
+                <TerminalWrapper
+                    selectionListData={selectionListDataWithTerminalWrapper}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                />,
+            )
         )
 
         expect(container).toBeInTheDocument()

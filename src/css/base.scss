@@ -403,10 +403,12 @@ a:focus {
 .build-context-label {
     justify-content: none;
 }
+
 .build-context-highlight {
     background: var(--N200);
     white-space: nowrap;
 }
+
 // Pop Up
 .popup {
     position: fixed;
@@ -1113,6 +1115,7 @@ button.anchor {
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
         background-size: contain, contain;
     }
+
     &.timedout {
         background: url('../assets/icons/ic-timeout-red.svg'), $background;
         background-size: contain, contain;
@@ -1294,7 +1297,7 @@ button.anchor {
             }
         }
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             padding: 4px 8px;
         }
 
