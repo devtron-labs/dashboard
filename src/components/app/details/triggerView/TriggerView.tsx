@@ -47,7 +47,12 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
-import { getBranchValues, handleSourceNotConfigured, processConsequenceData, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
+import {
+    getBranchValues,
+    handleSourceNotConfigured,
+    processConsequenceData,
+    processWorkflowStatuses,
+} from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
@@ -664,11 +669,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     ) => {
         if (!offset && !size) {
             ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
+            this.setState({ isLoading: true })
         }
 
         const _offset = offset || 1
         const _size = size || 20
-        this.setState({ isLoading: true, showCDModal: true })
+        this.setState({ showCDModal: true })
         this.abortController = new AbortController()
         getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
             .then((response) => {

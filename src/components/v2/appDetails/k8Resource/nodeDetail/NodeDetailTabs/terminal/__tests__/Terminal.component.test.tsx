@@ -1,12 +1,13 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import { SocketConnectionType } from '../../node.type'
 import * as data from '../../../../../../../../components/common/helpers/Helpers'
-import { mockUseHeightObserver, renderStrip } from '../__mocks__/terminalWrapper.mock'
+import { mockUseHeightObserver, renderStrip, terminalContextWrapper } from '../__mocks__/terminalWrapper.mock'
 import { WebSocket, Server } from 'mock-socket'
 import { BrowserRouter } from 'react-router-dom'
 import TerminalView from '../Terminal'
+import { SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
+import '@testing-library/jest-dom/extend-expect'
 
 describe('TerminalView', () => {
     let mockServer
@@ -22,39 +23,39 @@ describe('TerminalView', () => {
         mockSocket.close()
     })
 
-    it('renders without crashing', () => {
+    it('renders without crashing', async () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
-        const { container } = render(
-            <TerminalView
-                terminalRef={{current: null}}
-                sessionId={''}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-                clearTerminal={false}
-                renderConnectionStrip={jest.fn()}
-            />,
-            {
-                wrapper: BrowserRouter,
-            },
+        const { container } = await render(
+            terminalContextWrapper(
+                <TerminalView
+                    terminalRef={{ current: null }}
+                    sessionId={''}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                    clearTerminal={false}
+                    renderConnectionStrip={jest.fn()}
+                />,
+            )
         )
-        expect(container).toBeInTheDocument()
-        useHeightObserverMock.mockRestore()
+        await waitFor(() => {
+            expect(container).toBeInTheDocument()
+            useHeightObserverMock.mockRestore()
+        })
     })
 
     it('renders with messaging strip', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
         const { container } = render(
-            <TerminalView
-                terminalRef={{current: null}}
-                sessionId={''}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-                clearTerminal={false}
-                renderConnectionStrip={renderStrip}
-            />,
-            {
-                wrapper: BrowserRouter,
-            },
+            terminalContextWrapper(
+                <TerminalView
+                    terminalRef={{ current: null }}
+                    sessionId={''}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                    clearTerminal={false}
+                    renderConnectionStrip={renderStrip}
+                />,
+            ),
         )
         expect(container).toBeInTheDocument()
         const messageStrip = container.querySelector(
@@ -73,14 +74,16 @@ describe('TerminalView', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
 
         const { getByText } = render(
-            <TerminalView
-                terminalRef={{current: null}}
-                sessionId={'123df5'}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-                clearTerminal={false}
-                renderConnectionStrip={renderStrip}
-            />,
+            terminalContextWrapper(
+                <TerminalView
+                    terminalRef={{ current: null }}
+                    sessionId={'123df5'}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                    clearTerminal={false}
+                    renderConnectionStrip={renderStrip}
+                />,
+            ),
         )
         mockServer.emit('connection', mockSocket)
         mockSocket.send('Terminal!')
@@ -91,28 +94,32 @@ describe('TerminalView', () => {
         const mockRenderConnectionStrip = jest.fn()
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
         const { rerender } = render(
-            <TerminalView
-                terminalRef={{current: null}}
-                sessionId={'123df5'}
-                socketConnection={SocketConnectionType.CONNECTING}
-                setSocketConnection={jest.fn()}
-                clearTerminal={false}
-                renderConnectionStrip={mockRenderConnectionStrip}
-            />,
+            terminalContextWrapper(
+                <TerminalView
+                    terminalRef={{ current: null }}
+                    sessionId={'123df5'}
+                    socketConnection={SocketConnectionType.CONNECTING}
+                    setSocketConnection={jest.fn()}
+                    clearTerminal={false}
+                    renderConnectionStrip={mockRenderConnectionStrip}
+                />,
+            ),
         )
 
         expect(mockRenderConnectionStrip).toHaveBeenCalled()
 
         const newSocketConnection = SocketConnectionType.CONNECTED
         rerender(
-            <TerminalView
-                terminalRef={{current: null}}
-                sessionId={'123df5'}
-                socketConnection={newSocketConnection}
-                setSocketConnection={jest.fn()}
-                clearTerminal={false}
-                renderConnectionStrip={mockRenderConnectionStrip}
-            />,
+            terminalContextWrapper(
+                <TerminalView
+                    terminalRef={{ current: null }}
+                    sessionId={'123df5'}
+                    socketConnection={newSocketConnection}
+                    setSocketConnection={jest.fn()}
+                    clearTerminal={false}
+                    renderConnectionStrip={mockRenderConnectionStrip}
+                />,
+            ),
         )
 
         expect(mockRenderConnectionStrip).not.toHaveBeenCalledWith(SocketConnectionType.CONNECTED)

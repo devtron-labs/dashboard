@@ -1,10 +1,11 @@
 import React from 'react'
 import { OptionsOrGroups, GroupBase, ActionMeta, StylesConfig } from 'react-select'
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
-import { SocketConnectionType } from '../node.type'
+import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
+import { EditModeType, TerminalWrapperType } from './constants'
 
 export interface TerminalWrapperComponentType {
-    type: string
+    type: TerminalWrapperType
     hideTerminalStripComponent?: boolean
     title?: string
     value?: unknown
@@ -28,6 +29,10 @@ export interface TerminalWrapperComponentType {
     resumePodConnection?: () => void
     toggleButton?: boolean
     setTerminalCleared?: () => void
+    buttonSelectionState?: string
+    setManifestButtonState?: (button: EditModeType) => void
+    onToggle?: (value: boolean) => void
+    isEnabled?: boolean
     dataTestId?: string
     classNamePrefix?: string
 }
@@ -130,4 +135,17 @@ export interface ClearTerminalType {
     hideTerminalStripComponent?: boolean
     setTerminalCleared: () => void
     dataTestId?: string
+}
+
+export interface EditManifestType {
+    hideTerminalStripComponent?: boolean
+    buttonSelectionState: string
+    setManifestButtonState: (button: string) => void
+}
+
+export interface DebugModeType {
+    hideTerminalStripComponent?: boolean
+    showInfoTippy?: boolean
+    onToggle: (value: boolean) => void
+    isEnabled: boolean
 }
