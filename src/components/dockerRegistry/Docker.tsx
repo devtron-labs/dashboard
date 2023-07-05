@@ -12,13 +12,15 @@ import {
     RadioGroup,
     RadioGroupItem,
     not,
+    CHECKBOX_VALUE,
+    Checkbox,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, REGISTRY_TYPE_MAP, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType } from '../../config'
+import { DOCUMENTATION, REGISTRY_TYPE_MAP, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -91,23 +93,36 @@ useEffect(() => {
     let dockerRegistryList = result?.result || []
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
+
+    const additionalRegistryTitleTippyContent = () => {
+        return <p className="p-12 fs-13 fw-4 lh-20">{REGISTRY_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
+    }
+
     return (
         <section
             className="global-configuration__component flex-1"
             data-testid="select-existing-container-registry-list"
         >
-            <h2 className="form__title">Registries</h2>
-            <p className="form__subtitle">
-                Manage your organization’s Container/ OCI registries.&nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    rel="noopener noreferrer"
-                    target="_blank"
+            <div className="flex left fs-16 cn-9 fw-6 mb-20" data-testid="container-oci-registry-heading">
+                Container / OCI Registry
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300"
+                    placement="top"
+                    Icon={HelpIcon}
+                    iconClass="fcv-5"
+                    heading={REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
+                    infoText={REGISTRY_TITLE_DESCRIPTION_CONTENT.infoText}
+                    additionalContent={additionalRegistryTitleTippyContent()}
+                    documentationLinkText={REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                    documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                    showCloseButton={true}
+                    trigger="click"
+                    interactive={true}
                 >
-                    Learn more
-                </a>
-            </p>
+                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                </TippyCustomized>
+            </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
                     reload={reload}
@@ -136,7 +151,14 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    ociRegistryConfig = {},
+    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
+        ? {
+              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+              CHART: OCIRegistryConfigConstants.PUSH,
+          }
+        : {
+              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+          },
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -149,7 +171,7 @@ function CollapsedList({
 }) {
     const [collapsed, toggleCollapse] = useState(true)
     const history = useHistory()
-    const { url, path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const params = useParams<{ id: string }>()
 
     const setToggleCollapse = () => {
@@ -165,7 +187,7 @@ function CollapsedList({
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List
-                dataTestId={id || 'Add'}
+                dataTestId={id || 'add-registry-button'}
                 onClick={setToggleCollapse}
                 className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
             >
@@ -183,7 +205,7 @@ function CollapsedList({
                 <div className="flex left">
                     <List.Title
                         style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
-                        title={id || 'Add Container Registry'}
+                        title={id || 'Add Registry'}
                         subtitle={registryUrl}
                         tag={isDefault ? 'DEFAULT' : ''}
                     />
@@ -435,8 +457,8 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: Isdefault,
-            isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE,
+            isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) ? Isdefault: false,
+            isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== 'gcr',
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
@@ -485,6 +507,14 @@ function DockerForm({
                         : ignoredClusterIdsCsv,
             },
         }
+    }
+
+    const handleDefaultChange = (e) => { 
+        if (isDefault) {
+            toast.success('Please mark another as default.')
+            return
+        }
+        toggleDefault(not)                    
     }
 
     async function onSave() {
@@ -624,14 +654,14 @@ function DockerForm({
     }
     const handleOCIRegistryStorageAction = (e: any): void => {
         if (!IsContainerStore) {
-            if (e.currentTarget.dataset.name === 'CONTAINER_STORE') {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (e.currentTarget.dataset.name === 'CONTAINER_AND_CHART_STORE') {
+            if (OCIRegistryUseActionHelmPushMessage) {
                 setOCIRegistryStorageConfig({
                     CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                     CHART: OCIRegistryConfigConstants.PUSH,
+                })
+            } else {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                 })
             }
         } else {
@@ -674,8 +704,8 @@ function DockerForm({
             return {
                 ...base,
                 position: 'relative',
-                paddingBottom: '0px',
                 maxHeight: '250px',
+                paddingBottom: '4px',
             }
         },
     }
@@ -708,7 +738,7 @@ function DockerForm({
     const renderRegistryCredentialsAutoInjectToClustersComponent = () => {
         if (!showManageModal) {
             return (
-                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-20 fs-13">
+                <div className="en-2 bw-1 br-4 pt-10 pb-10 pl-16 pr-16 mb-16 fs-13">
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
@@ -764,10 +794,10 @@ function DockerForm({
 
     return (
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form divider" autoComplete="off">
-            <div className="pl-20 pr-20 pt-20">
-                <div className="form__row--two-third">
+            <div className="pl-20 pr-20 pt-20 pb-20">
+                <div className={`form__row--two-third ${selectedDockerRegistryType.value === 'gcr' ? 'mb-16' : ''}`}>
                     <div className="flex left column top">
-                        <label htmlFor="" className="form__label w-100 dc__required-field">
+                        <label htmlFor="" className="form__label w-100 cb-7 dc__required-field">
                             Registry provider
                         </label>
                         <ReactSelect
@@ -813,12 +843,10 @@ function DockerForm({
                             className="flex-wrap regisrty-form__radio-group"
                             value={registryStorageType}
                             name="registry-type"
+                            disabled={id}
                             onChange={onRegistryStorageTypeChange}
                         >
-                            <span className="flex left cn-7 w-150 mr-16 fs-13 fw-6 lh-20">
-                                Regisrty Type
-                                <Question className="icon-dim-16 ml-4" />
-                            </span>
+                            <span className="flex left cn-7 w-150 mr-16 fs-13 fw-6 lh-20">Registry type</span>
                             <RadioGroupItem
                                 value={RegistryStorageType.CONTAINER}
                                 dataTestId="container-registry-radio-button"
@@ -987,25 +1015,24 @@ function DockerForm({
                     </>
                 )}
                 {selectedDockerRegistryType.value === 'other' && (
-                    <hr className="cn-1 bcn-1 en-1" style={{ height: 0.5 }} />
-                )}
-                {selectedDockerRegistryType.value === 'other' && (
-                    <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-22'}`}>
-                        <Dropdown
-                            onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
-                            className="rotate icon-dim-18 pointer fcn-6"
-                            style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
-                        />
-                        <label
-                            className="fs-13 mb-0 ml-8 pointer"
-                            onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
-                        >
-                            Advanced Registry URL Connection Options
-                        </label>
-                        <a target="_blank" href="https://docs.docker.com/registry/insecure/">
-                            <Info className="icon-dim-16 ml-4 mt-5" />
-                        </a>
-                    </div>
+                    <>
+                        <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-16'}`}>
+                            <Dropdown
+                                onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
+                                className="rotate icon-dim-18 pointer fcn-6"
+                                style={{ ['--rotateBy' as any]: !toggleCollapsedAdvancedRegistry ? '-90deg' : '0deg' }}
+                            />
+                            <label
+                                className="fs-13 mb-0 ml-8 pointer"
+                                onClick={(e) => setToggleCollapsedAdvancedRegistry(not)}
+                            >
+                                Advanced Registry URL Connection Options
+                            </label>
+                            <a target="_blank" href="https://docs.docker.com/registry/insecure/">
+                                <Info className="icon-dim-16 ml-4 mt-5" />
+                            </a>
+                        </div>
+                    </>
                 )}
                 {toggleCollapsedAdvancedRegistry && selectedDockerRegistryType.value === 'other' && (
                     <div className="form__row ml-3" style={{ width: '100%' }}>
@@ -1059,14 +1086,14 @@ function DockerForm({
                         ))}
                     </div>
                 )}
-                {registryStorageType === RegistryStorageType.OCI_PRIVATE ? (
+                <hr className="mt-0 mb-16" />
+                {registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                selectedDockerRegistryType.value !== 'gcr' ? (
                     <>
-                        <hr className="mt-0" />
                         <div className="mb-12">
                             <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
                                 <span className="flex left w-150">
-                                    <span className="dc__required-field">Use repository</span>
-                                    <Question className="icon-dim-16 ml-4" />
+                                    <span className="dc__required-field">Use repository to</span>
                                 </span>
                                 {OCIRegisrtyInputError && (
                                     <span className="form__error">
@@ -1076,73 +1103,66 @@ function DockerForm({
                                 )}
                             </span>
                         </div>
-                        <div className="dc__block form__buttons mb-12">
-                            <label htmlFor="" className="docker-default flex left">
-                                <input
-                                    type="checkbox"
-                                    className="cursor"
-                                    name="default"
-                                    checked={IsContainerStore}
-                                    data-name={
-                                        OCIRegistryUseActionHelmPushMessage ? 'CONTAINER_AND_CHART_STORE' : 'CONTAINER_STORE'
-                                    }
-                                    onChange={(e) => {
-                                        handleOCIRegistryStorageAction(e)
-                                    }}
-                                />
-                                <div className="mr-4">
-                                    Store container images {OCIRegistryUseActionHelmPushMessage ? `& ${OCIRegistryUseActionHelmPushMessage}` : ''}
-                                </div>
-                            </label>
+                        <div className={`flex left ${IsContainerStore ? 'mb-12' : ''}`}>
+                            <Checkbox
+                                rootClassName="docker-default mb-0"
+                                isChecked={IsContainerStore}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={handleOCIRegistryStorageAction}
+                                dataTestId={`store-${
+                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                                }-checkbox`}
+                            >
+                                Store container images
+                                {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
+                            </Checkbox>
                         </div>
                         {IsContainerStore && (
-                            <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                            <>
+                                <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                                <hr className="mt-0 mb-16" />
+                            </>
                         )}
-                        <hr className="mt-0" />
                     </>
                 ) : (
                     renderRegistryCredentialsAutoInjectToClustersComponent()
                 )}
-                <div className="form__row form__buttons  ">
-                    <label
-                        htmlFor=""
-                        className="docker-default flex left "
-                        onClick={
-                            isDefault
-                                ? () => {
-                                      toast.success('Please mark another as default.')
-                                  }
-                                : (e) => toggleDefault((t) => !t)
-                        }
-                    >
-                        <input
-                            type="checkbox"
-                            className="cursor"
-                            name="default"
-                            checked={Isdefault}
-                            onChange={(e) => {}}
-                        />
-                        <div className="mr-4"> Set as default registry </div>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={
-                                <span style={{ display: 'block', width: '160px' }}>
-                                    Default container registry is automatically selected while creating an application.{' '}
-                                </span>
-                            }
-                        >
-                            <Question className="icon-dim-20" />
-                        </Tippy>
-                    </label>
-                </div>
+                {(selectedDockerRegistryType.value === 'gcr' ||
+                    registryStorageType !== RegistryStorageType.OCI_PRIVATE ||
+                    IsContainerStore) && (
+                    <>
+                        <div className="flex left">
+                            <Checkbox
+                                rootClassName="docker-default mb-0"
+                                isChecked={Isdefault}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={handleDefaultChange}
+                                dataTestId="set-as-default-registry-checkbox"
+                            >
+                                Set as default registry
+                            </Checkbox>
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={
+                                    <span style={{ display: 'block', width: '160px' }}>
+                                        Default container registry is automatically selected while creating an
+                                        application.
+                                    </span>
+                                }
+                            >
+                                <Question className="icon-dim-20 ml-8" />
+                            </Tippy>
+                        </div>
+                    </>
+                )}
             </div>
             <div className="p-20 divider">
                 <div className="flex right">
                     {id && (
                         <button
-                            className="cta delete dc__m-auto ml-0"
+                            className="cta flex h-36 delete dc__m-auto ml-0"
                             data-testid="delete-container-registry"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
@@ -1150,11 +1170,11 @@ function DockerForm({
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta mr-16 cancel" type="button" onClick={setToggleCollapse}>
+                    <button className="cta flex h-36 mr-16 cancel" type="button" onClick={setToggleCollapse}>
                         Cancel
                     </button>
                     <button
-                        className="cta"
+                        className="cta flex h-36"
                         type="submit"
                         disabled={loading}
                         data-testid="container-registry-save-button"

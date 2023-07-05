@@ -433,6 +433,15 @@ export const RegistryStorageType = {
     CONTAINER: 'CONTAINER',
     OCI_PRIVATE: 'OCI_PRIVATE',
 }
+
+export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'Container / OCI Registry',
+    infoText:
+        'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
+    additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
 export interface RegistryPayloadType {
     id: string,
     pluginId: string,
