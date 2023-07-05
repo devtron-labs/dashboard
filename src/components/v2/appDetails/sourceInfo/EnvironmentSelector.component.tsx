@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { showError, PopupMenu, multiSelectStyles, ForceDeleteDialog, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, PopupMenu, multiSelectStyles, ForceDeleteDialog, ServerErrors, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { useSharedState } from '../../utils/useSharedState'
-import { AppType, DeploymentAppType } from '../appDetails.type'
+import { AppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
 import Tippy from '@tippyjs/react'
@@ -49,7 +49,7 @@ function EnvironmentSelectorComponent({
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState<string>('')
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
 
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {

@@ -1,9 +1,9 @@
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import {ChartValuesType, ChartVersionType} from '../../../charts/charts.types'
 import {
     ChartValuesViewAction,
     ChartValuesViewActionTypes,
     ChartValuesViewState,
-    DeploymentAppType
 } from './ChartValuesView.type'
 
 
@@ -68,7 +68,7 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: DeploymentAppType.Helm
+        deploymentAppType: DeploymentAppTypes.HELM
     }
 }
 

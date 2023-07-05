@@ -20,6 +20,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     ConditionalWrap,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -48,7 +49,6 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
-import { DeploymentAppTypes } from '../../../../config/constants'
 import { DELETE_ACTION } from '../../../../config'
 import Tippy from '@tippyjs/react'
 

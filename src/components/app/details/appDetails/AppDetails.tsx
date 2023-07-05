@@ -9,6 +9,7 @@ import {
     multiSelectStyles,
     useEffectAfterMount,
     Drawer,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -79,7 +80,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appDetails.type'
+import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
@@ -241,7 +242,7 @@ export const Details: React.FC<DetailsType> = ({
         appDetails &&
             !!appDetails.appName &&
             !!appDetails.environmentName &&
-            appDetails.deploymentAppType !== DeploymentAppType.helm,
+            appDetails.deploymentAppType !== DeploymentAppTypes.HELM,
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
@@ -341,11 +342,11 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
         getDeploymentStatusDetail(params.appId, params.envId)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
-                    if (deploymentAppType === DeploymentAppType.helm) {
+                    if (deploymentAppType === DeploymentAppTypes.HELM) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
