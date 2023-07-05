@@ -6,7 +6,6 @@ import {
     MODULE_STATUS_RETRY_COUNT,
     SERVER_MODE,
     URLS,
-    Routes,
 } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
