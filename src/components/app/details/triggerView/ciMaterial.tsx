@@ -39,12 +39,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        let envId = this.state.selectedCIPipeline?.environmentId
-        if( !this.state.selectedCIPipeline?.environmentId && this.state.selectedCIPipeline?.lastTriggeredEnvId === -1 ){
-            envId=0
-        }else if( this.state.selectedCIPipeline?.lastTriggeredEnvId !== -1 ) {
-            envId=this.state.selectedCIPipeline?.lastTriggeredEnvId
-        }
+        let envId = this.state.selectedCIPipeline?.environmentId || 0
         const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         this.props.setSelectedEnv(_selectedEnv)
     }
