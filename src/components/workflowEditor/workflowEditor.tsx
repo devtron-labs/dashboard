@@ -332,25 +332,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <Route
                         path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
                             (pipeline) =>
-                                `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
+                                `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId`,
                         )}
-                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                        render={({ location, match }: { location: any; match: any }) => {
                             const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
                             const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
                             return (
-                                // <CDPipeline
-                                //     match={match}
-                                //     history={history}
-                                //     location={location}
-                                //     appName={this.state.appName}
-                                //     close={this.closePipeline}
-                                //     downstreamNodeSize={downstreamNodeSize}
-                                //     getWorkflows={this.getWorkflows}
-                                //     refreshParentWorkflows={this.props.getWorkflows}
-                                // />
                                 <NewCDPipeline
                                     match={match}
-                                    history={history}
                                     location={location}
                                     appName={this.state.appName}
                                     close={this.closePipeline}

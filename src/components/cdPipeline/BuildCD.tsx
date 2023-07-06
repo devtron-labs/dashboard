@@ -45,7 +45,7 @@ export default function BuildCD({
     showFormError,
     allStrategies,
     parentPipelineId,
-    isWebhookCD
+    isWebhookCD,
 }) {
     const {
         formData,
@@ -57,7 +57,6 @@ export default function BuildCD({
         handleStrategy,
         getPrePostStageInEnv,
         isVirtualEnvironment,
-
     }: {
         formData: CDFormType
         setFormData: React.Dispatch<React.SetStateAction<any>>
@@ -67,8 +66,7 @@ export default function BuildCD({
         setPageState: React.Dispatch<React.SetStateAction<string>>
         handleStrategy: (value: any) => void
         getPrePostStageInEnv: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
-        isVirtualEnvironment: boolean,
-
+        isVirtualEnvironment: boolean
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -134,8 +132,14 @@ export default function BuildCD({
                 secrets: [],
             }
             _form.isClusterCdActive = selection.isClusterCdActive
-            _form.runPreStageInEnv = getPrePostStageInEnv(selection.isVirtualEnvironment, _form.isClusterCdActive && _form.runPreStageInEnv)
-            _form.runPostStageInEnv = getPrePostStageInEnv(selection.isVirtualEnvironment, _form.isClusterCdActive && _form.runPostStageInEnv)
+            _form.runPreStageInEnv = getPrePostStageInEnv(
+                selection.isVirtualEnvironment,
+                _form.isClusterCdActive && _form.runPreStageInEnv,
+            )
+            _form.runPostStageInEnv = getPrePostStageInEnv(
+                selection.isVirtualEnvironment,
+                _form.isClusterCdActive && _form.runPostStageInEnv,
+            )
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
         } else {
@@ -458,8 +462,8 @@ export default function BuildCD({
     }
 
     const onChangeRequiredApprovals = (requiredCount: string): void => {
-        const _form = {...formData}
-        _form.requiredApprovals = requiredCount 
+        const _form = { ...formData }
+        _form.requiredApprovals = requiredCount
         setFormData(_form)
     }
 
@@ -496,11 +500,11 @@ export default function BuildCD({
         })
         let strategy = formData.savedStrategies[0]
             ? {
-                  label:formData.savedStrategies[0]?.deploymentTemplate,
+                  label: formData.savedStrategies[0]?.deploymentTemplate,
                   value: formData.savedStrategies[0]?.deploymentTemplate,
               }
             : undefined
-            
+
         return (
             <>
                 <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
@@ -622,17 +626,14 @@ export default function BuildCD({
         )
     }
 
-    return pageState === ViewType.LOADING.toString() ? (
-        <div style={{ minHeight: '200px' }} className="flex">
-            <Progressing pageLoader />
-        </div>
-    ) : (
-        <div className="cd-pipeline-body p-20 ci-scrollable-content">
-            {isAdvanced && renderPipelineNameInput()}
-            <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
-            {renderEnvNamespaceAndTriggerType()}
-            {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && renderDeploymentAppType()}
-            {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
+    const renderBuild = () => {
+        return (
+            <>
+                {isAdvanced && renderPipelineNameInput()}
+                <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
+                {renderEnvNamespaceAndTriggerType()}
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && renderDeploymentAppType()}
+                {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {ManualApproval && (
                     <>
                         <div className="divider mt-12 mb-12" />
@@ -643,6 +644,15 @@ export default function BuildCD({
                         />
                     </>
                 )}
+            </>
+        )
+    }
+
+    return pageState === ViewType.LOADING.toString() ? (
+        <div style={{ minHeight: '200px' }} className="flex">
+            <Progressing pageLoader />
         </div>
+    ) : (
+        <div className="cd-pipeline-body p-20 ci-scrollable-content">{renderBuild()}</div>
     )
 }
