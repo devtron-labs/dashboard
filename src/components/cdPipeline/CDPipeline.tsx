@@ -985,7 +985,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                         value={this.jsonToYaml(strategy.jsonStr)}
                                     >
                                         <CodeEditor.Header
-                                            // className="dc__code-textarea code-textarea--cd-pipeline"
                                             onChange={(event) =>
                                                 this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
                                             }
