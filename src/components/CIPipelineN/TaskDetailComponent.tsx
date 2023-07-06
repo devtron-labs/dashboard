@@ -21,6 +21,7 @@ export function TaskDetailComponent() {
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
+        isCdPipeline
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -28,6 +29,7 @@ export function TaskDetailComponent() {
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        isCdPipeline: boolean
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
@@ -136,7 +138,7 @@ export function TaskDetailComponent() {
                     />
                 </div>
 
-                {activeStageName === BuildStageVariable.PostBuild && (
+                {!isCdPipeline && activeStageName === BuildStageVariable.PostBuild && (
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
                         <input

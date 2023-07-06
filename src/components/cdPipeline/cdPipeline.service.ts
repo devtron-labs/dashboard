@@ -1,4 +1,4 @@
-import { Routes } from '../../config';
+import { Routes, TriggerType } from '../../config';
 import { post, get, sortCallback } from '@devtron-labs/devtron-fe-common-lib';
 import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service';
 
@@ -39,10 +39,22 @@ export function getCDPipeline(appId: string, pipelineId: string) {
     return get(URL);
 }
 
+export function getCDPipelineV2(appId: string, pipelineId: string) {
+    const URL = `${Routes.V2_CD_CONFIG}/${appId}/${pipelineId}`;
+    return get(URL);
+}
+
 export async function getCDPipelineConfig(appId: string, pipelineId: string): Promise<any> {
-    return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic()]).then(([cdPipelineRes, envListResponse]) => {
+    return Promise.all([getCDPipelineV2(appId, pipelineId), getEnvironmentListMinPublic()]).then(([cdPipelineRes, envListResponse]) => {
         let envId = cdPipelineRes.result.environmentId;
+        let cdPipeline = cdPipelineRes.result
         let environments = envListResponse.result || [];
+        const form = {
+            name: cdPipeline.name,
+            triggerType: cdPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
+            preBuildStage: cdPipeline.preDeployStage || { id: 0, triggerType: TriggerType.Auto, steps: [] },
+            postBuildStage: cdPipeline.postDeployStage || { id: 0, triggerType: TriggerType.Auto, steps: [] },
+        }
         environments = environments.map((env) => {
             return {
                 id: env.id,
@@ -54,7 +66,8 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
         });
         return {
             pipelineConfig: cdPipelineRes.result,
-            environments
+            environments,
+            form
         }
     })
 }
@@ -80,7 +93,7 @@ export function getConfigMapAndSecrets(appId: string, envId) {
         })
 
         const configSecretsList = [{
-            lable: 'ConfigMaps',
+            label: 'ConfigMaps',
             options:  configmaps.map((configmap) => {
                 return {
                     label: configmap.name,
@@ -89,7 +102,7 @@ export function getConfigMapAndSecrets(appId: string, envId) {
                 }
             })
         },{
-            lable: 'Secrets',
+            label: 'Secrets',
             options:  secrets.map((secret) => {
                 return {
                     label: secret.name,

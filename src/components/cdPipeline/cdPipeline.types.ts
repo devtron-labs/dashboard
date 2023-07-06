@@ -175,9 +175,10 @@ export interface AdvanceCDPipelineModalProps {
 
 export interface CDFormType {
     name: string
+    ciPipelineId: number
     environmentId: number
+    environmentName: string
     namespace: string
-    materials: MaterialType[]
     environments: Environment[]
     deploymentAppType: string
     triggerType: string
@@ -185,8 +186,17 @@ export interface CDFormType {
     postBuildStage: any
     strategies: DeploymentStrategy[]
     savedStrategies: SavedDeploymentStrategy[]
-    preStageConfigMapSecretNames: { configMaps: string[], secrets: string[] },
-    postStageConfigMapSecretNames: { configMaps: string[], secrets: string[] },
+    preStageConfigMapSecretNames: { configMaps: string[], secrets: string[] }
+    postStageConfigMapSecretNames: { configMaps: string[], secrets: string[] }
+    requiredApprovals: string
+    userApprovalConfig?: {
+        requiredCount: number
+    }
+    isClusterCdActive: boolean
+    deploymentAppCreated: boolean,
+    clusterName: string
+    runPreStageInEnv: boolean,
+    runPostStageInEnv: boolean,
 }
 
 export interface CDFormErrorObjectType {

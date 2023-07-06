@@ -3,6 +3,7 @@ import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as CheckNotSelected } from '../../assets/icons/ic-checkbox-unselected.svg';
 import { components } from 'react-select';
+import { ReactComponent as Search} from '../../assets/icons/ic-nav-search.svg'
 
 export const styles = {
     control: (base, state) => ({
@@ -58,3 +59,14 @@ export function DropdownIndicator(props) {
 }
 
 export const NUMBER_OF_APPROVALS = 6
+
+export const ValueContainer = (props) => {
+    return (
+        <components.ValueContainer {...props}>
+            <div className="flex left w-100">
+            <Search className='icon-dim-16 scn-6 mr-8' />
+               {props.children}
+            </div>
+        </components.ValueContainer>
+    )
+}

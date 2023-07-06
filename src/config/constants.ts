@@ -28,6 +28,7 @@ export const Routes = {
     CLUSTER_NOTE: 'cluster/description/note',
 
     CD_CONFIG: 'app/cd-pipeline',
+    V2_CD_CONFIG: 'app/v2/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',

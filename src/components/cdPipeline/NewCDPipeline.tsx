@@ -1,12 +1,12 @@
-import { BuildStageVariable, ConditionalWrap, ConditionType, Drawer, FormErrorObjectType, MandatoryPluginDataType, MandatoryPluginDetailType, PluginDetailType, PluginType, RefVariableStageType, RefVariableType, ScriptType, ServerErrors, showError, StepType, TaskErrorObj, VariableType, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { BuildStageVariable, ConditionalWrap, ConditionType, DeleteDialog, Drawer, ForceDeleteDialog, FormErrorObjectType, MandatoryPluginDataType, MandatoryPluginDetailType, PluginDetailType, PluginType, RefVariableStageType, RefVariableType, ScriptType, ServerErrors, showError, StepType, TaskErrorObj, VariableType, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { BuildTabText, SourceTypeMap, ViewType } from '../../config'
+import { NavLink, Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { BuildTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CDFormType } from './cdPipeline.types'
-import { getCDPipelineConfig, getCDPipelineNameSuggestion, getConfigMapAndSecrets, getDeploymentStrategyList } from './cdPipeline.service'
+import { CDFormType, CD_PATCH_ACTION, Environment } from './cdPipeline.types'
+import { deleteCDPipeline, getCDPipelineConfig, getCDPipelineNameSuggestion, getConfigMapAndSecrets, getDeploymentStrategyList, saveCDPipeline, updateCDPipeline } from './cdPipeline.service'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import yamlJsParser from 'yaml'
 import { Sidebar } from '../CIPipelineN/Sidebar'
@@ -16,6 +16,12 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import './cdPipeline.scss'
+import { toast } from 'react-toastify'
+import { MULTI_REQUIRED_FIELDS_MSG, TOAST_INFO } from '../../config/constantMessaging'
+import { PipelineType } from '../app/details/triggerView/types'
+import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
+import Tippy from '@tippyjs/react'
+import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 
@@ -42,6 +48,8 @@ export default function NewCDPipeline({
     const allStrategies = useRef<{ [key: string]: any }>({})
     const noStrategyAvailable = useRef(false)
     const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
+    const parentPipelineId = urlParams.get('parentPipelineId')
+
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
         workflowId: string
@@ -61,24 +69,34 @@ export default function NewCDPipeline({
     const text = cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const [formData, setFormData] = useState<CDFormType>({
         name: '',
+        ciPipelineId: isWebhookCD ? 0 : +ciPipelineId,
         environmentId: 0,
         environments: [],
-        materials: [],
+        environmentName: '',
         namespace: '',
-        deploymentAppType: '',
-        triggerType: '',
+        deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
+        triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
         preStageConfigMapSecretNames: { configMaps: [], secrets: [] },
         postStageConfigMapSecretNames: { configMaps: [], secrets: [] },
         preBuildStage: {
             id: 0,
+            triggerType: TriggerType.Auto,
             steps: [],
         },
         postBuildStage: {
             id: 0,
+            triggerType: TriggerType.Auto,
             steps: [],
         },
+        requiredApprovals: '',
+        userApprovalConfig: null,
+        isClusterCdActive: false,
+        deploymentAppCreated: false,
+        clusterName: '',
+        runPreStageInEnv: false,
+        runPostStageInEnv: false,
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
@@ -89,6 +107,7 @@ export default function NewCDPipeline({
     const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
         if (mandatoryPluginData?.pluginData.length) {
@@ -98,7 +117,8 @@ export default function NewCDPipeline({
         }
         return _mandatoryPluginsMap
     }, [mandatoryPluginData])
-    // const [deleteDialog, setDeleteDialog] = useState<deleteDialogType>(deleteDialogType.showNormalDeleteDialog)
+    const [deleteDialog, setDeleteDialog] = useState<deleteDialogType>(deleteDialogType.showNormalDeleteDialog)
+    const [forceDeleteData, setForceDeleteData] = useState({forceDeleteDialogMessage: '', forceDeleteDialogTitle: ''})
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
@@ -215,7 +235,23 @@ export default function NewCDPipeline({
             .then((result) => {
                 let pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form)
-            
+                const preBuildVariable = calculateLastStepDetail(
+                    false,
+                    result.form,
+                    BuildStageVariable.PreBuild,
+                ).calculatedStageVariables
+                const postBuildVariable = calculateLastStepDetail(
+                    false,
+                    result.form,
+                    BuildStageVariable.PostBuild,
+                ).calculatedStageVariables
+                setInputVariablesListFromPrevStep({
+                    preBuildStage: preBuildVariable,
+                    postBuildStage: postBuildVariable,
+                })
+                validateStage(BuildStageVariable.PreBuild, result.form)
+                validateStage(BuildStageVariable.Build, result.form)
+                validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setFormData(form)
                 setPageState(ViewType.FORM)
@@ -277,6 +313,13 @@ export default function NewCDPipeline({
             })
     }
 
+    const getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
+        if (isVirtualEnvironment) {
+            return true
+        } else {
+            return isRunPrePostStageInEnv ?? false
+        }
+    }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form): void => {
         sortObjectArrayAlphabetically(environments, 'name')
@@ -307,10 +350,22 @@ export default function NewCDPipeline({
         let env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
 
         form.name = pipelineConfigFromRes.name
+        form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.environmentId = pipelineConfigFromRes.environmentId
         form.environments = environments
-        form.savedStrategies = savedStrategies
+        form.savedStrategies = savedStrategies 
+        form.isClusterCdActive = pipelineConfigFromRes.isClusterCdActive || false
+        form.deploymentAppType = pipelineConfigFromRes.deploymentAppType || ''
+        form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
+        form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
+        if(pipelineConfigFromRes?.preDeployStage){
+            form.preBuildStage = pipelineConfigFromRes.preDeployStage   
+        }   
+        if(pipelineConfigFromRes?.postDeployStage){
+            form.postBuildStage = pipelineConfigFromRes?.postDeployStage
+        }
+        form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -350,7 +405,9 @@ export default function NewCDPipeline({
                     }
                 })
                 : [],
-        }    
+        }
+        form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPreStageInEnv)
+        form.runPostStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPostStageInEnv)  
     }
 
     const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): void => {
@@ -460,6 +517,66 @@ export default function NewCDPipeline({
                 })
             }
         }
+    }
+
+    const responseCode = () => {
+        
+        const _preStageConfigMapSecretNames = {
+            configMaps: formData.preStageConfigMapSecretNames.configMaps.map((config) => {
+                return config['value']
+            }),
+            secrets: formData.preStageConfigMapSecretNames.secrets.map((secret) => {
+                return secret['value']
+            }),
+        }
+
+        const _postStageConfigMapSecretNames = {
+            configMaps: formData.postStageConfigMapSecretNames.configMaps.map((config) => {
+                return config['value']
+            }),
+            secrets: formData.postStageConfigMapSecretNames.secrets.map((secret) => {
+                return secret['value']
+            }),
+        }
+    
+        const pipeline = {
+            name: formData.name,
+            appWorkflowId: +workflowId,
+            ciPipelineId: +ciPipelineId,
+            environmentId: formData.environmentId,
+            namespace: formData.namespace,
+            id: +cdPipelineId,
+            strategies: formData.savedStrategies,
+            parentPipelineType: parentPipelineType,
+            parentPipelineId: +parentPipelineId,
+            isClusterCdActive: formData.isClusterCdActive,
+            deploymentAppType: formData.deploymentAppType,
+            deploymentAppCreated: formData.deploymentAppCreated,
+            userApprovalConfig: formData.userApprovalConfig,
+            triggerType: formData.triggerType,
+            environmentName: formData.environmentName,
+            preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
+            postStageConfigMapSecretNames: _postStageConfigMapSecretNames,
+        }
+      
+        const request = {
+            appId: +appId
+        }
+        if (!cdPipelineId) {
+            request['pipelines'] = [pipeline]
+        } else {
+            request['pipeline'] = pipeline
+            request['action'] = CD_PATCH_ACTION.UPDATE
+        }
+
+        if(formData.preBuildStage.steps.length > 0){
+            pipeline['preDeployStage'] = formData.preBuildStage
+        }
+        if(formData.postBuildStage.steps.length > 0){
+            pipeline['postDeployStage'] = formData.postBuildStage
+        }
+
+        return request
     }
 
     const addNewTask = () => {
@@ -612,25 +729,10 @@ export default function NewCDPipeline({
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
             name: validationRules.name(_formData.name),
+            envNameError: validationRules.environment(_formData.environmentId)
         } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
-            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
-
-            let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid =
-                    isValid &&
-                    validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
-                return isValid
-            }, true)
-            if (_formData.materials.length > 1) {
-                const _isWebhook = _formData.materials.some((_mat) => _mat.type === SourceTypeMap.WEBHOOK)
-                if (_isWebhook) {
-                    valid = true
-                    _formDataErrorObj.name.isValid = true
-                }
-            }
-
-            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
+            _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
                 setShowFormError(true)
             }
@@ -642,21 +744,222 @@ export default function NewCDPipeline({
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
-            if (
-                mandatoryPluginData?.pluginData?.length &&
-                (sharedPlugins.length || presetPlugins.length) &&
-                validatePlugins
-            ) {
-                setMandatoryPluginData(
-                    validatePlugins(formData, mandatoryPluginData.pluginData, [...sharedPlugins, ...presetPlugins]),
-                )
-            }
+            
             _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
+    const checkUniqueness = (): boolean => {
+        const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
+        const stageNameList = list.map((taskData) => {
+            if (taskData.stepType === PluginType.INLINE) {
+                if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
+                    if (!taskData.inlineStepDetail['isMountCustomScript']) {
+                        taskData.inlineStepDetail['script'] = null
+                        taskData.inlineStepDetail['storeScriptAt'] = null
+                    }
+
+                    if (!taskData.inlineStepDetail['mountCodeToContainer']) {
+                        taskData.inlineStepDetail['mountCodeToContainerPath'] = null
+                    }
+
+                    if (!taskData.inlineStepDetail['mountDirectoryFromHost']) {
+                        taskData.inlineStepDetail['mountPathMap'] = null
+                    }
+                    taskData.inlineStepDetail.outputVariables = null
+                    let conditionDetails = taskData.inlineStepDetail.conditionDetails
+                    for (let i = 0; i < conditionDetails?.length; i++) {
+                        if (
+                            conditionDetails[i].conditionType === ConditionType.PASS ||
+                            conditionDetails[i].conditionType === ConditionType.FAIL
+                        ) {
+                            conditionDetails.splice(i, 1)
+                            i--
+                        }
+                    }
+                    taskData.inlineStepDetail.conditionDetails = conditionDetails
+                }
+            }
+            return taskData.name
+        })
+
+        // Below code is to check if all the task name from pre-stage and post-stage is unique
+        return stageNameList.length === new Set(stageNameList).size
+    }
+
+    const savePipeline = () => {
+        const isUnique = checkUniqueness()
+        if (!isUnique) {
+            toast.error('All task names must be unique')
+            return
+        }
+        setLoadingData(true)
+        validateStage(BuildStageVariable.PreBuild, formData)
+        validateStage(BuildStageVariable.Build, formData)
+        validateStage(BuildStageVariable.PostBuild, formData)
+
+        if (
+            !formDataErrorObj.buildStage.isValid ||
+            !formDataErrorObj.preBuildStage.isValid ||
+            !formDataErrorObj.postBuildStage.isValid
+        ) {
+            setLoadingData(false)
+            if (formData.name === '') {
+                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+            }
+            return
+        }
+
+       const request = responseCode()
+
+        const _form = {...formData}
+        let promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
+        promise
+            .then((response) => {
+                if (response.result) {
+                    let pipelineConfigFromRes = response.result.pipelines[0]
+                    updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form)
+                    let envName = pipelineConfigFromRes.environmentName
+                    if (!envName) {
+                        let selectedEnv: Environment = _form.environments.find(
+                            (env) => env.id == _form.environmentId,
+                        )
+                        envName = selectedEnv.name
+                    }
+                    setFormData(_form)
+                    close(
+                        pipelineConfigFromRes.parentPipelineType !== PipelineType.WEBHOOK,
+                        _form.environmentId,
+                        envName,
+                        pipelineConfigFromRes.cdPipelineId
+                            ? 'Deployment pipeline updated'
+                            : 'Deployment pipeline created',
+                        !match.params.cdPipelineId,
+                    )
+                    getWorkflows()
+                }
+            })
+            .catch((error: ServerErrors) => {
+                showError(error)
+            })
+    }
+
+    const hideDeleteModal = () => {
+        setShowDeleteModal(false)
+    }
+
+    const setForceDeleteDialogData = (serverError) => {
+        const _forceDeleteData = {...forceDeleteData}
+        setDeleteDialog(deleteDialogType.showForceDeleteDialog)
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                _forceDeleteData.forceDeleteDialogMessage = internalMessage
+                _forceDeleteData.forceDeleteDialogTitle = userMessage })
+        }
+        setForceDeleteData(_forceDeleteData)
+    }
+
+    const deleteCD = (force: boolean, cascadeDelete: boolean) => {
+        const isPartialDelete =
+            formData.deploymentAppType === DeploymentAppType.GitOps &&
+            formData.deploymentAppCreated &&
+            !force
+        const payload = {
+            action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
+            appId: parseInt(appId),
+            pipeline: {
+                id: +cdPipelineId,
+            },
+        }
+        deleteCDPipeline(payload, force, cascadeDelete)
+            .then((response) => {
+                if (response.result) {
+                    if (cascadeDelete && !response.result.deleteResponse?.clusterReachable && !response.result.deleteResponse?.deleteInitiated) {
+                            hideDeleteModal()
+                            const form = {...formData}
+                            form.clusterName = response.result.deleteResponse?.clusterName
+                            setFormData(form)
+                            setDeleteDialog(deleteDialogType.showNonCascadeDeleteDialog)
+                    } else {
+                        toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
+                        hideDeleteModal()
+                        const form = {...formData}
+                        form.clusterName = response.result.deleteResponse?.clusterName
+                        setFormData(form)
+                        setDeleteDialog(deleteDialogType.showNormalDeleteDialog)
+                        close()
+                        if (isWebhookCD) {
+                            refreshParentWorkflows()
+                        }
+                        getWorkflows()
+                    }
+                }
+            })
+            .catch((error: ServerErrors) => {
+                if (!force && error.code != 403) {
+                    setForceDeleteDialogData(error)
+                    hideDeleteModal()
+                    setDeleteDialog(deleteDialogType.showForceDeleteDialog)
+                } else {
+                    showError(error)
+                }
+            })
+    }
+
+    const handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
+        switch (deleteAction) {
+            case DELETE_ACTION.DELETE:
+                return deleteCD(false, true)
+            case DELETE_ACTION.NONCASCADE_DELETE:
+                return formData.deploymentAppType === DeploymentAppType.GitOps
+                    ? deleteCD(false, false)
+                    : deleteCD(false, true)
+            case DELETE_ACTION.FORCE_DELETE:
+                return deleteCD(true, false)
+        }
+    }
+
+    const onClickHideNonCascadeDeletePopup = () => {
+        setDeleteDialog(deleteDialogType.showNormalDeleteDialog)
+    }
+
+    const  onClickNonCascadeDelete = () => {
+        onClickHideNonCascadeDeletePopup()
+        handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE)
+    }
+
+    const renderDeleteCDModal = () => {
+        if(deleteDialog === deleteDialogType.showForceDeleteDialog){
+            return (
+                <ForceDeleteDialog
+                    forceDeleteDialogTitle={forceDeleteData.forceDeleteDialogTitle}
+                    onClickDelete={() => handleDeletePipeline(DELETE_ACTION.FORCE_DELETE)}
+                    closeDeleteModal={hideDeleteModal}
+                    forceDeleteDialogMessage={forceDeleteData.forceDeleteDialogMessage}
+                />
+            )
+        } else if(deleteDialog === deleteDialogType.showNonCascadeDeleteDialog){
+            return ( 
+                <ClusterNotReachableDailog
+                    clusterName={formData.clusterName}
+                    onClickCancel={onClickHideNonCascadeDeletePopup}
+                    onClickDelete={onClickNonCascadeDelete}
+                />
+            )
+        } else {
+            return (
+                <DeleteDialog
+                    title={`Delete '${formData.name}' ?`}
+                    description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
+                    delete={() => handleDeletePipeline(DELETE_ACTION.DELETE)}
+                    closeDelete={hideDeleteModal}
+                />
+            )
+        }
+    }
+
+    const getNavLink = (toLink: string, stageName: string) => {    
         const showAlert = !formDataErrorObj[stageName].isValid
         const showWarning =
             mandatoryPluginData &&
@@ -669,7 +972,7 @@ export default function NewCDPipeline({
                     replace
                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
-                    to={toLink}
+                    to={`${toLink}?${urlParams}`}
                     onClick={() => {
                         validateStage(activeStageName, formData)
                     }}
@@ -688,7 +991,35 @@ export default function NewCDPipeline({
     }
 
     const renderSecondaryButton = () => {
-       if (!isAdvanced) {
+        if (cdPipelineId) {
+            let canDeletePipeline = downstreamNodeSize === 0
+            let message =
+                downstreamNodeSize > 0
+                    ? 'This Pipeline cannot be deleted as it has connected CD pipeline'
+                    : ''
+            return (
+                <ConditionalWrap
+                    condition={!canDeletePipeline}
+                    wrap={(children) => (
+                        <Tippy className="default-tt" content={message}>
+                            <div>{children}</div>
+                        </Tippy>
+                    )}
+                >
+                    <button
+                        data-testid="ci-delete-pipeline-button"
+                        type="button"
+                        className={`cta cta--workflow delete mr-16`}
+                        disabled={!canDeletePipeline}
+                        onClick={() => {
+                            setShowDeleteModal(true)
+                        }}
+                    >
+                        Delete Pipeline
+                    </button>
+                </ConditionalWrap>
+            )
+        }else if (!isAdvanced) {
             return (
                 <button
                     type="button"
@@ -707,6 +1038,10 @@ export default function NewCDPipeline({
         }
     }
 
+    const closePipelineModal = () => {
+        close()
+    }
+
     const renderCDPipelineModal = () => {
         return (
             <div
@@ -718,7 +1053,7 @@ export default function NewCDPipeline({
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={close}>
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePipelineModal}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -754,11 +1089,13 @@ export default function NewCDPipeline({
                         pageState,
                         setPageState,
                         globalVariables,
-                        configMapAndSecrets
+                        configMapAndSecrets,
+                        getPrePostStageInEnv,
+                        isVirtualEnvironment
                     }}
                 >
-                    <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
-                        {isAdvanced && (
+                    <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''}`}>
+                        {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar
                                     mandatoryPluginData={mandatoryPluginData}
@@ -792,7 +1129,6 @@ export default function NewCDPipeline({
                                     allStrategies={allStrategies}
                                     isAdvanced={isAdvanced}
                                     setIsVirtualEnvironment={setIsVirtualEnvironment}
-                                    isVirtualEnvironment={isVirtualEnvironment}
                                     noStrategyAvailable={noStrategyAvailable}
                                     showFormError={showFormError}
                                 />
@@ -805,7 +1141,7 @@ export default function NewCDPipeline({
                     <>
                         <div
                             className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                                ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
+                                cdPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
                             } `}
                         >
                             {formData && (
@@ -815,7 +1151,7 @@ export default function NewCDPipeline({
                                     rootClassName="cta cta--workflow"
                                     loaderColor="white"
                                     dataTestId="build-pipeline-button"
-                                    onClick={() => {}}
+                                    onClick={savePipeline}
                                     isLoading={loadingData}
                                 >
                                     {text}
@@ -825,6 +1161,7 @@ export default function NewCDPipeline({
                         </div>
                     </>
                 )}
+                {cdPipelineId && showDeleteModal && renderDeleteCDModal()}
             </div>
         )
     }

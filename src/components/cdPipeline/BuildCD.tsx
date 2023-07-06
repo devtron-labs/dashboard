@@ -35,10 +35,10 @@ import { styles, Option } from './cdpipeline.util'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
+const ManualApproval = importComponentFromFELibrary('ManualApproval')
 
 export default function BuildCD({
     isAdvanced,
-    isVirtualEnvironment,
     setIsVirtualEnvironment,
     noStrategyAvailable,
     showFormError,
@@ -53,6 +53,9 @@ export default function BuildCD({
         pageState,
         setPageState,
         handleStrategy,
+        getPrePostStageInEnv,
+        isVirtualEnvironment,
+
     }: {
         formData: CDFormType
         setFormData: React.Dispatch<React.SetStateAction<any>>
@@ -62,10 +65,12 @@ export default function BuildCD({
         pageState: string
         setPageState: React.Dispatch<React.SetStateAction<string>>
         handleStrategy: (value: any) => void
+        getPrePostStageInEnv: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
+        isVirtualEnvironment: boolean,
+
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
-    const envList = []
-    let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
+    let { cdPipelineId } = useParams<{
         appId: string
         workflowId: string
         ciPipelineId: string
@@ -114,38 +119,24 @@ export default function BuildCD({
                 }
             })
             _form.environmentId = selection.id
+            _form.environmentName = selection.name
             _form.namespace = selection.namespace
             setIsVirtualEnvironment(selection.isVirtualEnvironment)
             _formDataErrorObj.envNameError = validationRules.environment(selection.id)
             _formDataErrorObj.nameSpaceError = !isVirtualEnvironment && validationRules.namespace(selection.namespace)
-
+            _form.preStageConfigMapSecretNames = {
+                configMaps: [],
+                secrets: [],
+            }
+            _form.postStageConfigMapSecretNames = {
+                configMaps: [],
+                secrets: [],
+            }
+            _form.isClusterCdActive = selection.isClusterCdActive
+            _form.runPreStageInEnv = getPrePostStageInEnv(selection.isVirtualEnvironment, _form.isClusterCdActive && _form.runPreStageInEnv)
+            _form.runPostStageInEnv = getPrePostStageInEnv(selection.isVirtualEnvironment, _form.isClusterCdActive && _form.runPostStageInEnv)
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
-
-            ///////   For config maps & secrets /////
-
-            // _form.preStageConfigMapSecretNames = {
-            //     configMaps: [],
-            //     secrets: [],
-            // }
-            // _form.postStageConfigMapSecretNames = {
-            //     configMaps: [],
-            //     secrets: [],
-            // }
-            // pipelineConfig.isClusterCdActive = selection.isClusterCdActive
-            // pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv)
-            // pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv)
-            // this.setState({ environments: list, pipelineConfig, errorForm }, () => {
-            //     getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
-            //         .then((response) => {
-            //             this.configMapAndSecrets = response.result
-            //             this.setState({ view: ViewType.FORM, errorForm: errorForm })
-            //         })
-            //         .catch((error: ServerErrors) => {
-            //             showError(error)
-            //             this.setState({ code: error.code, loadingData: false })
-            //         })
-            // })
         } else {
             let list = _form.environments.map((item) => {
                 return {
@@ -449,6 +440,12 @@ export default function BuildCD({
         setFormData(_form)
     }
 
+    const onChangeRequiredApprovals = (requiredCount: string): void => {
+        const _form = {...formData}
+        _form.requiredApprovals = requiredCount 
+        setFormData(_form)
+    }
+
     const renderStrategyOptions = () => {
         return (
             <Select
@@ -612,12 +609,22 @@ export default function BuildCD({
             <Progressing pageLoader />
         </div>
     ) : (
-        <div className="p-20 ci-scrollable-content">
+        <div className="cd-pipeline-body p-20 ci-scrollable-content">
             {isAdvanced && renderPipelineNameInput()}
             <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
             {renderEnvNamespaceAndTriggerType()}
             {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && renderDeploymentAppType()}
             {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
+                {ManualApproval && (
+                    <>
+                        <div className="divider mt-12 mb-12" />
+                        <ManualApproval
+                            requiredApprovals={formData.requiredApprovals}
+                            currentRequiredCount={formData.userApprovalConfig?.requiredCount}
+                            onChangeRequiredApprovals={onChangeRequiredApprovals}
+                        />
+                    </>
+                )}
         </div>
     )
 }

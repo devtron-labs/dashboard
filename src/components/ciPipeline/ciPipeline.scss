@@ -233,6 +233,11 @@
         border-right: 1px solid var(--N200);
         padding-left: 20px;
     }
+
+    &.no-side-bar {
+        grid-template-columns: 1fr;
+    }
+
 }
 
 .bottom-border-radius {
