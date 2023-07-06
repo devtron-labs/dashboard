@@ -735,7 +735,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
 
         if (this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
-            valid = !!pipelineConfig.containerRegistryName && !!pipelineConfig.repoName
+            valid = (!!pipelineConfig.containerRegistryName || !!this.state.defaultContainerName) && !!pipelineConfig.repoName
         }
         if (!valid) {
             this.setState({ loadingData: false })
