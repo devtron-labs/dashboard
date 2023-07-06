@@ -15,7 +15,10 @@ export default function DeploymentStatusDetailBreakdown({
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
     const { url } = useRouteMatch()
-    const isHelmManifestPushed = deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO]?.showHelmManifest
+    const isHelmManifestPushed =
+        deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[
+            TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO
+        ]?.showHelmManifest
     return (
         <>
             {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
@@ -67,11 +70,20 @@ export default function DeploymentStatusDetailBreakdown({
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                         />
                         {isHelmManifestPushed && (
-                            <DeploymentStatusDetailRow
-                                type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
-                                hideVerticalConnector={true}
-                                deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                            />
+                            <>
+                                <DeploymentStatusDetailRow
+                                    type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
+                                    hideVerticalConnector={true}
+                                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                                />
+                                <ErrorInfoStatusBar
+                                    type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
+                                    nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
+                                    errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
+                                    hideVericalConnector={true}
+                                    hideErrorIcon={true}
+                                />
+                            </>
                         )}
                     </>
                 )}
