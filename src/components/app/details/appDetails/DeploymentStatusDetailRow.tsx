@@ -189,7 +189,7 @@ export function DeploymentStatusDetailRow({
                 type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
                 nonDeploymentError={deploymentDetailedData.nonDeploymentError}
                 errorMessage={deploymentDetailedData.deploymentError}
-                hideVericalConnector={true}
+                hideVerticalConnector={true}
                 hideErrorIcon={true}
             />
         )

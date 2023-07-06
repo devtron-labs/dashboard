@@ -150,7 +150,7 @@ export interface ErrorInfoStatusBarType {
     nonDeploymentError: string
     type: string
     errorMessage: string
-    hideVericalConnector?: boolean
+    hideVerticalConnector?: boolean
     hideErrorIcon?: boolean
 }
 
