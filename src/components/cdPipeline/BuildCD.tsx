@@ -1,5 +1,6 @@
 import {
     FormErrorObjectType,
+    InfoColourBar,
     Progressing,
     RadioGroup,
     RadioGroupItem,
@@ -8,7 +9,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ValidationRules } from './validationRules'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { TriggerType, ViewType } from '../../config'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
@@ -32,6 +32,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import yamlJsParser from 'yaml'
 import { toast } from 'react-toastify'
 import { styles, Option } from './cdpipeline.util'
+import { ValidationRules } from '../ciPipeline/validationRules'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -43,12 +44,13 @@ export default function BuildCD({
     noStrategyAvailable,
     showFormError,
     allStrategies,
+    parentPipelineId,
+    isWebhookCD
 }) {
     const {
         formData,
         setFormData,
         formDataErrorObj,
-        setLoadingData,
         setFormDataErrorObj,
         pageState,
         setPageState,
@@ -60,7 +62,6 @@ export default function BuildCD({
         formData: CDFormType
         setFormData: React.Dispatch<React.SetStateAction<any>>
         formDataErrorObj: CDFormErrorObjectType
-        setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<CDFormErrorObjectType>>
         pageState: string
         setPageState: React.Dispatch<React.SetStateAction<string>>
@@ -175,6 +176,22 @@ export default function BuildCD({
                     </span>
                 )}
             </div>
+        )
+    }
+
+    const renderWebhookWarning = () => {
+        return (
+            <InfoColourBar
+                message={
+                    <div>
+                        <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample JSON
+                        will be generated after the pipeline is created.
+                    </div>
+                }
+                classname="bw-1 bcv-1 ev-2 bcv-1 fs-12 mt-20"
+                Icon={Help}
+                iconClass="fcv-5 h-20"
+            />
         )
     }
 
@@ -508,6 +525,7 @@ export default function BuildCD({
                     }}
                     styles={{ ...styles }}
                 />
+                {isWebhookCD && !parentPipelineId && renderWebhookWarning()}
             </>
         )
     }

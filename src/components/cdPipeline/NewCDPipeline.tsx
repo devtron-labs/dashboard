@@ -17,7 +17,7 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import './cdPipeline.scss'
 import { toast } from 'react-toastify'
-import { MULTI_REQUIRED_FIELDS_MSG, TOAST_INFO } from '../../config/constantMessaging'
+import { CREATE_DEPLOYMENT_PIPELINE, DEPLOY_IMAGE_EXTERNALSOURCE, EDIT_DEPLOYMENT_PIPELINE, MULTI_REQUIRED_FIELDS_MSG, TOAST_INFO } from '../../config/constantMessaging'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import Tippy from '@tippyjs/react'
@@ -65,7 +65,6 @@ export default function NewCDPipeline({
     } else if (location.pathname.indexOf('/post-build') >= 0) {
         activeStageName = BuildStageVariable.PostBuild
     }
-    const title = `${cdPipelineId ? 'Edit ' : 'Create '}pipeline`
     const text = cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const [formData, setFormData] = useState<CDFormType>({
         name: '',
@@ -359,6 +358,7 @@ export default function NewCDPipeline({
         form.deploymentAppType = pipelineConfigFromRes.deploymentAppType || ''
         form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
+        form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig 
         if(pipelineConfigFromRes?.preDeployStage){
             form.preBuildStage = pipelineConfigFromRes.preDeployStage   
         }   
@@ -538,6 +538,12 @@ export default function NewCDPipeline({
                 return secret['value']
             }),
         }
+
+        const _userApprovalConfig = formData.requiredApprovals?.length > 0
+            ? {
+                  requiredCount: +formData.requiredApprovals,
+              }
+            : null
     
         const pipeline = {
             name: formData.name,
@@ -552,7 +558,7 @@ export default function NewCDPipeline({
             isClusterCdActive: formData.isClusterCdActive,
             deploymentAppType: formData.deploymentAppType,
             deploymentAppCreated: formData.deploymentAppCreated,
-            userApprovalConfig: formData.userApprovalConfig,
+            userApprovalConfig: _userApprovalConfig,
             triggerType: formData.triggerType,
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
@@ -731,6 +737,9 @@ export default function NewCDPipeline({
             name: validationRules.name(_formData.name),
             envNameError: validationRules.environment(_formData.environmentId)
         } // validating name always as it's a mandatory field
+        if (!isVirtualEnvironment) {
+            _formDataErrorObj.nameSpaceError = validationRules.namespace(_formData.namespace)
+        }
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
@@ -1020,7 +1029,7 @@ export default function NewCDPipeline({
                 </ConditionalWrap>
             )
         }else if (!isAdvanced) {
-            return (
+            return (!isWebhookCD &&
                 <button
                     type="button"
                     data-testid="create-build-pipeline-advanced-options-button"
@@ -1043,6 +1052,12 @@ export default function NewCDPipeline({
     }
 
     const renderCDPipelineModal = () => {
+        const title =
+            isWebhookCD && workflowId === '0'
+                ? DEPLOY_IMAGE_EXTERNALSOURCE
+                : cdPipelineId
+                ? EDIT_DEPLOYMENT_PIPELINE
+                : CREATE_DEPLOYMENT_PIPELINE
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
@@ -1130,7 +1145,10 @@ export default function NewCDPipeline({
                                     isAdvanced={isAdvanced}
                                     setIsVirtualEnvironment={setIsVirtualEnvironment}
                                     noStrategyAvailable={noStrategyAvailable}
+                                    parentPipelineId={parentPipelineId}
+                                    isWebhookCD={isWebhookCD}
                                     showFormError={showFormError}
+                                    
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1141,7 +1159,7 @@ export default function NewCDPipeline({
                     <>
                         <div
                             className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                                cdPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
+                                !isWebhookCD && (cdPipelineId || !isAdvanced) ? 'flex-justify' : 'justify-right'
                             } `}
                         >
                             {formData && (
