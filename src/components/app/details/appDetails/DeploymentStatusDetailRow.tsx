@@ -22,6 +22,7 @@ import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstat
 import { ReactComponent as TimeOut } from '../../../../assets/icons/ic-timeout-red.svg'
 import AppStatusDetailsChart from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailsChart'
 import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
+import { statusIcon } from '../../config'
 
 export function DeploymentStatusDetailRow({
     type,
@@ -232,7 +233,7 @@ export function DeploymentStatusDetailRow({
                     )}
                 </div>
                 {type === TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO &&
-                    deploymentDetailedData.deploymentStatus === 'failed' &&
+                    deploymentDetailedData.deploymentStatus === statusIcon.failed &&
                     renderErrorInfoBar()}
             </div>
 
