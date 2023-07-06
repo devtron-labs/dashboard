@@ -9,6 +9,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { LoadingState } from '../ciConfig/types'
 
 export function Build({
     showFormError,
@@ -24,13 +25,15 @@ export function Build({
         formData,
         setFormData,
         formDataErrorObj,
-        setLoadingData,
+        loadingState,
+        setLoadingState,
         setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         formDataErrorObj: FormErrorObjectType
-        setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
+        loadingState: LoadingState
+        setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
@@ -275,7 +278,8 @@ export function Build({
                         formData={formData}
                         setFormData={setFormData}
                         setDockerConfigOverridden={setDockerConfigOverridden}
-                        setLoadingData={setLoadingData}
+                        loadingState={loadingState}
+                        setLoadingState={setLoadingState}
                     />
                 </>
             )}

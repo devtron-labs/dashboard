@@ -57,6 +57,7 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
                 namespace: env.namespace || "",
                 active: envId == env.id,
                 isClusterCdActive: env.isClusterCdActive,
+                allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             }
         });
 
