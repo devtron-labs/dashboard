@@ -980,11 +980,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 </span>
                             </div>
                             {strategy.isCollapsed ? null : (
-                                <div className="code-editor">
+                                <div>
                                     <CodeEditor
+                                        height={300}
                                         value={this.jsonToYaml(strategy.jsonStr)}
                                     >
                                         <CodeEditor.Header
+                                            className="code-editor"
                                             onChange={(event) =>
                                                 this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
                                             }
