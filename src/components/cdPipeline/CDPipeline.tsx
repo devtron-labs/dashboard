@@ -1128,6 +1128,28 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
+    renderPrePostStageType = (key) => {
+      return    <>
+      <label className="form__label form__label--sentence dc__bold">
+          When do you want this stage to trigger?
+      </label>
+      <RadioGroup
+          value={this.state.pipelineConfig[key].triggerType}
+          name={`${key}-trigger-type`}
+          onChange={(event) => {
+              this.handleStageConfigChange(event.target.value, key, 'triggerType')
+          }}
+      >
+          <RadioGroupItem dataTestId="cd-auto-mode-button" value={TriggerType.Auto}>
+              Automatic
+          </RadioGroupItem>
+          <RadioGroupItem dataTestId="cd-manual-mode-button" value={TriggerType.Manual}>
+              Manual
+          </RadioGroupItem>
+      </RadioGroup>
+  </>
+    }
+
     renderDeploymentStageDetails(key: 'preStage' | 'postStage') {
         let configmapKey
         if (key == 'preStage') configmapKey = 'preStageConfigMapSecretNames'
@@ -1175,27 +1197,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="delete-stage-icon cursor"
                         onClick={(e) => this.deleteStage(key)}
                     />
-                    {!(this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH) && (
-                        <>
-                            <label className="form__label form__label--sentence dc__bold">
-                                When do you want this stage to trigger?
-                            </label>
-                            <RadioGroup
-                                value={this.state.pipelineConfig[key].triggerType}
-                                name={`${key}-trigger-type`}
-                                onChange={(event) => {
-                                    this.handleStageConfigChange(event.target.value, key, 'triggerType')
-                                }}
-                            >
-                                <RadioGroupItem dataTestId="cd-auto-mode-button" value={TriggerType.Auto}>
-                                    Automatic
-                                </RadioGroupItem>
-                                <RadioGroupItem dataTestId="cd-manual-mode-button" value={TriggerType.Manual}>
-                                    Manual
-                                </RadioGroupItem>
-                            </RadioGroup>
-                        </>
-                    )}
+                    {this.state.isVirtualEnvironmentOnEnvSelection &&
+                    this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
+                        ? this.renderPrePostStageType(key)
+                        : this.renderPrePostStageType(key)}
                 </div>
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
