@@ -980,14 +980,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 </span>
                             </div>
                             {strategy.isCollapsed ? null : (
-                                <div className="deployment-strategy__info-body">
-                                    <textarea
-                                        className="dc__code-textarea code-textarea--cd-pipeline"
+                                <div className="code-editor">
+                                    <CodeEditor
                                         value={this.jsonToYaml(strategy.jsonStr)}
-                                        onChange={(event) =>
-                                            this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
-                                        }
-                                    />
+                                    >
+                                        <CodeEditor.Header
+                                            // className="dc__code-textarea code-textarea--cd-pipeline"
+                                            onChange={(event) =>
+                                                this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
+                                            }
+                                        />
+                                    </CodeEditor>
                                 </div>
                             )}
                         </div>
