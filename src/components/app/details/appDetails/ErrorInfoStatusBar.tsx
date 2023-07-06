@@ -12,10 +12,10 @@ export function ErrorInfoStatusBar({
     return nonDeploymentError === type ? (
         <>
             <div className="bcr-1 flex left er-2 br-4 p-8">
-              {hideErrorIcon &&  <Error className="icon-dim-20 mr-8" />}
+              {!hideErrorIcon &&  <Error className="icon-dim-20 mr-8" />}
                 {errorMessage}
             </div>
-            {hideVericalConnector && <div className="vertical-connector" />}
+            {!hideVericalConnector && <div className="vertical-connector" />}
         </>
     ) : null
 }
