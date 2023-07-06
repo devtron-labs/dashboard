@@ -14,7 +14,6 @@ import {
     ImageComment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
-import React from "react";
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
