@@ -6,16 +6,16 @@ export function ErrorInfoStatusBar({
     nonDeploymentError,
     type,
     errorMessage,
-    hideVericalConnector,
+    hideVerticalConnector,
     hideErrorIcon
 }: ErrorInfoStatusBarType) {
     return nonDeploymentError === type ? (
         <>
-            <div className="bcr-1 flex left er-2 br-4 p-8">
+            <div className={`bcr-1 flex left ${!hideErrorIcon ? 'er-2 br-4 bw-1' : '' } p-8`}>
               {!hideErrorIcon &&  <Error className="icon-dim-20 mr-8" />}
                 {errorMessage}
             </div>
-            {!hideVericalConnector && <div className="vertical-connector" />}
+            {!hideVerticalConnector && <div className="vertical-connector" />}
         </>
     ) : null
 }
