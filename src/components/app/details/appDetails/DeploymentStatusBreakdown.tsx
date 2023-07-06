@@ -76,13 +76,6 @@ export default function DeploymentStatusDetailBreakdown({
                                     hideVerticalConnector={true}
                                     deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                                 />
-                                <ErrorInfoStatusBar
-                                    type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
-                                    nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
-                                    errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
-                                    hideVericalConnector={true}
-                                    hideErrorIcon={true}
-                                />
                             </>
                         )}
                     </>
