@@ -7,11 +7,12 @@ import {
     ServerErrors,
     GenericEmptyState,
     DetailsProgressing,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DeploymentAppTypes, DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
+import { DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'

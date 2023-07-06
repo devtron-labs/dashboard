@@ -14,13 +14,14 @@ import {
     not,
     CHECKBOX_VALUE,
     Checkbox,
+    REGISTRY_TYPE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, REGISTRY_TYPE_MAP, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
+import { DOCUMENTATION, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -509,12 +510,12 @@ function DockerForm({
         }
     }
 
-    const handleDefaultChange = (e) => { 
+    const handleDefaultChange = (e) => {
         if (isDefault) {
             toast.success('Please mark another as default.')
             return
         }
-        toggleDefault(not)                    
+        toggleDefault(not)
     }
 
     async function onSave() {

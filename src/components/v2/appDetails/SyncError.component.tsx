@@ -3,9 +3,9 @@ import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from './index.store'
 import { renderErrorHeaderMessage } from '../../common/error/error.utils'
-import { AppType, DeploymentAppType, SyncErrorType } from './appDetails.type'
+import { AppType, SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'
-import { ForceDeleteDialog, ResponseType, ServerErrors, not, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, ForceDeleteDialog, ResponseType, ServerErrors, not, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from '../../app/details/appDetails/appDetails.service'
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
 import { toast } from 'react-toastify'
@@ -61,7 +61,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     }, [appDetails])
 
     useEffect(() => {
-        if (appDetails.deploymentAppType === DeploymentAppType.argo_cd && appDetails.deploymentAppDeleteRequest) {
+        if (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest) {
             verifyDeployedClusterConnectionStatus()
         }
     }, [appDetails.appId, appDetails.environmentId])
