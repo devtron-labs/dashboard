@@ -232,7 +232,7 @@ export function DeploymentStatusDetailRow({
                     )}
                 </div>
                 {type === TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO &&
-                    deploymentDetailedData.deploymentError === 'failed' &&
+                    deploymentDetailedData.deploymentStatus === 'failed' &&
                     renderErrorInfoBar()}
             </div>
 
