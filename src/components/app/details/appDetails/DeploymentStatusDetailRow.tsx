@@ -34,6 +34,9 @@ export function DeploymentStatusDetailRow({
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
     const [collapsed, toggleCollapsed] = useState<boolean>(statusBreakDownType.isCollapsed)
     const appHealthDropDownlist = ['inprogress', 'failed', 'disconnect', 'timed_out']
+    const isHelmManifestPushFailed =
+        type === TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO &&
+        deploymentDetailedData.deploymentStatus === statusIcon.failed
 
     useEffect(() => {
         toggleCollapsed(statusBreakDownType.isCollapsed)
@@ -197,7 +200,7 @@ export function DeploymentStatusDetailRow({
             <div className="bw-1 en-2">
                 <div
                     className={`deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0  ${
-                        collapsed ? 'br-4' : 'border-collapse'
+                        collapsed ? (!isHelmManifestPushFailed ? 'br-4' : '') : 'border-collapse'
                     }`}
                 >
                     {renderIcon(statusBreakDownType.icon)}
@@ -232,9 +235,7 @@ export function DeploymentStatusDetailRow({
                         />
                     )}
                 </div>
-                {type === TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO &&
-                    deploymentDetailedData.deploymentStatus === statusIcon.failed &&
-                    renderErrorInfoBar()}
+                {isHelmManifestPushFailed && renderErrorInfoBar()}
             </div>
 
             {type === TIMELINE_STATUS.GIT_COMMIT && renderDetailedData()}
