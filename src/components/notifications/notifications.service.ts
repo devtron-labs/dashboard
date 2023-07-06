@@ -274,7 +274,7 @@ export function updateNotificationRecipients(
             if (r.configId) {
                 return {
                     configId: r.configId,
-                    dest: r.dest === 'slack' || "webhook" ? r.dest : emailChannel,
+                    dest: r.dest === 'slack' || r.dest === "webhook" ? r.dest : emailChannel,
                     recipient: '',
                 }
             } else
