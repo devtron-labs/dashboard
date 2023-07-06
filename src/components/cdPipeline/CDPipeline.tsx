@@ -294,7 +294,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 savedStrategies.push({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
-                    jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    yamlStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
                     selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
@@ -893,6 +893,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
+    jsonToYaml = (jsonStr: string) => {
+        const YAML = require('js-yaml');
+        const jsonObject = JSON.parse(jsonStr);
+        const yamlString = YAML.dump(jsonObject);
+        return yamlString;
+    }
+
     renderDeploymentStrategy() {
         if (this.noStrategyAvailable) {
             return null
@@ -971,7 +978,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 <div className="deployment-strategy__info-body">
                                     <textarea
                                         className="dc__code-textarea code-textarea--cd-pipeline"
-                                        value={strategy.jsonStr}
+                                        value={this.jsonToYaml(strategy.yamlStr)}
                                         onChange={(event) =>
                                             this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
                                         }
