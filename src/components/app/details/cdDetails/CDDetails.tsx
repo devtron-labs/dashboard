@@ -510,7 +510,8 @@ const HistoryLogs: React.FC<{
                                     userApprovalMetadata={userApprovalMetadata}
                                     isGitops={
                                         deploymentAppType === DeploymentAppTypes.GITOPS ||
-                                        deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                                        deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD ||
+                                        deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                                     }
                                     isHelmApps={false}
                                     isVirtualEnvironment={triggerDetails.IsVirtualEnvironment}
