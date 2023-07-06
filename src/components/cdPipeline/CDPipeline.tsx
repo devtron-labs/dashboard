@@ -57,7 +57,7 @@ import { styles, DropdownIndicator, Option } from './cdpipeline.util'
 import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap, createClusterEnvGroup, importComponentFromFELibrary } from '../common/helpers/Helpers'
+import { ConditionalWrap, createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
@@ -73,6 +73,7 @@ import {
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -161,6 +162,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             forceDeleteDialogMessage: '',
             forceDeleteDialogTitle: '',
             clusterName: '',
+            allowedDeploymentTypes: []
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -213,7 +215,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                     })
                                 })
                                 .catch((error) => {})
-                            getEnvironmentListMinPublic()
+                            getEnvironmentListMinPublic(true)
                                 .then((response) => {
                                     let list = response.result || []
                                     list = list.map((env) => {
@@ -226,6 +228,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             isClusterCdActive: env.isClusterCdActive,
                                             description: env.description,
                                             isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
+                                            allowedDeploymentTypes: env.allowedDeploymentTypes || [],
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -367,6 +370,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPostStage,
             showError: false,
             requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
+            allowedDeploymentTypes: env.allowedDeploymentTypes || []
         })
     }
 
@@ -481,7 +485,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.isClusterCdActive = selection.isClusterCdActive
             pipelineConfig.runPreStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPreStageInEnv)
             pipelineConfig.runPostStageInEnv = this.getPrePostStageInEnv(selection.isVirtualEnvironment, pipelineConfig.isClusterCdActive && pipelineConfig.runPostStageInEnv)
-            this.setState({ environments: list, pipelineConfig, errorForm }, () => {
+            pipelineConfig.deploymentAppType = getDeploymentAppType(selection.allowedDeploymentTypes, this.state.pipelineConfig.deploymentAppType, selection.isVirtualEnvironment)
+            this.setState({ environments: list, pipelineConfig, errorForm, allowedDeploymentTypes: selection.allowedDeploymentTypes }, () => {
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
                         this.configMapAndSecrets = response.result
@@ -1185,24 +1190,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <div className="cd-pipeline__deployment-type mt-16">
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-                <RadioGroup
-                    value={
-                        this.state.pipelineConfig.deploymentAppType
-                            ? this.state.pipelineConfig.deploymentAppType
-                            : DeploymentAppType.Helm
-                    }
-                    name="deployment-app-type"
-                    onChange={this.handleDeploymentAppTypeChange}
-                    disabled={!!this.props.match.params.cdPipelineId}
-                    className={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? 'bcb-5' : ''}`}
-                >
-                    <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
-                        Helm
-                    </RadioGroupItem>
-                    <RadioGroupItem dataTestId="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
-                        GitOps
-                    </RadioGroupItem>
-                </RadioGroup>
+                <DeploymentAppRadioGroup
+                    isDisabled={!!this.props.match.params.cdPipelineId}
+                    deploymentAppType={this.state.pipelineConfig.deploymentAppType ?? DeploymentAppType.Helm}
+                    handleOnChange={this.handleDeploymentAppTypeChange}
+                    allowedDeploymentTypes={this.state.allowedDeploymentTypes}
+                    rootClassName={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? 'bcb-5' : ''}`}
+                    isFromCDPipeline={true}
+                />
             </div>
         )
     }
@@ -1230,7 +1225,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 )
             }
             if (!this.state.showDeleteModal && this.state.showNonCascadeDeleteDialog) {
-                return ( 
+                return (
                     <ClusterNotReachableDailog
                         clusterName={this.state.clusterName}
                         onClickCancel={this.onClickHideNonCascadeDeletePopup}
@@ -1522,6 +1517,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {this.renderEnvNamespaceAndTriggerType()}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !this.state.pipelineConfig.isVirtualEnvironment &&
+                            this.state.allowedDeploymentTypes.length>0 &&
                             this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </div>
@@ -1606,6 +1602,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.renderEnvNamespaceAndTriggerType()}
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !this.state.pipelineConfig.isVirtualEnvironment &&
+                    this.state.allowedDeploymentTypes.length>0 &&
                     this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>

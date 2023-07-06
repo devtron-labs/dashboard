@@ -265,6 +265,7 @@ export default function ChartGroupDetails() {
                                         }*/
                                         onClick={handleAdvancedButtonClick}
                                         className="cta cancel dc__ellipsis-right w-100"
+                                        data-testid="advanced-options-button"
                                     >
                                         Advanced Options
                                     </button>

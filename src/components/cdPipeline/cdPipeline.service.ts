@@ -40,7 +40,7 @@ export function getCDPipeline(appId: string, pipelineId: string) {
 }
 
 export async function getCDPipelineConfig(appId: string, pipelineId: string): Promise<any> {
-    return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic()]).then(([cdPipelineRes, envListResponse]) => {
+    return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic(true)]).then(([cdPipelineRes, envListResponse]) => {
         let envId = cdPipelineRes.result.environmentId;
         let environments = envListResponse.result || [];
         environments = environments.map((env) => {
@@ -50,6 +50,7 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
                 namespace: env.namespace || "",
                 active: envId == env.id,
                 isClusterCdActive: env.isClusterCdActive,
+                allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             }
         });
         return {

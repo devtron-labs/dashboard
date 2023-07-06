@@ -1,3 +1,4 @@
+import React from "react";
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import {
     ServerErrors,
@@ -254,3 +255,5 @@ export const processConsequenceData = (data: BlockedStateData): ConsequenceType 
         return data.ciBlockState
     }
 }
+
+
