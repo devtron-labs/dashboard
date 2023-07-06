@@ -727,12 +727,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             errorForm.pipelineNameError.isValid &&
             (!!pipelineConfig.isVirtualEnvironment || !!pipelineConfig.namespace) &&
             !!pipelineConfig.triggerType &&
-            !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION) &&
-            !!(pipelineConfig.containerRegistryName || this.state.defaultContainerName) &&
-            !!pipelineConfig.repoName
+            !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
+
         if (!pipelineConfig.name || (!pipelineConfig.isVirtualEnvironment && !pipelineConfig.namespace)) {
             toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return
+        }
+
+        if (this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
+            valid = !!pipelineConfig.containerRegistryName && !!pipelineConfig.repoName
         }
         if (!valid) {
             this.setState({ loadingData: false })
@@ -763,7 +766,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     : null,
             containerRegistryName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
-                    ? this.state.pipelineConfig.containerRegistryName
+                    ? this.state.pipelineConfig.containerRegistryName || this.state.defaultContainerName
                     : '',
             repoName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
