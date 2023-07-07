@@ -172,9 +172,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
                                             isJobView={isJobView}
-                                            tagsEditable = {triggerHistoryResult.result?.tagsEditable}
-                                            appReleaseTags = {triggerHistoryResult.result?.appReleaseTagNames}
-                                            hideImageTaggingHardDelete = {triggerHistoryResult.result?.hideImageTaggingHardDelete}
+                                            tagsEditable = {triggerHistoryResult?.result?.tagsEditable}
+                                            appReleaseTags = {triggerHistoryResult?.result?.appReleaseTagNames}
+                                            hideImageTaggingHardDelete = {triggerHistoryResult?.result?.hideImageTaggingHardDelete}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
