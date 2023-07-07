@@ -182,7 +182,7 @@ export function Sidebar({
                 <div className="sidebar-action-container-border pb-12">
                     {!addConfigSecret ? (
                         <div className="flex flex-justify pt-6 pb-6">
-                            <span className="fs-12 fw-6">CONFIGMAPS & SECRETS</span>
+                            <span className="fs-12 cn-6 fw-6">CONFIGMAPS & SECRETS</span>
                             <Add className="fcb-5 icon-dim-20 cursor" onClick={onClick} />
                         </div>
                     ) : (
