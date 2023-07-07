@@ -374,7 +374,7 @@ function ChartDeploymentHistory({
      * @returns parsed value if it's a JSON string or passed value without parsing
      */
     function getEditorValue(value: string): string {
-        if (isExternal) {
+        if (installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
                 return YAML.stringify(parsedJson, { indent: 2 })
