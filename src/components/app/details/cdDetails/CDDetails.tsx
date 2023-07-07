@@ -527,12 +527,10 @@ const HistoryLogs: React.FC<{
                                 artifactId={artifactId}
                                 ciPipelineId={ciPipelineId}
                                 imageComment={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageComment
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageComment
                                 }
                                 imageReleaseTags={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageReleaseTags
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageReleaseTags
                                 }
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
