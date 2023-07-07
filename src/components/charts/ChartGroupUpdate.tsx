@@ -199,7 +199,7 @@ export default function ChartGroupUpdate({}) {
                         </div>
                     )}
                 </button>
-                <button className="cta flex cancel h-32" onClick={redirectToGroupDetail}>
+                <button className="cta flex cancel h-32" onClick={redirectToGroupDetail} data-testid="group-detail">
                     Group Detail
                 </button>
             </div>
