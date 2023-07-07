@@ -286,7 +286,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.setState({
                 environments: environments,
                 dockerRegistries: dockerRegistries,
-                defaultContainerName: dockerRegistries.find((docker) => docker.isDefault === true).id
+                defaultContainerName: dockerRegistries.find((docker) => docker.isDefault === true)?.id
             })
 
             if (this.props.match.params.cdPipelineId) {
