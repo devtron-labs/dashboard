@@ -54,7 +54,7 @@ export class Empty extends Component<EmptyProps>{
                 subTitle={this.props.message}
                 isButtonAvailable={true}
                 renderButton={renderButton}
-                children={children && children}
+                children={children}
             />
         </div>
     }
