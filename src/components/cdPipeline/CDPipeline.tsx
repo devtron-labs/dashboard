@@ -899,19 +899,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
-    jsonToYaml = (jsonStr: string) => {
-        try{
-            console.log(jsonStr)
-            const YAML = require('js-yaml');
-            const jsonObject = JSON.parse(jsonStr);
-            const yamlString = YAML.dump(jsonObject);
-            return yamlString;
-        }
-        catch(err){
-            showError(err);
-        }
-    }
-
     renderDeploymentStrategy() {
         if (this.noStrategyAvailable) {
             return null
