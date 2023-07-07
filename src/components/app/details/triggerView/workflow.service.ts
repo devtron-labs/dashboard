@@ -500,8 +500,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     let preCD: NodeAttr | undefined = undefined,
         postCD: NodeAttr | undefined = undefined
     let stageIndex = 1
-    if (!isEmpty(cdPipeline?.preStage?.config)) {
-        let trigger = cdPipeline.preStage?.triggerType?.toLowerCase() ?? ''
+    if (!isEmpty(cdPipeline?.preDeployStage?.steps)) {
+        let trigger = cdPipeline.preDeployStage?.triggerType?.toLowerCase() ?? ''
         preCD = {
             parents: [String(parentId)],
             height: dimensions.cDNodeSizes.nodeHeight,
@@ -531,7 +531,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         stageIndex++
     }
     let cdDownstreams = []
-    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postStage?.config)) {
+    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postDeployStage?.steps)) {
         cdDownstreams = [`${WorkflowNodeType.POST_CD}-${cdPipeline.id}`]
     }
 
@@ -572,8 +572,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     } as NodeAttr
     stageIndex++
 
-    if (!isEmpty(cdPipeline?.postStage?.config)) {
-        let trigger = cdPipeline.postStage?.triggerType?.toLowerCase() ?? ''
+    if (!isEmpty(cdPipeline?.postDeployStage?.steps)) {
+        let trigger = cdPipeline.postDeployStage?.triggerType?.toLowerCase() ?? ''
         postCD = {
             parents: [String(cdPipeline.id)],
             height: dimensions.cDNodeSizes.nodeHeight,

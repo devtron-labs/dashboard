@@ -12,6 +12,7 @@ import {
     DockerConfigOverrideType,
     ReleaseTag,
     ImageComment,
+    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from "react";
 
@@ -529,6 +530,12 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
+export interface prePostDeployStageType {  
+    isValid: boolean;
+    steps: TaskErrorObj[];
+    triggerType: string
+}
+
 export interface CdPipeline {
     id: number
     environmentId: number
@@ -555,6 +562,8 @@ export interface CdPipeline {
     userApprovalConfig?: UserApprovalConfigType
     isVirtualEnvironment?: boolean
     helmPackageName?: string
+    preDeployStage?: prePostDeployStageType
+    postDeployStage?: prePostDeployStageType
 }
 
 export interface CdPipelineResult {
