@@ -704,6 +704,20 @@ export default function NewCDPipeline({
         handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
+    const handleAdvanceClick = () => {
+        const form = {...formData}
+        let strategies = form.strategies.filter(
+            (strategy) => strategy.deploymentTemplate != form.savedStrategies[0].deploymentTemplate,
+        )
+        form.strategies = strategies
+        setFormData(form)
+        setIsAdvanced(true)
+    }
+
+    const openDeleteModal = () => {
+        setShowDeleteModal(true)
+    }
+
     const renderDeleteCDModal = () => {
         if (deleteDialog === deleteDialogType.showForceDeleteDialog) {
             return (
@@ -780,9 +794,7 @@ export default function NewCDPipeline({
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}
-                        onClick={() => {
-                            setShowDeleteModal(true)
-                        }}
+                        onClick={openDeleteModal}
                     >
                         Delete Pipeline
                     </button>
@@ -795,9 +807,7 @@ export default function NewCDPipeline({
                         type="button"
                         data-testid="create-build-pipeline-advanced-options-button"
                         className="cta cta--workflow cancel mr-16 flex"
-                        onClick={() => {
-                            setIsAdvanced(true)
-                        }}
+                        onClick={handleAdvanceClick}
                     >
                         Advanced options
                     </button>
