@@ -265,7 +265,6 @@ export function BulkActionEdit() {
                                 {state.pipelines.map(p => <PipelineSelect key={p.ciPipelineId} {...p} isActive={p.ciPipelineId === state.ciPipelineId} select={Number(id) === 0 ? e => dispatch({ type: 'selectPipeline', value: p.ciPipelineId }) : () => { }} />)}
                                 {state.pipelines.length === 0 &&
                                 <GenericEmptyState
-                                    classname="flex column empty-pipelines w-32 h-32"
                                     image={Error}
                                     title={EMPTY_STATE_STATUS.BULK_ACTION_EDITS.TITLE}
                                     heightToDeduct={500}

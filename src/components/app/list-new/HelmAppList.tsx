@@ -5,7 +5,6 @@ import {
     ErrorScreenManager,
     ServerErrors,
     Host,
-    EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'

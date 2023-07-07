@@ -18,7 +18,7 @@ export function AppDetailsEmptyState({envType}: AppDetailsEmptyChart) {
             subTitle={
                 <>
                     {ERROR_EMPTY_SCREEN.DEPLOYMENT_NOT_EXIST}
-                    {envType === EnvType.APPLICATION}
+                    {envType === EnvType.APPLICATION && ERROR_EMPTY_SCREEN.SELECT_ANOTHER_ENVIRONMENT}
                 </>
             }
         />

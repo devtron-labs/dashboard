@@ -28,7 +28,7 @@ export default function CDEmptyState({
         return (
             <div
             className={`${
-                actionButtonClass ? actionButtonClass : 'cb-5 bcn-0 en-2'
+                actionButtonClass ? actionButtonClass : "cb-5 bcn-0 en-2"
             } fcn-0 fw-6 fs-13 flexbox br-4 pl-16 pr-16 pt-8 pb-8 pointer`}
             onClick={actionHandler}
             data-testid={dataTestId}

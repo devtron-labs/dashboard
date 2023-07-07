@@ -16,7 +16,6 @@ import { importComponentFromFELibrary, Select } from '../../../common'
 import {
     Progressing,
     DeleteDialog,
-    EmptyState,
     RadioGroup,
     RadioGroupItem, GenericEmptyState,
     ConditionalWrap,
@@ -557,8 +556,3 @@ export const UpdateApplicationButton = ({
     )
 }
 
-export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
-    return (
-        <GenericEmptyState image={ErrorExclamation} classname="icon-dim-20 mb-10" title={''} subTitle={info} />
-    )
-}

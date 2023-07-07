@@ -203,7 +203,7 @@ export default function SavedValuesList() {
         )
     }
 
-    const renderGenericEmptyStateButton = () => {
+    const renderClearSearchButton = () => {
         return (
              <button onClick={clearSearch} className="add-link cta flex">
                 Clear search
@@ -220,7 +220,7 @@ export default function SavedValuesList() {
                     title={title || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.TITLE}
                     subTitle={subTitle || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.SUBTITLE}
                     isButtonAvailable={showClearButton}
-                    renderButton={renderGenericEmptyStateButton}
+                    renderButton={renderClearSearchButton}
                 />
             </div>
         )

@@ -53,7 +53,6 @@ import {
     DeleteApplicationButton,
     UpdateApplicationButton,
     AppNameInput,
-    ErrorScreenWithInfo,
     ValueNameInput,
     DeploymentAppSelector,
 } from './ChartValuesView.component'

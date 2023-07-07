@@ -407,7 +407,6 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
               <GenericEmptyState
                 image={AppNotDeployed}
                 title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                subTitle={<span></span>}
               />
 
           </div>

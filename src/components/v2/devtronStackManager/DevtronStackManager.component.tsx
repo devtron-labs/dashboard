@@ -34,7 +34,6 @@ import {
     ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
-    EmptyState,
     Toggle,
     toastAccessDenied,
     ConfirmationDialog,
@@ -1084,21 +1083,24 @@ export const ModuleDetailsView = ({
     ) : null
 }
 
-const DiscoverIntegrationsButton = () => {
-    const history: RouteComponentProps['history'] = useHistory()
-    return (
-        <button
-            type="button"
-            className="empty-state__discover-btn flex fs-13 fw-6 br-4"
-            onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
-            >
-            <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
-        </button>
-    )
-}
-
 export const NoIntegrationsInstalledView = (): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
+    const redirectToDiscoverModules = () => {
+        history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)
+        
+    }
+
+    const renderDiscoverIntegrationsButton = () => {
+        return (
+            <button
+                type="button"
+                className="empty-state__discover-btn flex fs-13 fw-6 br-4"
+                onClick={redirectToDiscoverModules}
+                >
+                <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
+            </button>
+        )
+    }
 
     return (
         <div className="no-integrations__installed-view dc__position-rel">
@@ -1108,7 +1110,7 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
                 title={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.SUBTITLE}
                 isButtonAvailable={true}
-                renderButton={DiscoverIntegrationsButton}
+                renderButton={renderDiscoverIntegrationsButton}
             />
         </div>
     )
