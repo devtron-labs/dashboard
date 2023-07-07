@@ -298,6 +298,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    yamlStr: yamlJsParser.stringify(pipelineConfigFromRes.strategies[i].config, {indent:2}),
                     selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
@@ -562,16 +563,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    handleStrategyChange(event, selection: string, key: 'json' | 'yaml'): void {
+    handleStrategyChange(value, selection: string, key: 'json' | 'yaml'): void {
         let json, jsonStr, yamlStr
         if (key === 'json') {
-            jsonStr = event.target.value
+            jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
             } catch (error) {}
         } else {
-            yamlStr = event.target.value
+            yamlStr = value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
@@ -899,10 +900,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     jsonToYaml = (jsonStr: string) => {
-        const YAML = require('js-yaml');
-        const jsonObject = JSON.parse(jsonStr);
-        const yamlString = YAML.dump(jsonObject);
-        return yamlString;
+        try{
+            console.log(jsonStr)
+            const YAML = require('js-yaml');
+            const jsonObject = JSON.parse(jsonStr);
+            const yamlString = YAML.dump(jsonObject);
+            return yamlString;
+        }
+        catch(err){
+            showError(err);
+        }
     }
 
     renderDeploymentStrategy() {
@@ -983,14 +990,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 <div>
                                     <CodeEditor
                                         height={300}
-                                        value={this.jsonToYaml(strategy.jsonStr)}
+                                        value={strategy.yamlStr}
+                                        mode="yaml"
+                                        onChange={(event) =>
+                                            this.handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
+                                        }
                                     >
-                                        <CodeEditor.Header
-                                            className="code-editor"
-                                            onChange={(event) =>
-                                                this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
-                                            }
-                                        />
+                                        <CodeEditor.Header className="code-editor" />
                                     </CodeEditor>
                                 </div>
                             )}
