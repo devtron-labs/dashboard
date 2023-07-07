@@ -609,6 +609,12 @@ export const BuildTabText = {
     postBuildStage: 'Post-build stage',
 }
 
+export const CDDeploymentTabText = {
+    preBuildStage: 'Pre-Deployment stage',
+    buildStage: 'Deployment stage',
+    postBuildStage: 'Post-Deployment stage',
+}
+
 export const JobPipelineTabText = {
     buildStage: 'Basic configuration',
     preBuildStage: 'Tasks to be executed',

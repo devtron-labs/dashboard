@@ -261,7 +261,8 @@ export default function BuildCD({
         )
     }
 
-    const selectStrategy = (value: string): void => {
+    const selectStrategy = (e): void => {
+        const value = e.target.value
         const _form = { ...formData }
         let selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
         let strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
@@ -471,7 +472,7 @@ export default function BuildCD({
         return (
             <Select
                 rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150"
-                onChange={(e) => selectStrategy(e.target.value)}
+                onChange={selectStrategy}
             >
                 <Select.Button rootClassName="right" hideArrow={true}>
                     <span className="flex cb-5 fw-6">

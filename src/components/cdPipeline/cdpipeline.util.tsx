@@ -3,8 +3,9 @@ import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { components } from 'react-select';
 import { ReactComponent as Search} from '../../assets/icons/ic-nav-search.svg'
-import { ConditionType, PluginType, ScriptType, StepType, TaskErrorObj } from '@devtron-labs/devtron-fe-common-lib';
+import { BuildStageVariable, ConditionType, FormType, PluginType, RefVariableStageType, RefVariableType, ScriptType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib';
 import { ValidationRules } from '../ciPipeline/validationRules';
+import { CDFormType, InputVariablesFromInputListType } from './cdPipeline.types';
 
 export const styles = {
     control: (base, state) => ({
@@ -180,4 +181,152 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
             })
         }
     }
+}
+
+export const checkUniqueness = (formData): boolean => {
+    const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
+    const stageNameList = list.map((taskData) => {
+        if (taskData.stepType === PluginType.INLINE) {
+            if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
+                if (!taskData.inlineStepDetail['isMountCustomScript']) {
+                    taskData.inlineStepDetail['script'] = null
+                    taskData.inlineStepDetail['storeScriptAt'] = null
+                }
+
+                if (!taskData.inlineStepDetail['mountCodeToContainer']) {
+                    taskData.inlineStepDetail['mountCodeToContainerPath'] = null
+                }
+
+                if (!taskData.inlineStepDetail['mountDirectoryFromHost']) {
+                    taskData.inlineStepDetail['mountPathMap'] = null
+                }
+                taskData.inlineStepDetail.outputVariables = null
+                let conditionDetails = taskData.inlineStepDetail.conditionDetails
+                for (let i = 0; i < conditionDetails?.length; i++) {
+                    if (
+                        conditionDetails[i].conditionType === ConditionType.PASS ||
+                        conditionDetails[i].conditionType === ConditionType.FAIL
+                    ) {
+                        conditionDetails.splice(i, 1)
+                        i--
+                    }
+                }
+                taskData.inlineStepDetail.conditionDetails = conditionDetails
+            }
+        }
+        return taskData.name
+    })
+
+    // Below code is to check if all the task name from pre-stage and post-stage is unique
+    return stageNameList.length === new Set(stageNameList).size
+}
+
+export  const calculateLastStepDetail = (
+    isFromAddNewTask: boolean,
+    _formData: FormType | CDFormType,
+    activeStageName: string,
+    formDataErrorObj: any,
+    setFormDataErrorObj: (formDataError: any) => void,
+    inputVariablesListFromPrevStep: InputVariablesFromInputListType,
+    setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void,
+    startIndex?: number,
+    isFromMoveTask?: boolean
+): {
+    index: number
+    calculatedStageVariables: Map<string, VariableType>[]
+} => {
+    const _formDataErrorObj = { ...formDataErrorObj }
+    if (!_formData[activeStageName].steps) {
+        _formData[activeStageName].steps = []
+    }
+    const stepsLength = _formData[activeStageName].steps?.length
+    let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
+        _inputVariablesListPerTask: Map<string, VariableType>[] = []
+    for (let i = 0; i < stepsLength; i++) {
+        if (!_formDataErrorObj[activeStageName].steps[i])
+            _formDataErrorObj[activeStageName].steps.push({ isValid: true })
+        _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+        _formData[activeStageName].steps[i].index = i + 1
+        if (!_formData[activeStageName].steps[i].stepType) {
+            continue
+        }
+
+        if (
+            _formData[activeStageName].steps[i].stepType === PluginType.INLINE &&
+            _formData[activeStageName].steps[i].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE &&
+            _formData[activeStageName].steps[i].inlineStepDetail.script &&
+            !_formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript
+        ) {
+            _formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript = true
+        }
+        const currentStepTypeVariable =
+            _formData[activeStageName].steps[i].stepType === PluginType.INLINE
+                ? 'inlineStepDetail'
+                : 'pluginRefStepDetail'
+        if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable]) {
+            _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable] = {
+                inputVariables: [],
+                outputVariables: [],
+            }
+        }
+        if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+            _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
+        }
+        if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
+            _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables = []
+        }
+        const outputVariablesLength =
+            _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
+        for (let j = 0; j < outputVariablesLength; j++) {
+            if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
+                _outputVariablesFromPrevSteps.set(
+                    i +
+                        1 +
+                        '.' +
+                        _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
+                    {
+                        ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
+                        refVariableStepIndex: i + 1,
+                        refVariableStage:
+                            activeStageName === BuildStageVariable.PreBuild
+                                ? RefVariableStageType.PRE_CI
+                                : RefVariableStageType.POST_CI,
+                    },
+                )
+            }
+        }
+        if (
+            !isFromAddNewTask &&
+            i >= startIndex &&
+            _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables
+        ) {
+            for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+                const variableDetail =
+                    _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
+                if (
+                    variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
+                    ((variableDetail.refVariableStage ===
+                        (activeStageName === BuildStageVariable.PreBuild
+                            ? RefVariableStageType.PRE_CI
+                            : RefVariableStageType.POST_CI) &&
+                        variableDetail.refVariableStepIndex > startIndex) ||
+                        (activeStageName === BuildStageVariable.PreBuild &&
+                            variableDetail.refVariableStage === RefVariableStageType.POST_CI))
+                ) {
+                    variableDetail.refVariableStepIndex = 0
+                    variableDetail.refVariableName = ''
+                    variableDetail.variableType = RefVariableType.NEW
+                    delete variableDetail.refVariableStage
+                }
+            }
+        }
+    }
+    if (isFromAddNewTask || isFromMoveTask) {
+        _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+    }
+    const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
+    _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
+    setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
+    setFormDataErrorObj(_formDataErrorObj)
+    return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
 }

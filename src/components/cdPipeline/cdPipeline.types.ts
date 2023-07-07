@@ -1,4 +1,4 @@
-import { ErrorObj, MaterialType, TaskErrorObj } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorObj, MaterialType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { DeploymentAppTypes } from '../../config'
 
@@ -218,4 +218,9 @@ export interface CDFormErrorObjectType {
         isValid: boolean;
         steps: TaskErrorObj[];
     };
+}
+
+export interface InputVariablesFromInputListType {
+    preBuildStage: Map<string, VariableType>[]
+    postBuildStage: Map<string, VariableType>[]
 }

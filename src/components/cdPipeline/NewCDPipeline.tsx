@@ -20,7 +20,7 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { BuildTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CDFormType, CD_PATCH_ACTION, Environment } from './cdPipeline.types'
@@ -54,7 +54,7 @@ import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import Tippy from '@tippyjs/react'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-import { validateTask } from './cdpipeline.util'
+import { calculateLastStepDetail, checkUniqueness, validateTask } from './cdpipeline.util'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -258,17 +258,21 @@ export default function NewCDPipeline({
             })
     }
 
+    const calculateLastStepDetailWrapper = (isFromAddNewTask: boolean, _formData: CDFormType, activeStageName: string,) => {
+        return calculateLastStepDetail(isFromAddNewTask,_formData,activeStageName,formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep)
+    }
+
     const getCDPipeline = (form): void => {
         getCDPipelineConfig(appId, cdPipelineId)
             .then((result) => {
                 let pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form)
-                const preBuildVariable = calculateLastStepDetail(
+                const preBuildVariable = calculateLastStepDetailWrapper(
                     false,
                     result.form,
                     BuildStageVariable.PreBuild,
                 ).calculatedStageVariables
-                const postBuildVariable = calculateLastStepDetail(
+                const postBuildVariable = calculateLastStepDetailWrapper(
                     false,
                     result.form,
                     BuildStageVariable.PostBuild,
@@ -510,7 +514,7 @@ export default function NewCDPipeline({
 
     const addNewTask = () => {
         const _formData = { ...formData }
-        const detailsFromLastStep = calculateLastStepDetail(true, _formData, activeStageName)
+        const detailsFromLastStep = calculateLastStepDetailWrapper(true, _formData, activeStageName)
 
         const stage = {
             id: detailsFromLastStep.index,
@@ -529,112 +533,6 @@ export default function NewCDPipeline({
         })
         setFormDataErrorObj(_formDataErrorObj)
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
-    }
-
-    const calculateLastStepDetail = (
-        isFromAddNewTask: boolean,
-        _formData: CDFormType,
-        activeStageName: string,
-        startIndex?: number,
-        isFromMoveTask?: boolean,
-    ): {
-        index: number
-        calculatedStageVariables: Map<string, VariableType>[]
-    } => {
-        const _formDataErrorObj = { ...formDataErrorObj }
-        if (!_formData[activeStageName].steps) {
-            _formData[activeStageName].steps = []
-        }
-        const stepsLength = _formData[activeStageName].steps?.length
-        let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
-            _inputVariablesListPerTask: Map<string, VariableType>[] = []
-        for (let i = 0; i < stepsLength; i++) {
-            if (!_formDataErrorObj[activeStageName].steps[i])
-                _formDataErrorObj[activeStageName].steps.push({ isValid: true })
-            _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-            _formData[activeStageName].steps[i].index = i + 1
-            if (!_formData[activeStageName].steps[i].stepType) {
-                continue
-            }
-
-            if (
-                _formData[activeStageName].steps[i].stepType === PluginType.INLINE &&
-                _formData[activeStageName].steps[i].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE &&
-                _formData[activeStageName].steps[i].inlineStepDetail.script &&
-                !_formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript
-            ) {
-                _formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript = true
-            }
-            const currentStepTypeVariable =
-                _formData[activeStageName].steps[i].stepType === PluginType.INLINE
-                    ? 'inlineStepDetail'
-                    : 'pluginRefStepDetail'
-            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable]) {
-                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable] = {
-                    inputVariables: [],
-                    outputVariables: [],
-                }
-            }
-            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
-                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
-            }
-            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
-                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables = []
-            }
-            const outputVariablesLength =
-                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
-            for (let j = 0; j < outputVariablesLength; j++) {
-                if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
-                    _outputVariablesFromPrevSteps.set(
-                        i +
-                            1 +
-                            '.' +
-                            _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
-                        {
-                            ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                            refVariableStepIndex: i + 1,
-                            refVariableStage:
-                                activeStageName === BuildStageVariable.PreBuild
-                                    ? RefVariableStageType.PRE_CI
-                                    : RefVariableStageType.POST_CI,
-                        },
-                    )
-                }
-            }
-            if (
-                !isFromAddNewTask &&
-                i >= startIndex &&
-                _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables
-            ) {
-                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
-                    const variableDetail =
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
-                    if (
-                        variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
-                        ((variableDetail.refVariableStage ===
-                            (activeStageName === BuildStageVariable.PreBuild
-                                ? RefVariableStageType.PRE_CI
-                                : RefVariableStageType.POST_CI) &&
-                            variableDetail.refVariableStepIndex > startIndex) ||
-                            (activeStageName === BuildStageVariable.PreBuild &&
-                                variableDetail.refVariableStage === RefVariableStageType.POST_CI))
-                    ) {
-                        variableDetail.refVariableStepIndex = 0
-                        variableDetail.refVariableName = ''
-                        variableDetail.variableType = RefVariableType.NEW
-                        delete variableDetail.refVariableStage
-                    }
-                }
-            }
-        }
-        if (isFromAddNewTask || isFromMoveTask) {
-            _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-        }
-        const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
-        _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
-        setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
-        setFormDataErrorObj(_formDataErrorObj)
-        return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
     const handleStrategy = (value: string): void => {
@@ -683,46 +581,8 @@ export default function NewCDPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const checkUniqueness = (): boolean => {
-        const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
-        const stageNameList = list.map((taskData) => {
-            if (taskData.stepType === PluginType.INLINE) {
-                if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
-                    if (!taskData.inlineStepDetail['isMountCustomScript']) {
-                        taskData.inlineStepDetail['script'] = null
-                        taskData.inlineStepDetail['storeScriptAt'] = null
-                    }
-
-                    if (!taskData.inlineStepDetail['mountCodeToContainer']) {
-                        taskData.inlineStepDetail['mountCodeToContainerPath'] = null
-                    }
-
-                    if (!taskData.inlineStepDetail['mountDirectoryFromHost']) {
-                        taskData.inlineStepDetail['mountPathMap'] = null
-                    }
-                    taskData.inlineStepDetail.outputVariables = null
-                    let conditionDetails = taskData.inlineStepDetail.conditionDetails
-                    for (let i = 0; i < conditionDetails?.length; i++) {
-                        if (
-                            conditionDetails[i].conditionType === ConditionType.PASS ||
-                            conditionDetails[i].conditionType === ConditionType.FAIL
-                        ) {
-                            conditionDetails.splice(i, 1)
-                            i--
-                        }
-                    }
-                    taskData.inlineStepDetail.conditionDetails = conditionDetails
-                }
-            }
-            return taskData.name
-        })
-
-        // Below code is to check if all the task name from pre-stage and post-stage is unique
-        return stageNameList.length === new Set(stageNameList).size
-    }
-
     const savePipeline = () => {
-        const isUnique = checkUniqueness()
+        const isUnique = checkUniqueness(formData)
         if (!isUnique) {
             toast.error('All task names must be unique')
             return
@@ -912,7 +772,7 @@ export default function NewCDPipeline({
                         validateStage(activeStageName, formData)
                     }}
                 >
-                    {BuildTabText[stageName]}
+                    {CDDeploymentTabText[stageName]}
                     {(showAlert || showWarning) && (
                         <WarningTriangle
                             className={`icon-dim-16 mr-5 ml-5 mt-3 ${

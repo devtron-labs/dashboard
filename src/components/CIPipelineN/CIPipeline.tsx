@@ -55,7 +55,7 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { validateTask } from '../cdPipeline/cdpipeline.util'
+import { calculateLastStepDetail, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -181,18 +181,22 @@ export default function CIPipeline({
         }
     }, [location.pathname])
 
+    const calculateLastStepDetailWrapper = (isFromAddNewTask: boolean, _formData: FormType, activeStageName: string,) => {
+        return calculateLastStepDetail(isFromAddNewTask,_formData,activeStageName,formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep)
+    }
+
     const getInitialData = (): void => {
         setPageState(ViewType.LOADING)
         getSecurityModuleStatus()
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
                 .then((ciResponse) => {
-                    const preBuildVariable = calculateLastStepDetail(
+                    const preBuildVariable = calculateLastStepDetailWrapper(
                         false,
                         ciResponse.form,
                         BuildStageVariable.PreBuild,
                     ).calculatedStageVariables
-                    const postBuildVariable = calculateLastStepDetail(
+                    const postBuildVariable = calculateLastStepDetailWrapper(
                         false,
                         ciResponse.form,
                         BuildStageVariable.PostBuild,
@@ -395,45 +399,9 @@ export default function CIPipeline({
             )
         }
     }
-    const checkUniqueness = (): boolean => {
-        const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
-        const stageNameList = list.map((taskData) => {
-            if (taskData.stepType === PluginType.INLINE) {
-                if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
-                    if (!taskData.inlineStepDetail['isMountCustomScript']) {
-                        taskData.inlineStepDetail['script'] = null
-                        taskData.inlineStepDetail['storeScriptAt'] = null
-                    }
-
-                    if (!taskData.inlineStepDetail['mountCodeToContainer']) {
-                        taskData.inlineStepDetail['mountCodeToContainerPath'] = null
-                    }
-
-                    if (!taskData.inlineStepDetail['mountDirectoryFromHost']) {
-                        taskData.inlineStepDetail['mountPathMap'] = null
-                    }
-                    taskData.inlineStepDetail.outputVariables = null
-                    let conditionDetails = taskData.inlineStepDetail.conditionDetails
-                    for (let i = 0; i < conditionDetails?.length; i++) {
-                        if (
-                            conditionDetails[i].conditionType === ConditionType.PASS ||
-                            conditionDetails[i].conditionType === ConditionType.FAIL
-                        ) {
-                            conditionDetails.splice(i, 1)
-                            i--
-                        }
-                    }
-                    taskData.inlineStepDetail.conditionDetails = conditionDetails
-                }
-            }
-            return taskData.name
-        })
-
-        // Below code is to check if all the task name from pre-stage and post-stage is unique
-        return stageNameList.length === new Set(stageNameList).size
-    }
+   
     const savePipeline = () => {
-        const isUnique = checkUniqueness()
+        const isUnique = checkUniqueness(formData)
         if (!isUnique) {
             toast.error('All task names must be unique')
             return
@@ -558,115 +526,9 @@ export default function CIPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const calculateLastStepDetail = (
-        isFromAddNewTask: boolean,
-        _formData: FormType,
-        activeStageName: string,
-        startIndex?: number,
-        isFromMoveTask?: boolean,
-    ): {
-        index: number
-        calculatedStageVariables: Map<string, VariableType>[]
-    } => {
-        const _formDataErrorObj = { ...formDataErrorObj }
-        if (!_formData[activeStageName].steps) {
-            _formData[activeStageName].steps = []
-        }
-        const stepsLength = _formData[activeStageName].steps?.length
-        let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
-            _inputVariablesListPerTask: Map<string, VariableType>[] = []
-        for (let i = 0; i < stepsLength; i++) {
-            if (!_formDataErrorObj[activeStageName].steps[i])
-                _formDataErrorObj[activeStageName].steps.push({ isValid: true })
-            _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-            _formData[activeStageName].steps[i].index = i + 1
-            if (!_formData[activeStageName].steps[i].stepType) {
-                continue
-            }
-
-            if (
-                _formData[activeStageName].steps[i].stepType === PluginType.INLINE &&
-                _formData[activeStageName].steps[i].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE &&
-                _formData[activeStageName].steps[i].inlineStepDetail.script &&
-                !_formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript
-            ) {
-                _formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript = true
-            }
-            const currentStepTypeVariable =
-                _formData[activeStageName].steps[i].stepType === PluginType.INLINE
-                    ? 'inlineStepDetail'
-                    : 'pluginRefStepDetail'
-            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable]) {
-                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable] = {
-                    inputVariables: [],
-                    outputVariables: [],
-                }
-            }
-            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
-                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
-            }
-            if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
-                _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables = []
-            }
-            const outputVariablesLength =
-                _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
-            for (let j = 0; j < outputVariablesLength; j++) {
-                if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
-                    _outputVariablesFromPrevSteps.set(
-                        i +
-                            1 +
-                            '.' +
-                            _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
-                        {
-                            ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
-                            refVariableStepIndex: i + 1,
-                            refVariableStage:
-                                activeStageName === BuildStageVariable.PreBuild
-                                    ? RefVariableStageType.PRE_CI
-                                    : RefVariableStageType.POST_CI,
-                        },
-                    )
-                }
-            }
-            if (
-                !isFromAddNewTask &&
-                i >= startIndex &&
-                _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables
-            ) {
-                for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
-                    const variableDetail =
-                        _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
-                    if (
-                        variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
-                        ((variableDetail.refVariableStage ===
-                            (activeStageName === BuildStageVariable.PreBuild
-                                ? RefVariableStageType.PRE_CI
-                                : RefVariableStageType.POST_CI) &&
-                            variableDetail.refVariableStepIndex > startIndex) ||
-                            (activeStageName === BuildStageVariable.PreBuild &&
-                                variableDetail.refVariableStage === RefVariableStageType.POST_CI))
-                    ) {
-                        variableDetail.refVariableStepIndex = 0
-                        variableDetail.refVariableName = ''
-                        variableDetail.variableType = RefVariableType.NEW
-                        delete variableDetail.refVariableStage
-                    }
-                }
-            }
-        }
-        if (isFromAddNewTask || isFromMoveTask) {
-            _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
-        }
-        const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
-        _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
-        setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)
-        setFormDataErrorObj(_formDataErrorObj)
-        return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
-    }
-
     const addNewTask = () => {
         const _formData = { ...formData }
-        const detailsFromLastStep = calculateLastStepDetail(true, _formData, activeStageName)
+        const detailsFromLastStep = calculateLastStepDetailWrapper(true, _formData, activeStageName)
 
         const stage = {
             id: detailsFromLastStep.index,
