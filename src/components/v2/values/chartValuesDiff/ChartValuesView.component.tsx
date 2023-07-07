@@ -10,14 +10,13 @@ import {
     Option,
 } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import {
     Progressing,
     DeleteDialog,
     RadioGroup,
-    RadioGroupItem, GenericEmptyState,
+    RadioGroupItem,
     ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
@@ -33,7 +32,6 @@ import {
     DeleteChartDialogProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
-    ErrorScreenWithInfoProps,
     UpdateApplicationButtonProps,
     ValueNameInputType,
 } from './ChartValuesView.type'

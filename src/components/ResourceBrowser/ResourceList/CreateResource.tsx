@@ -10,7 +10,6 @@ import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState } from
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
-import ResourceListEmptyState from './ResourceListEmptyState'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
 export function CreateResource({ closePopup, clusterId }: CreateResourceType) {

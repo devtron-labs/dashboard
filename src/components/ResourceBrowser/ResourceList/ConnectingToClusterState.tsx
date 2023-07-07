@@ -6,7 +6,7 @@ import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gi
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { useParams } from 'react-router-dom'
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ConnectingToClusterState({
     loader,

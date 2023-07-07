@@ -1,5 +1,5 @@
 import React from 'react'
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { JobListViewType, JOBLIST_EMPTY_STATE_MESSAGING } from './Constants'
 import { JobsEmptyProps } from './Types'
 import nojobs from '../../assets/img/empty-joblist@2x.png'

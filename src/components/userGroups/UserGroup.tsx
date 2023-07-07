@@ -21,7 +21,6 @@ import {
     ErrorScreenNotAuthorized,
     get,
     InfoColourBar,
-    EmptyState,
     Option,
     MultiValueContainer,
     MultiValueRemove,
@@ -84,7 +83,6 @@ import {
     TOAST_ACCESS_DENIED,
     USER_NOT_EDITABLE,
 } from '../../config/constantMessaging'
-import { EMPTY } from 'rxjs'
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 

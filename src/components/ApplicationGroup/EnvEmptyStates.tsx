@@ -2,7 +2,7 @@ import React from 'react'
 import emptyNoResults from '../../assets/img/empty-noresult@2x.png'
 import { EMPTY_LIST_MESSAGING } from './Constants'
 import { EmptyEnvState } from './AppGroup.types'
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function EnvEmptyStates({ title, subTitle, actionHandler }: EmptyEnvState) {
     const EnvEmptyStatesButton = () => {

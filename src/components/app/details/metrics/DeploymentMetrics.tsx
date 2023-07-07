@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
 import { DatePicker } from '../../../common';
-import { showError, Progressing, ErrorScreenManager, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
