@@ -270,6 +270,7 @@ export default function NewCDPipeline({
                 validateStage(BuildStageVariable.Build, result.form)
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
+                setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
                 setFormData(form)
                 setPageState(ViewType.FORM)
             })

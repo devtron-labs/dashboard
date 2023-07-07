@@ -122,7 +122,7 @@ export default function BuildCD({
             _form.namespace = selection.namespace
             setIsVirtualEnvironment(selection.isVirtualEnvironment)
             _formDataErrorObj.envNameError = validationRules.environment(selection.id)
-            _formDataErrorObj.nameSpaceError = !isVirtualEnvironment && validationRules.namespace(selection.namespace)
+            _formDataErrorObj.nameSpaceError = !selection.isVirtualEnvironment && validationRules.namespace(selection.namespace)
             _form.preStageConfigMapSecretNames = {
                 configMaps: [],
                 secrets: [],
