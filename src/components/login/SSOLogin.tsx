@@ -158,10 +158,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     setConfig(response: any, newsso: any): void {
-        if ( response.result?.config?.config?.hasOwnProperty('clientID') && response.result?.config?.config?.clientID === '') {
+        const config = response.result?.config?.config
+        if ( config?.hasOwnProperty('clientID') && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if ( response.result?.config?.config?.hasOwnProperty('clientSecret') && response.result?.config?.config?.clientSecret === '') {
+        if ( config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
         let newConfig: SSOConfigType
@@ -209,10 +210,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     checkConfigJson(ssoConfig) {
-        if (ssoConfig.hasOwnProperty('clientID') && (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)) {
+        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)) {
             ssoConfig.clientID = ''
         }
-        if (ssoConfig.hasOwnProperty('clientID') && (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)) {
+        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)) {
             ssoConfig.clientSecret = ''
         }
         return ssoConfig
