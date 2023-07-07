@@ -298,6 +298,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
+                    yamlStr: yamlJsParser.stringify(pipelineConfigFromRes.strategies[i].config, {indent:2}),
                     selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
@@ -562,16 +563,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    handleStrategyChange(event, selection: string, key: 'json' | 'yaml'): void {
+    handleStrategyChange(value, selection: string, key: 'json' | 'yaml'): void {
         let json, jsonStr, yamlStr
         if (key === 'json') {
-            jsonStr = event.target.value
+            jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
             } catch (error) {}
         } else {
-            yamlStr = event.target.value
+            yamlStr = value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
@@ -973,14 +974,17 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 </span>
                             </div>
                             {strategy.isCollapsed ? null : (
-                                <div className="deployment-strategy__info-body">
-                                    <textarea
-                                        className="dc__code-textarea code-textarea--cd-pipeline"
-                                        value={strategy.jsonStr}
+                                <div>
+                                    <CodeEditor
+                                        height={300}
+                                        value={strategy.yamlStr}
+                                        mode="yaml"
                                         onChange={(event) =>
-                                            this.handleStrategyChange(event, strategy.deploymentTemplate, 'json')
+                                            this.handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
                                         }
-                                    />
+                                    >
+                                        <CodeEditor.Header className="code-editor" />
+                                    </CodeEditor>
                                 </div>
                             )}
                         </div>
