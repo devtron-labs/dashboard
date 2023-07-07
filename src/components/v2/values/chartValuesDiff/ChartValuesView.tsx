@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
+import { getDeploymentAppType, importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -35,7 +35,14 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { ConfigurationType, DELETE_ACTION, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import {
+    ConfigurationType,
+    DELETE_ACTION,
+    SERVER_MODE,
+    URLS,
+    checkIfDevtronOperatorHelmRelease,
+    DeploymentAppTypes,
+} from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -139,6 +146,7 @@ function ChartValuesView({
     const [deploymentVersion, setDeploymentVersion] = useState(1)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
+    const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -1162,14 +1170,29 @@ function ChartValuesView({
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
-        dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-        setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
-        if (commonState.invalidaEnvironment) {
-            dispatch({
-                type: ChartValuesViewActionTypes.invalidaEnvironment,
-                payload: false,
-            })
-        }
+      if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
+          dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
+      } else {
+          dispatch({
+              type: ChartValuesViewActionTypes.multipleOptions,
+              payload: {
+                  selectedEnvironment: selected,
+                  deploymentAppType: getDeploymentAppType(
+                      selected.allowedDeploymentTypes,
+                      commonState.deploymentAppType,
+                      selected.isVirtualEnvironment
+                  ),
+              },
+          })
+      }
+      setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
+      setAllowedDeploymentTypes(selected.allowedDeploymentTypes ?? [])
+      if (commonState.invalidaEnvironment) {
+          dispatch({
+              type: ChartValuesViewActionTypes.invalidaEnvironment,
+              payload: false,
+          })
+      }
     }
 
     const handleDeploymentAppTypeSelection = (event) => {
@@ -1243,7 +1266,7 @@ function ChartValuesView({
             },
         })
     }
-    
+
     const onClickNonCascadeDelete = () => {
         dispatch({
             type: ChartValuesViewActionTypes.nonCascadeDeleteData,
@@ -1480,12 +1503,14 @@ function ChartValuesView({
                             !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
+                            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
                             !appDetails?.isVirtualEnvironment && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}
                                     handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
                                     isDeployChartView={isDeployChartView}
+                                    allowedDeploymentTypes={allowedDeploymentTypes}
                                 />
                             )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
@@ -1630,10 +1655,10 @@ function ChartValuesView({
                 )}
                 {commonState.nonCascadeDeleteData.nonCascade && (
                     <ClusterNotReachableDailog
-                    clusterName={commonState.nonCascadeDeleteData.clusterName}
-                    onClickCancel={onClickHideNonCascadeDeletePopup}
-                    onClickDelete={onClickNonCascadeDelete}
-                />
+                        clusterName={commonState.nonCascadeDeleteData.clusterName}
+                        onClickCancel={onClickHideNonCascadeDeletePopup}
+                        onClickDelete={onClickNonCascadeDelete}
+                    />
                 )}
                 {commonState.showNoGitOpsWarning && (
                     <NoGitOpsConfiguredWarning

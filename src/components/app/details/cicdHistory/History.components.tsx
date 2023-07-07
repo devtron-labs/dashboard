@@ -78,20 +78,32 @@ export const GitChanges = ({
     artifact,
     userApprovalMetadata,
     triggeredByEmail,
+    ciPipelineId,
+    artifactId,
+    imageComment,
+    imageReleaseTags,
+    appReleaseTagNames,
+    tagsEditable,
+    hideImageTaggingHardDelete
 }: GitChangesType) => {
     const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
-        return <GenericEmptyState title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE} subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE} />
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE}
+            />
+        )
     }
     return (
-        <div className="flex column left w-100 p-16">
+        <div className="flex column left w-100 ">
             {ciMaterials?.map((ciMaterial, index) => {
                 const gitTrigger = gitTriggers[ciMaterial.id]
                 return gitTrigger && (gitTrigger.Commit || gitTrigger.WebhookData?.Data) ? (
                     <div
                         key={`mat-${gitTrigger?.Commit}-${index}`}
-                        className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                        className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mt-16 ml-16"
                         data-testid="source-code-git-hash"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
@@ -113,25 +125,34 @@ export const GitChanges = ({
                     </div>
                 ) : null
             })}
-            {artifact && userApprovalMetadata && (
-                <CIListItem
-                    type="approved-artifact"
-                    userApprovalMetadata={userApprovalMetadata}
-                    triggeredBy={triggeredByEmail}
-                >
-                    <div className="flex column left hover-trigger">
-                        <div className="cn-9 fs-14 flex left">
-                            <CopyTippyWithText
-                                copyText={extractImage(artifact)}
-                                copied={copied}
-                                setCopied={setCopied}
-                            />
+            {artifact && (
+                <div className="flex left column mt-16 mb-16 ml-16" style={{ width: 'min( 100%, 800px )' }}>
+                    <CIListItem
+                        type="deployed-artifact"
+                        userApprovalMetadata={userApprovalMetadata}
+                        triggeredBy={triggeredByEmail}
+                        artifactId={artifactId}
+                        ciPipelineId={ciPipelineId}
+                        imageComment={imageComment}
+                        imageReleaseTags={imageReleaseTags}
+                        appReleaseTagNames={appReleaseTagNames}
+                        tagsEditable={tagsEditable}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                    >
+                        <div className="flex column left hover-trigger">
+                            <div className="cn-9 fs-14 flex left">
+                                <CopyTippyWithText
+                                    copyText={extractImage(artifact)}
+                                    copied={copied}
+                                    setCopied={setCopied}
+                                />
+                            </div>
+                            <div className="cn-7 fs-12 flex left">
+                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                            </div>
                         </div>
-                        <div className="cn-7 fs-12 flex left">
-                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                        </div>
-                    </div>
-                </CIListItem>
+                    </CIListItem>
+                </div>
             )}
         </div>
     )
