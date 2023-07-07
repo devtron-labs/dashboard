@@ -120,6 +120,7 @@ export default function NewCDPipeline({
         clusterName: '',
         runPreStageInEnv: false,
         runPostStageInEnv: false,
+        allowedDeploymentTypes: []
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
@@ -214,7 +215,7 @@ export default function NewCDPipeline({
     }
 
     const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic()])
+        Promise.all([getCDPipelineNameSuggestion(appId), getEnvironmentListMinPublic(true)])
             .then(([cpPipelineName, envList]) => {
                 form.name = cpPipelineName.result
                 let list = envList.result || []
@@ -227,7 +228,8 @@ export default function NewCDPipeline({
                         active: false,
                         isClusterCdActive: env.isClusterCdActive,
                         description: env.description,
-                        isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
+                        isVirtualEnvironment: env.isVirtualEnvironment,
+                        allowedDeploymentTypes: env.allowedDeploymentTypes || [],
                     }
                 })
                 sortObjectArrayAlphabetically(list, 'name')
@@ -378,6 +380,7 @@ export default function NewCDPipeline({
         form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
         form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
+        form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
         if (pipelineConfigFromRes?.preDeployStage) {
             form.preBuildStage = pipelineConfigFromRes.preDeployStage
         }

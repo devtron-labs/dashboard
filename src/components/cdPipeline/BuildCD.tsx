@@ -13,7 +13,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { TriggerType, ViewType } from '../../config'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { CDFormErrorObjectType, CDFormType, Environment } from './cdPipeline.types'
-import { createClusterEnvGroup, importComponentFromFELibrary, Select } from '../common'
+import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
     DropdownIndicator,
     EnvFormatOptions,
@@ -33,6 +33,7 @@ import yamlJsParser from 'yaml'
 import { toast } from 'react-toastify'
 import { styles, Option } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
+import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -139,6 +140,8 @@ export default function BuildCD({
                 selection.isVirtualEnvironment,
                 _form.isClusterCdActive && _form.runPostStageInEnv,
             )
+            _form.deploymentAppType = getDeploymentAppType(selection.allowedDeploymentTypes, _form.deploymentAppType, selection.isVirtualEnvironment)
+            _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
         } else {
@@ -195,28 +198,6 @@ export default function BuildCD({
                 Icon={Help}
                 iconClass="fcv-5 h-20"
             />
-        )
-    }
-
-    const renderDeploymentAppType = () => {
-        return (
-            <div className="cd-pipeline__deployment-type mt-16">
-                <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-                <RadioGroup
-                    value={formData.deploymentAppType ? formData.deploymentAppType : DeploymentAppType.Helm}
-                    name="deployment-app-type"
-                    onChange={handleDeploymentAppTypeChange}
-                    disabled={!!cdPipelineId}
-                    className={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                >
-                    <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
-                        Helm
-                    </RadioGroupItem>
-                    <RadioGroupItem dataTestId="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
-                        GitOps
-                    </RadioGroupItem>
-                </RadioGroup>
-            </div>
         )
     }
 
@@ -467,6 +448,22 @@ export default function BuildCD({
         setFormData(_form)
     }
 
+    const renderDeploymentAppType = () => {
+        return (
+            <div className="cd-pipeline__deployment-type mt-16">
+                <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
+                <DeploymentAppRadioGroup
+                    isDisabled={!!cdPipelineId}
+                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppType.Helm}
+                    handleOnChange={handleDeploymentAppTypeChange}
+                    allowedDeploymentTypes={formData.allowedDeploymentTypes}
+                    rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
+                    isFromCDPipeline={true}
+                />
+            </div>
+        )
+    }
+
     const renderStrategyOptions = () => {
         return (
             <Select
@@ -632,7 +629,8 @@ export default function BuildCD({
                 {isAdvanced && renderPipelineNameInput()}
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && renderDeploymentAppType()}
+
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && formData.allowedDeploymentTypes.length>0 && renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {ManualApproval && (
                     <>

@@ -200,6 +200,7 @@ export interface CDFormType {
     clusterName: string
     runPreStageInEnv: boolean,
     runPostStageInEnv: boolean,
+    allowedDeploymentTypes: DeploymentAppTypes[]
 }
 
 export interface CDFormErrorObjectType {

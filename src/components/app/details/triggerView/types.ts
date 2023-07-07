@@ -534,6 +534,8 @@ export interface prePostDeployStageType {
     isValid: boolean;
     steps: TaskErrorObj[];
     triggerType: string
+    name: string
+    status: string
 }
 
 export interface CdPipeline {
