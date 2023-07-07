@@ -47,12 +47,15 @@ export function NoVulnerabilityView() {
 }
 
 export function CIRunningView(props) {
-    return        ( <GenericEmptyState
-    image={MechanicalOperation}
-    title={'Building artifacts'}
-    subTitle={
-        props.isSecurityTab
-            ? null : 'Generated artifact(s) will be available here after the pipeline is executed.'
-    }
-    />)
+    return (
+        <GenericEmptyState
+            image={MechanicalOperation}
+            title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
+            subTitle={
+                props.isSecurityTab
+                    ? null
+                    : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE
+            }
+        />
+    )
 }
