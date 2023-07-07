@@ -1,23 +1,17 @@
 import {
     BuildStageVariable,
     ConditionalWrap,
-    ConditionType,
     DeleteDialog,
     Drawer,
     ForceDeleteDialog,
-    MandatoryPluginDataType,
-    MandatoryPluginDetailType,
     PluginDetailType,
-    PluginType,
-    RefVariableStageType,
     RefVariableType,
-    ScriptType,
     ServerErrors,
     showError,
     VariableType,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
@@ -131,21 +125,10 @@ export default function NewCDPipeline({
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
-    const [showFormError, setShowFormError] = useState<boolean>(false)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
     const [loadingData, setLoadingData] = useState<boolean>(false)
-    const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-    const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
-        const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
-        if (mandatoryPluginData?.pluginData.length) {
-            for (const plugin of mandatoryPluginData.pluginData) {
-                _mandatoryPluginsMap[plugin.id] = plugin
-            }
-        }
-        return _mandatoryPluginsMap
-    }, [mandatoryPluginData])
     const [deleteDialog, setDeleteDialog] = useState<deleteDialogType>(deleteDialogType.showNormalDeleteDialog)
     const [forceDeleteData, setForceDeleteData] = useState({ forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' })
     const { path } = useRouteMatch()
@@ -564,9 +547,6 @@ export default function NewCDPipeline({
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid
-            if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
-                setShowFormError(true)
-            }
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
@@ -756,10 +736,6 @@ export default function NewCDPipeline({
 
     const getNavLink = (toLink: string, stageName: string) => {
         const showAlert = !formDataErrorObj[stageName].isValid
-        const showWarning =
-            mandatoryPluginData &&
-            ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
-                (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
         return (
             <li className="tab-list__tab">
                 <NavLink
@@ -773,7 +749,7 @@ export default function NewCDPipeline({
                     }}
                 >
                     {CDDeploymentTabText[stageName]}
-                    {(showAlert || showWarning) && (
+                    {(showAlert) && (
                         <WarningTriangle
                             className={`icon-dim-16 mr-5 ml-5 mt-3 ${
                                 showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
@@ -824,10 +800,6 @@ export default function NewCDPipeline({
                         }}
                     >
                         Advanced options
-                        {mandatoryPluginData &&
-                            (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                                <WarningTriangle className="ml-6 icon-dim-16 warning-icon-y7-imp" />
-                            )}
                     </button>
                 )
             )
@@ -904,10 +876,8 @@ export default function NewCDPipeline({
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar
-                                    mandatoryPluginData={mandatoryPluginData}
                                     pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    mandatoryPluginsMap={mandatoryPluginsMap}
                                 />
                             </div>
                         )}
@@ -917,7 +887,6 @@ export default function NewCDPipeline({
                                     <PreBuild
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
-                                        mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
                             )}
@@ -926,7 +895,6 @@ export default function NewCDPipeline({
                                     <PreBuild
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
-                                        mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
                             )}
@@ -938,7 +906,6 @@ export default function NewCDPipeline({
                                     noStrategyAvailable={noStrategyAvailable}
                                     parentPipelineId={parentPipelineId}
                                     isWebhookCD={isWebhookCD}
-                                    showFormError={showFormError}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

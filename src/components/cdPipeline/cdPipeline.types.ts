@@ -1,4 +1,4 @@
-import { ErrorObj, MaterialType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorObj, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { DeploymentAppTypes } from '../../config'
 

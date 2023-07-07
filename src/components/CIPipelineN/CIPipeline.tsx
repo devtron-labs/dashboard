@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
@@ -9,17 +9,11 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
-    ConditionType,
     DockerConfigOverrideType,
     FormType,
-    PluginType,
-    RefVariableStageType,
     RefVariableType,
-    ScriptType,
-    StepType,
     VariableType,
     MandatoryPluginDataType,
-    TaskErrorObj,
     MandatoryPluginDetailType,
     PluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'

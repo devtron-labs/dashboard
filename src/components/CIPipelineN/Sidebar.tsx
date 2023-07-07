@@ -72,7 +72,6 @@ export function Sidebar({
     }, [activeStageName])
 
     const showMandatoryWarning = (): boolean => {
-        if (isCdPipeline) return true
         return (
             mandatoryPluginData &&
             ((isPreBuildTab && !mandatoryPluginData.isValidPre) ||

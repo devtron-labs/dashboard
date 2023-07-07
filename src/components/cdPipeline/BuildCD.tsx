@@ -7,7 +7,7 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { TriggerType, ViewType } from '../../config'
@@ -42,7 +42,6 @@ export default function BuildCD({
     isAdvanced,
     setIsVirtualEnvironment,
     noStrategyAvailable,
-    showFormError,
     allStrategies,
     parentPipelineId,
     isWebhookCD,

@@ -353,9 +353,9 @@ export interface BuildContextProps {
 
 export interface CIPipelineSidebarType {
     isJobView?: boolean
-    mandatoryPluginData: MandatoryPluginDataType
+    mandatoryPluginData?: MandatoryPluginDataType
     pluginList: PluginDetailType[]
-    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]

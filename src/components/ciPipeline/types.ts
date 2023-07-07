@@ -390,6 +390,6 @@ export interface BuildType {
 export interface PreBuildType {
   presetPlugins: PluginDetailType[]
   sharedPlugins: PluginDetailType[]
-  mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+  mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
   isJobView?: boolean
 }
