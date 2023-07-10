@@ -135,7 +135,7 @@ export default function NewCDPipeline({
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
-    const [isAdvanced, setIsAdvanced] = useState<boolean>(false)
+    const [isAdvanced, setIsAdvanced] = useState<boolean>(!!cdPipelineId)
     const parentPipelineType = parentPipelineTypeFromURL
         ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
         : isWebhookCD
