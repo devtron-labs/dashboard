@@ -167,7 +167,7 @@ export function Sidebar({
         }
 
         const onBlur = () => {
-            setAddConfigSecret(true)
+            setAddConfigSecret(false)
         }
 
         const onClick = () => {
@@ -319,7 +319,7 @@ export function Sidebar({
     }
 
     return (
-        <div className="dc__position-rel h-100 dc__overflow-auto">
+        <div className="dc__position-rel h-100">
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
                     {configurationType === ConfigurationType.GUI && (

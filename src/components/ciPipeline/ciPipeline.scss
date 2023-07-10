@@ -234,6 +234,7 @@
         padding-left: 20px;
         padding-right: 20px;
         max-height: calc(100vh - 150px);
+        overflow: auto;
     }
 
     &.no-side-bar {
