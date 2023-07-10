@@ -44,7 +44,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (isDockerFileError) {
             return {
-                img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{dockerFileErrorMsg}</h1>,
                 subtitle: DOCKER_FILE_ERROR_MESSAGE,
                 cta:
@@ -58,7 +58,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (isBranchError) {
             return {
-                img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{branchErrorMsg}</h1>,
                 subtitle: repoUrl ? (
                     <a href={repoUrl} rel="noopener noreferrer" target="_blank" className="">
