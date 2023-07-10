@@ -8,6 +8,7 @@ import {
     stopPropagation,
     DeleteDialog,
     showError,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
@@ -17,7 +18,6 @@ import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
 import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
-import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
@@ -215,8 +215,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const renderEmpty = () => {
         return (
-            <ResourceListEmptyState
-                imgSource={EmptyFolder}
+            <GenericEmptyState
+                image={EmptyFolder}
                 title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
                 subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
             />
