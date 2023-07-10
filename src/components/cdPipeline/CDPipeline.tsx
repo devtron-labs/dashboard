@@ -717,7 +717,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
         }
         if(this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH){
-          errorForm.containerRegistryError = this.validationRules.containerRegistry(pipelineConfig.containerRegistryName || this.state.defaultContainerName)
+          errorForm.containerRegistryError = this.validationRules.containerRegistry(!!pipelineConfig.containerRegistryName || !!this.state.defaultContainerName)
           errorForm.repositoryError = this.validationRules.repository(pipelineConfig.repoName)
         }
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)

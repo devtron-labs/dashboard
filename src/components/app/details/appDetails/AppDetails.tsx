@@ -117,6 +117,11 @@ export default function AppDetail() {
 
     useEffect(() => {
         if (otherEnvsLoading) return
+        // If there is only one environment, redirect to that environment
+        if (!params.envId && otherEnvsResult?.result?.length === 1) { 
+            const newUrl = getAppDetailsURL(params.appId, otherEnvsResult?.result[0].environmentId)
+            push(newUrl)
+        }
         if (
             !params.envId &&
             environmentId &&
