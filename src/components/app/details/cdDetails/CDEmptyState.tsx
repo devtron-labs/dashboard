@@ -42,13 +42,14 @@ export default function CDEmptyState({
         )
     }
     return (
-        <div style={{ backgroundColor: 'var(--window-bg)' }}>
+        <div className="dc__position-rel" style={{ backgroundColor: 'var(--window-bg)' }}>
           <GenericEmptyState
                 image={imgSource || AppNotDeployed}
                 classname="fs-16"
                 title={title ? title : EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
                 subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
                 renderButton={handleCDEmptyStateButton}
+                isButtonAvailable
             />
         </div>
     )
