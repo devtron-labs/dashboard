@@ -33,9 +33,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         calculateLastStepDetail,
         formDataErrorObj,
         setFormDataErrorObj,
-        validateTask,
-        inputVariablesListFromPrevStep,
-        setInputVariablesListFromPrevStep,
+        validateTask
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -45,10 +43,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             isFromAddNewTask: boolean,
             _formData: FormType,
             activeStageName: string,
-            formDataErrorObj: FormErrorObjectType,
-            setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>,
-            inputVariablesListFromPrevStep,
-            setInputVariablesListFromPrevStep,
             startIndex?: number,
             isFromMoveTask?: boolean,
         ) => {
@@ -58,8 +52,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-        inputVariablesListFromPrevStep: InputVariablesFromInputListType
-        setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
@@ -125,10 +117,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                 false,
                 _formData,
                 activeStageName,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 selectedTaskIndex,
             )
             setFormData(_formData)
@@ -143,10 +131,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                 false,
                 _formData,
                 activeStageName,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 selectedTaskIndex,
             )
         }
@@ -187,10 +171,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                 false,
                 _formData,
                 activeStageName,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 selectedTaskIndex,
             )
         }

@@ -28,6 +28,7 @@ const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
     const {
         formData,
+        isCdPipeline,
         setFormData,
         addNewTask,
         selectedTaskIndex,
@@ -39,10 +40,9 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
-        inputVariablesListFromPrevStep,
-        setInputVariablesListFromPrevStep,
     }: {
         formData: FormType | CDFormType
+        isCdPipeline: boolean
         setFormData: React.Dispatch<React.SetStateAction<FormType | CDFormType>>
         addNewTask: () => void
         selectedTaskIndex: number
@@ -56,18 +56,12 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             isFromAddNewTask: boolean,
             _form: FormType | CDFormType,
             activeStageName: string,
-            formDataErrorObj: FormErrorObjectType,
-            setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>,
-            inputVariablesListFromPrevStep,
-            setInputVariablesListFromPrevStep,
             startIndex?: number,
             isFromMoveTask?: boolean,
         ) => {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
-        inputVariablesListFromPrevStep: InputVariablesFromInputListType
-        setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void
         validateStage: (stageName: string, _formData: FormType | CDFormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
@@ -126,7 +120,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             }
         } else {
             isPluginRequired =
-                !isJobView && isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+                !isJobView && isRequired && !isCdPipeline && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -142,7 +136,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 pluginRefStepDetail: { inputVariables: [] },
             }
             if (_form[activeStageName].steps.length > selectedTaskIndex) {
-                calculateLastStepDetail(false, _form, activeStageName ,formDataErrorObj, setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep, selectedTaskIndex)
+                calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
             }
         }
         setFormData(_form)

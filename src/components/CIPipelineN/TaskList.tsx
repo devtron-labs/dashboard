@@ -42,7 +42,6 @@ export function TaskList({
         setFormDataErrorObj,
         validateTask,
         validateStage,
-        inputVariablesListFromPrevStep,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -54,10 +53,6 @@ export function TaskList({
             isFromAddNewTask: boolean,
             _formData: FormType,
             activeStageName: string,
-            formDataErrorObj: any,
-            setFormDataErrorObj: (formDataError: any) => void,
-            inputVariablesListFromPrevStep: InputVariablesFromInputListType,
-            setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void,
             startIndex?: number,
             isFromMoveTask?: boolean,
         ) => {
@@ -104,10 +99,6 @@ export function TaskList({
             false,
             _formData,
             activeStageName,
-            formDataErrorObj,
-            setFormDataErrorObj,
-            inputVariablesListFromPrevStep,
-            setInputVariablesListFromPrevStep,
             dragItemStartIndex < index ? dragItemStartIndex : index,
         )
         validateCurrentTask(index)
@@ -139,10 +130,6 @@ export function TaskList({
             false,
             _formData,
             activeStageName,
-            formDataErrorObj,
-            setFormDataErrorObj,
-            inputVariablesListFromPrevStep,
-            setInputVariablesListFromPrevStep,
             newTaskIndex,
         )
         setTimeout(() => {
@@ -276,20 +263,12 @@ export function TaskList({
                 false,
                 _formData,
                 BuildStageVariable.PreBuild,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 newTaskIndex,
             ).calculatedStageVariables
             postBuildVariable = calculateLastStepDetail(
                 true,
                 _formData,
                 BuildStageVariable.PostBuild,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 0,
             ).calculatedStageVariables
         } else {
@@ -298,10 +277,6 @@ export function TaskList({
                 false,
                 _formData,
                 BuildStageVariable.PreBuild,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 preTaskLength > 1 ? preTaskLength - 1 : 0,
                 true,
             ).calculatedStageVariables
@@ -309,10 +284,6 @@ export function TaskList({
                 false,
                 _formData,
                 BuildStageVariable.PostBuild,
-                formDataErrorObj,
-                setFormDataErrorObj,
-                inputVariablesListFromPrevStep,
-                setInputVariablesListFromPrevStep,
                 newTaskIndex,
             ).calculatedStageVariables
         }

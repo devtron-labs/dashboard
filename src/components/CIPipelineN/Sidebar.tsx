@@ -85,19 +85,11 @@ export function Sidebar({
             false,
             _formData,
             BuildStageVariable.PreBuild,
-            formDataErrorObj,
-            setFormDataErrorObj,
-            inputVariablesListFromPrevStep,
-            setInputVariablesListFromPrevStep,
         ).calculatedStageVariables
         const postBuildVariable = calculateLastStepDetail(
             false,
             _formData,
             BuildStageVariable.PostBuild,
-            formDataErrorObj,
-            setFormDataErrorObj,
-            inputVariablesListFromPrevStep,
-            setInputVariablesListFromPrevStep,
         ).calculatedStageVariables
         setInputVariablesListFromPrevStep({
             preBuildStage: preBuildVariable,
