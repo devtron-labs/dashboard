@@ -122,7 +122,8 @@ export default function BuildCD({
             _form.namespace = selection.namespace
             setIsVirtualEnvironment(selection.isVirtualEnvironment)
             _formDataErrorObj.envNameError = validationRules.environment(selection.id)
-            _formDataErrorObj.nameSpaceError = !selection.isVirtualEnvironment && validationRules.namespace(selection.namespace)
+            _formDataErrorObj.nameSpaceError =
+                !selection.isVirtualEnvironment && validationRules.namespace(selection.namespace)
             _form.preStageConfigMapSecretNames = {
                 configMaps: [],
                 secrets: [],
@@ -140,7 +141,11 @@ export default function BuildCD({
                 selection.isVirtualEnvironment,
                 _form.isClusterCdActive && _form.runPostStageInEnv,
             )
-            _form.deploymentAppType = getDeploymentAppType(selection.allowedDeploymentTypes, _form.deploymentAppType, selection.isVirtualEnvironment)
+            _form.deploymentAppType = getDeploymentAppType(
+                selection.allowedDeploymentTypes,
+                _form.deploymentAppType,
+                selection.isVirtualEnvironment,
+            )
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
@@ -466,10 +471,7 @@ export default function BuildCD({
 
     const renderStrategyOptions = () => {
         return (
-            <Select
-                rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150"
-                onChange={selectStrategy}
-            >
+            <Select rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150" onChange={selectStrategy}>
                 <Select.Button rootClassName="right" hideArrow={true}>
                     <span className="flex cb-5 fw-6">
                         <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
@@ -630,7 +632,10 @@ export default function BuildCD({
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
 
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && formData.allowedDeploymentTypes.length>0 && renderDeploymentAppType()}
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                    !isVirtualEnvironment &&
+                    formData.allowedDeploymentTypes.length > 0 &&
+                    renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {isAdvanced && ManualApproval && (
                     <>
@@ -646,11 +651,5 @@ export default function BuildCD({
         )
     }
 
-    return pageState === ViewType.LOADING.toString() ? (
-        <div style={{ minHeight: '200px' }} className="flex">
-            <Progressing pageLoader />
-        </div>
-    ) : (
-        <div className="cd-pipeline-body p-20 ci-scrollable-content">{renderBuild()}</div>
-    )
+    return <div className="cd-pipeline-body p-20 ci-scrollable-content">{renderBuild()}</div>
 }

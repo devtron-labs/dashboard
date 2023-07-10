@@ -5,6 +5,7 @@ import {
     Drawer,
     ForceDeleteDialog,
     PluginDetailType,
+    Progressing,
     RefVariableType,
     ServerErrors,
     showError,
@@ -120,7 +121,7 @@ export default function NewCDPipeline({
         clusterName: '',
         runPreStageInEnv: false,
         runPostStageInEnv: false,
-        allowedDeploymentTypes: []
+        allowedDeploymentTypes: [],
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
@@ -243,8 +244,20 @@ export default function NewCDPipeline({
             })
     }
 
-    const calculateLastStepDetailWrapper = (isFromAddNewTask: boolean, _formData: CDFormType, activeStageName: string,) => {
-        return calculateLastStepDetail(isFromAddNewTask,_formData,activeStageName,formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep)
+    const calculateLastStepDetailWrapper = (
+        isFromAddNewTask: boolean,
+        _formData: CDFormType,
+        activeStageName: string,
+    ) => {
+        return calculateLastStepDetail(
+            isFromAddNewTask,
+            _formData,
+            activeStageName,
+            formDataErrorObj,
+            setFormDataErrorObj,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
+        )
     }
 
     const getCDPipeline = (form): void => {
@@ -709,7 +722,7 @@ export default function NewCDPipeline({
     }
 
     const handleAdvanceClick = () => {
-        const form = {...formData}
+        const form = { ...formData }
         let strategies = form.strategies.filter(
             (strategy) => strategy.deploymentTemplate != form.savedStrategies[0].deploymentTemplate,
         )
@@ -767,7 +780,7 @@ export default function NewCDPipeline({
                     }}
                 >
                     {CDDeploymentTabText[stageName]}
-                    {(showAlert) && (
+                    {showAlert && (
                         <WarningTriangle
                             className={`icon-dim-16 mr-5 ml-5 mt-3 ${
                                 showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
@@ -855,77 +868,77 @@ export default function NewCDPipeline({
                     </ul>
                 )}
                 <hr className="divider m-0" />
-                <pipelineContext.Provider
-                    value={{
-                        formData,
-                        isCdPipeline,
-                        setFormData,
-                        handleStrategy,
-                        appId,
-                        activeStageName,
-                        formDataErrorObj,
-                        setFormDataErrorObj,
-                        inputVariablesListFromPrevStep,
-                        selectedTaskIndex,
-                        setSelectedTaskIndex,
-                        calculateLastStepDetail,
-                        validateTask,
-                        validateStage,
-                        addNewTask,
-                        configurationType,
-                        setConfigurationType,
-                        pageState,
-                        setPageState,
-                        globalVariables,
-                        configMapAndSecrets,
-                        getPrePostStageInEnv,
-                        isVirtualEnvironment,
-                    }}
-                >
-                    <div
-                        className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
-                            activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''
-                        }`}
-                    >
-                        {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
-                            <div className="sidebar-container">
-                                <Sidebar
-                                    pluginList={[...presetPlugins, ...sharedPlugins]}
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                />
-                            </div>
-                        )}
-                        <Switch>
-                            {isAdvanced && (
-                                <Route path={`${path}/pre-build`}>
-                                    <PreBuild
-                                        presetPlugins={presetPlugins}
-                                        sharedPlugins={sharedPlugins}
-                                    />
-                                </Route>
-                            )}
-                            {isAdvanced && (
-                                <Route path={`${path}/post-build`}>
-                                    <PreBuild
-                                        presetPlugins={presetPlugins}
-                                        sharedPlugins={sharedPlugins}
-                                    />
-                                </Route>
-                            )}
-                            <Route path={`${path}/build`}>
-                                <BuildCD
-                                    allStrategies={allStrategies}
-                                    isAdvanced={isAdvanced}
-                                    setIsVirtualEnvironment={setIsVirtualEnvironment}
-                                    noStrategyAvailable={noStrategyAvailable}
-                                    parentPipelineId={parentPipelineId}
-                                    isWebhookCD={isWebhookCD}
-                                />
-                            </Route>
-                            <Redirect to={`${path}/build`} />
-                        </Switch>
+                {pageState === ViewType.LOADING ? (
+                    <div style={{ minHeight: '200px' }} className="flex h-100">
+                        <Progressing pageLoader />
                     </div>
-                </pipelineContext.Provider>
+                ) : (
+                    <pipelineContext.Provider
+                        value={{
+                            formData,
+                            isCdPipeline,
+                            setFormData,
+                            handleStrategy,
+                            appId,
+                            activeStageName,
+                            formDataErrorObj,
+                            setFormDataErrorObj,
+                            inputVariablesListFromPrevStep,
+                            selectedTaskIndex,
+                            setSelectedTaskIndex,
+                            calculateLastStepDetail,
+                            validateTask,
+                            validateStage,
+                            addNewTask,
+                            configurationType,
+                            setConfigurationType,
+                            pageState,
+                            setPageState,
+                            globalVariables,
+                            configMapAndSecrets,
+                            getPrePostStageInEnv,
+                            isVirtualEnvironment,
+                        }}
+                    >
+                        <div
+                            className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
+                                activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''
+                            }`}
+                        >
+                            {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
+                                <div className="sidebar-container">
+                                    <Sidebar
+                                        pluginList={[...presetPlugins, ...sharedPlugins]}
+                                        setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                    />
+                                </div>
+                            )}
+                            <Switch>
+                                {isAdvanced && (
+                                    <Route path={`${path}/pre-build`}>
+                                        <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    </Route>
+                                )}
+                                {isAdvanced && (
+                                    <Route path={`${path}/post-build`}>
+                                        <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    </Route>
+                                )}
+                                <Route path={`${path}/build`}>
+                                    <BuildCD
+                                        allStrategies={allStrategies}
+                                        isAdvanced={isAdvanced}
+                                        setIsVirtualEnvironment={setIsVirtualEnvironment}
+                                        noStrategyAvailable={noStrategyAvailable}
+                                        parentPipelineId={parentPipelineId}
+                                        isWebhookCD={isWebhookCD}
+                                    />
+                                </Route>
+                                <Redirect to={`${path}/build`} />
+                            </Switch>
+                        </div>
+                    </pipelineContext.Provider>
+                )}
                 {pageState !== ViewType.LOADING && (
                     <>
                         <div

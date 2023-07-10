@@ -20,6 +20,7 @@ import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
 import ReactSelect from 'react-select'
 import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
 import { ValueContainer } from '../cdPipeline/cdpipeline.util'
+import Tippy from '@tippyjs/react'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
@@ -84,13 +85,19 @@ export function Sidebar({
             false,
             _formData,
             BuildStageVariable.PreBuild,
-            formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep
+            formDataErrorObj,
+            setFormDataErrorObj,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
         ).calculatedStageVariables
         const postBuildVariable = calculateLastStepDetail(
             false,
             _formData,
-            BuildStageVariable.PostBuild
-            ,formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep,
+            BuildStageVariable.PostBuild,
+            formDataErrorObj,
+            setFormDataErrorObj,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
         ).calculatedStageVariables
         setInputVariablesListFromPrevStep({
             preBuildStage: preBuildVariable,
@@ -158,7 +165,7 @@ export function Sidebar({
                 ...base,
                 top: 'auto',
                 width: '240px',
-                marginTop: '4px'
+                marginTop: '4px',
             }),
             dropdownIndicator: (base, state) => ({
                 ...base,
@@ -229,8 +236,8 @@ export function Sidebar({
                             })}
                         </div>
                     )}
-                    </div>
-                    {renderExecuteTask()}
+                </div>
+                {renderExecuteTask()}
             </div>
         )
     }
@@ -256,30 +263,29 @@ export function Sidebar({
         const runInEnv = isPreBuildTab ? formData.runPreStageInEnv : formData.runPostStageInEnv
 
         return (
+            <Tippy
+            className="default-tt"
+            arrow={false}
+            placement="bottom"
+            disabled={isVirtualEnvironment}
+            content="This Environment is not configured to run on devtron worker."
+        >
             <div
                 className={`flex flex-justify fs-13 fw-4 mt-12 mb-12
-                    ${
-                        formData.isClusterCdActive
-                            ? 'dc__position-rel'
-                            : 'dc__position-rel cd-checkbox-tooltip'
-                    }
+                    ${formData.isClusterCdActive ? 'dc__position-rel' : 'dc__position-rel'}
                 `}
             >
                 Execute tasks in application environment
                 <input
-                        type="checkbox"
-                        className='icon-dim-20'
-                        checked={runInEnv}
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleRunInEnvCheckbox}
-                        disabled={!formData.isClusterCdActive}
-                    />
-                {!isVirtualEnvironment && (
-                    <span className="checkbox-tooltip-body">
-                        This Environment is not configured to run on devtron worker.
-                    </span>
-                )}
+                    type="checkbox"
+                    className="icon-dim-20"
+                    checked={runInEnv}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={handleRunInEnvCheckbox}
+                    disabled={!formData.isClusterCdActive}
+                />
             </div>
+            </Tippy>
         )
     }
 
