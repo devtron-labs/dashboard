@@ -32,7 +32,7 @@ export default function EmptyStateCIMaterial({
     const getData = () => {
         if (isRepoError) {
             return {
-                img: <ErrorImage/>,
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{repoErrorMsg}</h1>,
                 subtitle: (
                     <a href={repoUrl} rel="noopener noreferrer" target="_blank">
