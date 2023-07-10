@@ -26,7 +26,8 @@ export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (F
 export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
 
 export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the component'
-export const GIT_MATERIAL_IN_USE_MESSAGE = 'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
+export const GIT_MATERIAL_IN_USE_MESSAGE =
+    'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
 export const enum DeleteComponentsName {
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
@@ -49,13 +50,14 @@ export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
-export const DEPLOY_IMAGE_EXTERNALSOURCE='Deploy image from external source'
-export const EDIT_DEPLOYMENT_PIPELINE='Edit deployment pipeline'
-export const CREATE_DEPLOYMENT_PIPELINE='Create deployment pipeline'
-export const ERROR_MESSAGE_FOR_VALIDATION="Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'"
-export const CHARACTER_ERROR_MIN='At least 2 characters required'
+export const DEPLOY_IMAGE_EXTERNALSOURCE = 'Deploy image from external source'
+export const EDIT_DEPLOYMENT_PIPELINE = 'Edit deployment pipeline'
+export const CREATE_DEPLOYMENT_PIPELINE = 'Create deployment pipeline'
+export const ERROR_MESSAGE_FOR_VALIDATION =
+    "Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'"
+export const CHARACTER_ERROR_MIN = 'At least 2 characters required'
 export const CHARACTER_ERROR_MAX = 'Max 50 characters allowed'
-export const COPIED_MESSAGE='Copied!'
+export const COPIED_MESSAGE = 'Copied!'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
@@ -96,8 +98,8 @@ export const ERROR_EMPTY_SCREEN = {
     TAB_NOT_AVAILABLE_POSTFIX: 'is not available for this deployment',
     ONLY_FOR_SUPERADMIN: 'Information on this page is available only to superadmin users.',
     NOT_AUTHORIZED: 'Not authorized',
-    UNAUTHORIZED:'unauthorized',
-    FORBIDDEN:'forbidden',
+    UNAUTHORIZED: 'unauthorized',
+    FORBIDDEN: 'forbidden',
     REQUIRED_MANAGER_ACCESS:
         'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
@@ -115,19 +117,20 @@ export const NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE = [
 // Toast messages
 
 export const TOAST_INFO = {
-  PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
-  DELETION_INITIATED: 'Deletion initiated',
-  RE_SYNC: 'Re-sync initiated. It may take upto 5 minutes for it to complete.'
+    PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
+    DELETION_INITIATED: 'Deletion initiated',
+    RE_SYNC: 'Re-sync initiated. It may take upto 5 minutes for it to complete.',
 }
 
 export const APP_DETAILS = {
-  APP_FULLY_NOT_CONFIGURED: 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
-  JOB_FULLY_NOT_CONFIGURED: {
-    title: 'Finish configuring this job',
-    subTitle: 'This job is not fully configured. Complete the configuration and come back here to run the job.',
-    buttonTitle: 'Go to configurations'
-  },
-  NEED_HELP: 'Need help?'
+    APP_FULLY_NOT_CONFIGURED:
+        'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+    JOB_FULLY_NOT_CONFIGURED: {
+        title: 'Finish configuring this job',
+        subTitle: 'This job is not fully configured. Complete the configuration and come back here to run the job.',
+        buttonTitle: 'Go to configurations',
+    },
+    NEED_HELP: 'Need help?',
 }
 
 // All CTA
@@ -170,60 +173,61 @@ export const APP_GROUP_CI_DETAILS = {
 }
 
 export const DEPLOYMENT_HISTORY_TAB = {
-  STEPS: 'Steps',
-  SOURCE : 'Source',
-  VALUES_YAML: 'values.yaml',
-  HELM_GENERATED_MANIFEST: 'Helm generated manifest',
-  ARTIFACTS: 'Artifacts'
+    STEPS: 'Steps',
+    SOURCE: 'Source',
+    VALUES_YAML: 'values.yaml',
+    HELM_GENERATED_MANIFEST: 'Helm generated manifest',
+    ARTIFACTS: 'Artifacts',
 }
 
 export const CONFIGMAPS_SECRETS = {
-    configmaps: "configmaps",
-    secrets: "secrets"
+    configmaps: 'configmaps',
+    secrets: 'secrets',
 }
 
 export const API_COMPONENTS = {
-    TITLE: "API tokens ",
-    QUESTION_ICON_INFO: "API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.",
-    NEW_API_TITLE: "/ New API token",
-    EDIT_API_TITLE: "/ Edit API token"
+    TITLE: 'API tokens ',
+    QUESTION_ICON_INFO:
+        'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.',
+    NEW_API_TITLE: '/ New API token',
+    EDIT_API_TITLE: '/ Edit API token',
 }
 
 export const EMPTY_STATE_STATUS = {
-    DATA_NOT_AVAILABLE: "Data not available",
+    DATA_NOT_AVAILABLE: 'Data not available',
     API_TOKEN: {
         TITLE: 'No matching results',
         SUBTITLE: "We couldn't find any matching token",
     },
     ARTIFACTS_EMPTY_STATE_TEXTS: {
-      NoFilesFound: 'No files found',
-      BlobStorageNotConfigured: 'Blob storage must be configured to store any files generated by the pipeline',
-      StoreFiles: 'Want to store files?',
-      ConfigureBlobStorage: 'Configure blob storage',
-      NoFilesGenerated: 'No files were generated by the job pipeline.',
-      NoArtifactsGenerated: 'No artifacts generated',
-      NoArtifactsError: 'Errr..!! We couldn’t build your code.',
+        NoFilesFound: 'No files found',
+        BlobStorageNotConfigured: 'Blob storage must be configured to store any files generated by the pipeline',
+        StoreFiles: 'Want to store files?',
+        ConfigureBlobStorage: 'Configure blob storage',
+        NoFilesGenerated: 'No files were generated by the job pipeline.',
+        NoArtifactsGenerated: 'No artifacts generated',
+        NoArtifactsError: 'Errr..!! We couldn’t build your code.',
     },
-    CI_BUILD_HISTORY_PIPELINE_TRIGGER:{
-      TITLE: 'pipeline not triggered',
-      SUBTITLE: 'Pipeline trigger history, details and logs will be available here.',
+    CI_BUILD_HISTORY_PIPELINE_TRIGGER: {
+        TITLE: 'pipeline not triggered',
+        SUBTITLE: 'Pipeline trigger history, details and logs will be available here.',
     },
-    CI_BUILD_HISTORY_LINKED_PIPELINE:{
-      TITLE: 'This is a Linked CI Pipelined',
-      SUBTITLE: 'This is a Linked CI Pipelined',
+    CI_BUILD_HISTORY_LINKED_PIPELINE: {
+        TITLE: 'This is a Linked CI Pipelined',
+        SUBTITLE: 'This is a Linked CI Pipelined',
     },
-    CI_BUILD_HISTORY_NO_PIPELINE:{
-      TITLE: 'No pipeline selected',
-      SUBTITLE: 'Please select a pipeline',
+    CI_BUILD_HISTORY_NO_PIPELINE: {
+        TITLE: 'No pipeline selected',
+        SUBTITLE: 'Please select a pipeline',
     },
     CI_DEATILS_NO_VULNERABILITY_FOUND: {
-      TITLE: 'You’re secure!',
-      SUBTITLE: 'No security vulnerability found for this image.',
+        TITLE: 'You’re secure!',
+        SUBTITLE: 'No security vulnerability found for this image.',
     },
     CI_DETAILS_IMAGE_SCANNED_DISABLED: 'Go to build pipeline configurations and enable ’Scan for vulnerabilities’',
-    CI_DETAILS_IMAGE_NOT_SCANNED:{
-      TITLE: 'Image not scanned',
-      SUBTITLE: 'This build was executed before scanning was enabled for this pipeline.'
+    CI_DETAILS_IMAGE_NOT_SCANNED: {
+        TITLE: 'Image not scanned',
+        SUBTITLE: 'This build was executed before scanning was enabled for this pipeline.',
     },
     CD_DETAILS_NO_ENVIRONMENT: {
         TITLE: 'No environment selected',
@@ -231,22 +235,23 @@ export const EMPTY_STATE_STATUS = {
     },
     CD_DETAILS_NO_DEPLOYMENT: {
         TITLE: 'No deployments',
-        SUBTITLE: 'No deployment history available for the'
+        SUBTITLE: 'No deployment history available for the',
     },
     CHART_DEPLOYMENT_HISTORY: {
-        SUBTITLE: 'Data for previous deployments is not available. History for any new deployment will be available here.',
+        SUBTITLE:
+            'Data for previous deployments is not available. History for any new deployment will be available here.',
     },
-    CHART_GROUP_DEPLOYMENT:{
+    CHART_GROUP_DEPLOYMENT: {
         TITLE: 'No Deployments',
-        SUBTITLE: "You haven't made any deployments"
+        SUBTITLE: "You haven't made any deployments",
     },
-    DEPLOYMENT_DETAILS_SETPS_FAILED:{
-      TITLE: 'Deployment failed',
-      SUBTITLE: 'A new deployment was initiated before this deployment completed.'
+    DEPLOYMENT_DETAILS_SETPS_FAILED: {
+        TITLE: 'Deployment failed',
+        SUBTITLE: 'A new deployment was initiated before this deployment completed.',
     },
-    DEPLOYMENT_DETAILS_SETPS_PROGRESSING:{
-      TITLE: 'Deployment in progress',
-      SUBTITLE: 'This deployment is in progress. Click on Check status to know the live status.'
+    DEPLOYMENT_DETAILS_SETPS_PROGRESSING: {
+        TITLE: 'Deployment in progress',
+        SUBTITLE: 'This deployment is in progress. Click on Check status to know the live status.',
     },
     DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE: {
         SUBTITLE: 'Source code detail is not available',
@@ -259,14 +264,14 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE:
             'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.',
     },
-    TRIGGER_URL:{
-      TITLE: 'No URLs available',
-      SUBTITLE: 'No URLs found in ingress and service resources',
+    TRIGGER_URL: {
+        TITLE: 'No URLs available',
+        SUBTITLE: 'No URLs found in ingress and service resources',
     },
 
     CD_EMPTY_STATE: {
         TITLE: 'Data not available',
-        SUBTITLE: 'Deployed configurations is not available for older deployments'
+        SUBTITLE: 'Deployed configurations is not available for older deployments',
     },
 
     CI_PROGRESS_VIEW: {
@@ -281,7 +286,8 @@ export const EMPTY_STATE_STATUS = {
 
     RENDER_NO_ENVIORNMENT_STATE: {
         TITLE: 'Deployment Metrics',
-        SUBTITLE: 'This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.',
+        SUBTITLE:
+            'This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.',
     },
 
     RENDER_SELECT_ENVIRONMENT_VIEW: {
@@ -315,7 +321,8 @@ export const EMPTY_STATE_STATUS = {
     },
 
     CHART_VALUES_GUIT_VIEW: {
-        SUBTITLE: 'GUI view is not available as values.schema.json file does not exist for the selected version and values.',
+        SUBTITLE:
+            'GUI view is not available as values.schema.json file does not exist for the selected version and values.',
     },
 
     DEVTRON_STACK_MANAGER: {
@@ -347,7 +354,7 @@ export const EMPTY_STATE_STATUS = {
     },
 
     SECURITY_SCANS: {
-        TITLE: "No Scans Performed",
+        TITLE: 'No Scans Performed',
         SUBTITLE: 'No results found for the applied filters.',
     },
 
@@ -359,12 +366,14 @@ export const EMPTY_STATE_STATUS = {
     CONFIGURATION_TAB: {
         TITLE: 'No Configurations',
     },
-    
+
     EXTERNAL_LINK_COMPONENT: {
         TITLE: 'Add external links',
         SUBTITLE: "We couldn't find any matching external link configuration",
     },
-
+    CD_MATERIAL: {
+        TITLE: 'No Image Available',
+    },
 }
 
-export const INVALID_YAML_MSG = "Please provide data in valid YAML format";
+export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'

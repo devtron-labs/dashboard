@@ -58,6 +58,8 @@ import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
+import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1351,7 +1353,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
            <GenericEmptyState
                 image={noartifact}
                 classname="w-300 dc__text-center lh-1-4"
-                title={'No image available'}
+                title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'

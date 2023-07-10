@@ -403,7 +403,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     }
     else if (this.state.view === ViewType.FORM && this.state.size === 0) {
       return (
-          <div className='dc__position-rel' style={{ height: 'calc(100vh - 175px)' }}>
+          <div className="dc__position-rel" style={{ height: 'calc(100vh - 175px)' }}>
               <GenericEmptyState
                 image={AppNotDeployed}
                 title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}

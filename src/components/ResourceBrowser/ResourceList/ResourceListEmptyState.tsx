@@ -12,9 +12,11 @@ export default function ResourceListEmptyState({
 }: ResourceListEmptyStateType) {
     const handleButton = () => {
         return (
-            <button onClick={actionHandler} className="add-link cta flex">
-                {actionButtonText ?? 'Clear filters'}
-            </button>
+            actionHandler && (
+                <button onClick={actionHandler} className="add-link cta flex">
+                    {actionButtonText ?? 'Clear filters'}
+                </button>
+            )
         )
     }
     return (
@@ -23,7 +25,7 @@ export default function ResourceListEmptyState({
             image={imgSource ?? emptyCustomChart}
             title={title ?? 'No resources found'}
             subTitle={subTitle}
-            renderButton={actionHandler && handleButton}
+            renderButton={handleButton}
         />
     )
 }

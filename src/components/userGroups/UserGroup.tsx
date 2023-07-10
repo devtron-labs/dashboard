@@ -1572,7 +1572,7 @@ function SSONotConfiguredState() {
 function NoGroups({ onClick }) {
     const handleButton = () => {
         return (
-            <button data-testid="add-first-permission-group-button" onClick={onClick} className="cta flex">
+            <button onClick={onClick} className="cta flex">
                 <AddIcon className="mr-5" />
                 Add group
             </button>

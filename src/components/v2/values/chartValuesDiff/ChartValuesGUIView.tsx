@@ -229,7 +229,7 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
         return (
             <GenericEmptyState
                 image={Error}
-                title={''}
+                title={""}
                 subTitle={EMPTY_STATE_STATUS.CHART_VALUES_GUIT_VIEW.SUBTITLE}
             />
         )

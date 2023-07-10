@@ -104,7 +104,7 @@ export default function ConnectingToClusterState({
 
     const renderNoClusterSelected = () => {
         return (
-            <div className='dc__position-rel' style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={SELECTE_CLUSTER_STATE_MESSAGING.heading}

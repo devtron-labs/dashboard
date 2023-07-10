@@ -391,16 +391,21 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     renderEmptyState() {
         let env = this.state.environments.find(e => e.value === Number(this.props.match.params.envId));
         let envName = env ? env.label : "";
-        return <div>
-            {this.renderInputs()}
-            <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <GenericEmptyState
-                    image={AppNotDeployed}
-                    title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
-                    subTitle={`There are no deployments in this period on '${envName}'.`}
-                />
+        return (
+            <div>
+                {this.renderInputs()}
+                <div
+                    className="dc__position-rel"
+                    style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 150px' }}
+                >
+                    <GenericEmptyState
+                        image={AppNotDeployed}
+                        title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
+                        subTitle={`There are no deployments in this period on '${envName}'.`}
+                    />
+                </div>
             </div>
-        </div>
+        )
     }
 
     renderNoEnvironmentView() {
