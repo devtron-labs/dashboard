@@ -21,7 +21,7 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
-import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { CDFormType } from '../cdPipeline/cdPipeline.types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')

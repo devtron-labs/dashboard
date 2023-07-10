@@ -16,9 +16,6 @@ import {
     MandatoryPluginDataType,
     MandatoryPluginDetailType,
     PluginDetailType,
-    PluginType,
-    RefVariableStageType,
-    ScriptType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BuildStageVariable,
@@ -53,7 +50,6 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
-import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')

@@ -22,7 +22,6 @@ import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {

@@ -16,7 +16,7 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CDFormType, InputVariablesFromInputListType } from './cdPipeline.types'
+import { CDFormType } from './cdPipeline.types'
 
 export const styles = {
     control: (base, state) => ({

@@ -5,23 +5,20 @@ import {
     Drawer,
     ForceDeleteDialog,
     PluginDetailType,
-    PluginType,
     Progressing,
-    RefVariableStageType,
     RefVariableType,
-    ScriptType,
     ServerErrors,
     showError,
     VariableType,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CDFormType, CD_PATCH_ACTION, Environment, InputVariablesFromInputListType } from './cdPipeline.types'
+import { CDFormType, CD_PATCH_ACTION, Environment } from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -252,13 +249,20 @@ export default function NewCDPipeline({
         _formData: CDFormType,
         activeStageName: string,
         startIndex?: number,
-        isFromMoveTask?: boolean
+        isFromMoveTask?: boolean,
     ): {
         index: number
         calculatedStageVariables: Map<string, VariableType>[]
     } => {
         const _formDataErrorObj = { ...formDataErrorObj }
-        let {stepsLength, _inputVariablesListPerTask} = calculateLastStepDetailsLogic(_formData,activeStageName, _formDataErrorObj, isFromAddNewTask, startIndex, isFromMoveTask)
+        let { stepsLength, _inputVariablesListPerTask } = calculateLastStepDetailsLogic(
+            _formData,
+            activeStageName,
+            _formDataErrorObj,
+            isFromAddNewTask,
+            startIndex,
+            isFromMoveTask,
+        )
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
         setInputVariablesListFromPrevStep(_inputVariablesListFromPrevStep)

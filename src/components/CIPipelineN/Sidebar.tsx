@@ -6,7 +6,6 @@ import {
     FormType,
     Option,
     multiSelectStyles,
-    Checkbox,
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
