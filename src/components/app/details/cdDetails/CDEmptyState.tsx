@@ -26,7 +26,7 @@ export default function CDEmptyState({
 }) {
     const handleCDEmptyStateButton = () => {
         return (
-            actionButtonText && (
+            actionButtonText ? (
                 <div
                     className={`${
                         actionButtonClass ? actionButtonClass : 'cb-5 bcn-0 en-2'
@@ -38,14 +38,14 @@ export default function CDEmptyState({
                     {actionButtonText}
                     {ActionButtonIcon && actionButtonIconRight && <ActionButtonIcon className="icon-dim-16 ml-8" />}
                 </div>
-            )
+            ) : null
         )
     }
     return (
         <div style={{ backgroundColor: 'var(--window-bg)' }}>
           <GenericEmptyState
                 image={imgSource || AppNotDeployed}
-                classname='fs-16'
+                classname="fs-16"
                 title={title ? title : EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
                 subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
                 renderButton={handleCDEmptyStateButton}

@@ -161,12 +161,12 @@ export const GitChanges = ({
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
     const EmptyViewButton = () => {
         return (
-            link && (
+            link ? (
                 <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
                     <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
                     {linkText}
                 </NavLink>
-            )
+            ) : null
         )
     }
     return (
