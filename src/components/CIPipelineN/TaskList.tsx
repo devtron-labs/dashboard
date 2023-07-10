@@ -338,7 +338,7 @@ export function TaskList({
 
     return (
         <>
-            <div className={`task-container pr-20 ${withWarning ? 'with-warning' : ''}`}>
+            <div className={`pr-20 ${withWarning ? 'with-warning' : ''}`}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div

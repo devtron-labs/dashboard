@@ -158,6 +158,7 @@ export function Sidebar({
                 ...base,
                 top: 'auto',
                 width: '240px',
+                marginTop: '4px'
             }),
             dropdownIndicator: (base, state) => ({
                 ...base,
@@ -265,13 +266,14 @@ export function Sidebar({
                 `}
             >
                 Execute tasks in application environment
-                <Checkbox
-                    isChecked={runInEnv}
-                    rootClassName="p-0"
-                    value={CHECKBOX_VALUE.CHECKED}
-                    disabled={!formData.isClusterCdActive}
-                    onChange={handleRunInEnvCheckbox}
-                />
+                <input
+                        type="checkbox"
+                        className='icon-dim-20'
+                        checked={runInEnv}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={handleRunInEnvCheckbox}
+                        disabled={!formData.isClusterCdActive}
+                    />
                 {!isVirtualEnvironment && (
                     <span className="checkbox-tooltip-body">
                         This Environment is not configured to run on devtron worker.
@@ -317,7 +319,7 @@ export function Sidebar({
     }
 
     return (
-        <div className="dc__position-rel">
+        <div className="dc__position-rel h-100 dc__overflow-auto">
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
                     {configurationType === ConfigurationType.GUI && (
@@ -335,12 +337,14 @@ export function Sidebar({
                                 />
                             )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList
-                                withWarning={showMandatoryWarning()}
-                                mandatoryPluginsMap={mandatoryPluginsMap}
-                                setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                isJobView={isJobView}
-                            />
+                            <div className="pb-16 sidebar-action-container-border">
+                                <TaskList
+                                    withWarning={showMandatoryWarning()}
+                                    mandatoryPluginsMap={mandatoryPluginsMap}
+                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                    isJobView={isJobView}
+                                />
+                            </div>
                             {isCdPipeline && triggerPipelineMode()}
                         </>
                     )}
@@ -377,14 +381,16 @@ export function Sidebar({
             )}
             {isCdPipeline && activeStageName !== BuildStageVariable.Build && renderConfigSecret()}
 
-            {!isCdPipeline && <div className="sidebar-action-container pr-20">
-                <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
-                <div>
-                    <a className="dc__link fw-6" href={helpData.docLink} target="_blank" rel="noreferrer noopener">
-                        {helpData.helpText}
-                    </a>
+            {!isCdPipeline && (
+                <div className="sidebar-action-container pr-20">
+                    <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
+                    <div>
+                        <a className="dc__link fw-6" href={helpData.docLink} target="_blank" rel="noreferrer noopener">
+                            {helpData.helpText}
+                        </a>
+                    </div>
                 </div>
-            </div>}
+            )}
         </div>
     )
 }

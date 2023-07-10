@@ -64,12 +64,10 @@ export const NUMBER_OF_APPROVALS = 6
 
 export const ValueContainer = (props) => {
     return (
-        <components.ValueContainer {...props}>
-            <div className="flex left w-100">
-            <Search className='icon-dim-16 scn-6 mr-8' />
-               {props.children}
-            </div>
-        </components.ValueContainer>
+        <span className="flex left w-100">
+            <Search className="icon-dim-16 scn-6 ml-8" />
+            <components.ValueContainer {...props}>{props.children}</components.ValueContainer>
+        </span>
     )
 }
 
