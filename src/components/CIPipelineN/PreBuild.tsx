@@ -21,7 +21,7 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
-import { CDFormType } from '../cdPipeline/cdPipeline.types'
+import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -39,6 +39,8 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
+        inputVariablesListFromPrevStep,
+        setInputVariablesListFromPrevStep,
     }: {
         formData: FormType | CDFormType
         setFormData: React.Dispatch<React.SetStateAction<FormType | CDFormType>>
@@ -52,13 +54,20 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         calculateLastStepDetail: (
             isFromAddNewTask: boolean,
-            _formData: FormType | CDFormType,
+            _form: FormType | CDFormType,
             activeStageName: string,
+            formDataErrorObj: FormErrorObjectType,
+            setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
             startIndex?: number,
+            isFromMoveTask?: boolean,
         ) => {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
         }
+        inputVariablesListFromPrevStep: InputVariablesFromInputListType
+        setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void
         validateStage: (stageName: string, _formData: FormType | CDFormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
@@ -133,7 +142,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 pluginRefStepDetail: { inputVariables: [] },
             }
             if (_form[activeStageName].steps.length > selectedTaskIndex) {
-                calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
+                calculateLastStepDetail(false, _form, activeStageName ,formDataErrorObj, setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep, selectedTaskIndex)
             }
         }
         setFormData(_form)

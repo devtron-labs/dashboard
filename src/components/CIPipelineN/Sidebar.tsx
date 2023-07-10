@@ -34,7 +34,6 @@ export function Sidebar({
         formData,
         setFormData,
         configurationType,
-        setConfigurationType,
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
@@ -43,6 +42,7 @@ export function Sidebar({
         validateStage,
         isCdPipeline,
         configMapAndSecrets,
+        inputVariablesListFromPrevStep,
         isVirtualEnvironment,
         getPrePostStageInEnv,
     } = useContext(pipelineContext)
@@ -84,11 +84,13 @@ export function Sidebar({
             false,
             _formData,
             BuildStageVariable.PreBuild,
+            formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep
         ).calculatedStageVariables
         const postBuildVariable = calculateLastStepDetail(
             false,
             _formData,
-            BuildStageVariable.PostBuild,
+            BuildStageVariable.PostBuild
+            ,formDataErrorObj,setFormDataErrorObj,inputVariablesListFromPrevStep,setInputVariablesListFromPrevStep,
         ).calculatedStageVariables
         setInputVariablesListFromPrevStep({
             preBuildStage: preBuildVariable,

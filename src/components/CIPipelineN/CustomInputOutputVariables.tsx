@@ -22,6 +22,7 @@ import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -33,6 +34,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
+        inputVariablesListFromPrevStep,
+        setInputVariablesListFromPrevStep,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -42,7 +45,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
             isFromAddNewTask: boolean,
             _formData: FormType,
             activeStageName: string,
+            formDataErrorObj: FormErrorObjectType,
+            setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
             startIndex?: number,
+            isFromMoveTask?: boolean,
         ) => {
             index: number
             calculatedStageVariables: Map<string, VariableType>[]
@@ -50,6 +58,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+        inputVariablesListFromPrevStep: InputVariablesFromInputListType
+        setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
@@ -111,7 +121,16 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const handleBlur = () => {
         if (type === PluginVariableType.OUTPUT) {
             const _formData = { ...formData }
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            calculateLastStepDetail(
+                false,
+                _formData,
+                activeStageName,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
+                selectedTaskIndex,
+            )
             setFormData(_formData)
         }
     }
@@ -120,7 +139,16 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            calculateLastStepDetail(
+                false,
+                _formData,
+                activeStageName,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
+                selectedTaskIndex,
+            )
         }
         if (
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
@@ -155,7 +183,16 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
             selectedValue.label
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            calculateLastStepDetail(
+                false,
+                _formData,
+                activeStageName,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
+                selectedTaskIndex,
+            )
         }
         setFormData(_formData)
     }

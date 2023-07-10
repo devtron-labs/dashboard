@@ -20,6 +20,7 @@ import {
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -41,6 +42,7 @@ export function TaskList({
         setFormDataErrorObj,
         validateTask,
         validateStage,
+        inputVariablesListFromPrevStep,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -52,6 +54,10 @@ export function TaskList({
             isFromAddNewTask: boolean,
             _formData: FormType,
             activeStageName: string,
+            formDataErrorObj: any,
+            setFormDataErrorObj: (formDataError: any) => void,
+            inputVariablesListFromPrevStep: InputVariablesFromInputListType,
+            setInputVariablesListFromPrevStep: (inputVariables: InputVariablesFromInputListType) => void,
             startIndex?: number,
             isFromMoveTask?: boolean,
         ) => {
@@ -62,6 +68,7 @@ export function TaskList({
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
         validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
         validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
+        inputVariablesListFromPrevStep: InputVariablesFromInputListType
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -97,6 +104,10 @@ export function TaskList({
             false,
             _formData,
             activeStageName,
+            formDataErrorObj,
+            setFormDataErrorObj,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
             dragItemStartIndex < index ? dragItemStartIndex : index,
         )
         validateCurrentTask(index)
@@ -124,7 +135,16 @@ export function TaskList({
         const newListLength = newList.length
         const newListIndex = newListLength > 1 ? newListLength - 1 : 0
         const newTaskIndex = taskIndex >= newListLength ? newListIndex : taskIndex
-        calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
+        calculateLastStepDetail(
+            false,
+            _formData,
+            activeStageName,
+            formDataErrorObj,
+            setFormDataErrorObj,
+            inputVariablesListFromPrevStep,
+            setInputVariablesListFromPrevStep,
+            newTaskIndex,
+        )
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
@@ -256,12 +276,20 @@ export function TaskList({
                 false,
                 _formData,
                 BuildStageVariable.PreBuild,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
                 newTaskIndex,
             ).calculatedStageVariables
             postBuildVariable = calculateLastStepDetail(
                 true,
                 _formData,
                 BuildStageVariable.PostBuild,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
                 0,
             ).calculatedStageVariables
         } else {
@@ -270,6 +298,10 @@ export function TaskList({
                 false,
                 _formData,
                 BuildStageVariable.PreBuild,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
                 preTaskLength > 1 ? preTaskLength - 1 : 0,
                 true,
             ).calculatedStageVariables
@@ -277,6 +309,10 @@ export function TaskList({
                 false,
                 _formData,
                 BuildStageVariable.PostBuild,
+                formDataErrorObj,
+                setFormDataErrorObj,
+                inputVariablesListFromPrevStep,
+                setInputVariablesListFromPrevStep,
                 newTaskIndex,
             ).calculatedStageVariables
         }
