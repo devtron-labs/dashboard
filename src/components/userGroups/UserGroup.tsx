@@ -21,7 +21,6 @@ import {
     ErrorScreenNotAuthorized,
     get,
     InfoColourBar,
-    EmptyState,
     Option,
     MultiValueContainer,
     MultiValueRemove,
@@ -30,6 +29,7 @@ import {
     not,
     noop,
     useEffectAfterMount,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
@@ -77,6 +77,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import {
+    EMPTY_STATE_STATUS,
     ERROR_EMPTY_SCREEN,
     SSO_NOT_CONFIGURED_STATE_TEXTS,
     TOAST_ACCESS_DENIED,
@@ -1518,22 +1519,21 @@ export function GroupRow({ name, description, removeRow }) {
 }
 
 function NoUsers({ onClick }) {
+    const handleNoUserButton = () => {
+        return (
+            <button onClick={onClick} className="cta flex">
+                <AddIcon className="mr-5" />
+                Add user
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No users</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Add users and assign group or direct permissions</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={onClick} className="cta flex">
-                    <AddIcon className="mr-5" />
-                    Add user
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            title={EMPTY_STATE_STATUS.NO_USER.TITLE}
+            subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
+            renderButton={handleNoUserButton}
+        />
     )
 }
 
@@ -1548,70 +1548,69 @@ const renderEmptySSOMessage = (): JSX.Element => {
 
 function SSONotConfiguredState() {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">
-                    {SSO_NOT_CONFIGURED_STATE_TEXTS.title}
-                </h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle className="w-300 fw-400 fs-13">
-                {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
-                <InfoColourBar
-                    message={renderEmptySSOMessage()}
-                    classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
-                    linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
-                    redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
-                    internalLink={true}
-                    Icon={ErrorIcon}
-                />
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            classname="fs-16 dc__align-center lh-24 mb-8-imp mt-20"
+            title={SSO_NOT_CONFIGURED_STATE_TEXTS.title}
+            subTitle={
+                <>
+                    {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
+                    <InfoColourBar
+                        message={renderEmptySSOMessage()}
+                        classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
+                        linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
+                        redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
+                        internalLink={true}
+                        Icon={ErrorIcon}
+                    />
+                </>
+            }
+        />
     )
 }
 
 function NoGroups({ onClick }) {
+    const handleButton = () => {
+        return (
+            <button onClick={onClick} className="cta flex">
+                <AddIcon className="mr-5" />
+                Add group
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 data-testid="empty-permission-groups-title">No groups</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Groups allow you to combine permissions and easily assign them to users
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button data-testid="add-first-permission-group-button" onClick={onClick} className="cta flex">
-                    <AddIcon className="mr-5" />
-                    Add group
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
+            subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
+            isButtonAvailable={true}
+            renderButton={handleButton}
+        />
     )
 }
 
 function SearchEmpty({ searchString, setSearchString }) {
+    const handleSearchEmptyButton = () => {
+        return (
+            <button onClick={(e) => setSearchString('')} className="cta secondary">
+                Clear search
+            </button>
+        )
+    }
+
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptySearch} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No matching results</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                We couldn’t find any result for ”<b>{searchString}</b>”
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={(e) => setSearchString('')} className="cta secondary">
-                    Clear search
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptySearch}
+            title={EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
+            subTitle={
+                <>
+                    We couldn’t find any result for 
+                    {<b>{searchString}</b>}
+                </>
+            }
+            isButtonAvailable={true}
+            renderButton={handleSearchEmptyButton}
+        />
     )
 }
 
