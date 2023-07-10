@@ -9,10 +9,11 @@ import {
 import { UpdateApplicationButton } from './ChartValuesView.component'
 import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
 import YAML from 'yaml'
-import { Progressing, CHECKBOX_VALUE, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, CHECKBOX_VALUE, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const getGUIWidget = (
     props: any,
@@ -221,24 +222,17 @@ const renderGUIWidget = (
     return null
 }
 
-const SchemaNotAvailable = (): JSX.Element => {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <Error className="icon-dim-20 mb-10" />
-            </EmptyState.Image>
-            <EmptyState.Subtitle>
-                GUI view is not available as values.schema.json file does not exist for the selected version and values
-            </EmptyState.Subtitle>
-        </EmptyState>
-    )
-}
-
 const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
     if (props.fetchingSchemaJson) {
         return <Progressing size={32} fullHeight />
     } else if (!props.schemaJson?.size) {
-        return <SchemaNotAvailable />
+        return (
+            <GenericEmptyState
+                image={Error}
+                title=""
+                subTitle={EMPTY_STATE_STATUS.CHART_VALUES_GUIT_VIEW.SUBTITLE}
+            />
+        )
     }
 
     return (

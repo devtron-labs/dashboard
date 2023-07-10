@@ -28,7 +28,6 @@ import {
     showError,
     Progressing,
     ConditionalWrap,
-    EmptyState,
     InfoColourBar,
     noop,
     MaterialInfo,
@@ -39,6 +38,7 @@ import {
     ScanVulnerabilitiesTable,
     ImageTagButton,
     ImageTagsContainer,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -58,6 +58,8 @@ import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
+import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1348,21 +1350,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={noartifact} alt="" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                        No image available
-                    </h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    {this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
+           <GenericEmptyState
+                image={noartifact}
+                classname="w-300 dc__text-center lh-1-4"
+                title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
+                subTitle={
+                    this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'
                         : 'Please Trigger CI Pipeline and find the image here for deployment.'}
-                </EmptyState.Subtitle>
-            </EmptyState>
+            />
         )
     }
 
