@@ -7,7 +7,6 @@ import {
     Checkbox,
     RadioGroupItem,
     RadioGroup,
-    EmptyState,
     InfoColourBar,
     Toggle,
     GenericEmptyState,
@@ -38,7 +37,7 @@ import { toast } from 'react-toastify'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
-import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
@@ -854,8 +853,8 @@ export default function ClusterForm({
                 >
                     <GenericEmptyState
                         image={MechanicalOperation}
-                        title="Trying to connect to Cluster"
-                        subTitle="Please wait while the kubeconfig is verified and cluster details are fetched."
+                        title={EMPTY_STATE_STATUS.LOADING_CLUSTER.TITLE}
+                        subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
                     />
                 </div>
                 <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
@@ -872,17 +871,11 @@ export default function ClusterForm({
 
     const NoMatchingResults = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={NoResults} width="250" height="200" alt="No matching results" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h2 data-testid="no_matching_result" className="fs-16 fw-4 c-9">
-                        No matching results
-                    </h2>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>We couldn't find any matching cluster</EmptyState.Subtitle>
-            </EmptyState>
+            <GenericEmptyState
+                image={NoResults}
+                title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
+                subTitle={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.SUBTITLE}
+            />
         )
     }
 
