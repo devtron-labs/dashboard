@@ -309,7 +309,7 @@ export function TaskList({
 
     return (
         <>
-            <div className={`pr-20 ${withWarning ? 'with-warning' : ''}`}>
+            <div className={withWarning ? 'with-warning' : ''}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -391,7 +391,7 @@ export function TaskList({
             </div>
             <div
                 data-testid="sidebar-add-task-button"
-                className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20"
+                className="task-item add-task-container cb-5 fw-6 fs-13 flexbox"
                 onClick={addNewTask}
             >
                 <Add className="add-icon" /> Add task

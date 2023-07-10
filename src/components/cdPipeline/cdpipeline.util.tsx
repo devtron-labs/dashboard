@@ -1,11 +1,22 @@
-import React from 'react';
-import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg';
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
-import { components } from 'react-select';
-import { ReactComponent as Search} from '../../assets/icons/ic-nav-search.svg'
-import { BuildStageVariable, ConditionType, FormType, PluginType, RefVariableStageType, RefVariableType, ScriptType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib';
-import { ValidationRules } from '../ciPipeline/validationRules';
-import { CDFormType, InputVariablesFromInputListType } from './cdPipeline.types';
+import React from 'react'
+import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
+import { components } from 'react-select'
+import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
+import {
+    BuildStageVariable,
+    ConditionType,
+    FormType,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
+    ScriptType,
+    StepType,
+    TaskErrorObj,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ValidationRules } from '../ciPipeline/validationRules'
+import { CDFormType, InputVariablesFromInputListType } from './cdPipeline.types'
 
 export const styles = {
     control: (base, state) => ({
@@ -14,50 +25,57 @@ export const styles = {
         border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
     }),
     menu: (base, state) => {
-        return ({
+        return {
             ...base,
-            backgroundColor: state.Selected ? "white" : "white"
-        })
+            backgroundColor: state.Selected ? 'white' : 'white',
+        }
     },
     singleValue: (base, state) => {
-        return ({
+        return {
             ...base,
-            color: 'var(--N900)'
-        })
+            color: 'var(--N900)',
+        }
     },
-    multiValue: (base ,state) => {
-        return({
+    multiValue: (base, state) => {
+        return {
             ...base,
             backgroundColor: 'var(--N0)',
             border: '1px solid var(--N200)',
-            borderRadius: '4px'
-        })
+            borderRadius: '4px',
+        }
     },
     option: (base, state) => {
-        return ({
+        return {
             ...base,
             color: 'var(--N900)',
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
             paddingLeft: '8px',
-        })
-    }
+        }
+    },
 }
 
 export function Option(props) {
-    const { selectOption, data } = props;
-    const style = { flex: '0 0' , alignText: 'left' }
-    const onClick = (e) => selectOption(data);
-    return <div className="flex left" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-        {props.isSelected ? <Check onClick={onClick} className="icon-dim-16" style={style} />
-            : <span onClick={onClick} style={style} />}
-        <components.Option {...props} />
-    </div>
-};
+    const { selectOption, data } = props
+    const style = { flex: '0 0', alignText: 'left' }
+    const onClick = (e) => selectOption(data)
+    return (
+        <div className="flex left" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
+            {props.isSelected ? (
+                <Check onClick={onClick} className="icon-dim-16" style={style} />
+            ) : (
+                <span onClick={onClick} style={style} />
+            )}
+            <components.Option {...props} />
+        </div>
+    )
+}
 
 export function DropdownIndicator(props) {
-    return <components.DropdownIndicator {...props}>
-        <ArrowDown className="icon-dim-20 icon-n5" />
-    </components.DropdownIndicator>
+    return (
+        <components.DropdownIndicator {...props}>
+            <ArrowDown className="icon-dim-20 icon-n5" />
+        </components.DropdownIndicator>
+    )
 }
 
 export const NUMBER_OF_APPROVALS = 6
@@ -136,16 +154,13 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
                             taskData.inlineStepDetail['mountCodeToContainerPath'],
                         )
                         taskErrorObj.isValid =
-                            taskErrorObj.isValid &&
-                            taskErrorObj.inlineStepDetail['mountCodeToContainerPath'].isValid
+                            taskErrorObj.isValid && taskErrorObj.inlineStepDetail['mountCodeToContainerPath'].isValid
                     }
 
                     if (taskData.inlineStepDetail['mountDirectoryFromHost']) {
                         taskErrorObj.inlineStepDetail['mountPathMap'] = []
                         taskData.inlineStepDetail['mountPathMap']?.forEach((element, index) => {
-                            taskErrorObj.inlineStepDetail['mountPathMap'].push(
-                                validationRules.mountPathMap(element),
-                            )
+                            taskErrorObj.inlineStepDetail['mountPathMap'].push(validationRules.mountPathMap(element))
                             taskErrorObj.isValid =
                                 taskErrorObj.isValid && taskErrorObj.inlineStepDetail['mountPathMap'][index].isValid
                         })
@@ -171,9 +186,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
                         element.conditionOnVariable = ''
                     }
                 }
-                taskErrorObj[currentStepTypeVariable]['conditionDetails'].push(
-                    validationRules.conditionDetail(element),
-                )
+                taskErrorObj[currentStepTypeVariable]['conditionDetails'].push(validationRules.conditionDetail(element))
                 taskErrorObj.isValid =
                     taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable]['conditionDetails'][index].isValid
             })
@@ -217,4 +230,100 @@ export const checkUniqueness = (formData): boolean => {
 
     // Below code is to check if all the task name from pre-stage and post-stage is unique
     return stageNameList.length === new Set(stageNameList).size
+}
+
+export const calculateLastStepDetailsLogic = (
+    _formData: FormType | CDFormType,
+    activeStageName: string,
+    _formDataErrorObj: any,
+    isFromAddNewTask,
+    startIndex: number,
+    isFromMoveTask: boolean,
+) => {
+    if (!_formData[activeStageName].steps) {
+        _formData[activeStageName].steps = []
+    }
+    const stepsLength = _formData[activeStageName].steps?.length
+    let _outputVariablesFromPrevSteps: Map<string, VariableType> = new Map(),
+        _inputVariablesListPerTask: Map<string, VariableType>[] = []
+    for (let i = 0; i < stepsLength; i++) {
+        if (!_formDataErrorObj[activeStageName].steps[i])
+            _formDataErrorObj[activeStageName].steps.push({ isValid: true })
+        _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+        _formData[activeStageName].steps[i].index = i + 1
+        if (!_formData[activeStageName].steps[i].stepType) {
+            continue
+        }
+
+        if (
+            _formData[activeStageName].steps[i].stepType === PluginType.INLINE &&
+            _formData[activeStageName].steps[i].inlineStepDetail.scriptType === ScriptType.CONTAINERIMAGE &&
+            _formData[activeStageName].steps[i].inlineStepDetail.script &&
+            !_formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript
+        ) {
+            _formData[activeStageName].steps[i].inlineStepDetail.isMountCustomScript = true
+        }
+        const currentStepTypeVariable =
+            _formData[activeStageName].steps[i].stepType === PluginType.INLINE
+                ? 'inlineStepDetail'
+                : 'pluginRefStepDetail'
+        if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable]) {
+            _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable] = {
+                inputVariables: [],
+                outputVariables: [],
+            }
+        }
+        if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+            _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].inputVariables = []
+        }
+        if (!_formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables) {
+            _formDataErrorObj[activeStageName].steps[i][currentStepTypeVariable].outputVariables = []
+        }
+        const outputVariablesLength =
+            _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables?.length
+        for (let j = 0; j < outputVariablesLength; j++) {
+            if (_formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name) {
+                _outputVariablesFromPrevSteps.set(
+                    i + 1 + '.' + _formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j].name,
+                    {
+                        ..._formData[activeStageName].steps[i][currentStepTypeVariable].outputVariables[j],
+                        refVariableStepIndex: i + 1,
+                        refVariableStage:
+                            activeStageName === BuildStageVariable.PreBuild
+                                ? RefVariableStageType.PRE_CI
+                                : RefVariableStageType.POST_CI,
+                    },
+                )
+            }
+        }
+        if (
+            !isFromAddNewTask &&
+            i >= startIndex &&
+            _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables
+        ) {
+            for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
+                const variableDetail = _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
+                if (
+                    variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
+                    ((variableDetail.refVariableStage ===
+                        (activeStageName === BuildStageVariable.PreBuild
+                            ? RefVariableStageType.PRE_CI
+                            : RefVariableStageType.POST_CI) &&
+                        variableDetail.refVariableStepIndex > startIndex) ||
+                        (activeStageName === BuildStageVariable.PreBuild &&
+                            variableDetail.refVariableStage === RefVariableStageType.POST_CI))
+                ) {
+                    variableDetail.refVariableStepIndex = 0
+                    variableDetail.refVariableName = ''
+                    variableDetail.variableType = RefVariableType.NEW
+                    delete variableDetail.refVariableStage
+                }
+            }
+        }
+    }
+    if (isFromAddNewTask || isFromMoveTask) {
+        _inputVariablesListPerTask.push(new Map(_outputVariablesFromPrevSteps))
+    }
+
+    return { stepsLength, _inputVariablesListPerTask }
 }

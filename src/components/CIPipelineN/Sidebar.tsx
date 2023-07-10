@@ -156,8 +156,8 @@ export function Sidebar({
             menu: (base, state) => ({
                 ...base,
                 top: 'auto',
-                width: '240px',
                 marginTop: '4px',
+
             }),
             dropdownIndicator: (base, state) => ({
                 ...base,
@@ -167,7 +167,7 @@ export function Sidebar({
         }
 
         const onBlur = () => {
-            setAddConfigSecret(false)
+            setAddConfigSecret(true)
         }
 
         const onClick = () => {
@@ -180,7 +180,7 @@ export function Sidebar({
         }
 
         return (
-            <div className="pr-20">
+            <>
                 <div className="sidebar-action-container-border pb-12">
                     {!addConfigSecret ? (
                         <div className="flex flex-justify pt-6 pb-6">
@@ -188,29 +188,31 @@ export function Sidebar({
                             <Add className="fcb-5 icon-dim-20 cursor" onClick={onClick} />
                         </div>
                     ) : (
-                        <ReactSelect
-                            options={configMapAndSecrets}
-                            value={valueList}
-                            placeholder="Search"
-                            menuIsOpen={addConfigSecret}
-                            autoFocus={addConfigSecret}
-                            className="basic-multi-select"
-                            onBlur={onBlur}
-                            closeMenuOnSelect={false}
-                            hideSelectedOptions={false}
-                            controlShouldRenderValue={false}
-                            components={{
-                                ClearIndicator: null,
-                                ValueContainer: ValueContainer,
-                                IndicatorSeparator: null,
-                                Option,
-                                IndicatorsContainer: () => null,
-                                GroupHeading: (props) => <GroupHeading {...props} hideClusterName />,
-                            }}
-                            styles={tempMultiSelectStyles}
-                            onChange={addConfigSecrets}
-                            isMulti
-                        />
+                        <div className="pl-2 pr-2">
+                            <ReactSelect
+                                options={configMapAndSecrets}
+                                value={valueList}
+                                placeholder="Search"
+                                menuIsOpen={addConfigSecret}
+                                autoFocus={addConfigSecret}
+                                className="basic-multi-select"
+                                onBlur={onBlur}
+                                closeMenuOnSelect={false}
+                                hideSelectedOptions={false}
+                                controlShouldRenderValue={false}
+                                components={{
+                                    ClearIndicator: null,
+                                    ValueContainer: ValueContainer,
+                                    IndicatorSeparator: null,
+                                    Option,
+                                    IndicatorsContainer: () => null,
+                                    GroupHeading: (props) => <GroupHeading {...props} hideClusterName />,
+                                }}
+                                styles={tempMultiSelectStyles}
+                                onChange={addConfigSecrets}
+                                isMulti
+                            />
+                        </div>
                     )}
                     {valueList.length > 0 && (
                         <div className="">
@@ -230,7 +232,7 @@ export function Sidebar({
                     )}
                 </div>
                 {renderExecuteTask()}
-            </div>
+            </>
         )
     }
 
@@ -285,7 +287,7 @@ export function Sidebar({
         const triggerValue = isPreBuildTab ? formData.preBuildStage.triggerType : formData.postBuildStage.triggerType
 
         return (
-            <div className="sidebar-action-container sidebar-action-container-border pr-20">
+            <div className="sidebar-action-container sidebar-action-container-border">
                 <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">
                     Trigger {isPreBuildTab ? 'PRE' : 'POST'}-DEPLOYMENT STAGE
                 </div>
