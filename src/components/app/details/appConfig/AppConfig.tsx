@@ -54,6 +54,8 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
+import ConfigMapList from '../../../ConfigMapSecret/ConfigMapList'
+import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -367,7 +369,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 _lastConfiguredStage = lastConfiguredStage.stageName
                 _configs = isUnlocked(_lastConfiguredStage)
             }
-            
+
         }
 
         return {
@@ -767,16 +769,12 @@ function AppComposeRouter({
                                     />
                                 )}
                             />,
-                            <Route
-                                key={`${path}/${URLS.APP_CM_CONFIG}`}
-                                path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
-                            />,
-                            <Route
-                                key={`${path}/${URLS.APP_CS_CONFIG}`}
-                                path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
-                            />,
+                            <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                                <ConfigMapList />
+                            </Route>,
+                            <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                                <SecretList />
+                            </Route>,
                             <Route
                                 key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                                 path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}

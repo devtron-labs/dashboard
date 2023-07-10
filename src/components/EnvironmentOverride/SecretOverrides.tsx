@@ -82,7 +82,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
                                     appChartRef={appChartRef}
                                     name={name}
                                     type="secret"
-                                    label={global ? (data || esoSecretData.secretStore || secretData ? 'modified' : '') : 'env'}
+                                    label={global ? (data || esoSecretData.secretStore || secretData ? 'Overridden' : 'Inheriting') : 'env'}
                                 />
                             )
                         })}
