@@ -319,7 +319,7 @@ export function Sidebar({
     }
 
     return (
-        <div className="dc__position-rel h-100">
+        <div className="dc__position-rel">
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
                     {configurationType === ConfigurationType.GUI && (
