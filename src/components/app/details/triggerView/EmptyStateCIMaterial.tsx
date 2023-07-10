@@ -8,7 +8,6 @@ import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { LoadingText } from '../../../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
