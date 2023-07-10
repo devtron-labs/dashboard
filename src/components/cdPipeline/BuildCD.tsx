@@ -632,7 +632,7 @@ export default function BuildCD({
 
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isVirtualEnvironment && formData.allowedDeploymentTypes.length>0 && renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
-                {ManualApproval && (
+                {isAdvanced && ManualApproval && (
                     <>
                         <div className="divider mt-12 mb-12" />
                         <ManualApproval
