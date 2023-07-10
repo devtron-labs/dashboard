@@ -92,7 +92,7 @@ export default function NewCDPipeline({
     const text = cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const [formData, setFormData] = useState<CDFormType>({
         name: '',
-        ciPipelineId: isWebhookCD ? 0 : +ciPipelineId,
+        ciPipelineId: isWebhookCD ? null : +ciPipelineId,
         environmentId: 0,
         environments: [],
         environmentName: '',
