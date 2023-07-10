@@ -265,7 +265,7 @@ export function Sidebar({
             content="This Environment is not configured to run on devtron worker."
         >
             <div
-                className={`flex flex-justify fs-13 fw-4 mt-12 mb-12
+                className={`flexbox flex-justify fs-13 fw-4 mt-12 mb-12
                     ${formData.isClusterCdActive ? 'dc__position-rel' : 'dc__position-rel'}
                 `}
             >
