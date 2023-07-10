@@ -11,7 +11,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager as ErrorScreen,
-    EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';

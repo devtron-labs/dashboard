@@ -7,7 +7,6 @@ import {
     Checkbox,
     RadioGroupItem,
     RadioGroup,
-    EmptyState,
     InfoColourBar,
     Toggle,
     GenericEmptyState,

@@ -22,7 +22,7 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
