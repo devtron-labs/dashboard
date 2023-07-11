@@ -63,6 +63,7 @@ export interface AppConfigNavigationProps {
     getRepo: string
     isJobView: boolean
     hideConfigHelp: boolean
+    workflowsRes?: WorkflowResult
 }
 
 export interface AppComposeRouterProps {
@@ -91,6 +92,7 @@ export interface EnvironmentOverridesProps {
     ciPipelines?: any[]
     reload?: () => void
     appId?: string
+    workflowsRes?: WorkflowResult
 }
 
 export interface EnvironmentOverrideRouteProps {
@@ -100,6 +102,7 @@ export interface EnvironmentOverrideRouteProps {
     ciPipelines?: any[]
     reload?: () => void
     appId?: string
+    workflowsRes?: WorkflowResult
 }
 
 export interface NextButtonProps {

@@ -67,6 +67,7 @@ import { DropdownIndicator } from '../../../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading } from '../../../CIPipelineN/Constants'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
+import { WorkflowResult } from '../triggerView/types'
 
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
@@ -539,6 +540,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                             getRepo={showRepoOnDelete}
                             isJobView={isJobView}
                             hideConfigHelp={hideConfigHelp}
+                            workflowsRes={state.workflowsRes}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -623,6 +625,7 @@ function Navigation({
     getRepo,
     isJobView,
     hideConfigHelp,
+    workflowsRes
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
@@ -673,7 +676,7 @@ function Navigation({
                         </ConditionalWrap>
                     )
                 } else {
-                    return <EnvironmentOverrideRouter key={item.title} isJobView={isJobView} />
+                    return <EnvironmentOverrideRouter key={item.title} isJobView={isJobView} workflowsRes={workflowsRes}/>
                 }
             })}
 
@@ -872,7 +875,7 @@ const EnvOverridesHelpNote = () => {
     )
 }
 
-const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines, reload, appId }: EnvironmentOverrideRouteProps) => {
+const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines, reload, appId, workflowsRes }: EnvironmentOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const location = useLocation()
     const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
@@ -892,7 +895,8 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
     }
 
     const handleDeleteConfirmation = () => {
-        setConfirmationDialog(false)
+        setDeleteView(false)
+        deleteEnvHandler()
     }
 
     const handleCancelDelete = () => {
@@ -913,10 +917,23 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
             })
     }
 
+    const handleViewPipeline = () =>{
+        setDeleteView(false)
+    }
+
 
     const showDeleteDialog = (pipeline: any): JSX.Element => {
         
-        
+        const workFlows = workflowsRes?.workflows
+        let workFlow
+        workFlows?.forEach((workflow) => {
+            workflow.tree.forEach((ciPipeline) => {
+                if(!workFlow){
+                    workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline 
+                }
+            })
+        })
+        const path = `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/build`
         return (!showConfirmationDialog ? <DeleteDialog
             title={`Delete configurations for environment '${envOverride.environmentName}'?`}
             delete={deleteEnvHandler}
@@ -936,7 +953,8 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                     {`Pipeline ‘${pipeline.name}‘  is using configurations for environment ‘${envOverride.environmentName}’.`}
                 </p>
                 <p className="fs-13 cn-7 lh-1-54">
-                    Deleting the environment configurations may impact the pipeline
+                    Deleting the environment configurations may impact the pipeline.
+                    <Link to={path} onClick={handleViewPipeline} className="ml-2">View pipeline</Link>
                 </p>
                 <ConfirmationDialog.ButtonGroup>
                     <button
@@ -948,7 +966,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                     </button>
                     <button
                         onClick={handleDeleteConfirmation}
-                        className="cta ml-12 dc__no-decor"
+                        className="cta delete cta-cd-delete-modal ml-16"
                     >
                         Delete Anyway
                     </button>
@@ -981,7 +999,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                     className="icon-dim-24 rotate"
                     style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                 />}
-                <PopupMenu autoClose>
+                {isJobView && <PopupMenu autoClose>
                     <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
                         <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
                     </PopupMenu.Button>
@@ -998,8 +1016,10 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                             </span>
                         </div>
                     </PopupMenu.Body>
-                </PopupMenu>
+                </PopupMenu>}
+                {isJobView && showDelete && showDeleteDialog(deletePipeline)}
             </div>
+            
             {!collapsed && (
                 <div className="environment-routes">
                     {!isJobView && <NavLink
@@ -1018,12 +1038,11 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                     </NavLink>
                 </div>
             )}
-            {showDelete && showDeleteDialog(deletePipeline)}
         </div>
     )
 }
 
-const EnvironmentOverrides = ({ environmentResult, environmentsLoading, environmentList, isJobView, ciPipelines, reload, appId }: EnvironmentOverridesProps) => {
+const EnvironmentOverrides = ({ environmentResult, environmentsLoading, environmentList, isJobView, ciPipelines, reload, appId, workflowsRes }: EnvironmentOverridesProps) => {
     if (environmentsLoading) return null
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
@@ -1032,14 +1051,14 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading, environm
                 {environments.map((env, index) => {
                     return (
                         !env.deploymentAppDeleteRequest && (
-                            <EnvOverrideRoute envOverride={env} key={env.environmentName} environmentList={environmentList} isJobView={isJobView} ciPipelines={ciPipelines} reload={reload} appId={appId}/>
+                            <EnvOverrideRoute envOverride={env} key={env.environmentName} environmentList={environmentList} isJobView={isJobView} ciPipelines={ciPipelines} reload={reload} appId={appId} workflowsRes={workflowsRes}/>
                         )
                     )
                 })}
             </div>
         )
     } else {
-        return (
+        return (!isJobView ?
             <InfoColourBar
                 classname="question-bar no-env-overrides"
                 message={<EnvOverridesHelpNote />}
@@ -1047,11 +1066,11 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading, environm
                 iconClass="fcv-5"
                 iconSize={16}
             />
-        )
+            : <></>)
     }
 }
 
-function EnvironmentOverrideRouter({isJobView} : {isJobView?: boolean}) {
+function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: boolean, workflowsRes?: WorkflowResult}) {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -1167,7 +1186,7 @@ function EnvironmentOverrideRouter({isJobView} : {isJobView?: boolean}) {
                 </div>
             )}
             <div className="flex column left environment-routes-container top">
-                <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} environmentList={environmentList} isJobView={isJobView} ciPipelines={ciPipelines} reload={reloadEnvironments} appId={appId}/>
+                <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} environmentList={environmentList} isJobView={isJobView} ciPipelines={ciPipelines} reload={reloadEnvironments} appId={appId} workflowsRes={workflowsRes}/>
             </div>
         </div>
     )
