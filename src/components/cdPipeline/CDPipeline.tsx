@@ -1197,10 +1197,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="delete-stage-icon cursor"
                         onClick={(e) => this.deleteStage(key)}
                     />
-                    {this.state.isVirtualEnvironmentOnEnvSelection &&
-                    this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
-                        ? this.renderPrePostStageType(key)
-                        : this.renderPrePostStageType(key)}
+                    {!(
+                        this.state.pipelineConfig.isVirtualEnvironment &&
+                        this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ) && this.renderPrePostStageType(key)}
                 </div>
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
