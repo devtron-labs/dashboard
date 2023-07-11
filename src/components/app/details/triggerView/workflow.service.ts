@@ -500,13 +500,13 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     let preCD: NodeAttr | undefined = undefined,
         postCD: NodeAttr | undefined = undefined
     let stageIndex = 1
-    if (!isEmpty(cdPipeline?.preDeployStage?.steps)) {
-        let trigger = cdPipeline.preDeployStage?.triggerType?.toLowerCase() ?? ''
+    if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
+        let trigger = cdPipeline.preDeployStage?.triggerType?.toLowerCase() || cdPipeline.preStage?.triggerType?.toLowerCase() || ''
         preCD = {
             parents: [String(parentId)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
-            title: cdPipeline.preDeployStage?.name ?? '',
+            title: cdPipeline.preDeployStage?.name || cdPipeline.preStage.name || '',
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
@@ -514,7 +514,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeOut: false,
             downstreams: [`${WorkflowNodeType.CD}-${cdPipeline.id}`],
             type: WorkflowNodeType.PRE_CD,
-            status: cdPipeline.preDeployStage?.status || DEFAULT_STATUS,
+            status: cdPipeline.preDeployStage?.status || cdPipeline.preStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
             description: cdPipeline.description || '',
@@ -531,7 +531,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         stageIndex++
     }
     let cdDownstreams = []
-    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postDeployStage?.steps)) {
+    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postDeployStage?.steps || cdPipeline.preStage?.config)) {
         cdDownstreams = [`${WorkflowNodeType.POST_CD}-${cdPipeline.id}`]
     }
 
@@ -572,13 +572,13 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
     } as NodeAttr
     stageIndex++
 
-    if (!isEmpty(cdPipeline?.postDeployStage?.steps)) {
-        let trigger = cdPipeline.postDeployStage?.triggerType?.toLowerCase() ?? ''
+    if (!isEmpty(cdPipeline?.postDeployStage?.steps || cdPipeline?.postStage?.config)) {
+        let trigger = cdPipeline.postDeployStage?.triggerType?.toLowerCase() || cdPipeline.postStage?.triggerType?.toLowerCase() || ''
         postCD = {
             parents: [String(cdPipeline.id)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
-            title: cdPipeline.postDeployStage?.name ?? '',
+            title: cdPipeline.postDeployStage?.name || cdPipeline.postStage?.name  || '',
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
@@ -586,7 +586,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeOut: false,
             downstreams: [],
             type: WorkflowNodeType.POST_CD,
-            status: cdPipeline.postDeployStage?.status || DEFAULT_STATUS,
+            status: cdPipeline.postDeployStage?.status || cdPipeline.postStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
             description: cdPipeline.description || '',
