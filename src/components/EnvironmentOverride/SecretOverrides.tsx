@@ -36,7 +36,7 @@ function useSecretContext() {
     return context
 }
 
-export default function SecretOverrides({ parentState, setParentState, isJobView }: SecretOverridesProps) {
+export default function SecretOverrides({ parentState, setParentState }: SecretOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
