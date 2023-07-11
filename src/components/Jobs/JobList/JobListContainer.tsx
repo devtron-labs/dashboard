@@ -36,7 +36,7 @@ export default function JobListContainer({
 
     const getJobsList = async (request): Promise<void> => {
         const isSearchOrFilterApplied =
-            request.appNameSearch?.length || request.teams?.length || request.appStatuses?.length
+            request.appNameSearch?.length || request.teams?.length || request.appStatuses?.length || request.environments?.length
         const updatedState = { ...state }
         updatedState.view = JobListViewType.LOADING
         updatedState.sortRule = {
