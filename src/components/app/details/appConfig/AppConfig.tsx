@@ -14,6 +14,7 @@ import {
     usePrevious,
     useAsync,
     ConditionalWrap,
+    createClusterEnvGroup,
 } from '../../../common'
 import {
     showError,
@@ -24,13 +25,19 @@ import {
     TippyCustomized,
     TippyTheme,
     InfoColourBar,
+    PopupMenu,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
+import { addJobEnvironment, deleteJobEnvironment, getAppConfigStatus, getAppOtherEnvironmentMin, getCIConfig, getEnvironmentListMinPublic, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
+import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as More } from '../../../../assets/icons/ic-more-option.svg'
+import { ReactComponent as DeleteIcon } from '../../../../assets/icons/ic-delete-interactive.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import DockerFileInUse from '../../../../assets/img/ic-dockerfile-in-use.png'
 import { toast } from 'react-toastify'
@@ -54,6 +61,13 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
+import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+import ReactSelect from 'react-select'
+import { DropdownIndicator } from '../../../cdPipeline/cdpipeline.util'
+import { buildStageStyles, groupHeading } from '../../../CIPipelineN/Constants'
+import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
+
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -152,6 +166,30 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView:
                 supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+            },
+            {
+                title: 'ConfigMaps',
+                href: `/job/${appId}/edit/configmap`,
+                stage: 'CONFIGMAP',
+                isLocked: !isUnlocked.configmap,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Secrets',
+                href: `/job/${appId}/edit/secrets`,
+                stage: 'SECRETS',
+                isLocked: !isUnlocked.secret,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Environment Override',
+                href: `/job/${appId}/edit/env-override`,
+                stage: 'ENV_OVERRIDE',
+                isLocked: !isUnlocked.envOverride,
             },
         ]
     } else {
@@ -353,6 +391,9 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
             _configs = {
                 material: true, // First step/stage will be unlocked by default.
                 workflowEditor: materialStage?.status ?? false, // Unlocked when GIT_MATERIAL step is completed
+                configmap: materialStage?.status ?? false,
+                secret: materialStage?.status ?? false,
+                envOverride: true,
             } as AppStageUnlockedType
             _lastConfiguredStage = materialStage?.status ? STAGE_NAME.GIT_MATERIAL : STAGE_NAME.APP
         } else {
@@ -599,7 +640,6 @@ function Navigation({
                         )
                     )
                 } else if (
-                    isJobView ||
                     item.stage !== 'ENV_OVERRIDE' ||
                     (item.stage === 'ENV_OVERRIDE' && item.isLocked)
                 ) {
@@ -633,7 +673,7 @@ function Navigation({
                         </ConditionalWrap>
                     )
                 } else {
-                    return <EnvironmentOverrideRouter key={item.title} />
+                    return <EnvironmentOverrideRouter key={item.title} isJobView={isJobView} />
                 }
             })}
 
@@ -693,10 +733,10 @@ function AppComposeRouter({
                                 />
                             </>
                         </Route>
-                        {isUnlocked.workflowEditor && (
+                        {isUnlocked.workflowEditor && [
                             <Route
                                 path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                                render={(props) => (
+                                render={() => (
                                     <WorkflowEdit
                                         configStatus={1}
                                         isCDPipeline={isCDPipeline}
@@ -705,8 +745,29 @@ function AppComposeRouter({
                                         isJobView={isJobView}
                                     />
                                 )}
-                            />
-                        )}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_CM_CONFIG}`}
+                                path={`${path}/${URLS.APP_CM_CONFIG}`}
+                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_CS_CONFIG}`}
+                                path={`${path}/${URLS.APP_CS_CONFIG}`}
+                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
+                                path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                                render={(props) => (
+                                    <EnvironmentOverride
+                                        environments={environments}
+                                        setEnvironments={setEnvironments}
+                                        isJobView={isJobView}
+                                    />
+                                )}
+                            />,
+                        ]}
                     </Switch>
                 ) : (
                     <Switch>
@@ -811,11 +872,14 @@ const EnvOverridesHelpNote = () => {
     )
 }
 
-const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
+const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines, reload, appId }: EnvironmentOverrideRouteProps) => {
     const { url } = useRouteMatch()
     const location = useLocation()
     const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
     const [collapsed, toggleCollapsed] = useState(location.pathname.includes(`${LINK}/`) ? false : true)
+    const [showConfirmationDialog, setConfirmationDialog] = useState(false)
+    const [showDelete, setDeleteView] = useState(false)
+    const [deletePipeline,setDeletePipeline] = useState()
 
     useEffect(() => {
         if (!location.pathname.includes(`${LINK}/`) && !collapsed) {
@@ -827,50 +891,148 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
         toggleCollapsed(!collapsed)
     }
 
+    const handleDeleteConfirmation = () => {
+        setConfirmationDialog(false)
+    }
+
+    const handleCancelDelete = () => {
+        setDeleteView(false)
+        setDeletePipeline(null)
+    }
+    
+    const deleteEnvHandler = () => {
+        let requestBody = {envId: envOverride.environmentId, appId: appId}
+        deleteJobEnvironment(requestBody)
+            .then((response) => {
+                toast.success("Deleted Successfully");
+                reload()
+                setDeleteView(false);
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
+
+
+    const showDeleteDialog = (pipeline: any): JSX.Element => {
+        
+        
+        return (!showConfirmationDialog ? <DeleteDialog
+            title={`Delete configurations for environment '${envOverride.environmentName}'?`}
+            delete={deleteEnvHandler}
+            closeDelete={handleCancelDelete}
+        >
+            <DeleteDialog.Description>
+                <p className="fs-13 cn-7 lh-1-54">
+                    Are you sure you want to delete configurations for this environment?
+                </p>
+            </DeleteDialog.Description>
+        </DeleteDialog>
+            :
+            <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warn} />
+                <ConfirmationDialog.Body title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`} />
+                <p className="fs-13 cn-7 lh-1-54">
+                    {`Pipeline ‘${pipeline.name}‘  is using configurations for environment ‘${envOverride.environmentName}’.`}
+                </p>
+                <p className="fs-13 cn-7 lh-1-54">
+                    Deleting the environment configurations may impact the pipeline
+                </p>
+                <ConfirmationDialog.ButtonGroup>
+                    <button
+                        type="button"
+                        className="cta cancel"
+                        onClick={handleCancelDelete}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleDeleteConfirmation}
+                        className="cta ml-12 dc__no-decor"
+                    >
+                        Delete Anyway
+                    </button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>
+        )
+    }
+
+    const toggleDeleteDialog = (e)  => {
+        e.stopPropagation()
+        setDeleteView(true)
+        const pipeline = ciPipelines?.find((env) => env.environmentId === envOverride.environmentId)
+        if(pipeline){
+            setConfirmationDialog(true)
+            setDeletePipeline(pipeline)
+        }
+    }
+
     return (
         <div className="flex column left environment-route-wrapper top">
             <div
-                className={`app-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
+                className={`app-compose__nav-item flex cursor ${isJobView ? "dc__content-start" : ""} ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
                 onClick={handleNavItemClick}
             >
+                {isJobView && <Dropdown
+                    className={`icon-dim-18 rotate mr-8 ${ collapsed ? "dc__flip-90" : ""}`}
+                />}
                 {envOverride.environmentName}
-                <Dropdown
+                {!isJobView && <Dropdown
                     className="icon-dim-24 rotate"
                     style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
-                />
+                />}
+                <PopupMenu autoClose>
+                    <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
+                        <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
+                    </PopupMenu.Button>
+                    <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
+                        <div className="fs-13 fw-4 lh-20">
+
+                            <span
+                                className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                                onClick={toggleDeleteDialog}
+                                data-testid="delete-jobs-environment-link"
+                            >
+                                <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
+                                {RESOURCE_ACTION_MENU.delete}
+                            </span>
+                        </div>
+                    </PopupMenu.Body>
+                </PopupMenu>
             </div>
             {!collapsed && (
                 <div className="environment-routes">
-                    <NavLink
+                    {!isJobView && <NavLink
                         data-testid="env-deployment-template"
                         className="app-compose__nav-item cursor"
                         to={`${LINK}/deployment-template`}
                     >
                         Deployment template
                     </NavLink>
-                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/configmap`}>
+                    }
+                    <NavLink className={`app-compose__nav-item cursor ${isJobView ? "ml-16 w-auto-imp" : "" }`} to={`${LINK}/configmap`}>
                         ConfigMaps
                     </NavLink>
-                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/secrets`}>
+                    <NavLink className={`app-compose__nav-item cursor ${isJobView ? "ml-16 w-auto-imp" : "" }`} to={`${LINK}/secrets`}>
                         Secrets
                     </NavLink>
                 </div>
             )}
+            {showDelete && showDeleteDialog(deletePipeline)}
         </div>
     )
 }
 
-const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: EnvironmentOverridesProps) => {
+const EnvironmentOverrides = ({ environmentResult, environmentsLoading, environmentList, isJobView, ciPipelines, reload, appId }: EnvironmentOverridesProps) => {
     if (environmentsLoading) return null
-
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
             <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                {environments.map((env) => {
+                {environments.map((env, index) => {
                     return (
                         !env.deploymentAppDeleteRequest && (
-                            <EnvOverrideRoute envOverride={env} key={env.environmentName} />
+                            <EnvOverrideRoute envOverride={env} key={env.environmentName} environmentList={environmentList} isJobView={isJobView} ciPipelines={ciPipelines} reload={reload} appId={appId}/>
                         )
                     )
                 })}
@@ -889,17 +1051,74 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
     }
 }
 
-function EnvironmentOverrideRouter() {
+function EnvironmentOverrideRouter({isJobView} : {isJobView?: boolean}) {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
+    const [environmentList, setEnvironmentList] = useState([])
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironmentMin(appId),
+        () => !isJobView ? getAppOtherEnvironmentMin(appId) : getJobOtherEnvironment(appId),
         [appId],
         !!appId,
     )
+    const [addEnvironment, setEnvironmentView] = useState(true)
+    const [ciPipelines, setCIPipelines] = useState([])
+
+    const getJobOtherEnvironment = (appId) => {
+        getEnvironmentListMinPublic()
+            .then((response) => {
+                let list = []
+                response.result?.forEach((env) => {
+                    if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
+                        list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
+                    }
+                })
+                setEnvironmentList(list)
+            }).catch((error) => {
+                showError(error)
+            })
+            getCIConfig((Number)(appId))
+                .then((response) => {
+                    setCIPipelines(response.result?.ciPipelines)
+                }).catch((error) => {
+                    showError(error)
+                })
+        return getJobOtherEnvironmentMin(appId)
+    }
+
+    const selectEnvironment = (selection) => {
+        let requestBody = {envId: selection.id, appId: appId}
+        addJobEnvironment(requestBody)
+            .then((response) => {
+                toast.success("Saved Successfully");
+                reloadEnvironments()
+                setEnvironmentView(!addEnvironment);
+            })
+            .catch((error) => {
+                showError(error)
+            })
+            
+    }
+
+    const envList = createClusterEnvGroup(environmentList, 'clusterName')
+
+    const handleAddEnvironment = () => {
+        setEnvironmentView(!addEnvironment)
+    }
+
+    const ValueContainer = (props): JSX.Element => {
+        return (
+            <>
+                <Search className="icon-dim-18 ml-8" />
+                <span className="fs-12">Select Environment</span>
+            </>
+        )
+    }
+
+    let selectedEnv : Environment = environmentList.find((env) => env.id === -1)
+
     useEffect(() => {
-        if (previousPathName && previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) {
+        if (previousPathName && ( (previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) || (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) )) {
             reloadEnvironments()
         }
     }, [pathname])
@@ -910,8 +1129,45 @@ function EnvironmentOverrideRouter() {
             <div className="app-compose__nav-item routes-container-header flex dc__uppercase no-hover">
                 Environment Overrides
             </div>
+            {isJobView && (
+                <div className="flex dc__content-start dc__align-start cursor">
+                    <div className="flex dc__align-center p-8">
+                        {addEnvironment ? (
+                            <div className="flex dc__align-center" onClick={handleAddEnvironment}>
+                                <Add className="icon-dim-18 fcb-5 mr-8" />
+                                <div className="fw-6 fs-13 cb-5">Add Environment</div></div>) : (
+                            <>
+                                <ReactSelect
+                                    menuPlacement="auto"
+                                    closeMenuOnScroll={true}
+                                    classNamePrefix="job-pipeline-environment-dropdown"
+                                    placeholder="Select Environment"
+                                    options={envList}
+                                    value={selectedEnv}
+                                    getOptionLabel={(option) => `${option.name}`}
+                                    getOptionValue={(option) => `${option.id}`}
+                                    isMulti={false}
+                                    onChange={selectEnvironment}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        GroupHeading: groupHeading,
+                                        ValueContainer: ValueContainer
+                                    }}
+                                    styles={{
+                                        ...buildStageStyles,
+                                        control: (base) => ({
+                                            ...base, border: '1px solid #d6dbdf', minHeight: '20px', height: '30px', marginTop: '4px', width: '200px'
+                                        }),
+                                    }}
+                                />
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
             <div className="flex column left environment-routes-container top">
-                <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} />
+                <EnvironmentOverrides environmentsLoading={environmentsLoading} environmentResult={environmentResult} environmentList={environmentList} isJobView={isJobView} ciPipelines={ciPipelines} reload={reloadEnvironments} appId={appId}/>
             </div>
         </div>
     )

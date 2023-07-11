@@ -72,6 +72,7 @@ export default function NavigationRoutes() {
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    const [environmentId, setEnvironmentId] = useState(null)
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -383,9 +384,11 @@ export default function NavigationRoutes() {
                                             </Route>,
                                         ]}
                                         {isSuperAdmin && !window._env_.K8S_CLIENT && (
-                                            <Route path={URLS.JOB}>
-                                                <Jobs />
-                                            </Route>
+                                            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+                                                <Route path={URLS.JOB}>
+                                                    <Jobs />
+                                                </Route>
+                                            </AppContext.Provider>
                                         )}
                                         <Route>
                                             <RedirectUserWithSentry
