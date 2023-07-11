@@ -926,14 +926,16 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
         
         const workFlows = workflowsRes?.workflows
         let workFlow
-        workFlows?.forEach((workflow) => {
-            workflow.tree.forEach((ciPipeline) => {
-                if(!workFlow){
-                    workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline 
-                }
+        if(pipeline) {
+            workFlows?.forEach((workflow) => {
+                workflow.tree.forEach((ciPipeline) => {
+                    if(!workFlow){
+                        workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline 
+                    }
+                })
             })
-        })
-        const path = `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/build`
+        }
+        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/build` : ""
         return (!showConfirmationDialog ? <DeleteDialog
             title={`Delete configurations for environment '${envOverride.environmentName}'?`}
             delete={deleteEnvHandler}
