@@ -528,12 +528,10 @@ const HistoryLogs: React.FC<{
                                 artifactId={artifactId}
                                 ciPipelineId={ciPipelineId}
                                 imageComment={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageComment
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageComment
                                 }
                                 imageReleaseTags={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        .imageReleaseTags
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageReleaseTags
                                 }
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
@@ -576,12 +574,10 @@ const HistoryLogs: React.FC<{
                                         ciPipelineId={triggerDetails.ciPipelineId}
                                         artifactId={triggerDetails.artifactId}
                                         imageComment={
-                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                                .imageComment
+                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageComment
                                         }
                                         imageReleaseTags={
-                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                                .imageReleaseTags
+                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageReleaseTags
                                         }
                                         tagsEditable={tagsEditable}
                                         appReleaseTagNames={appReleaseTags}

@@ -9,8 +9,8 @@ import {
     toastAccessDenied,
     PopupMenu,
     Checkbox,
-    EmptyState,
     Reload,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getNotificationConfigurations,
@@ -38,6 +38,7 @@ import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { renderPipelineTypeIcon } from './notifications.util';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
@@ -379,15 +380,28 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-    renderEmptyState() {
-        return <EmptyState>
-            <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
-            <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
-            <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <div data-testid="add-notification-button" onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
-                <Add className="icon-dim-20 mr-5" />Add Notification
-            </div>
-        </EmptyState>
+    renderGenericState() {
+        const renderGenericStateButton = () => {
+            return (
+                <button
+                    data-testid="add-notification-button"
+                    onClick={this.CreateNewNotification}
+                    className="cta flex dc__no-decor"
+                >
+                    <Add className="icon-dim-20 mr-5" />
+                    Add Notification
+                </button>
+            )
+        }
+        return (
+            <GenericEmptyState
+                image={EmptyImage}
+                title={EMPTY_STATE_STATUS.NOTIFICATION_TAB.TITLE}
+                subTitle={EMPTY_STATE_STATUS.NOTIFICATION_TAB.SUBTITL}
+                isButtonAvailable={true}
+                renderButton={renderGenericStateButton}
+            />
+        )
     }
 
     validateAccess = (updateState): void => {
@@ -670,7 +684,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         else if (!this.state.notificationList.length) {
             return <div className="pt-16" style={{ "height": "calc(100vh - 215px)" }}>
                 {this.renderHostErrorMessage()}
-                {this.renderEmptyState()}
+                {this.renderGenericState()}
             </div>
         }
         else return <div className="bcn-0 pt-16" style={{ "minHeight": "calc(100vh - 215px)" }}>
