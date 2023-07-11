@@ -4,6 +4,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { updateNotificationRecipients } from './notifications.service'
 import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from './notifications.util'
 import { toast } from 'react-toastify'
@@ -100,7 +101,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
     removeRecipient(provider): void {
         let state = { ...this.state }
         state.savedRecipients = state.savedRecipients.filter((p) => {
-            if ((provider.configId && p.configId !== provider.configId) || !(provider.recipient === p.recipient)) {
+            if ((provider.configId && (p.configId !== provider.configId || ( p.dest!==provider.dest))) || !(provider.recipient === p.recipient)) {
                 return p
             }
         })
@@ -212,6 +213,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                             <Email className="icon-dim-20 mr-5" />
                                         ) : null}
                                         {p.dest === 'slack' ? <Slack className="icon-dim-20 mr-5" /> : null}
+                                        {p.dest === 'webhook' ? <Webhook className="icon-dim-20 mr-5" /> : null }
                                         {p.recipient ? p.recipient : p.name}
                                         <button
                                             type="button"
