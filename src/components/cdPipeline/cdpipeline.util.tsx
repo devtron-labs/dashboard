@@ -193,8 +193,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
     }
 }
 
-export const checkUniqueness = (formData): boolean => {
-    const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
+const checkStepsUniqueness = (list): boolean => {
     const stageNameList = list.map((taskData) => {
         if (taskData.stepType === PluginType.INLINE) {
             if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
@@ -229,6 +228,19 @@ export const checkUniqueness = (formData): boolean => {
 
     // Below code is to check if all the task name from pre-stage and post-stage is unique
     return stageNameList.length === new Set(stageNameList).size
+}
+
+export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
+    if(isCDPipeline){
+        const preStageValidation: boolean = checkStepsUniqueness(formData.preBuildStage.steps)
+        const postStageValidation: boolean = checkStepsUniqueness(formData.postBuildStage.steps)
+        return preStageValidation && postStageValidation
+
+    } else {
+        const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
+        return checkStepsUniqueness(list)
+    }
+
 }
 
 export const calculateLastStepDetailsLogic = (

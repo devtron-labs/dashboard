@@ -589,7 +589,7 @@ export default function NewCDPipeline({
     }
 
     const savePipeline = () => {
-        const isUnique = checkUniqueness(formData)
+        const isUnique = checkUniqueness(formData, true)
         if (!isUnique) {
             toast.error('All task names must be unique')
             return
