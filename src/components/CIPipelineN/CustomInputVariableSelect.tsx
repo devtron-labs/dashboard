@@ -3,12 +3,7 @@ import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
 import {
     RefVariableType,
     PluginType,
-    FormType,
-    VariableType,
     RefVariableStageType,
-    StepType,
-    FormErrorObjectType,
-    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
@@ -30,20 +25,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setFormDataErrorObj,
         validateTask,
         isCdPipeline
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        inputVariablesListFromPrevStep: {
-            preBuildStage: Map<string, VariableType>[]
-            postBuildStage: Map<string, VariableType>[]
-        }
-        globalVariables: { label: string; value: string; format: string }[]
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-        isCdPipeline: boolean
     } = useContext(pipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',

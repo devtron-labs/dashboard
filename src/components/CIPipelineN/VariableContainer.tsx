@@ -4,7 +4,6 @@ import { PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import Tippy from '@tippyjs/react'
-import { FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function VariableContainer({ type }: { type: PluginVariableType }) {
@@ -14,11 +13,6 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
         selectedTaskIndex,
         activeStageName,
         formDataErrorObj,
-    }: {
-        formData: FormType
-        selectedTaskIndex: number
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
     } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[

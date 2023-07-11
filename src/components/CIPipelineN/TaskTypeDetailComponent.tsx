@@ -10,12 +10,8 @@ import {
     CHECKBOX_VALUE,
     RadioGroup,
     RadioGroupItem,
-    FormType,
     MountPath,
     ScriptType,
-    StepType,
-    FormErrorObjectType,
-    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -39,14 +35,6 @@ export function TaskTypeDetailComponent() {
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-    }: {
-        selectedTaskIndex: number
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 

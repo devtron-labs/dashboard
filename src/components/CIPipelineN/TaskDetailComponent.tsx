@@ -4,7 +4,7 @@ import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import { PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
@@ -22,14 +22,6 @@ export function TaskDetailComponent() {
         formDataErrorObj,
         setFormDataErrorObj,
         isCdPipeline
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        isCdPipeline: boolean
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')

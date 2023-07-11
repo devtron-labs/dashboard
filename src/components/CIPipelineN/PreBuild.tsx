@@ -3,7 +3,6 @@ import {
     FormType,
     PluginType,
     ScriptType,
-    FormErrorObjectType,
     VariableType,
     RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -21,7 +20,6 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
-import { CDFormType } from '../cdPipeline/cdPipeline.types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -40,29 +38,6 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
-    }: {
-        formData: FormType | CDFormType
-        isCdPipeline: boolean
-        setFormData: React.Dispatch<React.SetStateAction<FormType | CDFormType>>
-        addNewTask: () => void
-        selectedTaskIndex: number
-        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-        configurationType: string
-        setConfigurationType: React.Dispatch<React.SetStateAction<string>>
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _form: FormType | CDFormType,
-            activeStageName: string,
-            startIndex?: number,
-            isFromMoveTask?: boolean,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        validateStage: (stageName: string, _formData: FormType | CDFormType, formDataErrorObject?: FormErrorObjectType) => void
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {

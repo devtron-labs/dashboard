@@ -3,7 +3,6 @@ import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } fro
 import {
     RadioGroup,
     RadioGroupItem,
-    FormType,
     Option,
     multiSelectStyles,
     CHECKBOX_VALUE,
@@ -20,6 +19,7 @@ import ReactSelect from 'react-select'
 import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
 import { ValueContainer } from '../cdPipeline/cdpipeline.util'
 import Tippy from '@tippyjs/react'
+import { PipelineFormType } from '../workflowEditor/types'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
@@ -79,7 +79,7 @@ export function Sidebar({
         )
     }
 
-    const handleApplyPlugin = (_formData: FormType): void => {
+    const handleApplyPlugin = (_formData: PipelineFormType): void => {
         const preBuildVariable = calculateLastStepDetail(
             false,
             _formData,
@@ -100,7 +100,7 @@ export function Sidebar({
     }
 
     const addConfigSecrets = (selected) => {
-        const _form = { ...formData }
+        const _form = { ...formData}
         const preConfigMaps = []
         const preSecrets = []
         const postConfigsMaps = []
@@ -217,7 +217,7 @@ export function Sidebar({
                         <div className="">
                             {valueList.map((item) => {
                                 return (
-                                    <div className="dc__hover-n50 pt-6 pb-6 flex left dc__visible-hover dc__visible-hover--parent">
+                                    <div key={item.value} className="dc__hover-n50 pt-6 pb-6 flex left dc__visible-hover dc__visible-hover--parent">
                                         {listIcon(item.type)}
                                         {item.label}
                                         <Remove

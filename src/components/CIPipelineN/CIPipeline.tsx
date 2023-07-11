@@ -10,7 +10,6 @@ import {
     Drawer,
     DeleteDialog,
     DockerConfigOverrideType,
-    FormType,
     RefVariableType,
     VariableType,
     MandatoryPluginDataType,
@@ -50,6 +49,7 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
+import { PipelineFormType } from '../workflowEditor/types'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -98,7 +98,7 @@ export default function CIPipeline({
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
-    const [formData, setFormData] = useState<FormType>({
+    const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
         args: [],
         materials: [],
@@ -178,7 +178,7 @@ export default function CIPipeline({
 
     const calculateLastStepDetail = (
         isFromAddNewTask: boolean,
-        _formData: FormType,
+        _formData: PipelineFormType,
         activeStageName: string,
         startIndex?: number,
         isFromMoveTask?: boolean
@@ -261,7 +261,7 @@ export default function CIPipeline({
             })
     }
 
-    const getAvailablePlugins = (_formData: FormType): void => {
+    const getAvailablePlugins = (_formData: PipelineFormType): void => {
         getPluginsData(Number(appId))
             .then((response) => {
                 const _presetPlugin = []
@@ -293,7 +293,7 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[]): void => {
+    const getMandatoryPluginData = (_formData: PipelineFormType, pluginList: PluginDetailType[]): void => {
         if (!isJobView && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
@@ -319,7 +319,7 @@ export default function CIPipeline({
         }
     }
 
-    const getPluginData = (_formData?: FormType): void => {
+    const getPluginData = (_formData?: PipelineFormType): void => {
         getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
     }
 
@@ -488,7 +488,7 @@ export default function CIPipeline({
             })
     }
 
-    const validateStage = (stageName: string, _formData: FormType, formDataErrorObject?): void => {
+    const validateStage = (stageName: string, _formData: PipelineFormType, formDataErrorObject?): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
             name: validationRules.name(_formData.name),

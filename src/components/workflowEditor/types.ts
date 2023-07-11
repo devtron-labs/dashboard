@@ -1,6 +1,9 @@
+import { BuildStageType, FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
+import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { LoadingState } from '../ciConfig/types'
 
 export interface WorkflowEditState {
     view: string
@@ -109,4 +112,52 @@ export interface DeprecatedWarningModalType {
 
 export interface CDNodeState{
   showDeletePipelinePopup: boolean
+}
+
+export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType> {
+    name: string;
+    triggerType: string;
+    preBuildStage?: BuildStageType;
+    postBuildStage?: BuildStageType;
+}
+
+export interface PipelineContext<T> {
+    formData: PipelineFormType
+    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
+    selectedTaskIndex: number
+    activeStageName: string
+    calculateLastStepDetail: (
+        isFromAddNewTask: boolean,
+        _formData: PipelineFormType,
+        activeStageName: string,
+        startIndex?: number,
+        isFromMoveTask?: boolean
+    ) => {
+        index: number
+        calculatedStageVariables: Map<string, VariableType>[]
+    }
+    formDataErrorObj: T
+    setFormDataErrorObj: React.Dispatch<React.SetStateAction<T>>
+    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+    configurationType: string
+    setConfigurationType: React.Dispatch<React.SetStateAction<string>>
+    setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
+    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
+    isCdPipeline?: boolean,
+    configMapAndSecrets?: {
+        label: string;
+        options: any;
+    }[],
+    loadingState?: LoadingState
+    setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
+    appId: string
+    inputVariablesListFromPrevStep?: InputVariablesFromInputListType,
+    setInputVariablesListFromPrevStep?: (inputVariables: InputVariablesFromInputListType) => void,
+    addNewTask: () => void,
+    pageState?: string
+    setPageState?: React.Dispatch<React.SetStateAction<string>>
+    handleStrategy?: (value: any) => void
+    getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
+    isVirtualEnvironment?: boolean
+    globalVariables: { label: string; value: string; format: string }[]
 }

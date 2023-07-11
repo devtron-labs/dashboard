@@ -1,7 +1,5 @@
 import {
-    FormErrorObjectType,
     InfoColourBar,
-    Progressing,
     RadioGroup,
     RadioGroupItem,
     TippyCustomized,
@@ -12,7 +10,7 @@ import { useParams } from 'react-router-dom'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { TriggerType, ViewType } from '../../config'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
-import { CDFormErrorObjectType, CDFormType, Environment } from './cdPipeline.types'
+import { Environment } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
     DropdownIndicator,
@@ -52,21 +50,10 @@ export default function BuildCD({
         setFormData,
         formDataErrorObj,
         setFormDataErrorObj,
-        pageState,
         setPageState,
         handleStrategy,
         getPrePostStageInEnv,
         isVirtualEnvironment,
-    }: {
-        formData: CDFormType
-        setFormData: React.Dispatch<React.SetStateAction<any>>
-        formDataErrorObj: CDFormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<CDFormErrorObjectType>>
-        pageState: string
-        setPageState: React.Dispatch<React.SetStateAction<string>>
-        handleStrategy: (value: any) => void
-        getPrePostStageInEnv: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
-        isVirtualEnvironment: boolean
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -271,7 +258,7 @@ export default function BuildCD({
         let envId = formData.environmentId
         let selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
         let namespaceEditable = false
-        const envList = createClusterEnvGroup(formData.environments, 'clusterName')
+        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const groupHeading = (props) => {
             return <GroupHeading {...props} />

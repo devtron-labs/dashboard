@@ -3,13 +3,12 @@ import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle, CiPipelineSourceTypeOption, FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, Toggle, CiPipelineSourceTypeOption } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { LoadingState } from '../ciConfig/types'
 
 export function Build({
     showFormError,
@@ -28,13 +27,6 @@ export function Build({
         loadingState,
         setLoadingState,
         setFormDataErrorObj,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        formDataErrorObj: FormErrorObjectType
-        loadingState: LoadingState
-        setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 

@@ -1,5 +1,5 @@
 import React, { Component, createContext } from 'react'
-import { WorkflowEditProps, WorkflowEditState } from './types'
+import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
@@ -16,7 +16,6 @@ import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import add from '../../assets/icons/misc/addWhite.svg'
 import CIPipeline from '../CIPipelineN/CIPipeline'
-import CDPipeline from '../cdPipeline/CDPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
@@ -34,7 +33,7 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
 
-export const pipelineContext = createContext(null)
+export const pipelineContext = createContext<PipelineContext<any>>(null)
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null

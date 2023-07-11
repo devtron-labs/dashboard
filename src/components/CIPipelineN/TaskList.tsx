@@ -7,11 +7,6 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import {
     PopupMenu,
-    FormType,
-    StepType,
-    VariableType,
-    FormErrorObjectType,
-    TaskErrorObj,
     BuildStageVariable,
     PluginType,
     RefVariableStageType,
@@ -20,7 +15,7 @@ import {
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { PipelineFormType } from '../workflowEditor/types'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -33,6 +28,7 @@ export function TaskList({
     const {
         formData,
         setFormData,
+        isCdPipeline,
         addNewTask,
         activeStageName,
         selectedTaskIndex,
@@ -42,28 +38,6 @@ export function TaskList({
         setFormDataErrorObj,
         validateTask,
         validateStage,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        addNewTask: () => void
-        activeStageName: string
-        selectedTaskIndex: number
-        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-            isFromMoveTask?: boolean,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
-        inputVariablesListFromPrevStep: InputVariablesFromInputListType
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -163,7 +137,8 @@ export function TaskList({
         if (_taskDetail[0].pluginRefStepDetail) {
             const isPluginRequired =
                 !isJobView &&
-                isRequired &&
+                isRequired && 
+                !isCdPipeline &&
                 isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
             if (_taskDetail[0].isMandatory && !isPluginRequired) {
                 isMandatoryMissing = true
@@ -221,7 +196,7 @@ export function TaskList({
         }
     }
 
-    const clearDependentPostVariables = (_formData: FormType, deletedTaskIndex: number, _formDataErrorObj): void => {
+    const clearDependentPostVariables = (_formData: PipelineFormType, deletedTaskIndex: number, _formDataErrorObj): void => {
         const stepsLength = _formData[BuildStageVariable.PostBuild].steps?.length
         let reValidateStage = false
         for (let i = 0; i < stepsLength; i++) {
@@ -256,7 +231,7 @@ export function TaskList({
         setFormData(_formData)
     }
 
-    const reCalculatePrevStepVar = (_formData: FormType, newTaskIndex: number): void => {
+    const reCalculatePrevStepVar = (_formData: PipelineFormType, newTaskIndex: number): void => {
         let preBuildVariable, postBuildVariable
         if (activeStageName === BuildStageVariable.PreBuild) {
             preBuildVariable = calculateLastStepDetail(
@@ -377,7 +352,7 @@ export function TaskList({
                                             )}
                                         </div>
                                     )}
-                                    {!isJobView && taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
+                                    {!isJobView && !isCdPipeline && taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
                                         <MandatoryPluginMenuOptionTippy
                                             pluginDetail={mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]}
                                         />

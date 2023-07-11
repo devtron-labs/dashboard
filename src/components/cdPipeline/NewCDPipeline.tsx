@@ -18,7 +18,7 @@ import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'reac
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CDFormType, CD_PATCH_ACTION, Environment } from './cdPipeline.types'
+import { CD_PATCH_ACTION, Environment } from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -35,7 +35,6 @@ import { PreBuild } from '../CIPipelineN/PreBuild'
 import { getGlobalVariable, getPluginsData } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
-import { pipelineContext } from '../workflowEditor/workflowEditor'
 import './cdPipeline.scss'
 import { toast } from 'react-toastify'
 import {
@@ -50,6 +49,8 @@ import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.
 import Tippy from '@tippyjs/react'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { PipelineFormType } from '../workflowEditor/types'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -91,7 +92,7 @@ export default function NewCDPipeline({
         activeStageName = BuildStageVariable.PostBuild
     }
     const text = cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'
-    const [formData, setFormData] = useState<CDFormType>({
+    const [formData, setFormData] = useState<PipelineFormType>({
         name: '',
         ciPipelineId: isWebhookCD ? null : +ciPipelineId,
         environmentId: 0,
@@ -246,7 +247,7 @@ export default function NewCDPipeline({
 
     const calculateLastStepDetail = (
         isFromAddNewTask: boolean,
-        _formData: CDFormType,
+        _formData: PipelineFormType,
         activeStageName: string,
         startIndex?: number,
         isFromMoveTask?: boolean,
@@ -562,7 +563,7 @@ export default function NewCDPipeline({
         setFormData(_form)
     }
 
-    const validateStage = (stageName: string, _formData: CDFormType, formDataErrorObject?): void => {
+    const validateStage = (stageName: string, _formData: PipelineFormType, formDataErrorObject?): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
             name: validationRules.name(_formData.name),
@@ -908,6 +909,7 @@ export default function NewCDPipeline({
                             configMapAndSecrets,
                             getPrePostStageInEnv,
                             isVirtualEnvironment,
+                            setInputVariablesListFromPrevStep
                         }}
                     >
                         <div

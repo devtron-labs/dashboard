@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { FormType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import { ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
@@ -16,11 +16,6 @@ function CustomScript({ handleScriptChange }: CustomScriptType) {
         formData,
         activeStageName,
         formDataErrorObj,
-    }: {
-        selectedTaskIndex: number
-        formData: FormType
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
     } = useContext(pipelineContext)
 
     const [editorValue, setEditorValue] = useState<string>(

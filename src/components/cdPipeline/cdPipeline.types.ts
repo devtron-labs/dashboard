@@ -1,4 +1,4 @@
-import { ErrorObj, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { BuildStageType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { DeploymentAppTypes } from '../../config'
 
@@ -176,6 +176,12 @@ export interface AdvanceCDPipelineModalProps {
     renderAddStage: (key: 'preStage' | 'postStage') => void
 }
 
+interface ConfigSecretType {
+    label: string,
+    value: string,
+    type: string,
+}
+
 export interface CDFormType {
     name: string
     ciPipelineId: number
@@ -185,12 +191,12 @@ export interface CDFormType {
     environments: Environment[]
     deploymentAppType: string
     triggerType: string
-    preBuildStage: any
-    postBuildStage: any
+    preBuildStage?: BuildStageType;
+    postBuildStage?: BuildStageType;
     strategies: DeploymentStrategy[]
     savedStrategies: SavedDeploymentStrategy[]
-    preStageConfigMapSecretNames: { configMaps: string[], secrets: string[] }
-    postStageConfigMapSecretNames: { configMaps: string[], secrets: string[] }
+    preStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }
+    postStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }
     requiredApprovals: string
     userApprovalConfig?: {
         requiredCount: number
@@ -201,24 +207,6 @@ export interface CDFormType {
     runPreStageInEnv: boolean,
     runPostStageInEnv: boolean,
     allowedDeploymentTypes: DeploymentAppTypes[]
-}
-
-export interface CDFormErrorObjectType {
-    name: ErrorObj;
-    envNameError: ErrorObj,
-    nameSpaceError: ErrorObj,
-    preBuildStage?: {
-        isValid: boolean;
-        steps: TaskErrorObj[];
-    };
-    buildStage?: {
-        isValid: boolean;
-        name: ErrorObj;
-    };
-    postBuildStage?: {
-        isValid: boolean;
-        steps: TaskErrorObj[];
-    };
 }
 
 export interface InputVariablesFromInputListType {

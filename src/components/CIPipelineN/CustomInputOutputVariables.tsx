@@ -1,12 +1,7 @@
 import React, { useContext } from 'react'
 import {
     ConditionType,
-    FormType,
     RefVariableType,
-    StepType,
-    VariableType,
-    FormErrorObjectType,
-    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -33,24 +28,6 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-            isFromMoveTask?: boolean,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 

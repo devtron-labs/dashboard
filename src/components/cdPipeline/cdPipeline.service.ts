@@ -45,7 +45,7 @@ export function getCDPipelineV2(appId: string, pipelineId: string) {
 }
 
 export async function getCDPipelineConfig(appId: string, pipelineId: string): Promise<any> {
-    return Promise.all([getCDPipelineV2(appId, pipelineId), getEnvironmentListMinPublic()]).then(([cdPipelineRes, envListResponse]) => {
+    return Promise.all([getCDPipelineV2(appId, pipelineId), getEnvironmentListMinPublic(true)]).then(([cdPipelineRes, envListResponse]) => {
         let envId = cdPipelineRes.result.environmentId;
         let cdPipeline = cdPipelineRes.result
         let environments = envListResponse.result || [];

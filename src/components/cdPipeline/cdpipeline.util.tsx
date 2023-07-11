@@ -6,7 +6,6 @@ import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import {
     BuildStageVariable,
     ConditionType,
-    FormType,
     PluginType,
     RefVariableStageType,
     RefVariableType,
@@ -16,7 +15,7 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CDFormType } from './cdPipeline.types'
+import { PipelineFormType } from '../workflowEditor/types'
 
 export const styles = {
     control: (base, state) => ({
@@ -233,7 +232,7 @@ export const checkUniqueness = (formData): boolean => {
 }
 
 export const calculateLastStepDetailsLogic = (
-    _formData: FormType | CDFormType,
+    _formData: PipelineFormType,
     activeStageName: string,
     _formDataErrorObj: any,
     isFromAddNewTask,
