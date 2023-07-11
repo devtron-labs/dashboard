@@ -157,6 +157,7 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
     let search = params.search || ''
     let appStatus = params.appStatus || ''
     let teams = params.team || ''
+    let environments = params.environment || ''
     const teamsArr = teams
         .toString()
         .split(',')
@@ -167,11 +168,17 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
         .split(',')
         .filter((status) => status != '')
         .map((status) => status)
+    const environmentsArr = environments
+        .toString()
+        .split(',')
+        .filter((environment) => environment != '')
+        .map((environment) => Number(environment))
 
     // update master filters data (check/uncheck)
     const filterApplied = {
         teams: new Set<number>(teamsArr),
         appStatus: new Set<string>(appStatusArr),
+        environments: new Set<number>(environmentsArr),
     }
 
     const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
@@ -192,6 +199,15 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
             label: status.label,
             isSaved: true,
             isChecked: filterApplied.appStatus.has(status.key),
+        }
+    })
+
+    _masterFilters.environments = masterFilters.environments.map((status) => {
+        return {
+            key: status.key,
+            label: status.label,
+            isSaved: true,
+            isChecked: filterApplied.environments.has(status.key),
         }
     })
     setMasterFilters(_masterFilters)
@@ -216,6 +232,7 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
         teams: teamsArr,
         appNameSearch: search,
         appStatuses: appStatusArr,
+        environments: environmentsArr,
         sortBy: sortBy,
         sortOrder: sortOrder,
         offset: offset,
