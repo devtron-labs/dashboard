@@ -96,14 +96,9 @@ export default function BuildCD({
     const selectEnvironment = (selection: Environment): void => {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
-
+        console.log(selection);
+        
         if (selection) {
-            let list = _form.environments.map((item) => {
-                return {
-                    ...item,
-                    active: item.id == selection.id,
-                }
-            })
             _form.environmentId = selection.id
             _form.environmentName = selection.name
             _form.namespace = selection.namespace

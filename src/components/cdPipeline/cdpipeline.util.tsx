@@ -26,7 +26,7 @@ export const styles = {
     menu: (base, state) => {
         return {
             ...base,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'white',
         }
     },
     singleValue: (base, state) => {

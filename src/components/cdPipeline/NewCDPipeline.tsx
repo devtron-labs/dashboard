@@ -342,7 +342,6 @@ export default function NewCDPipeline({
                 const _globalVariableOptions = response.result.map((variable) => {
                     variable.label = variable.name
                     variable.value = variable.name
-                    variable.format = variable.format
                     variable.description = variable.description || ''
                     variable.variableType = RefVariableType.GLOBAL
                     delete variable.name

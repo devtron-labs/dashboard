@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
 import {
-    FormType,
     PluginType,
     ScriptType,
     VariableType,

@@ -42,7 +42,6 @@ export function Sidebar({
         validateStage,
         isCdPipeline,
         configMapAndSecrets,
-        inputVariablesListFromPrevStep,
         isVirtualEnvironment,
         getPrePostStageInEnv,
     } = useContext(pipelineContext)
@@ -264,9 +263,7 @@ export function Sidebar({
             content="This Environment is not configured to run on devtron worker."
         >
             <div
-                className={`flexbox flex-justify fs-13 fw-4 mt-12 mb-12
-                    ${formData.isClusterCdActive ? 'dc__position-rel' : 'dc__position-rel'}
-                `}
+                className="flexbox flex-justify fs-13 fw-4 mt-12 mb-12 dc__position-rel"
             >
                 Execute tasks in application environment
                 <input

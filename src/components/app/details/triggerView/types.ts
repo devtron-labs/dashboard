@@ -530,7 +530,7 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
-export interface prePostDeployStageType {  
+export interface PrePostDeployStageType {  
     isValid: boolean;
     steps: TaskErrorObj[];
     triggerType: string
@@ -564,8 +564,8 @@ export interface CdPipeline {
     userApprovalConfig?: UserApprovalConfigType
     isVirtualEnvironment?: boolean
     helmPackageName?: string
-    preDeployStage?: prePostDeployStageType
-    postDeployStage?: prePostDeployStageType
+    preDeployStage?: PrePostDeployStageType
+    postDeployStage?: PrePostDeployStageType
 }
 
 export interface CdPipelineResult {
