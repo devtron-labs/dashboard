@@ -31,7 +31,7 @@ import './ConfigMap.scss'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import { KeyValue, KeyValueInputInterface, KeyValueValidated, ResizableTextareaProps, keyValueYaml } from './Types'
 import { EXTERNAL_TYPES } from './Constants'
-import { SecretForm } from './Secret/SecretList'
+import SecretForm from './Secret/SecretForm'
 
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
@@ -140,11 +140,12 @@ export function ConfigMapSecretContainer({
                 <SecretForm
                     name={data?.data ? title : ''}
                     appChartRef={appChartRef}
-                    secretData={data?.secretData ?? []}
+                    secret={data?.secretData ?? []}
                     mountPath={data?.mountPath ?? ''}
-                    roleARN={data?.roleARN ?? ''}
-                    type="environment"
-                    external={data?.external ?? false}
+                    roleARNData={data?.roleARN ?? ''}
+                    type={data?.type}
+                    //type="environment"
+                    //external={data?.external ?? false}
                     data={data?.data ?? null}
                     id={id}
                     appId={appId}
@@ -152,12 +153,12 @@ export function ConfigMapSecretContainer({
                     collapse={(e) => toggleCollapse(!collapsed)}
                     update={update}
                     index={index}
-                    keyValueEditable={false}
-                    initialise={init}
-                    externalType={data?.externalType ?? ''}
+                    //keyValueEditable={false}
+                    //initialise={init}
+                    externalTypeData={data?.externalType ?? ''}
                     subPath={data?.subPath ?? false}
                     filePermission={data?.filePermission ?? ''}
-                    esoSecretData={data?.esoSecretData ?? null}
+                    esoSecret={data?.esoSecretData ?? null}
                 />
             )
         } else {

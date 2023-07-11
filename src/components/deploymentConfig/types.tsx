@@ -221,23 +221,23 @@ export interface SecretFormProps {
     id: number
     appChartRef: { id: number; version: string; name: string }
     appId: number
-    roleARN: string
+    roleARNData: string
     name: string
     index: number
-    external: boolean
-    externalType: string
-    secretData: SecretData[]
-    esoSecretData?: EsoSecretData
+    //external: boolean
+    externalTypeData: string
+    secret: SecretData[]
+    esoSecret?: EsoSecretData
     type: string
     data: { k: string; v: string }[]
     isUpdate: boolean
     mountPath: string
-    keyValueEditable?: boolean
+    //keyValueEditable?: boolean
     filePermission: string
     subPath: boolean
     update: (...args) => void
     collapse: (...args) => void
-    initialise?: () => void
+    //initialise?: () => void
 }
 
 export interface BasicFieldDataType {

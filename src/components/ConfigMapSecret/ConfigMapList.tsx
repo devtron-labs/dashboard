@@ -55,18 +55,6 @@ export default function ConfigMapList() {
                     documentationLink={DOCUMENTATION.APP_CREATE_CONFIG_MAP}
                 />
             </h1>
-            {/* <p className="form__subtitle form__subtitle--artifacts">
-                ConfigMap is used to store common configuration variables, allowing users to unify environment variables
-                for different modules in a distributed system into one object.&nbsp;
-                <a
-                    rel="noreferrer noopener"
-                    className="dc__link"
-                    href={DOCUMENTATION.APP_CREATE_CONFIG_MAP}
-                    target="blank"
-                >
-                    Learn more about ConfigMaps
-                </a>
-            </p> */}
             <ConfigMapSecretContainer
                 key="Add ConfigMap"
                 title="Add ConfigMap"

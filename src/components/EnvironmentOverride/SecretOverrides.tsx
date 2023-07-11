@@ -921,13 +921,13 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     appChartRef={appChartRef}
                     appId={Number(appId)}
                     name={name}
-                    external={external}
-                    roleARN={roleARN}
-                    secretData={secretDataValue.map((s) => {
+                    //external={external}
+                    roleARNData={roleARN}
+                    secret={secretDataValue.map((s) => {
                         return { key: s.fileName, name: s.name, property: s.property, isBinary: s.isBinary }
                     })}
-                    esoSecretData={esoSecretData}
-                    externalType={externalType}
+                    esoSecret={esoSecretData}
+                    externalTypeData={externalType}
                     data={state.duplicate}
                     type={type}
                     mountPath={mountPath}
@@ -946,7 +946,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                             dispatch({ type: 'unlock', value: tempData })
                         }
                     }}
-                    initialise={() => {}}
+                    //initialise={() => {}}
                     filePermission={filePermission}
                     subPath={subPath}
                 />
