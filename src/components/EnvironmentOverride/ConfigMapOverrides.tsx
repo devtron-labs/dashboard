@@ -38,7 +38,7 @@ function useConfigMapContext() {
     return context
 }
 
-export default function ConfigMapOverrides({ parentState, setParentState, isJobView }: ConfigMapOverridesProps) {
+export default function ConfigMapOverrides({ parentState, setParentState }: ConfigMapOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
     const [configMapList, setConfigMapList] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -62,11 +62,11 @@ export default function ConfigMapOverrides({ parentState, setParentState, isJobV
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
                 })
-                if (!isJobView && !appChartRefRes.result) {
+                if (!appChartRefRes.result) {
                     toast.error('Error happened while fetching the results. Please try again')
                     return
                 }
-                !isJobView && setAppChartRef(appChartRefRes.result)
+                setAppChartRef(appChartRefRes.result)
             } catch (error) {
                 setParentState(ComponentStates.failed)
                 showError(error)

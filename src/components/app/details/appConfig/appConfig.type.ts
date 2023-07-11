@@ -86,20 +86,10 @@ export interface AppComposeRouterProps {
 export interface EnvironmentOverridesProps {
     environmentResult: AppOtherEnvironment
     environmentsLoading: boolean
-    environmentList?: any[]
-    isJobView?: boolean
-    ciPipelines?: any[]
-    reload?: () => void
-    appId?: string
 }
 
 export interface EnvironmentOverrideRouteProps {
     envOverride: AppEnvironment
-    environmentList?: any[]
-    isJobView?: boolean
-    ciPipelines?: any[]
-    reload?: () => void
-    appId?: string
 }
 
 export interface NextButtonProps {

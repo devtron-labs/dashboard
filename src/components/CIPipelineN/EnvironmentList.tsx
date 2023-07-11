@@ -6,7 +6,7 @@ import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading, triggerStageStyles } from './Constants'
 
 export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSelectedEnv }:
-    { isBuildStage?: boolean, environments: any[], selectedEnv: Environment, setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>> }) {
+    { isBuildStage: boolean, environments: any[], selectedEnv: Environment, setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>> }) {
 
     const selectEnvironment = (selection: Environment) => {
         const _selectedEnv = environments.find((env) => env.id == selection.id)
