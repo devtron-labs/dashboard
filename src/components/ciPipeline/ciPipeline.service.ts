@@ -6,13 +6,13 @@ import {
     Githost,
     ScriptType,
     PluginType,
-    BuildStageType,
     RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
+import { PipelineBuildStageType } from '../workflowEditor/types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -362,7 +362,7 @@ function migrateOldData(
         isCollapsed: boolean
         index: number
     }[],
-): BuildStageType {
+): PipelineBuildStageType {
     const commonFields = {
         value: '',
         format: 'STRING',

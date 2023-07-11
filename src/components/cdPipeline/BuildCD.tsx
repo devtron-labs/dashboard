@@ -96,7 +96,6 @@ export default function BuildCD({
     const selectEnvironment = (selection: Environment): void => {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
-        console.log(selection);
         
         if (selection) {
             _form.environmentId = selection.id

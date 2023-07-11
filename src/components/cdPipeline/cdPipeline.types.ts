@@ -1,6 +1,7 @@
-import { BuildStageType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { DeploymentAppTypes } from '../../config'
+import { PipelineBuildStageType } from '../workflowEditor/types'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -191,8 +192,8 @@ export interface CDFormType {
     environments: Environment[]
     deploymentAppType: string
     triggerType: string
-    preBuildStage?: BuildStageType;
-    postBuildStage?: BuildStageType;
+    preBuildStage?: PipelineBuildStageType;
+    postBuildStage?: PipelineBuildStageType;
     strategies: DeploymentStrategy[]
     savedStrategies: SavedDeploymentStrategy[]
     preStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }

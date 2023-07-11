@@ -1,4 +1,4 @@
-import { BuildStageType, FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
@@ -114,11 +114,17 @@ export interface CDNodeState{
   showDeletePipelinePopup: boolean
 }
 
+export interface PipelineBuildStageType {
+    id: number;
+    triggerType?: string
+    steps: StepType[];
+}
+
 export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType> {
     name: string;
     triggerType: string;
-    preBuildStage?: BuildStageType;
-    postBuildStage?: BuildStageType;
+    preBuildStage?: PipelineBuildStageType;
+    postBuildStage?: PipelineBuildStageType;
 }
 
 export interface PipelineContext<T> {
