@@ -97,30 +97,32 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     />
                 </h1>
             )}
-            <ConfigMapSecretContainer
-                key="Add Secret"
-                componentType="secret"
-                title=""
-                appChartRef={appChartRef}
-                appId={appId}
-                id={list?.id ?? 0}
-                update={update}
-                label={isOverrideView ? 'env' : ''}
-            />
-            {list?.configData?.map((cs, idx) => (
+            <div className="mt-20">
                 <ConfigMapSecretContainer
-                    key={cs.name}
+                    key="Add Secret"
                     componentType="secret"
-                    title={cs.name}
-                    data={cs}
+                    title=""
                     appChartRef={appChartRef}
                     appId={appId}
-                    id={list.id}
+                    id={list?.id ?? 0}
                     update={update}
-                    index={idx}
-                    label={getLabel(isOverrideView, cs.defaultData, cs.data)}
+                    label={isOverrideView ? 'env' : ''}
                 />
-            ))}
+                {list?.configData?.map((cs, idx) => (
+                    <ConfigMapSecretContainer
+                        key={cs.name}
+                        componentType="secret"
+                        title={cs.name}
+                        data={cs}
+                        appChartRef={appChartRef}
+                        appId={appId}
+                        id={list.id}
+                        update={update}
+                        index={idx}
+                        label={getLabel(isOverrideView, cs.defaultData, cs.data)}
+                    />
+                ))}
+            </div>
         </div>
     )
 }

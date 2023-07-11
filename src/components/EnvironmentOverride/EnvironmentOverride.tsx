@@ -18,6 +18,7 @@ import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
 import { getAppOtherEnvironmentMin } from '../../services/service'
 import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
 import SecretList from '../ConfigMapSecret/Secret/SecretList'
+import InfoIconWithTippy from '../ConfigMapSecret/InfoIconWithTippy'
 
 export default function EnvironmentOverride({
     appList,
@@ -108,23 +109,17 @@ export default function EnvironmentOverride({
         <ErrorBoundary>
             <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
                 {headingData && (
-                    <>
-                        <h1 className="form__title form__title--artifacts flex left" data-testid="environment-override-header">
-                            {formTitle()}
-                            {headingData.title}
-                        </h1>
-                        <div className="form__subtitle">
-                            {headingData.subtitle}&nbsp;
-                            <a
-                                className="dc__link"
-                                rel="noreferre noopener"
-                                href={headingData.learnMoreLink}
-                                target="blank"
-                            >
-                                Learn more
-                            </a>
-                        </div>
-                    </>
+                    <h1
+                        className="form__title form__title--artifacts flex left"
+                        data-testid="environment-override-header"
+                    >
+                        {formTitle()}
+                        {headingData.title}
+                        <InfoIconWithTippy
+                            infoText={headingData.subtitle}
+                            documentationLink={headingData.learnMoreLink}
+                        />
+                    </h1>
                 )}
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
@@ -140,11 +135,9 @@ export default function EnvironmentOverride({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
-                        {/* <ConfigMapOverrides parentState={viewState} setParentState={setViewState} /> */}
                         <ConfigMapList isOverrideView={true} parentState={viewState} setParentState={setViewState} />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
-                        {/* <SecretOverrides parentState={viewState} setParentState={setViewState} /> */}
                         <SecretList isOverrideView={true} parentState={viewState} setParentState={setViewState} />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />

@@ -64,32 +64,34 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                     />
                 </h1>
             )}
-            <ConfigMapSecretContainer
-                key="Add ConfigMap"
-                title=""
-                appChartRef={appChartRef}
-                appId={appId}
-                update={reload}
-                componentType="configmap"
-                id={configMap?.id ?? 0}
-                label={isOverrideView ? 'env' : ''}
-            />
-            {configMap?.configData.map((cm, idx) => {
-                return (
-                    <ConfigMapSecretContainer
-                        key={cm.name}
-                        title={cm.name}
-                        appChartRef={appChartRef}
-                        appId={appId}
-                        update={reload}
-                        componentType="configmap"
-                        data={cm}
-                        index={idx}
-                        id={configMap?.id}
-                        label={getLabel(isOverrideView,cm.defaultData, cm.data)}
-                    />
-                )
-            })}
+            <div className="mt-20">
+                <ConfigMapSecretContainer
+                    key="Add ConfigMap"
+                    title=""
+                    appChartRef={appChartRef}
+                    appId={appId}
+                    update={reload}
+                    componentType="configmap"
+                    id={configMap?.id ?? 0}
+                    label={isOverrideView ? 'env' : ''}
+                />
+                {configMap?.configData.map((cm, idx) => {
+                    return (
+                        <ConfigMapSecretContainer
+                            key={cm.name}
+                            title={cm.name}
+                            appChartRef={appChartRef}
+                            appId={appId}
+                            update={reload}
+                            componentType="configmap"
+                            data={cm}
+                            index={idx}
+                            id={configMap?.id}
+                            label={getLabel(isOverrideView, cm.defaultData, cm.data)}
+                        />
+                    )
+                })}
+            </div>
         </div>
     )
 }
