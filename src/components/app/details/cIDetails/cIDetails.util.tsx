@@ -4,7 +4,7 @@ import novulnerability from '../../../../assets/img/ic-vulnerability-not-found.s
 import React from 'react';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib';
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib';
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging';
 
 export function ScanDisabledView(props) {
@@ -47,11 +47,15 @@ export function NoVulnerabilityView() {
 }
 
 export function CIRunningView(props) {
-    return <EmptyState >
-        <EmptyState.Image>
-            <MechanicalOperation />
-        </EmptyState.Image>
-        <EmptyState.Title><h4>Building artifacts</h4></EmptyState.Title>
-        {props.isSecurityTab ? null : <EmptyState.Subtitle>Generated artifact(s) will be available here after the pipeline is executed.</EmptyState.Subtitle>}
-    </EmptyState>
+    return (
+        <GenericEmptyState
+            image={MechanicalOperation}
+            title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
+            subTitle={
+                props.isSecurityTab
+                    ? null
+                    : EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE
+            }
+        />
+    )
 }

@@ -11,6 +11,7 @@ import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -134,9 +135,16 @@ export default function CustomChartList() {
         return (
             <GenericEmptyState
                 image={emptyCustomChart}
-                title="Use custom charts in applications"
-                subTitle={`Import custom charts to use them in apps instead of the default system template.&nbsp;
-          ${renderLearnMoreLink()}`}
+                title={EMPTY_STATE_STATUS.CUSTOM_CHART_LIST.TITLE}
+                subTitle={
+                    <>
+                        Import custom charts to use them in apps instead of the default system template.
+                        <div>
+                            {renderLearnMoreLink()}
+                        </div>
+                        
+                    </>    
+                }
                 isButtonAvailable={true}
                 renderButton={renderUploadButton}
             />

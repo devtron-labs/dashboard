@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
 import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
@@ -174,21 +174,12 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 }
 
 const CIProgressView = (): JSX.Element => {
-    {
-        /* TO replace with genericemptystate after incoporating png support */
-    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <MechanicalOperation />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Building artifacts</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Generated artifact(s) will be available here after the pipeline is executed.
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={MechanicalOperation}
+            title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
+            subTitle={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
+        />
     )
 }
 
