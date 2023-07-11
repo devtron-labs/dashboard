@@ -1,3 +1,5 @@
+import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+
 export interface KeyValueInputInterface {
     keyLabel: string
     valueLabel: string
@@ -41,4 +43,10 @@ export interface KeyValue {
 export interface KeyValueValidated {
     isValid: boolean
     arr: KeyValue[]
+}
+
+export interface ConfigMapListProps {
+    isOverrideView?: boolean
+    parentState?: ComponentStates
+    setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
 }

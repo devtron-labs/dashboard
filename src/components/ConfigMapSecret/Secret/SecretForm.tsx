@@ -527,23 +527,7 @@ export default function SecretForm({
     }
 
     return (
-        <div className="white-card__config-map">
-            <div className="white-card__header">
-                {!envId && <div>{isUpdate ? `Edit Secret` : `Add Secret`}</div>}
-                <div className="uncollapse__delete flex">
-                    {isUpdate && !secretMode && (
-                        <Trash className="icon-n4 cursor icon-delete" onClick={showDeleteCIModal} />
-                    )}
-                    {typeof collapse === 'function' && !envId && (
-                        <img
-                            onClick={collapse}
-                            src={arrowTriangle}
-                            className="rotate pointer"
-                            style={{ ['--rotateBy' as any]: '-180deg' }}
-                        />
-                    )}
-                </div>
-            </div>
+        <div className="white-card__config-map mt-10">
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">

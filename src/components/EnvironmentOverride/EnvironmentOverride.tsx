@@ -16,6 +16,8 @@ import {
 } from './EnvironmentOverrides.type'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
 import { getAppOtherEnvironmentMin } from '../../services/service'
+import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
+import SecretList from '../ConfigMapSecret/Secret/SecretList'
 
 export default function EnvironmentOverride({
     appList,
@@ -138,10 +140,12 @@ export default function EnvironmentOverride({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
-                        <ConfigMapOverrides parentState={viewState} setParentState={setViewState} />
+                        {/* <ConfigMapOverrides parentState={viewState} setParentState={setViewState} /> */}
+                        <ConfigMapList isOverrideView={true} parentState={viewState} setParentState={setViewState} />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
-                        <SecretOverrides parentState={viewState} setParentState={setViewState} />
+                        {/* <SecretOverrides parentState={viewState} setParentState={setViewState} /> */}
+                        <SecretList isOverrideView={true} parentState={viewState} setParentState={setViewState} />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>

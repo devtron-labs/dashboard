@@ -6,389 +6,31 @@ import {
     CustomInput,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
-} from '../common'
+} from '../../common'
 import {
     showError,
     Progressing,
     DeleteDialog,
-    useThrottledEffect,
     Checkbox,
     CHECKBOX_VALUE,
     not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
-import { getAppChartRef } from '../../services/service'
-import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '../EnvironmentOverride/service'
+import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '../../EnvironmentOverride/service'
 import { toast } from 'react-toastify'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import CodeEditor from '../../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../../config'
+import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { ReactComponent as Trash } from '../../../assets/icons/ic-delete.svg'
 import './ConfigMap.scss'
-import { INVALID_YAML_MSG } from '../../config/constantMessaging'
-import { getConfigMapList } from '../ConfigMapSecret/service'
+import { INVALID_YAML_MSG } from '../../../config/constantMessaging'
+import { KeyValueInput, Tab, useKeyValueYaml, validateKeyValuePair } from '../ConfigMapSecret.components'
+import { EXTERNAL_TYPES } from '../Constants'
 
-const EXTERNAL_TYPES = {
-    '': 'Kubernetes ConfigMap',
-    KubernetesConfigMap: 'Kubernetes External ConfigMap',
-}
-
-const ConfigMap = ({ respondOnSuccess, ...props }) => {
-    const { appId } = useParams<{ appId }>()
-    const [configmap, setConfigmap] = useState<{ id: number; configData: any[]; appId: number }>()
-    const [configmapLoading, setConfigmapLoading] = useState(true)
-    const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
-
-    useEffect(() => {
-        async function initialise() {
-            try {
-                const appChartRefRes = await getAppChartRef(appId)
-                const configmapRes = await getConfigMapList(appId)
-                setConfigmap({
-                    appId: configmapRes.result.appId,
-                    id: configmapRes.result.id,
-                    configData: configmapRes.result.configData || [],
-                })
-                setAppChartRef(appChartRefRes.result)
-            } catch (error) {
-            } finally {
-                setConfigmapLoading(false)
-            }
-        }
-        initialise()
-    }, [appId])
-
-    async function reload() {
-        try {
-            const configmapRes = await getConfigMapList(appId)
-            setConfigmap({
-                appId: configmapRes.result.appId,
-                id: configmapRes.result.id,
-                configData: configmapRes.result.configData || [],
-            })
-        } catch (error) {}
-    }
-
-    if (configmapLoading) {
-        return <Progressing pageLoader />
-    }
-
-    let configData = [{ id: null, name: null }].concat(configmap?.configData)
-    return (
-        <div className="form__app-compose">
-            <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">ConfigMaps</h1>
-            <p className="form__subtitle form__subtitle--artifacts">
-                ConfigMap is used to store common configuration variables, allowing users to unify environment variables
-                for different modules in a distributed system into one object.&nbsp;
-                <a
-                    rel="noreferrer noopener"
-                    className="dc__link"
-                    href={DOCUMENTATION.APP_CREATE_CONFIG_MAP}
-                    target="blank"
-                >
-                    Learn more about ConfigMaps
-                </a>
-            </p>
-            {configData.map((cm, idx) => {
-                return (
-                    <CollapsedConfigMapForm
-                        key={cm?.name || Math.random().toString(36).substr(2, 5)}
-                        {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
-                        appChartRef={appChartRef}
-                        appId={appId}
-                        id={configmap?.id}
-                        update={reload}
-                        index={idx}
-                    />
-                )
-            })}
-        </div>
-    )
-}
-
-interface KeyValueInputInterface {
-    keyLabel: string
-    valueLabel: string
-    k: string
-    v: string
-    index: number
-    onChange: any
-    onDelete: any
-    keyError?: string
-    valueError?: string
-    valueType?: string
-}
-
-export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
-    ({
-        keyLabel,
-        valueLabel,
-        k,
-        v,
-        index,
-        onChange,
-        onDelete,
-        keyError = '',
-        valueError = '',
-        valueType = 'textarea',
-        ...rest
-    }) => {
-        return (
-            <article className="form__key-value-inputs">
-                {typeof onDelete === 'function' && (
-                    <Trash onClick={(e) => onDelete(e, index)} className="cursor icon-delete icon-n4" />
-                )}
-                <div className="form__field">
-                    <label>
-                        {keyLabel}
-                        <input
-                            data-testid={`secrets-gui-key-textbox-${index}`}
-                            type="text"
-                            autoComplete="off"
-                            placeholder=""
-                            value={k}
-                            onChange={(e) => onChange(index, e.target.value, v)}
-                            className="form__input"
-                            disabled={typeof onChange !== 'function'}
-                        />
-                        {keyError ? <span className="form__error">{keyError}</span> : <div />}
-                    </label>
-                </div>
-                <div className="form__field">
-                    <label>{valueLabel}</label>
-                    {valueType === 'textarea' ? (
-                        <ResizableTextarea
-                            value={v}
-                            onChange={(e) => onChange(index, k, e.target.value)}
-                            disabled={typeof onChange !== 'function'}
-                            placeholder=""
-                            maxHeight={300}
-                            data-testid="Configmap-gui-value-textbox"
-                        />
-                    ) : (
-                        <input
-                            type="text"
-                            autoComplete="off"
-                            value={v}
-                            onChange={(e) => onChange(index, k, e.target.value)}
-                            className="form__input"
-                            disabled={typeof onChange !== 'function'}
-                        />
-                    )}
-                    {valueError ? <span className="form__error">{valueError}</span> : <div />}
-                </div>
-            </article>
-        )
-    },
-)
-
-export function CollapsedConfigMapForm({
-    appChartRef,
-    title = '',
-    name = '',
-    type = 'environment',
-    external = false,
-    data = null,
-    id = null,
-    appId,
-    update = null,
-    index = null,
-    filePermission = '',
-    subPath = false,
-    ...rest
-}) {
-    const [collapsed, toggleCollapse] = useState(true)
-    return (
-        <section className="mb-12 br-8 bcn-0 bw-1 en-2 pl-20 pr-20 pt-19 pb-19">
-            {collapsed ? (
-                <ListComponent
-                    title={name || title}
-                    name={name}
-                    onClick={(e) => toggleCollapse(!collapsed)}
-                    collapsible={!title}
-                    className={title ? 'fw-5 cb-5 fs-14' : 'fw-5 cn-9 fs-14'}
-                />
-            ) : (
-                <ConfigMapForm
-                    {...{
-                        appChartRef,
-                        name,
-                        type,
-                        external,
-                        data,
-                        id,
-                        appId,
-                        isUpdate: !title,
-                        collapse: (e) => toggleCollapse(!collapsed),
-                        update,
-                        index,
-                        filePermission,
-                        subPath,
-                        ...rest,
-                    }}
-                />
-            )}
-        </section>
-    )
-}
-
-export function Tab({ title, active, onClick }) {
-    return (
-        <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
-            <div className="tab__selector"></div>
-            <div data-testid={`configmap-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
-        </nav>
-    )
-}
-
-interface ResizableTextareaProps {
-    minHeight?: number
-    maxHeight?: number
-    value?: string
-    onChange?: (e) => void
-    onBlur?: (e) => void
-    onFocus?: (e) => void
-    className?: string
-    placeholder?: string
-    lineHeight?: number
-    padding?: number
-    disabled?: boolean
-    name?: string
-    dataTestId?: string
-}
-
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-    minHeight,
-    maxHeight,
-    value,
-    onChange = null,
-    onBlur = null,
-    onFocus = null,
-    className = '',
-    placeholder = 'Enter your text here..',
-    lineHeight = 14,
-    padding = 12,
-    disabled = false,
-    dataTestId,
-    ...props
-}) => {
-    const [text, setText] = useState('')
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist()
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
-    }
-
-    function handleBlur(e) {
-        if (typeof onBlur === 'function') onBlur(e)
-    }
-
-    function handleFocus(e) {
-        if (typeof onFocus === 'function') onFocus(e)
-    }
-
-    useThrottledEffect(
-        () => {
-            _textRef.current.style.height = 'auto'
-            let nextHeight = _textRef.current.scrollHeight
-            if (minHeight && nextHeight < minHeight) {
-                nextHeight = minHeight
-            }
-            if (maxHeight && nextHeight > maxHeight) {
-                nextHeight = maxHeight
-            }
-            _textRef.current.style.height = nextHeight + 2 + 'px'
-        },
-        500,
-        [text],
-    )
-
-    return (
-        <textarea
-            data-testid={dataTestId}
-            ref={(el) => (_textRef.current = el)}
-            value={text}
-            placeholder={placeholder}
-            className={`dc__resizable-textarea ${className}`}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
-    )
-}
-
-export function ListComponent({ title, name = '', subtitle = '', onClick, className = '', collapsible = false }) {
-    return (
-        <article
-            className={`dc__configuration-list pointer ${className}`}
-            onClick={typeof onClick === 'function' ? onClick : function () {}}
-        >
-            {!name ? (
-                <Add className="configuration-list__logo icon-dim-24 fcb-5" />
-            ) : (
-                <File className="configuration-list__logo icon-dim-24" />
-            )}
-            <div data-testid="add-configmap-button" className="configuration-list__info">
-                <div className="configuration-list__title">{title}</div>
-                {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
-            </div>
-            {collapsible && <img className="configuration-list__arrow pointer" alt="" src={arrowTriangle} />}
-        </article>
-    )
-}
-
-interface keyValueYaml {
-    yaml: string
-    handleYamlChange: any
-    error: string
-}
-interface KeyValue {
-    k: string
-    v: string
-    keyError?: string
-    valueError?: string
-}
-interface KeyValueValidated {
-    isValid: boolean
-    arr: KeyValue[]
-}
-export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
-    let isValid = true
-    arr = arr.reduce((agg, { k, v }) => {
-        if (!k && typeof v !== 'string') {
-            // filter when both are missing
-            return agg
-        }
-        let keyError: string
-        let valueError: string
-        if (k && typeof v !== 'string') {
-            valueError = 'value must not be empty'
-            isValid = false
-        }
-        if (typeof v === 'string' && !PATTERNS.CONFIG_MAP_AND_SECRET_KEY.test(k)) {
-            keyError = `Key '${k}' must consist of alphanumeric characters, '.', '-' and '_'`
-            isValid = false
-        }
-        return [...agg, { k, v, keyError, valueError }]
-    }, [])
-    return { isValid, arr }
-}
-
-export function ConfigMapForm({
+export default function ConfigMapForm({
     appChartRef,
     id,
     appId,
@@ -659,8 +301,8 @@ export function ConfigMapForm({
     }))
 
     return (
-        <div className="white-card__config-map">
-            <div className="white-card__header">
+        <div className="white-card__config-map mt-16">
+            {/* <div className="white-card__header">
                 {!envId && <div>{isUpdate ? `Edit ConfigMap` : `Add ConfigMap`}</div>}
                 <div className="uncollapse__delete flex">
                     {isUpdate && <Trash className="cursor icon-delete icon-n4" onClick={showDeleteCMModal} />}
@@ -673,7 +315,7 @@ export function ConfigMapForm({
                         />
                     )}
                 </div>
-            </div>
+            </div> */}
             <div className="form__row">
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
@@ -684,11 +326,18 @@ export function ConfigMapForm({
                             toggleExternalValues(e.target.value !== '')
                         }}
                     >
-                        <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
+                        <Select.Button
+                            dataTestIdDropdown="select-configmap-datatype-dropdown"
+                            dataTestId="data-type-select-control"
+                        >
                             {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option dataTestIdMenuList = {`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
+                            <Select.Option
+                                dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`}
+                                key={value}
+                                value={value}
+                            >
                                 {name}
                             </Select.Option>
                         ))}
@@ -725,7 +374,7 @@ export function ConfigMapForm({
             <label className="form__label form__label--lower">{`How do you want to use this ConfigMap?`}</label>
             <div className={`form__row form-row__tab`}>
                 {tabs.map((data, idx) => (
-                    <Tab {...data} key={idx} onClick={(title) => selectTab(title)} />
+                    <Tab {...data} key={idx} onClick={(title) => selectTab(title)} type="configmap" />
                 ))}
             </div>
 
@@ -853,7 +502,7 @@ export function ConfigMapForm({
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
-                        dataTestid = "configmap-file-permission-textbox"
+                        dataTestid="configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}
@@ -873,8 +522,12 @@ export function ConfigMapForm({
                         disabled={false}
                         onChange={changeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui" dataTestId="GUI">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml" dataTestId="YAML">YAML</RadioGroup.Radio>
+                        <RadioGroup.Radio value="gui" dataTestId="GUI">
+                            GUI
+                        </RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml" dataTestId="YAML">
+                            YAML
+                        </RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             )}
@@ -891,7 +544,7 @@ export function ConfigMapForm({
                 <>
                     {yamlMode ? (
                         <div className="yaml-container">
-                        <CodeEditor
+                            <CodeEditor
                                 value={yaml}
                                 mode="yaml"
                                 inline
@@ -946,7 +599,12 @@ export function ConfigMapForm({
                 </>
             )}
             <div className="form__buttons">
-                <button data-testid={`configmap-save-button-${name}`} type="button" className="cta" onClick={handleSubmit}>
+                <button
+                    data-testid={`configmap-save-button-${name}`}
+                    type="button"
+                    className="cta"
+                    onClick={handleSubmit}
+                >
                     {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
                 </button>
             </div>
@@ -954,67 +612,3 @@ export function ConfigMapForm({
         </div>
     )
 }
-
-export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, keyError): keyValueYaml {
-    //input containing array of [{k, v, keyError, valueError}]
-    //return {yaml, handleYamlChange}
-    const [yaml, setYaml] = useState('')
-    const [error, setError] = useState('')
-    useEffect(() => {
-        if (!Array.isArray(keyValueArray)) {
-            setYaml('')
-            setError('')
-            return
-        }
-        setYaml(
-            YAML.stringify(
-                keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}),
-                { indent: 2 },
-            ),
-        )
-    }, [keyValueArray])
-
-    function handleYamlChange(yamlConfig) {
-        if (!yamlConfig) {
-            setKeyValueArray([])
-            return
-        }
-        try {
-            let obj = YAML.parse(yamlConfig)
-            if (typeof obj !== 'object') {
-                setError('Could not parse to valid YAML')
-                return null
-            }
-            let errorneousKeys = []
-            let tempArray = Object.keys(obj).reduce((agg, k) => {
-                if (!k && !obj[k]) return agg
-                let v =
-                    obj[k] && ['object', 'number'].includes(typeof obj[k])
-                        ? YAML.stringify(obj[k], { indent: 2 })
-                        : obj[k]
-                let keyErr: string
-                if (k && keyPattern.test(k)) {
-                    keyErr = ''
-                } else {
-                    keyErr = keyError
-                    errorneousKeys.push(k)
-                }
-                return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
-            }, [])
-            setKeyValueArray(tempArray)
-            let error = ''
-            if (errorneousKeys.length > 0) {
-                error = `Keys can contain: (Alphanumeric) (-) (_) (.) > Errors: ${errorneousKeys
-                    .map((e) => `"${e}"`)
-                    .join(', ')}`
-            }
-            setError(error)
-        } catch (err) {
-            setError('Could not parse to valid YAML')
-        }
-    }
-
-    return { yaml, handleYamlChange, error }
-}
-
-export default ConfigMap

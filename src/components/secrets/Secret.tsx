@@ -27,7 +27,6 @@ import {
 } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
-import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import YAML from 'yaml'
@@ -58,6 +57,7 @@ import {
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { NavLink } from 'react-router-dom'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
+import { getSecretList } from '../ConfigMapSecret/service'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()

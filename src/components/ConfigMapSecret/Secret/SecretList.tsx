@@ -1,67 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react'
-import {
-    RadioGroup,
-    Info,
-    ToastBody,
-    CustomInput,
-    isVersionLessThanOrEqualToTarget,
-    isChartRef3090OrBelow,
-} from '../../common'
-import {
-    showError,
-    Progressing,
-    DeleteDialog,
-    Checkbox,
-    CHECKBOX_VALUE,
-    InfoColourBar,
-    not,
-} from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
+import React, { useState, useEffect } from 'react'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
-import { updateSecret, deleteSecret, getSecretKeys } from '../../secrets/service'
-import { getAppChartRef } from '../../../services/service'
-import {
-    overRideSecret,
-    deleteSecret as deleteEnvironmentSecret,
-    unlockEnvSecret,
-} from '../../EnvironmentOverride/service'
-import { toast } from 'react-toastify'
-import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../../configMaps/ConfigMap'
-import { getSecretList } from '../../../services/service'
-import CodeEditor from '../../CodeEditor/CodeEditor'
-import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../../config'
-import YAML from 'yaml'
-import { ReactComponent as KeyIcon } from '../../../assets/icons/ic-key.svg'
-import addIcon from '../../../assets/icons/ic-add.svg'
-import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Trash } from '../../../assets/icons/ic-delete.svg'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import { KeyValueFileInput } from '../../util/KeyValueFileInput'
+import { getAppChartRefForAppAndEnv } from '../../../services/service'
+import { DOCUMENTATION } from '../../../config'
 import '../ConfigMap.scss'
 import { decode } from '../../../util/Util'
-import {
-    dataHeaders,
-    getTypeGroups,
-    GroupHeading,
-    groupStyle,
-    sampleJSONs,
-    SecretOptions,
-    hasHashiOrAWS,
-    hasESO,
-    CODE_EDITOR_RADIO_STATE,
-    DATA_HEADER_MAP,
-    CODE_EDITOR_RADIO_STATE_VALUE,
-    VIEW_MODE,
-    secretValidationInfoToast,
-    handleSecretDataYamlChange,
-} from './secret.utils'
-import { EsoData, SecretFormProps } from '../../deploymentConfig/types'
-import { NavLink } from 'react-router-dom'
-import { INVALID_YAML_MSG } from '../../../config/constantMessaging'
-import { ConfigMapSecretContainer, ListComponent, Tab } from '../ConfigMapSecret.components'
+import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
+import { getLabel } from '../ConfigMapSecret.utils'
+import { ConfigMapListProps } from '../Types'
+import { getSecretList } from '../service'
 
-export default function SecretList() {
+export default function SecretList({ isOverrideView, parentState, setParentState }: ConfigMapListProps) {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
@@ -69,14 +19,18 @@ export default function SecretList() {
     useEffect(() => {
         init()
     }, [])
-    const { appId } = useParams<{ appId }>()
+    const { appId, envId } = useParams<{ appId; envId }>()
 
     async function init() {
         try {
-            const appChartRefRes = await getAppChartRef(appId)
-            const { result } = await getSecretList(appId)
-            if (Array.isArray(result.configData)) {
-                result.configData = result.configData.map((config) => {
+            const [{ result: appChartRefRes }, { result: secretData }] = await Promise.all([
+                getAppChartRefForAppAndEnv(appId, envId),
+                getSecretList(appId, envId),
+            ])
+            //const appChartRefRes = await getAppChartRef(appId)
+            //const { result } = await getEnvironmentSecrets(appId, envId)
+            if (Array.isArray(secretData.configData)) {
+                secretData.configData = secretData.configData.map((config) => {
                     if (config.data) {
                         config.data = decode(config.data) //doesnt do anything because data.value will be empty
                     }
@@ -84,7 +38,7 @@ export default function SecretList() {
                 })
             }
             setAppChartRef(appChartRefRes.result)
-            setList(result)
+            setList(secretData)
         } catch (err) {
             showError(err)
         } finally {
@@ -133,22 +87,25 @@ export default function SecretList() {
 
     if (secretLoading) return <Progressing pageLoader />
     return (
-        <div className="form__app-compose">
-            <h1 className="form__title form__title--artifacts flex left">
-                Secrets
-                <InfoIconWithTippy
-                    infoText="A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys."
-                    documentationLink={DOCUMENTATION.APP_CREATE_SECRET}
-                />
-            </h1>
+        <div className={!isOverrideView ? 'form__app-compose' : ''}>
+            {!isOverrideView && (
+                <h1 className="form__title form__title--artifacts flex left">
+                    Secrets
+                    <InfoIconWithTippy
+                        infoText="A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys."
+                        documentationLink={DOCUMENTATION.APP_CREATE_SECRET}
+                    />
+                </h1>
+            )}
             <ConfigMapSecretContainer
                 key="Add Secret"
                 componentType="secret"
-                title="Add Secret"
+                title=""
                 appChartRef={appChartRef}
                 appId={appId}
                 id={list?.id ?? 0}
                 update={update}
+                label={isOverrideView ? 'env' : ''}
             />
             {list?.configData?.map((cs, idx) => (
                 <ConfigMapSecretContainer
@@ -161,6 +118,7 @@ export default function SecretList() {
                     id={list.id}
                     update={update}
                     index={idx}
+                    label={getLabel(isOverrideView, cs.defaultData, cs.data)}
                 />
             ))}
         </div>

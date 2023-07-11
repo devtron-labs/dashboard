@@ -54,8 +54,8 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
-import ConfigMapList from '../../../ConfigMapSecret/ConfigMapList'
 import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
+import ConfigMapList from '../../../ConfigMapSecret/ConfigMap/ConfigMapList'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
