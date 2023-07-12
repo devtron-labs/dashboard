@@ -68,6 +68,7 @@ import { buildStageStyles, groupHeading } from '../../../CIPipelineN/Constants'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
 import { WorkflowResult } from '../triggerView/types'
+import { groupStyle } from '../../../secrets/secret.utils'
 
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
@@ -921,22 +922,8 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
         setDeleteView(false)
     }
 
-
-    const showDeleteDialog = (pipeline: any): JSX.Element => {
-        
-        const workFlows = workflowsRes?.workflows
-        let workFlow
-        if(pipeline) {
-            workFlows?.forEach((workflow) => {
-                workflow.tree.forEach((ciPipeline) => {
-                    if(!workFlow){
-                        workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline 
-                    }
-                })
-            })
-        }
-        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/build` : ""
-        return (!showConfirmationDialog ? <DeleteDialog
+    const renderDeleteDialog = (): JSX.Element => {
+        return (<DeleteDialog
             title={`Delete configurations for environment '${envOverride.environmentName}'?`}
             delete={deleteEnvHandler}
             closeDelete={handleCancelDelete}
@@ -946,8 +933,11 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                     Are you sure you want to delete configurations for this environment?
                 </p>
             </DeleteDialog.Description>
-        </DeleteDialog>
-            :
+        </DeleteDialog>)
+    }
+
+    const renderConfirmationDeleteModal = (pipeline: any, path: string): JSX.Element => {
+        return (
             <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
                 <ConfirmationDialog.Body title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`} />
@@ -977,6 +967,46 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
         )
     }
 
+    const showDeleteDialog = (pipeline: any): JSX.Element => {
+        
+        const workFlows = workflowsRes?.workflows
+        let workFlow
+        if(pipeline) {
+            workFlows?.forEach((workflow) => {
+                workflow.tree.forEach((ciPipeline) => {
+                    if(!workFlow){
+                        workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline 
+                    }
+                })
+            })
+        }
+        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/build` : ""
+        return (!showConfirmationDialog ? renderDeleteDialog() : renderConfirmationDeleteModal(pipeline, path))
+    }
+
+    const deletePopUpMenu = (): JSX.Element => {
+        return (
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
+                    <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
+                </PopupMenu.Button>
+                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
+                    <div className="fs-13 fw-4 lh-20">
+
+                        <span
+                            className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                            onClick={toggleDeleteDialog}
+                            data-testid="delete-jobs-environment-link"
+                        >
+                            <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
+                            {RESOURCE_ACTION_MENU.delete}
+                        </span>
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+        )
+    }
+
     const toggleDeleteDialog = (e)  => {
         e.stopPropagation()
         setDeleteView(true)
@@ -1001,24 +1031,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                     className="icon-dim-24 rotate"
                     style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                 />}
-                {isJobView && <PopupMenu autoClose>
-                    <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
-                        <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
-                    </PopupMenu.Button>
-                    <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
-                        <div className="fs-13 fw-4 lh-20">
-
-                            <span
-                                className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                                onClick={toggleDeleteDialog}
-                                data-testid="delete-jobs-environment-link"
-                            >
-                                <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                                {RESOURCE_ACTION_MENU.delete}
-                            </span>
-                        </div>
-                    </PopupMenu.Body>
-                </PopupMenu>}
+                {isJobView && deletePopUpMenu()}
                 {isJobView && showDelete && showDeleteDialog(deletePipeline)}
             </div>
             
@@ -1158,7 +1171,7 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                                 <Add className="icon-dim-18 fcb-5 mr-8" />
                                 <div className="fw-6 fs-13 cb-5">Add Environment</div></div>) : (
                             <>
-                                <ReactSelect
+                                <ReactSelect                                    
                                     menuPlacement="auto"
                                     closeMenuOnScroll={true}
                                     classNamePrefix="job-pipeline-environment-dropdown"
@@ -1176,10 +1189,15 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                                         ValueContainer: ValueContainer
                                     }}
                                     styles={{
-                                        ...buildStageStyles,
+                                        ...groupStyle(),
                                         control: (base) => ({
                                             ...base, border: '1px solid #d6dbdf', minHeight: '20px', height: '30px', marginTop: '4px', width: '200px'
                                         }),
+                                        container: (base) => ({
+                                            ...base, paddingRight: '0px !important'
+                                        }),
+                                        valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
+                                        indicatorsContainer: (base) => ({ ...base, height: '28px' }),
                                     }}
                                 />
                             </>

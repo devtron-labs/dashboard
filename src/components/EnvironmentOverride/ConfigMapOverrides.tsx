@@ -55,7 +55,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, isJobV
         async function initialise() {
             setConfigMapLoading(true)
             try {
-                const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
+                const appChartRefRes = !isJobView && await getAppChartRefForAppAndEnv(appId, envId)
                 const configmapRes = await getEnvironmentConfigs(appId, envId)
                 setConfigMapList({
                     appId: configmapRes.result.appId,
