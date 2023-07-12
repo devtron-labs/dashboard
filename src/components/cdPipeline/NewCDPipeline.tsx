@@ -878,78 +878,72 @@ export default function NewCDPipeline({
                     </ul>
                 )}
                 <hr className="divider m-0" />
-                {pageState === ViewType.LOADING ? (
-                    <div style={{ minHeight: '200px' }} className="flex h-100">
-                        <Progressing pageLoader />
-                    </div>
-                ) : (
-                    <pipelineContext.Provider
-                        value={{
-                            formData,
-                            isCdPipeline,
-                            setFormData,
-                            handleStrategy,
-                            appId,
-                            activeStageName,
-                            formDataErrorObj,
-                            setFormDataErrorObj,
-                            inputVariablesListFromPrevStep,
-                            selectedTaskIndex,
-                            setSelectedTaskIndex,
-                            calculateLastStepDetail,
-                            validateTask,
-                            validateStage,
-                            addNewTask,
-                            configurationType,
-                            setConfigurationType,
-                            pageState,
-                            setPageState,
-                            globalVariables,
-                            configMapAndSecrets,
-                            getPrePostStageInEnv,
-                            isVirtualEnvironment,
-                            setInputVariablesListFromPrevStep
-                        }}
+                <pipelineContext.Provider
+                    value={{
+                        formData,
+                        isCdPipeline,
+                        setFormData,
+                        handleStrategy,
+                        appId,
+                        activeStageName,
+                        formDataErrorObj,
+                        setFormDataErrorObj,
+                        inputVariablesListFromPrevStep,
+                        selectedTaskIndex,
+                        setSelectedTaskIndex,
+                        calculateLastStepDetail,
+                        validateTask,
+                        validateStage,
+                        addNewTask,
+                        configurationType,
+                        setConfigurationType,
+                        pageState,
+                        setPageState,
+                        globalVariables,
+                        configMapAndSecrets,
+                        getPrePostStageInEnv,
+                        isVirtualEnvironment,
+                        setInputVariablesListFromPrevStep,
+                    }}
+                >
+                    <div
+                        className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
+                            activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''
+                        }`}
                     >
-                        <div
-                            className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
-                                activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''
-                            }`}
-                        >
-                            {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
-                                <div className="sidebar-container">
-                                    <Sidebar
-                                        pluginList={[...presetPlugins, ...sharedPlugins]}
-                                        setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    />
-                                </div>
-                            )}
-                            <Switch>
-                                {isAdvanced && (
-                                    <Route path={`${path}/pre-build`}>
-                                        <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
-                                    </Route>
-                                )}
-                                {isAdvanced && (
-                                    <Route path={`${path}/post-build`}>
-                                        <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
-                                    </Route>
-                                )}
-                                <Route path={`${path}/build`}>
-                                    <BuildCD
-                                        allStrategies={allStrategies}
-                                        isAdvanced={isAdvanced}
-                                        setIsVirtualEnvironment={setIsVirtualEnvironment}
-                                        noStrategyAvailable={noStrategyAvailable}
-                                        parentPipelineId={parentPipelineId}
-                                        isWebhookCD={isWebhookCD}
-                                    />
+                        {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
+                            <div className="sidebar-container">
+                                <Sidebar
+                                    pluginList={[...presetPlugins, ...sharedPlugins]}
+                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                />
+                            </div>
+                        )}
+                        <Switch>
+                            {isAdvanced && (
+                                <Route path={`${path}/pre-build`}>
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
                                 </Route>
-                                <Redirect to={`${path}/build`} />
-                            </Switch>
-                        </div>
-                    </pipelineContext.Provider>
-                )}
+                            )}
+                            {isAdvanced && (
+                                <Route path={`${path}/post-build`}>
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                </Route>
+                            )}
+                            <Route path={`${path}/build`}>
+                                <BuildCD
+                                    allStrategies={allStrategies}
+                                    isAdvanced={isAdvanced}
+                                    setIsVirtualEnvironment={setIsVirtualEnvironment}
+                                    noStrategyAvailable={noStrategyAvailable}
+                                    parentPipelineId={parentPipelineId}
+                                    isWebhookCD={isWebhookCD}
+                                />
+                            </Route>
+                            <Redirect to={`${path}/build`} />
+                        </Switch>
+                    </div>
+                </pipelineContext.Provider>
                 {pageState !== ViewType.LOADING && (
                     <>
                         <div

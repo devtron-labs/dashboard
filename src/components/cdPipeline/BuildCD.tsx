@@ -1,5 +1,6 @@
 import {
     InfoColourBar,
+    Progressing,
     RadioGroup,
     RadioGroupItem,
     TippyCustomized,
@@ -54,6 +55,7 @@ export default function BuildCD({
         handleStrategy,
         getPrePostStageInEnv,
         isVirtualEnvironment,
+        pageState,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -632,5 +634,11 @@ export default function BuildCD({
         )
     }
 
-    return <div className="cd-pipeline-body p-20 ci-scrollable-content">{renderBuild()}</div>
+    return pageState === ViewType.LOADING.toString() ? (
+        <div style={{ minHeight: '200px' }} className="flex">
+            <Progressing pageLoader />
+        </div>
+    ) : (
+        <div className="cd-pipeline-body p-20 ci-scrollable-content">{renderBuild()}</div>
+    )
 }

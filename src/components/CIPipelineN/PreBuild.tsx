@@ -4,6 +4,7 @@ import {
     ScriptType,
     VariableType,
     RefVariableType,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -11,7 +12,7 @@ import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
 import { PluginCardListContainer } from './PluginCardListContainer'
-import { BuildStageVariable, ConfigurationType } from '../../config'
+import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
 import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
@@ -37,6 +38,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
+        pageState
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
@@ -199,13 +201,25 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         }
     }
 
-    return configurationType === ConfigurationType.GUI ? (
-        renderGUI()
-    ) : (
-        <YAMLScriptComponent
-            editorValue={editorValue}
-            handleEditorValueChange={handleEditorValueChange}
-            showSample={true}
-        />
-    )
+    const renderComponent = () => {
+        if (pageState === ViewType.LOADING.toString()) {
+            return (
+                <div style={{ minHeight: '200px' }} className="flex">
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (configurationType === ConfigurationType.GUI) {
+            return renderGUI()
+        } else {
+            return (
+                <YAMLScriptComponent
+                    editorValue={editorValue}
+                    handleEditorValueChange={handleEditorValueChange}
+                    showSample={true}
+                />
+            )
+        }
+    }
+
+    return renderComponent()
 }
