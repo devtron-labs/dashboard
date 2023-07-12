@@ -60,7 +60,7 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
-import ReactSelect from 'react-select'
+import ReactSelect, { components } from 'react-select'
 import { DropdownIndicator } from '../../../cdPipeline/cdpipeline.util'
 import { groupHeading } from '../../../CIPipelineN/Constants'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
@@ -1130,7 +1130,6 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
             .catch((error) => {
                 showError(error)
             })
-            
     }
 
     const envList = createClusterEnvGroup(environmentList, 'clusterName')
@@ -1139,12 +1138,21 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
         setEnvironmentView(!addEnvironment)
     }
 
-    const ValueContainer = (props): JSX.Element => {
+    const ValueContainer = (props) => {
         return (
-            <>
-                <Search className="icon-dim-18 ml-8" />
-                <span className="fs-12">Select Environment</span>
-            </>
+            <components.ValueContainer {...props}>
+                {!props.selectProps.inputValue ? (
+                    <>
+                        <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
+                        <span className="dc__position-abs dc__left-35 cn-5 ml-2">
+                            {props.selectProps.placeholder}
+                        </span></>
+
+                ) : (
+                    <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
+                )}
+                <span className="dc__position-abs dc__left-30 cn-5 ml-2">{React.cloneElement(props.children[1])}</span>
+            </components.ValueContainer>
         )
     }
 
@@ -1164,17 +1172,18 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
             </div>
             {isJobView && (
                 <div className="flex dc__content-start dc__align-start cursor">
-                    <div className="flex dc__align-center p-8">
+                    <div className="flex dc__align-center pt-8 pb-8 pl-8">
                         {addEnvironment ? (
                             <div className="flex dc__align-center" onClick={handleAddEnvironment}>
                                 <Add className="icon-dim-18 fcb-5 mr-8" />
                                 <div className="fw-6 fs-13 cb-5">Add Environment</div></div>) : (
                             <>
-                                <ReactSelect                                    
+                                <ReactSelect 
+                                    isSearchable                                   
                                     menuPlacement="auto"
                                     closeMenuOnScroll={true}
-                                    classNamePrefix="job-pipeline-environment-dropdown"
                                     placeholder="Select Environment"
+                                    classNamePrefix="job-pipeline-environment-dropdown"
                                     options={envList}
                                     value={selectedEnv}
                                     getOptionLabel={(option) => `${option.name}`}
@@ -1185,17 +1194,17 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                                         IndicatorSeparator: null,
                                         DropdownIndicator,
                                         GroupHeading: groupHeading,
-                                        ValueContainer: ValueContainer
+                                        ValueContainer: ValueContainer             
                                     }}
                                     styles={{
                                         ...groupStyle(),
                                         control: (base) => ({
-                                            ...base, border: '1px solid #d6dbdf', minHeight: '20px', height: '30px', marginTop: '4px', width: '200px'
+                                            ...base, border: '1px solid #d6dbdf', minHeight: '20px', height: '30px', marginTop: '4px', width: '220px'
                                         }),
                                         container: (base) => ({
-                                            ...base, paddingRight: '0px !important'
+                                            ...base, paddingRight: '0px'
                                         }),
-                                        valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
+                                        valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px',}),
                                         indicatorsContainer: (base) => ({ ...base, height: '28px' }),
                                     }}
                                 />
