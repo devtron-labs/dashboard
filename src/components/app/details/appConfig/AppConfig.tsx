@@ -1157,7 +1157,7 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
     }
 
     const ValueContainer = (props): JSX.Element => {
-        return envValueContainer()
+        return envValueContainer(props)
     }
 
     let selectedEnv : Environment = environmentList.find((env) => env.id === -1)
