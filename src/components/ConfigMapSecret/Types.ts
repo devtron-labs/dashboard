@@ -50,3 +50,33 @@ export interface ConfigMapListProps {
     parentState?: ComponentStates
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
 }
+
+export interface ConfigMapProps {
+    appChartRef: { id: number; version: string; name: string }
+    toggleCollapse: any
+    configmap: any
+    id
+    reload
+    isOverrideView
+}
+
+export interface ConfigMapSecretProps {
+    componentType: string
+    title: string
+    appChartRef: any
+    appId: number
+    update: (index, result) => void
+    data?: any
+    index?: number
+    id?: number
+    isOverrideView?: boolean
+}
+
+export interface TabProps {
+    title: string
+    value: string
+    active: boolean
+    onClick: (title) => void
+    type: string
+    disabled?: boolean
+}

@@ -147,7 +147,10 @@ export default function SecretForm({
     const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(esoSecret) : '')
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isExternalValues = externalType !== 'KubernetesSecret'
-    const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
+    const tabs = [
+        { title: 'Environment Variable', value: 'Environment Variable' },
+        { title: 'Data Volume', value: 'Data Volume' },
+    ].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))

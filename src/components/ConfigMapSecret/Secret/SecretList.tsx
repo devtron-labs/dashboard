@@ -106,7 +106,7 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     appId={appId}
                     id={list?.id ?? 0}
                     update={update}
-                    label={isOverrideView ? 'env' : ''}
+                    isOverrideView={isOverrideView}
                 />
                 {list?.configData?.map((cs, idx) => (
                     <ConfigMapSecretContainer
@@ -119,7 +119,7 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                         id={list.id}
                         update={update}
                         index={idx}
-                        label={getLabel(isOverrideView, cs.defaultData, cs.data)}
+                        isOverrideView={isOverrideView}
                     />
                 ))}
             </div>

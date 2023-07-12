@@ -29,3 +29,31 @@ export function getSecretList(appId, envId?) {
         return get(`${Routes.APP_CREATE_SECRET}/${appId}`)
     }
 }
+
+export function overRideConfigMap(id, appId, environmentId, configData){
+    return post(`${ Routes.APP_CREATE_ENV_CONFIG_MAP }`, {
+        id,
+        appId,
+        environmentId,
+        configData
+    })
+}
+
+export function deleteConfigMap(id, appId, envId, name) {
+    return trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
+}
+
+
+export function overRideSecret(id, appId, environmentId, configData) {
+    return post(`${Routes.APP_CREATE_ENV_SECRET}`, {
+        id,
+        appId,
+        environmentId,
+        configData
+    })
+}
+
+export function deleteSecret(id, appId, envId, name) {
+    return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
+}
+

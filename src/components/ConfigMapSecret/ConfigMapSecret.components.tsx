@@ -1,15 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { DeleteDialog, stopPropagation, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteDialog, Progressing, stopPropagation, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PATTERNS } from '../../config'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
-import './ConfigMap.scss'
-import { KeyValue, KeyValueInputInterface, KeyValueValidated, ResizableTextareaProps, keyValueYaml } from './Types'
+import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import {
+    ConfigMapSecretProps,
+    KeyValue,
+    KeyValueInputInterface,
+    KeyValueValidated,
+    ResizableTextareaProps,
+    TabProps,
+    keyValueYaml,
+} from './Types'
 import SecretForm from './Secret/SecretForm'
 import ConfigMapForm from './ConfigMap/ConfigMapForm'
+import './ConfigMap.scss'
+import { OverrideConfigMapForm } from './ConfigMap/ConfigMapOverrides'
 
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
@@ -83,18 +95,8 @@ export function ConfigMapSecretContainer({
     data,
     index,
     id,
-    label
-}: {
-    componentType: string
-    title: string
-    appChartRef: any
-    appId: number
-    update: (index, result) => void
-    data?: any
-    index?: number
-    id?: number
-    label?: string
-}) {
+    isOverrideView,
+}: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
@@ -107,7 +109,7 @@ export function ConfigMapSecretContainer({
     }
 
     const openDeleteModal = (e): void => {
-      stopPropagation(e)
+        stopPropagation(e)
         setShowDeleteModal(true)
     }
 
@@ -179,25 +181,48 @@ export function ConfigMapSecretContainer({
             )
         } else {
             return (
-                <ConfigMapForm
+                // <ConfigMapForm
+                //     appChartRef={appChartRef}
+                //     name={data?.name}
+                //     type={data?.type}
+                //     //type="environment"
+                //     external={data?.external ?? false}
+                //     data={data?.data ?? null}
+                //     id={id}
+                //     appId={appId}
+                //     isUpdate={data?.data}
+                //     collapse={(e) => toggleCollapse(!collapsed)}
+                //     update={update}
+                //     index={index}
+                //     filePermission={data?.filePermission ?? ''}
+                //     subPath={data?.subPath ?? false}
+                //     mountPath={data?.mountPath}
+                // />
+                <OverrideConfigMapForm
                     appChartRef={appChartRef}
-                    name={data?.name}
-                    type={data?.type}
-                    //type="environment"
-                    external={data?.external ?? false}
-                    data={data?.data ?? null}
+                    toggleCollapse={(e) => toggleCollapse(!collapsed)}
+                    configmap={data}
                     id={id}
-                    appId={appId}
-                    isUpdate={data?.data}
-                    collapse={(e) => toggleCollapse(!collapsed)}
-                    update={update}
-                    index={index}
-                    filePermission={data?.filePermission ?? ''}
-                    subPath={data?.subPath ?? false}
-                    mountPath={data?.mountPath}
+                    reload={update}
+                    isOverrideView={isOverrideView}
                 />
             )
         }
+    }
+
+    const renderLabel = (): JSX.Element => {
+        let labelText = ''
+        if (isOverrideView) {
+            if (data?.defaultData) {
+                labelText = data.data ? 'Overridden' : 'Inheriting'
+            } else {
+                labelText = 'env'
+            }
+        }
+        if (labelText) {
+            return <div className="flex tag ml-12">{labelText}</div>
+        }
+        return null
     }
 
     return (
@@ -214,10 +239,10 @@ export function ConfigMapSecretContainer({
                         className={`flex left ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
                     >
                         {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
-                        {label && <div className="flex tag ml-12">{label}</div>}
+                        {renderLabel()}
                     </div>
                     <div className="flex right">
-                        {!collapsed && <Trash className="icon-n4 cursor icon-delete" onClick={openDeleteModal} />}
+                        {!collapsed && title && <Trash className="icon-n4 cursor icon-delete" onClick={openDeleteModal} />}
                         {title && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
                     </div>
                 </article>
@@ -228,9 +253,17 @@ export function ConfigMapSecretContainer({
     )
 }
 
-export function Tab({ title, active, onClick, type }) {
+export function Tab({ title, value, active, onClick, type, disabled }: TabProps) {
+    const handleTabChange = (): void => {
+        if (!disabled) {
+            onClick(value)
+        }
+    }
     return (
-        <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
+        <nav
+            className={`form__tab white-card flex left ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+            onClick={handleTabChange}
+        >
             <div className="tab__selector"></div>
             <div
                 data-testid={`${type}-${title.toLowerCase().split(' ').join('-')}-radio-button`}
@@ -414,4 +447,46 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
     }
 
     return { yaml, handleYamlChange, error }
+}
+
+export function Override({ external, overridden, onClick, loading = false, type = 'ConfigMap' }) {
+    return (
+        <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
+            {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
+            <div className="flex column left">
+                <div className="override-title" data-testid="env-override-title">
+                    {external
+                        ? 'Nothing to override'
+                        : overridden
+                        ? 'Base configurations are overridden'
+                        : 'Inheriting base configurations'}
+                </div>
+                <div className="override-subtitle" data-testid="env-override-subtitle">
+                    {external
+                        ? `This ${type} does not have any overridable values.`
+                        : overridden
+                        ? 'Deleting will discard the current overrides and base configuration will be applicable to this environment.'
+                        : `Overriding will fork the ${type} for this environment. Updating the base values will no longer affect this configuration.`}
+                </div>
+            </div>
+            {!external && (
+                <button
+                    data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    onClick={onClick}
+                >
+                    {loading ? (
+                        <Progressing />
+                    ) : overridden ? (
+                        <>
+                            <DeleteIcon className="icon-dim-16 mr-8" />
+                            <span>Delete override</span>
+                        </>
+                    ) : (
+                        'Allow override'
+                    )}
+                </button>
+            )}
+        </div>
+    )
 }

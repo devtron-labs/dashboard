@@ -73,7 +73,7 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                     update={reload}
                     componentType="configmap"
                     id={configMap?.id ?? 0}
-                    label={isOverrideView ? 'env' : ''}
+                    isOverrideView={isOverrideView}
                 />
                 {configMap?.configData.map((cm, idx) => {
                     return (
@@ -87,7 +87,7 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                             data={cm}
                             index={idx}
                             id={configMap?.id}
-                            label={getLabel(isOverrideView, cm.defaultData, cm.data)}
+                            isOverrideView={isOverrideView}
                         />
                     )
                 })}

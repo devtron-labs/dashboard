@@ -295,7 +295,10 @@ export default function ConfigMapForm({
         )
     }
 
-    const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
+    const tabs = [
+        { title: 'Environment Variable', value: 'Environment Variable' },
+        { title: 'Data Volume', value: 'Data Volume' },
+    ].map((data) => ({
         ...data,
         active: data.title === selectedTab,
     }))
