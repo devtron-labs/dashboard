@@ -26,7 +26,6 @@ import {
     TippyTheme,
     InfoColourBar,
     PopupMenu,
-    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { addJobEnvironment, deleteJobEnvironment, getAppConfigStatus, getAppOtherEnvironmentMin, getCIConfig, getEnvironmentListMinPublic, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
@@ -61,7 +60,6 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
-import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 import ReactSelect from 'react-select'
 import { DropdownIndicator } from '../../../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading } from '../../../CIPipelineN/Constants'
@@ -739,6 +737,7 @@ function AppComposeRouter({
                         </Route>
                         {isUnlocked.workflowEditor && [
                             <Route
+                                key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
                                 path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
                                 render={() => (
                                     <WorkflowEdit
