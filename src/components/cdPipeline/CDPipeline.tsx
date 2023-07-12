@@ -1249,7 +1249,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 <SwitchItem value={SwitchItemValues.Config}> Config </SwitchItem>
                                 <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
                             </Switch>
-                            <CodeEditor.ValidationError />
+                            <span className='ml-4'>
+                                <CodeEditor.ValidationError />
+                            </span>
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
