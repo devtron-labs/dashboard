@@ -56,7 +56,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, isJobV
             setConfigMapLoading(true)
             try {
                 const configmapRes = await getEnvironmentConfigs(appId, envId)
-                if (isJobView) {
+                if (!isJobView) {
                     const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
                     if (!appChartRefRes.result) {
                         toast.error('Error happened while fetching the results. Please try again')

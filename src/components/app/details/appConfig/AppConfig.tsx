@@ -1138,7 +1138,7 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
         setEnvironmentView(!addEnvironment)
     }
 
-    const ValueContainer = (props) => {
+    const envValueContainer = (props) => {
         return (
             <components.ValueContainer {...props}>
                 {!props.selectProps.inputValue ? (
@@ -1154,6 +1154,10 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                 <span className="dc__position-abs dc__left-30 cn-5 ml-2">{React.cloneElement(props.children[1])}</span>
             </components.ValueContainer>
         )
+    }
+
+    const ValueContainer = (props): JSX.Element => {
+        return envValueContainer()
     }
 
     let selectedEnv : Environment = environmentList.find((env) => env.id === -1)
