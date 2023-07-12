@@ -172,8 +172,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries: null,
             selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
-            defaultContainerName: ''
-
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -283,10 +281,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries = dockerRegistries.sort((a, b) => {
                 return sortCallback('id', a, b)
             })
+            const defaultContainerRegistry = dockerRegistries.find((docker) => docker.isDefault === true)
             this.setState({
                 environments: environments,
                 dockerRegistries: dockerRegistries,
-                defaultContainerName: dockerRegistries.find((docker) => docker.isDefault === true)?.id
+                selectedRegistry: defaultContainerRegistry,
+                pipelineConfig: {
+                    ...this.state.pipelineConfig,
+                    containerRegistryName: defaultContainerRegistry?.id
+                }
             })
 
             if (this.props.match.params.cdPipelineId) {
@@ -450,7 +453,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                     ? GeneratedHelmPush.PUSH
                     : GeneratedHelmPush.DO_NOT_PUSH,
-            selectedRegistry: this.state.dockerRegistries.filter(
+            selectedRegistry: this.state.dockerRegistries.find(
                 (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
             ),
         })
@@ -717,7 +720,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
         }
         if(this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH){
-          errorForm.containerRegistryError = this.validationRules.containerRegistry(!!pipelineConfig.containerRegistryName || !!this.state.defaultContainerName)
+          errorForm.containerRegistryError = this.validationRules.containerRegistry(
+              pipelineConfig.containerRegistryName || '',
+          )
           errorForm.repositoryError = this.validationRules.repository(pipelineConfig.repoName)
         }
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
@@ -735,7 +740,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
 
         if (this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
-            valid = (!!pipelineConfig.containerRegistryName || !!this.state.defaultContainerName) && !!pipelineConfig.repoName
+            valid = !!pipelineConfig.containerRegistryName && !!pipelineConfig.repoName
         }
         if (!valid) {
             this.setState({ loadingData: false })
@@ -766,7 +771,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     : null,
             containerRegistryName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
-                    ? this.state.pipelineConfig.containerRegistryName || this.state.defaultContainerName
+                    ? this.state.pipelineConfig.containerRegistryName
                     : '',
             repoName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
