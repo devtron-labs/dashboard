@@ -281,14 +281,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries = dockerRegistries.sort((a, b) => {
                 return sortCallback('id', a, b)
             })
-            const defaultContainerRegistry = dockerRegistries.find((docker) => docker.isDefault === true)
             this.setState({
                 environments: environments,
                 dockerRegistries: dockerRegistries,
-                selectedRegistry: defaultContainerRegistry,
                 pipelineConfig: {
                     ...this.state.pipelineConfig,
-                    containerRegistryName: defaultContainerRegistry?.id
                 }
             })
 
