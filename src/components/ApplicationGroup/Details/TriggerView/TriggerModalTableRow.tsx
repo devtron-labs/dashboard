@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ResponseRowType, TriggerModalRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
@@ -10,7 +10,7 @@ import { importComponentFromFELibrary } from '../../../common'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-export function TriggerModalRow({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) {
+export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDownloadPopupOpen }: TriggerModalRowType) {
     const [downloader, setDownLoader] = useState(false)
     const [isDownloaded, setIsDownLoad] = useState(false)
     const params = {
@@ -33,9 +33,13 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName }: Trigg
         e.stopPropagation()
         setIsDownLoad(true)
         if (getDeployManifestDownload) {
-            getDeployManifestDownload(params, setDownLoader,true)
+            getDeployManifestDownload(params, setDownLoader, true)
         }
     }
+
+    useEffect(() => {
+            setDownloadPopupOpen(downloader)
+    }, [downloader])
 
     return (
         <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual': ''}`} key={`response-${rowData.appId}`}>
