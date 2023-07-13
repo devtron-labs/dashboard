@@ -7,7 +7,6 @@ import {
     useBreadcrumb,
     toastAccessDenied,
     ServerErrors,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
