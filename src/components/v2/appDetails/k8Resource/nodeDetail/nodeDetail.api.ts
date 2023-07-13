@@ -1,6 +1,8 @@
 import { Routes } from '../../../../../config';
 import { post, put } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
+import IndexStore from '../../index.store'
+const appDetails = IndexStore.getAppDetails()
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
@@ -77,7 +79,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     )[0]
     const applicationObject =
         appDetails.deploymentAppType == DeploymentAppType.argo_cd ? `${appDetails.appName}` : appDetails.appName
-    
+
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
@@ -175,4 +177,19 @@ export const createResource = (
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
     return post(Routes.CREATE_RESOURCE, requestData)
+}
+
+export const generateEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType) => {
+    const appIds =
+        appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(
+                  clusterId,
+                  appId,
+                  environmentId,
+              )
+            : getAppId(clusterId, namespace, appName)
+
+    let url: string = 'k8s/resources/ephemeralContainers'
+    url += `?identifier=${appIds}&appType=0`
+  return post(url, requestData)
 }

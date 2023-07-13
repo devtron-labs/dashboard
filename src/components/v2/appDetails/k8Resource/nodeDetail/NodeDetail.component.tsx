@@ -6,18 +6,23 @@ import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
-import { NodeDetailTab } from './nodeDetail.type'
+import { EphemeralForm, EphemeralFormAdvancedType, EphemeralKeyType, NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { NodeDetailPropsType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { showError, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Checkbox,
+    CHECKBOX_VALUE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
 import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
 import { getNodeDetailTabs } from './nodeDetail.util'
+import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 
 function NodeDetailComponent({
     loadingResources,
@@ -33,7 +38,7 @@ function NodeDetailComponent({
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
+    const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState([])
@@ -44,6 +49,20 @@ function NodeDetailComponent({
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
+    const [showEphemeralContainerDrawer, setEphemeralContainerDrawer] = useState<boolean>(false)
+    const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
+        basicData: {
+            targetContainerName: '',
+            containerName: '',
+            image: '',
+        },
+    })
+    const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
+        advancedData: {
+            manifest: '',
+        },
+    })
+
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -187,36 +206,45 @@ function NodeDetailComponent({
     const handleChanges = (): void => {
         setHideManagedFields(!hideManagedFields)
     }
-    
+
+    const onClickShowLaunchEphemeral = (): void => {
+        setEphemeralContainerDrawer(true)
+    }
+
     return (
         <React.Fragment>
-            <div data-testid="app-resource-containor-header" className="pl-20 bcn-0 flex left w-100 pr-20">
-                {tabs &&
-                    tabs.length > 0 &&
-                    tabs.map((tab: string, index: number) => {
-                        return (
-                            <div
-                                key={index + 'resourceTreeTab'}
-                                className={`${
-                                    tab.toLowerCase() === selectedTabName.toLowerCase()
-                                        ? 'default-tab-row cb-5'
-                                        : 'cn-7'
-                                } pt-6 pb-6 cursor pl-8 pr-8 top`}
-                            >
-                                <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
-                                    <span
-                                        data-testid={`${tab.toLowerCase()}-nav-link`}
-                                        className={`${
-                                            tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
-                                        } default-tab-cell`}
-                                    >
-                                        {tab.toLowerCase()}
-                                    </span>
-                                </NavLink>
-                            </div>
-                        )
-                    })}
-                    
+            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__content-space">
+                <div data-testid="app-resource-containor-header" className="flex left">
+                    {tabs &&
+                        tabs.length > 0 &&
+                        tabs.map((tab: string, index: number) => {
+                            return (
+                                <div
+                                    key={index + 'resourceTreeTab'}
+                                    className={`${
+                                        tab.toLowerCase() === selectedTabName.toLowerCase()
+                                            ? 'default-tab-row cb-5'
+                                            : 'cn-7'
+                                    } pt-6 pb-6 cursor pl-8 pr-8 top`}
+                                >
+                                    <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
+                                        <span
+                                            data-testid={`${tab.toLowerCase()}-nav-link`}
+                                            className={`${
+                                                tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
+                                            } default-tab-cell`}
+                                        >
+                                            {tab.toLowerCase()}
+                                        </span>
+                                    </NavLink>
+                                </div>
+                            )
+                        })}
+                </div>
+                <div className="cursor cb-5" onClick={onClickShowLaunchEphemeral}>
+                    Launch Ephemeral Container
+                </div>
+
                 {isManagedFields && (
                     <>
                         <div className="ml-12 mr-5 tab-cell-border"></div>
@@ -235,6 +263,7 @@ function NodeDetailComponent({
                     </>
                 )}
             </div>
+
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI
                     msg=""
@@ -296,6 +325,17 @@ function NodeDetailComponent({
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
                 </Switch>
+            )}
+            {showEphemeralContainerDrawer && (
+                <EphemeralContainerDrawer
+                    ephemeralForm={ephemeralForm}
+                    setEphemeralForm={setEphemeralForm}
+                    setEphemeralContainerDrawer={setEphemeralContainerDrawer}
+                    params={params}
+                    setEphemeralFormAdvanced={setEphemeralFormAdvanced}
+                    ephemeralFormAdvanced={ephemeralFormAdvanced}
+
+                />
             )}
         </React.Fragment>
     )
