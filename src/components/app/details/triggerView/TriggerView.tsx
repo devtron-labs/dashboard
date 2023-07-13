@@ -9,6 +9,7 @@ import {
     DeploymentNodeType,
     CDModalTab,
     DeploymentAppTypes,
+    ToastBodyWithButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCDMaterialList,
@@ -47,7 +48,7 @@ import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
+import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import {
     getBranchValues,
     handleSourceNotConfigured,
@@ -56,7 +57,6 @@ import {
 } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { workflow } from './__mocks__/workflow.mock'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -94,8 +94,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isChangeBranchClicked: false,
             loader: false,
             isSaveLoading: false,
-            appReleaseTags:[],
-            tagsEditable:false,
+            appReleaseTags: [],
+            tagsEditable: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -117,11 +117,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     setAppReleaseTags = (appReleaseTags: string[]) => {
-        this.setState({appReleaseTags: appReleaseTags})
+        this.setState({ appReleaseTags: appReleaseTags })
     }
 
     setTagsEditable = (tagsEditable: boolean) => {
-        this.setState({tagsEditable: tagsEditable})
+        this.setState({ tagsEditable: tagsEditable })
     }
 
     getWorkflows = () => {
@@ -584,7 +584,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
-        
+
         getCDMaterialList(
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
@@ -595,7 +595,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     let cipipId = 0
                     workflow.nodes.map((node) => {
-                        if(node.type == 'CI'){
+                        if (node.type == 'CI') {
                             cipipId = +node.id
                         }
                         return node
@@ -603,7 +603,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
-                            node.appReleaseTagNames= data.appReleaseTagNames
+                            node.appReleaseTagNames = data.appReleaseTagNames
                             node.tagsEditable = data.tagsEditable
                             if (node.type === 'CD') {
                                 node.approvalUsers = data.approvalUsers
@@ -612,7 +612,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node.requestedUserId = data.requestedUserId
                             }
                         }
-                        node.connectingCiPipelineId =  cipipId
+                        node.connectingCiPipelineId = cipipId
                         return node
                     })
                     workflow.appReleaseTags = data.appReleaseTagNames
@@ -749,7 +749,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        node.isVirtualEnvironment && node.deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
+                        node.isVirtualEnvironment &&
+                            node.deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
                             this.onClickManifestDownload(
                                 _appId,
                                 node.environmentId,
@@ -776,7 +777,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     }
                 })
                 .catch((errors: ServerErrors) => {
-                    showError(errors)
+                    node.isVirtualEnvironment && node.deploymentAppType == DeploymentAppTypes.MANIFEST_PUSH
+                        ? this.handleTriggerErrorMessageForHelmManifestPush(errors, node.id, node.environmentId)
+                        : showError(errors)
                     this.setState({ code: errors.code, isLoading: false, isSaveLoading: false })
                 })
         } else {
@@ -785,6 +788,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             message += ciArtifact.id ? '' : 'Artifact id missing '
             toast.error(message)
         }
+    }
+
+    handleTriggerErrorMessageForHelmManifestPush = (serverError: any, cdPipelineId: string, environmentId: number) => {
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors) && serverError.code !== 403 && serverError.code !== 408) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                const toastBody = (
+                    <ToastBodyWithButton
+                        onClick={() => this.redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
+                        title=""
+                        subtitle={userMessage || internalMessage}
+                        buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
+                    />
+                )
+                toast.error(toastBody, { autoClose: false })
+            })
+        } else {
+            showError(serverError)
+        }
+    }
+
+    redirectToDeploymentStepsPage = (cdPipelineId: string, environmentId: number) => {
+        const { appId } = this.props.match.params
+        const { history } = this.props
+        history.push(`/app/${appId}/cd-details/${environmentId}/${cdPipelineId}`)
     }
 
     onClickTriggerCINode = () => {

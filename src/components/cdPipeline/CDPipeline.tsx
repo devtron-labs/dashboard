@@ -172,8 +172,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             dockerRegistries: null,
             selectedRegistry: null,
             generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
-            defaultContainerName: ''
-
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -286,7 +284,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.setState({
                 environments: environments,
                 dockerRegistries: dockerRegistries,
-                defaultContainerName: dockerRegistries.find((docker) => docker.isDefault === true)?.id
             })
 
             if (this.props.match.params.cdPipelineId) {
@@ -451,7 +448,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
                     ? GeneratedHelmPush.PUSH
                     : GeneratedHelmPush.DO_NOT_PUSH,
-            selectedRegistry: this.state.dockerRegistries.filter(
+            selectedRegistry: this.state.dockerRegistries.find(
                 (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
             ),
         })
@@ -718,7 +715,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
         }
         if(this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH){
-          errorForm.containerRegistryError = this.validationRules.containerRegistry(pipelineConfig.containerRegistryName || this.state.defaultContainerName)
+          errorForm.containerRegistryError = this.validationRules.containerRegistry(
+              pipelineConfig.containerRegistryName || '',
+          )
           errorForm.repositoryError = this.validationRules.repository(pipelineConfig.repoName)
         }
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
@@ -736,7 +735,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
 
         if (this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
-            valid = (!!pipelineConfig.containerRegistryName || !!this.state.defaultContainerName) && !!pipelineConfig.repoName
+            valid = !!pipelineConfig.containerRegistryName && !!pipelineConfig.repoName
         }
         if (!valid) {
             this.setState({ loadingData: false })
@@ -767,7 +766,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     : null,
             containerRegistryName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
-                    ? this.state.pipelineConfig.containerRegistryName || this.state.defaultContainerName
+                    ? this.state.pipelineConfig.containerRegistryName
                     : '',
             repoName:
                 this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH ? this.state.pipelineConfig.repoName : '',
@@ -1201,10 +1200,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="delete-stage-icon cursor"
                         onClick={(e) => this.deleteStage(key)}
                     />
-                    {this.state.isVirtualEnvironmentOnEnvSelection &&
-                    this.state.generatedHelmPushAction === GeneratedHelmPush.PUSH
-                        ? this.renderPrePostStageType(key)
-                        : this.renderPrePostStageType(key)}
+                    {!(
+                        this.state.pipelineConfig.isVirtualEnvironment &&
+                        this.state.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ) && this.renderPrePostStageType(key)}
                 </div>
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
@@ -1253,7 +1252,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 <SwitchItem value={SwitchItemValues.Config}> Config </SwitchItem>
                                 <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
                             </Switch>
-                            <CodeEditor.ValidationError />
+                            <span className="ml-4">
+                                <CodeEditor.ValidationError />
+                            </span>
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>

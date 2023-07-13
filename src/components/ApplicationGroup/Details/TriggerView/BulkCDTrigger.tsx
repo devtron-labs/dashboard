@@ -48,6 +48,7 @@ export default function BulkCDTrigger({
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
+    const [isDownloadPopupOpen, setDownloadPopupOpen] = useState(false);
     const [tagNotFoundWarningsMap, setTagNotFoundWarningsMap] = useState<Map<number, string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -77,6 +78,7 @@ export default function BulkCDTrigger({
     }
     const outsideClickHandler = (evt): void => {
         if (
+            !isDownloadPopupOpen &&
             ciTriggerDetailRef.current &&
             !ciTriggerDetailRef.current.contains(evt.target) &&
             typeof closePopup === 'function'
@@ -437,6 +439,7 @@ export default function BulkCDTrigger({
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal
+                        setDownloadPopupOpen={setDownloadPopupOpen}
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}

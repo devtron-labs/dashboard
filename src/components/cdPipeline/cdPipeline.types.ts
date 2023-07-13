@@ -105,7 +105,6 @@ export interface CDPipelineState {
     dockerRegistries
     generatedHelmPushAction: string
     selectedRegistry: any
-    defaultContainerName: string
 }
 
 export interface PipelineConfig {
