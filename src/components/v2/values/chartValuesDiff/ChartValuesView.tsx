@@ -10,6 +10,7 @@ import {
     InfoColourBar,
     ServerErrors,
     ForceDeleteDialog,
+    GenericEmptyState,
     ResponseType,
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -52,7 +53,6 @@ import {
     DeleteApplicationButton,
     UpdateApplicationButton,
     AppNameInput,
-    ErrorScreenWithInfo,
     ValueNameInput,
     DeploymentAppSelector,
 } from './ChartValuesView.component'
@@ -70,6 +70,7 @@ import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-lef
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import {
@@ -1283,7 +1284,8 @@ function ChartValuesView({
                 }`}
             >
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                    <ErrorScreenWithInfo info={commonState.valuesEditorError} />
+                    <GenericEmptyState image={ErrorExclamation} classname="icon-dim-20 mb-10" title="" subTitle={commonState.valuesEditorError} />
+
                 ) : (
                     <ChartValuesEditor
                         loading={

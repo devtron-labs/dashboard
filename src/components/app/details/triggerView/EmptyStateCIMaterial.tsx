@@ -7,7 +7,7 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -32,13 +32,7 @@ export default function EmptyStateCIMaterial({
     const getData = () => {
         if (isRepoError) {
             return {
-                img: (
-                    <img
-                        src={ErrorImage}
-                        alt={CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitAltText}
-                        className="empty-state__img--ci-material"
-                    />
-                ),
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{repoErrorMsg}</h1>,
                 subtitle: (
                     <a href={repoUrl} rel="noopener noreferrer" target="_blank">
@@ -50,7 +44,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (isDockerFileError) {
             return {
-                img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{dockerFileErrorMsg}</h1>,
                 subtitle: DOCKER_FILE_ERROR_MESSAGE,
                 cta:
@@ -64,7 +58,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (isBranchError) {
             return {
-                img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{branchErrorMsg}</h1>,
                 subtitle: repoUrl ? (
                     <a href={repoUrl} rel="noopener noreferrer" target="_blank" className="">
@@ -84,13 +78,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (noSearchResults) {
             return {
-                img: (
-                    <img
-                        src={NoResults}
-                        alt={CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitAltText}
-                        className="empty-state__img--ci-material"
-                    />
-                ),
+                img: NoResults,
                 title: <h1 className="dc__empty-title dc__word-break-all">{noSearchResultsMsg}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoSearchResults,
                 cta: (
@@ -102,13 +90,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (!anyCommit && !showAllCommits) {
             return {
-                img: (
-                    <img
-                        src={NoEligibleCommit}
-                        alt={CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitAltText}
-                        className="empty-state__img--ci-material"
-                    />
-                ),
+                img: NoEligibleCommit,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
                 link: <span data-testid="show-excluded-commits-button" className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
@@ -116,13 +98,7 @@ export default function EmptyStateCIMaterial({
             }
         } else if (!anyCommit) {
             return {
-                img: (
-                    <img
-                        src={EmptyStateImage}
-                        alt={CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitAltText}
-                        className="empty-state__img--ci-material"
-                    />
-                ),
+                img: EmptyStateImage,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFoundSubtitle,
                 cta: null,
@@ -130,13 +106,7 @@ export default function EmptyStateCIMaterial({
             }
         } else {
             return {
-                img: (
-                    <img
-                        src={ErrorImage}
-                        alt={CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitAltText}
-                        className="empty-state__img--ci-material"
-                    />
-                ),
+                img: ErrorImage,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.FailedToFetch}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.FailedToFetchSubtitle,
                 cta: (
@@ -149,29 +119,29 @@ export default function EmptyStateCIMaterial({
         }
     }
 
+    const handleMaterialLoadingButton = () => {
+        return (
+            <span className="dc__link cursor" onClick={toggleWebHookModal}>
+                {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
+            </span>
+        )
+    }
+
     const { title, subtitle, img, cta, link } = getData()
-    return isMaterialLoading ? (
-        <EmptyState>
-            <EmptyState.Loading text={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
-        </EmptyState>
+    return isMaterialLoading ? ( 
+            <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
-        <EmptyState>
-            <EmptyState.Image>{img}</EmptyState.Image>
-            <EmptyState.Title>{title}</EmptyState.Title>
-            <EmptyState.Subtitle className="mb-0">
-                <>
-                    {subtitle}
-                    {link}
-                </>
-            </EmptyState.Subtitle>
-            <EmptyState.Button>{cta}</EmptyState.Button>
-            {isWebHook && (
-                <EmptyState.Button>
-                    <span className="dc__link cursor" onClick={toggleWebHookModal}>
-                        {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
-                    </span>
-                </EmptyState.Button>
-            )}
-        </EmptyState>
+            <GenericEmptyState
+                image={img}
+                title={title}
+                subTitle={
+                    <>
+                        {subtitle}
+                        {link}
+                    </>
+                }
+                isButtonAvailable={isWebHook}
+                renderButton={handleMaterialLoadingButton}
+            />
     )
 }
