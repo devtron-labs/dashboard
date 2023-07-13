@@ -228,6 +228,7 @@ export interface ResourceTree {
 export interface PodMetaData {
     containers: Array<string>
     initContainers: any
+    ephemeralContainers: any
     isNew: boolean
     name: string
     uid: string
@@ -421,6 +422,7 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
 export interface OptionsBase {
     name: string;
     isInitContainer?: boolean
+    isEphemeralContainer?: boolean
 }
 
 export interface Options extends OptionsBase {

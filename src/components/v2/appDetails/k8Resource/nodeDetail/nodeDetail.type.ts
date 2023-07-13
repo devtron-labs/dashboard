@@ -40,6 +40,7 @@ export interface EphemeralContainerDrawerType {
     setEphemeralFormAdvanced: React.Dispatch<React.SetStateAction<EphemeralFormAdvancedType>>
     ephemeralFormAdvanced: EphemeralFormAdvancedType
     containerList
+    setContainers        : any
 }
 
 export interface ResponsePayload {

@@ -26,7 +26,7 @@ export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boo
 }
 
 export const flatContainers = (pod: PodMetaData): string[] => {
-    return [...(pod?.containers || []), ...(pod?.initContainers || [])]
+    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers || [])]
 }
 
 export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
@@ -34,11 +34,18 @@ export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
         ...(pod?.containers?.map((_container) => ({
             name: _container,
             isInitContainer: false,
+            isEphemeralConainer: false,
         })) || []),
         ...(pod?.initContainers?.map((_container) => ({
             name: _container,
             isInitContainer: true,
+            isEphemeralConainer: false,
         })) || []),
+        ...(pod?.ephemeralContainers?.map((_container) => ({
+            name: _container,
+            isInitContainer: false,
+            isEphemeralConainer: true,
+        })) || []), 
     ]
 }
 
@@ -308,12 +315,18 @@ export const getContainerOptions = (containers: string[]) => {
 
 export const getGroupedContainerOptions = (containers: Options[]) => {
     const containerOptions = [],
-        initContainerOptions = []
+        initContainerOptions = [],
+        ephemralContainerOptions = []
 
     if (Array.isArray(containers) && containers.length > 0) {
         for (const _container of containers) {
             if (_container.isInitContainer) {
                 initContainerOptions.push({
+                    label: _container.name,
+                    value: _container.name,
+                })
+            } else if (_container.isEphemeralContainer){
+                ephemralContainerOptions.push({
                     label: _container.name,
                     value: _container.name,
                 })
@@ -337,6 +350,13 @@ export const getGroupedContainerOptions = (containers: Options[]) => {
                 label: 'Init containers',
                 options: initContainerOptions.sort(sortOptionsByLabel),
             })
+        }
+
+        if (ephemralContainerOptions.length > 0){
+            groupedOptions.push({
+                label: 'Ephemeral containers',
+                options: ephemralContainerOptions.sort(sortOptionsByLabel),
+            }) 
         }
 
         return groupedOptions

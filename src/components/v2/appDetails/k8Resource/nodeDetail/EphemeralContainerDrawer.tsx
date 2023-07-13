@@ -32,6 +32,7 @@ function EphemeralContainerDrawer({
     setEphemeralFormAdvanced,
     ephemeralFormAdvanced,
     containerList,
+    setContainers
 }: EphemeralContainerDrawerType) {
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Config)
@@ -267,6 +268,31 @@ function EphemeralContainerDrawer({
                         manifest: '',
                     },
                 })
+
+                const containers = []
+                response?.ephemralContainers?.forEach(element => {
+                    containers.push({
+                        name: element,
+                        isInitContainer: false,
+                        isEphemeralConainer: true,
+                    })
+                });
+                response?.containers?.forEach(element => {
+                    containers.push({
+                        name: element,
+                        isInitContainer: false,
+                        isEphemeralConainer: false,
+                    })
+                });
+                response?.initContainers?.forEach(element => {
+                    containers.push({
+                        name: element,
+                        isInitContainer: true,
+                        isEphemeralConainer: false,
+                    })
+                });
+
+                setContainers(containers)
             })
             .catch((err) => {
                 showError(err)

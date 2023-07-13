@@ -111,6 +111,7 @@ function NodeDetailComponent({
                         ...result.manifest.spec.containers.map((_container) => ({
                             name: _container.name,
                             isInitContainer: false,
+                            isEphemeralContainer: false,
                         })),
                     )
                 }
@@ -120,9 +121,21 @@ function NodeDetailComponent({
                         ...result.manifest.spec.initContainers.map((_container) => ({
                             name: _container.name,
                             isInitContainer: true,
+                            isEphemeralContainer: false,
                         })),
                     )
                 }
+
+                if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
+                    _resourceContainers.push(
+                        ...result.manifest.spec.ephemeralContainers.map((_container) => ({
+                            name: _container.name,
+                            isInitContainer: false,
+                            isEphemeralContainer: true,
+                        })),
+                    )
+                }
+
             }
             setResourceContainers(_resourceContainers)
 
@@ -337,7 +350,7 @@ function NodeDetailComponent({
                     setEphemeralFormAdvanced={setEphemeralFormAdvanced}
                     ephemeralFormAdvanced={ephemeralFormAdvanced}
                     containerList={appDetails.resourceTree.podMetadata}
-
+                    setContainers={setResourceContainers}
                 />
             )}
         </React.Fragment>
