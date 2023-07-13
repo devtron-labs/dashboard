@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
-import { DEPLOYMENT_STATUS, MANIFEST_STATUS_HEADERS, Moment12HourFormat, TERMINAL_STATUS_MAP, TIMELINE_STATUS } from '../../../../config'
+import {
+    DEPLOYMENT_STATUS,
+    MANIFEST_STATUS_HEADERS,
+    Moment12HourFormat,
+    TERMINAL_STATUS_MAP,
+    TIMELINE_STATUS,
+} from '../../../../config'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { getManualSync } from '../../service'
@@ -15,6 +21,8 @@ import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-discon
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { ReactComponent as TimeOut } from '../../../../assets/icons/ic-timeout-red.svg'
 import AppStatusDetailsChart from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailsChart'
+import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
+import { statusIcon } from '../../config'
 
 export function DeploymentStatusDetailRow({
     type,
@@ -22,13 +30,13 @@ export function DeploymentStatusDetailRow({
     deploymentDetailedData,
     streamData,
 }: DeploymentStatusDetailRowType) {
-    
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
-    const [collapsed, toggleCollapsed] = useState<boolean>(
-        statusBreakDownType.isCollapsed,
-    )
+    const [collapsed, toggleCollapsed] = useState<boolean>(statusBreakDownType.isCollapsed)
     const appHealthDropDownlist = ['inprogress', 'failed', 'disconnect', 'timed_out']
+    const isHelmManifestPushFailed =
+        type === TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO &&
+        deploymentDetailedData.deploymentStatus === statusIcon.failed
 
     useEffect(() => {
         toggleCollapsed(statusBreakDownType.isCollapsed)
@@ -52,9 +60,7 @@ export function DeploymentStatusDetailRow({
                 {statusBreakDownType.timelineStatus && (
                     <div
                         className={`flex left pt-8 pl-12 pb-8 lh-20 ${
-                            statusBreakDownType.icon !== 'inprogress'
-                                ? 'bcr-1'
-                                : 'bcy-2'
+                            statusBreakDownType.icon !== 'inprogress' ? 'bcr-1' : 'bcy-2'
                         }`}
                     >
                         {deploymentDetailedData.deploymentStatusBreakdown[type].timelineStatus}
@@ -88,30 +94,28 @@ export function DeploymentStatusDetailRow({
                                     ))}
                                 </div>
                                 <div className="resource-list fs-13">
-                                    {statusBreakDownType.resourceDetails.map(
-                                        (nodeDetails) => (
+                                    {statusBreakDownType.resourceDetails.map((nodeDetails) => (
+                                        <div
+                                            className="app-status-row pt-8 pb-8"
+                                            key={`${nodeDetails.resourceKind}/${nodeDetails.resourceName}`}
+                                        >
+                                            <div className="dc__break-word">{nodeDetails.resourceKind}</div>
+                                            <div className="dc__break-word">{nodeDetails.resourceName}</div>
                                             <div
-                                                className="app-status-row pt-8 pb-8"
-                                                key={`${nodeDetails.resourceKind}/${nodeDetails.resourceName}`}
+                                                className={`app-summary__status-name f-${
+                                                    nodeDetails.resourceStatus
+                                                        ? nodeDetails.resourceStatus.toLowerCase() ===
+                                                          TERMINAL_STATUS_MAP.RUNNING
+                                                            ? TERMINAL_STATUS_MAP.PROGRESSING
+                                                            : nodeDetails.resourceStatus.toLowerCase()
+                                                        : ''
+                                                }`}
                                             >
-                                                <div className="dc__break-word">{nodeDetails.resourceKind}</div>
-                                                <div className="dc__break-word">{nodeDetails.resourceName}</div>
-                                                <div
-                                                    className={`app-summary__status-name f-${
-                                                        nodeDetails.resourceStatus
-                                                            ? nodeDetails.resourceStatus.toLowerCase() ===
-                                                              TERMINAL_STATUS_MAP.RUNNING
-                                                                ? TERMINAL_STATUS_MAP.PROGRESSING
-                                                                : nodeDetails.resourceStatus.toLowerCase()
-                                                            : ''
-                                                    }`}
-                                                >
-                                                    {nodeDetails.resourceStatus}
-                                                </div>
-                                                <ShowMoreText text={nodeDetails.statusMessage} />
+                                                {nodeDetails.resourceStatus}
                                             </div>
-                                        ),
-                                    )}
+                                            <ShowMoreText text={nodeDetails.statusMessage} />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         ) : null}
@@ -128,9 +132,7 @@ export function DeploymentStatusDetailRow({
                     {statusBreakDownType.timelineStatus && (
                         <div
                             className={`flex left pt-8 pl-12 pb-8 lh-20 ${
-                                statusBreakDownType.icon !== 'inprogress'
-                                    ? 'bcr-1'
-                                    : 'bcy-2'
+                                statusBreakDownType.icon !== 'inprogress' ? 'bcr-1' : 'bcy-2'
                             }`}
                         >
                             {statusBreakDownType.timelineStatus}
@@ -143,7 +145,11 @@ export function DeploymentStatusDetailRow({
                         </div>
                     )}
                     <div>
-                        <AppStatusDetailsChart appStreamData={streamData} filterRemoveHealth={true} showFooter={false} />
+                        <AppStatusDetailsChart
+                            appStreamData={streamData}
+                            filterRemoveHealth={true}
+                            showFooter={false}
+                        />
                     </div>
                 </div>
             )
@@ -153,7 +159,7 @@ export function DeploymentStatusDetailRow({
     const renderIcon = (iconState: string): JSX.Element => {
         switch (iconState) {
             case 'success':
-                return <Check className="icon-dim-20 green-tick" data-testid = "success-green-tick" />
+                return <Check className="icon-dim-20 green-tick" data-testid="success-green-tick" />
             case 'failed':
                 return <Error className="icon-dim-20" />
             case 'unknown':
@@ -177,54 +183,61 @@ export function DeploymentStatusDetailRow({
         }
     }
 
+    const renderErrorInfoBar = () => {
+        return (
+            <ErrorInfoStatusBar
+                type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
+                nonDeploymentError={deploymentDetailedData.nonDeploymentError}
+                errorMessage={deploymentDetailedData.deploymentError}
+                hideVerticalConnector={true}
+                hideErrorIcon={true}
+            />
+        )
+    }
 
     return (
         <>
-            <div
-                className={`deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 ${
-                    collapsed ? 'br-4' : 'border-collapse'
-                } en-2`}
-            >
-                {renderIcon(statusBreakDownType.icon)}
-                <span className="ml-12 mr-12 fs-13">
-                    <span data-testid = "deployment-status-step-name">{statusBreakDownType.displayText}</span>
-                    {statusBreakDownType.displaySubText && (
-                        <span className={`ml-12 f-${statusBreakDownType.icon || 'waiting'}`}>
-                            {statusBreakDownType.displaySubText}
-                        </span>
-                    )}
-                </span>
+            <div className="bw-1 en-2">
+                <div
+                    className={`deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0  ${
+                        collapsed ? (!isHelmManifestPushFailed ? 'br-4' : '') : 'border-collapse'
+                    }`}
+                >
+                    {renderIcon(statusBreakDownType.icon)}
+                    <span className="ml-12 mr-12 fs-13">
+                        <span data-testid="deployment-status-step-name">{statusBreakDownType.displayText}</span>
+                        {statusBreakDownType.displaySubText && (
+                            <span className={`ml-12 f-${statusBreakDownType.icon || 'waiting'}`}>
+                                {statusBreakDownType.displaySubText}
+                            </span>
+                        )}
+                    </span>
 
-                {statusBreakDownType.time !== '' &&
-                    statusBreakDownType.icon !== 'inprogress' && (
+                    {statusBreakDownType.time !== '' && statusBreakDownType.icon !== 'inprogress' && (
                         <span
                             data-testid="deployment-status-kubernetes-dropdown"
                             className={`pl-8 pr-8 pt-4 pb-4 br-12 ${
-                                statusBreakDownType.icon === 'failed'
-                                    ? 'bcr-1 cr-5'
-                                    : 'bcg-1 cg-7'
+                                statusBreakDownType.icon === 'failed' ? 'bcr-1 cr-5' : 'bcg-1 cg-7'
                             }`}
                         >
-                            {moment(
-                                statusBreakDownType.time,
-                                'YYYY-MM-DDTHH:mm:ssZ',
-                            ).format(Moment12HourFormat)}
+                            {moment(statusBreakDownType.time, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </span>
                     )}
-                {((type === TIMELINE_STATUS.KUBECTL_APPLY &&
-                    statusBreakDownType.kubeList?.length) ||
-                    (type === TIMELINE_STATUS.APP_HEALTH &&
-                        appHealthDropDownlist.includes(statusBreakDownType.icon)) ||
-                    (type === TIMELINE_STATUS.GIT_COMMIT &&
-                        statusBreakDownType.icon === 'failed')) && (
-                    <DropDownIcon
-                        style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
-                        className="icon-dim-24 rotate pointer"
-                        onClick={toggleDropdown}
-                        data-testid = "steps-deployment-history-dropdown"
-                    />
-                )}
+                    {((type === TIMELINE_STATUS.KUBECTL_APPLY && statusBreakDownType.kubeList?.length) ||
+                        (type === TIMELINE_STATUS.APP_HEALTH &&
+                            appHealthDropDownlist.includes(statusBreakDownType.icon)) ||
+                        (type === TIMELINE_STATUS.GIT_COMMIT && statusBreakDownType.icon === 'failed')) && (
+                        <DropDownIcon
+                            style={{ marginLeft: 'auto', ['--rotateBy' as any]: `${180 * Number(!collapsed)}deg` }}
+                            className="icon-dim-24 rotate pointer"
+                            onClick={toggleDropdown}
+                            data-testid="steps-deployment-history-dropdown"
+                        />
+                    )}
+                </div>
+                {isHelmManifestPushFailed && renderErrorInfoBar()}
             </div>
+
             {type === TIMELINE_STATUS.GIT_COMMIT && renderDetailedData()}
             {type === TIMELINE_STATUS.KUBECTL_APPLY && renderDetailedData()}
             {type === TIMELINE_STATUS.APP_HEALTH && renderDetailChart()}

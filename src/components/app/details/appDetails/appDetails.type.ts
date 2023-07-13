@@ -150,6 +150,8 @@ export interface ErrorInfoStatusBarType {
     nonDeploymentError: string
     type: string
     errorMessage: string
+    hideVerticalConnector?: boolean
+    hideErrorIcon?: boolean
 }
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
