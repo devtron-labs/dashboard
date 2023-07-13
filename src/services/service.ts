@@ -147,8 +147,8 @@ export function getClusterListMin() {
     return get(URL)
 }
 
-export function getDockerRegistryStatus(): Promise<ResponseType> {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status`
+export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`
     return get(URL)
 }
 

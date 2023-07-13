@@ -4,7 +4,8 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import {AppMetaInfo} from "../../../app/types";
-import { DELETE_ACTION, DeploymentAppTypes } from '../../../../config'
+import { DELETE_ACTION } from '../../../../config'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -332,11 +333,6 @@ export enum ChartValuesViewActionTypes {
     selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
-// TOdo replace this with the common
-export enum DeploymentAppType {
-    Helm = 'helm',
-    GitOps = 'argo_cd',
-}
 
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
