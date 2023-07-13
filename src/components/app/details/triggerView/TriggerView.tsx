@@ -10,7 +10,6 @@ import {
     CDModalTab,
     DeploymentAppTypes,
     ToastBodyWithButton,
-    ERROR_EMPTY_SCREEN,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCDMaterialList,
@@ -49,7 +48,7 @@ import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
+import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import {
     getBranchValues,
     handleSourceNotConfigured,
@@ -802,7 +801,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             onClick={() => this.redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
                             title=""
                             subtitle={userMessage || internalMessage}
-                            buttonText="VIEW DETAILS"
+                            buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
                         />
                     )
                     toast.error(toastBody, { autoClose: false })
