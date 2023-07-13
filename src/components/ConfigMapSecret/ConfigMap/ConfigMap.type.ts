@@ -17,6 +17,7 @@ export interface ConfigMapState {
     externalSubpathValues: ValueWithError
     isFilePermissionChecked: boolean
     configName: ValueWithError
+    yamlMode: boolean
 }
 
 export enum ConfigMapActionTypes {
@@ -41,6 +42,8 @@ export enum ConfigMapActionTypes {
     setFilePermission = 'setFilePermission',
     setConfigName = 'setConfigName',
     multipleOptions = 'multipleOptions',
+    toggleYamlMode='toggleYamlMode',
+    setExternalType = 'setExternalType',
 }
 
 export interface ConfigMapAction {

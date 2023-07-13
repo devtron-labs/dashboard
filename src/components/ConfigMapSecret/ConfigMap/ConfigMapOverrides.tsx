@@ -1,9 +1,8 @@
-import React, { useState, useReducer, useRef, memo } from 'react'
+import React, { useReducer, useRef } from 'react'
 import { overRideConfigMap, deleteConfigMap } from '../service'
 import { useParams } from 'react-router'
 import {
     Info,
-    Select,
     RadioGroup,
     CustomInput,
     isVersionLessThanOrEqualToTarget,
@@ -18,18 +17,26 @@ import {
     not,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../../configMaps/ConfigMap'
+import { KeyValueInput, useKeyValueYaml } from '../../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
 import warningIcon from '../../../assets/img/warning-medium.svg'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { Override, Tab } from '../ConfigMapSecret.components'
-import '../../EnvironmentOverride/environmentOverride.scss'
 import { ConfigMapProps } from '../Types'
-import { EXTERNAL_TYPES } from '../Constants'
 import { ConfigMapReducer, initState } from './ConfigMap.reducer'
 import { ConfigMapActionTypes } from './ConfigMap.type'
+import ReactSelect from 'react-select'
+import '../../EnvironmentOverride/environmentOverride.scss'
+import {
+    SecretOptions,
+    getTypeGroups,
+    groupStyle,
+    GroupHeading,
+    ConfigMapOptions,
+} from '../Secret/secret.utils'
+import { Option } from '../../v2/common/ReactSelect.utils'
 
 export const OverrideConfigMapForm = React.memo(
     ({ appChartRef, toggleCollapse, configmap, id, reload, isOverrideView }: ConfigMapProps): JSX.Element => {
@@ -57,24 +64,25 @@ export const OverrideConfigMapForm = React.memo(
             PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
             `Key must consist of alphanumeric characters, '.', '-' and '_'`,
         )
-        const [yamlMode, toggleYamlMode] = useState(true)
-        //const [isFilePermissionChecked, setIsFilePermissionChecked] = useState(!!filePermission)
         const isChartVersion309OrBelow =
             appChartRef &&
             appChartRef.name === ROLLOUT_DEPLOYMENT &&
             isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
             isChartRef3090OrBelow(appChartRef.id)
 
-        function changeEditorMode(e) {
-            if (yamlMode) {
+        function changeEditorMode() {
+            if (state.yamlMode) {
                 if (state.duplicate) {
-                    dispatch({ type: ConfigMapActionTypes.yamlToValues, payload: tempArr.current })
+                    dispatch({
+                        type: ConfigMapActionTypes.multipleOptions,
+                        payload: { duplicate: tempArr.current, yamlMode: !state.yamlMode },
+                    })
+                    tempArr.current = []
+                    return
                 }
-                toggleYamlMode(not)
                 tempArr.current = []
-                return
             }
-            toggleYamlMode(not)
+            dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
         }
 
         async function handleOverride(e) {
@@ -118,12 +126,12 @@ export const OverrideConfigMapForm = React.memo(
 
         async function handleSubmit(e) {
             e.preventDefault()
-            let dataArray = yamlMode ? tempArr.current : state.duplicate
+            let dataArray = state.yamlMode ? tempArr.current : state.duplicate
             const isInvalid = dataArray.some(
                 (dup) => !dup.k || !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(dup.k),
             )
             if (isInvalid) {
-                if (!yamlMode) {
+                if (!state.yamlMode) {
                     dispatch({ type: ConfigMapActionTypes.createErrors })
                 }
                 return
@@ -232,6 +240,10 @@ export const OverrideConfigMapForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.setExternal, payload: e.target.value !== '' })
         }
 
+        const toggleExternalType = (selectedExternalType): void => {
+            dispatch({ type: ConfigMapActionTypes.setExternalType, payload: selectedExternalType.value !== '' })
+        }
+
         const toggleSelectedType = (title: string): void => {
             dispatch({ type: ConfigMapActionTypes.setSelectedType, payload: title })
         }
@@ -277,33 +289,37 @@ export const OverrideConfigMapForm = React.memo(
                     <div className="form__row">
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
-                            <Select
-                                disabled={isOverrideView && configmap?.data?.name && configmap?.global}
-                                value={state.external ? 'KubernetesConfigMap' : ''}
-                                dataTestId="configmaps-data-type-select-dropdown"
+                            <ReactSelect
+                                placeholder="Select ConfigMap Type"
+                                options={ConfigMapOptions}
+                                value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
                                 onChange={toggleExternalValues}
-                            >
-                                <Select.Button
-                                    dataTestIdDropdown="select-configmap-datatype-dropdown"
-                                    dataTestId="data-type-select-control"
-                                >
-                                    {state.external ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
-                                </Select.Button>
-                                {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                                    <Select.Option
-                                        dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`}
-                                        key={value}
-                                        value={value}
-                                    >
-                                        {name}
-                                    </Select.Option>
-                                ))}
-                            </Select>
-                            {/* <Select disabled={isOverrideView} onChange={(e) => {}}>
-                                    <Select.Button>
-                                        {external ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
-                                    </Select.Button>
-                                </Select> */}
+                                styles={groupStyle()}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option,
+                                }}
+                                classNamePrefix="configmap-data-type"
+                                isDisabled={isOverrideView && configmap?.data?.name && configmap?.global}
+                            />
+                            <ReactSelect
+                                placeholder="Select Secret Type"
+                                options={getTypeGroups()}
+                                defaultValue={
+                                    configmap?.externalType && configmap?.externalType !== ''
+                                        ? getTypeGroups(configmap?.externalType)
+                                        : getTypeGroups()[0].options[0]
+                                }
+                                onChange={toggleExternalType}
+                                styles={groupStyle()}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option: SecretOptions,
+                                    GroupHeading,
+                                }}
+                                classNamePrefix="secret-data-type"
+                                isDisabled={isOverrideView && configmap?.data?.name && configmap?.global}
+                            />
                         </div>
                     </div>
                     {!configmap?.data?.name && (
@@ -499,7 +515,7 @@ export const OverrideConfigMapForm = React.memo(
                                 <RadioGroup
                                     className="gui-yaml-switch"
                                     name="yaml-mode"
-                                    initialTab={yamlMode ? 'yaml' : 'gui'}
+                                    initialTab={state.yamlMode ? 'yaml' : 'gui'}
                                     disabled={false}
                                     onChange={changeEditorMode}
                                 >
@@ -512,7 +528,7 @@ export const OverrideConfigMapForm = React.memo(
                                 </RadioGroup>
                             </div>
 
-                            {yamlMode ? (
+                            {state.yamlMode ? (
                                 <div className="yaml-container">
                                     <CodeEditor
                                         value={
@@ -571,7 +587,7 @@ export const OverrideConfigMapForm = React.memo(
                             )}
                         </>
                     )}
-                    {state.duplicate && !yamlMode && (
+                    {state.duplicate && !state.yamlMode && (
                         <span
                             className="dc__bold anchor pointer"
                             onClick={(e) => dispatch({ type: ConfigMapActionTypes.addParam })}

@@ -24,6 +24,7 @@ export const initState = (configMap): ConfigMapState => {
             value: configMap?.data?.name,
             error: '',
         },
+        yamlMode: true,
     }
 }
 
@@ -94,8 +95,14 @@ export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction)
             return { ...state, filePermission: action.payload }
         case ConfigMapActionTypes.setConfigName:
             return { ...state, configName: action.payload }
+        case ConfigMapActionTypes.toggleYamlMode:
+            return { ...state, yamlMode: !state.yamlMode }
+            case ConfigMapActionTypes.setExternalType:
+                return { ...state, externalType: action.payload }
         case ConfigMapActionTypes.multipleOptions:
             return { ...state, ...action.payload }
+
+
 
         default:
             return state

@@ -57,3 +57,7 @@ export function deleteSecret(id, appId, envId, name) {
     return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
 }
 
+export function unlockEnvSecret(id, appId, envId, name){
+    return get(`${Routes.APP_CREATE_ENV_SECRET}/edit/${appId}/${envId}/${id}?name=${name}`)
+}
+

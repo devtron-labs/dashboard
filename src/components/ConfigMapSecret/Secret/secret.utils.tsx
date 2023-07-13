@@ -2,7 +2,7 @@ import React from 'react'
 import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { SECRET_TOAST_INFO } from './constants'
 import YAML from 'yaml'
@@ -313,7 +313,7 @@ export const hasProperty = (externalType): boolean => {
     return externalType === 'ESO_AWSSecretsManager'
 }
 
-export const secretValidationInfoToast = (isESO,secretStore,secretStoreRef) => {
+export const secretValidationInfoToast = (isESO, secretStore, secretStoreRef) => {
     let errorMessage = ''
     if (isESO) {
         if (secretStore && secretStoreRef) {
@@ -339,7 +339,7 @@ export function handleSecretDataYamlChange(
     setEsoData: (arg: EsoData[]) => void,
     setSecretStore: (arg: any) => void,
     setScretStoreRef: (arg: any) => void,
-    setRefreshInterval: (arg: string) => void
+    setRefreshInterval: (arg: string) => void,
 ): void {
     if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
     if (isESO) {
@@ -384,3 +384,8 @@ export function handleSecretDataYamlChange(
         }
     } catch (error) {}
 }
+
+export const ConfigMapOptions: OptionType[] = [
+    { value: 's', label: 'Kubernetes ConfigMap' },
+    { value: 'KubernetesConfigMap', label: 'Kubernetes External ConfigMap' },
+]
