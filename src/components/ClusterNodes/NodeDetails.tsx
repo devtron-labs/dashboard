@@ -635,8 +635,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
     const handleResourceClick=(e)=>{
-        const {name}=e.currentTarget.dataset
-        const _url=`${URLS.RESOURCE_BROWSER}/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${name}`
+        const _url=`${URLS.RESOURCE_BROWSER}/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${e.currentTarget.dataset.name}`
         window.open(_url,'_blank')
     }
     const renderPodHeaderCell = (
