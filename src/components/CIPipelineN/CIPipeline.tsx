@@ -245,7 +245,7 @@ export default function CIPipeline({
     const getGlobalVariables = (): void => {
         getGlobalVariable(Number(appId))
             .then((response) => {
-                const _globalVariableOptions = response.result.map((variable) => {
+                const _globalVariableOptions = response.result?.map((variable) => {
                     variable.label = variable.name
                     variable.value = variable.name
                     variable.format = variable.format

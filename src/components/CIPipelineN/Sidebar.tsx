@@ -315,7 +315,7 @@ export function Sidebar({
     }
 
     return (
-        <div className="dc__position-rel">
+        <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
                     {configurationType === ConfigurationType.GUI && (
@@ -341,7 +341,7 @@ export function Sidebar({
                                     isJobView={isJobView}
                                 />
                             </div>
-                            {isCdPipeline && triggerPipelineMode()}
+                            {isCdPipeline && !isVirtualEnvironment && triggerPipelineMode()}
                         </>
                     )}
                 </div>

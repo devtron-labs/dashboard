@@ -3,9 +3,9 @@ import {
     ConditionalWrap,
     DeleteDialog,
     Drawer,
+    ErrorScreenManager,
     ForceDeleteDialog,
     PluginDetailType,
-    Progressing,
     RefVariableType,
     ServerErrors,
     showError,
@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, DELETE_ACTION, DeploymentAppTypes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment } from './cdPipeline.types'
@@ -138,6 +138,7 @@ export default function NewCDPipeline({
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
     const [isAdvanced, setIsAdvanced] = useState<boolean>(!!cdPipelineId)
+    const [errorCode, setErrorCode] = useState<number>()
     const parentPipelineType = parentPipelineTypeFromURL
         ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
         : isWebhookCD
@@ -212,6 +213,7 @@ export default function NewCDPipeline({
             })
             .catch((error: ServerErrors) => {
                 showError(error)
+                setErrorCode(error.code)
                 setPageState(ViewType.ERROR)
             })
     }
@@ -300,7 +302,8 @@ export default function NewCDPipeline({
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                // this.setState({ code: error.code, view: ViewType.ERROR, loadingData: false })
+                setPageState(ViewType.ERROR)
+                setErrorCode(error.code)
             })
     }
 
@@ -337,13 +340,14 @@ export default function NewCDPipeline({
     }
 
     const getGlobalVariables = (): void => {
-        getGlobalVariable(Number(appId))
-            .then((response) => {
-                const _globalVariableOptions = response.result.map((variable) => {
+        getGlobalVariable(Number(appId), true)
+            .then((response) => {     
+                const _globalVariableOptions = response.result?.map((variable) => {
                     variable.label = variable.name
                     variable.value = variable.name
                     variable.description = variable.description || ''
                     variable.variableType = RefVariableType.GLOBAL
+                    variable.format = variable.format
                     delete variable.name
                     return variable
                 })
@@ -502,6 +506,11 @@ export default function NewCDPipeline({
             postStageConfigMapSecretNames: _postStageConfigMapSecretNames,
         }
 
+        if (isVirtualEnvironment) {
+            pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
+            pipeline.triggerType = TriggerType.Manual // In case of virtual environment trigger type will always be manual
+        }
+
         const request = {
             appId: +appId,
         }
@@ -513,10 +522,18 @@ export default function NewCDPipeline({
         }
 
         if (formData.preBuildStage.steps.length > 0) {
-            pipeline['preDeployStage'] = formData.preBuildStage
+            let preBuildStage = formData.preBuildStage
+            if(isVirtualEnvironment){
+                preBuildStage = { ...preBuildStage, triggerType: TriggerType.Manual }
+            }
+            pipeline['preDeployStage'] = preBuildStage
         }
         if (formData.postBuildStage.steps.length > 0) {
-            pipeline['postDeployStage'] = formData.postBuildStage
+            let postBuildStage = formData.postBuildStage
+            if(isVirtualEnvironment){
+                postBuildStage = { ...postBuildStage, triggerType: TriggerType.Manual }
+            }
+            pipeline['postDeployStage'] = postBuildStage
         }
 
         return request
@@ -804,7 +821,7 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            let canDeletePipeline = downstreamNodeSize === 0
+            let canDeletePipeline = downstreamNodeSize === 0 
             let message =
                 downstreamNodeSize > 0 ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (
@@ -847,27 +864,18 @@ export default function NewCDPipeline({
         close()
     }
 
-    const renderCDPipelineModal = () => {
-        const title =
-            isWebhookCD && workflowId === '0'
-                ? DEPLOY_IMAGE_EXTERNALSOURCE
-                : cdPipelineId
-                ? EDIT_DEPLOYMENT_PIPELINE
-                : CREATE_DEPLOYMENT_PIPELINE
-        return (
-            <div
-                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
-                    isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
-                }`}
-            >
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
-                        {title}
-                    </h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePipelineModal}>
-                        <Close className="icon-dim-24" />
-                    </button>
+    const renderCDPipelineBody = () => {
+        if (pageState === ViewType.ERROR) {
+            return (
+                <div className="pipeline-empty-state">
+                    <hr className="divider m-0" />
+                   <div className='h-100 flex'><ErrorScreenManager code={errorCode} /></div>
                 </div>
+            )
+        }
+        
+        return (
+            <>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
                         <>
@@ -944,6 +952,32 @@ export default function NewCDPipeline({
                         </Switch>
                     </div>
                 </pipelineContext.Provider>
+            </>
+        )
+    }
+
+    const renderCDPipelineModal = () => {
+        const title =
+            isWebhookCD && workflowId === '0'
+                ? DEPLOY_IMAGE_EXTERNALSOURCE
+                : cdPipelineId
+                ? EDIT_DEPLOYMENT_PIPELINE
+                : CREATE_DEPLOYMENT_PIPELINE
+        return (
+            <div
+                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
+                    isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
+                }`}
+            >
+                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                        {title}
+                    </h2>
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePipelineModal}>
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+                {renderCDPipelineBody()}
                 {pageState !== ViewType.LOADING && (
                     <>
                         <div

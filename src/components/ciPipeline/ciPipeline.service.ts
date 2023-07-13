@@ -547,6 +547,11 @@ export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
     return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
 }
 
-export function getGlobalVariable(appId: number): Promise<any> {
-    return get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`)
+export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
+    let variableList = []
+    await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
+        variableList = response.result?.filter((item) => item.stageType === (isCD ? 'cd' : 'ci'))
+    })
+
+    return { result: variableList }
 }

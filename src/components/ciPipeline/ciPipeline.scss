@@ -243,6 +243,10 @@
 
 }
 
+.pipeline-empty-state {
+    height: calc(100vh - 118px);
+}
+
 .bottom-border-radius {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
