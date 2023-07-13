@@ -55,7 +55,7 @@ import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { createTaintsList } from '../cluster/cluster.util'
-import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 
 
 
