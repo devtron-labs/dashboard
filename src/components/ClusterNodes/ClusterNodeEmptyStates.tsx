@@ -20,6 +20,7 @@ export default function ClusterNodeEmptyState({
   }
     return (
         <GenericEmptyState
+            SvgImage=""
             image={emptyCustomChart}
             title={title || EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.TITLE}
             subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}

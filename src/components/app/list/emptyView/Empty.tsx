@@ -22,6 +22,7 @@ export class Empty extends Component<EmptyProps>{
 
         return <div className='dc__position-rel' style={{ height: "calc(100vh - 160px)" }}>
             <GenericEmptyState
+                SvgImage=""
                 image={noapps}
                 title={this.props.title}
                 subTitle={
@@ -49,6 +50,7 @@ export class Empty extends Component<EmptyProps>{
 
         return <div className='dc__position-rel' style={{ height: "calc(100vh - 250px)" }}>
             <GenericEmptyState
+                SvgImage=""
                 image={noresult}
                 title={this.props.title}
                 subTitle={this.props.message}

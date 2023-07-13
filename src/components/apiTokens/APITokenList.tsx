@@ -70,6 +70,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     const noMatchingResults = () => {
       return (
           <GenericEmptyState
+              SvgImage=""
               image={NoResults}
               title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
               subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}
@@ -104,7 +105,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div></div>
                 </div>
-                <div className="dc__overflow-scroll api__list__height">
+                <div className="dc__overflow-scroll api__list__height dc__position-rel">
                     {!tokenList || tokenList.length === 0 ? (
                         noMatchingResults()
                     ) : (

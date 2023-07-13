@@ -396,6 +396,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         return (
             <GenericEmptyState
                 image={EmptyImage}
+                SvgImage=""
                 title={EMPTY_STATE_STATUS.NOTIFICATION_TAB.TITLE}
                 subTitle={EMPTY_STATE_STATUS.NOTIFICATION_TAB.SUBTITL}
                 isButtonAvailable={true}

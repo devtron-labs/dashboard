@@ -1285,7 +1285,7 @@ function ChartValuesView({
                 }`}
             >
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                    <GenericEmptyState image={ErrorExclamation} classname="icon-dim-20 mb-10" title="" subTitle={commonState.valuesEditorError} />
+                    <GenericEmptyState SvgImage={ErrorExclamation} classname="icon-dim-20 mb-10" title="" subTitle={commonState.valuesEditorError} />
 
                 ) : (
                     <ChartValuesEditor

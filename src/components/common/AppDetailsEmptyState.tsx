@@ -12,6 +12,7 @@ export function AppDetailsEmptyState({envType}: AppDetailsEmptyChart) {
     return (
         <GenericEmptyState
             image={notFound}
+            SvgImage=""
             classname="w-100 dc__text-center "
             heightToDeduct={300}
             title={ERROR_EMPTY_SCREEN.APP_NOT_AVAILABLE}

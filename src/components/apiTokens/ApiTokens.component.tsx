@@ -190,6 +190,7 @@ function ApiTokens() {
     const renderEmptyState = (): JSX.Element => {
         return (
             <GenericEmptyState
+                SvgImage=""
                 image={emptyGeneratToken}
                 title={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.TITLE}
                 subTitle={EMPTY_STATE_STATUS.GENERATE_API_TOKEN.SUBTITLE}

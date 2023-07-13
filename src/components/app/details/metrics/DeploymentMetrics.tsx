@@ -399,6 +399,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 150px' }}
                 >
                     <GenericEmptyState
+                        SvgImage=""
                         image={AppNotDeployed}
                         title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
                         subTitle={`There are no deployments in this period on '${envName}'.`}
@@ -411,6 +412,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     renderNoEnvironmentView() {
         return <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
             <GenericEmptyState
+                SvgImage=""
                 image={SelectEnvImage}
                 title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
                 subTitle={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.SUBTITLE}
@@ -423,6 +425,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             {this.renderInputs()}
             <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
                 <GenericEmptyState
+                    SvgImage=""
                     image={SelectEnvImage}
                     title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
                     subTitle={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.SUBTITLE}

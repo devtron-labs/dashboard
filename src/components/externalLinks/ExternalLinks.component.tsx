@@ -63,6 +63,7 @@ export const NoExternalLinksView = ({
     return (
         <GenericEmptyState
             image={EmptyExternalLinks}
+            SvgImage=""
             classname="title dc__position-rel"
             title={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.TITLE}
             heightToDeduct={120}
@@ -103,6 +104,7 @@ export const NoMatchingResults = (): JSX.Element => {
     return (
         <GenericEmptyState
             image={NoResults}
+            SvgImage=""
             title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
             subTitle={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.SUBTITLE}
         />

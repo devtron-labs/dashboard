@@ -91,6 +91,7 @@ export const GitChanges = ({
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
         return (
             <GenericEmptyState
+                SvgImage=""
                 title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
                 subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE}
             />
@@ -171,10 +172,12 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
     }
     return (
         <GenericEmptyState
+            SvgImage=""
             image={imgSrc ?? AppNotDeployed}
             classname="w-300 dc__text-center lh-1-4"
             title={title}
             subTitle={subTitle}
+            isButtonAvailable={true}
             renderButton={EmptyViewButton}
         />
     )

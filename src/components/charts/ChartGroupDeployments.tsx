@@ -126,6 +126,7 @@ const CollapsibleDeployment: React.FC<{ index?:number; installedChartGroup: Inst
 function EmptyStateChartDeploymentList() {
     return (
         <GenericEmptyState
+            SvgImage=""
             image={NoDeploymentImg}
             title={EMPTY_STATE_STATUS.CHART_GROUP_DEPLOYMENT.TITLE}
             subTitle={EMPTY_STATE_STATUS.CHART_GROUP_DEPLOYMENT.SUBTITLE}

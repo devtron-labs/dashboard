@@ -1529,9 +1529,11 @@ function NoUsers({ onClick }) {
     }
     return (
         <GenericEmptyState
+            SvgImage=""
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_USER.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
+            isButtonAvailable={true}
             renderButton={handleNoUserButton}
         />
     )
@@ -1549,6 +1551,7 @@ const renderEmptySSOMessage = (): JSX.Element => {
 function SSONotConfiguredState() {
     return (
         <GenericEmptyState
+            SvgImage=""
             image={EmptyImage}
             classname="fs-16 dc__align-center lh-24 mb-8-imp mt-20"
             title={SSO_NOT_CONFIGURED_STATE_TEXTS.title}
@@ -1580,6 +1583,7 @@ function NoGroups({ onClick }) {
     }
     return (
         <GenericEmptyState
+            SvgImage=""
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
@@ -1601,6 +1605,7 @@ function SearchEmpty({ searchString, setSearchString }) {
     return (
         <GenericEmptyState
             image={EmptySearch}
+            SvgImage=""
             title={EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
             subTitle={
                 <>

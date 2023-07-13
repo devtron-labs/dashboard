@@ -33,6 +33,7 @@ function ChartEmptyState({
         >
             <GenericEmptyState
                 image={emptyImage}
+                SvgImage=""
                 title={title || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
                 subTitle={subTitle || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.SUBTITLE}
                 isButtonAvailable={true}

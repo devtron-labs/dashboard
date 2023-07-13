@@ -18,6 +18,7 @@ export function ScanDisabledView(props) {
   }
   return (
       <GenericEmptyState
+          SvgImage=""
           image={notScanned}
           title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
           subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_SCANNED_DISABLED}
@@ -30,6 +31,7 @@ export function ScanDisabledView(props) {
 
 export function ImageNotScannedView() {
     return <GenericEmptyState
+      SvgImage=""
       image={scannedDisabled}
       title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
       subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.SUBTITLE}
@@ -39,7 +41,7 @@ export function ImageNotScannedView() {
 export function NoVulnerabilityView() {
     return (
         <GenericEmptyState
-            image={novulnerability}
+            SvgImage={novulnerability}
             title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
             classname="dc__position-rel-imp"
         />
@@ -49,7 +51,7 @@ export function NoVulnerabilityView() {
 export function CIRunningView(props) {
     return (
         <GenericEmptyState
-            image={MechanicalOperation}
+            SvgImage={MechanicalOperation}
             title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
             subTitle={
                 props.isSecurityTab

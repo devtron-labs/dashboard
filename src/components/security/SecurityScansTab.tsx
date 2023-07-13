@@ -391,6 +391,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         return (
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
                 <GenericEmptyState
+                    SvgImage=""
                     image={NoResults}
                     title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
                     subTitle={EMPTY_STATE_STATUS.SECURITY_SCANS.SUBTITLE}
@@ -404,6 +405,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
       return (
           <div className="dc__position-rel" style={{ height: 'calc(100vh - 175px)' }}>
               <GenericEmptyState
+                SvgImage=""
                 image={AppNotDeployed}
                 title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
               />

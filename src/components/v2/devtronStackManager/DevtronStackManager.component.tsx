@@ -1106,6 +1106,7 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
         <div className="no-integrations__installed-view dc__position-rel">
             <GenericEmptyState
                 image={NoIntegrations}
+                SvgImage=""
                 classname="fs-16"
                 title={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.SUBTITLE}

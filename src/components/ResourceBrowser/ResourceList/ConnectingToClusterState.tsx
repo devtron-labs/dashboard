@@ -107,6 +107,7 @@ export default function ConnectingToClusterState({
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
                     image={NoClusterSelectImage}
+                    SvgImage=""
                     title={SELECTE_CLUSTER_STATE_MESSAGING.heading}
                     subTitle={SELECTE_CLUSTER_STATE_MESSAGING.infoText}
                 />

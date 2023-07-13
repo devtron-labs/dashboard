@@ -239,11 +239,13 @@ export default function CDDetails() {
                         </Route>
                     ) : !envId ? (
                         <GenericEmptyState
+                            SvgImage=""
                             title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
                             subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
                         <GenericEmptyState
+                            SvgImage="" 
                             title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
                             subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
                         />
