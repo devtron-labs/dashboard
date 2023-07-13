@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getAppOtherEnvironmentMin, getChartReferences } from '../../services/service'
-import { useJsonYaml, useAsync } from '../common'
+import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
 import {
     showError,
     Progressing,
@@ -12,11 +12,6 @@ import {
     not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
-import {
-    DeploymentConfigFormCTA,
-    DeploymentTemplateEditorView,
-    DeploymentTemplateOptionsTab,
-} from './DeploymentTemplateView'
 import { BasicFieldErrorObj, ChartMetadataType, DeploymentChartVersionType, DeploymentConfigProps } from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
@@ -33,6 +28,11 @@ import {
     validateBasicView,
 } from './DeploymentConfig.utils'
 import { BASIC_FIELDS, EDITOR_VIEW } from './constants'
+import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
+import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'
+import DeploymentTemplateOptionsTab from './DeploymentTemplateView/DeploymentTemplateOptionsTab'
+
+const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -58,6 +58,7 @@ export default function DeploymentConfig({
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [showReadme, setShowReadme] = useState(false)
     const [openComparison, setOpenComparison] = useState(false)
+    const [selectedTabIndex, setSelectedTabIndex] = useState(1)
     const [readme, setReadme] = useState('')
     const history = useHistory()
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
@@ -324,6 +325,22 @@ export default function DeploymentConfig({
 
     return (
         <div className={`app-compose__deployment-config ${openComparison || showReadme ? 'full-view' : 'h-100'}`}>
+            {/* WIP - toolbar implementation */}
+            {ConfigToolbar && (
+                <ConfigToolbar
+                    selectedTabIndex={selectedTabIndex}
+                    setSelectedTabIndex={setSelectedTabIndex}
+                    isDraftMode={true}
+                    handleDiscardDraft={handleReadMeClick}
+                    noReadme={!yamlMode}
+                    showReadme={showReadme}
+                    handleReadMeClick={handleReadMeClick}
+                    handleCommentClick={handleReadMeClick}
+                    isApprovalPending={true}
+                    approvalUsers={[]}
+                    activityHistory={[]}
+                />
+            )}
             <form
                 action=""
                 className={`white-card__deployment-config p-0 bcn-0 h-100 ${openComparison ? 'comparison-view' : ''}`}

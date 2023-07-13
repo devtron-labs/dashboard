@@ -21,11 +21,6 @@ import { toast } from 'react-toastify'
 import '../deploymentConfig/deploymentConfig.scss'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import YAML from 'yaml'
-import {
-    DeploymentConfigFormCTA,
-    DeploymentTemplateEditorView,
-    DeploymentTemplateOptionsTab,
-} from '../deploymentConfig/DeploymentTemplateView'
 import { BasicFieldErrorObj, DeploymentChartVersionType } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -40,6 +35,9 @@ import {
 } from '../deploymentConfig/DeploymentConfig.utils'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
+import DeploymentTemplateOptionsTab from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateOptionsTab'
+import DeploymentTemplateEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateEditorView'
+import DeploymentConfigFormCTA from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigFormCTA'
 
 export default function DeploymentTemplateOverride({
     parentState,
