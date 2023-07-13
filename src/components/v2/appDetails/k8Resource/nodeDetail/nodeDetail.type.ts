@@ -16,6 +16,8 @@ export interface ParamsType {
     podName: string
     nodeType: string
     node: string
+    appId: string
+    envId: string
 }
 export interface EphemeralForm {
     basicData: {
@@ -37,6 +39,7 @@ export interface EphemeralContainerDrawerType {
     params: ParamsType
     setEphemeralFormAdvanced: React.Dispatch<React.SetStateAction<EphemeralFormAdvancedType>>
     ephemeralFormAdvanced: EphemeralFormAdvancedType
+    containerList
 }
 
 export interface ResponsePayload {

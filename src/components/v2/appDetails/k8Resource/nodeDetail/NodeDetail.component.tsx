@@ -336,6 +336,7 @@ function NodeDetailComponent({
                     params={params}
                     setEphemeralFormAdvanced={setEphemeralFormAdvanced}
                     ephemeralFormAdvanced={ephemeralFormAdvanced}
+                    containerList={appDetails.resourceTree.podMetadata}
 
                 />
             )}

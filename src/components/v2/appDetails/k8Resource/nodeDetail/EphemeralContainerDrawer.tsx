@@ -1,21 +1,28 @@
-import { Drawer, get, post, RadioGroup, RadioGroupItem, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Drawer,
+    get,
+    multiSelectStyles,
+    post,
+    RadioGroup,
+    RadioGroupItem,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import { EphemeralContainerDrawerType, EphemeralKeyType } from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { SwitchItemValues } from '../../../../cdPipeline/CDPipeline'
-import {
-    ButtonWithLoader,
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
-} from '../../../../common'
+import { ButtonWithLoader, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../../../../common'
 import sampleConfig from './sampleConfig.json'
 import yamlJsParser from 'yaml'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
 import { OutputTabType } from '../../../../bulkEdits/bulkEdits.type'
-import {ResponsePayload }from './nodeDetail.type'
+import { ResponsePayload } from './nodeDetail.type'
+import { DropdownIndicator, Option } from '../../../common/ReactSelect.utils'
+import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
 
 function EphemeralContainerDrawer({
     ephemeralForm,
@@ -23,14 +30,13 @@ function EphemeralContainerDrawer({
     setEphemeralContainerDrawer,
     params,
     setEphemeralFormAdvanced,
-    ephemeralFormAdvanced
+    ephemeralFormAdvanced,
+    containerList,
 }: EphemeralContainerDrawerType) {
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Config)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
-    const [ephemeralData, setEphemeralData] = useState()
-
     const onClickHideLaunchEphemeral = (): void => {
         setEphemeralContainerDrawer(false)
     }
@@ -48,6 +54,7 @@ function EphemeralContainerDrawer({
             },
         })
     }
+    const [ephemeralContainerList, setEphemeralContainerList] = useState([])
 
     const handleManifestTabChange = (e): void => {
         setSwitchManifest(e.target.value)
@@ -68,6 +75,22 @@ function EphemeralContainerDrawer({
                 </button>
             </div>
         )
+    }
+
+    const handleContainerSelectChange = (selected) => {
+        setEphemeralForm({
+            ...ephemeralForm,
+            basicData: {
+                ...ephemeralForm.basicData,
+                targetContainerName: selected[0].value,
+            },
+        })
+    }
+
+    const getOptions = (): [{ label: string; value: string }] => {
+        return containerList[0].containers.map((res) => {
+            return [{ value: res, label: res }]
+        })
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -100,13 +123,35 @@ function EphemeralContainerDrawer({
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Target Container Name</div>
-                    <input
-                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                        data-testid="preBuild-task-description-textbox"
-                        type="text"
-                        onChange={(e) => handleEphemeralChange(e, 'targetContainerName')}
-                        value={ephemeralForm.basicData.targetContainerName}
-                        placeholder="Enter task description"
+                    <ReactSelect
+                        value={{
+                            label: ephemeralForm.basicData.targetContainerName,
+                            value: ephemeralForm.basicData.targetContainerName,
+                        }}
+                        options={getOptions()}
+                        className="select-width"
+                        classNamePrefix="select-token-expiry-duration"
+                        isSearchable={false}
+                        onChange={handleContainerSelectChange}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        styles={{
+                            ...multiSelectStyles,
+                            control: (base) => ({
+                                ...base,
+                                minHeight: '36px',
+                                fontWeight: '400',
+                                backgroundColor: 'var(--N50)',
+                                cursor: 'pointer',
+                            }),
+                            dropdownIndicator: (base) => ({
+                                ...base,
+                                padding: '0 8px',
+                            }),
+                        }}
                     />
                 </div>
             </div>
@@ -116,7 +161,6 @@ function EphemeralContainerDrawer({
     const renderEphemeralContainerType = () => {
         return (
             <>
-
                 <ul role="tablist" className="tab-list">
                     <RadioGroup
                         className="ecr-authType__radio-group"
@@ -137,14 +181,14 @@ function EphemeralContainerDrawer({
     }
 
     const handleManifestAdvanceChange = (e) => {
-      if (switchManifest !== SwitchItemValues.Config) return
-      let manifestJson = yamlJsParser.parse(e)
-      setEphemeralFormAdvanced({
-          ...ephemeralFormAdvanced,
-          advancedData: {
-              manifest: JSON.stringify(manifestJson),
-          },
-      })
+        if (switchManifest !== SwitchItemValues.Config) return
+        let manifestJson = yamlJsParser.parse(e)
+        setEphemeralFormAdvanced({
+            ...ephemeralFormAdvanced,
+            advancedData: {
+                manifest: JSON.stringify(manifestJson),
+            },
+        })
     }
 
     const renderAdvancedEphemeral = () => {
@@ -153,7 +197,7 @@ function EphemeralContainerDrawer({
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
         return (
-          <div className="mt-24 mr-24 mb-24 code-editor-container">
+            <div className="mt-24 mr-24 mb-24 code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
                     height={300}
@@ -206,9 +250,23 @@ function EphemeralContainerDrawer({
             appDetails.appType,
         )
             .then((response: any) => {
+                toast.success('Launched Container Successfully ')
                 setEphemeralContainerDrawer(false)
-                setEphemeralData(response)
-            //     setEphemeralForm(
+                setEphemeralContainerList(response)
+                console.log('ephemeral containers list', response)
+                setEphemeralForm({
+                    ...ephemeralForm,
+                    basicData: {
+                        targetContainerName: '',
+                        containerName: '',
+                        image: '',
+                    },
+                })
+                setEphemeralFormAdvanced({
+                    advancedData: {
+                        manifest: '',
+                    },
+                })
             })
             .catch((err) => {
                 showError(err)
