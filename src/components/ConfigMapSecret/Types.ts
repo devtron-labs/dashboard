@@ -51,13 +51,14 @@ export interface ConfigMapListProps {
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
 }
 
-export interface ConfigMapProps {
+export interface ConfigMapSecretFormProps {
     appChartRef: { id: number; version: string; name: string }
     toggleCollapse: any
-    configmap: any
+    configMapSecretData: any
     id
     reload
     isOverrideView
+    componentType: string
 }
 
 export interface ConfigMapSecretProps {

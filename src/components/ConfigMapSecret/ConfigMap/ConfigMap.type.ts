@@ -42,8 +42,13 @@ export enum ConfigMapActionTypes {
     setFilePermission = 'setFilePermission',
     setConfigName = 'setConfigName',
     multipleOptions = 'multipleOptions',
-    toggleYamlMode='toggleYamlMode',
+    toggleYamlMode = 'toggleYamlMode',
     setExternalType = 'setExternalType',
+    setSecretDataYaml = 'setSecretDataYaml',
+    setEsoYaml = 'setEsoYaml',
+    setEsoData = 'setEsoData',
+    setSecretData = 'setSecretData',
+    setRoleARN = 'setRoleARN',
 }
 
 export interface ConfigMapAction {

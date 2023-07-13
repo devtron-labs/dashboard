@@ -1,13 +1,7 @@
 import React, { useReducer, useRef } from 'react'
-import { overRideConfigMap, deleteConfigMap } from '../service'
+import { overRideConfigMap, deleteConfigMap, unlockEnvSecret } from '../service'
 import { useParams } from 'react-router'
-import {
-    Info,
-    RadioGroup,
-    CustomInput,
-    isVersionLessThanOrEqualToTarget,
-    isChartRef3090OrBelow,
-} from '../../common'
+import { Info, RadioGroup, CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../../common'
 import {
     showError,
     Progressing,
@@ -24,28 +18,40 @@ import CodeEditor from '../../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { Override, Tab } from '../ConfigMapSecret.components'
-import { ConfigMapProps } from '../Types'
+import { ConfigMapSecretFormProps } from '../Types'
 import { ConfigMapReducer, initState } from './ConfigMap.reducer'
 import { ConfigMapActionTypes } from './ConfigMap.type'
 import ReactSelect from 'react-select'
-import '../../EnvironmentOverride/environmentOverride.scss'
 import {
     SecretOptions,
     getTypeGroups,
     groupStyle,
     GroupHeading,
     ConfigMapOptions,
+    hasHashiOrAWS,
+    hasESO,
+    handleSecretDataYamlChange,
+    unlockSecrets,
 } from '../Secret/secret.utils'
 import { Option } from '../../v2/common/ReactSelect.utils'
+import '../../EnvironmentOverride/environmentOverride.scss'
 
-export const OverrideConfigMapForm = React.memo(
-    ({ appChartRef, toggleCollapse, configmap, id, reload, isOverrideView }: ConfigMapProps): JSX.Element => {
+export const ConfigMapSecretForm = React.memo(
+    ({
+        appChartRef,
+        toggleCollapse,
+        configMapSecretData,
+        id,
+        reload,
+        isOverrideView,
+        componentType,
+    }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
 
         function memoisedRemove(e, idx) {
             dispatch({ type: ConfigMapActionTypes.keyValueDelete, payload: { index: idx } })
         }
-        const [state, dispatch] = useReducer(memoizedReducer, initState(configmap))
+        const [state, dispatch] = useReducer(memoizedReducer, initState(configMapSecretData))
         const tabs = [
             { title: 'Environment Variable', value: 'environment' },
             { title: 'Data Volume', value: 'volume' },
@@ -70,6 +76,9 @@ export const OverrideConfigMapForm = React.memo(
             isVersionLessThanOrEqualToTarget(appChartRef.version, [3, 9]) &&
             isChartRef3090OrBelow(appChartRef.id)
 
+        const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
+        const isESO = componentType === 'secret' && hasESO(state.externalType)
+
         function changeEditorMode() {
             if (state.yamlMode) {
                 if (state.duplicate) {
@@ -88,7 +97,7 @@ export const OverrideConfigMapForm = React.memo(
         async function handleOverride(e) {
             e.preventDefault()
             if (state.duplicate) {
-                if (configmap?.data) {
+                if (state.data) {
                     dispatch({ type: ConfigMapActionTypes.toggleDialog })
                 } else {
                     //temporary copy, removecopy
@@ -96,17 +105,78 @@ export const OverrideConfigMapForm = React.memo(
                 }
             } else {
                 //duplicate
-                const duplicate = Object.keys(configmap?.defaultData ?? {}).map((k) => ({
-                    k,
-                    v: configmap?.defaultData[k],
-                    keyError: '',
-                    valueError: '',
-                }))
-                dispatch({
-                    type: ConfigMapActionTypes.multipleOptions,
-                    payload: { duplicate: duplicate, mountPath: state.mountPath || configmap?.defaultMountPath },
-                })
+                if (componentType === 'secret') {
+                    unlockSecrets(
+                        id,
+                        +appId,
+                        +envId,
+                        state.configName,
+                        configMapSecretData.global,
+                        isESO,
+                        dispatch,
+                    )
+                } else {
+                    const duplicate = Object.keys(state.defaultData ?? {}).map((k) => ({
+                        k,
+                        v: state.defaultData[k],
+                        keyError: '',
+                        valueError: '',
+                    }))
+                    dispatch({
+                        type: ConfigMapActionTypes.multipleOptions,
+                        payload: {
+                            duplicate: duplicate,
+                            mountPath: state.mountPath || configMapSecretData?.defaultMountPath,
+                        },
+                    })
+                }
             }
+        }
+
+        function handleSecretDataChange(index: number, key: string, value: string | boolean): void {
+            const _secretData = [...state.secretData]
+            _secretData[index] = { ...state[index], [key]: value }
+            let json = [..._secretData]
+            json = json.map((j) => {
+                let temp = {}
+                temp['isBinary'] = j.isBinary
+                if (j.fileName) {
+                    temp['key'] = j.fileName
+                }
+                if (j.property) {
+                    temp['property'] = j.property
+                }
+                if (j.name) {
+                    temp['name'] = j.name
+                }
+                return temp
+            })
+            dispatch({
+                type: ConfigMapActionTypes.multipleOptions,
+                payload: { secretDataYaml: YAML.stringify(json), secretData: _secretData },
+            })
+        }
+
+        function handleSecretDataDelete(index: number): void {
+            const _secretData = [...state.secretData]
+            _secretData.splice(index, 1)
+            let json = [..._secretData]
+            json = json.map((j) => {
+                return {
+                    key: j.fileName,
+                    name: j.name,
+                    property: j.property,
+                    isBinary: j.isBinary,
+                }
+            })
+            dispatch({
+                type: ConfigMapActionTypes.multipleOptions,
+                payload: { secretDataYaml: YAML.stringify(json), secretData: _secretData },
+            })
+        }
+
+        const handleSecretYamlChange = (yaml) => {
+            handleSecretDataYamlChange(yaml, state.codeEditorRadio, isESO, dispatch)
         }
 
         function stringify(value) {
@@ -236,12 +306,12 @@ export const OverrideConfigMapForm = React.memo(
             }
         }
 
-        const toggleExternalValues = (e): void => {
-            dispatch({ type: ConfigMapActionTypes.setExternal, payload: e.target.value !== '' })
+        const toggleExternalValues = (selectedExternalType): void => {
+            dispatch({ type: ConfigMapActionTypes.setExternal, payload: selectedExternalType.value !== '' })
         }
 
         const toggleExternalType = (selectedExternalType): void => {
-            dispatch({ type: ConfigMapActionTypes.setExternalType, payload: selectedExternalType.value !== '' })
+            dispatch({ type: ConfigMapActionTypes.setExternalType, payload: selectedExternalType.value })
         }
 
         const toggleSelectedType = (title: string): void => {
@@ -275,10 +345,14 @@ export const OverrideConfigMapForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.setConfigName, payload: { value: e.target.value, error: '' } })
         }
 
+        const handleRoleARNChange = (e): void => {
+            dispatch({ type: ConfigMapActionTypes.setConfigName, payload: e.target.value })
+        }
+
         return (
             <>
-                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map">
-                    {isOverrideView && configmap?.data?.name && configmap?.global && (
+                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-2">
+                    {isOverrideView && state.configName && configMapSecretData?.global && (
                         <Override
                             external={state.external && state.selectedType === 'environment'}
                             overridden={!!state.duplicate}
@@ -289,40 +363,47 @@ export const OverrideConfigMapForm = React.memo(
                     <div className="form__row">
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
-                            <ReactSelect
-                                placeholder="Select ConfigMap Type"
-                                options={ConfigMapOptions}
-                                value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
-                                onChange={toggleExternalValues}
-                                styles={groupStyle()}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option,
-                                }}
-                                classNamePrefix="configmap-data-type"
-                                isDisabled={isOverrideView && configmap?.data?.name && configmap?.global}
-                            />
-                            <ReactSelect
-                                placeholder="Select Secret Type"
-                                options={getTypeGroups()}
-                                defaultValue={
-                                    configmap?.externalType && configmap?.externalType !== ''
-                                        ? getTypeGroups(configmap?.externalType)
-                                        : getTypeGroups()[0].options[0]
-                                }
-                                onChange={toggleExternalType}
-                                styles={groupStyle()}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option: SecretOptions,
-                                    GroupHeading,
-                                }}
-                                classNamePrefix="secret-data-type"
-                                isDisabled={isOverrideView && configmap?.data?.name && configmap?.global}
-                            />
+                            {componentType === 'secret' ? (
+                                <ReactSelect
+                                    placeholder="Select Secret Type"
+                                    options={getTypeGroups()}
+                                    defaultValue={
+                                        state.externalType && state.externalType !== ''
+                                            ? getTypeGroups(state.externalType)
+                                            : getTypeGroups()[0].options[0]
+                                    }
+                                    onChange={toggleExternalType}
+                                    styles={groupStyle()}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        Option: SecretOptions,
+                                        GroupHeading,
+                                    }}
+                                    classNamePrefix="secret-data-type"
+                                    isDisabled={
+                                        isOverrideView && configMapSecretData?.name && configMapSecretData?.global
+                                    }
+                                />
+                            ) : (
+                                <ReactSelect
+                                    placeholder="Select ConfigMap Type"
+                                    options={ConfigMapOptions}
+                                    value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
+                                    onChange={toggleExternalValues}
+                                    styles={groupStyle()}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        Option,
+                                    }}
+                                    classNamePrefix="configmap-data-type"
+                                    isDisabled={
+                                        isOverrideView && configMapSecretData?.name && configMapSecretData?.global
+                                    }
+                                />
+                            )}
                         </div>
                     </div>
-                    {!configmap?.data?.name && (
+                    {!configMapSecretData?.name && (
                         <>
                             {state.external && (
                                 <div className="dc__info-container mb-24">
@@ -355,25 +436,15 @@ export const OverrideConfigMapForm = React.memo(
                             </div>
                         </>
                     )}
-
-                    {/* <div className="form__row">
-                        <label className="form__label">Usage type</label>
-                        <input
-                            type="text"
-                            autoComplete="off"
-                            className="form__input half"
-                            value={type === 'volume' ? 'Data volume' : 'Environment variable'}
-                            disabled
-                        />
-
-                    </div> */}
                     <label className="form__label form__label--lower">{`How do you want to use this ConfigMap?`}</label>
                     <div className={`form__row form-row__tab`}>
                         {tabs.map((tabData, idx) => (
                             <Tab
                                 {...tabData}
                                 key={idx}
-                                disabled={!!(isOverrideView && configmap?.data?.name && configmap?.global)}
+                                disabled={
+                                    !!(isOverrideView && configMapSecretData?.name && configMapSecretData?.global)
+                                }
                                 onClick={toggleSelectedType}
                                 type="configmap"
                             />
@@ -392,7 +463,9 @@ export const OverrideConfigMapForm = React.memo(
                                     helperText={'Keys are mounted as files to volume'}
                                     error={state.volumeMountPath.error}
                                     onChange={onMountPathChange}
-                                    disabled={isOverrideView && configmap?.data?.name && configmap?.global}
+                                    disabled={
+                                        isOverrideView && configMapSecretData?.name && configMapSecretData?.global
+                                    }
                                 />
                             </div>
                             <div className="mb-16">
@@ -508,6 +581,20 @@ export const OverrideConfigMapForm = React.memo(
                             )}
                         </>
                     )}
+                    {(isHashiOrAWS || isESO) && (
+                        <div className="form__row form__row--flex">
+                            <div className="w-50">
+                                <CustomInput
+                                    value={state.roleARN}
+                                    autoComplete="off"
+                                    label={'Role ARN'}
+                                    disabled={state.locked}
+                                    placeholder={'Enter Role ARN'}
+                                    onChange={handleRoleARNChange}
+                                />
+                            </div>
+                        </div>
+                    )}
                     {!state.external && (
                         <>
                             <div className="flex left mb-16">
@@ -534,7 +621,7 @@ export const OverrideConfigMapForm = React.memo(
                                         value={
                                             state.duplicate
                                                 ? yaml
-                                                : YAML.stringify(configmap?.defaultData, { indent: 2 })
+                                                : YAML.stringify(configMapSecretData?.defaultData, { indent: 2 })
                                         }
                                         mode="yaml"
                                         inline
@@ -573,12 +660,12 @@ export const OverrideConfigMapForm = React.memo(
                                     />
                                 ))
                             ) : (
-                                Object.keys(configmap?.defaultData).map((config, idx) => (
+                                Object.keys(configMapSecretData?.defaultData).map((config, idx) => (
                                     <KeyValueInput
                                         keyLabel={state.selectedType === 'volume' ? 'File Name' : 'Key'}
                                         valueLabel={state.selectedType === 'volume' ? 'File Content' : 'Value'}
                                         k={config}
-                                        v={stringify(configmap?.defaultData[config])}
+                                        v={stringify(configMapSecretData?.defaultData[config])}
                                         index={idx}
                                         onChange={null}
                                         onDelete={null}

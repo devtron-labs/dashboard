@@ -21,7 +21,7 @@ import {
 import SecretForm from './Secret/SecretForm'
 import ConfigMapForm from './ConfigMap/ConfigMapForm'
 import './ConfigMap.scss'
-import { OverrideConfigMapForm } from './ConfigMap/ConfigMapOverrides'
+import { ConfigMapSecretForm } from './ConfigMap/ConfigMapSecretForm'
 
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
@@ -153,68 +153,27 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if (componentType === 'secret') {
-            return (
-                <SecretForm
-                    name={data?.name}
-                    appChartRef={appChartRef}
-                    secret={data?.secretData ?? []}
-                    mountPath={data?.mountPath ?? ''}
-                    roleARNData={data?.roleARN ?? ''}
-                    type={data?.type}
-                    //type="environment"
-                    //external={data?.external ?? false}
-                    data={data?.data ?? null}
-                    id={id}
-                    appId={appId}
-                    isUpdate={data?.data}
-                    collapse={(e) => toggleCollapse(!collapsed)}
-                    update={update}
-                    index={index}
-                    //keyValueEditable={false}
-                    //initialise={init}
-                    externalTypeData={data?.externalType ?? ''}
-                    subPath={data?.subPath ?? false}
-                    filePermission={data?.filePermission ?? ''}
-                    esoSecret={data?.esoSecretData ?? null}
-                />
-            )
-        } else {
-            return (
-                // <ConfigMapForm
-                //     appChartRef={appChartRef}
-                //     name={data?.name}
-                //     type={data?.type}
-                //     //type="environment"
-                //     external={data?.external ?? false}
-                //     data={data?.data ?? null}
-                //     id={id}
-                //     appId={appId}
-                //     isUpdate={data?.data}
-                //     collapse={(e) => toggleCollapse(!collapsed)}
-                //     update={update}
-                //     index={index}
-                //     filePermission={data?.filePermission ?? ''}
-                //     subPath={data?.subPath ?? false}
-                //     mountPath={data?.mountPath}
-                // />
-                <OverrideConfigMapForm
-                    appChartRef={appChartRef}
-                    toggleCollapse={(e) => toggleCollapse(!collapsed)}
-                    configmap={data}
-                    id={id}
-                    reload={update}
-                    isOverrideView={isOverrideView}
-                />
-            )
-        }
+        return (
+            <ConfigMapSecretForm
+                appChartRef={appChartRef}
+                toggleCollapse={(e) => toggleCollapse(!collapsed)}
+                configMapSecretData={data}
+                id={id}
+                reload={update}
+                isOverrideView={isOverrideView}
+                componentType={componentType}
+            />
+        )
     }
 
     const renderLabel = (): JSX.Element => {
         let labelText = ''
         if (isOverrideView) {
             if (data?.defaultData) {
-                labelText = data.data ? 'Overridden' : 'Inheriting'
+                labelText =
+                    data.data || (componentType === 'secret' && (data.esoSecretData.secretStore || data.secretData))
+                        ? 'Overridden'
+                        : 'Inheriting'
             } else {
                 labelText = 'env'
             }
@@ -242,7 +201,9 @@ export function ConfigMapSecretContainer({
                         {renderLabel()}
                     </div>
                     <div className="flex right">
-                        {!collapsed && title && <Trash className="icon-n4 cursor icon-delete" onClick={openDeleteModal} />}
+                        {!collapsed && title && (
+                            <Trash className="icon-n4 cursor icon-delete" onClick={openDeleteModal} />
+                        )}
                         {title && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
                     </div>
                 </article>

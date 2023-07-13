@@ -1,30 +1,37 @@
 import { PATTERNS } from '../../../config'
+import { getSecretInitState } from '../Secret/secret.utils'
 import { ConfigMapAction, ConfigMapActionTypes, ConfigMapState } from './ConfigMap.type'
 
-export const initState = (configMap): ConfigMapState => {
+export const initState = (configMapSecretData): ConfigMapState => {
     return {
-        mountPath: configMap?.mountPath ?? '',
+        mountPath: configMapSecretData?.mountPath ?? '',
         loading: false,
         dialog: false,
-        subPath: configMap?.subPath ?? '',
-        filePermission: { value: configMap?.filePermission ?? '', error: '' },
-        duplicate: configMap?.data
-            ? Object.keys(configMap.data).map((k) => ({ k, v: configMap.data[k], keyError: '', valueError: '' }))
+        subPath: configMapSecretData?.subPath ?? '',
+        filePermission: { value: configMapSecretData?.filePermission ?? '', error: '' },
+        duplicate: configMapSecretData?.data
+            ? Object.keys(configMapSecretData.data).map((k) => ({
+                  k,
+                  v: configMapSecretData.data[k],
+                  keyError: '',
+                  valueError: '',
+              }))
             : null,
-        external: configMap?.external,
-        selectedType: configMap?.type,
-        volumeMountPath: { value: configMap?.mountPath ?? configMap?.defaultMountPath, error: '' },
-        isSubPathChecked: !!configMap?.subPath,
+        external: configMapSecretData?.external,
+        selectedType: configMapSecretData?.type,
+        volumeMountPath: { value: configMapSecretData?.mountPath ?? configMapSecretData?.defaultMountPath, error: '' },
+        isSubPathChecked: !!configMapSecretData?.subPath,
         externalSubpathValues: {
-            value: configMap?.data ? Object.keys(configMap?.data).join(',') : '',
+            value: configMapSecretData?.data ? Object.keys(configMapSecretData?.data).join(',') : '',
             error: '',
         },
-        isFilePermissionChecked: !!configMap?.filePermission,
+        isFilePermissionChecked: !!configMapSecretData?.filePermission,
         configName: {
-            value: configMap?.data?.name,
+            value: configMapSecretData?.name ?? '',
             error: '',
         },
         yamlMode: true,
+        ...getSecretInitState(configMapSecretData),
     }
 }
 
@@ -97,13 +104,22 @@ export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction)
             return { ...state, configName: action.payload }
         case ConfigMapActionTypes.toggleYamlMode:
             return { ...state, yamlMode: !state.yamlMode }
-            case ConfigMapActionTypes.setExternalType:
-                return { ...state, externalType: action.payload }
+
+        case ConfigMapActionTypes.setExternalType:
+            return { ...state, externalType: action.payload }
+        case ConfigMapActionTypes.setSecretDataYaml:
+            return { ...state, secretDataYaml: action.payload }
+        case ConfigMapActionTypes.setEsoYaml:
+            return { ...state, esoYaml: action.payload }
+        case ConfigMapActionTypes.setEsoData:
+            return { ...state, esoData: action.payload }
+        case ConfigMapActionTypes.setSecretData:
+            return { ...state, secretData: action.payload }
+        case ConfigMapActionTypes.setRoleARN:
+            return { ...state, roleARN: action.payload }
+
         case ConfigMapActionTypes.multipleOptions:
             return { ...state, ...action.payload }
-
-
-
         default:
             return state
     }

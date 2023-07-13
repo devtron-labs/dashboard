@@ -477,18 +477,18 @@ export default function SecretForm({
     }
 
     const handleSecretYamlChange = (yaml) => {
-        handleSecretDataYamlChange(
-            yaml,
-            codeEditorRadio,
-            isESO,
-            setEsoYaml,
-            setSecretDataYaml,
-            setSecretData,
-            setEsoData,
-            setSecretStore,
-            setScretStoreRef,
-            setRefreshInterval,
-        )
+        // handleSecretDataYamlChange(
+        //     yaml,
+        //     codeEditorRadio,
+        //     isESO,
+        //     setEsoYaml,
+        //     setSecretDataYaml,
+        //     setSecretData,
+        //     setEsoData,
+        //     setSecretStore,
+        //     setScretStoreRef,
+        //     setRefreshInterval,
+        // )
     }
 
     function handleDeleteParam(e, idx: number): void {
