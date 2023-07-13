@@ -1,5 +1,5 @@
 import { Routes } from '../../../../../config';
-import { post, put } from '@devtron-labs/devtron-fe-common-lib';
+import { post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 import IndexStore from '../../index.store'
 const appDetails = IndexStore.getAppDetails()
@@ -182,14 +182,21 @@ export const createResource = (
 export const generateEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType) => {
     const appIds =
         appType == AppType.DEVTRON_APP
-            ? generateDevtronAppIdentiferForK8sRequest(
-                  clusterId,
-                  appId,
-                  environmentId,
-              )
+            ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
     let url: string = 'k8s/resources/ephemeralContainers'
     url += `?identifier=${appIds}&appType=0`
-  return post(url, requestData)
+    return post(url, requestData)
+}
+
+export const deleteEphemeralUrl = (clusterId, environmentId, namespace, appName, appId, appType) => {
+    const appIds =
+        appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
+            : getAppId(clusterId, namespace, appName)
+
+    let url: string = 'k8s/resources/ephemeralContainers'
+    url += `?identifier=${appIds}&appType=0`
+    return trash(url)
 }

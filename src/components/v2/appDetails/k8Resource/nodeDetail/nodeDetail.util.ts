@@ -108,7 +108,7 @@ export function getPodContainerOptions(
             logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0].name as string)
 
         const containerOptions = containers.map((_container) => {
-            return { ..._container, selected: _container.name === _selectedContainerName }
+            return { ..._container, selected: _container.name === _selectedContainerName, isEphemeralContainer: _container.isEphemeralContainer }
         })
 
         return {
@@ -314,7 +314,6 @@ export const getContainerOptions = (containers: string[]) => {
 }
 
 export const getGroupedContainerOptions = (containers: Options[]) => {
-  console.log(containers)
     const containerOptions = [],
         initContainerOptions = [],
         ephemralContainerOptions = []
@@ -330,6 +329,7 @@ export const getGroupedContainerOptions = (containers: Options[]) => {
                 ephemralContainerOptions.push({
                     label: _container.name,
                     value: _container.name,
+                    isEphemeralContainer: _container.isEphemeralContainer
                 })
             } else {
                 containerOptions.push({

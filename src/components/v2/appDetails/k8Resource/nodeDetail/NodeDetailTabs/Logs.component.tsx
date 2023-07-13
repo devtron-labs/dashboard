@@ -5,22 +5,22 @@ import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.s
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
-import { getLogsURL } from '../nodeDetail.api'
+import { deleteEphemeralUrl, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib';
+import { Checkbox, CHECKBOX_VALUE, Host, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
 import { toast } from 'react-toastify'
-import Select from 'react-select'
+import Select, { components } from 'react-select'
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { Option } from '../../../../common/ReactSelect.utils'
+import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
 import { replaceLastOddBackslash } from '../../../../../../util/Util'
 import {
@@ -32,6 +32,7 @@ import {
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
+import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -73,6 +74,45 @@ function LogsComponent({
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
+
+    function Option(props) {
+        const { selectProps, data, style } = props
+        const getDeleteEphemeralContainer = () => {
+            deleteEphemeralUrl(
+                appDetails.clusterId,
+                appDetails.environmentId,
+                appDetails.namespace,
+                appDetails.appName,
+                appDetails.appId,
+                appDetails.appType,
+            )
+                .then(() => {
+                    toast.success('Deleted successfully')
+                })
+                .catch((error) => {
+                    showError(error)
+                })
+        }
+
+        selectProps.styles.option = getCustomOptionSelectionStyle(style)
+        const getOption = () => {
+            return (
+                <div onClick={stopPropagation}>
+                    <components.Option {...props}>
+                        <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
+                            {data.isEphemeralContainer && (
+                                <Cross className="icon-dim-16 cursor" onClick={() => getDeleteEphemeralContainer()} />
+                            )}
+                            {props.label}
+                        </div>
+                    </components.Option>
+                </div>
+            )
+        }
+
+        return getOption()
+    }
+
     const handlePodSelection = (selectedOption: string) => {
         const pods = getSelectedPodList(selectedOption)
         const containers = new Set(pods[0].containers ?? [])
@@ -459,7 +499,6 @@ function LogsComponent({
                         {(podContainerOptions?.containerOptions ?? []).length > 0 && (
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
-
                                 <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
