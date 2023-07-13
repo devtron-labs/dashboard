@@ -15,17 +15,21 @@ import yamlJsParser from 'yaml'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
 import { OutputTabType } from '../../../../bulkEdits/bulkEdits.type'
+import {ResponsePayload }from './nodeDetail.type'
 
 function EphemeralContainerDrawer({
     ephemeralForm,
     setEphemeralForm,
     setEphemeralContainerDrawer,
     params,
+    setEphemeralFormAdvanced,
+    ephemeralFormAdvanced
 }: EphemeralContainerDrawerType) {
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Config)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
+    const [ephemeralData, setEphemeralData] = useState()
 
     const onClickHideLaunchEphemeral = (): void => {
         setEphemeralContainerDrawer(false)
@@ -132,53 +136,64 @@ function EphemeralContainerDrawer({
         )
     }
 
-    // const handleManifestAdvanceChange = (e) => {
-    //     setEphemeralForm({
-    //         ...ephemeralForm,
-    //         advancedData: {
-    //             ...ephemeralForm.advancedData,
-    //             manifest: e.target.value,
-    //         },
-    //     })
-    // }
+    const handleManifestAdvanceChange = (e) => {
+        setEphemeralFormAdvanced({
+            ...ephemeralFormAdvanced,
+            advancedData: {
+                ...ephemeralFormAdvanced.advancedData,
+                manifest: e
+            },
+        })
+    }
 
-    // const renderAdvancedEphemeral = () => {
-    //     let codeEditorBody =
-    //         switchManifest === SwitchItemValues.Config
-    //             ? ephemeralForm?.advancedData.manifest
-    //             : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
-    //     return (
-    //         <div className="code-editor">
-    //             <CodeEditor
-    //                 value={codeEditorBody}
-    //                 height={300}
-    //                 mode="yaml"
-    //                 onChange={(e) => handleManifestAdvanceChange(e)}
-    //             >
-    //                 <CodeEditor.Header>
-    //                     <Switch
-    //                         value={ephemeralForm?.advancedData?.manifest}
-    //                         name={'tab'}
-    //                         onChange={handleManifestTabChange}
-    //                     >
-    //                         <SwitchItem value={SwitchItemValues.Config}> Config </SwitchItem>
-    //                         <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
-    //                     </Switch>
-    //                     <CodeEditor.ValidationError />
-    //                 </CodeEditor.Header>
-    //             </CodeEditor>
-    //         </div>
-    //     )
-    // }
+    const renderAdvancedEphemeral = () => {
+        let codeEditorBody =
+            switchManifest === SwitchItemValues.Config
+                ? ephemeralFormAdvanced.advancedData.manifest
+                : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
+        return (
+            <div className="code-editor">
+                <CodeEditor
+                    value={codeEditorBody}
+                    height={300}
+                    mode="yaml"
+                    onChange={handleManifestAdvanceChange}
+                >
+                    <CodeEditor.Header>
+                        <Switch
+                            value={ephemeralFormAdvanced.advancedData.manifest}
+                            name={'tab'}
+                            onChange={handleManifestTabChange}
+                        >
+                            <SwitchItem value={SwitchItemValues.Config}> Config </SwitchItem>
+                            <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
+                        </Switch>
+                        <CodeEditor.ValidationError />
+                    </CodeEditor.Header>
+                </CodeEditor>
+            </div>
+        )
+    }
 
     const onSave = () => {
         setLoader(true)
-        let payload = {
-            ...ephemeralForm,
+        let payload: ResponsePayload = {
             namespace: appDetails.namespace,
             clusterId: appDetails.clusterId,
             podName: params.podName,
         }
+        if (ephemeralContainerType === EDITOR_VIEW.BASIC) {
+            payload = {
+                ...payload,
+                basicData: ephemeralForm.basicData,
+            }
+        } else {
+            payload = {
+                ...payload,
+                advancedData: ephemeralFormAdvanced.advancedData,
+            }
+        }
+
         generateEphemeralUrl(
             payload,
             appDetails.clusterId,
@@ -190,9 +205,12 @@ function EphemeralContainerDrawer({
         )
             .then((response: any) => {
                 console.log(response)
+                setEphemeralContainerDrawer(true)
+                setEphemeralData(response)
             })
             .catch((err) => {
                 showError(err)
+                setEphemeralContainerDrawer(false)
             })
             .finally(() => {
                 setLoader(false)
@@ -233,7 +251,7 @@ function EphemeralContainerDrawer({
                 {renderEphemeralHeaders()}
                 <div className="p-20 ">
                     {renderEphemeralContainerType()}
-                    {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : null}
+                    {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : renderAdvancedEphemeral()}
                 </div>
                 {renderEphemeralFooter()}
             </div>

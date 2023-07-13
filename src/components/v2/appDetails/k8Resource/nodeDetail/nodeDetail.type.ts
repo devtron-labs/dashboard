@@ -38,3 +38,18 @@ export interface EphemeralContainerDrawerType {
     setEphemeralFormAdvanced: React.Dispatch<React.SetStateAction<EphemeralFormAdvancedType>>
     ephemeralFormAdvanced: EphemeralFormAdvancedType
 }
+
+export interface ResponsePayload {
+    namespace: string
+    clusterId: number
+    podName:string
+    basicData?: {
+      targetContainerName: string
+      containerName: string
+      image: string
+    }
+
+  advancedData?: {
+    manifest: string
+  }
+}
