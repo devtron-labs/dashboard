@@ -7,6 +7,7 @@ import {
     useBreadcrumb,
     toastAccessDenied,
     ServerErrors,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -637,7 +638,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const handleResourceClick=(e)=>{
         const {name}=e.currentTarget.dataset
         const _url=`/resource-browser/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${name}`
-        push(_url)
+        window.open(_url,'_blank')
     }
     const renderPodHeaderCell = (
         columnName: string,
@@ -706,7 +707,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <a
-                                                    className="dc__inline-block dc__ellipsis-right lh-20"
+                                                    className="dc__inline-block dc__ellipsis-right lh-20 cursor"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
                                                     data-name={pod.name}
                                                     onClick={handleResourceClick}
