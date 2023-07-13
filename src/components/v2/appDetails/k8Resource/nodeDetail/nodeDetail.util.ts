@@ -34,18 +34,18 @@ export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
         ...(pod?.containers?.map((_container) => ({
             name: _container,
             isInitContainer: false,
-            isEphemeralConainer: false,
+            isEphemeralContainer: false,
         })) || []),
         ...(pod?.initContainers?.map((_container) => ({
             name: _container,
             isInitContainer: true,
-            isEphemeralConainer: false,
+            isEphemeralContainer: false,
         })) || []),
         ...(pod?.ephemeralContainers?.map((_container) => ({
             name: _container,
             isInitContainer: false,
-            isEphemeralConainer: true,
-        })) || []), 
+            isEphemeralContainer: true,
+        })) || []),
     ]
 }
 
@@ -314,6 +314,7 @@ export const getContainerOptions = (containers: string[]) => {
 }
 
 export const getGroupedContainerOptions = (containers: Options[]) => {
+  console.log(containers)
     const containerOptions = [],
         initContainerOptions = [],
         ephemralContainerOptions = []
@@ -356,7 +357,7 @@ export const getGroupedContainerOptions = (containers: Options[]) => {
             groupedOptions.push({
                 label: 'Ephemeral containers',
                 options: ephemralContainerOptions.sort(sortOptionsByLabel),
-            }) 
+            })
         }
 
         return groupedOptions

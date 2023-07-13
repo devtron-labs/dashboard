@@ -1,8 +1,7 @@
 import {
     Drawer,
-    get,
     multiSelectStyles,
-    post,
+    OptionType,
     RadioGroup,
     RadioGroupItem,
     showError,
@@ -13,16 +12,23 @@ import { EphemeralContainerDrawerType, EphemeralKeyType } from './nodeDetail.typ
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { SwitchItemValues } from '../../../../cdPipeline/CDPipeline'
-import { ButtonWithLoader, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../../../../common'
+import {
+    ButtonWithLoader,
+    convertToOptionsList,
+    DevtronSwitch as Switch,
+    DevtronSwitchItem as SwitchItem,
+    filterImageList,
+} from '../../../../common'
 import sampleConfig from './sampleConfig.json'
 import yamlJsParser from 'yaml'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
-import { OutputTabType } from '../../../../bulkEdits/bulkEdits.type'
 import { ResponsePayload } from './nodeDetail.type'
-import { DropdownIndicator, Option } from '../../../common/ReactSelect.utils'
+import { DropdownIndicator, menuComponent, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
+import { getHostURLConfiguration } from '../../../../../services/service'
+import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 
 function EphemeralContainerDrawer({
     ephemeralForm,
@@ -32,18 +38,39 @@ function EphemeralContainerDrawer({
     setEphemeralFormAdvanced,
     ephemeralFormAdvanced,
     containerList,
-    setContainers
+    setContainers,
 }: EphemeralContainerDrawerType) {
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Config)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
+    const [imageListOption, setImageListOption] = useState<OptionType[]>([])
+    const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
+    const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
+    const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
+
+    useEffect(() => {
+        getImageList()
+        getOptions()
+    }, [])
+
     const onClickHideLaunchEphemeral = (): void => {
         setEphemeralContainerDrawer(false)
     }
 
     const onChangeEphemeralContainerType = (event): void => {
         setEphemeralContainerType(event.target.value)
+    }
+
+    const getImageList = () => {
+        getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST').then((hostUrlConfig) => {
+            if (hostUrlConfig.result) {
+                const imageValue: string = hostUrlConfig.result.value
+                let filteredImageList = filterImageList(JSON.parse(imageValue), 'v1.26.5')
+                let option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
+                setImageListOption(option)
+            }
+        })
     }
 
     const handleEphemeralChange = (e, key: EphemeralKeyType): void => {
@@ -55,7 +82,6 @@ function EphemeralContainerDrawer({
             },
         })
     }
-    const [ephemeralContainerList, setEphemeralContainerList] = useState([])
 
     const handleManifestTabChange = (e): void => {
         setSwitchManifest(e.target.value)
@@ -78,20 +104,30 @@ function EphemeralContainerDrawer({
         )
     }
 
-    const handleContainerSelectChange = (selected) => {
+    const handleContainerSelectChange = (selected, key) => {
+        if (key === 'image') {
+            setSelectedImageList(selected)
+        } else {
+            setSelectedTargetContainer(selected)
+        }
         setEphemeralForm({
             ...ephemeralForm,
             basicData: {
                 ...ephemeralForm.basicData,
-                targetContainerName: selected[0].value,
+                [key]: key === 'image' ? selected.value : selected.value,
             },
         })
     }
 
-    const getOptions = (): [{ label: string; value: string }] => {
-        return containerList[0].containers.map((res) => {
-            return [{ value: res, label: res }]
-        })
+    const getOptions = () => {
+        setTargetContainerOption(
+            containerList[0].containers.map((res) => {
+                return {
+                    value: res,
+                    label: res,
+                }
+            }),
+        )
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -112,28 +148,44 @@ function EphemeralContainerDrawer({
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Image</div>
-                    <input
-                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                        data-testid="preBuild-task-description-textbox"
-                        type="text"
-                        onChange={(e) => handleEphemeralChange(e, 'image')}
-                        value={ephemeralForm.basicData.image}
-                        placeholder="Enter task description"
+                    <ReactSelect
+                        value={selectedImageList}
+                        options={imageListOption}
+                        className="select-width"
+                        classNamePrefix="select-token-expiry-duration"
+                        isSearchable={false}
+                        onChange={(e) => handleContainerSelectChange(e, 'image')}
+                        components={{
+                            IndicatorSeparator: null,
+                            // Option: imageOptionComponent,
+                            MenuList: menuComponentForImage,
+                        }}
+                        styles={{
+                            ...multiSelectStyles,
+                            control: (base) => ({
+                                ...base,
+                                minHeight: '36px',
+                                fontWeight: '400',
+                                backgroundColor: 'var(--N50)',
+                                cursor: 'pointer',
+                            }),
+                            dropdownIndicator: (base) => ({
+                                ...base,
+                                padding: '0 8px',
+                            }),
+                        }}
                     />
                 </div>
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Target Container Name</div>
                     <ReactSelect
-                        value={{
-                            label: ephemeralForm.basicData.targetContainerName,
-                            value: ephemeralForm.basicData.targetContainerName,
-                        }}
-                        options={getOptions()}
+                        value={selectedTargetContainer}
+                        options={targetContainerOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
-                        onChange={handleContainerSelectChange}
+                        onChange={(e) => handleContainerSelectChange(e, 'targetContainerName')}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
@@ -253,8 +305,6 @@ function EphemeralContainerDrawer({
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')
                 setEphemeralContainerDrawer(false)
-                setEphemeralContainerList(response)
-                console.log('ephemeral containers list', response)
                 setEphemeralForm({
                     ...ephemeralForm,
                     basicData: {
@@ -270,27 +320,27 @@ function EphemeralContainerDrawer({
                 })
 
                 const containers = []
-                response?.ephemralContainers?.forEach(element => {
+                response?.ephemralContainers?.forEach((element) => {
                     containers.push({
                         name: element,
                         isInitContainer: false,
-                        isEphemeralConainer: true,
+                        isEphemeralContainer: true,
                     })
-                });
-                response?.containers?.forEach(element => {
+                })
+                response?.containers?.forEach((element) => {
                     containers.push({
                         name: element,
                         isInitContainer: false,
-                        isEphemeralConainer: false,
+                        isEphemeralContainer: false,
                     })
-                });
-                response?.initContainers?.forEach(element => {
+                })
+                response?.initContainers?.forEach((element) => {
                     containers.push({
                         name: element,
                         isInitContainer: true,
-                        isEphemeralConainer: false,
+                        isEphemeralContainer: false,
                     })
-                });
+                })
 
                 setContainers(containers)
             })

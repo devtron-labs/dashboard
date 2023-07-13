@@ -10,7 +10,7 @@ import {
     clusterTerminalTypeUpdate,
     clusterTerminalUpdate,
 } from './clusterNodes.service'
-import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
+import { GroupHeading, menuComponentForImage, Option } from '../../components/v2/common/ReactSelect.utils'
 import { clusterImageDescription, convertToOptionsList } from '../common'
 import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
@@ -635,16 +635,7 @@ export default function ClusterTerminal({
         setTerminalCleared(!terminalCleared)
     }
 
-    const menuComponent = (props) => {
-        return (
-            <components.MenuList {...props}>
-                <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
-                    {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
-                </div>
-                {props.children}
-            </components.MenuList>
-        )
-    }
+
 
     const renderRegisterLinkMatcher = (terminal) => {
         const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
@@ -910,7 +901,7 @@ export default function ClusterTerminal({
                 components: {
                     IndicatorSeparator: null,
                     Option: imageOptionComponent,
-                    MenuList: menuComponent,
+                    MenuList: menuComponentForImage,
                 },
             },
             {
