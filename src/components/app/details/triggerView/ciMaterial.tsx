@@ -157,7 +157,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         return (
             <ButtonWithLoader
-                rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
                 dataTestId="ci-trigger-start-build-button"
                 loaderColor="#ffffff"
                 disabled={!canTrigger}

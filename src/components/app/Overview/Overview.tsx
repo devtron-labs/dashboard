@@ -401,10 +401,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="env-deployments-info-wrapper w-100">
                 <div
-                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space"
+                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-start"
                     data-testid="overview-configured-pipeline"
                 >
-                    <div className="m-tb-8">Pipeline name</div>
+                    <div className="m-tb-8 w-300">Pipeline name</div>
                     <div className="flex">
                         <div className="m-tb-8 mr-16 w-150">Last run status</div>
                         <div className="m-tb-8 mr-16 w-150">Run in environment</div>
@@ -412,8 +412,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                 </div>
                 {jobPipelines.map((jobPipeline, index) => (
-                    <div key={jobPipeline.ciPipelineID} className="dc__content-space flex">
-                        <div className="h-20 m-tb-8 cb-5 fs-13">
+                    <div key={jobPipeline.ciPipelineID} className="flex dc__content-start">
+                        <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
                                 to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineName}/`}
                                 className="fs-13"
@@ -439,6 +439,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {environmentName(jobPipeline)}
+                                {environmentName(jobPipeline) === "devtron-ci" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
                                 {jobPipeline.startedOn !== '0001-01-01T00:00:00Z'

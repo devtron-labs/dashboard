@@ -24,6 +24,15 @@ export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSe
         )
     }
 
+    const envOption = (props): JSX.Element => {
+        return (
+            <components.Option {...props}>
+                <div>{props.data.name}</div>
+                {props.data.name === "devtron-ci" && <span className="fs-12 cn-7 pt-2">{props.data.description}</span>}
+            </components.Option>
+        )
+    }
+
     return (
         <div className={`${isBuildStage ? "sidebar-action-container sidebar-action-container-border" : "flex h-36 dc__align-items-center br-4 dc__border"}`}>
             {isBuildStage ? <span>Execute tasks in environment</span> : <div className="flex p-8 dc__align-start dc__border-right">Execute job in</div>}
@@ -44,6 +53,7 @@ export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSe
                         DropdownIndicator,
                         GroupHeading: groupHeading,
                         Control: environmentListControl,
+                        Option: envOption,
                     }}
                     styles={isBuildStage ? buildStageStyles : triggerStageStyles}
                 />

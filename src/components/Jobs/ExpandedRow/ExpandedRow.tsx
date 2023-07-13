@@ -31,7 +31,10 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <AppStatus appStatus={ciPipeline.status} isJobView={true} />
                     </div>
                     <div className="app-list__cell app-list__cell--time">
-                        <p className="dc__truncate-text m-0">{environmentName(ciPipeline)}</p>
+                        <p className="dc__truncate-text m-0">
+                            {environmentName(ciPipeline)}
+                            {environmentName(ciPipeline) === "devtron-ci" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                        </p>
                     </div>
                     <div className="app-list__cell app-list__cell--time">
                         <p className="dc__truncate-text m-0">{ciPipeline.lastRunAt}</p>

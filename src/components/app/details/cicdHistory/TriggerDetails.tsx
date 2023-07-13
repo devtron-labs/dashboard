@@ -172,7 +172,7 @@ const ProgressingStatus = React.memo(
         }
         return (
             <>
-                <div className="flex left">
+                <div className="flex left mb-24">
                     <div className="dc__min-width-fit-content">
                         <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                             In progress
@@ -227,7 +227,7 @@ const CurrentStatus = React.memo(
             )
         } else {
             return (
-                <div className={`flex left ${ isJobView ? "mb-12" : ""}`}>
+                <div className={`flex left ${ isJobView ? "mb-24" : ""}`}>
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
@@ -306,8 +306,9 @@ const StartDetails = ({
                 )}
             </div>
             {isJobView && <div className="pt-4 pb-4 pr-0 pl-0">
-                <span className="fw-6 fs-12">Env</span>
-                <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : "default-ci"}</span>
+                <span className="fw-6 fs-14">Env</span>
+                <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : "devtron-ci"}</span>
+                {environmentName === "" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
             </div>}
 
         </div>

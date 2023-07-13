@@ -145,7 +145,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
-                        {this.props.isJobView && _selectedEnv && <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>}
+                        {this.props.isJobView && _selectedEnv && (
+                            <>
+                                <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>
+                                {_selectedEnv.name === "devtron-ci" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>}
+                            </>
+                        )}
                     </div>
                     <div
                         className={`workflow-node__icon-common ml-8 ${

@@ -255,12 +255,12 @@ export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): strin
     const status = jobPipeline.status === "notdeployed" ? "" : jobPipeline.status;
     if (status === "") {
         if (jobPipeline.environmentName === "") {
-            return "default-ci"
+            return "devtron-ci"
         }
         return jobPipeline.environmentName
     } else {
         if (jobPipeline.lastTriggeredEnvironmentName === "") {
-            return "default-ci"
+            return "devtron-ci"
         }
         return jobPipeline.lastTriggeredEnvironmentName
     }

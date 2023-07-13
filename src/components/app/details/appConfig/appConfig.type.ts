@@ -32,6 +32,7 @@ export interface AppConfigState {
     maximumAllowedUrl: string
     canDeleteApp: boolean
     workflowsRes?: WorkflowResult
+    environmentList?: any[]
 }
 
 export interface AppStageUnlockedType {
@@ -82,6 +83,7 @@ export interface AppComposeRouterProps {
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
+    envList?: any[]
 }
 
 export interface EnvironmentOverridesProps {

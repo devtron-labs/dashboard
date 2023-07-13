@@ -81,7 +81,7 @@ export default function JobListView(props: JobListViewProps) {
                                 )}
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0 value" data-testid="job-list-for-sort">
+                                <p className="dc__truncate-text m-0 value cb-5" data-testid="job-list-for-sort">
                                     {job.name}
                                 </p>
                             </div>
@@ -89,7 +89,10 @@ export default function JobListView(props: JobListViewProps) {
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">{environmentName(job.defaultPipeline)}</p>
+                                <p className="dc__truncate-text m-0">
+                                    {environmentName(job.defaultPipeline)}
+                                    {environmentName(job.defaultPipeline) === "devtron-ci" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                                </p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>

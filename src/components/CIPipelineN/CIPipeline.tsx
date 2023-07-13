@@ -191,7 +191,7 @@ export default function CIPipeline({
         getEnvironmentListMinPublic()
             .then((response) => {
                 let list = []
-                list.push({ id: 0, clusterName: '', name: "default-ci", active: false, isClusterActive: false, description: "System default" })
+                list.push({ id: 0, clusterName: '', name: "devtron-ci", active: false, isClusterActive: false, description: "System default" })
                 response.result?.forEach((env) => {
                     if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
                         list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
@@ -517,7 +517,6 @@ export default function CIPipeline({
         } else {
             _ciPipeline.environmentId = undefined
         }
-        
 
         saveCIPipeline(
             {

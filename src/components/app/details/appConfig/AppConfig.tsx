@@ -294,6 +294,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
         maximumAllowedUrl: '',
         canDeleteApp: false,
         workflowsRes: null,
+        environmentList: []
     })
 
     useEffect(() => {
@@ -309,8 +310,8 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     }, [appName])
 
     useEffect(() => {
-        Promise.all([getAppConfigStatus(+appId, isJobView), getWorkflowList(appId)])
-            .then(([configStatusRes, workflowRes]) => {
+        Promise.all([getAppConfigStatus(+appId, isJobView), getWorkflowList(appId), getEnvironmentListMinPublic()])
+            .then(([configStatusRes, workflowRes, envResult]) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
                 let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
@@ -334,6 +335,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     maximumAllowedUrl: redirectUrl,
                     canDeleteApp: workflowRes.result.workflows.length === 0,
                     workflowsRes: workflowRes.result,
+                    environmentList: envResult.result
                 })
                 if (location.pathname === match.url) {
                     history.replace(redirectUrl)
@@ -559,6 +561,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepoState={setShowRepoOnDelete}
                             isJobView={isJobView}
+                            envList={state.environmentList}
                         />
                     </div>
                 </div>
@@ -710,6 +713,7 @@ function AppComposeRouter({
     toggleRepoSelectionTippy,
     setRepoState,
     isJobView,
+    envList
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
@@ -746,6 +750,7 @@ function AppComposeRouter({
                                         respondOnSuccess={respondOnSuccess}
                                         getWorkflows={getWorkflows}
                                         isJobView={isJobView}
+                                        envList={envList}
                                     />
                                 )}
                             />,
@@ -941,11 +946,11 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                 <ConfirmationDialog.Icon src={warn} />
                 <ConfirmationDialog.Body title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`} />
                 <p className="fs-13 cn-7 lh-1-54">
-                    {`Pipeline ‘${pipeline.name}‘  is using configurations for environment ‘${envOverride.environmentName}’.`}
+                    {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
+                    <Link to={path} onClick={handleViewPipeline} className="ml-2">View pipeline</Link>
                 </p>
                 <p className="fs-13 cn-7 lh-1-54">
-                    Deleting the environment configurations may impact the pipeline.
-                    <Link to={path} onClick={handleViewPipeline} className="ml-2">View pipeline</Link>
+                    Base configmaps & secrets will be used if environment configurations are deleted.
                 </p>
                 <ConfirmationDialog.ButtonGroup>
                     <button
@@ -979,7 +984,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                 })
             })
         }
-        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/build` : ""
+        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/pre-build` : ""
         return (!showConfirmationDialog ? renderDeleteDialog() : renderConfirmationDeleteModal(pipeline, path))
     }
 
@@ -1179,6 +1184,8 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                                 <div className="fw-6 fs-13 cb-5">Add Environment</div></div>) : (
                             <>
                                 <ReactSelect 
+                                    autoFocus
+                                    menuIsOpen
                                     isSearchable                                   
                                     menuPlacement="auto"
                                     closeMenuOnScroll={true}
@@ -1190,9 +1197,10 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                                     getOptionValue={(option) => `${option.id}`}
                                     isMulti={false}
                                     onChange={selectEnvironment}
+                                    onBlur={handleAddEnvironment}
                                     components={{
                                         IndicatorSeparator: null,
-                                        DropdownIndicator,
+                                        DropdownIndicator: null,
                                         GroupHeading: groupHeading,
                                         ValueContainer: ValueContainer             
                                     }}
@@ -1205,7 +1213,6 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
                                             ...base, paddingRight: '0px'
                                         }),
                                         valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px',}),
-                                        indicatorsContainer: (base) => ({ ...base, height: '28px' }),
                                     }}
                                 />
                             </>
