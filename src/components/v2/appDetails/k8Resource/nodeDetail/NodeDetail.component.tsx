@@ -23,6 +23,7 @@ import './nodeDetail.css'
 import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
 import { getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
+import {ReactComponent as EphemeralIcon} from '../../../../../assets/icons/ic-ephemeral.svg'
 
 function NodeDetailComponent({
     loadingResources,
@@ -241,7 +242,8 @@ function NodeDetailComponent({
                             )
                         })}
                 </div>
-                <div className="cursor cb-5" onClick={onClickShowLaunchEphemeral}>
+                <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
+                    <EphemeralIcon className="mr-4"/>
                     Launch Ephemeral Container
                 </div>
 

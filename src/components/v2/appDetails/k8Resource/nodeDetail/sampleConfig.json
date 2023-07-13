@@ -4,14 +4,7 @@
         "command": ["sh"],
         "image": "quay.io/devtron/ubuntu-k8s-utils:latest",
         "targetContainerName": "demo-app",
-        "stdin": false,
-        "tty": true,
-        "volumeMounts": [
-            {
-                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
-                "name": "kube-api-access-qnhvv",
-                "readOnly": true
-            }
-        ]
+        "stdin": true,
+        "tty": true
     }
 }

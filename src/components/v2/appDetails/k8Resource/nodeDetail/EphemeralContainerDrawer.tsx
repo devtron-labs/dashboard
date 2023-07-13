@@ -137,13 +137,14 @@ function EphemeralContainerDrawer({
     }
 
     const handleManifestAdvanceChange = (e) => {
-        setEphemeralFormAdvanced({
-            ...ephemeralFormAdvanced,
-            advancedData: {
-                ...ephemeralFormAdvanced.advancedData,
-                manifest: e
-            },
-        })
+      if (switchManifest !== SwitchItemValues.Config) return
+      let manifestJson = yamlJsParser.parse(e)
+      setEphemeralFormAdvanced({
+          ...ephemeralFormAdvanced,
+          advancedData: {
+              manifest: JSON.stringify(manifestJson),
+          },
+      })
     }
 
     const renderAdvancedEphemeral = () => {
@@ -152,12 +153,13 @@ function EphemeralContainerDrawer({
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
         return (
-            <div className="code-editor">
+          <div className="mt-24 mr-24 mb-24 code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
                     height={300}
                     mode="yaml"
                     onChange={handleManifestAdvanceChange}
+                    readOnly={switchManifest === SwitchItemValues.Sample}
                 >
                     <CodeEditor.Header>
                         <Switch
@@ -204,16 +206,17 @@ function EphemeralContainerDrawer({
             appDetails.appType,
         )
             .then((response: any) => {
-                console.log(response)
-                setEphemeralContainerDrawer(true)
+                setEphemeralContainerDrawer(false)
                 setEphemeralData(response)
+            //     setEphemeralForm(
             })
             .catch((err) => {
                 showError(err)
-                setEphemeralContainerDrawer(false)
+                setEphemeralContainerDrawer(true)
             })
             .finally(() => {
                 setLoader(false)
+                setEphemeralContainerDrawer(false)
             })
     }
 
