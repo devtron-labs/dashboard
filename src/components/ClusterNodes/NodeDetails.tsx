@@ -55,7 +55,7 @@ import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { createTaintsList } from '../cluster/cluster.util'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
-
+import { URLS } from '../../config'
 
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
@@ -636,7 +636,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
     const handleResourceClick=(e)=>{
         const {name}=e.currentTarget.dataset
-        const _url=`/resource-browser/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${name}`
+        const _url=`${URLS.RESOURCE_BROWSER}/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${name}`
         window.open(_url,'_blank')
     }
     const renderPodHeaderCell = (
@@ -705,14 +705,14 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 content={pod.name}
                                                 interactive={true}
                                             >
-                                                <a
-                                                    className="dc__inline-block dc__ellipsis-right lh-20 cursor"
+                                                <span
+                                                    className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
                                                     data-name={pod.name}
                                                     onClick={handleResourceClick}
                                                 >
                                                     {pod.name}
-                                                </a>
+                                                </span>
                                             </Tippy>
                                             <Tippy
                                                 className="default-tt"
