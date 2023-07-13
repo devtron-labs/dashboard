@@ -54,6 +54,8 @@ import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { createTaintsList } from '../cluster/cluster.util'
+import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST } from '../ResourceBrowser/Constants'
+
 
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
@@ -632,7 +634,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                   }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
-
+    const handleResourceClick=(e)=>{
+        const {name}=e.currentTarget.dataset
+        const _url=`/resource-browser/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${name}`
+        push(_url)
+    }
     const renderPodHeaderCell = (
         columnName: string,
         sortingFieldName: string,
@@ -699,12 +705,14 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 content={pod.name}
                                                 interactive={true}
                                             >
-                                                <span
+                                                <a
                                                     className="dc__inline-block dc__ellipsis-right lh-20"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
+                                                    data-name={pod.name}
+                                                    onClick={handleResourceClick}
                                                 >
                                                     {pod.name}
-                                                </span>
+                                                </a>
                                             </Tippy>
                                             <Tippy
                                                 className="default-tt"
