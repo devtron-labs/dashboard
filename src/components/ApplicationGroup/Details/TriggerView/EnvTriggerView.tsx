@@ -16,6 +16,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     VisibleModal,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -863,7 +864,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        onClickManifestDownload(_appId, node.environmentId, node.environmentName)
+                        node.isVirtualEnvironment &&
+                            node.deploymentAppType == DeploymentAppTypes.MANIFEST_DOWNLOAD &&
+                            onClickManifestDownload(_appId, node.environmentId, node.environmentName)
                         const msg =
                             materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
