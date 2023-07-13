@@ -76,6 +76,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         variable.refVariableStepIndex = 0
         variable.refVariableName = ''
         variable.variableType = RefVariableType.NEW
+        variable.variableStepIndexInPlugin = variable.variableStepIndex
         delete variable.refVariableStage
         delete variable.variableStepIndex
         return variable
