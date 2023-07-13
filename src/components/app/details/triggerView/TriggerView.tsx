@@ -793,19 +793,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     handleTriggerErrorMessageForHelmManifestPush = (serverError: any, cdPipelineId: string, environmentId: number) => {
-        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors) && serverError.code !== 403 && serverError.code !== 408) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
-                if (serverError.code !== 403 && serverError.code !== 408) {
-                    const toastBody = (
-                        <ToastBodyWithButton
-                            onClick={() => this.redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
-                            title=""
-                            subtitle={userMessage || internalMessage}
-                            buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
-                        />
-                    )
-                    toast.error(toastBody, { autoClose: false })
-                }
+                const toastBody = (
+                    <ToastBodyWithButton
+                        onClick={() => this.redirectToDeploymentStepsPage(cdPipelineId, environmentId)}
+                        title=""
+                        subtitle={userMessage || internalMessage}
+                        buttonText={TOAST_BUTTON_TEXT_VIEW_DETAILS}
+                    />
+                )
+                toast.error(toastBody, { autoClose: false })
             })
         } else {
             showError(serverError)
