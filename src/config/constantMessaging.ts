@@ -377,3 +377,5 @@ export const EMPTY_STATE_STATUS = {
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
+
+export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pipeline'

@@ -8,6 +8,7 @@ import {
     VisibleModal,
     DeploymentNodeType,
     CDModalTab,
+    ToastBodyWithButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCDMaterialList,
@@ -46,7 +47,7 @@ import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
+import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR, NO_TASKS_CONFIGURED_ERROR } from '../../../../config/constantMessaging'
 import {
     getBranchValues,
     handleSourceNotConfigured,
@@ -893,11 +894,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
+                
+                errors.errors.map(error=>{
+                    if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
+                        const errorToastBody = (
+                            <ToastBodyWithButton
+                                onClick={this.redirectToCIPipeline}
+                                subtitle={error.userMessage}
+                                title="Nothing to execute"
+                                buttonText="EDIT PIPELINE"
+                            />
+                        )
+                        toast.error(errorToastBody)
+                    } else {
+                        toast.error(error)
+                    }
+                })
                 this.setState({ code: errors.code, isLoading: false })
             })
     }
-
+    redirectToCIPipeline = () => {
+        this.props.history.push(
+            `/app/${this.props.match.params.appId}/edit/workflow/${this.state.workflowId}/ci-pipeline/${this.state.ciNodeId}/build`,
+        )
+    }
     selectCommit = (materialId: string, hash: string): void => {
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
