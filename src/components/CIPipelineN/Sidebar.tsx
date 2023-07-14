@@ -260,7 +260,7 @@ export function Sidebar({
             className="default-tt"
             arrow={false}
             placement="bottom"
-            disabled={isVirtualEnvironment}
+            disabled={formData.isClusterCdActive}
             content="This Environment is not configured to run on devtron worker."
         >
             <div

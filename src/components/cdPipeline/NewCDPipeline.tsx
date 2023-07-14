@@ -520,6 +520,8 @@ export default function NewCDPipeline({
                 formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? formData.containerRegistryName : '',
             repoName: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? formData.repoName : '',
             manifestStorageType: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
+            runPreStageInEnv: formData.runPreStageInEnv,
+            runPostStageInEnv: formData.runPostStageInEnv
         }
 
         if (isVirtualEnvironment) {
