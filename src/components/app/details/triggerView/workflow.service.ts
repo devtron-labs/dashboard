@@ -517,6 +517,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             status: cdPipeline.preStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
+            isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+            deploymentAppType: cdPipeline.deploymentAppType,
             description: cdPipeline.description || '',
             environmentId: cdPipeline.environmentId,
             deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',
@@ -568,6 +570,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
         userApprovalConfig: cdPipeline.userApprovalConfig,
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+        deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
     } as NodeAttr
     stageIndex++
@@ -589,6 +592,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             status: cdPipeline.postStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
+            isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+            deploymentAppType: cdPipeline.deploymentAppType,
             description: cdPipeline.description || '',
             environmentId: cdPipeline.environmentId,
             deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',

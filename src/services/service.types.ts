@@ -1,6 +1,4 @@
-import { ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
-import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
-import { DeploymentAppTypes } from '../config';
+import { DeploymentAppTypes, ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
 
 export interface RootObject {
     code: number;
@@ -43,7 +41,7 @@ export interface CDPipeline {
     runPreStageInEnv: boolean;
     runPostStageInEnv: boolean;
     isClusterCdActive: boolean;
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
 }
 
 export interface AppListMin extends ResponseType {

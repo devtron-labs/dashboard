@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { showError, useThrottledEffect, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib';
+import { showError, useThrottledEffect, OptionType, noop, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
@@ -13,7 +13,6 @@ import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
-import { DeploymentAppTypes } from '../../../config';
 
 const commandLineParser = require('command-line-parser')
 

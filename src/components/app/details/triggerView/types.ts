@@ -12,6 +12,7 @@ import {
     DockerConfigOverrideType,
     ReleaseTag,
     ImageComment,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
@@ -561,6 +562,7 @@ export interface CdPipeline {
     deploymentAppCreated?: boolean
     userApprovalConfig?: UserApprovalConfigType
     isVirtualEnvironment?: boolean
+    deploymentAppType: DeploymentAppTypes
     helmPackageName?: string
 }
 
