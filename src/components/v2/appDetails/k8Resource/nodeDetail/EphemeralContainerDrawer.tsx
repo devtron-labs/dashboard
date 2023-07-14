@@ -49,14 +49,11 @@ function EphemeralContainerDrawer({
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
-    const [errorForm, serErrorForm] = useState({
-        containerName: { isValid: true, message: '' },
-    })
 
     useEffect(() => {
         getImageList()
         getOptions()
-    }, [])
+    }, [containerList])
 
     const onClickHideLaunchEphemeral = (): void => {
         setEphemeralContainerDrawer(false)
@@ -70,7 +67,7 @@ function EphemeralContainerDrawer({
         getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST').then((hostUrlConfig) => {
             if (hostUrlConfig.result) {
                 const imageValue: string = hostUrlConfig.result.value
-                let filteredImageList = filterImageList(JSON.parse(imageValue), 'v1.26.5')
+                let filteredImageList = filterImageList(JSON.parse(imageValue), appDetails?.k8sVersion)
                 let option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
                 setImageListOption(option)
             }
@@ -78,23 +75,17 @@ function EphemeralContainerDrawer({
     }
 
     const handleEphemeralChange = (e, key: EphemeralKeyType): void => {
-        if (!e.target.value) {
-            serErrorForm({
-                ...errorForm,
-                containerName: { isValid: false, message: 'This is a required filed' },
-            })
-        } else{
-
-         serErrorForm({
-                ...errorForm,
-                containerName: { isValid: true, message: '' },
-            })
-          }
         setEphemeralForm({
             ...ephemeralForm,
             basicData: {
                 ...ephemeralForm.basicData,
                 [key]: e.target.value,
+            },
+        })
+        setEphemeralFormAdvanced({
+            ...ephemeralFormAdvanced,
+            advancedData: {
+                manifest: '',
             },
         })
     }
@@ -120,7 +111,9 @@ function EphemeralContainerDrawer({
         )
     }
 
-    const handleContainerSelectChange = (selected, key, defaultVal) => {
+    const handleContainerSelectChange = (selected, key, defaultOptions) => {
+        let defaultVal = defaultOptions.length && defaultOptions[0]
+        console.log(defaultVal)
         if (key === 'image') {
             setSelectedImageList(selected)
         } else {
@@ -130,7 +123,7 @@ function EphemeralContainerDrawer({
             ...ephemeralForm,
             basicData: {
                 ...ephemeralForm.basicData,
-                [key]: selected?.value || defaultVal,
+                [key]: selected?.value ?? defaultVal,
             },
         })
     }
@@ -159,24 +152,25 @@ function EphemeralContainerDrawer({
                             onChange={(e) => handleEphemeralChange(e, 'containerName')}
                             value={ephemeralForm.basicData.containerName}
                         />
-                        {!errorForm.containerName.isValid && (
+                        {/* {!isValid.containerName && (
                             <span className="form__error">
                                 <img src={error} alt="" className="form__icon" />
-                                {errorForm.containerName.message}
+                                This is a required field
                             </span>
-                        )}
+                        )} */}
                     </div>
                 </div>
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Image</div>
+                    {console.log(imageListOption)}
                     <ReactSelect
                         value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
-                        onChange={(e) => handleContainerSelectChange(e, 'image', imageListOption[0])}
+                        onChange={(e) => handleContainerSelectChange(e, 'image', imageListOption)}
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
@@ -206,7 +200,9 @@ function EphemeralContainerDrawer({
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
-                        onChange={(e) => handleContainerSelectChange(e, 'targetContainerName', targetContainerOption[0])}
+                        onChange={(e) =>
+                            handleContainerSelectChange(e, 'targetContainerName', targetContainerOption[0])
+                        }
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
@@ -263,6 +259,14 @@ function EphemeralContainerDrawer({
                 manifest: JSON.stringify(manifestJson),
             },
         })
+        setEphemeralForm({
+            ...ephemeralForm,
+            basicData: {
+                targetContainerName: '',
+                containerName: '',
+                image: '',
+            },
+        })
     }
 
     const renderAdvancedEphemeral = () => {
@@ -296,10 +300,6 @@ function EphemeralContainerDrawer({
     }
 
     const onSave = () => {
-      let isValidForm
-      if(!errorForm.containerName) {
-        isValidForm = false
-      }
         setLoader(true)
         setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
@@ -307,15 +307,24 @@ function EphemeralContainerDrawer({
             clusterId: appDetails.clusterId,
             podName: params.podName,
         }
+
         if (ephemeralContainerType === EDITOR_VIEW.BASIC) {
             payload = {
                 ...payload,
-                basicData: ephemeralForm.basicData,
+                basicData: {
+                    containerName: ephemeralForm.basicData.containerName,
+                    image: ephemeralForm.basicData?.image ? ephemeralForm.basicData.image : imageListOption[0].value,
+                    targetContainerName: ephemeralForm.basicData?.targetContainerName
+                        ? ephemeralForm.basicData.targetContainerName
+                        : targetContainerOption[0]?.value || '',
+                },
             }
         } else {
             payload = {
                 ...payload,
-                advancedData: ephemeralFormAdvanced.advancedData,
+                advancedData: {
+                    manifest: JSON.stringify(ephemeralFormAdvanced.advancedData.manifest),
+                },
             }
         }
 
@@ -369,16 +378,11 @@ function EphemeralContainerDrawer({
                 })
 
                 setContainers(containers)
+                setEphemeralContainerDrawer(false)
             })
             .catch((err) => {
                 showError(err)
                 setEphemeralContainerDrawer(true)
-
-                  serErrorForm({
-                    ...errorForm,
-                    containerName: { isValid: false, message: 'This is a required fileld' },
-                })
-
             })
             .finally(() => {
                 setLoader(false)
@@ -402,7 +406,9 @@ function EphemeralContainerDrawer({
                     <ButtonWithLoader
                         rootClassName="flex cta h-36 ml-16"
                         onClick={onSave}
-                        disabled={ephemeralContainerType === EDITOR_VIEW.BASIC && !ephemeralForm.basicData.containerName}
+                        disabled={
+                            ephemeralContainerType === EDITOR_VIEW.BASIC && !ephemeralForm.basicData.containerName
+                        }
                         isLoading={loader}
                         loaderColor="white"
                     >
