@@ -132,13 +132,17 @@ function NodeDetailComponent({
                 }
 
                 if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
-                    _resourceContainers.push(
-                        ...result.manifest.spec.ephemeralContainers.map((_container) => ({
-                            name: _container.name,
-                            isInitContainer: false,
-                            isEphemeralContainer: true,
-                        })),
-                    )
+                    let ephemeralContainers = []
+                    result.manifest.status.ephemeralContainerStatuses.forEach((_container) => {
+                        if (_container.state.running) {
+                            ephemeralContainers.push({
+                                name: _container.name,
+                                isInitContainer: false,
+                                isEphemeralContainer: true,
+                            })
+                        }
+                    })
+                    _resourceContainers.push(ephemeralContainers)
                 }
 
             }
@@ -362,7 +366,8 @@ function NodeDetailComponent({
                     setEphemeralFormAdvanced={setEphemeralFormAdvanced}
                     ephemeralFormAdvanced={ephemeralFormAdvanced}
                     containerList={appDetails.resourceTree?.podMetadata}
-                    setContainers={setResourceContainers}
+                    resourceContainers = {resourceContainers}
+                    setResourceContainers={setResourceContainers}
                     setEphemeralContainerType={setEphemeralContainerType}
                     ephemeralContainerType={ephemeralContainerType}
                     setImageListOption={setImageListOption}

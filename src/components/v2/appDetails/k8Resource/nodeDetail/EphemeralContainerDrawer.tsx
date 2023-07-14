@@ -39,7 +39,8 @@ function EphemeralContainerDrawer({
     setEphemeralFormAdvanced,
     ephemeralFormAdvanced,
     containerList,
-    setContainers,
+    resourceContainers,
+    setResourceContainers,
     ephemeralContainerType,
     setEphemeralContainerType,
     targetContainerOption,
@@ -372,29 +373,13 @@ function EphemeralContainerDrawer({
                 })
 
                 const containers = []
-                response?.ephemralContainers?.forEach((element) => {
-                    containers.push({
-                        name: element,
-                        isInitContainer: false,
-                        isEphemeralContainer: true,
-                    })
+                let containerName = response.result
+                resourceContainers.forEach((con) => {
+                    if (containerName !== con.name) {
+                        containers.push(con)
+                    }
                 })
-                response?.containers?.forEach((element) => {
-                    containers.push({
-                        name: element,
-                        isInitContainer: false,
-                        isEphemeralContainer: false,
-                    })
-                })
-                response?.initContainers?.forEach((element) => {
-                    containers.push({
-                        name: element,
-                        isInitContainer: true,
-                        isEphemeralContainer: false,
-                    })
-                })
-
-                setContainers(containers)
+                setResourceContainers(containers)
                 setEphemeralContainerDrawer(false)
             })
             .catch((err) => {
