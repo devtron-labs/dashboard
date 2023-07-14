@@ -10,7 +10,6 @@ import {
     RefVariableType,
     ServerErrors,
     showError,
-    sortCallback,
     VariableType,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -135,7 +134,7 @@ export default function NewCDPipeline({
     const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
-    const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
+    const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string; stageType: string }[]>([])
     const [loadingData, setLoadingData] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [deleteDialog, setDeleteDialog] = useState<deleteDialogType>(deleteDialogType.showNormalDeleteDialog)
@@ -145,7 +144,7 @@ export default function NewCDPipeline({
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
     const [isAdvanced, setIsAdvanced] = useState<boolean>(!!cdPipelineId)
     const [errorCode, setErrorCode] = useState<number>()
-    const [dockerRegistries, setDockerRegistries] = useState<any[]>()
+    const [dockerRegistries, setDockerRegistries] = useState<any[]>([])
     const parentPipelineType = parentPipelineTypeFromURL
         ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
         : isWebhookCD
@@ -290,6 +289,8 @@ export default function NewCDPipeline({
             isFromAddNewTask,
             startIndex,
             isFromMoveTask,
+            isCdPipeline,
+            globalVariables
         )
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask

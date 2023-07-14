@@ -250,6 +250,8 @@ export const calculateLastStepDetailsLogic = (
     isFromAddNewTask,
     startIndex: number,
     isFromMoveTask: boolean,
+    isCDPipeline?: boolean,
+    globalVariables?: { label: string; value: string; format: string ; stageType: string}[]
 ) => {
     if (!_formData[activeStageName].steps) {
         _formData[activeStageName].steps = []
@@ -314,6 +316,11 @@ export const calculateLastStepDetailsLogic = (
         ) {
             for (const key in _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables) {
                 const variableDetail = _formData[activeStageName].steps[i][currentStepTypeVariable].inputVariables[key]
+                if(isCDPipeline){
+                    if(!globalVariables.filter((variable) => variable.stageType !== 'post-cd').find((variables) => variables.value === variableDetail.refVariableName)){
+                        variableDetail.refVariableName = ''; 
+                    }
+                }
                 if (
                     variableDetail.variableType === RefVariableType.FROM_PREVIOUS_STEP &&
                     ((variableDetail.refVariableStage ===

@@ -342,7 +342,7 @@ export function Sidebar({
                                     isJobView={isJobView}
                                 />
                             </div>
-                            {isCdPipeline && !isVirtualEnvironment && formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH && triggerPipelineMode()}
+                            {isCdPipeline && formData.generatedHelmPushAction === GeneratedHelmPush.PUSH && triggerPipelineMode()}
                         </>
                     )}
                 </div>

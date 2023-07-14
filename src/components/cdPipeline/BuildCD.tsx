@@ -373,23 +373,24 @@ export default function BuildCD({
                 </div>
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
-                    ? HelmManifestPush &&  <HelmManifestPush
-                    generatedHelmPushAction={formData.generatedHelmPushAction}
-                    onChangeSetGeneratedHelmPush={onChangeSetGeneratedHelmPush}
-                    repositoryName={formData.repoName}
-                    handleOnRepository={setRepositoryName}
-                    dockerRegistries={dockerRegistries}
-                    handleRegistryChange={handleRegistryChange}
-                    selectedRegistry={formData.selectedRegistry}
-                    containerRegistryName={formData.containerRegistryName}
-                    containerRegistryErrorForm={formDataErrorObj.containerRegistryError}
-                    repositoryErrorForm={formDataErrorObj.repositoryError}
-                />
+                    ? HelmManifestPush && (
+                          <HelmManifestPush
+                              generatedHelmPushAction={formData.generatedHelmPushAction}
+                              onChangeSetGeneratedHelmPush={onChangeSetGeneratedHelmPush}
+                              repositoryName={formData.repoName}
+                              handleOnRepository={setRepositoryName}
+                              dockerRegistries={dockerRegistries}
+                              handleRegistryChange={handleRegistryChange}
+                              selectedRegistry={formData.selectedRegistry}
+                              containerRegistryName={formData.containerRegistryName}
+                              containerRegistryErrorForm={formDataErrorObj.containerRegistryError}
+                              repositoryErrorForm={formDataErrorObj.repositoryError}
+                          />
+                      )
                     : renderTriggerType()}
-                     {isVirtualEnvironment &&
-                    formData.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
-                        <div className="mt-16">{renderTriggerType()}</div>
-                    )}
+                {isVirtualEnvironment && formData.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
+                    <div className="mt-16">{renderTriggerType()}</div>
+                )}
             </>
         )
     }
