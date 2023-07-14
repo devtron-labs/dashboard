@@ -402,7 +402,6 @@ function ChartDeploymentHistory({
             return (
                 <div className="flex h-100">
                     <GenericEmptyState
-                        SvgImage=""
                         title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
                         subTitle={`${deploymentTabs[selectedDeploymentTabName]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
@@ -699,7 +698,6 @@ function ChartDeploymentHistory({
         } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
             return (
                 <GenericEmptyState
-                    SvgImage=""
                     title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
                     subTitle={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.SUBTITLE}
                 />

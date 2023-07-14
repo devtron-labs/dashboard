@@ -135,7 +135,6 @@ export default function CustomChartList() {
         return (
             <GenericEmptyState
                 image={emptyCustomChart}
-                SvgImage=""
                 title={EMPTY_STATE_STATUS.CUSTOM_CHART_LIST.TITLE}
                 subTitle={
                     <>

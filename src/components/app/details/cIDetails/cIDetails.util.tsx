@@ -18,7 +18,6 @@ export function ScanDisabledView(props) {
   }
   return (
       <GenericEmptyState
-          SvgImage=""
           image={notScanned}
           title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
           subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_SCANNED_DISABLED}
@@ -31,7 +30,6 @@ export function ScanDisabledView(props) {
 
 export function ImageNotScannedView() {
     return <GenericEmptyState
-      SvgImage=""
       image={scannedDisabled}
       title={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.TITLE}
       subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_NOT_SCANNED.SUBTITLE}

@@ -18,7 +18,6 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
         }
         return (
             <GenericEmptyState
-                SvgImage=""
                 image={nojobs}
                 title={JOBLIST_EMPTY_STATE_MESSAGING.createJob}
                 subTitle={JOBLIST_EMPTY_STATE_MESSAGING.createJobInfoText}
@@ -42,7 +41,6 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
         }
         return (
             <GenericEmptyState
-                SvgImage=""
                 image={noresult}
                 title={JOBLIST_EMPTY_STATE_MESSAGING.noJobsFound}
                 subTitle={JOBLIST_EMPTY_STATE_MESSAGING.noJobFoundInfoText}

@@ -216,7 +216,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const renderEmpty = () => {
         return (
             <GenericEmptyState
-                SvgImage=""
                 image={EmptyFolder}
                 title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
                 subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}

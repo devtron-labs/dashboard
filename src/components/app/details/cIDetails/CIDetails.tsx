@@ -146,7 +146,6 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                     {!pipelineId ? (
                         // Empty state if there is no pipeline
                         <GenericEmptyState
-                            SvgImage=""
                             title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
                             subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
                                 isJobView ? 'to see execution details' : 'to start seeing CI builds'
@@ -181,7 +180,6 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
                                     // Empty state if there is no linked pipeline
                                     <GenericEmptyState
-                                        SvgImage=""
                                         title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
                                         subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
                                         isButtonAvailable={true}
@@ -191,7 +189,6 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                     !loading && (
                                         // Empty state if there is no pipeline
                                         <GenericEmptyState
-                                            SvgImage=""
                                             title={`${isJobView ? 'Job' : 'Build'} ${
                                                 EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
                                             }`}
@@ -500,7 +497,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
         return (
             <GenericEmptyState
-                SvgImage=""
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />

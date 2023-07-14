@@ -555,7 +555,6 @@ export default function HelmAppList({
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
                     image={NoClusterSelectImage}
-                    SvgImage=""
                     title={APPLIST_EMPTY_STATE_MESSAGING.heading}
                     subTitle={APPLIST_EMPTY_STATE_MESSAGING.infoText}
                 />
@@ -610,7 +609,6 @@ export default function HelmAppList({
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
                     image={noChartInClusterImage}
-                    SvgImage=""
                     title={APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
                     subTitle={APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
                     isButtonAvailable={true}

@@ -70,7 +70,6 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     const noMatchingResults = () => {
       return (
           <GenericEmptyState
-              SvgImage=""
               image={NoResults}
               title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
               subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}

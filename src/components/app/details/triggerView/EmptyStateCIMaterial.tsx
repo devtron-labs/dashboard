@@ -129,7 +129,7 @@ export default function EmptyStateCIMaterial({
 
     const { title, subtitle, img, cta, link } = getData()
     return isMaterialLoading ? ( 
-            <GenericEmptyState SvgImage="" image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
+            <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
             <GenericEmptyState
                 image={img}
@@ -140,7 +140,6 @@ export default function EmptyStateCIMaterial({
                         {link}
                     </>
                 }
-                SvgImage=""
                 isButtonAvailable={isWebHook}
                 renderButton={handleMaterialLoadingButton}
             />

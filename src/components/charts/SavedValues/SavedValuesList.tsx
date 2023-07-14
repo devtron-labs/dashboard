@@ -216,7 +216,6 @@ export default function SavedValuesList() {
             <div className='dc__position-rel' style={{ height: 'calc(100vh - 235px)' }}>
                 <GenericEmptyState
                     image={emptyCustomChart}
-                    SvgImage=""
                     heightToDeduct={235}
                     title={title || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.TITLE}
                     subTitle={subTitle || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.SUBTITLE}

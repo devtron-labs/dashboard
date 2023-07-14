@@ -21,7 +21,6 @@ export default function ResourceListEmptyState({
     }
     return (
         <GenericEmptyState
-            SvgImage=""
             classname="title dc__position-rel-imp"
             image={imgSource ?? emptyCustomChart}
             title={title ?? 'No resources found'}

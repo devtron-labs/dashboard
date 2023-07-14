@@ -66,7 +66,6 @@ export default function Artifacts({
         return (
             <div className="flex column p-24 w-100 h-100">
                 <GenericEmptyState
-                    SvgImage=""
                     title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.BlobStorageNotConfigured}
                     image={noartifact}
@@ -86,7 +85,6 @@ export default function Artifacts({
     } else if (isJobView && !isArtifactUploaded) {
         return (
             <GenericEmptyState
-                SvgImage=""
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesGenerated}
                 image={noartifact}
@@ -98,7 +96,6 @@ export default function Artifacts({
     ) {
         return (
             <GenericEmptyState
-                SvgImage=""
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />

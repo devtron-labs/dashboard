@@ -872,7 +872,6 @@ export default function ClusterForm({
     const NoMatchingResults = (): JSX.Element => {
         return (
             <GenericEmptyState
-                SvgImage=""
                 image={NoResults}
                 title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
                 subTitle={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.SUBTITLE}

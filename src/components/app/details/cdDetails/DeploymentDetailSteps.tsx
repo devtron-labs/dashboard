@@ -107,7 +107,6 @@ export default function DeploymentDetailSteps({
         deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
             <GenericEmptyState
-                SvgImage=""
                 title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.SUBTITLE}
             />

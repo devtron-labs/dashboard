@@ -58,7 +58,6 @@ export default function DeploymentHistoryConfigList({
         <>
             {!deploymentHistoryList && !deploymentListLoader ? (
                 <GenericEmptyState
-                    SvgImage=""
                     title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
                     subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_HISTORY_CONFIG_LIST.SUBTITLE}
                 />

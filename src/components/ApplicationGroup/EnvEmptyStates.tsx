@@ -16,7 +16,6 @@ export default function EnvEmptyStates({ title, subTitle, actionHandler }: Empty
     }
     return (
         <GenericEmptyState
-            SvgImage=""
             image={emptyNoResults}
             title={title || EMPTY_LIST_MESSAGING.NO_MATCHING_ENV}
             subTitle={subTitle || EMPTY_LIST_MESSAGING.NO_MATCHING_RESULT}

@@ -196,7 +196,6 @@ export function CopyToClipboardTextWithTippy({
 function EmptyUrlState({ title = '', subtitle = '' }) {
     return (
         <GenericEmptyState
-            SvgImage=""
             title={title || EMPTY_STATE_STATUS.TRIGGER_URL.TITLE}
             subTitle={subtitle || EMPTY_STATE_STATUS.TRIGGER_URL.SUBTITLE}
         />
