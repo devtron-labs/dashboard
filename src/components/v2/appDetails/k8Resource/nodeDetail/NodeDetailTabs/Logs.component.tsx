@@ -117,8 +117,6 @@ function LogsComponent({
                         <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
                             {data.isEphemeralContainer && (
                                 <Cross className="icon-dim-16 cursor" onClick={(selected) => {
-                                 // Todo remove console
-                                 console.log(selected)
                                   getDeleteEphemeralContainer(selected)
                                 }} />
                             )}

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
-import { Option } from '../../../../common/ReactSelect.utils'
+import { getCustomOptionSelectionStyle, Option } from '../../../../common/ReactSelect.utils'
 import {
     getContainersData,
     getContainerSelectStyles,
@@ -16,10 +16,13 @@ import { AppType, Options, TerminalComponentProps } from '../../../appDetails.ty
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
-import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
+import { toast } from 'react-toastify'
+import { components } from 'react-select'
+import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
 
 let clusterTimeOut
 
@@ -30,6 +33,7 @@ function TerminalComponent({
     selectedResource,
     selectedContainer,
     setSelectedContainer,
+
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
@@ -51,6 +55,62 @@ function TerminalComponent({
     const appDetails = IndexStore.getAppDetails()
     const nodeName = isResourceBrowserView ? params.node : params.podName
 
+    function Option(props) {
+      const { selectProps, data, style } = props
+
+      const getPayload = (containerName) => {
+        let payload: ResponsePayload = {
+            namespace: appDetails.namespace,
+            clusterId: appDetails.clusterId,
+            podName: params.podName,
+            basicData: {
+                containerName: containerName,
+            },
+        }
+        return payload
+    }
+
+      const getDeleteEphemeralContainer = (containerName) => {
+          deleteEphemeralUrl(
+            getPayload(containerName),
+              appDetails.clusterId,
+              appDetails.environmentId,
+              appDetails.namespace,
+              appDetails.appName,
+              appDetails.appId,
+              appDetails.appType,
+          )
+              .then(() => {
+                  toast.success('Deleted successfully')
+              })
+              .catch((error) => {
+                  showError(error)
+              })
+      }
+
+      selectProps.styles.option = getCustomOptionSelectionStyle(style)
+      const getOption = () => {
+          return (
+              <div onClick={stopPropagation}>
+                  <components.Option {...props}>
+                      <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
+                          {data.isEphemeralContainer && (
+                              <Cross className="icon-dim-16 cursor" onClick={(selected) => {
+                               // Todo remove console
+                               console.log('props', props.label)
+                                getDeleteEphemeralContainer(props.label)
+                              }} />
+                          )}
+                          {props.label}
+                      </div>
+                  </components.Option>
+              </div>
+          )
+      }
+
+      return getOption()
+  }
+
     const generateSessionURL = () => {
         const appId =
             appDetails.appType == AppType.DEVTRON_APP
@@ -70,7 +130,7 @@ function TerminalComponent({
         url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
-        if (!isResourceBrowserView) { 
+        if (!isResourceBrowserView) {
             return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
         }
         return url

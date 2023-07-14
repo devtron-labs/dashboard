@@ -11,7 +11,6 @@ import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import { EphemeralContainerDrawerType, EphemeralKeyType } from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
-import { SwitchItemValues } from '../../../../cdPipeline/CDPipeline'
 import {
     ButtonWithLoader,
     convertToOptionsList,
@@ -30,6 +29,7 @@ import { toast } from 'react-toastify'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import error from '../../../../../assets/icons/misc/errorInfo.svg'
+import { SwitchItemValues } from '../../../../login/SSOLogin'
 
 function EphemeralContainerDrawer({
     ephemeralForm,
@@ -47,7 +47,7 @@ function EphemeralContainerDrawer({
     imageListOption,
     setImageListOption
 }: EphemeralContainerDrawerType) {
-    const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Config)
+    const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
 
@@ -255,7 +255,7 @@ function EphemeralContainerDrawer({
       
 
     const handleManifestAdvanceChange = (e) => {
-        if (switchManifest !== SwitchItemValues.Config) return
+        if (switchManifest !== SwitchItemValues.Configuration) return
         setEphemeralFormAdvanced({
             ...ephemeralFormAdvanced,
             advancedData: {
@@ -274,7 +274,7 @@ function EphemeralContainerDrawer({
 
     const renderAdvancedEphemeral = () => {
         let codeEditorBody =
-            switchManifest === SwitchItemValues.Config
+            switchManifest === SwitchItemValues.Configuration
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
         return (
@@ -285,6 +285,7 @@ function EphemeralContainerDrawer({
                     mode="yaml"
                     onChange={handleManifestAdvanceChange}
                     readOnly={switchManifest === SwitchItemValues.Sample}
+
                 >
                     <CodeEditor.Header>
                         <Switch
@@ -292,7 +293,7 @@ function EphemeralContainerDrawer({
                             name={'tab'}
                             onChange={handleManifestTabChange}
                         >
-                            <SwitchItem value={SwitchItemValues.Config}> Config </SwitchItem>
+                            <SwitchItem  value={SwitchItemValues.Configuration}> Config </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
                         </Switch>
                         <CodeEditor.ValidationError />
