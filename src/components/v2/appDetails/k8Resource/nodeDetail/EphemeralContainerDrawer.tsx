@@ -301,7 +301,7 @@ function EphemeralContainerDrawer({
                 >
                     <CodeEditor.Header>
                         <Switch
-                            value={ephemeralFormAdvanced.advancedData.manifest}
+                            value={switchManifest}
                             name={'tab'}
                             onChange={handleManifestTabChange}
                         >
