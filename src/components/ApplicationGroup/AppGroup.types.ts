@@ -137,6 +137,7 @@ export interface TriggerResponseModalType {
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
     envName?: string
+    setDownloadPopupOpen?: (e) => void
 }
 
 export interface TriggerModalRowType {
@@ -144,6 +145,7 @@ export interface TriggerModalRowType {
     index: number
     isVirtualEnv?: boolean
     envName?: string
+    setDownloadPopupOpen?: (e) => void
 }
 
 export interface WorkflowNodeSelectionType {
