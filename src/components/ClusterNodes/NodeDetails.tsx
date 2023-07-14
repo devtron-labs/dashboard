@@ -56,7 +56,6 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { createTaintsList } from '../cluster/cluster.util'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
-import { useRouteMatch } from 'react-router-dom'
 
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
@@ -93,7 +92,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push } = useHistory()
-    const {url}=useRouteMatch()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         getNodeCapacity(clusterId, nodeName)
@@ -638,9 +636,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
     const handleResourceClick=(e)=>{
         const {name,namespace}=e.currentTarget.dataset
-        console.log(url)
         const beginpart=window.location.href.split('/clusters')[0]
-        console.log(window.location.href)
         const _url=`${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
         window.open(_url,'_blank')
     }
