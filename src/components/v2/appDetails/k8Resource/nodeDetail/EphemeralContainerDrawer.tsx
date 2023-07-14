@@ -24,11 +24,12 @@ import yamlJsParser from 'yaml'
 import IndexStore from '../../index.store'
 import { generateEphemeralUrl } from './nodeDetail.api'
 import { ResponsePayload } from './nodeDetail.type'
-import { DropdownIndicator, menuComponent, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
+import { DropdownIndicator, menuComponentForImage, Option } from '../../../common/ReactSelect.utils'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
+import error from '../../../../../assets/icons/misc/errorInfo.svg'
 
 function EphemeralContainerDrawer({
     ephemeralForm,
@@ -48,6 +49,9 @@ function EphemeralContainerDrawer({
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
+    const [errorForm, serErrorForm] = useState({
+        containerName: { isValid: true, message: '' },
+    })
 
     useEffect(() => {
         getImageList()
@@ -74,6 +78,18 @@ function EphemeralContainerDrawer({
     }
 
     const handleEphemeralChange = (e, key: EphemeralKeyType): void => {
+        if (!e.target.value) {
+            serErrorForm({
+                ...errorForm,
+                containerName: { isValid: false, message: 'This is a required filed' },
+            })
+        } else{
+
+         serErrorForm({
+                ...errorForm,
+                containerName: { isValid: true, message: '' },
+            })
+          }
         setEphemeralForm({
             ...ephemeralForm,
             basicData: {
@@ -104,7 +120,7 @@ function EphemeralContainerDrawer({
         )
     }
 
-    const handleContainerSelectChange = (selected, key) => {
+    const handleContainerSelectChange = (selected, key, defaultVal) => {
         if (key === 'image') {
             setSelectedImageList(selected)
         } else {
@@ -114,7 +130,7 @@ function EphemeralContainerDrawer({
             ...ephemeralForm,
             basicData: {
                 ...ephemeralForm.basicData,
-                [key]: key === 'image' ? selected.value : selected.value,
+                [key]: selected?.value || defaultVal,
             },
         })
     }
@@ -143,21 +159,26 @@ function EphemeralContainerDrawer({
                             onChange={(e) => handleEphemeralChange(e, 'containerName')}
                             value={ephemeralForm.basicData.containerName}
                         />
+                        {!errorForm.containerName.isValid && (
+                            <span className="form__error">
+                                <img src={error} alt="" className="form__icon" />
+                                {errorForm.containerName.message}
+                            </span>
+                        )}
                     </div>
                 </div>
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Image</div>
                     <ReactSelect
-                        value={selectedImageList}
+                        value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
-                        onChange={(e) => handleContainerSelectChange(e, 'image')}
+                        onChange={(e) => handleContainerSelectChange(e, 'image', imageListOption[0])}
                         components={{
                             IndicatorSeparator: null,
-                            // Option: imageOptionComponent,
                             MenuList: menuComponentForImage,
                         }}
                         styles={{
@@ -180,12 +201,12 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Target Container Name</div>
                     <ReactSelect
-                        value={selectedTargetContainer}
+                        value={selectedTargetContainer || targetContainerOption[0]}
                         options={targetContainerOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
-                        onChange={(e) => handleContainerSelectChange(e, 'targetContainerName')}
+                        onChange={(e) => handleContainerSelectChange(e, 'targetContainerName', targetContainerOption[0])}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
@@ -275,7 +296,12 @@ function EphemeralContainerDrawer({
     }
 
     const onSave = () => {
+      let isValidForm
+      if(!errorForm.containerName) {
+        isValidForm = false
+      }
         setLoader(true)
+        setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
             namespace: appDetails.namespace,
             clusterId: appDetails.clusterId,
@@ -347,10 +373,15 @@ function EphemeralContainerDrawer({
             .catch((err) => {
                 showError(err)
                 setEphemeralContainerDrawer(true)
+
+                  serErrorForm({
+                    ...errorForm,
+                    containerName: { isValid: false, message: 'This is a required fileld' },
+                })
+
             })
             .finally(() => {
                 setLoader(false)
-                setEphemeralContainerDrawer(false)
             })
     }
 
@@ -371,7 +402,7 @@ function EphemeralContainerDrawer({
                     <ButtonWithLoader
                         rootClassName="flex cta h-36 ml-16"
                         onClick={onSave}
-                        disabled={loader}
+                        disabled={ephemeralContainerType === EDITOR_VIEW.BASIC && !ephemeralForm.basicData.containerName}
                         isLoading={loader}
                         loaderColor="white"
                     >
