@@ -63,8 +63,8 @@ function EphemeralContainerDrawer({
         setEphemeralContainerDrawer(false)
     }
 
-    const onChangeEphemeralContainerType = (event): void => {
-        setEphemeralContainerType(event.target.value)
+    const handleEphemeralContainerTypeClick = (containerType) => {
+        setEphemeralContainerType(containerType)
     }
 
     const getImageList = () => {
@@ -100,7 +100,7 @@ function EphemeralContainerDrawer({
 
     const renderEphemeralHeaders = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+            <div className="flex flex-align-center flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Launch ephemeral container on pod: {params.podName}
                 </h2>
@@ -228,25 +228,31 @@ function EphemeralContainerDrawer({
 
     const renderEphemeralContainerType = () => {
         return (
-            <>
+            <div className="dc__border-bottom pl-20">
                 <ul role="tablist" className="tab-list">
-                    <RadioGroup
-                        className="ecr-authType__radio-group"
-                        value={ephemeralContainerType}
-                        name="ecr-authType"
-                        onChange={onChangeEphemeralContainerType}
-                    >
-                        <RadioGroupItem value={EDITOR_VIEW.BASIC} dataTestId="ephemeral-basic-tab">
-                            <li className="tab-list__tab dc__ellipsis-right">Basic</li>
-                        </RadioGroupItem>
-                        <RadioGroupItem value={EDITOR_VIEW.ADVANCED} dataTestId="ephemeral-advanced-tab">
-                            <li className="tab-list__tab">Advanced</li>
-                        </RadioGroupItem>
-                    </RadioGroup>
+                    <li className="pt-8 pr-16 lh-20 fs-13" onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC)}>
+                        <div
+                            className={`tab-list__tab-link w-auto pt-0 ${
+                                ephemeralContainerType === EDITOR_VIEW.BASIC ? 'active pb-6' : 'pb-8'
+                            }`}
+                        >
+                            Basic
+                        </div>
+                    </li>
+                    <li className="pt-8 pr-16 lh-20 fs-13" onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED)}>
+                        <div
+                            className={`tab-list__tab-link w-auto pt-0 ${
+                                ephemeralContainerType === EDITOR_VIEW.ADVANCED ? 'active pb-6' : 'pb-8'
+                            }`}
+                        >
+                            Advanced
+                        </div>
+                    </li>
                 </ul>
-            </>
+            </div>
         )
     }
+      
 
     const handleManifestAdvanceChange = (e) => {
         if (switchManifest !== SwitchItemValues.Config) return
@@ -272,7 +278,7 @@ function EphemeralContainerDrawer({
                 ? ephemeralFormAdvanced.advancedData.manifest
                 : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
         return (
-            <div className="mt-24 mr-24 mb-24 code-editor-container">
+            <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
                     height={300}
@@ -420,8 +426,8 @@ function EphemeralContainerDrawer({
         <Drawer position="right" width="50%">
             <div className="bcn-0 h-100 dc__position-rel">
                 {renderEphemeralHeaders()}
+                {renderEphemeralContainerType()}
                 <div className="p-20 ">
-                    {renderEphemeralContainerType()}
                     {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : renderAdvancedEphemeral()}
                 </div>
                 {renderEphemeralFooter()}
