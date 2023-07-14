@@ -143,7 +143,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.slackConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState SvgImage="" title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
@@ -227,7 +227,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.webhookConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState SvgImage="" title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
@@ -417,7 +417,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.sesConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                   <GenericEmptyState SvgImage="" title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                   <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
@@ -504,7 +504,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.smtpConfigurationList.length === 0) {
             return (
                 <div className="empty-state-height">
-                    <GenericEmptyState SvgImage="" title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
