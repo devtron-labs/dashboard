@@ -1,5 +1,4 @@
-import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
-import { UserApprovalMetadataType, ReleaseTag } from "@devtron-labs/devtron-fe-common-lib"
+import { DeploymentAppTypes, UserApprovalMetadataType, ReleaseTag } from "@devtron-labs/devtron-fe-common-lib"
 import { ImageComment } from "../cicdHistory/types"
 
 export interface DeploymentHistorySingleValue {
@@ -47,7 +46,7 @@ export interface DeploymentHistory {
 
 export interface DeploymentDetailStepsType{
   deploymentStatus?: string
-  deploymentAppType?: DeploymentAppType
+  deploymentAppType?: DeploymentAppTypes
   isHelmApps?: boolean
   installedAppVersionHistoryId?: number
   isGitops?: boolean
