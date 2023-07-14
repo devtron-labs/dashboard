@@ -260,7 +260,7 @@ function NodeDetailComponent({
                             )
                         })}
                 </div>
-                {selectedTabName === NodeDetailTab.LOGS && (
+                {selectedTabName === NodeDetailTab.TERMINAL && (
                     <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
                         <EphemeralIcon className="mr-4" />
                         Launch Ephemeral Container
