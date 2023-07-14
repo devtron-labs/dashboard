@@ -172,9 +172,10 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
     return (
         <GenericEmptyState
             image={imgSrc ?? AppNotDeployed}
-            classname="w-300 dc__text-center lh-1-4"
+            classname="w-300 dc__text-center lh-1-4 dc__align-reload-center"
             title={title}
             subTitle={subTitle}
+            isButtonAvailable={true}
             renderButton={EmptyViewButton}
         />
     )
