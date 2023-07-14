@@ -542,6 +542,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                             isJobView={isJobView}
                             hideConfigHelp={hideConfigHelp}
                             workflowsRes={state.workflowsRes}
+                            getWorkflows={reloadWorkflows}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -627,7 +628,8 @@ function Navigation({
     getRepo,
     isJobView,
     hideConfigHelp,
-    workflowsRes
+    workflowsRes,
+    getWorkflows
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
@@ -678,7 +680,7 @@ function Navigation({
                         </ConditionalWrap>
                     )
                 } else {
-                    return <EnvironmentOverrideRouter key={item.title} isJobView={isJobView} workflowsRes={workflowsRes}/>
+                    return <EnvironmentOverrideRouter key={item.title} isJobView={isJobView} workflowsRes={workflowsRes} getWorkflows={getWorkflows}/>
                 }
             })}
 
@@ -1089,7 +1091,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading, environm
     }
 }
 
-function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: boolean, workflowsRes?: WorkflowResult}) {
+function EnvironmentOverrideRouter({isJobView, workflowsRes, getWorkflows} : {isJobView?: boolean, workflowsRes?: WorkflowResult, getWorkflows: () => void}) {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -1166,6 +1168,7 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
     useEffect(() => {
         if (previousPathName && ( (previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) || (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) || (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))) {
             reloadEnvironments()
+            getWorkflows()
         }
     }, [pathname])
 

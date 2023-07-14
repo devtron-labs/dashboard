@@ -65,6 +65,7 @@ export interface AppConfigNavigationProps {
     isJobView: boolean
     hideConfigHelp: boolean
     workflowsRes?: WorkflowResult
+    getWorkflows: () => void
 }
 
 export interface AppComposeRouterProps {
