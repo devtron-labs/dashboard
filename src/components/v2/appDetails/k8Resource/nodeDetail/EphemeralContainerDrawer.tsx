@@ -40,14 +40,18 @@ function EphemeralContainerDrawer({
     ephemeralFormAdvanced,
     containerList,
     setContainers,
+    ephemeralContainerType,
+    setEphemeralContainerType,
+    targetContainerOption,
+    setTargetContainerOption,
+    imageListOption,
+    setImageListOption
 }: EphemeralContainerDrawerType) {
-    const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Config)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
-    const [imageListOption, setImageListOption] = useState<OptionType[]>([])
+
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
-    const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
 
     useEffect(() => {
@@ -152,12 +156,6 @@ function EphemeralContainerDrawer({
                             onChange={(e) => handleEphemeralChange(e, 'containerName')}
                             value={ephemeralForm.basicData.containerName}
                         />
-                        {/* {!isValid.containerName && (
-                            <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
-                                This is a required field
-                            </span>
-                        )} */}
                     </div>
                 </div>
 
@@ -252,11 +250,10 @@ function EphemeralContainerDrawer({
 
     const handleManifestAdvanceChange = (e) => {
         if (switchManifest !== SwitchItemValues.Config) return
-        let manifestJson = yamlJsParser.parse(e)
         setEphemeralFormAdvanced({
             ...ephemeralFormAdvanced,
             advancedData: {
-                manifest: JSON.stringify(manifestJson),
+                manifest: e,
             },
         })
         setEphemeralForm({
@@ -323,7 +320,7 @@ function EphemeralContainerDrawer({
             payload = {
                 ...payload,
                 advancedData: {
-                    manifest: JSON.stringify(ephemeralFormAdvanced.advancedData.manifest),
+                    manifest: JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)),
                 },
             }
         }

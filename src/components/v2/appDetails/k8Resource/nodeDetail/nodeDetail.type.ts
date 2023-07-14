@@ -40,20 +40,26 @@ export interface EphemeralContainerDrawerType {
     setEphemeralFormAdvanced: React.Dispatch<React.SetStateAction<EphemeralFormAdvancedType>>
     ephemeralFormAdvanced: EphemeralFormAdvancedType
     containerList
-    setContainers        : any
+    setContainers: any
+    ephemeralContainerType
+    setEphemeralContainerType
+    targetContainerOption,
+    setTargetContainerOption
+    imageListOption,
+    setImageListOption
 }
 
 export interface ResponsePayload {
     namespace: string
     clusterId: number
-    podName:string
+    podName: string
     basicData?: {
-      targetContainerName: string
-      containerName: string
-      image: string
+        targetContainerName?: string
+        containerName: string
+        image?: string
     }
 
-  advancedData?: {
-    manifest: string
-  }
+    advancedData?: {
+        manifest: string
+    }
 }

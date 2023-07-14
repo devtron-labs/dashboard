@@ -4,7 +4,7 @@ import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.s
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
 import { deleteEphemeralUrl, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
@@ -33,6 +33,7 @@ import {
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
 import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
+import { EDITOR_VIEW } from '../../../../../deploymentConfig/constants'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -74,11 +75,25 @@ function LogsComponent({
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
+    const getPayload = (containerName) => {
+        let payload: ResponsePayload = {
+            namespace: appDetails.namespace,
+            clusterId: appDetails.clusterId,
+            podName: params.podName,
+            basicData: {
+                containerName: containerName,
+            },
+        }
+        return payload
+    }
+
 
     function Option(props) {
         const { selectProps, data, style } = props
-        const getDeleteEphemeralContainer = () => {
+
+        const getDeleteEphemeralContainer = (containerName) => {
             deleteEphemeralUrl(
+              getPayload(containerName),
                 appDetails.clusterId,
                 appDetails.environmentId,
                 appDetails.namespace,
@@ -101,7 +116,11 @@ function LogsComponent({
                     <components.Option {...props}>
                         <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
                             {data.isEphemeralContainer && (
-                                <Cross className="icon-dim-16 cursor" onClick={() => getDeleteEphemeralContainer()} />
+                                <Cross className="icon-dim-16 cursor" onClick={(selected) => {
+                                 // Todo remove console
+                                 console.log(selected)
+                                  getDeleteEphemeralContainer(selected)
+                                }} />
                             )}
                             {props.label}
                         </div>

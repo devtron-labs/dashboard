@@ -16,6 +16,7 @@ import {
     showError,
     Checkbox,
     CHECKBOX_VALUE,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
@@ -24,6 +25,7 @@ import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
 import { getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import {ReactComponent as EphemeralIcon} from '../../../../../assets/icons/ic-ephemeral.svg'
+import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 
 function NodeDetailComponent({
     loadingResources,
@@ -63,6 +65,9 @@ function NodeDetailComponent({
             manifest: '',
         },
     })
+    const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
+    const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
+    const [imageListOption, setImageListOption] = useState<OptionType[]>([])
 
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
@@ -255,10 +260,12 @@ function NodeDetailComponent({
                             )
                         })}
                 </div>
-                <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
-                    <EphemeralIcon className="mr-4"/>
-                    Launch Ephemeral Container
-                </div>
+                {selectedTabName === NodeDetailTab.LOGS && (
+                    <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
+                        <EphemeralIcon className="mr-4" />
+                        Launch Ephemeral Container
+                    </div>
+                )}
 
                 {isManagedFields && (
                     <>
@@ -320,6 +327,11 @@ function NodeDetailComponent({
                                 setLogSearchTerms={setLogSearchTerms}
                                 isResourceBrowserView={isResourceBrowserView}
                                 selectedResource={selectedResource}
+                                ephemeralContainerType={ephemeralContainerType}
+                                ephemeralForm={ephemeralForm}
+                                targetContainerOption={targetContainerOption}
+                                ephemeralFormAdvanced={ephemeralFormAdvanced}
+                                imageListOption={imageListOption}
                             />
                         </div>
                     </Route>
@@ -351,6 +363,12 @@ function NodeDetailComponent({
                     ephemeralFormAdvanced={ephemeralFormAdvanced}
                     containerList={appDetails.resourceTree.podMetadata}
                     setContainers={setResourceContainers}
+                    setEphemeralContainerType={setEphemeralContainerType}
+                    ephemeralContainerType={ephemeralContainerType}
+                    setImageListOption={setImageListOption}
+                    imageListOption={imageListOption}
+                    setTargetContainerOption={setTargetContainerOption}
+                    targetContainerOption={targetContainerOption}
                 />
             )}
         </React.Fragment>

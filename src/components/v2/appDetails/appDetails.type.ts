@@ -402,8 +402,13 @@ export interface NodeDetailPropsType extends LogSearchTermType {
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
+    selectedTab: (_tabName: string, _url?: string) => void
+    isDeleted: boolean
+    ephemeralContainerType?: string
+    ephemeralForm?
+    targetContainerOption?
+    ephemeralFormAdvanced?
+    imageListOption?
 }
 
 export interface TerminalComponentProps {
