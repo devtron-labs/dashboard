@@ -165,5 +165,7 @@ export interface PipelineContext<T> {
     handleStrategy?: (value: any) => void
     getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
     isVirtualEnvironment?: boolean
-    globalVariables: { label: string; value: string; format: string; description?: string; variableType?: string }[]
+    globalVariables: {
+        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string 
+}[]
 }

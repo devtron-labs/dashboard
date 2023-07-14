@@ -550,7 +550,7 @@ export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
 export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
     let variableList = []
     await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
-        variableList = response.result?.filter((item) => item.stageType === (isCD ? 'cd' : 'ci'))
+        variableList = response.result?.filter((item) => isCD ? item.stageType !== 'ci' : item.stageType === 'ci')
     })
 
     return { result: variableList }

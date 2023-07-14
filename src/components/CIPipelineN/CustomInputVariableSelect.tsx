@@ -100,7 +100,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: globalVariables,
+                    options: isCdPipeline ? globalVariables.filter((variable) => variable.stageType !== 'post-cd') : globalVariables ,
                 },
             ])
         }
