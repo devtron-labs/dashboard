@@ -984,7 +984,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                 })
             })
         }
-        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow.id}/ci-pipeline/${pipeline.id}/pre-build` : ""
+        const path = pipeline ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build` : ""
         return (!showConfirmationDialog ? renderDeleteDialog() : renderConfirmationDeleteModal(pipeline, path))
     }
 
@@ -1164,7 +1164,7 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes} : {isJobView?: bool
     let selectedEnv : Environment = environmentList.find((env) => env.id === -1)
 
     useEffect(() => {
-        if (previousPathName && ( (previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) || (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) )) {
+        if (previousPathName && ( (previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) || (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) || (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))) {
             reloadEnvironments()
         }
     }, [pathname])
