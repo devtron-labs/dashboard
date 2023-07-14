@@ -306,7 +306,7 @@ export default function GitInfoMaterial({
                 selectedMaterial.isBranchError ||
                 selectedMaterial.noSearchResult ||
                 !anyCommit ? (
-                    <div className="select-material__empty-state-container flex">
+                    <div className="select-material__empty-state-container flex dc__position-rel">
                         <EmptyStateCIMaterial
                             isRepoError={selectedMaterial.isRepoError}
                             isBranchError={selectedMaterial.isBranchError}
