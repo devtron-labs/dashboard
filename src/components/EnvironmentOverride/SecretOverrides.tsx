@@ -83,6 +83,7 @@ export default function SecretOverrides({ parentState, setParentState, isJobView
                                     name={name}
                                     type="secret"
                                     label={global ? (data || esoSecretData.secretStore || secretData ? 'modified' : '') : 'env'}
+                                    isJobView={isJobView}
                                 />
                             )
                         })}
@@ -91,7 +92,7 @@ export default function SecretOverrides({ parentState, setParentState, isJobView
     )
 }
 
-export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
+export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isJobView }) {
     const { secrets, id, reload } = useSecretContext()
     const {
         data = null,
@@ -567,8 +568,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                             <Select disabled onChange={(e) => {}}>
                                 <Select.Button>
                                     {externalType
-                                        ? getTypeGroups(externalType).label
-                                        : getTypeGroups()[0].options[0].label}
+                                        ? getTypeGroups(isJobView, externalType).label
+                                        : getTypeGroups(isJobView)[0].options[0].label}
                                 </Select.Button>
                             </Select>
                         </div>
@@ -949,6 +950,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     initialise={() => {}}
                     filePermission={filePermission}
                     subPath={subPath}
+                    isJobView={isJobView}
                 />
             )}
             {state.dialog && (

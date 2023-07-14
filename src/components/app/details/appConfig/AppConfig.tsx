@@ -759,12 +759,12 @@ function AppComposeRouter({
                             <Route
                                 key={`${path}/${URLS.APP_CM_CONFIG}`}
                                 path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
+                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} isJobView={isJobView}/>}                                
                             />,
                             <Route
                                 key={`${path}/${URLS.APP_CS_CONFIG}`}
                                 path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
+                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} isJobView={isJobView}/>}
                             />,
                             <Route
                                 key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}

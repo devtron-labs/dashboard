@@ -57,4 +57,5 @@ export interface ListComponentType {
     type: string
     label: string
     appChartRef: { id: number; version: string; name: string }
+    isJobView?: boolean
 }
