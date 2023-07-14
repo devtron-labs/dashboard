@@ -429,7 +429,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             >
                                 {getStatusIcon(jobPipeline.status)}
                                 {jobPipeline.status === 'CANCELLED' ? (
-                                    <div>Cancelled</div>
+                                    <div>Aborted</div>
                                 ) : (
                                     <div>{jobPipeline.status}</div>
                                 )}

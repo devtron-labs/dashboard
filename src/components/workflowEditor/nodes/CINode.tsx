@@ -102,9 +102,9 @@ export class CINode extends Component<CINodeProps> {
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
-
-                                <span className="fw-4 fs-11">Env: {env ? env.environment_name : "devtron-ci"}</span>
-                                <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span>
+                                {this.props.isJobView && <>
+                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : "devtron-ci"}</span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span></>}
                             </div>
                             {this.renderNodeIcon()}
                         </div>
