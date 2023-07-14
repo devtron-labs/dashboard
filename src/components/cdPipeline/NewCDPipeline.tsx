@@ -2,6 +2,7 @@ import {
     BuildStageVariable,
     ConditionalWrap,
     DeleteDialog,
+    DeploymentAppTypes,
     Drawer,
     ErrorScreenManager,
     ForceDeleteDialog,
@@ -9,16 +10,17 @@ import {
     RefVariableType,
     ServerErrors,
     showError,
+    sortCallback,
     VariableType,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { CDDeploymentTabText, DELETE_ACTION, DeploymentAppTypes, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
-import { CD_PATCH_ACTION, Environment } from './cdPipeline.types'
+import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -45,12 +47,12 @@ import {
     TOAST_INFO,
 } from '../../config/constantMessaging'
 import { PipelineType } from '../app/details/triggerView/types'
-import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import Tippy from '@tippyjs/react'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormType } from '../workflowEditor/types'
+import { getDockerRegistryMinAuth } from '../ciConfig/service'
 
 export enum deleteDialogType {
     showForceDeleteDialog = 'showForceDeleteDialog',
@@ -99,7 +101,7 @@ export default function NewCDPipeline({
         environments: [],
         environmentName: '',
         namespace: '',
-        deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
+        deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -123,6 +125,10 @@ export default function NewCDPipeline({
         runPreStageInEnv: false,
         runPostStageInEnv: false,
         allowedDeploymentTypes: [],
+        containerRegistryName: '',
+        repoName: '',
+        selectedRegistry: null,
+        generatedHelmPushAction: GeneratedHelmPush.DO_NOT_PUSH,
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
@@ -139,6 +145,7 @@ export default function NewCDPipeline({
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
     const [isAdvanced, setIsAdvanced] = useState<boolean>(!!cdPipelineId)
     const [errorCode, setErrorCode] = useState<number>()
+    const [dockerRegistries, setDockerRegistries] = useState<any[]>()
     const parentPipelineType = parentPipelineTypeFromURL
         ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
         : isWebhookCD
@@ -149,6 +156,8 @@ export default function NewCDPipeline({
         name: { isValid: true },
         envNameError: { isValid: true },
         nameSpaceError: { isValid: true },
+        containerRegistryError: { isValid: true, message: '' },
+        repositoryError: { isValid: true, message: '' },
         preBuildStage: {
             steps: [],
             isValid: true,
@@ -167,8 +176,7 @@ export default function NewCDPipeline({
     }>({ preBuildStage: [], postBuildStage: [] })
 
     useEffect(() => {
-        getDeploymentStrategies()
-        getGlobalVariables()
+        getInit()
         document.addEventListener('keydown', escFunction)
     }, [])
 
@@ -183,39 +191,56 @@ export default function NewCDPipeline({
             close()
         }
     }
-    const getDeploymentStrategies = (): void => {
-        getDeploymentStrategyList(appId)
-            .then((response) => {
-                let strategies = response.result.pipelineStrategy || []
-                const _allStrategies = {}
 
-                strategies.forEach((strategy) => {
-                    if (!_allStrategies[strategy.deploymentTemplate]) {
-                        _allStrategies[strategy.deploymentTemplate] = {}
-                    }
-                    _allStrategies[strategy.deploymentTemplate] = strategy.config
-                })
-                allStrategies.current = _allStrategies
-                noStrategyAvailable.current = strategies.length === 0
+    const getInit = () => {
+        Promise.all([
+            getDeploymentStrategyList(appId),
+            getGlobalVariable(Number(appId), true),
+            getDockerRegistryMinAuth(appId, true),
+        ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+            let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+            let dockerRegistries = dockerResponse.result || []
+            const _allStrategies = {}
 
-                const _form = { ...formData }
-                _form.strategies = strategies
-                getAvailablePlugins()
-                if (cdPipelineId) {
-                    getCDPipeline(_form)
-                } else {
-                    getEnvCDPipelineName(_form)
-                    if (strategies.length > 0) {
-                        let defaultStrategy = strategies.find((strategy) => strategy.default)
-                        handleStrategy(defaultStrategy.deploymentTemplate)
-                    }
+            strategies.forEach((strategy) => {
+                if (!_allStrategies[strategy.deploymentTemplate]) {
+                    _allStrategies[strategy.deploymentTemplate] = {}
                 }
+                _allStrategies[strategy.deploymentTemplate] = strategy.config
             })
-            .catch((error: ServerErrors) => {
-                showError(error)
-                setErrorCode(error.code)
-                setPageState(ViewType.ERROR)
+            allStrategies.current = _allStrategies
+            noStrategyAvailable.current = strategies.length === 0
+
+            const _form = { ...formData }
+            _form.strategies = strategies
+            getAvailablePlugins()
+            if (cdPipelineId) {
+                getCDPipeline(_form)
+            } else {
+                getEnvCDPipelineName(_form)
+                if (strategies.length > 0) {
+                    let defaultStrategy = strategies.find((strategy) => strategy.default)
+                    handleStrategy(defaultStrategy.deploymentTemplate)
+                }
+            }
+
+            const _globalVariableOptions = envResponse.result?.map((variable) => {
+                variable.label = variable.name
+                variable.value = variable.name
+                variable.description = variable.description || ''
+                variable.variableType = RefVariableType.GLOBAL
+                variable.format = variable.format
+                delete variable.name
+                return variable
             })
+
+            setGlobalVariables(_globalVariableOptions || [])
+            setDockerRegistries(dockerRegistries)
+        }).catch((error: ServerErrors) => {
+            showError(error)
+            setErrorCode(error.code)
+            setPageState(ViewType.ERROR)
+        })
     }
 
     const getEnvCDPipelineName = (form) => {
@@ -339,25 +364,6 @@ export default function NewCDPipeline({
             })
     }
 
-    const getGlobalVariables = (): void => {
-        getGlobalVariable(Number(appId), true)
-            .then((response) => {     
-                const _globalVariableOptions = response.result?.map((variable) => {
-                    variable.label = variable.name
-                    variable.value = variable.name
-                    variable.description = variable.description || ''
-                    variable.variableType = RefVariableType.GLOBAL
-                    variable.format = variable.format
-                    delete variable.name
-                    return variable
-                })
-                setGlobalVariables(_globalVariableOptions || [])
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-    }
-
     const getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
         if (isVirtualEnvironment) {
             return true
@@ -396,10 +402,12 @@ export default function NewCDPipeline({
             }
         }
         let env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
-
         form.name = pipelineConfigFromRes.name
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
+        form.repoName = pipelineConfigFromRes.repoName
+        form.containerRegistryName = pipelineConfigFromRes.containerRegistryName
+        form.manifestStorageType = pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : 'helm_repo'
         form.environmentId = pipelineConfigFromRes.environmentId
         form.environments = environments
         form.savedStrategies = savedStrategies
@@ -458,6 +466,9 @@ export default function NewCDPipeline({
         }
         form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPreStageInEnv)
         form.runPostStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPostStageInEnv)
+        form.generatedHelmPushAction = pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH
+        form.selectedRegistry = dockerRegistries.find((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName
+    )
     }
 
     const responseCode = () => {
@@ -504,11 +515,21 @@ export default function NewCDPipeline({
             environmentName: formData.environmentName,
             preStageConfigMapSecretNames: _preStageConfigMapSecretNames,
             postStageConfigMapSecretNames: _postStageConfigMapSecretNames,
+            containerRegistryName:
+                formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? formData.containerRegistryName : '',
+            repoName: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? formData.repoName : '',
+            manifestStorageType: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
         }
 
         if (isVirtualEnvironment) {
-            pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
-            pipeline.triggerType = TriggerType.Manual // In case of virtual environment trigger type will always be manual
+            pipeline.deploymentAppType =
+                formData.generatedHelmPushAction === GeneratedHelmPush.PUSH
+                    ? DeploymentAppTypes.MANIFEST_PUSH
+                    : DeploymentAppTypes.MANIFEST_DOWNLOAD
+            pipeline.triggerType =
+                formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                    ? TriggerType.Manual
+                    : formData.triggerType // In case of virtual environment trigger type will always be manual
         }
 
         const request = {
@@ -523,15 +544,27 @@ export default function NewCDPipeline({
 
         if (formData.preBuildStage.steps.length > 0) {
             let preBuildStage = formData.preBuildStage
-            if(isVirtualEnvironment){
-                preBuildStage = { ...preBuildStage, triggerType: TriggerType.Manual }
+            if (isVirtualEnvironment) {
+                preBuildStage = {
+                    ...preBuildStage,
+                    triggerType:
+                        formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                            ? TriggerType.Manual
+                            : formData.preBuildStage.triggerType,
+                }
             }
             pipeline['preDeployStage'] = preBuildStage
         }
         if (formData.postBuildStage.steps.length > 0) {
             let postBuildStage = formData.postBuildStage
-            if(isVirtualEnvironment){
-                postBuildStage = { ...postBuildStage, triggerType: TriggerType.Manual }
+            if (isVirtualEnvironment) {
+                postBuildStage = {
+                    ...postBuildStage,
+                    triggerType:
+                        formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH
+                            ? TriggerType.Manual
+                            : formData.postBuildStage.triggerType,
+                }
             }
             pipeline['postDeployStage'] = postBuildStage
         }
@@ -588,9 +621,20 @@ export default function NewCDPipeline({
         if (!isVirtualEnvironment) {
             _formDataErrorObj.nameSpaceError = validationRules.namespace(_formData.namespace)
         }
+        if(formData.generatedHelmPushAction === GeneratedHelmPush.PUSH){
+            _formDataErrorObj.containerRegistryError = validationRules.containerRegistry(
+                formData.containerRegistryName || '',
+            )
+            _formDataErrorObj.repositoryError = validationRules.repository(formData.repoName)
+        }
+
+        // if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
+        //     valid = !!pipelineConfig.containerRegistryName && !!pipelineConfig.repoName
+        // }
+
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid =
-                _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid
+                _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid && _formDataErrorObj.repositoryError.isValid
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
@@ -615,7 +659,6 @@ export default function NewCDPipeline({
         validateStage(BuildStageVariable.PreBuild, formData)
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
-
         if (
             !formDataErrorObj.buildStage.isValid ||
             !formDataErrorObj.preBuildStage.isValid ||
@@ -679,7 +722,7 @@ export default function NewCDPipeline({
 
     const deleteCD = (force: boolean, cascadeDelete: boolean) => {
         const isPartialDelete =
-            formData.deploymentAppType === DeploymentAppType.GitOps && formData.deploymentAppCreated && !force
+            formData.deploymentAppType === DeploymentAppTypes.GITOPS && formData.deploymentAppCreated && !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(appId),
@@ -731,7 +774,7 @@ export default function NewCDPipeline({
             case DELETE_ACTION.DELETE:
                 return deleteCD(false, true)
             case DELETE_ACTION.NONCASCADE_DELETE:
-                return formData.deploymentAppType === DeploymentAppType.GitOps
+                return formData.deploymentAppType === DeploymentAppTypes.GITOPS
                     ? deleteCD(false, false)
                     : deleteCD(false, true)
             case DELETE_ACTION.FORCE_DELETE:
@@ -946,6 +989,7 @@ export default function NewCDPipeline({
                                     noStrategyAvailable={noStrategyAvailable}
                                     parentPipelineId={parentPipelineId}
                                     isWebhookCD={isWebhookCD}
+                                    dockerRegistries={dockerRegistries}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

@@ -1,4 +1,5 @@
 import {
+    DeploymentAppTypes,
     InfoColourBar,
     Progressing,
     RadioGroup,
@@ -10,8 +11,7 @@ import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { TriggerType, ViewType } from '../../config'
-import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
-import { Environment } from './cdPipeline.types'
+import { Environment, GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
     DropdownIndicator,
@@ -35,7 +35,7 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
-const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
+const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 
 export default function BuildCD({
@@ -45,6 +45,7 @@ export default function BuildCD({
     allStrategies,
     parentPipelineId,
     isWebhookCD,
+    dockerRegistries
 }) {
     const {
         formData,
@@ -229,6 +230,32 @@ export default function BuildCD({
         )
     }
 
+    const setRepositoryName = (event): void => {
+        const form = {...formData}
+        const formDataError = {...formDataErrorObj}
+        formDataError.repositoryError = validationRules.repository(event.target.value)
+        form.repoName = event.target.value
+        setFormData(form)
+        setFormDataErrorObj(formDataError)
+    }
+
+    const handleRegistryChange = (selectedRegistry): void => {
+        const form = {...formData}
+        const formDataError = {...formDataErrorObj}
+        formDataError.containerRegistryError = validationRules.containerRegistry(selectedRegistry.id || formData.containerRegistryName)
+        form.selectedRegistry = selectedRegistry
+        form.containerRegistryName = selectedRegistry.id
+        setFormData(form)
+        setFormDataErrorObj(formDataError)
+        
+    }
+
+    const  onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
+        const form = {...formData}
+        form.generatedHelmPushAction = selectedGeneratedHelmValue
+        setFormData(form)
+    }
+
     const selectStrategy = (e): void => {
         const value = e.target.value
         const _form = { ...formData }
@@ -346,8 +373,23 @@ export default function BuildCD({
                 </div>
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
-                    ? VirtualEnvSelectionInfoBar && <VirtualEnvSelectionInfoBar />
+                    ? HelmManifestPush &&  <HelmManifestPush
+                    generatedHelmPushAction={formData.generatedHelmPushAction}
+                    onChangeSetGeneratedHelmPush={onChangeSetGeneratedHelmPush}
+                    repositoryName={formData.repoName}
+                    handleOnRepository={setRepositoryName}
+                    dockerRegistries={dockerRegistries}
+                    handleRegistryChange={handleRegistryChange}
+                    selectedRegistry={formData.selectedRegistry}
+                    containerRegistryName={formData.containerRegistryName}
+                    containerRegistryErrorForm={formDataErrorObj.containerRegistryError}
+                    repositoryErrorForm={formDataErrorObj.repositoryError}
+                />
                     : renderTriggerType()}
+                     {isVirtualEnvironment &&
+                    formData.generatedHelmPushAction === GeneratedHelmPush.PUSH && (
+                        <div className="mt-16">{renderTriggerType()}</div>
+                    )}
             </>
         )
     }
@@ -442,7 +484,7 @@ export default function BuildCD({
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <DeploymentAppRadioGroup
                     isDisabled={!!cdPipelineId}
-                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppType.Helm}
+                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
                     handleOnChange={handleDeploymentAppTypeChange}
                     allowedDeploymentTypes={formData.allowedDeploymentTypes}
                     rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}

@@ -12,6 +12,7 @@ import {
     DockerConfigOverrideType,
     ReleaseTag,
     ImageComment,
+    DeploymentAppTypes,
     TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React from "react";
@@ -563,6 +564,7 @@ export interface CdPipeline {
     deploymentAppCreated?: boolean
     userApprovalConfig?: UserApprovalConfigType
     isVirtualEnvironment?: boolean
+    deploymentAppType: DeploymentAppTypes
     helmPackageName?: string
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType

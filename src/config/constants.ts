@@ -405,186 +405,56 @@ export enum MODES {
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
-export interface InputDetailType {
-    label: string
-    defaultValue: string
-    placeholder: string
+export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
+export type OCIRegistryStorageConfigType = {
+    CONTAINER ?: OCIRegistryStorageActionType,
+    CHART ?: OCIRegistryStorageActionType,
 }
-export interface RegistryTypeDetailType {
-    value: string
-    label: string
-    desiredFormat: string
-    placeholderText: string
-    gettingStartedLink: string
-    defaultRegistryURL: string
-    registryURL: InputDetailType
-    id: InputDetailType
-    password: InputDetailType
+export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
+    PULL: "PULL",
+    PUSH: "PUSH",
+    PULL_PUSH: "PULL/PUSH",
+}
+export const RegistryStorageType = {
+    CONTAINER: 'CONTAINER',
+    OCI_PRIVATE: 'OCI_PRIVATE',
 }
 
-export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
-    ecr: {
-        value: 'ecr',
-        label: 'ECR',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: 'Eg. xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
-        },
-        id: {
-            label: 'Access key ID*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Secret access key*',
-            defaultValue: '',
-            placeholder: '',
-        },
+export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'Container / OCI Registry',
+    infoText:
+        'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
+    additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export interface RegistryPayloadType {
+    id: string,
+    pluginId: string,
+    registryType: string,
+    isDefault: boolean,
+    isOCICompliantRegistry: boolean,
+    registryUrl: string,
+    awsAccessKeyId?: string,
+    awsSecretAccessKey?: string,
+    awsRegion?: string,
+    username?: string,
+    password?: string,
+    connection?: string,
+    cert?: string,
+    ipsConfig: {
+        id: string,
+        credentialType: string,
+        credentialValue: string,
+        appliedClusterIdsCsv: string,
+        ignoredClusterIdsCsv: string,
     },
-    'docker-hub': {
-        value: 'docker-hub',
-        label: 'Docker',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: 'https://docs.docker.com/docker-hub/',
-        defaultRegistryURL: 'docker.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'docker.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token (Recommended: Token)*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    acr: {
-        value: 'acr',
-        label: 'Azure',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink:
-            'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL/Login Server*',
-            defaultValue: '',
-            placeholder: 'Eg. xxx.azurecr.io',
-        },
-        id: {
-            label: 'Username/Registry Name*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    'artifact-registry': {
-        value: 'artifact-registry',
-        label: 'Artifact Registry (GCP)',
-        desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
-        placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
-        gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: 'Eg. region-docker.pkg.dev',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File*',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    gcr: {
-        value: 'gcr',
-        label: 'GCR',
-        desiredFormat: '(desired format: project-id/repo-name)',
-        placeholderText: 'Eg. project-id/repo_name',
-        gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
-        defaultRegistryURL: 'gcr.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'gcr.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File*',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    quay: {
-        value: 'quay',
-        label: 'Quay',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: '',
-        defaultRegistryURL: 'quay.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'quay.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Token*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    other: {
-        value: 'other',
-        label: 'Other',
-        desiredFormat: '',
-        placeholderText: '',
-        gettingStartedLink: '',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
+    ociRegistryConfig?: OCIRegistryStorageConfigType
+}
+
+export const RegistryTypeName = {
+    'CONTAINER': 'Container registry',
+    'OCI_PRIVATE': 'OCI Registry (Private)',
 }
 
 export const AppCreationType = {
@@ -794,7 +664,9 @@ export enum TIMELINE_STATUS {
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
     INPROGRESS= 'INPROGRESS',
-    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED= 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -814,7 +686,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
-export const RESOURCES_NOT_FOUND = 'Resources are not available' 
+export const RESOURCES_NOT_FOUND = 'Resources are not available'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
@@ -840,11 +712,7 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
-export enum DeploymentAppTypes {
-  HELM = 'helm',
-  GITOPS = 'argo_cd',
-  MANIFEST_DOWNLOAD = 'manifest_download'
-}
+
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

@@ -135,4 +135,14 @@ export class ValidationRules {
             return { message: null, isValid: true }
         }
     }
+
+    containerRegistry = (containerRegistry: string): { isValid: boolean; message: string } => {
+        if (!containerRegistry.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        else return { isValid: true, message: null }
+    }
+
+    repository = (repository: string): { isValid: boolean; message: string } => {
+        if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        else return { isValid: true, message: null }
+    }
 }

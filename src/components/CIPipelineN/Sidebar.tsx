@@ -20,6 +20,7 @@ import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
 import { ValueContainer } from '../cdPipeline/cdpipeline.util'
 import Tippy from '@tippyjs/react'
 import { PipelineFormType } from '../workflowEditor/types'
+import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
@@ -341,7 +342,7 @@ export function Sidebar({
                                     isJobView={isJobView}
                                 />
                             </div>
-                            {isCdPipeline && !isVirtualEnvironment && triggerPipelineMode()}
+                            {isCdPipeline && !isVirtualEnvironment && formData.generatedHelmPushAction === GeneratedHelmPush.DO_NOT_PUSH && triggerPipelineMode()}
                         </>
                     )}
                 </div>

@@ -1,6 +1,5 @@
-import { VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { DeploymentAppTypes } from '../../config'
 import { PipelineBuildStageType } from '../workflowEditor/types'
 
 export const CD_PATCH_ACTION = {
@@ -63,6 +62,11 @@ export interface CommonError {
     isValid: boolean
     message: string
 }
+
+export enum GeneratedHelmPush {
+  PUSH = 'PUSH',
+  DO_NOT_PUSH = 'DO_NOT_PUSH',
+}
 export interface CDPipelineState {
     environments: Environment[]
     view: string
@@ -74,6 +78,8 @@ export interface CDPipelineState {
         deploymentAppType: string
         deploymentAppCreated: boolean
         isVirtualEnvironment?: boolean
+        repoName: string
+        containerRegistryName: string
     }
     showDeleteModal: boolean
     shouldDeleteApp: boolean
@@ -83,6 +89,8 @@ export interface CDPipelineState {
         pipelineNameError: CommonError
         envNameError: CommonError
         nameSpaceError: CommonError
+        containerRegistryError: CommonError
+        repositoryError: CommonError
     }
     showPreStage: boolean
     showDeploymentStage: boolean
@@ -95,6 +103,9 @@ export interface CDPipelineState {
     showNonCascadeDeleteDialog: boolean
     clusterName: string
     allowedDeploymentTypes: DeploymentAppTypes[]
+    dockerRegistries
+    generatedHelmPushAction: string
+    selectedRegistry: any
 }
 
 export interface PipelineConfig {
@@ -208,6 +219,10 @@ export interface CDFormType {
     runPreStageInEnv: boolean,
     runPostStageInEnv: boolean,
     allowedDeploymentTypes: DeploymentAppTypes[]
+    containerRegistryName: string
+    repoName: string
+    selectedRegistry: any
+    generatedHelmPushAction: string
 }
 
 export interface InputVariablesFromInputListType {
