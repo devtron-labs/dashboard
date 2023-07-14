@@ -43,10 +43,12 @@ export interface EphemeralContainerDrawerType {
     setContainers: any
     ephemeralContainerType
     setEphemeralContainerType
-    targetContainerOption,
+    targetContainerOption
     setTargetContainerOption
-    imageListOption,
+    imageListOption
     setImageListOption
+    isResourceBrowserView
+    resourceContainers
 }
 
 export interface ResponsePayload {

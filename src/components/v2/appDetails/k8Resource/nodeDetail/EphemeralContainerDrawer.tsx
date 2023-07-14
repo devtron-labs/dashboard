@@ -45,7 +45,9 @@ function EphemeralContainerDrawer({
     targetContainerOption,
     setTargetContainerOption,
     imageListOption,
-    setImageListOption
+    setImageListOption,
+    isResourceBrowserView,
+    resourceContainers
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -57,7 +59,7 @@ function EphemeralContainerDrawer({
     useEffect(() => {
         getImageList()
         getOptions()
-    }, [containerList])
+    }, [])
 
     const onClickHideLaunchEphemeral = (): void => {
         setEphemeralContainerDrawer(false)
@@ -117,7 +119,6 @@ function EphemeralContainerDrawer({
 
     const handleContainerSelectChange = (selected, key, defaultOptions) => {
         let defaultVal = defaultOptions.length && defaultOptions[0]
-        console.log(defaultVal)
         if (key === 'image') {
             setSelectedImageList(selected)
         } else {
@@ -133,14 +134,26 @@ function EphemeralContainerDrawer({
     }
 
     const getOptions = () => {
-        setTargetContainerOption(
-            containerList[0].containers.map((res) => {
-                return {
-                    value: res,
-                    label: res,
-                }
-            }),
-        )
+      if (isResourceBrowserView) {
+          setTargetContainerOption(
+              resourceContainers.map((container) => {
+                  return {
+                      label: container.name,
+                      value: container.name,
+                  }
+              }),
+          )
+      } else {
+          setTargetContainerOption(
+              containerList &&
+                  containerList?.[0]?.containers.map((res) => {
+                      return {
+                          value: res,
+                          label: res,
+                      }
+                  }),
+          )
+      }
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -161,7 +174,6 @@ function EphemeralContainerDrawer({
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Image</div>
-                    {console.log(imageListOption)}
                     <ReactSelect
                         value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
@@ -193,7 +205,7 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Target Container Name</div>
                     <ReactSelect
-                        value={selectedTargetContainer || targetContainerOption[0]}
+                        value={selectedTargetContainer || targetContainerOption?.[0]}
                         options={targetContainerOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
@@ -252,7 +264,7 @@ function EphemeralContainerDrawer({
             </div>
         )
     }
-      
+
 
     const handleManifestAdvanceChange = (e) => {
         if (switchManifest !== SwitchItemValues.Configuration) return
@@ -340,6 +352,7 @@ function EphemeralContainerDrawer({
             appDetails.appName,
             appDetails.appId,
             appDetails.appType,
+            isResourceBrowserView
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')

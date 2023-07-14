@@ -197,14 +197,16 @@ export const createResource = (
     return post(Routes.CREATE_RESOURCE, requestData)
 }
 
-export const generateEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType) => {
+export const generateEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType, isResourceBrowserView) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
-
-    const appTypes = appType === AppType.DEVTRON_APP ? '0' : appType === AppType.DEVTRON_HELM_CHART ? '1' : '2'
+    const appTypes = appType === AppType.DEVTRON_APP ? '0' : appType === AppType.DEVTRON_HELM_CHART ? '1' : ''
     let url: string = 'k8s/resources/ephemeralContainers'
+    if (isResourceBrowserView) {
+        url += `?identifier=${clusterId}`
+    }
     url += `?identifier=${appIds}&appType=${appTypes}`
     return post(url, requestData)
 }

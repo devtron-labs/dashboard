@@ -361,7 +361,7 @@ function NodeDetailComponent({
                     params={params}
                     setEphemeralFormAdvanced={setEphemeralFormAdvanced}
                     ephemeralFormAdvanced={ephemeralFormAdvanced}
-                    containerList={appDetails.resourceTree.podMetadata}
+                    containerList={appDetails.resourceTree?.podMetadata}
                     setContainers={setResourceContainers}
                     setEphemeralContainerType={setEphemeralContainerType}
                     ephemeralContainerType={ephemeralContainerType}
@@ -369,6 +369,8 @@ function NodeDetailComponent({
                     imageListOption={imageListOption}
                     setTargetContainerOption={setTargetContainerOption}
                     targetContainerOption={targetContainerOption}
+                    isResourceBrowserView={isResourceBrowserView}
+                    resourceContainers={resourceContainers}
                 />
             )}
         </React.Fragment>
