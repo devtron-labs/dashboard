@@ -4,13 +4,13 @@ interface ValueWithError {
 }
 
 export interface ConfigMapState {
-    mountPath: string
     loading: boolean
     dialog: boolean
     subPath: string
     filePermission: ValueWithError
     duplicate: any
     external: boolean
+    externalValues: { k: string; v: any; keyError: string; valueError: string }[]
     selectedType: string
     volumeMountPath: ValueWithError
     isSubPathChecked: boolean
@@ -49,6 +49,10 @@ export enum ConfigMapActionTypes {
     setEsoData = 'setEsoData',
     setSecretData = 'setSecretData',
     setRoleARN = 'setRoleARN',
+    setExternalValues = 'setExternalValues',
+    setCodeEditorRadio = 'setCodeEditorRadio',
+    unlock = 'unlock',
+    toggleSecretMode = 'toggleSecretMode',
 }
 
 export interface ConfigMapAction {

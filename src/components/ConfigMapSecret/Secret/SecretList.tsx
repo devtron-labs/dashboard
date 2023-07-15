@@ -103,7 +103,6 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     componentType="secret"
                     title=""
                     appChartRef={appChartRef}
-                    appId={appId}
                     id={list?.id ?? 0}
                     update={update}
                     isOverrideView={isOverrideView}
@@ -115,7 +114,6 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                         title={cs.name}
                         data={cs}
                         appChartRef={appChartRef}
-                        appId={appId}
                         id={list.id}
                         update={update}
                         index={idx}

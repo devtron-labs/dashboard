@@ -1,7 +1,16 @@
-import React, { useReducer, useRef } from 'react'
-import { overRideConfigMap, deleteConfigMap, unlockEnvSecret } from '../service'
+import React, { useEffect, useReducer, useRef } from 'react'
+import {
+    overRideConfigMap,
+    unlockEnvSecret,
+    overRideSecret,
+    updateConfig,
+    deleteSecret,
+    deleteEnvSecret,
+    deleteConfig,
+    deleteEnvConfigMap,
+} from '../service'
 import { useParams } from 'react-router'
-import { Info, RadioGroup, CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../../common'
+import { CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../../common'
 import {
     showError,
     Progressing,
@@ -10,14 +19,13 @@ import {
     CHECKBOX_VALUE,
     not,
     stopPropagation,
+    InfoColourBar,
+    ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { KeyValueInput, useKeyValueYaml } from '../../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
 import warningIcon from '../../../assets/img/warning-medium.svg'
-import CodeEditor from '../../CodeEditor/CodeEditor'
-import YAML from 'yaml'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { Override, Tab } from '../ConfigMapSecret.components'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../../config'
+import { Override, Tab, validateKeyValuePair } from '../ConfigMapSecret.components'
 import { ConfigMapSecretFormProps } from '../Types'
 import { ConfigMapReducer, initState } from './ConfigMap.reducer'
 import { ConfigMapActionTypes } from './ConfigMap.type'
@@ -30,11 +38,19 @@ import {
     ConfigMapOptions,
     hasHashiOrAWS,
     hasESO,
-    handleSecretDataYamlChange,
     unlockSecrets,
+    secretValidationInfoToast,
+    CODE_EDITOR_RADIO_STATE,
 } from '../Secret/secret.utils'
 import { Option } from '../../v2/common/ReactSelect.utils'
+import { NavLink } from 'react-router-dom'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
+import { EXTERNAL_INFO_TEXT } from '../Constants'
+import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
+import { getSecretKeys, updateSecret } from '../../secrets/service'
+import YAML from 'yaml'
 import '../../EnvironmentOverride/environmentOverride.scss'
+import { INVALID_YAML_MSG } from '../../../config/constantMessaging'
 
 export const ConfigMapSecretForm = React.memo(
     ({
@@ -42,16 +58,14 @@ export const ConfigMapSecretForm = React.memo(
         toggleCollapse,
         configMapSecretData,
         id,
-        reload,
         isOverrideView,
         componentType,
+        update,
+        index,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
-
-        function memoisedRemove(e, idx) {
-            dispatch({ type: ConfigMapActionTypes.keyValueDelete, payload: { index: idx } })
-        }
-        const [state, dispatch] = useReducer(memoizedReducer, initState(configMapSecretData))
+        const tempArr = useRef([])
+        const [state, dispatch] = useReducer(memoizedReducer, initState(configMapSecretData, isOverrideView))
         const tabs = [
             { title: 'Environment Variable', value: 'environment' },
             { title: 'Data Volume', value: 'volume' },
@@ -60,16 +74,7 @@ export const ConfigMapSecretForm = React.memo(
             active: data.value === state.selectedType,
         }))
         const { appId, envId } = useParams<{ appId; envId }>()
-        const tempArr = useRef([])
-        function setKeyValueArray(arr) {
-            tempArr.current = arr
-        }
-        const { yaml, handleYamlChange, error } = useKeyValueYaml(
-            state.duplicate,
-            setKeyValueArray,
-            PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
-            `Key must consist of alphanumeric characters, '.', '-' and '_'`,
-        )
+
         const isChartVersion309OrBelow =
             appChartRef &&
             appChartRef.name === ROLLOUT_DEPLOYMENT &&
@@ -78,20 +83,44 @@ export const ConfigMapSecretForm = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
+        useEffect(() => {
+            if (!configMapSecretData?.name) return
+            handleSecretFetch()
+        }, [])
 
-        function changeEditorMode() {
-            if (state.yamlMode) {
-                if (state.duplicate) {
-                    dispatch({
-                        type: ConfigMapActionTypes.multipleOptions,
-                        payload: { duplicate: tempArr.current, yamlMode: !state.yamlMode },
-                    })
-                    tempArr.current = []
-                    return
-                }
-                tempArr.current = []
+        useEffect(() => {
+            if (configMapSecretData?.data) {
+                const data = configMapSecretData.data
+                dispatch({
+                    type: ConfigMapActionTypes.setExternalValues,
+                    payload: Object.keys(data).map((k) => ({
+                        k,
+                        v: typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k],
+                        keyError: '',
+                        valueError: '',
+                    })),
+                })
             }
-            dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
+        }, [configMapSecretData?.data])
+
+        useEffect(() => {
+            if (isESO && !state.yamlMode) {
+                dispatch({
+                    type: ConfigMapActionTypes.toggleYamlMode,
+                })
+            }
+        }, [isESO, state.yamlMode])
+
+        async function handleSecretFetch() {
+            try {
+                const { result } = envId
+                    ? await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
+                    : await getSecretKeys(id, appId, configMapSecretData?.name)
+                update(index, result)
+                dispatch({ type: ConfigMapActionTypes.toggleSecretMode, payload: false })
+            } catch (err) {
+                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            }
         }
 
         async function handleOverride(e) {
@@ -110,7 +139,7 @@ export const ConfigMapSecretForm = React.memo(
                         id,
                         +appId,
                         +envId,
-                        state.configName,
+                        state.configName.value,
                         configMapSecretData.global,
                         isESO,
                         dispatch,
@@ -126,143 +155,202 @@ export const ConfigMapSecretForm = React.memo(
                         type: ConfigMapActionTypes.multipleOptions,
                         payload: {
                             duplicate: duplicate,
-                            mountPath: state.mountPath || configMapSecretData?.defaultMountPath,
+                            volumeMountPath: state.volumeMountPath || {
+                                value: configMapSecretData?.defaultMountPath,
+                                error: '',
+                            },
                         },
                     })
                 }
-            }
-        }
-
-        function handleSecretDataChange(index: number, key: string, value: string | boolean): void {
-            const _secretData = [...state.secretData]
-            _secretData[index] = { ...state[index], [key]: value }
-            let json = [..._secretData]
-            json = json.map((j) => {
-                let temp = {}
-                temp['isBinary'] = j.isBinary
-                if (j.fileName) {
-                    temp['key'] = j.fileName
-                }
-                if (j.property) {
-                    temp['property'] = j.property
-                }
-                if (j.name) {
-                    temp['name'] = j.name
-                }
-                return temp
-            })
-            dispatch({
-                type: ConfigMapActionTypes.multipleOptions,
-                payload: { secretDataYaml: YAML.stringify(json), secretData: _secretData },
-            })
-        }
-
-        function handleSecretDataDelete(index: number): void {
-            const _secretData = [...state.secretData]
-            _secretData.splice(index, 1)
-            let json = [..._secretData]
-            json = json.map((j) => {
-                return {
-                    key: j.fileName,
-                    name: j.name,
-                    property: j.property,
-                    isBinary: j.isBinary,
-                }
-            })
-            dispatch({
-                type: ConfigMapActionTypes.multipleOptions,
-                payload: { secretDataYaml: YAML.stringify(json), secretData: _secretData },
-            })
-        }
-
-        const handleSecretYamlChange = (yaml) => {
-            handleSecretDataYamlChange(yaml, state.codeEditorRadio, isESO, dispatch)
-        }
-
-        function stringify(value) {
-            if (!value) return value
-            if (typeof value === 'object') {
-                return YAML.stringify(value, { indent: 2 })
-            }
-            if (typeof value === 'string') {
-                return value
-            }
-            try {
-                return value.toString()
-            } catch (err) {
-                return ''
             }
         }
 
         async function handleSubmit(e) {
             e.preventDefault()
-            let dataArray = state.yamlMode ? tempArr.current : state.duplicate
-            const isInvalid = dataArray.some(
-                (dup) => !dup.k || !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(dup.k),
-            )
-            if (isInvalid) {
-                if (!state.yamlMode) {
-                    dispatch({ type: ConfigMapActionTypes.createErrors })
-                }
+            const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
+            let isErrorInForm = false
+            if (state.secretMode) {
+                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 return
             }
-            if (state.selectedType === 'volume' && state.isFilePermissionChecked && !isChartVersion309OrBelow) {
-                if (!state.filePermission.value) {
+            if (!state.configName.value) {
+                dispatch({
+                    type: ConfigMapActionTypes.setConfigName,
+                    payload: { value: state.configName.value, error: 'This is a required field' },
+                })
+                isErrorInForm = true
+            } else if (state.configName.value.length > 253) {
+                dispatch({
+                    type: ConfigMapActionTypes.setConfigName,
+                    payload: { value: state.configName.value, error: 'More than 253 characters are not allowed' },
+                })
+                isErrorInForm = true
+            } else if (!configMapSecretNameRegex.test(state.configName.value)) {
+                dispatch({
+                    type: ConfigMapActionTypes.setConfigName,
+                    payload: {
+                        value: state.configName.value,
+                        error: `Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'`,
+                    },
+                })
+                isErrorInForm = true
+            }
+            if (state.selectedType === 'volume') {
+                if (!state.volumeMountPath.value) {
                     dispatch({
-                        type: ConfigMapActionTypes.setFilePermission,
-                        payload: { value: state.filePermission.value, error: 'This is a required field' },
+                        type: ConfigMapActionTypes.setVolumeMountPath,
+                        payload: { value: state.volumeMountPath.value, error: 'This is a required field' },
                     })
-                    return
-                } else if (state.filePermission.value.length > 4) {
-                    dispatch({
-                        type: ConfigMapActionTypes.setFilePermission,
-                        payload: { value: state.filePermission.value, error: 'More than 4 characters are not allowed' },
-                    })
-                    return
-                } else if (state.filePermission.value.length === 4) {
-                    if (!state.filePermission.value.startsWith('0')) {
+                    isErrorInForm = true
+                }
+                if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
+                    if (!state.filePermission.value) {
+                        dispatch({
+                            type: ConfigMapActionTypes.setFilePermission,
+                            payload: { value: state.filePermission.value, error: 'This is a required field' },
+                        })
+                        isErrorInForm = true
+                    } else if (state.filePermission.value.length > 4) {
                         dispatch({
                             type: ConfigMapActionTypes.setFilePermission,
                             payload: {
                                 value: state.filePermission.value,
-                                error: '4 characters are allowed in octal format only, first character should be 0',
+                                error: 'More than 4 characters are not allowed',
                             },
                         })
-                        return
+                        isErrorInForm = true
+                    } else if (state.filePermission.value.length === 4) {
+                        if (!state.filePermission.value.startsWith('0')) {
+                            dispatch({
+                                type: ConfigMapActionTypes.setFilePermission,
+                                payload: {
+                                    value: state.filePermission.value,
+                                    error: '4 characters are allowed in octal format only, first character should be 0',
+                                },
+                            })
+                            isErrorInForm = true
+                        }
+                    } else if (state.filePermission.value.length < 3) {
+                        dispatch({
+                            type: ConfigMapActionTypes.setFilePermission,
+                            payload: { value: state.filePermission.value, error: 'Atleast 3 character are required' },
+                        })
+                        isErrorInForm = true
                     }
-                } else if (state.filePermission.value.length < 3) {
-                    dispatch({
-                        type: ConfigMapActionTypes.setFilePermission,
-                        payload: { value: state.filePermission.value, error: 'Atleast 3 character are required' },
-                    })
-                    return
+                    if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(state.filePermission.value)) {
+                        dispatch({
+                            type: ConfigMapActionTypes.setFilePermission,
+                            payload: {
+                                value: state.filePermission.value,
+                                error: 'This is octal number, use numbers between 0 to 7',
+                            },
+                        })
+                        isErrorInForm = true
+                    }
                 }
-                if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(state.filePermission.value)) {
-                    dispatch({
-                        type: ConfigMapActionTypes.setFilePermission,
-                        payload: {
-                            value: state.filePermission.value,
-                            error: 'This is octal number, use numbers between 0 to 7',
-                        },
-                    })
-                    return
+                if (state.isSubPathChecked && state.isExternalValues) {
+                    if (!state.externalSubpathValues.value) {
+                        dispatch({
+                            type: ConfigMapActionTypes.setExternalSubpathValues,
+                            payload: { value: state.externalSubpathValues.value, error: 'This is a required field' },
+                        })
+                        isErrorInForm = true
+                    } else if (
+                        !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(state.externalSubpathValues.value)
+                    ) {
+                        dispatch({
+                            type: ConfigMapActionTypes.setExternalSubpathValues,
+                            payload: {
+                                value: state.externalSubpathValues.value,
+                                error: 'Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys',
+                            },
+                        })
+                        isErrorInForm = true
+                    }
                 }
             }
-            if (dataArray.length === 0 && !state.external) {
-                toast.error('Configmaps without any data are not allowed.')
+
+            let dataArray = state.yamlMode ? tempArr.current : state.externalValues
+            const { isValid, arr } = validateKeyValuePair(dataArray)
+            if (!isValid) {
+                toast.error(INVALID_YAML_MSG)
+                dispatch({
+                    type: ConfigMapActionTypes.setExternalValues,
+                    payload: arr,
+                })
                 return
             }
+
+            if (isErrorInForm) {
+                return
+            }
+            if (componentType)
+                if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
+                    toast.error(`Please add ${componentType} data before saving.`)
+                    return
+                }
+
+            if (componentType === 'secret' && (isHashiOrAWS || isESO)) {
+                let isValid = true
+                if (isESO) {
+                    isValid = state.esoData?.reduce((isValid, s) => {
+                        isValid = isValid && !!s?.secretKey && !!s.key
+                        return isValid
+                    }, !state.secretStore != !state.secretStoreRef && !!state.esoData?.length)
+                } else {
+                    isValid = state.secretData.reduce((isValid, s) => {
+                        isValid = isValid && !!s.fileName && !!s.name
+                        return isValid
+                    }, !!state.secretData.length)
+                }
+
+                if (!isValid) {
+                    secretValidationInfoToast(isESO, state.secretStore, state.secretStoreRef)
+                    return
+                }
+            }
             try {
+                const data = arr.reduce((agg, curr) => {
+                    if (!curr.k) return agg
+                    let value = curr.v ?? ''
+                    agg[curr.k] = componentType === 'secret' && state.externalType === '' ? btoa(value) : value
+                    return agg
+                }, {})
                 let payload = {
                     name: state.configName.value,
                     type: state.selectedType,
                     external: state.external,
-                    data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
+                    data: data, //dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
                 }
-
+                if (componentType === 'secret') {
+                    payload['roleARN'] = ''
+                    payload['externalType'] = state.externalType
+                    if (isHashiOrAWS) {
+                        payload['secretData'] = state.secretData.map((s) => {
+                            return {
+                                key: s.fileName,
+                                name: s.name,
+                                isBinary: s.isBinary,
+                                property: s.property,
+                            }
+                        })
+                        payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
+                        payload['roleARN'] = state.roleARN.value
+                        delete payload[CODE_EDITOR_RADIO_STATE.DATA]
+                    } else if (isESO) {
+                        payload['esoSecretData'] = {
+                            secretStore: state.secretStore,
+                            esoData: state.esoData,
+                            secretStoreRef: state.secretStoreRef,
+                            refreshInterval: state.refreshInterval,
+                        }
+                        payload['roleARN'] = state.roleARN.value
+                        delete payload[CODE_EDITOR_RADIO_STATE.DATA]
+                    }
+                }
                 if (state.selectedType === 'volume') {
-                    payload['mountPath'] = state.mountPath
-                    if (!state.external && !isChartVersion309OrBelow) {
+                    payload['mountPath'] = state.volumeMountPath.value
+                    if (!isChartVersion309OrBelow) {
                         payload['subPath'] = state.subPath
                     }
                     if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
@@ -271,14 +359,33 @@ export const ConfigMapSecretForm = React.memo(
                                 ? `0${state.filePermission.value}`
                                 : `${state.filePermission.value}`
                     }
-                }
 
+                    if (state.isSubPathChecked && state.external) {
+                        const externalSubpathKey = state.externalSubpathValues.value.replace(/\s+/g, '').split(',')
+                        const secretKeys = {}
+                        externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
+                        payload['data'] = secretKeys
+                    }
+                }
                 dispatch({ type: ConfigMapActionTypes.submitLoading })
-                await overRideConfigMap(id, +appId, +envId, [payload])
-                await reload()
+                let toastTitle = ''
+                if (!envId) {
+                    const { result } =
+                        componentType === 'secret'
+                            ? await updateSecret(id, +appId, payload)
+                            : await updateConfig(id, +appId, payload)
+                    toastTitle = `${payload.name ? 'Updated' : 'Saved'}`
+                    update(index, result)
+                } else {
+                    componentType === 'secret'
+                        ? await overRideSecret(id, +appId, +envId, [payload])
+                        : await overRideConfigMap(id, +appId, +envId, [payload])
+                    toastTitle = 'Overridden'
+                    update(true)
+                }
                 toast.success(
                     <div className="toast">
-                        <div className="toast__title">Overridden</div>
+                        <div className="toast__title">{toastTitle}</div>
                         <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                     </div>,
                 )
@@ -293,10 +400,13 @@ export const ConfigMapSecretForm = React.memo(
 
         async function handleDelete(e) {
             try {
-                const { result } = await deleteConfigMap(id, +appId, +envId, state.configName.value)
-                toggleCollapse(not)
-                await reload()
+                componentType === 'secret'
+                    ? await deleteEnvSecret(id, appId, +envId, configMapSecretData?.name)
+                    : await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
                 toast.success('Restored to global.')
+
+                update(index, null)
+                toggleCollapse(not)
                 dispatch({ type: ConfigMapActionTypes.success })
             } catch (err) {
                 showError(err)
@@ -311,7 +421,10 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const toggleExternalType = (selectedExternalType): void => {
-            dispatch({ type: ConfigMapActionTypes.setExternalType, payload: selectedExternalType.value })
+            dispatch({
+                type: ConfigMapActionTypes.multipleOptions,
+                payload: { external: selectedExternalType.value !== '', externalType: selectedExternalType.value },
+            })
         }
 
         const toggleSelectedType = (title: string): void => {
@@ -346,7 +459,54 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const handleRoleARNChange = (e): void => {
-            dispatch({ type: ConfigMapActionTypes.setConfigName, payload: e.target.value })
+            dispatch({ type: ConfigMapActionTypes.setRoleARN, payload: { value: e.target.value, error: '' } })
+        }
+
+        const handleAddParam = (): void => {
+            if (isOverrideView) {
+                if (isHashiOrAWS) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setSecretData,
+                        payload: [...state.secretData, { fileName: '', property: '', isBinary: true, name: '' }],
+                    })
+                } else {
+                    dispatch({ type: ConfigMapActionTypes.addParam })
+                }
+            } else {
+                if (isHashiOrAWS) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setSecretData,
+                        payload: [...state.secretData, { fileName: '', property: '', isBinary: true, name: '' }],
+                    })
+                } else
+                    dispatch({
+                        type: ConfigMapActionTypes.setExternalValues,
+                        payload: [...state.externalValues, { k: '', v: '', keyError: '', valueError: '' }],
+                    })
+            }
+        }
+
+        const ExternalSecretHelpNote = () => {
+            return (
+                <div className="fs-13 fw-4 lh-18">
+                    <NavLink
+                        to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
+                        className="dc__link"
+                        target="_blank"
+                    >
+                        External Secrets Operator
+                    </NavLink>
+                    &nbsp;should be installed in the target cluster.&nbsp;
+                    <a
+                        className="dc__link"
+                        href={DOCUMENTATION.EXTERNAL_SECRET}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        Learn more
+                    </a>
+                </div>
+            )
         }
 
         return (
@@ -364,26 +524,36 @@ export const ConfigMapSecretForm = React.memo(
                         <label className="form__label">Data type</label>
                         <div className="form-row__select-external-type">
                             {componentType === 'secret' ? (
-                                <ReactSelect
-                                    placeholder="Select Secret Type"
-                                    options={getTypeGroups()}
-                                    defaultValue={
-                                        state.externalType && state.externalType !== ''
-                                            ? getTypeGroups(state.externalType)
-                                            : getTypeGroups()[0].options[0]
-                                    }
-                                    onChange={toggleExternalType}
-                                    styles={groupStyle()}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option: SecretOptions,
-                                        GroupHeading,
-                                    }}
-                                    classNamePrefix="secret-data-type"
-                                    isDisabled={
-                                        isOverrideView && configMapSecretData?.name && configMapSecretData?.global
-                                    }
-                                />
+                                <>
+                                    <ReactSelect
+                                        placeholder="Select Secret Type"
+                                        options={getTypeGroups()}
+                                        defaultValue={
+                                            state.externalType && state.externalType !== ''
+                                                ? getTypeGroups(state.externalType)
+                                                : getTypeGroups()[0].options[0]
+                                        }
+                                        onChange={toggleExternalType}
+                                        styles={groupStyle()}
+                                        components={{
+                                            IndicatorSeparator: null,
+                                            Option: SecretOptions,
+                                            GroupHeading,
+                                        }}
+                                        classNamePrefix="secret-data-type"
+                                        isDisabled={
+                                            isOverrideView && configMapSecretData?.name && configMapSecretData?.global
+                                        }
+                                    />
+                                    {isESO && (
+                                        <InfoColourBar
+                                            classname="info_bar cn-9 mt-16 lh-20"
+                                            message={<ExternalSecretHelpNote />}
+                                            Icon={InfoIcon}
+                                            iconSize={20}
+                                        />
+                                    )}
+                                </>
                             ) : (
                                 <ReactSelect
                                     placeholder="Select ConfigMap Type"
@@ -405,30 +575,35 @@ export const ConfigMapSecretForm = React.memo(
                     </div>
                     {!configMapSecretData?.name && (
                         <>
-                            {state.external && (
-                                <div className="dc__info-container mb-24">
-                                    <Info />
-                                    <div className="flex column left">
-                                        <div className="dc__info-title">Using External Configmaps</div>
-                                        <div className="dc__info-subtitle">
-                                            Configmap will not be created by system. However, they will be used inside
-                                            the pod. Please make sure that configmap with the same name is present in
-                                            the environment.
+                            {(state.externalType === 'KubernetesSecret' ||
+                                (componentType !== 'secret' && state.external)) && (
+                                <InfoColourBar
+                                    classname="info_bar cn-9 mt-16 mb-16 lh-20"
+                                    message={
+                                        <div className="flex column left">
+                                            <div className="dc__info-title">
+                                                {EXTERNAL_INFO_TEXT[componentType].title}
+                                            </div>
+                                            <div className="dc__info-subtitle">
+                                                {EXTERNAL_INFO_TEXT[componentType].infoText}
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    }
+                                    Icon={InfoIcon}
+                                    iconSize={20}
+                                />
                             )}
                             <div className="form__row">
                                 <label className="form__label">Name*</label>
                                 <input
-                                    data-testid="configmap-name-textbox"
+                                    data-testid={`${componentType}-name-textbox`}
                                     value={state.configName.value}
                                     autoComplete="off"
                                     autoFocus
                                     onChange={onConfigNameChange}
                                     type="text"
                                     className={`form__input`}
-                                    placeholder={`random-configmap`}
+                                    placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
                                 />
                                 {state.configName.error && (
                                     <label className="form__error">{state.configName.error}</label>
@@ -436,7 +611,9 @@ export const ConfigMapSecretForm = React.memo(
                             </div>
                         </>
                     )}
-                    <label className="form__label form__label--lower">{`How do you want to use this ConfigMap?`}</label>
+                    <label className="form__label form__label--lower">
+                        How do you want to use this {componentType === 'secret' ? 'Secret' : 'ConfigMap'}?
+                    </label>
                     <div className={`form__row form-row__tab`}>
                         {tabs.map((tabData, idx) => (
                             <Tab
@@ -446,7 +623,7 @@ export const ConfigMapSecretForm = React.memo(
                                     !!(isOverrideView && configMapSecretData?.name && configMapSecretData?.global)
                                 }
                                 onClick={toggleSelectedType}
-                                type="configmap"
+                                type={componentType}
                             />
                         ))}
                     </div>
@@ -454,7 +631,7 @@ export const ConfigMapSecretForm = React.memo(
                         <>
                             <div className="form__row">
                                 <CustomInput
-                                    dataTestid="configmap-volume-path-textbox"
+                                    dataTestid={`${componentType}-volume-path-textbox`}
                                     value={state.volumeMountPath.value}
                                     autoComplete="off"
                                     tabIndex={5}
@@ -477,7 +654,7 @@ export const ConfigMapSecretForm = React.memo(
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={toggleSubpath}
                                 >
-                                    <span data-testid="configmap-sub-path-checkbox" className="mb-0">
+                                    <span data-testid={`${componentType}-sub-path-checkbox`} className="mb-0">
                                         Set SubPath (same as
                                         <a
                                             href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -585,110 +762,50 @@ export const ConfigMapSecretForm = React.memo(
                         <div className="form__row form__row--flex">
                             <div className="w-50">
                                 <CustomInput
-                                    value={state.roleARN}
+                                    dataTestid="enter-role-ARN"
+                                    value={state.roleARN.value}
                                     autoComplete="off"
                                     label={'Role ARN'}
                                     disabled={state.locked}
                                     placeholder={'Enter Role ARN'}
+                                    error={state.roleARN.error}
                                     onChange={handleRoleARNChange}
                                 />
                             </div>
                         </div>
                     )}
-                    {!state.external && (
-                        <>
-                            <div className="flex left mb-16">
-                                <b className="mr-5 dc__bold">Data*</b>
-                                <RadioGroup
-                                    className="gui-yaml-switch"
-                                    name="yaml-mode"
-                                    initialTab={state.yamlMode ? 'yaml' : 'gui'}
-                                    disabled={false}
-                                    onChange={changeEditorMode}
-                                >
-                                    <RadioGroup.Radio value="gui" dataTestId="gui-from-config-map">
-                                        GUI
-                                    </RadioGroup.Radio>
-                                    <RadioGroup.Radio value="yaml" dataTestId="yaml-from-config-map">
-                                        YAML
-                                    </RadioGroup.Radio>
-                                </RadioGroup>
-                            </div>
-
-                            {state.yamlMode ? (
-                                <div className="yaml-container">
-                                    <CodeEditor
-                                        value={
-                                            state.duplicate
-                                                ? yaml
-                                                : YAML.stringify(configMapSecretData?.defaultData, { indent: 2 })
-                                        }
-                                        mode="yaml"
-                                        inline
-                                        height={350}
-                                        onChange={handleYamlChange}
-                                        //readOnly={!state.duplicate}
-                                        shebang="#key: value"
-                                    >
-                                        <CodeEditor.Header>
-                                            <CodeEditor.ValidationError />
-                                            <CodeEditor.Clipboard />
-                                        </CodeEditor.Header>
-                                        {error && (
-                                            <div className="validation-error-block">
-                                                <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
-                                                <div>{error}</div>
-                                            </div>
-                                        )}
-                                    </CodeEditor>
-                                </div>
-                            ) : state.duplicate ? (
-                                state.duplicate.map((config, idx) => (
-                                    <KeyValueInput
-                                        keyLabel={state.selectedType === 'volume' ? 'File Name' : 'Key'}
-                                        valueLabel={state.selectedType === 'volume' ? 'File Content' : 'Value'}
-                                        {...config}
-                                        index={idx}
-                                        key={idx}
-                                        onChange={(index, k, v) =>
-                                            dispatch({
-                                                type: ConfigMapActionTypes.keyValueChange,
-                                                payload: { index, k, v },
-                                            })
-                                        }
-                                        onDelete={memoisedRemove}
-                                    />
-                                ))
-                            ) : (
-                                Object.keys(configMapSecretData?.defaultData).map((config, idx) => (
-                                    <KeyValueInput
-                                        keyLabel={state.selectedType === 'volume' ? 'File Name' : 'Key'}
-                                        valueLabel={state.selectedType === 'volume' ? 'File Content' : 'Value'}
-                                        k={config}
-                                        v={stringify(configMapSecretData?.defaultData[config])}
-                                        index={idx}
-                                        onChange={null}
-                                        onDelete={null}
-                                    />
-                                ))
-                            )}
-                        </>
-                    )}
-                    {state.duplicate && !state.yamlMode && (
-                        <span
-                            className="dc__bold anchor pointer"
-                            onClick={(e) => dispatch({ type: ConfigMapActionTypes.addParam })}
-                        >
+                    <ConfigMapSecretDataEditorContainer
+                        id={id}
+                        configMapSecretData={configMapSecretData}
+                        isOverrideView={isOverrideView}
+                        componentType={componentType}
+                        state={state}
+                        dispatch={dispatch}
+                        tempArr={tempArr}
+                    />
+                    {(!isOverrideView || state.duplicate) && !state.yamlMode && (
+                        <span className="dc__bold anchor pointer" onClick={handleAddParam}>
                             +Add params
                         </span>
                     )}
-                    {!(state.external && state.selectedType === 'environment') && (
+                    {/* {!(state.external && state.selectedType === 'environment') && (
                         <div className="form__buttons">
                             <button className="cta" type="submit">
                                 {state.submitLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>
-                    )}
+                    )} */}
+                    <div className="form__buttons">
+                        <button data-testid="secrets-save-button" type="button" className="cta" onClick={handleSubmit}>
+                            {state.submitLoading ? (
+                                <Progressing />
+                            ) : (
+                                `${configMapSecretData?.name ? 'Update' : 'Save'} ${
+                                    componentType === 'secret' ? 'Secret' : 'ConfigMap'
+                                }`
+                            )}
+                        </button>
+                    </div>
                 </form>
 
                 {state.dialog && (

@@ -53,19 +53,29 @@ export interface ConfigMapListProps {
 
 export interface ConfigMapSecretFormProps {
     appChartRef: { id: number; version: string; name: string }
-    toggleCollapse: any
+    toggleCollapse: React.Dispatch<React.SetStateAction<boolean>>
     configMapSecretData: any
     id
-    reload
-    isOverrideView
+    isOverrideView: boolean
     componentType: string
+    update: (...args) => void
+    index: number
+}
+
+export interface ConfigMapSecretDataEditorContainerProps {
+    id
+    configMapSecretData: any
+    isOverrideView: boolean
+    componentType: string
+    state
+    dispatch
+    tempArr
 }
 
 export interface ConfigMapSecretProps {
     componentType: string
     title: string
     appChartRef: any
-    appId: number
     update: (index, result) => void
     data?: any
     index?: number

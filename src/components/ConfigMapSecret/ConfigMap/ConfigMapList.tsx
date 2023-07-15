@@ -9,7 +9,6 @@ import { getConfigMapList } from '../service'
 import './ConfigMap.scss'
 import { ConfigMapListProps } from '../Types'
 import { ComponentStates } from '../../EnvironmentOverride/EnvironmentOverrides.type'
-import { getLabel } from '../ConfigMapSecret.utils'
 
 export default function ConfigMapList({ isOverrideView, parentState, setParentState }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -47,11 +46,9 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
     function reload() {
         init()
     }
+
     if (parentState === ComponentStates.loading || !configMap || configMapLoading)
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
-    // if (configMapLoading) {
-    //     return <Progressing pageLoader />
-    // }
 
     return (
         <div className={!isOverrideView ? 'form__app-compose' : ''}>
@@ -69,7 +66,6 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                     key="Add ConfigMap"
                     title=""
                     appChartRef={appChartRef}
-                    appId={appId}
                     update={reload}
                     componentType="configmap"
                     id={configMap?.id ?? 0}
@@ -81,7 +77,6 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                             key={cm.name}
                             title={cm.name}
                             appChartRef={appChartRef}
-                            appId={appId}
                             update={reload}
                             componentType="configmap"
                             data={cm}

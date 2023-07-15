@@ -354,7 +354,7 @@ export async function unlockSecrets(
             payload: {
                 locked: false,
                 duplicate:
-                    data?.name && global && !isESO
+                    name && global && !isESO
                         ? Object.keys(temp).map((k) => ({
                               k,
                               v: temp[k],
@@ -460,19 +460,18 @@ export function handleSecretDataYamlChange(
     } catch (error) {}
 }
 
-export const getSecretInitState = (configMapSecretData) => {
-    let tempSecretData =
-        (configMapSecretData?.secretData || []).length === 0 && configMapSecretData?.defaultSecretData
-            ? configMapSecretData?.defaultSecretData
-            : configMapSecretData?.secretData || []
+export const getSecretInitState = (configMapSecretData, isOverrideView) => {
+    let tempSecretData, jsonForSecretDataYaml
+    if (configMapSecretData?.secretData?.length) {
+        tempSecretData = configMapSecretData.secretData
+        jsonForSecretDataYaml = configMapSecretData.secretData
+    } else {
+        tempSecretData = configMapSecretData?.defaultSecretData ?? []
+        jsonForSecretDataYaml = configMapSecretData?.defaultSecretData ?? []
+    }
     tempSecretData = tempSecretData.map((s) => {
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
-
-    let jsonForSecretDataYaml: any[] = configMapSecretData?.secretData ? configMapSecretData?.secretData : []
-    if (jsonForSecretDataYaml.length === 0 && configMapSecretData?.defaultSecretData) {
-        jsonForSecretDataYaml = configMapSecretData.defaultSecretData
-    }
     jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
         let temp = {}
         temp['isBinary'] = j.isBinary
@@ -494,9 +493,13 @@ export const getSecretInitState = (configMapSecretData) => {
     const isEsoSecretData: boolean =
         (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
     return {
-        externalType: '',
-        roleARN: configMapSecretData?.roleARN ?? '',
-        secretDataValue: tempSecretData,
+        externalType: configMapSecretData?.externalType,
+        roleARN: {
+            value: configMapSecretData?.roleARN ?? '',
+            error: '',
+        },
+        esoData: tempEsoSecretData?.esoData,
+        secretData: tempSecretData,
         secretDataYaml: YAML.stringify(jsonForSecretDataYaml),
         codeEditorRadio: CODE_EDITOR_RADIO_STATE.DATA,
         esoDataSecret: tempEsoSecretData?.esoData,
@@ -504,6 +507,8 @@ export const getSecretInitState = (configMapSecretData) => {
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
+        locked: isOverrideView && !configMapSecretData.mountPath,
+        secretMode: configMapSecretData?.name ?? false,
     }
 }
 

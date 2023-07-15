@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { DeleteDialog, Progressing, stopPropagation, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeleteDialog,
+    Progressing,
+    not,
+    showError,
+    stopPropagation,
+    useThrottledEffect,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PATTERNS } from '../../config'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
@@ -22,6 +29,9 @@ import SecretForm from './Secret/SecretForm'
 import ConfigMapForm from './ConfigMap/ConfigMapForm'
 import './ConfigMap.scss'
 import { ConfigMapSecretForm } from './ConfigMap/ConfigMapSecretForm'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { deleteConfig, deleteEnvConfigMap, deleteEnvSecret, deleteSecret } from './service'
 
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
@@ -90,7 +100,6 @@ export function ConfigMapSecretContainer({
     componentType,
     title,
     appChartRef,
-    appId,
     update,
     data,
     index,
@@ -99,6 +108,7 @@ export function ConfigMapSecretContainer({
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+    const { appId, envId } = useParams<{ appId; envId }>()
 
     const updateCollapsed = (): void => {
         toggleCollapse(!collapsed)
@@ -113,20 +123,21 @@ export function ConfigMapSecretContainer({
         setShowDeleteModal(true)
     }
 
-    async function handleDelete() {
-        // try {
-        //     if (!envId) {
-        //         await deleteConfig(id, appId, name)
-        //         toast.success('Successfully deleted')
-        //         updateForm(listIndex, null)
-        //     } else {
-        //         await deleteEnvironmentConfig(id, appId, envId, name)
-        //         toast.success('Successfully deleted')
-        //         updateForm(true)
-        //     }
-        // } catch (err) {
-        //     showError(err)
-        // }
+    const handleDelete = async () => {
+        try {
+            if (!envId) {
+                componentType === 'secret' ? await deleteSecret(id, appId, title) : await deleteConfig(id, appId, title)
+            } else {
+                componentType === 'secret'
+                    ? await deleteEnvSecret(id, appId, +envId, title)
+                    : await deleteEnvConfigMap(id, appId, envId, title)
+            }
+            update(index, null)
+            toggleCollapse(not)
+            toast.success('Successfully deleted')
+        } catch (err) {
+            showError(err)
+        }
     }
 
     const renderDeleteCMModal = () => {
@@ -156,12 +167,13 @@ export function ConfigMapSecretContainer({
         return (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}
-                toggleCollapse={(e) => toggleCollapse(!collapsed)}
+                toggleCollapse={toggleCollapse}
                 configMapSecretData={data}
                 id={id}
-                reload={update}
                 isOverrideView={isOverrideView}
                 componentType={componentType}
+                update={update}
+                index={index}
             />
         )
     }
