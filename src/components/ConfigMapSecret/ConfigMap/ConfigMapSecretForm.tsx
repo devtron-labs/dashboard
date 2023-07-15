@@ -4,9 +4,7 @@ import {
     unlockEnvSecret,
     overRideSecret,
     updateConfig,
-    deleteSecret,
     deleteEnvSecret,
-    deleteConfig,
     deleteEnvConfigMap,
 } from '../service'
 import { useParams } from 'react-router'
@@ -65,7 +63,10 @@ export const ConfigMapSecretForm = React.memo(
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
-        const [state, dispatch] = useReducer(memoizedReducer, initState(configMapSecretData, isOverrideView))
+        const [state, dispatch] = useReducer(
+            memoizedReducer,
+            initState(configMapSecretData, isOverrideView, componentType),
+        )
         const tabs = [
             { title: 'Environment Variable', value: 'environment' },
             { title: 'Data Volume', value: 'volume' },
@@ -88,20 +89,25 @@ export const ConfigMapSecretForm = React.memo(
             handleSecretFetch()
         }, [])
 
-        useEffect(() => {
-            if (configMapSecretData?.data) {
-                const data = configMapSecretData.data
-                dispatch({
-                    type: ConfigMapActionTypes.setExternalValues,
-                    payload: Object.keys(data).map((k) => ({
-                        k,
-                        v: typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k],
-                        keyError: '',
-                        valueError: '',
-                    })),
-                })
-            }
-        }, [configMapSecretData?.data])
+        // useEffect(() => {
+        //     if (configMapSecretData?.data) {
+        //         const data = configMapSecretData.data
+        //         dispatch({
+        //             type: ConfigMapActionTypes.setExternalValues,
+        //             payload: Object.keys(data).map((k) => ({
+        //                 k,
+        //                 v: typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k],
+        //                 keyError: '',
+        //                 valueError: '',
+        //             })),
+        //         })
+        //     } else {
+        //         dispatch({
+        //             type: ConfigMapActionTypes.setExternalValues,
+        //             payload: [{ k: '', v: '', keyError: '', valueError: '' }],
+        //         })
+        //     }
+        // }, [configMapSecretData?.data])
 
         useEffect(() => {
             if (isESO && !state.yamlMode) {
@@ -783,11 +789,11 @@ export const ConfigMapSecretForm = React.memo(
                         dispatch={dispatch}
                         tempArr={tempArr}
                     />
-                    {(!isOverrideView || state.duplicate) && !state.yamlMode && (
+                    {/* {(!isOverrideView || state.duplicate) && !state.yamlMode && (
                         <span className="dc__bold anchor pointer" onClick={handleAddParam}>
                             +Add params
                         </span>
-                    )}
+                    )} */}
                     {/* {!(state.external && state.selectedType === 'environment') && (
                         <div className="form__buttons">
                             <button className="cta" type="submit">

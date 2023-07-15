@@ -18,29 +18,29 @@ const initialDuplicate = (configMapSecretData, isOverrideView) => {
         } else {
             return [{ k: '', v: '', keyError: '', valueError: '' }]
         }
-    } else{
-      if (configMapSecretData?.data) {
-        return configMapSecretData.name && configMapSecretData.global
-            ? Object.keys(configMapSecretData.data).map((k) => ({
-                  k,
-                  v: configMapSecretData.data[k],
-                  keyError: '',
-                  valueError: '',
-              }))
-            : configMapSecretData.data
-    } else if (configMapSecretData?.name && configMapSecretData?.global) {
-        return (
-            configMapSecretData.secretData ||
-            (configMapSecretData.esoSecretData?.esoData && configMapSecretData.esoSecretData)
-        )
     } else {
-        return null
+        if (configMapSecretData?.data) {
+            return configMapSecretData.name && configMapSecretData.global
+                ? Object.keys(configMapSecretData.data).map((k) => ({
+                      k,
+                      v: configMapSecretData.data[k],
+                      keyError: '',
+                      valueError: '',
+                  }))
+                : configMapSecretData.data
+        } else if (configMapSecretData?.name && configMapSecretData?.global) {
+            return (
+                configMapSecretData.secretData ||
+                (configMapSecretData.esoSecretData?.esoData && configMapSecretData.esoSecretData)
+            )
+        } else {
+            return null
+        }
     }
-    }
-
 }
 
-export const initState = (configMapSecretData, isOverrideView: boolean): ConfigMapState => {
+export const initState = (configMapSecretData, isOverrideView: boolean, componentType: string): ConfigMapState => {
+    const secretInitState = componentType === 'secret' ? getSecretInitState(configMapSecretData, isOverrideView) : {}
     return {
         loading: false,
         dialog: false,
@@ -48,18 +48,18 @@ export const initState = (configMapSecretData, isOverrideView: boolean): ConfigM
         filePermission: { value: configMapSecretData?.filePermission ?? '', error: '' },
         duplicate: initialDuplicate(configMapSecretData, isOverrideView),
         externalValues: configMapSecretData?.data
-            ? Object.keys(configMapSecretData?.data).map((k) => ({
+            ? Object.keys(configMapSecretData.data).map((k) => ({
                   k,
                   v:
-                      typeof configMapSecretData?.data[k] === 'object'
-                          ? YAML.stringify(configMapSecretData?.data[k], { indent: 2 })
-                          : configMapSecretData?.data[k],
+                      typeof configMapSecretData.data[k] === 'object'
+                          ? YAML.stringify(configMapSecretData.data[k], { indent: 2 })
+                          : configMapSecretData.data[k],
                   keyError: '',
                   valueError: '',
               }))
             : [{ k: '', v: '', keyError: '', valueError: '' }],
-        external: configMapSecretData?.external,
-        selectedType: configMapSecretData?.type?? 'environment',
+        external: configMapSecretData?.external ?? false,
+        selectedType: configMapSecretData?.type ?? 'environment',
         volumeMountPath: { value: configMapSecretData?.mountPath ?? configMapSecretData?.defaultMountPath, error: '' },
         isSubPathChecked: !!configMapSecretData?.subPath,
         externalSubpathValues: {
@@ -72,7 +72,7 @@ export const initState = (configMapSecretData, isOverrideView: boolean): ConfigM
             error: '',
         },
         yamlMode: true,
-        ...getSecretInitState(configMapSecretData, isOverrideView),
+        ...secretInitState,
     }
 }
 

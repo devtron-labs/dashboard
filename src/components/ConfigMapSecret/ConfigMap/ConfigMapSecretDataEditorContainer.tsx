@@ -250,7 +250,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         return (
             <>
-                {!state.external && state.externalType === '' && (
+                {!state.external && (
                     <>
                         <div className="flex left mb-16">
                             <b className="mr-5 dc__bold dc__required-field">Data</b>

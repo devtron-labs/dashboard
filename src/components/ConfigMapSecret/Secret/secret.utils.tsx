@@ -507,7 +507,7 @@ export const getSecretInitState = (configMapSecretData, isOverrideView) => {
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
-        locked: isOverrideView && !configMapSecretData.mountPath,
+        locked: isOverrideView && !configMapSecretData?.mountPath,
         secretMode: configMapSecretData?.name ?? false,
     }
 }
