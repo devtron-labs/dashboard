@@ -108,7 +108,7 @@ export function getPodContainerOptions(
             logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0].name as string)
 
         const containerOptions = containers.map((_container) => {
-            return { ..._container, selected: _container.name === _selectedContainerName, isEphemeralContainer: _container.isEphemeralContainer }
+            return { ..._container, selected: _container.name === _selectedContainerName, isEphemeralContainer: _container.isEphemeralContainer, isInitContainer:  _container.isInitContainer}
         })
 
         return {
