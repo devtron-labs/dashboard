@@ -28,8 +28,8 @@ import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
-import error from '../../../../../assets/icons/misc/errorInfo.svg'
 import { SwitchItemValues } from '../../../../login/SSOLogin'
+import {Options} from "../../appDetails.type";
 
 function EphemeralContainerDrawer({
     ephemeralForm,
@@ -48,7 +48,8 @@ function EphemeralContainerDrawer({
     imageListOption,
     setImageListOption,
     isResourceBrowserView,
-    resourceContainers
+    containers,
+    setContainers,
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -372,14 +373,17 @@ function EphemeralContainerDrawer({
                     },
                 })
 
-                const containers = []
+                const _containers = containers
                 let containerName = response.result
-                resourceContainers.forEach((con) => {
-                    if (containerName !== con.name) {
-                        containers.push(con)
-                    }
-                })
-                setResourceContainers(containers)
+
+                _containers.push({
+                    name: containerName,
+                    isInitContainer: false,
+                    isEphemeralContainer: true,
+                } as Options )
+
+                setResourceContainers(_containers)
+                setContainers(_containers)
                 setEphemeralContainerDrawer(false)
             })
             .catch((err) => {

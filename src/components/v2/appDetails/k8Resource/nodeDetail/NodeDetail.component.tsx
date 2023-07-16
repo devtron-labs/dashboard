@@ -7,7 +7,7 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import { EphemeralForm, EphemeralFormAdvancedType, EphemeralKeyType, NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType } from '../../appDetails.type'
+import {NodeDetailPropsType, NodeType, Options} from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -22,7 +22,7 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
 import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
-import { getNodeDetailTabs } from './nodeDetail.util'
+import {getContainersData, getNodeDetailTabs} from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import {ReactComponent as EphemeralIcon} from '../../../../../assets/icons/ic-ephemeral.svg'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
@@ -68,7 +68,10 @@ function NodeDetailComponent({
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
-
+    const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
+    const [containers,setContainers] = useState<Options[]>((
+        isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)
+    ) as Options[])
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -352,6 +355,8 @@ function NodeDetailComponent({
                             selectedResource={selectedResource}
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
+                            containers={containers}
+                            setContainers={setContainers}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
@@ -375,7 +380,8 @@ function NodeDetailComponent({
                     setTargetContainerOption={setTargetContainerOption}
                     targetContainerOption={targetContainerOption}
                     isResourceBrowserView={isResourceBrowserView}
-                    resourceContainers={resourceContainers}
+                    containers={containers}
+                    setContainers={setContainers}
                 />
             )}
         </React.Fragment>

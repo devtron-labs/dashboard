@@ -33,15 +33,13 @@ function TerminalComponent({
     selectedResource,
     selectedContainer,
     setSelectedContainer,
-
+    containers,
+    setContainers,
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const containers = (
-        isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)
-    ) as Options[]
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
@@ -80,8 +78,18 @@ function TerminalComponent({
               appDetails.appId,
               appDetails.appType,
           )
-              .then(() => {
+              .then((response : any) => {
                   toast.success('Deleted successfully')
+                  const _containers = []
+                  let containerName = response.result
+
+                  containers.forEach((con)=>{
+                      if (containerName !== con.name){
+                          _containers.push(con)
+                      }
+                  })
+
+                  setContainers(_containers)
               })
               .catch((error) => {
                   showError(error)

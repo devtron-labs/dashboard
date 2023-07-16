@@ -418,6 +418,8 @@ export interface TerminalComponentProps {
     selectedResource?: SelectedResourceType
     selectedContainer: Map<string, string>
     setSelectedContainer: (containerName: Map<string, string>) => void
+    containers: Options[]
+    setContainers: React.Dispatch<React.SetStateAction<Options[]>>
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {

@@ -1,4 +1,5 @@
 import React from 'react'
+import {Options} from "../../appDetails.type";
 
 export enum NodeDetailTab {
     EVENTS = 'EVENTS',
@@ -39,7 +40,7 @@ export interface EphemeralContainerDrawerType {
     params: ParamsType
     setEphemeralFormAdvanced: React.Dispatch<React.SetStateAction<EphemeralFormAdvancedType>>
     ephemeralFormAdvanced: EphemeralFormAdvancedType
-    containerList
+    containerList        : any
     resourceContainers   : any
     setResourceContainers: any
     ephemeralContainerType
@@ -49,7 +50,8 @@ export interface EphemeralContainerDrawerType {
     imageListOption
     setImageListOption
     isResourceBrowserView
-    resourceContainers
+    containers: Options[]
+    setContainers: React.Dispatch<React.SetStateAction<Options[]>>
 }
 
 export interface ResponsePayload {
