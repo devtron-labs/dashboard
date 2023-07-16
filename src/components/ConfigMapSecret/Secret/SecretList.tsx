@@ -7,7 +7,6 @@ import '../ConfigMap.scss'
 import { decode } from '../../../util/Util'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
-import { getLabel } from '../ConfigMapSecret.utils'
 import { ConfigMapListProps } from '../Types'
 import { getSecretList } from '../service'
 
@@ -17,18 +16,16 @@ export default function SecretList({ isOverrideView, parentState, setParentState
     const [secretLoading, setSecretLoading] = useState(true)
 
     useEffect(() => {
-        init()
+        init(true)
     }, [])
     const { appId, envId } = useParams<{ appId; envId }>()
 
-    async function init() {
+    async function init(isFromInit?: boolean) {
         try {
             const [{ result: appChartRefRes }, { result: secretData }] = await Promise.all([
-                getAppChartRefForAppAndEnv(appId, envId),
+                isFromInit ? getAppChartRefForAppAndEnv(appId, envId) : { result: null },
                 getSecretList(appId, envId),
             ])
-            //const appChartRefRes = await getAppChartRef(appId)
-            //const { result } = await getEnvironmentSecrets(appId, envId)
             if (Array.isArray(secretData.configData)) {
                 secretData.configData = secretData.configData.map((config) => {
                     if (config.data) {
@@ -37,8 +34,10 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     return config
                 })
             }
-            setAppChartRef(appChartRefRes.result)
             setList(secretData)
+            if (appChartRefRes) {
+                setAppChartRef(appChartRefRes.result)
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -47,6 +46,10 @@ export default function SecretList({ isOverrideView, parentState, setParentState
     }
 
     function update(index, result) {
+        if (!index && !result) {
+            init()
+            return
+        }
         try {
             setList((list) => {
                 let configData = list.configData

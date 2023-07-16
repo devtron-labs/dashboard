@@ -87,7 +87,7 @@ export const ConfigMapSecretForm = React.memo(
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
         useEffect(() => {
-            if (!configMapSecretData?.name || !state.duplicate) return
+            if (!configMapSecretData?.name || (!configMapSecretData?.global && configMapSecretData?.defaultData)) return
             handleSecretFetch()
         }, [])
 
@@ -389,7 +389,7 @@ export const ConfigMapSecretForm = React.memo(
                         ? await overRideSecret(id, +appId, +envId, [payload])
                         : await overRideConfigMap(id, +appId, +envId, [payload])
                     toastTitle = 'Overridden'
-                    update(true)
+                    update()
                 }
                 toast.success(
                     <div className="toast">
@@ -413,7 +413,7 @@ export const ConfigMapSecretForm = React.memo(
                     : await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
                 toast.success('Restored to global.')
 
-                update(index, null)
+                update()
                 toggleCollapse(not)
                 dispatch({ type: ConfigMapActionTypes.success })
             } catch (err) {
@@ -522,7 +522,11 @@ export const ConfigMapSecretForm = React.memo(
                 <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-20">
                     {isOverrideView && configMapSecretData?.name && configMapSecretData?.global && (
                         <Override
-                            external={state.external && state.selectedType === 'environment'}
+                            external={
+                                state.selectedType === 'environment' &&
+                                ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                                    (componentType === 'configmap' && state.external))
+                            }
                             overridden={!!state.duplicate}
                             onClick={handleOverride}
                             loading={state.overrideLoading}
@@ -799,22 +803,10 @@ export const ConfigMapSecretForm = React.memo(
                         dispatch={dispatch}
                         tempArr={tempArr}
                     />
-                    {/* {(!isOverrideView || state.duplicate) && !state.yamlMode && (
-                        <span className="dc__bold anchor pointer" onClick={handleAddParam}>
-                            +Add params
-                        </span>
-                    )} */}
-                    {/* {!(state.external && state.selectedType === 'environment') && (
-                        <div className="form__buttons">
-                            <button className="cta" type="submit">
-                                {state.submitLoading ? <Progressing /> : 'Save'}
-                            </button>
-                        </div>
-                    )} */}
                     {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
                         <div className="form__buttons">
                             <button
-                                disabled={!state.duplicate}
+                                disabled={state.locked}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
                                 className="cta"

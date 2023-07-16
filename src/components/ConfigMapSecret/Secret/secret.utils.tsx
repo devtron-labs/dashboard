@@ -353,6 +353,7 @@ export async function unlockSecrets(
             type: ConfigMapActionTypes.multipleOptions,
             payload: {
                 locked: false,
+                secretMode: false,
                 duplicate:
                     name && global && !isESO
                         ? Object.keys(temp).map((k) => ({
@@ -493,7 +494,7 @@ export const getSecretInitState = (configMapSecretData, isOverrideView) => {
     const isEsoSecretData: boolean =
         (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
     return {
-        externalType: configMapSecretData?.externalType,
+        externalType: configMapSecretData?.externalType ?? '',
         roleARN: {
             value: configMapSecretData?.roleARN ?? '',
             error: '',
@@ -507,8 +508,8 @@ export const getSecretInitState = (configMapSecretData, isOverrideView) => {
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
-        locked: isOverrideView && !configMapSecretData?.mountPath,
-        secretMode: configMapSecretData?.name ?? false,
+        locked: isOverrideView && configMapSecretData?.global && !configMapSecretData?.mountPath,
+        secretMode: !!configMapSecretData?.name,
     }
 }
 
