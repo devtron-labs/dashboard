@@ -19,6 +19,8 @@ import {
     stopPropagation,
     InfoColourBar,
     ToastBody,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../../assets/img/warning-medium.svg'
@@ -43,7 +45,7 @@ import {
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import { EXTERNAL_INFO_TEXT } from '../Constants'
+import { ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from '../Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
 import { getSecretKeys, updateSecret } from '../../secrets/service'
 import YAML from 'yaml'
@@ -85,7 +87,7 @@ export const ConfigMapSecretForm = React.memo(
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
         useEffect(() => {
-            if (!configMapSecretData?.name) return
+            if (!configMapSecretData?.name || !state.duplicate) return
             handleSecretFetch()
         }, [])
 
@@ -433,8 +435,8 @@ export const ConfigMapSecretForm = React.memo(
             })
         }
 
-        const toggleSelectedType = (title: string): void => {
-            dispatch({ type: ConfigMapActionTypes.setSelectedType, payload: title })
+        const toggleSelectedType = (e): void => {
+            dispatch({ type: ConfigMapActionTypes.setSelectedType, payload: e.target.value })
         }
 
         const onMountPathChange = (e): void => {
@@ -517,13 +519,14 @@ export const ConfigMapSecretForm = React.memo(
 
         return (
             <>
-                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-2">
-                    {isOverrideView && state.configName && configMapSecretData?.global && (
+                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-20">
+                    {isOverrideView && configMapSecretData?.name && configMapSecretData?.global && (
                         <Override
                             external={state.external && state.selectedType === 'environment'}
                             overridden={!!state.duplicate}
                             onClick={handleOverride}
                             loading={state.overrideLoading}
+                            type={componentType}
                         />
                     )}
                     <div className="form__row">
@@ -579,59 +582,67 @@ export const ConfigMapSecretForm = React.memo(
                             )}
                         </div>
                     </div>
+                    {(state.externalType === 'KubernetesSecret' || (componentType !== 'secret' && state.external)) && (
+                        <InfoColourBar
+                            classname="info_bar cn-9 mt-16 mb-16 lh-20"
+                            message={
+                                <div className="flex column left">
+                                    <div className="dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</div>
+                                    <div className="dc__info-subtitle">
+                                        {EXTERNAL_INFO_TEXT[componentType].infoText}
+                                    </div>
+                                </div>
+                            }
+                            Icon={InfoIcon}
+                            iconSize={20}
+                        />
+                    )}
                     {!configMapSecretData?.name && (
-                        <>
-                            {(state.externalType === 'KubernetesSecret' ||
-                                (componentType !== 'secret' && state.external)) && (
-                                <InfoColourBar
-                                    classname="info_bar cn-9 mt-16 mb-16 lh-20"
-                                    message={
-                                        <div className="flex column left">
-                                            <div className="dc__info-title">
-                                                {EXTERNAL_INFO_TEXT[componentType].title}
-                                            </div>
-                                            <div className="dc__info-subtitle">
-                                                {EXTERNAL_INFO_TEXT[componentType].infoText}
-                                            </div>
-                                        </div>
-                                    }
-                                    Icon={InfoIcon}
-                                    iconSize={20}
-                                />
-                            )}
-                            <div className="form__row">
-                                <label className="form__label">Name*</label>
-                                <input
-                                    data-testid={`${componentType}-name-textbox`}
-                                    value={state.configName.value}
-                                    autoComplete="off"
-                                    autoFocus
-                                    onChange={onConfigNameChange}
-                                    type="text"
-                                    className={`form__input`}
-                                    placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
-                                />
-                                {state.configName.error && (
-                                    <label className="form__error">{state.configName.error}</label>
-                                )}
-                            </div>
-                        </>
+                        <div className="form__row">
+                            <label className="form__label">Name*</label>
+                            <input
+                                data-testid={`${componentType}-name-textbox`}
+                                value={state.configName.value}
+                                autoComplete="off"
+                                autoFocus
+                                onChange={onConfigNameChange}
+                                type="text"
+                                className={`form__input`}
+                                placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
+                            />
+                            {state.configName.error && <label className="form__error">{state.configName.error}</label>}
+                        </div>
                     )}
                     <label className="form__label form__label--lower">
                         How do you want to use this {componentType === 'secret' ? 'Secret' : 'ConfigMap'}?
                     </label>
-                    <div className={`form__row form-row__tab`}>
-                        {tabs.map((tabData, idx) => (
-                            <Tab
-                                {...tabData}
-                                key={idx}
-                                disabled={
-                                    !!(isOverrideView && configMapSecretData?.name && configMapSecretData?.global)
-                                }
-                                onClick={toggleSelectedType}
-                                type={componentType}
-                            />
-                        ))}
+                    <div className="form__row configmap-secret-usage-radio">
+                        <RadioGroup
+                            value={state.selectedType}
+                            name="DeploymentAppTypeGroup"
+                            onChange={toggleSelectedType}
+                            disabled={!!(isOverrideView && configMapSecretData?.name && configMapSecretData?.global)}
+                            className="radio-group-no-border"
+                        >
+                            <RadioGroupItem
+                                dataTestId={`${componentType}-${ConfigMapSecretUsageMap.environment.title
+                                    .toLowerCase()
+                                    .split(' ')
+                                    .join('-')}-radio-button`}
+                                value={ConfigMapSecretUsageMap.environment.value}
+                            >
+                                {ConfigMapSecretUsageMap.environment.title}
+                            </RadioGroupItem>
+                            <RadioGroupItem
+                                dataTestId={`${componentType}-${ConfigMapSecretUsageMap.volume.title
+                                    .toLowerCase()
+                                    .split(' ')
+                                    .join('-')}-radio-button`}
+                                value={ConfigMapSecretUsageMap.volume.value}
+                            >
+                                {ConfigMapSecretUsageMap.volume.title}
+                            </RadioGroupItem>
+                        </RadioGroup>
                     </div>
                     {state.selectedType === 'volume' && (
                         <>
@@ -646,9 +657,7 @@ export const ConfigMapSecretForm = React.memo(
                                     helperText={'Keys are mounted as files to volume'}
                                     error={state.volumeMountPath.error}
                                     onChange={onMountPathChange}
-                                    disabled={
-                                        isOverrideView && configMapSecretData?.name && configMapSecretData?.global
-                                    }
+                                    disabled={!state.duplicate}
                                 />
                             </div>
                             <div className="mb-16">
@@ -656,7 +665,7 @@ export const ConfigMapSecretForm = React.memo(
                                     isChecked={state.isSubPathChecked}
                                     onClick={stopPropagation}
                                     rootClassName="top"
-                                    disabled={isChartVersion309OrBelow}
+                                    disabled={!state.duplicate}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={toggleSubpath}
                                 >
@@ -705,6 +714,7 @@ export const ConfigMapSecretForm = React.memo(
                                             placeholder={'Enter keys (Eg. username,configs.json)'}
                                             error={state.externalSubpathValues.error}
                                             onChange={onExternalSubpathValuesChange}
+                                            disabled={!state.duplicate}
                                         />
                                     </div>
                                 )}
@@ -714,7 +724,7 @@ export const ConfigMapSecretForm = React.memo(
                                     isChecked={state.isFilePermissionChecked}
                                     onClick={stopPropagation}
                                     rootClassName=""
-                                    disabled={isChartVersion309OrBelow}
+                                    disabled={!state.duplicate || isChartVersion309OrBelow}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={toggleFilePermission}
                                 >
@@ -755,10 +765,10 @@ export const ConfigMapSecretForm = React.memo(
                                         tabIndex={5}
                                         label={''}
                                         dataTestid="configmap-file-permission-textbox"
-                                        disabled={isChartVersion309OrBelow}
                                         placeholder={'eg. 0400 or 400'}
                                         error={state.filePermission.error}
                                         onChange={onFilePermissionChange}
+                                        disabled={!state.duplicate || isChartVersion309OrBelow}
                                     />
                                 </div>
                             )}
@@ -771,11 +781,11 @@ export const ConfigMapSecretForm = React.memo(
                                     dataTestid="enter-role-ARN"
                                     value={state.roleARN.value}
                                     autoComplete="off"
-                                    label={'Role ARN'}
-                                    disabled={state.locked}
-                                    placeholder={'Enter Role ARN'}
+                                    label="Role ARN"
+                                    placeholder="Enter Role ARN"
                                     error={state.roleARN.error}
                                     onChange={handleRoleARNChange}
+                                    disabled={!state.duplicate || state.locked}
                                 />
                             </div>
                         </div>
@@ -801,17 +811,25 @@ export const ConfigMapSecretForm = React.memo(
                             </button>
                         </div>
                     )} */}
-                    <div className="form__buttons">
-                        <button data-testid="secrets-save-button" type="button" className="cta" onClick={handleSubmit}>
-                            {state.submitLoading ? (
-                                <Progressing />
-                            ) : (
-                                `${configMapSecretData?.name ? 'Update' : 'Save'} ${
-                                    componentType === 'secret' ? 'Secret' : 'ConfigMap'
-                                }`
-                            )}
-                        </button>
-                    </div>
+                    {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
+                        <div className="form__buttons">
+                            <button
+                                disabled={!state.duplicate}
+                                data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
+                                type="button"
+                                className="cta"
+                                onClick={handleSubmit}
+                            >
+                                {state.submitLoading ? (
+                                    <Progressing />
+                                ) : (
+                                    `${configMapSecretData?.name ? 'Update' : 'Save'} ${
+                                        componentType === 'secret' ? 'Secret' : 'ConfigMap'
+                                    }`
+                                )}
+                            </button>
+                        </div>
+                    )}
                 </form>
 
                 {state.dialog && (

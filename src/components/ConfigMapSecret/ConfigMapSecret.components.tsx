@@ -181,9 +181,9 @@ export function ConfigMapSecretContainer({
     const renderLabel = (): JSX.Element => {
         let labelText = ''
         if (isOverrideView) {
-            if (data?.defaultData) {
+            if (data?.defaultData || data?.global) {
                 labelText =
-                    data.data || (componentType === 'secret' && (data.esoSecretData.secretStore || data.secretData))
+                    data.data || (componentType === 'secret' && (data.esoSecretData?.secretStore || data.secretData))
                         ? 'Overridden'
                         : 'Inheriting'
             } else {

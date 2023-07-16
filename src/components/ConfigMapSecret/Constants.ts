@@ -15,3 +15,8 @@ export const EXTERNAL_INFO_TEXT = {
             'Configmap will not be created by system. However, they will be used inside the pod. Please make sure that configmap with the same name is present in the environment',
     },
 }
+
+export const ConfigMapSecretUsageMap = {
+    environment: { title: 'Environment Variable', value: 'environment' },
+    volume: { title: 'Data Volume', value: 'volume' },
+}
