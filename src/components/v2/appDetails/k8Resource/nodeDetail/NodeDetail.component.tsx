@@ -70,7 +70,7 @@ function NodeDetailComponent({
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const [containers,setContainers] = useState<Options[]>((
-        isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)
+        isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)
     ) as Options[])
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
