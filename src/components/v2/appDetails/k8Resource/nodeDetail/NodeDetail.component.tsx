@@ -87,7 +87,6 @@ function NodeDetailComponent({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
 
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
-    console.log(podMetaData?.name)
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
