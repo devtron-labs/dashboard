@@ -1,6 +1,7 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -151,12 +152,6 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
-//TODO replace it everthere with DeploymentAppType from common constant
-export enum DeploymentAppType {
-    helm = 'helm',
-    argo_cd = 'argo_cd',
-    manifest_download = 'manifest_download'
-}
 
 export interface AppDetails {
     appId: number
@@ -187,7 +182,7 @@ export interface AppDetails {
     additionalData?: any
     clusterId?: number
     notes?: string
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean
     externalCi?: boolean
     clusterName?: string

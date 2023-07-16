@@ -104,7 +104,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div></div>
                 </div>
-                <div className="dc__overflow-scroll api__list__height">
+                <div className="dc__overflow-scroll api__list__height dc__position-rel">
                     {!tokenList || tokenList.length === 0 ? (
                         noMatchingResults()
                     ) : (

@@ -14,10 +14,10 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
+import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -83,7 +83,7 @@ function ManifestComponent({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
             appDetails.deploymentAppDeleteRequest)
         ) {
             markActiveTab('Live manifest')
@@ -329,7 +329,7 @@ function ManifestComponent({
                     <div className="bcn-0">
                         {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
                             isResourceBrowserView ||
-                            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+                            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                                 appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {

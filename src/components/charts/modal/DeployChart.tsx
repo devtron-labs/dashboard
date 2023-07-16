@@ -5,7 +5,7 @@ import {
     DropdownIcon,
     useJsonYaml,
 } from '../../common'
-import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
@@ -34,7 +34,6 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import { DeploymentAppType } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function mapById(arr) {
@@ -71,7 +70,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     appStoreId = 0,
     chartIdFromDeploymentDetail = 0,
     installedAppVersionId = 0,
-    deploymentAppType = DeploymentAppType.Helm,
+    deploymentAppType = DeploymentAppTypes.HELM,
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: '' },
     ...rest
 }) => {
