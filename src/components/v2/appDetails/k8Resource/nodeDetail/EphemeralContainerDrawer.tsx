@@ -8,7 +8,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
-import { EphemeralContainerDrawerType, EphemeralKeyType } from './nodeDetail.type'
+import { EphemeralContainerDrawerType } from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
@@ -54,6 +54,7 @@ function EphemeralContainerDrawer({
     containers,
     setContainers,
     switchSelectedContainer,
+    onClickShowLaunchEphemeral
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -66,10 +67,6 @@ function EphemeralContainerDrawer({
         getImageList()
         getOptions()
     }, [])
-
-    const onClickHideLaunchEphemeral = (): void => {
-        setEphemeralContainerDrawer(false)
-    }
 
     const handleEphemeralContainerTypeClick = (containerType) => {
         setEphemeralContainerType(containerType)
@@ -131,7 +128,7 @@ function EphemeralContainerDrawer({
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24 "
-                    onClick={onClickHideLaunchEphemeral}
+                    onClick={onClickShowLaunchEphemeral}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -347,9 +344,9 @@ function EphemeralContainerDrawer({
         setLoader(true)
         setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
-            namespace: appDetails.namespace,
-            clusterId: appDetails.clusterId,
-            podName: params.podName,
+            namespace: isResourceBrowserView ? params.namespace : appDetails.namespace,
+            clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
+            podName: isResourceBrowserView ?  params.node : params.podName,
         }
 
         if (ephemeralContainerType === EDITOR_VIEW.BASIC) {
@@ -381,6 +378,7 @@ function EphemeralContainerDrawer({
             appDetails.appId,
             appDetails.appType,
             isResourceBrowserView,
+            params,
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')
@@ -428,7 +426,7 @@ function EphemeralContainerDrawer({
                 <div className="dc__border-top w-50 bcn-0 pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius dc__position-fixed dc__right-0 dc__bottom-0">
                     <ButtonWithLoader
                         rootClassName="flex cta cancel h-36 "
-                        onClick={onClickHideLaunchEphemeral}
+                        onClick={onClickShowLaunchEphemeral}
                         disabled={loader}
                         dataTestId="cancel-token"
                         isLoading={false}

@@ -6,25 +6,26 @@ import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
-import { EphemeralForm, EphemeralFormAdvancedType, EphemeralKeyType, NodeDetailTab, ParamsType } from './nodeDetail.type'
-import {NodeDetailPropsType, NodeType, Options} from '../../appDetails.type'
+import {
+    EphemeralForm,
+    EphemeralFormAdvancedType,
+    EphemeralKeyType,
+    NodeDetailTab,
+    ParamsType,
+} from './nodeDetail.type'
+import { NodeDetailPropsType, NodeType, Options } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import {
-    showError,
-    Checkbox,
-    CHECKBOX_VALUE,
-    OptionType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
 import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
-import {getContainersData, getNodeDetailTabs} from './nodeDetail.util'
+import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
-import {ReactComponent as EphemeralIcon} from '../../../../../assets/icons/ic-ephemeral.svg'
+import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 
 function NodeDetailComponent({
@@ -69,9 +70,9 @@ function NodeDetailComponent({
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const [containers,setContainers] = useState<Options[]>((
-        isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)
-    ) as Options[])
+    const [containers, setContainers] = useState<Options[]>(
+        (isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)) as Options[],
+    )
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -86,7 +87,7 @@ function NodeDetailComponent({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
 
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
-
+    console.log(podMetaData?.name)
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
@@ -151,7 +152,6 @@ function NodeDetailComponent({
                     })
                     _resourceContainers.push(ephemeralContainers)
                 }
-
             }
             setResourceContainers(_resourceContainers)
 
@@ -238,10 +238,10 @@ function NodeDetailComponent({
     }
 
     const onClickShowLaunchEphemeral = (): void => {
-        setEphemeralContainerDrawer(true)
+        setEphemeralContainerDrawer(!showEphemeralContainerDrawer)
     }
 
-    const switchSelectedContainer = (containerName : string) => {
+    const switchSelectedContainer = (containerName: string) => {
         setSelectedContainerName(containerName)
         setSelectedContainer(selectedContainer.set(selectedContainerValue, containerName))
     }
@@ -378,11 +378,12 @@ function NodeDetailComponent({
                     ephemeralForm={ephemeralForm}
                     setEphemeralForm={setEphemeralForm}
                     setEphemeralContainerDrawer={setEphemeralContainerDrawer}
+                    onClickShowLaunchEphemeral={onClickShowLaunchEphemeral}
                     params={params}
                     setEphemeralFormAdvanced={setEphemeralFormAdvanced}
                     ephemeralFormAdvanced={ephemeralFormAdvanced}
                     containerList={appDetails.resourceTree?.podMetadata}
-                    resourceContainers = {resourceContainers}
+                    resourceContainers={resourceContainers}
                     setResourceContainers={setResourceContainers}
                     setEphemeralContainerType={setEphemeralContainerType}
                     ephemeralContainerType={ephemeralContainerType}

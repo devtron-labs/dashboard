@@ -18,8 +18,10 @@ export interface ParamsType {
     podName: string
     nodeType: string
     node: string
-    appId: string
-    envId: string
+    appId?: string
+    envId?: string
+    namespace?: string
+    clusterId?: string
 }
 export interface EphemeralForm {
     basicData: {
@@ -54,6 +56,7 @@ export interface EphemeralContainerDrawerType {
     containers: Options[]
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     switchSelectedContainer: (string) => void
+    onClickShowLaunchEphemeral: () => void
 }
 
 export interface ResponsePayload {
