@@ -9,7 +9,7 @@ import { deleteEphemeralUrl, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib';
+import { Checkbox, CHECKBOX_VALUE, Host} from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -20,7 +20,7 @@ import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
+import { Option } from '../../../../common/ReactSelect.utils'
 import { AppDetailsTabs } from '../../../appDetails.store'
 import { replaceLastOddBackslash } from '../../../../../../util/Util'
 import {
@@ -85,49 +85,6 @@ function LogsComponent({
             },
         }
         return payload
-    }
-
-
-    function Option(props) {
-        const { selectProps, data, style } = props
-
-        const getDeleteEphemeralContainer = (containerName) => {
-            deleteEphemeralUrl(
-              getPayload(containerName),
-                appDetails.clusterId,
-                appDetails.environmentId,
-                appDetails.namespace,
-                appDetails.appName,
-                appDetails.appId,
-                appDetails.appType,
-            )
-                .then(() => {
-                    toast.success('Deleted successfully')
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-        }
-
-        selectProps.styles.option = getCustomOptionSelectionStyle(style)
-        const getOption = () => {
-            return (
-                <div onClick={stopPropagation}>
-                    <components.Option {...props}>
-                        <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
-                            {data.isEphemeralContainer && (
-                                <Cross className="icon-dim-16 cursor" onClick={(selected) => {
-                                  getDeleteEphemeralContainer(selected)
-                                }} />
-                            )}
-                            {props.label}
-                        </div>
-                    </components.Option>
-                </div>
-            )
-        }
-
-        return getOption()
     }
 
     const handlePodSelection = (selectedOption: string) => {

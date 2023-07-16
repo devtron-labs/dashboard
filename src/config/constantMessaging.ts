@@ -375,6 +375,10 @@ export const EMPTY_STATE_STATUS = {
     CD_MATERIAL: {
         TITLE: 'No Image Available',
     },
+    EPHEMERAL_CONTAINER: {
+      TITLE: 'Ephemeral Container',
+      SUBTITLE: 'An Ephemeral Container is a temporary container that you may add to an existing Pod for user-initiated activities such as debugging.'
+  },
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'

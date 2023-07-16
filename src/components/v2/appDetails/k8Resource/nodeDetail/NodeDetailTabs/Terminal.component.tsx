@@ -69,7 +69,7 @@ function TerminalComponent({
         return payload
     }
 
-      const getDeleteEphemeralContainer = (containerName) => {
+      const deleteEphemeralContainer = (containerName: string) => {
           deleteEphemeralUrl(
             getPayload(containerName),
               appDetails.clusterId,
@@ -105,9 +105,7 @@ function TerminalComponent({
                       <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
                           {data.isEphemeralContainer && (
                               <Cross className="icon-dim-16 cursor" onClick={(selected) => {
-                               // Todo remove console
-                               console.log('props', props.label)
-                                getDeleteEphemeralContainer(props.label)
+                                deleteEphemeralContainer(props.label)
                               }} />
                           )}
                           {props.label}

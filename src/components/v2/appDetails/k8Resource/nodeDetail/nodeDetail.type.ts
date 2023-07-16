@@ -1,3 +1,4 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib';
 import React from 'react'
 import {Options} from "../../appDetails.type";
 
@@ -43,13 +44,13 @@ export interface EphemeralContainerDrawerType {
     containerList        : any
     resourceContainers   : any
     setResourceContainers: any
-    ephemeralContainerType
-    setEphemeralContainerType
-    targetContainerOption
-    setTargetContainerOption
-    imageListOption
-    setImageListOption
-    isResourceBrowserView
+    ephemeralContainerType: string
+    setEphemeralContainerType: React.Dispatch<React.SetStateAction<string>>
+    targetContainerOption: OptionType[]
+    setTargetContainerOption?: React.Dispatch<React.SetStateAction<OptionType[]>>
+    imageListOption: OptionType[]
+    setImageListOption?: React.Dispatch<React.SetStateAction<OptionType[]>>
+    isResourceBrowserView: boolean
     containers: Options[]
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     switchSelectedContainer: (string) => void

@@ -1,7 +1,8 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -400,10 +401,10 @@ export interface LogsComponentProps extends NodeDetailPropsType {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string
-    ephemeralForm?
-    targetContainerOption?
-    ephemeralFormAdvanced?
-    imageListOption?
+    ephemeralForm?: EphemeralForm
+    targetContainerOption?: OptionType[]
+    ephemeralFormAdvanced?: EphemeralFormAdvancedType
+    imageListOption?: OptionType[]
 }
 
 export interface TerminalComponentProps {
