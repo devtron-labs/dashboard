@@ -378,7 +378,7 @@ function EphemeralContainerDrawer({
             appDetails.appId,
             appDetails.appType,
             isResourceBrowserView,
-            params,
+            params
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')

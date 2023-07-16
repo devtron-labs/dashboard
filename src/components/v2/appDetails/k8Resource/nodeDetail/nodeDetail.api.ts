@@ -178,7 +178,6 @@ export const createResource = (
 }
 
 export const generateEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType, isResourceBrowserView, params: ParamsType) => {
-  console.log(params)
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
