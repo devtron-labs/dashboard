@@ -50,6 +50,7 @@ function EphemeralContainerDrawer({
     isResourceBrowserView,
     containers,
     setContainers,
+    switchSelectedContainer,
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -385,6 +386,7 @@ function EphemeralContainerDrawer({
                 setResourceContainers(_containers)
                 setContainers(_containers)
                 setEphemeralContainerDrawer(false)
+                switchSelectedContainer(containerName)
             })
             .catch((err) => {
                 showError(err)

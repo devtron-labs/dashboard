@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 
@@ -420,6 +420,8 @@ export interface TerminalComponentProps {
     setSelectedContainer: (containerName: Map<string, string>) => void
     containers: Options[]
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
+    selectedContainerName: string
+    setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {

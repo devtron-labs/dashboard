@@ -81,6 +81,10 @@ function NodeDetailComponent({
         }
     }
 
+    const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
+    const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
+    const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
+
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
 
     useEffect(() => {
@@ -237,6 +241,11 @@ function NodeDetailComponent({
         setEphemeralContainerDrawer(true)
     }
 
+    const switchSelectedContainer = (containerName : string) => {
+        setSelectedContainerName(containerName)
+        setSelectedContainer(selectedContainer.set(selectedContainerValue, containerName))
+    }
+
     return (
         <React.Fragment>
             <div className="w-100 pr-20 pl-20 bcn-0 flex dc__content-space">
@@ -357,6 +366,8 @@ function NodeDetailComponent({
                             setSelectedContainer={setSelectedContainer}
                             containers={containers}
                             setContainers={setContainers}
+                            selectedContainerName={selectedContainerName}
+                            setSelectedContainerName={setSelectedContainerName}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
@@ -382,6 +393,7 @@ function NodeDetailComponent({
                     isResourceBrowserView={isResourceBrowserView}
                     containers={containers}
                     setContainers={setContainers}
+                    switchSelectedContainer={switchSelectedContainer}
                 />
             )}
         </React.Fragment>

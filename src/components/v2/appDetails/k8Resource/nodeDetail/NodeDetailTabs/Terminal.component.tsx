@@ -35,6 +35,8 @@ function TerminalComponent({
     setSelectedContainer,
     containers,
     setContainers,
+    selectedContainerName,
+    setSelectedContainerName,
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
@@ -42,7 +44,6 @@ function TerminalComponent({
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
-    const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
@@ -178,7 +179,7 @@ function TerminalComponent({
 
     useEffect(() => {
         setSelectedContainerName(_selectedContainer)
-    }, [containers])
+    }, [containers,selectedContainer])
 
     useEffect(() => {
         clearTimeout(clusterTimeOut)

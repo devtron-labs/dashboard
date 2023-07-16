@@ -52,6 +52,7 @@ export interface EphemeralContainerDrawerType {
     isResourceBrowserView
     containers: Options[]
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
+    switchSelectedContainer: (string) => void
 }
 
 export interface ResponsePayload {
