@@ -34,6 +34,7 @@ import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.
 import { ReactComponent as QuestionIcon } from '../../../../v2/assets/icons/ic-question.svg'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import Tippy from '@tippyjs/react'
+import CreatableSelect from 'react-select/creatable'
 
 function EphemeralContainerDrawer({
     setEphemeralContainerDrawer,
@@ -184,6 +185,12 @@ function EphemeralContainerDrawer({
         }
     }
 
+    const handleKeyDown = (event) => {
+      if (event.key === 'Enter' || event.key === 'Tab') {
+        event.target.blur()
+    }
+    }
+
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div>
@@ -220,12 +227,11 @@ function EphemeralContainerDrawer({
                             <span className="text-underline-dashed">Image</span>
                         </Tippy>
                     </div>
-                    <ReactSelect
+                    <CreatableSelect
                         value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
-                        isSearchable={true}
                         onChange={(e) => handleContainerSelectChange(e, 'image', imageListOption)}
                         components={{
                             IndicatorSeparator: null,
@@ -245,6 +251,7 @@ function EphemeralContainerDrawer({
                                 padding: '0 8px',
                             }),
                         }}
+                        onKeyDown={handleKeyDown}
                     />
                 </div>
 
