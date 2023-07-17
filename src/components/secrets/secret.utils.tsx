@@ -206,7 +206,7 @@ export const dataHeaders = {
     ),
 }
 
-export const getTypeGroups = (typeValue?: string) => {
+export const getTypeGroups = (isJobView?:boolean, typeValue?: string) => {
     const noGroups: any[] = [
             { value: '', label: 'Kubernetes Secret' },
             { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
@@ -223,6 +223,14 @@ export const getTypeGroups = (typeValue?: string) => {
             { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
         ]
 
+    if(isJobView){
+        return [
+            {
+                label: '',
+                options: noGroups
+            }
+        ]
+    }
     const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
 
     if (typeValue) return externalType
