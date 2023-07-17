@@ -635,7 +635,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
     const handleResourceClick=(e)=>{
-        const _url=`${URLS.RESOURCE_BROWSER}/${clusterId}/all/pod/${K8S_EMPTY_GROUP}/${e.currentTarget.dataset.name}`
+        const {name,namespace}=e.currentTarget.dataset
+        const beginpart=window.location.href.split('/clusters')[0]
+        const _url=`${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
         window.open(_url,'_blank')
     }
     const renderPodHeaderCell = (
@@ -708,6 +710,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                     className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
                                                     data-name={pod.name}
+                                                    data-namespace={pod.namespace}
                                                     onClick={handleResourceClick}
                                                 >
                                                     {pod.name}

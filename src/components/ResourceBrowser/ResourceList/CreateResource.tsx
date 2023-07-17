@@ -116,7 +116,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
         if (loader) {
             return (
                 <GenericEmptyState
-                    image={mechanicalOperation}
+                    SvgImage={mechanicalOperation}
                     title={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.title}
                     subTitle={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.subTitle}
                 />

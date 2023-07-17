@@ -1352,7 +1352,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
            <GenericEmptyState
                 image={noartifact}
-                classname="w-300 dc__text-center lh-1-4"
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
