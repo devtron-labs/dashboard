@@ -70,7 +70,6 @@ function NodeDetailComponent({
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
-   console.log(selectedResource)
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
     useEffect(() => {
         if (params.nodeType) {
@@ -134,7 +133,7 @@ function NodeDetailComponent({
                             })
                         }
                     })
-                    _resourceContainers.push(ephemeralContainers)
+                    _resourceContainers.push(...ephemeralContainers)
                 }
             }
             setResourceContainers(_resourceContainers)
@@ -350,6 +349,7 @@ function NodeDetailComponent({
                             selectedContainerName={selectedContainerName}
                             setSelectedContainerName={setSelectedContainerName}
                             switchSelectedContainer={switchSelectedContainer}
+                            selectedNamespaceByClickingPod={selectedResource?.namespace}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
@@ -372,7 +372,7 @@ function NodeDetailComponent({
                     isResourceBrowserView={isResourceBrowserView}
                     containers={containers}
                     switchSelectedContainer={switchSelectedContainer}
-                    selectesNamespaceByClickingPod={selectedResource?.namespace}
+                    selectedNamespaceByClickingPod={selectedResource?.namespace}
                 />
             )}
         </React.Fragment>

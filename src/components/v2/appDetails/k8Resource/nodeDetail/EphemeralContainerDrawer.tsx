@@ -51,7 +51,7 @@ function EphemeralContainerDrawer({
     containers,
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
-    selectesNamespaceByClickingPod,
+    selectedNamespaceByClickingPod,
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -96,7 +96,7 @@ function EphemeralContainerDrawer({
             ...ephemeralForm,
             basicData: {
                 ...ephemeralForm.basicData,
-                containerName: e.target.value || 'debugger',
+                containerName: e.target.value,
             },
         })
         setEphemeralFormAdvanced({
@@ -204,7 +204,7 @@ function EphemeralContainerDrawer({
                             data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={handleEphemeralChange}
-                            value={ephemeralForm.basicData.containerName || 'debugger'}
+                            value={ephemeralForm.basicData.containerName}
                         />
                     </div>
                 </div>
@@ -375,7 +375,7 @@ function EphemeralContainerDrawer({
         setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
             namespace: isResourceBrowserView
-                ? selectesNamespaceByClickingPod
+                ? selectedNamespaceByClickingPod
                 : appDetails.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ? params.node : params.podName,
@@ -431,7 +431,6 @@ function EphemeralContainerDrawer({
 
                 const _containers = containers
                 let containerName = response.result
-
                 _containers.push({
                     name: containerName,
                     isInitContainer: false,

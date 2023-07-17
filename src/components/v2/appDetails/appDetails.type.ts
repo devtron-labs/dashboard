@@ -418,6 +418,7 @@ export interface TerminalComponentProps {
     selectedContainerName: string
     setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
     switchSelectedContainer: (string) => void
+    selectedNamespaceByClickingPod: string
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {

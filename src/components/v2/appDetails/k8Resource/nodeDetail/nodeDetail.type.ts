@@ -52,7 +52,7 @@ export interface EphemeralContainerDrawerType {
     containers?: Options[]
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
-    selectesNamespaceByClickingPod?: string
+    selectedNamespaceByClickingPod?: string
 }
 
 export interface ResponsePayload {

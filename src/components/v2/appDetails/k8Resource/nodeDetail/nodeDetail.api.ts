@@ -193,7 +193,7 @@ export const generateEphemeralUrl = (requestData, clusterId, environmentId, name
     return post(url, requestData)
 }
 
-export const deleteEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType, isResourceBrowserView) => {
+export const deleteEphemeralUrl = (requestData, clusterId, environmentId, namespace, appName, appId, appType, isResourceBrowserView, params: ParamsType) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
@@ -202,7 +202,7 @@ export const deleteEphemeralUrl = (requestData, clusterId, environmentId, namesp
     let url: string = 'k8s/resources/ephemeralContainers'
     const appTypes = appType === AppType.DEVTRON_APP ? '0' :'1'
     if (isResourceBrowserView) {
-        url += `?identifier=${clusterId}`
+        url += `?identifier=${params.clusterId}`
     } else {
         url += `?identifier=${appIds}&appType=${appTypes}`
     }

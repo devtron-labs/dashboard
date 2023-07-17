@@ -313,7 +313,7 @@ export const getContainerOptions = (containers: string[]) => {
     return Array.isArray(containers) ? containers.map((container) => ({ label: container, value: container })) : []
 }
 
-export const getGroupedContainerOptions = (containers: Options[]) => {
+export const getGroupedContainerOptions = (containers: Options[], isTerminal?: boolean) => {
     const containerOptions = [],
         initContainerOptions = [],
         ephemralContainerOptions = []
@@ -325,7 +325,7 @@ export const getGroupedContainerOptions = (containers: Options[]) => {
                     label: _container.name,
                     value: _container.name,
                 })
-            } else if (_container.isEphemeralContainer){
+            } else if (_container.isEphemeralContainer && isTerminal ){
                 ephemralContainerOptions.push({
                     label: _container.name,
                     value: _container.name,
@@ -341,7 +341,7 @@ export const getGroupedContainerOptions = (containers: Options[]) => {
 
         const groupedOptions = [
             {
-                label: 'Containers',
+                label: 'Main containers',
                 options: containerOptions.sort(sortOptionsByLabel),
             },
         ]

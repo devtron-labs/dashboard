@@ -36,9 +36,10 @@ function TerminalComponent({
     containers,
     selectedContainerName,
     setSelectedContainerName,
-    switchSelectedContainer
+    switchSelectedContainer,
+    selectedNamespaceByClickingPod
 }: TerminalComponentProps) {
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string }>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
@@ -58,9 +59,11 @@ function TerminalComponent({
       const { selectProps, data, style } = props
       const getPayload = (containerName) => {
         let payload: ResponsePayload = {
-            namespace: appDetails.namespace,
-            clusterId: appDetails.clusterId,
-            podName: params.podName,
+          namespace: isResourceBrowserView
+          ? selectedNamespaceByClickingPod
+          : appDetails.namespace,
+      clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
+      podName: isResourceBrowserView ? params.node : params.podName,
             basicData: {
                 containerName: containerName,
             },
@@ -77,7 +80,8 @@ function TerminalComponent({
               appDetails.appName,
               appDetails.appId,
               appDetails.appType,
-              isResourceBrowserView
+              isResourceBrowserView,
+              params
           )
               .then((response: any) => {
                   const _containers = []
@@ -251,9 +255,9 @@ function TerminalComponent({
                 type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
                 classNamePrefix: 'containers-select',
-                title: 'Main container ',
+                title: 'Container',
                 placeholder: 'Select container',
-                options: getGroupedContainerOptions(containers),
+                options: getGroupedContainerOptions(containers, true),
                 value: defaultContainerOption,
                 onChange: handleContainerChange,
                 styles: getContainerSelectStyles(),
