@@ -57,7 +57,7 @@ function TerminalComponent({
 
     function Option(props) {
       const { selectProps, data, style } = props
-      const getPayload = (containerName) => {
+      const getPayload = (containerName: string) => {
         let payload: ResponsePayload = {
           namespace: isResourceBrowserView
           ? selectedNamespaceByClickingPod

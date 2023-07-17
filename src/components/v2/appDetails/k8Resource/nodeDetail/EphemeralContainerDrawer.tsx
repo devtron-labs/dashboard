@@ -333,7 +333,7 @@ function EphemeralContainerDrawer({
         )
     }
 
-    const handleManifestAdvanceChange = (e) => {
+    const handleManifestAdvanceConfiguration = (e) => {
         if (switchManifest !== SwitchItemValues.Configuration) return
         setEphemeralFormAdvanced({
             ...ephemeralFormAdvanced,
@@ -362,7 +362,7 @@ function EphemeralContainerDrawer({
                     value={codeEditorBody}
                     height={300}
                     mode="yaml"
-                    onChange={handleManifestAdvanceChange}
+                    onChange={handleManifestAdvanceConfiguration}
                     readOnly={switchManifest === SwitchItemValues.Sample}
                 >
                     <CodeEditor.Header>
@@ -417,7 +417,7 @@ function EphemeralContainerDrawer({
             appDetails.appId,
             appDetails.appType,
             isResourceBrowserView,
-            params,
+            params
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')

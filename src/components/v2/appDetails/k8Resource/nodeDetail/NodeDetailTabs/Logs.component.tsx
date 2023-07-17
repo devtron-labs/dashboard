@@ -75,17 +75,6 @@ function LogsComponent({
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
-    const getPayload = (containerName) => {
-        let payload: ResponsePayload = {
-            namespace: appDetails.namespace,
-            clusterId: appDetails.clusterId,
-            podName: params.podName,
-            basicData: {
-                containerName: containerName,
-            },
-        }
-        return payload
-    }
 
     const handlePodSelection = (selectedOption: string) => {
         const pods = getSelectedPodList(selectedOption)
