@@ -161,11 +161,11 @@ function EphemeralContainerDrawer({
             },
         })
     }
-
+console.log(resourceContainers)
     const getOptions = () => {
         if (isResourceBrowserView) {
             setTargetContainerOption(
-                resourceContainers.map((container) => {
+                resourceContainers.filter((resourceContainer) => (!resourceContainer.isEphemeralContainer && !resourceContainer.isInitContainer)).map((container) => {
                     return {
                         label: container.name,
                         value: container.name,
