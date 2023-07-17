@@ -292,24 +292,26 @@ export default function DeploymentTemplateOverride({
 
     return (
         <div
-            className={`app-compose__deployment-config bcn-0 ${
+            className={`app-compose__deployment-config dc__window-bg ${
                 state.openComparison || state.showReadme ? 'full-view' : 'h-100'
             }`}
         >
-            {state.data && state.charts && (
-                <DeploymentTemplateOverrideForm
-                    chartRefLoading={chartRefLoading}
-                    state={state}
-                    environments={environments}
-                    environmentName={environmentName}
-                    handleOverride={handleOverride}
-                    dispatch={dispatch}
-                    initialise={initialise}
-                    handleAppMetrics={handleAppMetrics}
-                    handleDelete={handleDelete}
-                    isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
-                />
-            )}
+            <div className="bcn-0 dc__border br-4 m-12 dc__overflow-hidden h-100">
+                {state.data && state.charts && (
+                    <DeploymentTemplateOverrideForm
+                        chartRefLoading={chartRefLoading}
+                        state={state}
+                        environments={environments}
+                        environmentName={environmentName}
+                        handleOverride={handleOverride}
+                        dispatch={dispatch}
+                        initialise={initialise}
+                        handleAppMetrics={handleAppMetrics}
+                        handleDelete={handleDelete}
+                        isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                    />
+                )}
+            </div>
         </div>
     )
 }
@@ -423,7 +425,7 @@ function DeploymentTemplateOverrideForm({
                     payload: {
                         basicFieldValues: _basicFieldValues,
                         basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                        yamlMode: !state.yamlMode,
+                        yamlMode: false,
                     },
                 })
                 return

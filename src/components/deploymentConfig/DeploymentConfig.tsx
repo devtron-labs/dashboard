@@ -400,54 +400,53 @@ export default function DeploymentConfig({
             }}
         >
             <div
-                className={`app-compose__deployment-config ${
+                className={`app-compose__deployment-config dc__window-bg ${
                     state.openComparison || state.showReadme ? 'full-view' : 'h-100'
                 }`}
             >
-                <ConfigToolbar
-                    loading={state.loading || state.chartConfigLoading}
-                    selectedTabIndex={state.selectedTabIndex}
-                    handleTabSelection={handleTabSelection}
-                    noReadme={!state.yamlMode}
-                    showReadme={state.showReadme}
-                    handleReadMeClick={handleReadMeClick}
-                    handleCommentClick={noop}
-                    isDraftMode={false}
-                    handleDiscardDraft={noop}
-                    isApprovalPending={false}
-                    approvalUsers={[]}
-                    activityHistory={[]}
-                />
-                <form
-                    action=""
-                    className={`white-card__deployment-config p-0 bcn-0 ${
-                        state.openComparison ? 'comparison-view' : ''
-                    }`}
-                    onSubmit={handleSubmit}
-                >
-                    <DeploymentTemplateOptionsTab codeEditorValue={state.tempFormData} />
-                    <DeploymentTemplateEditorView
-                        value={state.tempFormData}
-                        editorOnChange={editorOnChange}
+                <div className="dc__border br-4 m-12 dc__overflow-hidden h-100">
+                    <ConfigToolbar
+                        loading={state.loading || state.chartConfigLoading}
+                        selectedTabIndex={state.selectedTabIndex}
+                        handleTabSelection={handleTabSelection}
+                        noReadme={!state.yamlMode}
+                        showReadme={state.showReadme}
+                        handleReadMeClick={handleReadMeClick}
+                        handleCommentClick={noop}
+                        isDraftMode={false}
+                        handleDiscardDraft={noop}
+                        isApprovalPending={false}
+                        approvalUsers={[]}
+                        activityHistory={[]}
                     />
-                    {!state.openComparison && !state.showReadme && (
-                        <DeploymentConfigFormCTA
-                            loading={state.loading || state.chartConfigLoading}
-                            showAppMetricsToggle={
-                                state.charts &&
-                                state.selectedChart &&
-                                appMetricsEnvironmentVariableEnabled &&
-                                grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-                                state.yamlMode
-                            }
-                            isAppMetricsEnabled={state.isAppMetricsEnabled}
-                            isCiPipeline={isCiPipeline}
-                            toggleAppMetrics={toggleAppMetrics}
-                            selectedChart={state.selectedChart}
-                        />
-                    )}
-                </form>
-                {state.showConfirmation && <SaveConfirmationDialog save={save} />}
+                    <form
+                        action=""
+                        className={`white-card__deployment-config p-0 bcn-0 ${
+                            state.openComparison ? 'comparison-view' : ''
+                        }`}
+                        onSubmit={handleSubmit}
+                    >
+                        <DeploymentTemplateOptionsTab codeEditorValue={state.tempFormData} />
+                        <DeploymentTemplateEditorView value={state.tempFormData} editorOnChange={editorOnChange} />
+                        {!state.openComparison && !state.showReadme && (
+                            <DeploymentConfigFormCTA
+                                loading={state.loading || state.chartConfigLoading}
+                                showAppMetricsToggle={
+                                    state.charts &&
+                                    state.selectedChart &&
+                                    appMetricsEnvironmentVariableEnabled &&
+                                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                                    state.yamlMode
+                                }
+                                isAppMetricsEnabled={state.isAppMetricsEnabled}
+                                isCiPipeline={isCiPipeline}
+                                toggleAppMetrics={toggleAppMetrics}
+                                selectedChart={state.selectedChart}
+                            />
+                        )}
+                    </form>
+                    {state.showConfirmation && <SaveConfirmationDialog save={save} />}
+                </div>
             </div>
         </DeploymentConfigContext.Provider>
     )
