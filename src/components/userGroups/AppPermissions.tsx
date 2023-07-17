@@ -1,6 +1,12 @@
 import React, { useContext, useEffect } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { APPROVER_ACTION, ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup'
+import {
+    APPROVER_ACTION,
+    CONFIG_APPROVER_ACTION,
+    ChartPermission,
+    DirectPermission,
+    useUserGroupContext,
+} from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { useRouteMatch } from 'react-router'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../config'
@@ -363,6 +369,8 @@ export default function AppPermissions({
             }
         } else if (name === APPROVER_ACTION.label) {
             tempPermissions[index][name] = !tempPermissions[index][name]
+        } else if (name === CONFIG_APPROVER_ACTION.label) {
+            tempPermissions[index]['action'].configApprover = !tempPermissions[index]['action'].configApprover
         } else {
             tempPermissions[index][name] = selectedValue
         }

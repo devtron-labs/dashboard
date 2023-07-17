@@ -303,9 +303,12 @@ export default function DeploymentTemplateEditorView({
                         </CodeEditor.Header>
                     )}
                     {state.openComparison && (
-                        <CodeEditor.Header hideDefaultSplitHeader={true}>
+                        <CodeEditor.Header
+                            className="code-editor__header flex left p-0-imp"
+                            hideDefaultSplitHeader={true}
+                        >
                             <>
-                                <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32">
+                                <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
                                     <span style={{ width: '85px' }}>Compare with: </span>
                                     <CompareWithDropdown
                                         isEnvOverride={isEnvOverride}
@@ -317,7 +320,7 @@ export default function DeploymentTemplateEditorView({
                                     />
                                 </div>
                                 <div
-                                    className={`flex left fs-12 fw-6 cn-9 pl-16 h-32 ${
+                                    className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${
                                         isEnvOverride ? (!!state.duplicate ? 'bcy-1' : 'bcb-1') : ''
                                     }`}
                                 >
