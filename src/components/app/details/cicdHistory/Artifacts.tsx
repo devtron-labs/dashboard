@@ -176,7 +176,7 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 const CIProgressView = (): JSX.Element => {
     return (
         <GenericEmptyState
-            image={MechanicalOperation}
+            SvgImage={MechanicalOperation}
             title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
             subTitle={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
         />

@@ -39,7 +39,7 @@ export function ImageNotScannedView() {
 export function NoVulnerabilityView() {
     return (
         <GenericEmptyState
-            image={novulnerability}
+            SvgImage={novulnerability}
             title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
             classname="dc__position-rel-imp"
         />
@@ -49,7 +49,7 @@ export function NoVulnerabilityView() {
 export function CIRunningView(props) {
     return (
         <GenericEmptyState
-            image={MechanicalOperation}
+            SvgImage={MechanicalOperation}
             title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
             subTitle={
                 props.isSecurityTab

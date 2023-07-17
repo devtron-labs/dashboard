@@ -48,6 +48,7 @@ export default function CDEmptyState({
                 classname="fs-16"
                 title={title ? title : EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
                 subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
+                isButtonAvailable={true}
                 renderButton={handleCDEmptyStateButton}
                 isButtonAvailable
             />

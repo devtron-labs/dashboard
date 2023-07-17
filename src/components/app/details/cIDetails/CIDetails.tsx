@@ -418,7 +418,7 @@ export function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
     return (
         <div className="flex h-100 dc__position-rel">
             <GenericEmptyState
-                image={novulnerability}
+                SvgImage={novulnerability}
                 title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.TITLE}
                 subTitle={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.SUBTITLE}
                 children={

@@ -44,6 +44,7 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
                 image={noresult}
                 title={JOBLIST_EMPTY_STATE_MESSAGING.noJobsFound}
                 subTitle={JOBLIST_EMPTY_STATE_MESSAGING.noJobFoundInfoText}
+                isButtonAvailable={true}
                 renderButton={handleButton}
             />
         )

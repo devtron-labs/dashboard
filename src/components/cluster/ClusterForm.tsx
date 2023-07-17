@@ -852,7 +852,7 @@ export default function ClusterForm({
                     style={{ height: 'calc(100vh - 110px)' }}
                 >
                     <GenericEmptyState
-                        image={MechanicalOperation}
+                        SvgImage={MechanicalOperation}
                         title={EMPTY_STATE_STATUS.LOADING_CLUSTER.TITLE}
                         subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
                     />
