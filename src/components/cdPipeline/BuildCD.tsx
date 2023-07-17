@@ -33,6 +33,7 @@ import { toast } from 'react-toastify'
 import { styles, Option } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
+import CodeEditor from '../CodeEditor/CodeEditor'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -445,16 +446,16 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const handleStrategyChange = (event, selection: string, key: 'json' | 'yaml'): void => {
+    const handleStrategyChange = (value, selection: string, key: 'json' | 'yaml'): void => {
         let json, jsonStr, yamlStr
         if (key === 'json') {
-            jsonStr = event.target.value
+            jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
             } catch (error) {}
         } else {
-            yamlStr = event.target.value
+            yamlStr = value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
@@ -635,13 +636,16 @@ export default function BuildCD({
                             </div>
                             {strategy.isCollapsed ? null : (
                                 <div className="deployment-strategy__info-body">
-                                    <textarea
-                                        className="dc__code-textarea code-textarea--cd-pipeline"
+                                    <CodeEditor
+                                        height={300}
                                         value={strategy.jsonStr}
+                                        mode="yaml"
                                         onChange={(event) =>
-                                            handleStrategyChange(event, strategy.deploymentTemplate, 'json')
+                                            handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
                                         }
-                                    />
+                                    >
+                                        <CodeEditor.Header className="code-editor" />
+                                    </CodeEditor>
                                 </div>
                             )}
                         </div>

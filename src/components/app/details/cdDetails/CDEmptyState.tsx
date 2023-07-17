@@ -50,7 +50,6 @@ export default function CDEmptyState({
                 subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
                 isButtonAvailable={true}
                 renderButton={handleCDEmptyStateButton}
-                isButtonAvailable
             />
         </div>
     )
