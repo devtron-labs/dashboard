@@ -345,7 +345,7 @@ function EphemeralContainerDrawer({
         setLoader(true)
         setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
-            namespace: isResourceBrowserView ? selectesNamespaceByClickingPod : appDetails.namespace,
+            namespace: isResourceBrowserView ? selectesNamespaceByClickingPod  ? selectesNamespaceByClickingPod : 'devtroncd' : appDetails.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ?  params.node : params.podName,
         }
