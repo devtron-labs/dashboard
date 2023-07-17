@@ -5,6 +5,7 @@ import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export interface CINodeProps {
     x: number
@@ -103,7 +104,7 @@ export class CINode extends Component<CINodeProps> {
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
                                 {this.props.isJobView && <>
-                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : "devtron-ci"}</span>
+                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
                                     <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span></>}
                             </div>
                             {this.renderNodeIcon()}

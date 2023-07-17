@@ -47,7 +47,7 @@ import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
-import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
+import { DEFAULT_ENV, HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR, NO_TASKS_CONFIGURED_ERROR, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import {
     getBranchValues,
@@ -123,7 +123,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         getEnvironmentListMinPublic()
             .then((response) => {
                 let list = []
-                list.push({ id: 0, clusterName: '', name: "devtron-ci", active: false, isClusterActive: false, description: "System default" })
+                list.push({ id: 0, clusterName: '', name: DEFAULT_ENV, active: false, isClusterActive: false, description: "System default" })
                 response.result?.forEach((env) => {
                     if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
                         list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })

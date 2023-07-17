@@ -24,6 +24,7 @@ import {
 } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
+import { DEFAULT_ENV } from '../triggerView/Constants'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -307,7 +308,7 @@ const StartDetails = ({
             </div>
             {isJobView && <div className="pt-4 pb-4 pr-0 pl-0">
                 <span className="fw-6 fs-14">Env</span>
-                <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : "devtron-ci"}</span>
+                <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : DEFAULT_ENV}</span>
                 {environmentName === "" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
             </div>}
 

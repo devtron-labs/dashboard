@@ -4,6 +4,7 @@ import ReactSelect, { components } from 'react-select'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading, triggerStageStyles } from './Constants'
+import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSelectedEnv }:
     { isBuildStage?: boolean, environments: any[], selectedEnv: Environment, setSelectedEnv?: (_selectedEnv: Environment) => void | React.Dispatch<React.SetStateAction<Environment>> }) {
@@ -28,7 +29,7 @@ export function EnvironmentList({ isBuildStage, environments, selectedEnv, setSe
         return (
             <components.Option {...props}>
                 <div>{props.data.name}</div>
-                {props.data.name === "devtron-ci" && <span className="fs-12 cn-7 pt-2">{props.data.description}</span>}
+                {props.data.name === DEFAULT_ENV && <span className="fs-12 cn-7 pt-2">{props.data.description}</span>}
             </components.Option>
         )
     }

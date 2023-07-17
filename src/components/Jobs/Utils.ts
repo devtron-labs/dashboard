@@ -6,6 +6,7 @@ import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import moment from 'moment'
 import { JobPipeline } from '../app/types'
+import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 export const getInitialJobListState = (payloadParsedFromUrl): JobListState => {
     return {
@@ -255,12 +256,12 @@ export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): strin
     const status = jobPipeline.status === "notdeployed" ? "" : jobPipeline.status;
     if (status === "") {
         if (jobPipeline.environmentName === "") {
-            return "devtron-ci"
+            return DEFAULT_ENV
         }
         return jobPipeline.environmentName
     } else {
         if (jobPipeline.lastTriggeredEnvironmentName === "") {
-            return "devtron-ci"
+            return DEFAULT_ENV
         }
         return jobPipeline.lastTriggeredEnvironmentName
     }

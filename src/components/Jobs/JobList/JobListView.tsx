@@ -13,6 +13,7 @@ import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
 import { URLS } from '../../../config'
 import { environmentName } from '../Utils'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export default function JobListView(props: JobListViewProps) {
     const history = useHistory()
@@ -91,7 +92,7 @@ export default function JobListView(props: JobListViewProps) {
                             <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">
                                     {environmentName(job.defaultPipeline)}
-                                    {environmentName(job.defaultPipeline) === "devtron-ci" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                                    {environmentName(job.defaultPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
                                 </p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
