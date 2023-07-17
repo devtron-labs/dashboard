@@ -395,7 +395,6 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
     addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
-    selectesNamespaceByClickingPod?: string
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {
@@ -419,6 +418,7 @@ export interface TerminalComponentProps {
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     selectedContainerName: string
     setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
+    switchSelectedContainer: (string) => void
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {

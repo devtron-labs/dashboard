@@ -3,16 +3,15 @@ import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
-import { getCustomOptionSelectionStyle, Option } from '../../../../common/ReactSelect.utils'
+import { getCustomOptionSelectionStyle } from '../../../../common/ReactSelect.utils'
 import {
-    getContainersData,
     getContainerSelectStyles,
     getGroupedContainerOptions,
     getShellSelectStyles,
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import { AppType, Options, TerminalComponentProps } from '../../../appDetails.type'
+import { AppType, TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
@@ -23,6 +22,7 @@ import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl 
 import { toast } from 'react-toastify'
 import { components } from 'react-select'
 import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
+import Tippy from '@tippyjs/react'
 
 let clusterTimeOut
 
@@ -37,6 +37,7 @@ function TerminalComponent({
     setContainers,
     selectedContainerName,
     setSelectedContainerName,
+    switchSelectedContainer
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
@@ -56,7 +57,6 @@ function TerminalComponent({
 
     function Option(props) {
       const { selectProps, data, style } = props
-
       const getPayload = (containerName) => {
         let payload: ResponsePayload = {
             namespace: appDetails.namespace,
@@ -71,30 +71,32 @@ function TerminalComponent({
 
       const deleteEphemeralContainer = (containerName: string) => {
           deleteEphemeralUrl(
-            getPayload(containerName),
+              getPayload(containerName),
               appDetails.clusterId,
               appDetails.environmentId,
               appDetails.namespace,
               appDetails.appName,
               appDetails.appId,
               appDetails.appType,
+              isResourceBrowserView
           )
-              .then((response : any) => {
-                  toast.success('Deleted successfully')
+              .then((response: any) => {
                   const _containers = []
                   let containerName = response.result
-
-                  containers.forEach((con)=>{
-                      if (containerName !== con.name){
+                    containers?.forEach((con) => {
+                      if (containerName !== con.name) {
                           _containers.push(con)
                       }
                   })
-
                   setContainers(_containers)
+                  switchSelectedContainer(containers?.[0]?.name || '')
+                  // setSelectedContainer(selectedContainer.set(selectedContainerValue, containers?.[0]?.name || ''))
+                  toast.success('Deleted successfully')
               })
               .catch((error) => {
                   showError(error)
               })
+
       }
 
       selectProps.styles.option = getCustomOptionSelectionStyle(style)
@@ -104,9 +106,19 @@ function TerminalComponent({
                   <components.Option {...props}>
                       <div className={` ${data.isEphemeralContainer ? 'flex dc__content-space' : ''}`}>
                           {data.isEphemeralContainer && (
-                              <Cross className="icon-dim-16 cursor" onClick={(selected) => {
-                                deleteEphemeralContainer(props.label)
-                              }} />
+                              <Tippy
+                                  className="default-white"
+                                  arrow={false}
+                                  placement="bottom"
+                                  content="Remove container"
+                              >
+                                  <Cross
+                                      className={`icon-dim-16 cursor ${props.isFocused ? 'scr-5' : ''}`}
+                                      onClick={(selected) => {
+                                          deleteEphemeralContainer(props.label)
+                                      }}
+                                  />
+                              </Tippy>
                           )}
                           {props.label}
                       </div>
@@ -243,7 +255,7 @@ function TerminalComponent({
                 type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
                 classNamePrefix: 'containers-select',
-                title: 'Container ',
+                title: 'Main container ',
                 placeholder: 'Select container',
                 options: getGroupedContainerOptions(containers),
                 value: defaultContainerOption,

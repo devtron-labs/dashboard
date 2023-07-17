@@ -7,8 +7,6 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import {
-    EphemeralForm,
-    EphemeralFormAdvancedType,
     NodeDetailTab,
     ParamsType,
 } from './nodeDetail.type'
@@ -35,7 +33,6 @@ function NodeDetailComponent({
     selectedResource,
     logSearchTerms,
     setLogSearchTerms,
-    selectesNamespaceByClickingPod
 }: NodeDetailPropsType) {
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
@@ -54,18 +51,6 @@ function NodeDetailComponent({
     )
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const [showEphemeralContainerDrawer, setEphemeralContainerDrawer] = useState<boolean>(false)
-    const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
-        basicData: {
-            targetContainerName: '',
-            containerName: '',
-            image: '',
-        },
-    })
-    const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
-        advancedData: {
-            manifest: '',
-        },
-    })
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
@@ -85,7 +70,7 @@ function NodeDetailComponent({
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
-
+   console.log(selectedResource)
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
     useEffect(() => {
         if (params.nodeType) {
@@ -247,7 +232,7 @@ function NodeDetailComponent({
 
     return (
         <React.Fragment>
-            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__content-space">
+            <div className={`w-100 pr-20 pl-20 bcn-0 flex ${selectedTabName === NodeDetailTab.TERMINAL ? 'dc__content-space' : 'left'}`}>
                 <div data-testid="app-resource-containor-header" className="flex left">
                     {tabs &&
                         tabs.length > 0 &&
@@ -343,9 +328,9 @@ function NodeDetailComponent({
                                 isResourceBrowserView={isResourceBrowserView}
                                 selectedResource={selectedResource}
                                 ephemeralContainerType={ephemeralContainerType}
-                                ephemeralForm={ephemeralForm}
+
                                 targetContainerOption={targetContainerOption}
-                                ephemeralFormAdvanced={ephemeralFormAdvanced}
+
                                 imageListOption={imageListOption}
                             />
                         </div>
@@ -367,6 +352,7 @@ function NodeDetailComponent({
                             setContainers={setContainers}
                             selectedContainerName={selectedContainerName}
                             setSelectedContainerName={setSelectedContainerName}
+                            switchSelectedContainer={switchSelectedContainer}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
@@ -374,13 +360,9 @@ function NodeDetailComponent({
             )}
             {showEphemeralContainerDrawer && (
                 <EphemeralContainerDrawer
-                    ephemeralForm={ephemeralForm}
-                    setEphemeralForm={setEphemeralForm}
                     setEphemeralContainerDrawer={setEphemeralContainerDrawer}
                     onClickShowLaunchEphemeral={onClickShowLaunchEphemeral}
                     params={params}
-                    setEphemeralFormAdvanced={setEphemeralFormAdvanced}
-                    ephemeralFormAdvanced={ephemeralFormAdvanced}
                     containerList={appDetails.resourceTree?.podMetadata}
                     resourceContainers={resourceContainers}
                     setResourceContainers={setResourceContainers}
@@ -394,7 +376,7 @@ function NodeDetailComponent({
                     containers={containers}
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
-                    selectesNamespaceByClickingPod={selectesNamespaceByClickingPod}
+                    selectesNamespaceByClickingPod={selectedResource.namespace}
                 />
             )}
         </React.Fragment>

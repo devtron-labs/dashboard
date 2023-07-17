@@ -5,7 +5,7 @@ import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.s
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
-import { deleteEphemeralUrl, getLogsURL } from '../nodeDetail.api'
+import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'

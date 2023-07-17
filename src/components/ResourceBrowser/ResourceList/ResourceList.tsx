@@ -113,7 +113,6 @@ export default function ResourceList() {
         new: new AbortController(),
     })
     const searchWorkerRef = useRef(null)
-    const [selectesNamespaceByClickingPod, setSelectesNamespaceByClickingPod] = useState<string>('')
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -523,9 +522,7 @@ export default function ResourceList() {
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
-        // if(selectedNode){
-        //   setSelectesNamespaceByClickingPod(selectedNode?.namespace)
-        // }
+
 
         return {
             clusterId: Number(clusterId),
@@ -573,7 +570,6 @@ export default function ResourceList() {
                         addTab={addTab}
                         logSearchTerms={logSearchTerms}
                         setLogSearchTerms={setLogSearchTerms}
-                        selectesNamespaceByClickingPod={selectesNamespaceByClickingPod}
                     />
                 </div>
             )

@@ -8,7 +8,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
-import { EphemeralContainerDrawerType } from './nodeDetail.type'
+import { EphemeralContainerDrawerType, EphemeralForm, EphemeralFormAdvancedType } from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
@@ -32,15 +32,12 @@ import { SwitchItemValues } from '../../../../login/SSOLogin'
 import { Options } from '../../appDetails.type'
 import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../../../v2/assets/icons/ic-question.svg'
-import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
+import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
+import Tippy from '@tippyjs/react'
 
 function EphemeralContainerDrawer({
-    ephemeralForm,
-    setEphemeralForm,
     setEphemeralContainerDrawer,
     params,
-    setEphemeralFormAdvanced,
-    ephemeralFormAdvanced,
     containerList,
     resourceContainers,
     setResourceContainers,
@@ -55,12 +52,23 @@ function EphemeralContainerDrawer({
     setContainers,
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
-    selectesNamespaceByClickingPod
+    selectesNamespaceByClickingPod,
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
-
+    const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
+      basicData: {
+          targetContainerName: '',
+          containerName: 'debugger',
+          image: '',
+      },
+  })
+  const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
+      advancedData: {
+          manifest: '',
+      },
+  })
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
     const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
 
@@ -89,7 +97,7 @@ function EphemeralContainerDrawer({
             ...ephemeralForm,
             basicData: {
                 ...ephemeralForm.basicData,
-                containerName: e.target.value,
+                containerName: e.target.value || 'debugger',
             },
         })
         setEphemeralFormAdvanced({
@@ -106,22 +114,23 @@ function EphemeralContainerDrawer({
 
     const renderEphemeralHeaders = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+            <div className="flex flex-align-center flex-justify bcn-0 pb-10 pt-12 pl-20 pr-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left">
-                    <span>Launch ephemeral container on pod: {isResourceBrowserView ?  params.node : params.podName}</span>
+                    <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
+                    <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
                     <TippyCustomized
                         theme={TippyTheme.white}
                         className="w-300"
                         placement="top"
                         Icon={HelpIcon}
                         iconClass="fcv-5"
-                        heading={EMPTY_STATE_STATUS.EPHEMERAL_CONTAINER.TITLE}
-                        infoText={EMPTY_STATE_STATUS.EPHEMERAL_CONTAINER.SUBTITLE}
+                        heading={EPHEMERAL_CONTAINER.TITLE}
+                        infoText={EPHEMERAL_CONTAINER.SUBTITLE}
                         showCloseButton={true}
                         trigger="click"
                         interactive={true}
                     >
-                        <div className="flex">
+                        <div>
                             <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" />
                         </div>
                     </TippyCustomized>
@@ -181,7 +190,14 @@ function EphemeralContainerDrawer({
             <div>
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <span className="text-underline-dashed">Container name prefix</span>
+                        <Tippy
+                            className="default-white"
+                            arrow={false}
+                            placement="left"
+                            content={EPHEMERAL_CONTAINER.CONTAINER_NAME}
+                        >
+                            <span className="text-underline-dashed">Container name prefix</span>
+                        </Tippy>
                     </div>
                     <div>
                         <input
@@ -189,21 +205,28 @@ function EphemeralContainerDrawer({
                             data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={handleEphemeralChange}
-                            value={ephemeralForm.basicData.containerName}
+                            value={ephemeralForm.basicData.containerName || 'debugger'}
                         />
                     </div>
                 </div>
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <span className="text-underline-dashed">Image</span>
+                        <Tippy
+                            className="default-white"
+                            arrow={false}
+                            placement="left"
+                            content={EPHEMERAL_CONTAINER.IMAGE}
+                        >
+                            <span className="text-underline-dashed">Image</span>
+                        </Tippy>
                     </div>
                     <ReactSelect
                         value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
-                        isSearchable={false}
+                        isSearchable={true}
                         onChange={(e) => handleContainerSelectChange(e, 'image', imageListOption)}
                         components={{
                             IndicatorSeparator: null,
@@ -228,7 +251,14 @@ function EphemeralContainerDrawer({
 
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        <span className="text-underline-dashed">Target Container Name</span>
+                        <Tippy
+                            className="default-white"
+                            arrow={false}
+                            placement="left"
+                            content={EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
+                        >
+                            <span className="text-underline-dashed">Target Container Name</span>
+                        </Tippy>
                     </div>
                     <ReactSelect
                         value={selectedTargetContainer || targetContainerOption?.[0]}
@@ -269,24 +299,24 @@ function EphemeralContainerDrawer({
             <div className="dc__border-bottom pl-20">
                 <ul role="tablist" className="tab-list">
                     <li
-                        className="pt-8 pr-16 lh-20 fs-13"
+                        className="pt-4 pr-16 lh-20 fs-13"
                         onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC)}
                     >
                         <div
-                            className={`tab-list__tab-link w-auto pt-0 ${
-                                ephemeralContainerType === EDITOR_VIEW.BASIC ? 'active pb-6' : 'pb-8'
+                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
+                                ephemeralContainerType === EDITOR_VIEW.BASIC ? 'active' : ''
                             }`}
                         >
                             Basic
                         </div>
                     </li>
                     <li
-                        className="pt-8 pr-16 lh-20 fs-13"
+                        className="pt-4 pr-16 lh-20 fs-13"
                         onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED)}
                     >
                         <div
-                            className={`tab-list__tab-link w-auto pt-0 ${
-                                ephemeralContainerType === EDITOR_VIEW.ADVANCED ? 'active pb-6' : 'pb-8'
+                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
+                                ephemeralContainerType === EDITOR_VIEW.ADVANCED ? 'active ' : ''
                             }`}
                         >
                             Advanced
@@ -331,8 +361,8 @@ function EphemeralContainerDrawer({
                 >
                     <CodeEditor.Header>
                         <Switch value={switchManifest} name="tab" onChange={handleManifestTabChange}>
-                            <SwitchItem value={SwitchItemValues.Configuration}> Config </SwitchItem>
-                            <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
+                            <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
+                            <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                         </Switch>
                         <CodeEditor.ValidationError />
                     </CodeEditor.Header>
@@ -345,9 +375,11 @@ function EphemeralContainerDrawer({
         setLoader(true)
         setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
-            namespace: isResourceBrowserView ? selectesNamespaceByClickingPod  ? selectesNamespaceByClickingPod : 'devtroncd' : appDetails.namespace,
+            namespace: isResourceBrowserView
+                ? selectesNamespaceByClickingPod
+                : appDetails.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-            podName: isResourceBrowserView ?  params.node : params.podName,
+            podName: isResourceBrowserView ? params.node : params.podName,
         }
 
         if (ephemeralContainerType === EDITOR_VIEW.BASIC) {
@@ -379,7 +411,7 @@ function EphemeralContainerDrawer({
             appDetails.appId,
             appDetails.appType,
             isResourceBrowserView,
-            params
+            params,
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')
@@ -424,7 +456,7 @@ function EphemeralContainerDrawer({
     const renderEphemeralFooter = (): JSX.Element => {
         return (
             <div className="">
-                <div className="dc__border-top w-50 bcn-0 pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius dc__position-fixed dc__right-0 dc__bottom-0">
+                <div className="dc__border-top w-100 bcn-0 pt-12 pb-12 pl-20 pr-20 flex right bottom-border-radius dc__position-abs dc__right-0 dc__bottom-0">
                     <ButtonWithLoader
                         rootClassName="flex cta cancel h-36 "
                         onClick={onClickShowLaunchEphemeral}
@@ -439,7 +471,9 @@ function EphemeralContainerDrawer({
                         rootClassName="flex cta h-36 ml-16"
                         onClick={onSave}
                         disabled={
-                            ephemeralContainerType === EDITOR_VIEW.BASIC && !ephemeralForm.basicData.containerName
+                            ephemeralContainerType === EDITOR_VIEW.BASIC
+                                ? !ephemeralForm.basicData.containerName
+                                : !ephemeralFormAdvanced.advancedData.manifest
                         }
                         isLoading={loader}
                         loaderColor="white"
