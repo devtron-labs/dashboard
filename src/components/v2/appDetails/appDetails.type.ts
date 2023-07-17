@@ -395,6 +395,7 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
     addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
+    selectesNamespaceByClickingPod?: string
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {

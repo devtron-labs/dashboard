@@ -54,7 +54,8 @@ function EphemeralContainerDrawer({
     containers,
     setContainers,
     switchSelectedContainer,
-    onClickShowLaunchEphemeral
+    onClickShowLaunchEphemeral,
+    selectesNamespaceByClickingPod
 }: EphemeralContainerDrawerType) {
     const [switchManifest, setSwitchManifest] = useState<string>(SwitchItemValues.Configuration)
     const [loader, setLoader] = useState<boolean>(false)
@@ -107,7 +108,7 @@ function EphemeralContainerDrawer({
         return (
             <div className="flex flex-align-center flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left">
-                    <span>Launch ephemeral container on pod: {params.podName}</span>
+                    <span>Launch ephemeral container on pod: {isResourceBrowserView ?  params.node : params.podName}</span>
                     <TippyCustomized
                         theme={TippyTheme.white}
                         className="w-300"
@@ -344,7 +345,7 @@ function EphemeralContainerDrawer({
         setLoader(true)
         setEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
-            namespace: isResourceBrowserView ? params.namespace : appDetails.namespace,
+            namespace: isResourceBrowserView ? selectesNamespaceByClickingPod : appDetails.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ?  params.node : params.podName,
         }

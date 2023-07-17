@@ -57,6 +57,7 @@ export interface EphemeralContainerDrawerType {
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
+    selectesNamespaceByClickingPod?: string
 }
 
 export interface ResponsePayload {

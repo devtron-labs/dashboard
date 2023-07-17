@@ -9,7 +9,6 @@ import { useParams, useRouteMatch } from 'react-router'
 import {
     EphemeralForm,
     EphemeralFormAdvancedType,
-    EphemeralKeyType,
     NodeDetailTab,
     ParamsType,
 } from './nodeDetail.type'
@@ -36,6 +35,7 @@ function NodeDetailComponent({
     selectedResource,
     logSearchTerms,
     setLogSearchTerms,
+    selectesNamespaceByClickingPod
 }: NodeDetailPropsType) {
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
@@ -394,6 +394,7 @@ function NodeDetailComponent({
                     containers={containers}
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
+                    selectesNamespaceByClickingPod={selectesNamespaceByClickingPod}
                 />
             )}
         </React.Fragment>
