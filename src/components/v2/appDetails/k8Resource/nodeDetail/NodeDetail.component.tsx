@@ -55,9 +55,6 @@ function NodeDetailComponent({
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const [containers, setContainers] = useState<Options[]>(
-        (isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)) as Options[],
-    )
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -66,6 +63,9 @@ function NodeDetailComponent({
             setManagedFields(false)
         }
     }
+    const containers = (
+      isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)
+  ) as Options[]
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
@@ -328,9 +328,7 @@ function NodeDetailComponent({
                                 isResourceBrowserView={isResourceBrowserView}
                                 selectedResource={selectedResource}
                                 ephemeralContainerType={ephemeralContainerType}
-
                                 targetContainerOption={targetContainerOption}
-
                                 imageListOption={imageListOption}
                             />
                         </div>
@@ -349,7 +347,6 @@ function NodeDetailComponent({
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
                             containers={containers}
-                            setContainers={setContainers}
                             selectedContainerName={selectedContainerName}
                             setSelectedContainerName={setSelectedContainerName}
                             switchSelectedContainer={switchSelectedContainer}
@@ -374,9 +371,8 @@ function NodeDetailComponent({
                     targetContainerOption={targetContainerOption}
                     isResourceBrowserView={isResourceBrowserView}
                     containers={containers}
-                    setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
-                    selectesNamespaceByClickingPod={selectedResource.namespace}
+                    selectesNamespaceByClickingPod={selectedResource?.namespace}
                 />
             )}
         </React.Fragment>

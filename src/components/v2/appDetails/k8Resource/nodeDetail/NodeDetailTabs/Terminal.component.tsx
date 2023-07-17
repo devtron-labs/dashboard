@@ -34,7 +34,6 @@ function TerminalComponent({
     selectedContainer,
     setSelectedContainer,
     containers,
-    setContainers,
     selectedContainerName,
     setSelectedContainerName,
     switchSelectedContainer
@@ -88,9 +87,7 @@ function TerminalComponent({
                           _containers.push(con)
                       }
                   })
-                  setContainers(_containers)
                   switchSelectedContainer(containers?.[0]?.name || '')
-                  // setSelectedContainer(selectedContainer.set(selectedContainerValue, containers?.[0]?.name || ''))
                   toast.success('Deleted successfully')
               })
               .catch((error) => {
@@ -189,8 +186,7 @@ function TerminalComponent({
 
     useEffect(() => {
         setSelectedContainerName(_selectedContainer)
-    }, [containers,selectedContainer])
-
+    }, [containers])
     useEffect(() => {
         clearTimeout(clusterTimeOut)
         if (terminalRef.current) {

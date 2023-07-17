@@ -49,7 +49,6 @@ function EphemeralContainerDrawer({
     setImageListOption,
     isResourceBrowserView,
     containers,
-    setContainers,
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectesNamespaceByClickingPod,
@@ -440,7 +439,6 @@ function EphemeralContainerDrawer({
                 } as Options)
 
                 setResourceContainers(_containers)
-                setContainers(_containers)
                 setEphemeralContainerDrawer(false)
                 switchSelectedContainer(containerName)
             })

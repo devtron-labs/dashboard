@@ -49,8 +49,7 @@ export interface EphemeralContainerDrawerType {
     imageListOption: OptionType[]
     setImageListOption?: React.Dispatch<React.SetStateAction<OptionType[]>>
     isResourceBrowserView: boolean
-    containers: Options[]
-    setContainers: React.Dispatch<React.SetStateAction<Options[]>>
+    containers?: Options[]
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
     selectesNamespaceByClickingPod?: string
