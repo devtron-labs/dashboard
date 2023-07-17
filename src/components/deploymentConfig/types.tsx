@@ -104,7 +104,7 @@ export interface DeploymentConfigFormCTAProps {
     disableCheckbox?: boolean
     disableButton?: boolean
     toggleAppMetrics: () => void
-    selectedChart: DeploymentChartVersionType,
+    selectedChart: DeploymentChartVersionType
 }
 
 export interface CompareWithDropdownProps {
@@ -122,9 +122,7 @@ export interface ChartTypeVersionOptionsProps {
     charts: DeploymentChartVersionType[]
     chartsMetadata?: Record<string, ChartMetadataType>
     selectedChart: DeploymentChartVersionType
-    selectChart: (
-        selectedChart: DeploymentChartVersionType,
-    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartVersionType>>
+    selectChart: (selectedChart: DeploymentChartVersionType) => void
     selectedChartRefId: number
 }
 
@@ -140,15 +138,9 @@ export interface CompareOptionsProps {
 }
 
 export interface DeploymentTemplateOptionsTabProps {
-    isComparisonAvailable: boolean
-    environmentName?: string
-    isEnvOverride?: boolean
     openComparison: boolean
-    handleComparisonClick: () => void
     chartConfigLoading: boolean
     openReadMe: boolean
-    isReadMeAvailable: boolean
-    handleReadMeClick: () => void
     isUnSet: boolean
     charts: DeploymentChartVersionType[]
     chartsMetadata?: Record<string, ChartMetadataType>
@@ -166,35 +158,21 @@ export interface DeploymentTemplateOptionsTabProps {
 }
 
 export interface DeploymentTemplateEditorViewProps {
-    appId: string
-    envId: string
-    isUnSet: boolean
     isEnvOverride?: boolean
     environmentName?: string
-    openComparison: boolean
-    showReadme: boolean
-    chartConfigLoading: boolean
-    readme: string
     value: string
     defaultValue?: string
     editorOnChange: (str: string, fromBasic?: boolean) => void
-    schemas: any
-    charts: DeploymentChartVersionType[]
-    selectedChart: DeploymentChartVersionType
-    environments: AppEnvironment[]
-    fetchedValues: Record<number, string>
-    setFetchedValues: React.Dispatch<React.SetStateAction<Record<number, string>>>
     readOnly?: boolean
     globalChartRefId?: number
-    yamlMode: boolean
-    basicFieldValues: Record<string, any>
-    setBasicFieldValues?: (
-        basicFieldValues: Record<string, any>,
-    ) => void | React.Dispatch<React.SetStateAction<Record<string, any>>>
-    basicFieldValuesErrorObj: BasicFieldErrorObj
-    setBasicFieldValuesErrorObj?: (
-        basicFieldErrorObj: BasicFieldErrorObj,
-    ) => void | React.Dispatch<React.SetStateAction<BasicFieldErrorObj>>
+    handleOverride?: (e: any) => Promise<void>
+}
+
+export interface DeploymentConfigContextType {
+    isUnSet: boolean
+    state: DeploymentConfigStateType
+    dispatch: React.Dispatch<DeploymentConfigStateAction>
+    environments: AppEnvironment[]
     changeEditorMode: () => void
 }
 
@@ -274,4 +252,80 @@ export interface ChartSelectorModalType {
 
 export interface ChartMetadataType {
     chartDescription: string
+}
+
+export interface DeploymentConfigToolbarProps {
+    selectedTabIndex: number
+    handleTabSelection: (index: number) => void
+    noReadme?: boolean
+    showReadme: boolean
+    handleReadMeClick: () => void
+}
+
+export interface DeploymentConfigStateType {
+    charts: DeploymentChartVersionType[]
+    chartsMetadata: Record<string, ChartMetadataType>
+    selectedChartRefId: number
+    selectedChart: DeploymentChartVersionType
+    template: string
+    schema: any
+    loading: boolean
+    chartConfig: any
+    isAppMetricsEnabled: boolean
+    tempFormData: string
+    chartConfigLoading: boolean
+    showConfirmation: boolean
+    showReadme: boolean
+    openComparison: boolean
+    selectedTabIndex: number
+    readme: string
+    fetchedValues: Record<number | string, string>
+    yamlMode: boolean
+    isBasicLocked: boolean
+    isBasicLockedInBase: boolean
+    currentEditorView: string
+    basicFieldValues: Record<string, any>
+    basicFieldValuesErrorObj: BasicFieldErrorObj
+    data: any,
+    duplicate: any
+    dialog: boolean,
+    latestAppChartRef: any
+    latestChartRef: any
+}
+
+export enum DeploymentConfigStateActionTypes {
+    loading = 'loading',
+    charts = 'charts',
+    chartsMetadata = 'chartsMetadata',
+    selectedChartRefId = 'selectedChartRefId',
+    selectedChart = 'selectedChart',
+    template = 'template',
+    schemas = 'schemas',
+    chartConfig = 'chartConfig',
+    isAppMetricsEnabled = 'isAppMetricsEnabled',
+    tempFormData = 'tempFormData',
+    chartConfigLoading = 'chartConfigLoading',
+    showConfirmation = 'showConfirmation',
+    showReadme = 'showReadme',
+    openComparison = 'openComparison',
+    selectedTabIndex = 'selectedTabIndex',
+    readme = 'readme',
+    fetchedValues = 'fetchedValues',
+    yamlMode = 'yamlMode',
+    isBasicLocked = 'isBasicLocked',
+    isBasicLockedInBase = 'isBasicLockedInBase',
+    currentEditorView = 'currentEditorView',
+    basicFieldValues = 'basicFieldValues',
+    basicFieldValuesErrorObj = 'basicFieldValuesErrorObj',
+    duplicate = 'duplicate',
+    appMetrics = 'appMetrics',
+    data = 'data',
+    toggleDialog = 'toggleDialog',
+    reset = 'reset',
+    multipleOptions = 'multipleOptions',
+}
+
+export interface DeploymentConfigStateAction {
+    type: DeploymentConfigStateActionTypes
+    payload?: any
 }

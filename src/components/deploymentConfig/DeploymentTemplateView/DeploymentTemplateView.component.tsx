@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { versionComparator } from '../../common'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Arrows } from '../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
+import warningIcon from '../../../assets/icons/ic-info-filled.svg'
 import {
     ChartTypeVersionOptionsProps,
     CompareOptionsProps,
@@ -17,6 +18,7 @@ import {
     DeploymentChartGroupOptionType,
     DeploymentChartOptionType,
     DeploymentChartVersionType,
+    DeploymentConfigStateActionTypes,
 } from '../types'
 import {
     COMPARE_VALUES_TIPPY_CONTENT,
@@ -26,6 +28,7 @@ import {
 } from '../constants'
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
+import { DeploymentConfigContext } from '../DeploymentConfig'
 
 const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
     const handleReadMeOptionClick = () => {
@@ -381,7 +384,7 @@ export const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 158px)'
+        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 148px)'
     } else if (isEnvOverride) {
         return 'calc(100vh - 266px)'
     }
@@ -391,26 +394,93 @@ export const getCodeEditorHeight = (
 
 export const renderEditorHeading = (
     isEnvOverride: boolean,
+    overridden: boolean,
     readOnly: boolean,
     environmentName: string,
     selectedChart: DeploymentChartVersionType,
+    handleOverride: (e: any) => Promise<void>,
 ) => {
     return (
-        <>
-            {!readOnly && <Edit className="icon-dim-16 mr-10" />}
-            {`${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
-                selectedChart ? `(${selectedChart.version})` : ''
-            }`}
-            {isEnvOverride && readOnly && (
-                <Tippy
-                    className="default-tt w-200"
-                    arrow={false}
-                    placement="top"
-                    content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
+        <div className="flex dc__content-space w-100">
+            <div className="flex left">
+                {!readOnly && <Edit className="icon-dim-16 mr-10" />}
+                {`${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
+                    selectedChart ? `(${selectedChart.version})` : ''
+                }`}
+                {isEnvOverride && readOnly && (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
+                    >
+                        <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    </Tippy>
+                )}
+            </div>
+            {isEnvOverride && (
+                <span
+                    data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
+                    onClick={handleOverride}
                 >
-                    <Locked className="icon-dim-16 fcn-6 ml-10" />
-                </Tippy>
+                    {overridden ? 'Delete override' : 'Allow override'}
+                </span>
             )}
-        </>
+        </div>
+    )
+}
+
+export const SuccessToastBody = ({ chartConfig }) => {
+    return (
+        <div className="toast">
+            <div
+                className="toast__title"
+                data-testid={`${
+                    chartConfig.id ? 'update-base-deployment-template-popup' : 'saved-base-deployment-template-popup'
+                }`}
+            >
+                {chartConfig.id ? 'Updated' : 'Saved'}
+            </div>
+            <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
+        </div>
+    )
+}
+
+export const SaveConfirmationDialog = ({ save }) => {
+    const { state, dispatch } = useContext(DeploymentConfigContext)
+
+    const closeConfirmationDialog = () => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.showConfirmation,
+            payload: false,
+        })
+    }
+
+    return (
+        <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warningIcon} />
+            <ConfirmationDialog.Body title="Retain overrides and update" />
+            <p>Changes will only be applied to environments using default configuration.</p>
+            <p>Environments using overriden configurations will not be updated.</p>
+            <ConfirmationDialog.ButtonGroup>
+                <button
+                    data-testid="base-deployment-template-cancel-button"
+                    type="button"
+                    className="cta cancel"
+                    onClick={closeConfirmationDialog}
+                >
+                    Cancel
+                </button>
+                <button
+                    data-testid="base_deployment_template_update_button"
+                    type="button"
+                    className="cta"
+                    onClick={save}
+                >
+                    {state.loading ? <Progressing /> : state.chartConfig.id ? 'Update' : 'Save'}
+                </button>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>
     )
 }

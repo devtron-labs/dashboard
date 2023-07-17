@@ -1,5 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { DeploymentChartOptionType, DeploymentTemplateEditorViewProps } from '../types'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import {
+    BasicFieldErrorObj,
+    DeploymentChartOptionType,
+    DeploymentConfigContextType,
+    DeploymentConfigStateActionTypes,
+    DeploymentTemplateEditorViewProps,
+} from '../types'
 import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
@@ -18,36 +24,23 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { useParams } from 'react-router-dom'
+import { DeploymentConfigContext } from '../DeploymentConfig'
 
 export default function DeploymentTemplateEditorView({
-    appId,
-    envId,
-    isUnSet,
     isEnvOverride,
-    environmentName,
-    openComparison,
-    showReadme,
-    chartConfigLoading,
-    readme,
+    globalChartRefId,
+    readOnly,
     value,
     defaultValue,
+    environmentName,
     editorOnChange,
-    schemas,
-    charts,
-    selectedChart,
-    environments,
-    fetchedValues,
-    setFetchedValues,
-    readOnly,
-    globalChartRefId,
-    yamlMode,
-    basicFieldValues,
-    setBasicFieldValues,
-    basicFieldValuesErrorObj,
-    setBasicFieldValuesErrorObj,
-    changeEditorMode,
+    handleOverride,
 }: DeploymentTemplateEditorViewProps) {
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const envVariableSectionRef = useRef(null)
+    const { isUnSet, state, environments, dispatch, changeEditorMode } =
+        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
@@ -55,7 +48,7 @@ export default function DeploymentTemplateEditorView({
     const [globalChartRef, setGlobalChartRef] = useState(null)
 
     useEffect(() => {
-        if (selectedChart && environments.length > 0) {
+        if (state.selectedChart && environments.length > 0) {
             let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
             if (isEnvOverride) {
                 _filteredEnvironments = environments.filter((env) => +envId !== env.environmentId)
@@ -66,21 +59,21 @@ export default function DeploymentTemplateEditorView({
                     id: env.environmentId,
                     label: env.environmentName,
                     value: env.chartRefId,
-                    version: charts.find((chart) => chart.id === env.chartRefId)?.version || '',
+                    version: state.charts.find((chart) => chart.id === env.chartRefId)?.version || '',
                     kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key,
                 })) as DeploymentChartOptionType[],
             )
         }
-    }, [selectedChart, environments])
+    }, [state.selectedChart, environments])
 
     useEffect(() => {
-        if (selectedChart && charts.length > 0) {
-            const _filteredCharts = charts
+        if (state.selectedChart && state.charts.length > 0) {
+            const _filteredCharts = state.charts
                 .filter((chart) => {
                     if (!globalChartRef && chart.id === globalChartRefId) {
                         setGlobalChartRef(chart)
                     }
-                    return chart.name === selectedChart.name
+                    return chart.name === state.selectedChart.name
                 })
                 .sort((a, b) =>
                     versionComparator(a, b, DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version, SortingOrder.DESC),
@@ -95,10 +88,15 @@ export default function DeploymentTemplateEditorView({
                 })) as DeploymentChartOptionType[],
             )
         }
-    }, [selectedChart, charts])
+    }, [state.selectedChart, state.charts])
 
     useEffect(() => {
-        if (selectedChart && selectedOption && selectedOption.id !== -1 && !fetchedValues[selectedOption.id]) {
+        if (
+            state.selectedChart &&
+            selectedOption &&
+            selectedOption.id !== -1 &&
+            !state.fetchedValues[selectedOption.id]
+        ) {
             setFetchingValues(true)
             const isEnvOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
             const isChartVersionOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
@@ -113,7 +111,7 @@ export default function DeploymentTemplateEditorView({
                 .then(({ result }) => {
                     if (result) {
                         const _fetchedValues = {
-                            ...fetchedValues,
+                            ...state.fetchedValues,
                             [selectedOption.id]: YAML.stringify(
                                 isChartVersionOption
                                     ? result.defaultAppOverride
@@ -137,7 +135,28 @@ export default function DeploymentTemplateEditorView({
         return (): void => {
             setSelectedOption(null)
         }
-    }, [openComparison])
+    }, [state.openComparison])
+
+    const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.fetchedValues,
+            payload: fetchedValues,
+        })
+    }
+
+    const setBasicFieldValues = (basicFieldValues: Record<string, any>) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.basicFieldValues,
+            payload: basicFieldValues,
+        })
+    }
+
+    const setBasicFieldValuesErrorObj = (basicFieldValuesErrorObj: BasicFieldErrorObj) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.basicFieldValuesErrorObj,
+            payload: basicFieldValuesErrorObj,
+        })
+    }
 
     const renderActionButton = () => {
         return (
@@ -170,7 +189,7 @@ export default function DeploymentTemplateEditorView({
     }
 
     const handleInputChange = (e) => {
-        const _basicFieldValues = { ...basicFieldValues }
+        const _basicFieldValues = { ...state.basicFieldValues }
         if (e.target.name === BASIC_FIELDS.PORT) {
             e.target.value = e.target.value.replace(/\D/g, '')
             _basicFieldValues[BASIC_FIELDS.PORT] = e.target.value && Number(e.target.value)
@@ -197,7 +216,7 @@ export default function DeploymentTemplateEditorView({
 
     const addRow = (e): void => {
         if (readOnly) return
-        const _basicFieldValues = { ...basicFieldValues }
+        const _basicFieldValues = { ...state.basicFieldValues }
         if (e.currentTarget.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
         } else {
@@ -205,7 +224,7 @@ export default function DeploymentTemplateEditorView({
         }
         setBasicFieldValues(_basicFieldValues)
         if (e.currentTarget.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
-            const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
+            const _basicFieldValuesErrorObj = { ...state.basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
             if (_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length <= 2) {
@@ -218,7 +237,7 @@ export default function DeploymentTemplateEditorView({
 
     const removeRow = (name: string, index: number): void => {
         if (readOnly) return
-        const _basicFieldValues = { ...basicFieldValues }
+        const _basicFieldValues = { ...state.basicFieldValues }
         const _currentValue =
             name === BASIC_FIELDS.ENV_VARIABLES
                 ? _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES]
@@ -240,7 +259,7 @@ export default function DeploymentTemplateEditorView({
     }
 
     const handleIngressEnabledToggle = (): void => {
-        const _basicFieldValues = { ...basicFieldValues }
+        const _basicFieldValues = { ...state.basicFieldValues }
         _basicFieldValues[BASIC_FIELDS.ENABLED] = !_basicFieldValues[BASIC_FIELDS.ENABLED]
         setBasicFieldValues(_basicFieldValues)
     }
@@ -249,27 +268,41 @@ export default function DeploymentTemplateEditorView({
         return (
             <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
-                    defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
+                    defaultValue={
+                        (selectedOption?.id === -1 ? defaultValue : state.fetchedValues[selectedOption?.id]) || ''
+                    }
                     value={value}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
-                    validatorSchema={schemas}
-                    loading={chartConfigLoading || value === undefined || value === null || fetchingValues}
-                    height={getCodeEditorHeight(isUnSet, isEnvOverride, openComparison, showReadme)}
-                    diffView={openComparison}
+                    validatorSchema={state.schema}
+                    loading={state.chartConfigLoading || value === undefined || value === null || fetchingValues}
+                    height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
+                    diffView={state.openComparison}
                     readOnly={readOnly}
                 >
-                    {isUnSet && !openComparison && !showReadme && (
+                    {isUnSet && !state.openComparison && !state.showReadme && (
                         <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
                     )}
-                    {showReadme && (
-                        <CodeEditor.Header hideDefaultSplitHeader={true}>
-                            <div className="flex fs-12 fw-6 cn-9">
-                                {renderEditorHeading(isEnvOverride, readOnly, environmentName, selectedChart)}
+                    {state.showReadme && (
+                        <CodeEditor.Header
+                            className={`code-editor__header flex left p-0-imp ${
+                                isEnvOverride ? (!!state.duplicate ? 'bcy-1' : 'bcb-1') : ''
+                            }`}
+                            hideDefaultSplitHeader={true}
+                        >
+                            <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
+                                {renderEditorHeading(
+                                    isEnvOverride,
+                                    !!state.duplicate,
+                                    readOnly,
+                                    environmentName,
+                                    state.selectedChart,
+                                    handleOverride,
+                                )}
                             </div>
                         </CodeEditor.Header>
                     )}
-                    {openComparison && (
+                    {state.openComparison && (
                         <CodeEditor.Header hideDefaultSplitHeader={true}>
                             <>
                                 <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32">
@@ -283,8 +316,19 @@ export default function DeploymentTemplateEditorView({
                                         globalChartRef={globalChartRef}
                                     />
                                 </div>
-                                <div className="flex left fs-12 fw-6 cn-9 pl-16 h-32">
-                                    {renderEditorHeading(isEnvOverride, readOnly, environmentName, selectedChart)}
+                                <div
+                                    className={`flex left fs-12 fw-6 cn-9 pl-16 h-32 ${
+                                        isEnvOverride ? (!!state.duplicate ? 'bcy-1' : 'bcb-1') : ''
+                                    }`}
+                                >
+                                    {renderEditorHeading(
+                                        isEnvOverride,
+                                        !!state.duplicate,
+                                        readOnly,
+                                        environmentName,
+                                        state.selectedChart,
+                                        handleOverride,
+                                    )}
                                 </div>
                             </>
                         </CodeEditor.Header>
@@ -294,16 +338,17 @@ export default function DeploymentTemplateEditorView({
         )
     }
 
-    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
+    return state.yamlMode ||
+        (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
         <>
-            {showReadme ? (
+            {state.showReadme ? (
                 <>
                     <div className="dt-readme dc__border-right">
                         <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
-                        {chartConfigLoading ? (
+                        {state.chartConfigLoading ? (
                             <Progressing pageLoader />
                         ) : (
-                            <MarkDown markdown={readme} className="dt-readme-markdown" />
+                            <MarkDown markdown={state.readme} className="dt-readme-markdown" />
                         )}
                     </div>
                     {renderCodeEditor()}
@@ -325,7 +370,7 @@ export default function DeploymentTemplateEditorView({
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
                 }`}
             >
-                {chartConfigLoading || !value || fetchingValues ? (
+                {state.chartConfigLoading || !value || fetchingValues ? (
                     <div className="flex h-100">
                         <Progressing pageLoader />
                     </div>
@@ -338,23 +383,25 @@ export default function DeploymentTemplateEditorView({
                                 <input
                                     type="text"
                                     name={BASIC_FIELDS.PORT}
-                                    value={basicFieldValues?.[BASIC_FIELDS.PORT]}
+                                    value={state.basicFieldValues?.[BASIC_FIELDS.PORT]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     data-testid="containerport-textbox"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
                                     autoComplete="off"
                                 />
-                                {basicFieldValuesErrorObj?.port && !basicFieldValuesErrorObj.port.isValid && (
+                                {state.basicFieldValuesErrorObj?.port && !state.basicFieldValuesErrorObj.port.isValid && (
                                     <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{basicFieldValuesErrorObj.port.message}</span>
+                                        <span>{state.basicFieldValuesErrorObj.port.message}</span>
                                     </span>
                                 )}
                             </div>
                         </div>
                         <div
-                            className={`row-container ${basicFieldValues?.[BASIC_FIELDS.ENABLED] ? ' mb-8' : ' mb-16'}`}
+                            className={`row-container ${
+                                state.basicFieldValues?.[BASIC_FIELDS.ENABLED] ? ' mb-8' : ' mb-16'
+                            }`}
                         >
                             <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
                             <div
@@ -363,13 +410,13 @@ export default function DeploymentTemplateEditorView({
                                 style={{ width: '32px', height: '20px' }}
                             >
                                 <Toggle
-                                    selected={basicFieldValues?.[BASIC_FIELDS.ENABLED]}
+                                    selected={state.basicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleIngressEnabledToggle}
-                                    disabled={readOnly || basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
+                                    disabled={readOnly || state.basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
                                 />
                             </div>
                         </div>
-                        {basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
+                        {state.basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
                             <div className="mb-12">
                                 <div className="row-container mb-12">
                                     {renderLabel('Host', 'Host name')}
@@ -377,7 +424,7 @@ export default function DeploymentTemplateEditorView({
                                         type="text"
                                         data-testid="httprequests-routes-host-textbox"
                                         name={BASIC_FIELDS.HOST}
-                                        value={basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
+                                        value={state.basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
                                         readOnly={readOnly}
@@ -396,7 +443,7 @@ export default function DeploymentTemplateEditorView({
                                         Add path
                                     </div>
                                 </div>
-                                {basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0]?.[BASIC_FIELDS.PATHS]?.map(
+                                {state.basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0]?.[BASIC_FIELDS.PATHS]?.map(
                                     (path: string, index: number) => (
                                         <div className="row-container mb-4" key={`${BASIC_FIELDS.PATH}-${index}`}>
                                             <div />
@@ -429,7 +476,7 @@ export default function DeploymentTemplateEditorView({
                                     data-testid="resources-cpu-textbox"
                                     name={BASIC_FIELDS.RESOURCES_CPU}
                                     value={
-                                        basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
+                                        state.basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
                                             BASIC_FIELDS.CPU
                                         ]
                                     }
@@ -438,10 +485,10 @@ export default function DeploymentTemplateEditorView({
                                     readOnly={readOnly}
                                     autoComplete="off"
                                 />
-                                {basicFieldValuesErrorObj?.cpu && !basicFieldValuesErrorObj.cpu.isValid && (
+                                {state.basicFieldValuesErrorObj?.cpu && !state.basicFieldValuesErrorObj.cpu.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{basicFieldValuesErrorObj.cpu.message}</span>
+                                        <span>{state.basicFieldValuesErrorObj.cpu.message}</span>
                                     </span>
                                 )}
                             </div>
@@ -454,7 +501,7 @@ export default function DeploymentTemplateEditorView({
                                     type="text"
                                     name={BASIC_FIELDS.RESOURCES_MEMORY}
                                     value={
-                                        basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
+                                        state.basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
                                             BASIC_FIELDS.MEMORY
                                         ]
                                     }
@@ -463,12 +510,13 @@ export default function DeploymentTemplateEditorView({
                                     readOnly={readOnly}
                                     autoComplete="off"
                                 />
-                                {basicFieldValuesErrorObj?.memory && !basicFieldValuesErrorObj.memory.isValid && (
-                                    <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{basicFieldValuesErrorObj.memory.message}</span>
-                                    </span>
-                                )}
+                                {state.basicFieldValuesErrorObj?.memory &&
+                                    !state.basicFieldValuesErrorObj.memory.isValid && (
+                                        <span className="flexbox cr-5 fw-5 fs-11 flexbox">
+                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                            <span>{state.basicFieldValuesErrorObj.memory.message}</span>
+                                        </span>
+                                    )}
                             </div>
                         </div>
                         <div className="fw-6 fs-14 cn-9 mb-8">Environment Variables</div>
@@ -487,48 +535,52 @@ export default function DeploymentTemplateEditorView({
                                 Add variable
                             </div>
                         </div>
-                        {basicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map((envVariable: string, index: number) => (
-                            <div className="row-container mb-4" key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}>
-                                <div />
-                                <div>
-                                    <input
-                                        type="text"
-                                        data-testid="environment-variable-name"
-                                        name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.NAME}-${index}`}
-                                        data-index={index}
-                                        value={envVariable[BASIC_FIELDS.NAME]}
-                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
-                                        onChange={handleInputChange}
-                                        placeholder={BASIC_FIELDS.NAME}
-                                        readOnly={readOnly}
-                                        autoComplete="off"
-                                    />
-                                    <textarea
-                                        data-testid="environment-variable-value"
-                                        name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.VALUE}-${index}`}
-                                        data-index={index}
-                                        value={envVariable[BASIC_FIELDS.VALUE]}
-                                        className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
-                                        onChange={handleInputChange}
-                                        rows={2}
-                                        placeholder={BASIC_FIELDS.VALUE}
-                                        readOnly={readOnly}
-                                    ></textarea>
+                        {state.basicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map(
+                            (envVariable: string, index: number) => (
+                                <div className="row-container mb-4" key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}>
+                                    <div />
+                                    <div>
+                                        <input
+                                            type="text"
+                                            data-testid="environment-variable-name"
+                                            name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.NAME}-${index}`}
+                                            data-index={index}
+                                            value={envVariable[BASIC_FIELDS.NAME]}
+                                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
+                                            onChange={handleInputChange}
+                                            placeholder={BASIC_FIELDS.NAME}
+                                            readOnly={readOnly}
+                                            autoComplete="off"
+                                        />
+                                        <textarea
+                                            data-testid="environment-variable-value"
+                                            name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.VALUE}-${index}`}
+                                            data-index={index}
+                                            value={envVariable[BASIC_FIELDS.VALUE]}
+                                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
+                                            onChange={handleInputChange}
+                                            rows={2}
+                                            placeholder={BASIC_FIELDS.VALUE}
+                                            readOnly={readOnly}
+                                        ></textarea>
 
-                                    {basicFieldValuesErrorObj?.envVariables[index] &&
-                                        !basicFieldValuesErrorObj.envVariables[index].isValid && (
-                                            <span className="flexbox cr-5 fw-5 fs-11 flexbox">
-                                                <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                                <span>{basicFieldValuesErrorObj.envVariables[index].message}</span>
-                                            </span>
-                                        )}
+                                        {state.basicFieldValuesErrorObj?.envVariables[index] &&
+                                            !state.basicFieldValuesErrorObj.envVariables[index].isValid && (
+                                                <span className="flexbox cr-5 fw-5 fs-11 flexbox">
+                                                    <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                                    <span>
+                                                        {state.basicFieldValuesErrorObj.envVariables[index].message}
+                                                    </span>
+                                                </span>
+                                            )}
+                                    </div>
+                                    <Close
+                                        className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
+                                        onClick={(e) => removeRow(BASIC_FIELDS.ENV_VARIABLES, index)}
+                                    />
                                 </div>
-                                <Close
-                                    className="option-close-icon icon-dim-16 mt-8 mr-8 pointer"
-                                    onClick={(e) => removeRow(BASIC_FIELDS.ENV_VARIABLES, index)}
-                                />
-                            </div>
-                        ))}
+                            ),
+                        )}
                     </div>
                 )}
                 <div ref={envVariableSectionRef}></div>

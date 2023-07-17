@@ -30,30 +30,35 @@
 .app-compose__deployment-config {
     min-width: 960px;
 
+    .white-card__deployment-config {
+        height: calc(100% - 39px);
+
+        .select-button {
+            padding-left: 8px;
+            height: 40px;
+        }
+    }
+
     &.full-view {
         position: absolute;
         left: 56px;
         width: calc(100% - 56px);
-        height: calc(100% - 75px);
+        height: calc(100% - 78px);
 
         .white-card__deployment-config {
-            grid-template-rows: 48px auto;
+            height: calc(100% - 37px);
+
             grid-template-columns: 1fr 1fr;
-            grid-template-areas: 'tab tab' 'readme editor';
 
             &.comparison-view {
-                grid-template-areas: 'tab' 'editor';
                 grid-template-columns: 1fr;
             }
         }
 
         .deployment-template-override-form {
-            grid-template-rows: 60px 48px auto;
             grid-template-columns: 1fr 1fr;
-            grid-template-areas: 'override override' 'tab tab' 'readme editor';
 
             &.comparison-view {
-                grid-template-areas: 'override' 'tab' 'editor';
                 grid-template-columns: 1fr;
             }
 
@@ -85,15 +90,16 @@
                 .code-editor__header {
                     height: 32px;
                     border: none;
+
+                    &.bcb-1 {
+                        background: var(--B100);
+                    }
+        
+                    &.bcy-1 {
+                        background: var(--Y100);
+                    }
                 }
             }
-        }
-    }
-
-    .white-card__deployment-config {
-        .select-button {
-            padding-left: 8px;
-            height: 40px;
         }
     }
 
@@ -126,8 +132,6 @@
     }
 
     .dt-readme {
-        grid-area: readme;
-
         .code-editor__header {
             height: 32px;
             padding: 0 12px;
@@ -135,13 +139,12 @@
         }
 
         .dt-readme-markdown {
-            height: calc(100vh - 162px);
+            height: calc(100vh - 146px);
             overflow: scroll;
         }
     }
 
     .dt-options-tab-container {
-        grid-area: tab;
         height: 48px;
 
         .dt-view-option {
@@ -237,7 +240,6 @@
     display: grid;
     grid-template-rows: 32px 1fr;
     overflow: hidden;
-    grid-area: editor;
 
     &.form__row {
         margin-bottom: 0;
@@ -364,7 +366,6 @@
         }
 
         .override-container {
-            grid-area: override;
             border: none;
             border-radius: 0;
             margin-bottom: 0;
@@ -388,5 +389,11 @@
         &:hover:not(.bcb-1) {
             background-color: var(--N50);
         }
+    }
+}
+
+.config-toolbar-container {
+    .active-tab {
+        border-bottom: 2px solid var(--B500);
     }
 }
