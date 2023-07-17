@@ -93,3 +93,5 @@ export const IMAGE_SCAN_TOOL = {
     Clair: 'Clair',
     Trivy: 'Trivy',
 }
+
+export const DEFAULT_ENV = "devtron-ci"

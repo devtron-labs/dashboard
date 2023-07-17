@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef } from 'react'
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { getLoginInfo, showError, Progressing, Host, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
@@ -72,6 +72,8 @@ export default function NavigationRoutes() {
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    const [environmentId, setEnvironmentId] = useState(null)
+    const contextValue = useMemo(() => ({environmentId, setEnvironmentId}), [environmentId] )
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -383,9 +385,11 @@ export default function NavigationRoutes() {
                                             </Route>,
                                         ]}
                                         {isSuperAdmin && !window._env_.K8S_CLIENT && (
-                                            <Route path={URLS.JOB}>
-                                                <Jobs />
-                                            </Route>
+                                            <AppContext.Provider value={contextValue}>
+                                                <Route path={URLS.JOB}>
+                                                    <Jobs />
+                                                </Route>
+                                            </AppContext.Provider>
                                         )}
                                         <Route>
                                             <RedirectUserWithSentry

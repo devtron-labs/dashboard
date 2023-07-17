@@ -56,6 +56,7 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
+import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -191,7 +192,7 @@ export default function CIPipeline({
         getEnvironmentListMinPublic()
             .then((response) => {
                 let list = []
-                list.push({ id: 0, clusterName: '', name: "default-ci", active: false, isClusterActive: false, description: "System default" })
+                list.push({ id: 0, clusterName: '', name: DEFAULT_ENV, active: false, isClusterActive: false, description: "System default" })
                 response.result?.forEach((env) => {
                     if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
                         list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name, active: false, isClusterActive: env.isClusterActive, description: env.description })
@@ -514,8 +515,9 @@ export default function CIPipeline({
         let _ciPipeline = ciPipeline
         if(selectedEnv.id !== 0) {
             _ciPipeline.environmentId = selectedEnv.id
+        } else {
+            _ciPipeline.environmentId = undefined
         }
-        
 
         saveCIPipeline(
             {
