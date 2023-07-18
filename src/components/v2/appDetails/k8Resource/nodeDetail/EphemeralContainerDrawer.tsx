@@ -57,17 +57,17 @@ function EphemeralContainerDrawer({
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
     const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
-      basicData: {
-          targetContainerName: '',
-          containerName: 'debugger',
-          image: '',
-      },
-  })
-  const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
-      advancedData: {
-          manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
-      },
-  })
+        basicData: {
+            targetContainerName: '',
+            containerName: 'debugger',
+            image: '',
+        },
+    })
+    const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
+        advancedData: {
+            manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 }),
+        },
+    })
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
     const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
 
@@ -93,9 +93,9 @@ function EphemeralContainerDrawer({
                     ...ephemeralForm,
                     basicData: {
                         ...ephemeralForm.basicData,
-                        containerName: jsonManifest["name"] || '',
-                        image: jsonManifest["image"] || '',
-                        targetContainerName: jsonManifest["targetContainerName"] || ''
+                        containerName: jsonManifest['name'] || '',
+                        image: jsonManifest['image'] || '',
+                        targetContainerName: jsonManifest['targetContainerName'] || '',
                     },
                 })
             }
@@ -114,7 +114,7 @@ function EphemeralContainerDrawer({
                     ...ephemeralForm,
                     basicData: {
                         ...ephemeralForm.basicData,
-                        image: option?.[0]?.value || ''
+                        image: option?.[0]?.value || '',
                     },
                 })
             }
@@ -208,9 +208,9 @@ function EphemeralContainerDrawer({
     }
 
     const handleKeyDown = (event) => {
-      if (event.key === 'Enter' || event.key === 'Tab') {
-        event.target.blur()
-    }
+        if (event.key === 'Enter' || event.key === 'Tab') {
+            event.target.blur()
+        }
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -219,10 +219,13 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
-                            className="default-white"
+                            className="default-tt"
                             arrow={false}
-                            placement="left"
-                            content={EPHEMERAL_CONTAINER.CONTAINER_NAME}
+                            content={
+                                <span style={{ display: 'block', width: '220px' }}>
+                                    {EPHEMERAL_CONTAINER.CONTAINER_NAME}
+                                </span>
+                            }
                         >
                             <span className="text-underline-dashed">Container name prefix</span>
                         </Tippy>
@@ -241,10 +244,11 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
-                            className="default-white"
+                            className="default-tt"
                             arrow={false}
-                            placement="left"
-                            content={EPHEMERAL_CONTAINER.IMAGE}
+                            content={
+                                <span style={{ display: 'block', width: '220px' }}>{EPHEMERAL_CONTAINER.IMAGE}</span>
+                            }
                         >
                             <span className="text-underline-dashed">Image</span>
                         </Tippy>
@@ -267,10 +271,13 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
-                            className="default-white"
+                            className="default-tt"
                             arrow={false}
-                            placement="left"
-                            content={EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
+                            content={
+                                <span style={{ display: 'block', width: '220px' }}>
+                                    {EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
+                                </span>
+                            }
                         >
                             <span className="text-underline-dashed">Target Container Name</span>
                         </Tippy>
@@ -390,9 +397,7 @@ function EphemeralContainerDrawer({
         setLoader(true)
         setShowEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
-            namespace: isResourceBrowserView
-                ? selectedNamespaceByClickingPod
-                : appDetails.namespace,
+            namespace: isResourceBrowserView ? selectedNamespaceByClickingPod : appDetails.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ? params.node : params.podName,
         }
@@ -426,7 +431,7 @@ function EphemeralContainerDrawer({
             appDetails.appId,
             appDetails.appType,
             isResourceBrowserView,
-            params
+            params,
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')

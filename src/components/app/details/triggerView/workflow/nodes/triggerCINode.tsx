@@ -7,6 +7,7 @@ import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { TriggerViewContext } from '../../config'
+import { DEFAULT_ENV } from '../../Constants'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -35,6 +36,8 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
         action: any
         metadataField: string
     }
+    filteredCIPipelines?: any[]
+    environmentLists?: any[]
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -70,7 +73,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             return (
                 <div
                     data-testid={`ci-trigger-status-${this.props.index}`}
-                    className="dc__cd-trigger-status"
+                    className="dc__cd-trigger-status mb-6"
                     style={{ color: TriggerStatus[status] }}
                 >
                     {this.props.status ? this.props.status : BUILD_STATUS.NOT_TRIGGERED}
@@ -80,7 +83,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             return (
                 <div
                     data-testid={`ci-trigger-status-${this.props.index}`}
-                    className="dc__cd-trigger-status"
+                    className="dc__cd-trigger-status mb-6"
                     style={{ color: TriggerStatus[status] }}
                 >
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
@@ -100,7 +103,17 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
 
     renderCardContent(context) {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
-
+        let _selectedEnv
+        if (this.props.isJobView) {
+            let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
+            let envId = _selectedPipeline?.environmentId
+            if (!_selectedPipeline?.environmentId && _selectedPipeline?.lastTriggeredEnvId === -1) {
+                envId = 0
+            } else if (_selectedPipeline?.lastTriggeredEnvId !== -1) {
+                envId = _selectedPipeline?.lastTriggeredEnvId
+            }
+            _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+        }
         return (
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
@@ -129,10 +142,16 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        <span className="workflow-node__text-light">{this.props.isJobView ? 'Job' : 'Build'}</span>
+                        {!this.props.isJobView && <span className="workflow-node__text-light">Build</span>}
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
+                        {this.props.isJobView && _selectedEnv && (
+                            <>
+                                <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>
+                                {_selectedEnv.name === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>}
+                            </>
+                        )}
                     </div>
                     <div
                         className={`workflow-node__icon-common ml-8 ${

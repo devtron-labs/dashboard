@@ -386,3 +386,4 @@ export const EPHEMERAL_CONTAINER = {
   IMAGE: 'Container image name',
   TARGET_CONTAINER_NAME: 'Name of the container from PodSpec that this ephemeral container targets. The ephemeral container will be run in the namespaces (IPC, PID, etc) of this container.'
 }
+export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pipeline'
