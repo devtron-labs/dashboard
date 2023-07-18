@@ -709,7 +709,7 @@ export default function NewCDPipeline({
                         pipelineConfigFromRes.cdPipelineId
                             ? 'Deployment pipeline updated'
                             : 'Deployment pipeline created',
-                        _form.ciPipelineId ? false : true,
+                        !_form.ciPipelineId,
                     )
                     getWorkflows()
                 }

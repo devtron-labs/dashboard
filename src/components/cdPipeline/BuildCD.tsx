@@ -360,7 +360,7 @@ export default function BuildCD({
                             data-testid="cd-pipeline-namespace-textbox"
                             type="text"
                             disabled={!namespaceEditable}
-                            value={selectedEnv && selectedEnv.namespace ? selectedEnv.namespace : formData.namespace}
+                            value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
                             onChange={handleNamespaceChange}
                         />
 
