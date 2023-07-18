@@ -848,7 +848,7 @@ export default function ClusterForm({
                     </button>
                 </div>
                     <div
-                        className="dc__position-relr"
+                        className="dc__position-rel"
                         style={{ height: 'calc(100vh - 110px)' }}
                     >
                         <GenericEmptyState
