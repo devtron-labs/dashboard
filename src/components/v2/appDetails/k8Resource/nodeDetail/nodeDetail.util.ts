@@ -365,3 +365,18 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
 
     return []
 }
+
+export const selectStyles = {
+    ...multiSelectStyles,
+    control: (base) => ({
+        ...base,
+        minHeight: '36px',
+        fontWeight: '400',
+        backgroundColor: 'var(--N50)',
+        cursor: 'pointer',
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        padding: '0 8px',
+    }),
+}
