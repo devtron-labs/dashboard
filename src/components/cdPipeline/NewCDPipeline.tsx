@@ -13,7 +13,7 @@ import {
     VariableType,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
@@ -197,48 +197,48 @@ export default function NewCDPipeline({
             getGlobalVariable(Number(appId), true),
             getDockerRegistryMinAuth(appId, true),
         ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
-            let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
-            let dockerRegistries = dockerResponse.result || []
-            const _allStrategies = {}
+                let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+                let dockerRegistries = dockerResponse.result || []
+                const _allStrategies = {}
 
-            strategies.forEach((strategy) => {
-                if (!_allStrategies[strategy.deploymentTemplate]) {
-                    _allStrategies[strategy.deploymentTemplate] = {}
+                strategies.forEach((strategy) => {
+                    if (!_allStrategies[strategy.deploymentTemplate]) {
+                        _allStrategies[strategy.deploymentTemplate] = {}
+                    }
+                    _allStrategies[strategy.deploymentTemplate] = strategy.config
+                })
+                allStrategies.current = _allStrategies
+                noStrategyAvailable.current = strategies.length === 0
+
+                const _form = { ...formData }
+                _form.strategies = strategies
+                getAvailablePlugins()
+                if (cdPipelineId) {
+                    getCDPipeline(_form)
+                } else {
+                    getEnvCDPipelineName(_form)
+                    if (strategies.length > 0) {
+                        let defaultStrategy = strategies.find((strategy) => strategy.default)
+                        handleStrategy(defaultStrategy.deploymentTemplate)
+                    }
                 }
-                _allStrategies[strategy.deploymentTemplate] = strategy.config
+
+                const _globalVariableOptions = envResponse.result?.map((variable) => {
+                    variable.label = variable.name
+                    variable.value = variable.name
+                    variable.description = variable.description || ''
+                    variable.variableType = RefVariableType.GLOBAL
+                    delete variable.name
+                    return variable
+                })
+
+                setGlobalVariables(_globalVariableOptions || [])
+                setDockerRegistries(dockerRegistries)
+            }).catch((error: ServerErrors) => {
+                showError(error)
+                setErrorCode(error.code)
+                setPageState(ViewType.ERROR)
             })
-            allStrategies.current = _allStrategies
-            noStrategyAvailable.current = strategies.length === 0
-
-            const _form = { ...formData }
-            _form.strategies = strategies
-            getAvailablePlugins()
-            if (cdPipelineId) {
-                getCDPipeline(_form)
-            } else {
-                getEnvCDPipelineName(_form)
-                if (strategies.length > 0) {
-                    let defaultStrategy = strategies.find((strategy) => strategy.default)
-                    handleStrategy(defaultStrategy.deploymentTemplate)
-                }
-            }
-
-            const _globalVariableOptions = envResponse.result?.map((variable) => {
-                variable.label = variable.name
-                variable.value = variable.name
-                variable.description = variable.description || ''
-                variable.variableType = RefVariableType.GLOBAL
-                delete variable.name
-                return variable
-            })
-
-            setGlobalVariables(_globalVariableOptions || [])
-            setDockerRegistries(dockerRegistries)
-        }).catch((error: ServerErrors) => {
-            showError(error)
-            setErrorCode(error.code)
-            setPageState(ViewType.ERROR)
-        })
     }
 
     const getEnvCDPipelineName = (form) => {
@@ -289,7 +289,7 @@ export default function NewCDPipeline({
             startIndex,
             isFromMoveTask,
             isCdPipeline,
-            globalVariables
+            globalVariables,
         )
         const _inputVariablesListFromPrevStep = { ...inputVariablesListFromPrevStep }
         _inputVariablesListFromPrevStep[activeStageName] = _inputVariablesListPerTask
@@ -407,7 +407,10 @@ export default function NewCDPipeline({
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
         form.containerRegistryName = pipelineConfigFromRes.containerRegistryName
-        form.manifestStorageType = pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : 'helm_repo'
+        form.manifestStorageType =
+            pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
+                ? GeneratedHelmPush.PUSH
+                : 'helm_repo'
         form.environmentId = pipelineConfigFromRes.environmentId
         form.environments = environments
         form.savedStrategies = savedStrategies
@@ -466,9 +469,13 @@ export default function NewCDPipeline({
         }
         form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPreStageInEnv)
         form.runPostStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPostStageInEnv)
-        form.generatedHelmPushAction = pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH ? GeneratedHelmPush.PUSH : GeneratedHelmPush.DO_NOT_PUSH
-        form.selectedRegistry = dockerRegistries.find((dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName
-    )
+        form.generatedHelmPushAction =
+            pipelineConfigFromRes.deploymentAppType === DeploymentAppTypes.MANIFEST_PUSH
+                ? GeneratedHelmPush.PUSH
+                : GeneratedHelmPush.DO_NOT_PUSH
+        form.selectedRegistry = dockerRegistries.find(
+            (dockerRegistry) => dockerRegistry.id === pipelineConfigFromRes.containerRegistryName,
+        )
     }
 
     const responseCode = () => {
@@ -520,7 +527,7 @@ export default function NewCDPipeline({
             repoName: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? formData.repoName : '',
             manifestStorageType: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
             runPreStageInEnv: formData.runPreStageInEnv,
-            runPostStageInEnv: formData.runPostStageInEnv
+            runPostStageInEnv: formData.runPostStageInEnv,
         }
 
         if (isVirtualEnvironment) {
@@ -624,7 +631,7 @@ export default function NewCDPipeline({
         if (!isVirtualEnvironment) {
             _formDataErrorObj.nameSpaceError = validationRules.namespace(_formData.namespace)
         }
-        if(formData.generatedHelmPushAction === GeneratedHelmPush.PUSH){
+        if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
             _formDataErrorObj.containerRegistryError = validationRules.containerRegistry(
                 formData.containerRegistryName || '',
             )
@@ -632,16 +639,18 @@ export default function NewCDPipeline({
         }
 
         if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
-            if(_formDataErrorObj.repositoryError.isValid && _formDataErrorObj.containerRegistryError.isValid){
+            if (_formDataErrorObj.repositoryError.isValid && _formDataErrorObj.containerRegistryError.isValid) {
                 isReposAndContainerRegistoryValid = true
-            }else {
+            } else {
                 isReposAndContainerRegistoryValid = false
             }
         }
 
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid =
-                _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid && isReposAndContainerRegistoryValid
+                _formDataErrorObj.name.isValid &&
+                _formDataErrorObj.envNameError.isValid &&
+                isReposAndContainerRegistoryValid
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
@@ -871,7 +880,7 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            let canDeletePipeline = downstreamNodeSize === 0 
+            let canDeletePipeline = downstreamNodeSize === 0
             let message =
                 downstreamNodeSize > 0 ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (
@@ -914,16 +923,58 @@ export default function NewCDPipeline({
         close()
     }
 
+    const contextValue = useMemo(() => {
+        return {
+            formData,
+            isCdPipeline,
+            setFormData,
+            handleStrategy,
+            appId,
+            activeStageName,
+            formDataErrorObj,
+            setFormDataErrorObj,
+            inputVariablesListFromPrevStep,
+            selectedTaskIndex,
+            setSelectedTaskIndex,
+            calculateLastStepDetail,
+            validateTask,
+            validateStage,
+            addNewTask,
+            configurationType,
+            setConfigurationType,
+            pageState,
+            setPageState,
+            globalVariables,
+            configMapAndSecrets,
+            getPrePostStageInEnv,
+            isVirtualEnvironment,
+            setInputVariablesListFromPrevStep,
+        }
+    }, [
+        formData,
+        activeStageName,
+        formDataErrorObj,
+        inputVariablesListFromPrevStep,
+        selectedTaskIndex,
+        configurationType,
+        pageState,
+        globalVariables,
+        configMapAndSecrets,
+        isVirtualEnvironment,
+    ])
+
     const renderCDPipelineBody = () => {
         if (pageState === ViewType.ERROR) {
             return (
                 <div className="pipeline-empty-state">
                     <hr className="divider m-0" />
-                   <div className='h-100 flex'><ErrorScreenManager code={errorCode} /></div>
+                    <div className="h-100 flex">
+                        <ErrorScreenManager code={errorCode} />
+                    </div>
                 </div>
             )
         }
-        
+
         return (
             <>
                 {isAdvanced && (
@@ -936,34 +987,7 @@ export default function NewCDPipeline({
                     </ul>
                 )}
                 <hr className="divider m-0" />
-                <pipelineContext.Provider
-                    value={{
-                        formData,
-                        isCdPipeline,
-                        setFormData,
-                        handleStrategy,
-                        appId,
-                        activeStageName,
-                        formDataErrorObj,
-                        setFormDataErrorObj,
-                        inputVariablesListFromPrevStep,
-                        selectedTaskIndex,
-                        setSelectedTaskIndex,
-                        calculateLastStepDetail,
-                        validateTask,
-                        validateStage,
-                        addNewTask,
-                        configurationType,
-                        setConfigurationType,
-                        pageState,
-                        setPageState,
-                        globalVariables,
-                        configMapAndSecrets,
-                        getPrePostStageInEnv,
-                        isVirtualEnvironment,
-                        setInputVariablesListFromPrevStep,
-                    }}
-                >
+                <pipelineContext.Provider value={contextValue}>
                     <div
                         className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''} ${
                             activeStageName === BuildStageVariable.Build ? 'no-side-bar' : ''

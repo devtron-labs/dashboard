@@ -138,14 +138,14 @@ export interface PipelineFormDataErrorType {
     repositoryError?: { isValid: boolean, message?: string },
     preBuildStage: {
         steps: any[],
-        isValid: Boolean,
+        isValid: boolean,
     },
     buildStage: {
-        isValid: Boolean,
+        isValid: boolean,
     },
     postBuildStage: {
         steps: any[],
-        isValid: Boolean,
+        isValid: boolean,
     },
 }
 

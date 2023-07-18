@@ -646,6 +646,39 @@ export default function CIPipeline({
         )
     }
 
+    const contextValue = useMemo(() => {
+        return {
+            formData,
+            setFormData,
+            loadingState,
+            setLoadingState,
+            addNewTask,
+            configurationType,
+            setConfigurationType,
+            activeStageName,
+            selectedTaskIndex,
+            setSelectedTaskIndex,
+            calculateLastStepDetail,
+            inputVariablesListFromPrevStep,
+            appId,
+            formDataErrorObj,
+            setFormDataErrorObj,
+            validateTask,
+            validateStage,
+            globalVariables,
+        }
+    }, [
+        formData,
+        activeStageName,
+        loadingState,
+        formDataErrorObj,
+        inputVariablesListFromPrevStep,
+        selectedTaskIndex,
+        configurationType,
+        pageState,
+        globalVariables,
+    ])
+
     const renderCIPipelineModal = () => {
         return (
             <div
@@ -685,26 +718,7 @@ export default function CIPipeline({
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider
-                    value={{
-                        formData,
-                        setFormData,
-                        loadingState,
-                        setLoadingState,
-                        addNewTask,
-                        configurationType,
-                        setConfigurationType,
-                        activeStageName,
-                        selectedTaskIndex,
-                        setSelectedTaskIndex,
-                        calculateLastStepDetail,
-                        inputVariablesListFromPrevStep,
-                        appId,
-                        formDataErrorObj,
-                        setFormDataErrorObj,
-                        validateTask,
-                        validateStage,
-                        globalVariables,
-                    }}
+                    value={contextValue}
                 >
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
