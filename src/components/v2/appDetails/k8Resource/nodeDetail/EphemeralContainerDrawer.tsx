@@ -81,7 +81,7 @@ function EphemeralContainerDrawer({
             if (containerType === EDITOR_VIEW.ADVANCED) {
                 jsonManifest["name"] = ephemeralForm.basicData?.containerName || ''
                 jsonManifest["image"] = ephemeralForm.basicData?.image || ''
-                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containers.length && containers[0]) || ''
+                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containers.length && containers[0].name) || ''
                 setEphemeralFormAdvanced({
                     ...ephemeralFormAdvanced,
                     advancedData: {
