@@ -74,6 +74,7 @@ function EphemeralContainerDrawer({
         getImageList()
         getOptions()
     }, [])
+
     const handleEphemeralContainerTypeClick = (containerType) => {
         let jsonManifest = JSON.parse(JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)))
         if (jsonManifest) {
@@ -100,6 +101,10 @@ function EphemeralContainerDrawer({
             }
         }
         setEphemeralContainerType(containerType)
+        const parsedImage = yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image
+        const parsedImageOption = {label : parsedImage, value: parsedImage }
+        imageListOption.push(parsedImageOption)
+        setSelectedImageList(parsedImageOption)
     }
 
     const getImageList = () => {
@@ -113,14 +118,14 @@ function EphemeralContainerDrawer({
                     ...ephemeralForm,
                     basicData: {
                         ...ephemeralForm.basicData,
-                        image: option?.[0]?.value || '',
+                        image: yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image || option?.[0]?.value || '',
                     },
                 })
             }
         })
     }
 
-    const handleEphemeralChange = (e): void => {
+    const handleContainerChange = (e): void => {
         setEphemeralForm({
             ...ephemeralForm,
             basicData: {
@@ -168,7 +173,7 @@ function EphemeralContainerDrawer({
         )
     }
 
-    const handleContainerSelectChange = (selected, key, defaultOptions) => {
+    const handleEphemeralChange = (selected, key, defaultOptions) => {
         let defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
             const newImageOption = {
@@ -176,11 +181,10 @@ function EphemeralContainerDrawer({
                 label: selected.value,
             }
             const existingImageOption = imageListOption.find((option) => option.value === selected.value)
+            const newImageListOption = [newImageOption, ...imageListOption]
             if (!existingImageOption) {
-                const newImageListOption = [newImageOption, ...imageListOption]
                 setImageListOption(newImageListOption)
             }
-
             setSelectedImageList(selected)
         } else {
             setSelectedTargetContainer(selected)
@@ -234,7 +238,7 @@ function EphemeralContainerDrawer({
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             data-testid="preBuild-task-name-textbox"
                             type="text"
-                            onChange={handleEphemeralChange}
+                            onChange={handleContainerChange}
                             value={ephemeralForm.basicData.containerName}
                         />
                     </div>
@@ -252,12 +256,13 @@ function EphemeralContainerDrawer({
                             <span className="text-underline-dashed">Image</span>
                         </Tippy>
                     </div>
+
                     <CreatableSelect
-                        value={selectedImageList || imageListOption[0]}
+                        value={selectedImageList || imageListOption[0]   }
                         options={imageListOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
-                        onChange={(e) => handleContainerSelectChange(e, 'image', imageListOption)}
+                        onChange={(e) => handleEphemeralChange(e, 'image', imageListOption)}
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
@@ -288,7 +293,7 @@ function EphemeralContainerDrawer({
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
                         onChange={(e) =>
-                            handleContainerSelectChange(e, 'targetContainerName', targetContainerOption[0])
+                            handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])
                         }
                         components={{
                             IndicatorSeparator: null,

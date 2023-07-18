@@ -37,7 +37,6 @@ function TerminalComponent({
     selectedContainerName,
     setSelectedContainerName,
     switchSelectedContainer,
-    selectedNamespaceByClickingPod,
     setContainers,
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string }>()
@@ -61,7 +60,7 @@ function TerminalComponent({
       const getPayload = (containerName: string) => {
         let payload: ResponsePayload = {
           namespace: isResourceBrowserView
-          ? selectedNamespaceByClickingPod
+          ? selectedResource.namespace
           : appDetails.namespace,
       clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
       podName: isResourceBrowserView ? params.node : params.podName,

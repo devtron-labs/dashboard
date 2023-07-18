@@ -352,7 +352,6 @@ function NodeDetailComponent({
                             selectedContainerName={selectedContainerName}
                             setSelectedContainerName={setSelectedContainerName}
                             switchSelectedContainer={switchSelectedContainer}
-                            selectedNamespaceByClickingPod={selectedResource?.namespace}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
