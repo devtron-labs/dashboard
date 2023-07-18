@@ -21,6 +21,7 @@ import { ValueContainer } from '../cdPipeline/cdpipeline.util'
 import Tippy from '@tippyjs/react'
 import { PipelineFormType } from '../workflowEditor/types'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
+import { EnvironmentList } from './EnvironmentList'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
@@ -30,6 +31,9 @@ export function Sidebar({
     pluginList,
     mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
+    environments,
+    selectedEnv,
+    setSelectedEnv
 }: CIPipelineSidebarType) {
     const {
         formData,
@@ -345,6 +349,7 @@ export function Sidebar({
                             {isCdPipeline && formData.generatedHelmPushAction === GeneratedHelmPush.PUSH && triggerPipelineMode()}
                         </>
                     )}
+                    {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
                 </div>
             ) : (
                 <div className="sidebar-action-container pr-20">

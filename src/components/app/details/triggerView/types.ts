@@ -15,7 +15,7 @@ import {
     DeploymentAppTypes,
     TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React from "react";
+import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -155,6 +155,9 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
         action: any,
         metadataField: string
     }
+    selectedEnv?: Environment
+    setSelectedEnv?: (selectedEnv: Environment) => void;
+    environmentLists?: any[]
 }
 
 export interface RegexValueType {
@@ -252,6 +255,8 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     handleSelectionChange?: (_appId: number) => void
     isJobView?: boolean
     index?: number
+    environmentLists?: any[]
+    filteredCIPipelines?: any[]
 }
 
 export interface TriggerViewContextType {
@@ -340,6 +345,8 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
+    selectedEnv?: Environment
+    environmentLists?: any[]
     appReleaseTags?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean

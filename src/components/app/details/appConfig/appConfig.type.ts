@@ -32,6 +32,7 @@ export interface AppConfigState {
     maximumAllowedUrl: string
     canDeleteApp: boolean
     workflowsRes?: WorkflowResult
+    environmentList?: any[]
 }
 
 export interface AppStageUnlockedType {
@@ -63,6 +64,8 @@ export interface AppConfigNavigationProps {
     getRepo: string
     isJobView: boolean
     hideConfigHelp: boolean
+    workflowsRes?: WorkflowResult
+    getWorkflows: () => void
 }
 
 export interface AppComposeRouterProps {
@@ -81,15 +84,28 @@ export interface AppComposeRouterProps {
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
+    envList?: any[]
 }
 
 export interface EnvironmentOverridesProps {
     environmentResult: AppOtherEnvironment
     environmentsLoading: boolean
+    environmentList?: any[]
+    isJobView?: boolean
+    ciPipelines?: any[]
+    reload?: () => void
+    appId?: string
+    workflowsRes?: WorkflowResult
 }
 
 export interface EnvironmentOverrideRouteProps {
     envOverride: AppEnvironment
+    environmentList?: any[]
+    isJobView?: boolean
+    ciPipelines?: any[]
+    reload?: () => void
+    appId?: string
+    workflowsRes?: WorkflowResult
 }
 
 export interface NextButtonProps {

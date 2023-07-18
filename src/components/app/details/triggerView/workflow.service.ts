@@ -29,7 +29,7 @@ export const getTriggerWorkflows = (
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
-): Promise<{ appName: string; workflows: WorkflowType[] }> => {
+): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines }> => {
     return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
 }
 

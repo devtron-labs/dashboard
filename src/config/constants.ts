@@ -233,6 +233,7 @@ export const Routes = {
     ROTATE_PODS: 'app/rotate-pods',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
+    JOB_CONFIG_ENVIRONMENTS: 'config/environment'
 }
 
 export const ViewType = {

@@ -63,6 +63,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showOpenCIPipelineBanner:
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
+            filteredCIPipelines: [],
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -126,6 +127,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     allDeploymentNodeMap: allDeploymentNodeMap,
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
+                    filteredCIPipelines: result.filteredCIPipelines
                 })
             })
             .catch((errors) => {
@@ -541,6 +543,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showWebhookTippy={wf.showTippy}
                     hideWebhookTippy={this.hideWebhookTippy}
                     isJobView={this.props.isJobView}
+                    envList={this.props.envList}
+                    filteredCIPipelines={this.state.filteredCIPipelines}
                 />
             )
         })
