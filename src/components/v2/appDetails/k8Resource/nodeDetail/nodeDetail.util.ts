@@ -325,7 +325,7 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
                     label: _container.name,
                     value: _container.name,
                 })
-            } else if (_container.isEphemeralContainer && isTerminal ){
+            } else if (_container.isEphemeralContainer) {
                 ephemralContainerOptions.push({
                     label: _container.name,
                     value: _container.name,

@@ -415,6 +415,7 @@ export interface TerminalComponentProps {
     selectedContainer: Map<string, string>
     setSelectedContainer: (containerName: Map<string, string>) => void
     containers: Options[]
+    setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
     selectedContainerName: string
     setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
     switchSelectedContainer: (string) => void

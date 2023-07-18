@@ -63,9 +63,9 @@ function NodeDetailComponent({
             setManagedFields(false)
         }
     }
-    const containers = (
+    const [containers,setContainers] = useState<Options[]>((
       isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)
-  ) as Options[]
+  ) as Options[])
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
@@ -124,7 +124,7 @@ function NodeDetailComponent({
 
                 if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
                     let ephemeralContainers = []
-                    result.manifest.status.ephemeralContainerStatuses.forEach((_container) => {
+                    result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
                         if (_container.state.running) {
                             ephemeralContainers.push({
                                 name: _container.name,
@@ -137,7 +137,9 @@ function NodeDetailComponent({
                 }
             }
             setResourceContainers(_resourceContainers)
-
+            if (isResourceBrowserView) {
+                setContainers(_resourceContainers)
+            }
             // Clear out error on node change
             if (isResourceDeleted) {
                 setResourceDeleted(false)
@@ -346,6 +348,7 @@ function NodeDetailComponent({
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
                             containers={containers}
+                            setContainers={setContainers}
                             selectedContainerName={selectedContainerName}
                             setSelectedContainerName={setSelectedContainerName}
                             switchSelectedContainer={switchSelectedContainer}
@@ -360,8 +363,6 @@ function NodeDetailComponent({
                     setShowEphemeralContainerDrawer={setShowEphemeralContainerDrawer}
                     onClickShowLaunchEphemeral={onClickShowLaunchEphemeral}
                     params={params}
-                    containerList={appDetails.resourceTree?.podMetadata}
-                    resourceContainers={resourceContainers}
                     setResourceContainers={setResourceContainers}
                     setEphemeralContainerType={setEphemeralContainerType}
                     ephemeralContainerType={ephemeralContainerType}
@@ -371,6 +372,7 @@ function NodeDetailComponent({
                     targetContainerOption={targetContainerOption}
                     isResourceBrowserView={isResourceBrowserView}
                     containers={containers}
+                    setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
                 />

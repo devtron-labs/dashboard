@@ -39,8 +39,6 @@ export interface EphemeralFormAdvancedType {
 export interface EphemeralContainerDrawerType {
     setShowEphemeralContainerDrawer: React.Dispatch<React.SetStateAction<boolean>>
     params: ParamsType
-    containerList: Array<PodMetaData>
-    resourceContainers: Array<OptionsBase>
     setResourceContainers: React.Dispatch<React.SetStateAction<OptionsBase[]>>
     ephemeralContainerType: string
     setEphemeralContainerType: React.Dispatch<React.SetStateAction<string>>
@@ -50,6 +48,7 @@ export interface EphemeralContainerDrawerType {
     setImageListOption?: React.Dispatch<React.SetStateAction<OptionType[]>>
     isResourceBrowserView: boolean
     containers?: Options[]
+    setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
     switchSelectedContainer: (string) => void
     onClickShowLaunchEphemeral: () => void
     selectedNamespaceByClickingPod?: string

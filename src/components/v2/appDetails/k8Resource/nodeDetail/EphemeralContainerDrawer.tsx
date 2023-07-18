@@ -39,8 +39,6 @@ import CreatableSelect from 'react-select/creatable'
 function EphemeralContainerDrawer({
     setShowEphemeralContainerDrawer,
     params,
-    containerList,
-    resourceContainers,
     setResourceContainers,
     ephemeralContainerType,
     setEphemeralContainerType,
@@ -50,6 +48,7 @@ function EphemeralContainerDrawer({
     setImageListOption,
     isResourceBrowserView,
     containers,
+    setContainers,
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
@@ -80,12 +79,9 @@ function EphemeralContainerDrawer({
         let jsonManifest = JSON.parse(JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)))
         if (jsonManifest) {
             if (containerType === EDITOR_VIEW.ADVANCED) {
-                jsonManifest['name'] = ephemeralForm.basicData?.containerName || ''
-                jsonManifest['image'] = ephemeralForm.basicData?.image || ''
-                jsonManifest['targetContainerName'] =
-                    ephemeralForm.basicData.targetContainerName ||
-                    (containerList.length && containerList[0]?.containers[0]) ||
-                    ''
+                jsonManifest["name"] = ephemeralForm.basicData?.containerName || ''
+                jsonManifest["image"] = ephemeralForm.basicData?.image || ''
+                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containers.length && containers[0].name) || ''
                 setEphemeralFormAdvanced({
                     ...ephemeralFormAdvanced,
                     advancedData: {
@@ -199,46 +195,16 @@ function EphemeralContainerDrawer({
         })
     }
 
+
     const getOptions = () => {
-        if (isResourceBrowserView) {
-            setTargetContainerOption(
-                resourceContainers
-                    .filter(
-                        (resourceContainer) =>
-                            !resourceContainer.isEphemeralContainer && !resourceContainer.isInitContainer,
-                    )
-                    .map((container) => {
-                        return {
-                            label: container.name,
-                            value: container.name,
-                        }
-                    }),
-            )
-            setEphemeralForm({
-                ...ephemeralForm,
-                basicData: {
-                    ...ephemeralForm.basicData,
-                    targetContainerName: (resourceContainers.length && resourceContainers[0]?.name) || '',
-                },
-            })
-        } else {
-            setTargetContainerOption(
-                containerList &&
-                    containerList?.[0]?.containers.map((res) => {
-                        return {
-                            value: res,
-                            label: res,
-                        }
-                    }),
-            )
-            setEphemeralForm({
-                ...ephemeralForm,
-                basicData: {
-                    ...ephemeralForm.basicData,
-                    targetContainerName: (containerList.length && containerList[0]?.containers[0]) || '',
-                },
-            })
-        }
+        setTargetContainerOption(
+            containers.filter((container) => (!container.isEphemeralContainer && !container.isInitContainer) ).map((res) => {
+                return {
+                    value: res.name,
+                    label: res.name,
+                }
+            }),
+        )
     }
 
     const handleKeyDown = (event) => {
@@ -491,7 +457,7 @@ function EphemeralContainerDrawer({
                     isInitContainer: false,
                     isEphemeralContainer: true,
                 } as Options)
-
+                setContainers(_containers)
                 setResourceContainers(_containers)
                 setShowEphemeralContainerDrawer(false)
                 switchSelectedContainer(containerName)
