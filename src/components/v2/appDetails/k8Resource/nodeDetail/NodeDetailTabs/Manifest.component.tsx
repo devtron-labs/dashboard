@@ -14,10 +14,10 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
+import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -83,7 +83,7 @@ function ManifestComponent({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
             appDetails.deploymentAppDeleteRequest)
         ) {
             markActiveTab('Live manifest')
@@ -102,17 +102,11 @@ function ManifestComponent({
                     getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
-                    let _manifest
-                    if (
-                        appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-                        appDetails.deploymentAppType === DeploymentAppType.helm ||
-                        isResourceBrowserView
-                    ) {
-                        _manifest = JSON.stringify(response[0]?.result?.manifest)
-                        setDesiredManifest(response[1]?.result?.manifest || '')
-                    } else {
-                        _manifest = response[0]?.result?.manifest
-                    }
+                    let _manifest: string
+
+                    _manifest = JSON.stringify(response[0]?.result?.manifest)
+                    setDesiredManifest(response[1]?.result?.manifest || '')
+
                     if (_manifest) {
                         setManifest(_manifest)
                         setActiveManifestEditorData(_manifest)
@@ -320,6 +314,7 @@ function ManifestComponent({
     ) : (
         <div
             className="manifest-container"
+            data-testid="app-manifest-container"
             style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
         >
             {error && !loading && (
@@ -332,8 +327,10 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView ||  (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
-            appDetails.deploymentAppDeleteRequest)) && (
+                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                            isResourceBrowserView ||
+                            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                                appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
@@ -352,6 +349,7 @@ function ManifestComponent({
                                                     tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
                                                 } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
                                                 onClick={() => handleTabClick(tab)}
+                                                data-testid={tab.name}
                                             >
                                                 {tab.name}
                                             </div>
@@ -363,7 +361,11 @@ function ManifestComponent({
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (
-                                            <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
+                                            <div
+                                                className="flex left cb-5 cursor"
+                                                onClick={handleEditLiveManifest}
+                                                data-testid="edit-live-manifest"
+                                            >
                                                 <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
                                             </div>
                                         ) : (

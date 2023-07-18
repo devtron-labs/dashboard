@@ -13,12 +13,11 @@ import {
     Info,
     Select,
     RadioGroup,
-    not,
     CustomInput,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE, not } from '@devtron-labs/devtron-fe-common-lib'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -39,7 +38,7 @@ function useConfigMapContext() {
     return context
 }
 
-export default function ConfigMapOverrides({ parentState, setParentState }: ConfigMapOverridesProps) {
+export default function ConfigMapOverrides({ parentState, setParentState, isJobView }: ConfigMapOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
     const [configMapList, setConfigMapList] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -56,18 +55,21 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
         async function initialise() {
             setConfigMapLoading(true)
             try {
-                const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
                 const configmapRes = await getEnvironmentConfigs(appId, envId)
+                if (!isJobView) {
+                    const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
+                    if (!appChartRefRes.result) {
+                        toast.error('Error happened while fetching the results. Please try again')
+                        return
+                    }
+                    setAppChartRef(appChartRefRes.result)
+                }
                 setConfigMapList({
                     appId: configmapRes.result.appId,
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
                 })
-                if (!appChartRefRes.result) {
-                    toast.error('Error happened while fetching the results. Please try again')
-                    return
-                }
-                setAppChartRef(appChartRefRes.result)
+               
             } catch (error) {
                 setParentState(ComponentStates.failed)
                 showError(error)
@@ -109,6 +111,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
                         appChartRef={appChartRef}
                         type="config-map"
                         label={defaultData ? (data ? 'modified' : null) : 'env'}
+                        isJobView={isJobView}
                     />
                 ))}
             </ConfigMapContext.Provider>
@@ -116,7 +119,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
     )
 }
 
-export function ListComponent({ name = '', type, label = '', appChartRef }: ListComponentType) {
+export function ListComponent({ name = '', type, label = '', appChartRef, isJobView }: ListComponentType) {
     const [isCollapsed, toggleCollapse] = useState(true)
 
     const handleOverrideListClick = () => {
@@ -125,7 +128,7 @@ export function ListComponent({ name = '', type, label = '', appChartRef }: List
 
     return (
         <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
-            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick}>
+            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick} data-testid="click-to-add-configmaps-secret">
                 {name ? (
                     type === 'config-map' ? (
                         <FileIcon className="icon-dim-24" />
@@ -147,13 +150,14 @@ export function ListComponent({ name = '', type, label = '', appChartRef }: List
                 )}
             </div>
             {!isCollapsed && type !== 'config-map' && (
-                <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />
+                <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} isJobView={isJobView}/>
             )}
             {!isCollapsed && type !== 'secret' && (
                 <OverrideConfigMapForm
                     name={name}
                     appChartRef={appChartRef}
                     toggleCollapse={toggleCollapse}
+                    isJobView={isJobView}
                 />
             )}
         </div>
@@ -164,12 +168,14 @@ interface ConfigMapProps {
     name?: string
     appChartRef: { id: number; version: string; name: string }
     toggleCollapse: any
+    isJobView?: boolean
 }
 
 const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({
     name,
     appChartRef,
     toggleCollapse,
+    isJobView,
 }) {
     const { configMapList, id, reload } = useConfigMapContext()
     const configmap = configMapList.configData.find((cm) => cm.name === name)
@@ -388,7 +394,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 name: name,
                 type: type,
                 external: external,
-                data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v || '' }), {}),
+                data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
             }
 
             if (type === 'volume') {
@@ -451,7 +457,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
                                 <Select.Button>
-                                    {external ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
+                                    {external && !isJobView ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                                 </Select.Button>
                             </Select>
                         </div>
@@ -604,8 +610,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                 disabled={false}
                                 onChange={changeEditorMode}
                             >
-                                <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                                <RadioGroup.Radio value="gui" dataTestId="gui-from-config-map">GUI</RadioGroup.Radio>
+                                <RadioGroup.Radio value="yaml" dataTestId="yaml-from-config-map">YAML</RadioGroup.Radio>
                             </RadioGroup>
                         </div>
                     )}
@@ -692,6 +698,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     update={(isSuccess) => reload()}
                     subPath={subPath}
                     filePermission={filePermission}
+                    isJobView={isJobView}
                 />
             )}
             {state.dialog && (
@@ -724,14 +731,14 @@ export function Override({ external, overridden, onClick, loading = false, type 
         <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
             {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
-                <div className="override-title">
+                <div className="override-title" data-testid="env-override-title">
                     {external
                         ? 'Nothing to override'
                         : overridden
                         ? 'Base configurations are overridden'
                         : 'Inheriting base configurations'}
                 </div>
-                <div className="override-subtitle">
+                <div className="override-subtitle" data-testid="env-override-subtitle">
                     {external
                         ? `This ${type} does not have any overridable values.`
                         : overridden
@@ -740,7 +747,11 @@ export function Override({ external, overridden, onClick, loading = false, type 
                 </div>
             </div>
             {!external && (
-                <button className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`} onClick={onClick}>
+                <button
+                    data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    onClick={onClick}
+                >
                     {loading ? (
                         <Progressing />
                     ) : overridden ? (

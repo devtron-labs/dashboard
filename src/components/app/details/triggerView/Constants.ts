@@ -9,6 +9,10 @@ export const CI_MATERIAL_EMPTY_STATE_MESSAGING = {
     ClearSearch: 'Clear search',
     Retry: 'Retry',
     WebhookModalCTA: 'View all incoming webhook payloads',
+    NoCommitEligibleCommit: 'No eligible commit found in recent commits',
+    NoCommitEligibleCommitSubtitle:
+        'Commits that contain changes only in excluded files or folders are not eligible for build.',
+    NoCommitEligibleCommitButtonText: 'Show excluded commits',
 }
 export const IGNORE_CACHE_INFO = {
     FirstTrigger: {
@@ -22,11 +26,11 @@ export const IGNORE_CACHE_INFO = {
     },
     CacheNotAvailable: {
         title: 'Cache will be generated for this pipeline run',
-        infoText: 'Cache will be used in future runs to reduce build time.'
+        infoText: 'Cache will be used in future runs to reduce build time.',
     },
     IgnoreCache: {
         title: 'Ignore Cache',
-        infoText: 'Ignoring cache will lead to longer build time.'
+        infoText: 'Ignoring cache will lead to longer build time.',
     },
 }
 export const BRANCH_REGEX_MODAL_MESSAGING = {
@@ -69,4 +73,25 @@ export const TRIGGER_VIEW_GA_EVENTS = {
         category: 'Trigger View',
         action: `${nodeType} Triggered`,
     }),
+    ApprovalNodeClicked: {
+        category: 'Trigger View',
+        action: 'Approval Node Clicked',
+    },
 }
+
+export const ARTIFACT_STATUS = {
+    Progressing: 'Progressing',
+    Degraded: 'Degraded',
+    Failed: 'Failed',
+}
+
+export const NO_VULNERABILITY_TEXT = {
+    Secured: 'You’re secure!',
+    NoVulnerabilityFound: 'No security vulnerability found for this image.',
+}
+export const IMAGE_SCAN_TOOL = {
+    Clair: 'Clair',
+    Trivy: 'Trivy',
+}
+
+export const DEFAULT_ENV = "devtron-ci"

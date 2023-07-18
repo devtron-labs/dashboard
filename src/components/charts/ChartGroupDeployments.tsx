@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg';
-import { not } from '../common'
-import { DeleteDialog, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteDialog, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import NoDeploymentImg from '../../assets/img/app-not-configured.png';
 import { InstalledChartGroup, InstalledChart } from './charts.types';
 import { URLS } from '../../config';
 import placeHolder from '../../assets/icons/ic-plc-chart.svg';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 
 interface ChartGroupDeploymentsProps {
     name: string;
@@ -34,6 +34,7 @@ const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = function (pr
                     {props.installedChartData.length > 0
                         ? props.installedChartData.map((group, index) => <CollapsibleDeployment
                             key={index}
+                            index={index}
                             installedChartGroup={group}
                             deleteInstalledChart={props.deleteInstalledChart}
                         />)
@@ -46,7 +47,7 @@ const ChartGroupDeployments: React.FC<ChartGroupDeploymentsProps> = function (pr
 }
 
 
-const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup; deleteInstalledChart: (installedAppId: number) => void; }> = function (props) {
+const CollapsibleDeployment: React.FC<{ index?:number; installedChartGroup: InstalledChartGroup; deleteInstalledChart: (installedAppId: number) => void; }> = function (props) {
     let defaultInstalledChart: InstalledChart = {
         chartName: "",
         chartRepoName: "",
@@ -71,7 +72,7 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
     }
 
     return <React.Fragment >
-        <div className="chart-group-deployment__row">
+        <div className="chart-group-deployment__row" data-testid={`past-deployment-${props.index}`}>
             <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
                 {moment(props.installedChartGroup.installationTime).format('ddd, DD MMM YYYY, HH:mm a')}
             </div>
@@ -80,23 +81,24 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
                 <span></span>
             </div>
             <div className="chart-group-deployment__cell chart-group-deployment__cell--last-child">
-                <DownArrow className={`icon-dim-20 chart-group-deployment__expand-row ${collapsed ? "" : "chart-group-deployment__expand-row--rotated"}`}
+                <DownArrow className={`icon-dim-20 chart-group-deployment__expand-row ${collapsed ? "" : "chart-group-deployment__expand-row--rotated"}` }
+                    data-testid="down-arrow"
                     onClick={(e) => toggleCollapsed(not)}
                 />
             </div>
         </div>
         <div className={expandedRow}>
             {props.installedChartGroup.installedCharts.map((chart: InstalledChart, index) => {
-                return <Link to={`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`} key={`${index} - ${chart.chartName}}`} className="chart-group-deployment__row">
+                return <Link to={`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`} key={`${index} - ${chart.chartName}}`} className="chart-group-deployment__row" data-testid={`group-deployment-${props.index}`}>
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--first-child">
                         <img className="icon-dim-40 mr-16" onError={handleImageError} alt="chart" src={chart.icon || ""} />
-                        <p className="chart-group-deployment-cell__chart-name dc__ellipsis-right m-0">{chart.chartName}</p>
+                        <p className="chart-group-deployment-cell__chart-name dc__ellipsis-right m-0" data-testid="chart-name">{chart.chartName}</p>
                     </div>
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--child-2">
                         <span className="dc__ellipsis-right">{chart.environmentName}</span>
                     </div>
                     <div className="chart-group-deployment__cell chart-group-deployment__cell--last-child">
-                        <Delete className="icon-dim-20 cursor chart-group-deployment__delete-app"
+                        <Delete className="icon-dim-20 cursor chart-group-deployment__delete-app" data-testid={`deployment-delete-icon-${chart.chartName}`}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -122,11 +124,14 @@ const CollapsibleDeployment: React.FC<{ installedChartGroup: InstalledChartGroup
 }
 
 function EmptyStateChartDeploymentList() {
-    return <EmptyState>
-        <EmptyState.Image><img src={NoDeploymentImg} alt="so empty" /></EmptyState.Image>
-        <EmptyState.Title><h4>No Deployments</h4></EmptyState.Title>
-        <EmptyState.Subtitle>You haven't made any deployments.</EmptyState.Subtitle>
-    </EmptyState>
+    return (
+        <GenericEmptyState
+            image={NoDeploymentImg}
+            title={EMPTY_STATE_STATUS.CHART_GROUP_DEPLOYMENT.TITLE}
+            subTitle={EMPTY_STATE_STATUS.CHART_GROUP_DEPLOYMENT.SUBTITLE}
+            classname='dc__position-rel-imp'
+        />
+    )
 }
 
 export default ChartGroupDeployments;

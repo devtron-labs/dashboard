@@ -11,6 +11,7 @@ export function CIBuildConfigDiff({
     configOverridenPipelines,
     materials,
     globalCIConfig,
+    gitMaterials,
 }: CIBuildConfigDiffProps) {
     const [showOverrides, setShowOverrides] = useState(false)
     const [ciConfigDiffValues, setCIConfigDiffValues] = useState<CIConfigDiffType[]>([])
@@ -21,7 +22,7 @@ export function CIBuildConfigDiff({
             const _currentPipelineOverride = configOverridenPipelines.find(
                 (_ci) => _currentWorkflow.ciPipelineId === _ci.id,
             )?.dockerConfigOverride
-            setCIConfigDiffValues(getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials))
+            setCIConfigDiffValues(getCIConfigDiffValues(globalCIConfig, _currentPipelineOverride, materials, gitMaterials))
         }
     }, [configOverridenWorkflows, configOverridenPipelines, globalCIConfig])
     const renderDetailedValue = (parentClassName: string, value: string): JSX.Element => {

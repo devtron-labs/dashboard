@@ -1,6 +1,7 @@
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import emptyCustomChart from '../../assets/img/empty-noresult@2x.png'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export default function ClusterNodeEmptyState({
     title,
@@ -9,20 +10,22 @@ export default function ClusterNodeEmptyState({
     title?: string
     actionHandler?: () => void
 }) {
+
+  const renderClearSearchButton = () => {
+      return (
+          <button onClick={actionHandler} className="add-link cta flex">
+              Clear search
+          </button>
+      )
+  }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={emptyCustomChart} alt="Empty external links" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="title">{title || 'No matching clusters'}</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn’t find any matching results</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={actionHandler} className="add-link cta flex">
-                    Clear search
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={emptyCustomChart}
+            title={title || EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.TITLE}
+            subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}
+            isButtonAvailable={true}
+            renderButton={renderClearSearchButton}
+            classname='dc__position-rel-imp'
+        />
     )
 }

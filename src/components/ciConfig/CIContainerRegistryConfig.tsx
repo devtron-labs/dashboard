@@ -4,12 +4,12 @@ import ReactSelect, { components } from 'react-select'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { REGISTRY_TYPE_MAP, Routes, URLS } from '../../config'
+import { Routes, URLS } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, REGISTRY_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function CIContainerRegistryConfig({
     appId,
@@ -100,6 +100,7 @@ export default function CIContainerRegistryConfig({
                         to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
                         className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
                         style={{ backgroundColor: '#FFF' }}
+                        data-testid="add-container-registry-button"
                     >
                         <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
                         Add Container Registry
@@ -124,7 +125,7 @@ export default function CIContainerRegistryConfig({
 
     return (
         <div className="white-card white-card__docker-config dc__position-rel mb-12">
-            <h3 className="fs-14 fw-6 lh-20 m-0 pb-16">Store container image at</h3>
+            <h3 className="fs-14 fw-6 lh-20 m-0 pb-16" data-testid="store-container-image-heading">Store container image at</h3>
             <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label dc__required-field">
@@ -136,25 +137,26 @@ export default function CIContainerRegistryConfig({
                             <span className="fs-14 fw-4 lh-20 cn-9">{currentRegistry?.id}</span>
                         </div>
                     ) : (
-                        <ReactSelect
-                            className="m-0"
-                            tabIndex={1}
-                            isMulti={false}
-                            isClearable={false}
-                            options={dockerRegistries}
-                            getOptionLabel={(option) => `${option.id}`}
-                            getOptionValue={(option) => `${option.id}`}
-                            value={configOverrideView && !allowOverride ? currentRegistry : selectedRegistry}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: containerRegistryOption,
-                                MenuList: containerRegistryMenuList,
-                                Control: containerRegistryControls,
-                            }}
-                            onChange={handleRegistryChange}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
+                            <ReactSelect
+                                className="m-0"
+                                classNamePrefix="build-config__select-container-registry"
+                                tabIndex={1}
+                                isMulti={false}
+                                isClearable={false}
+                                options={dockerRegistries}
+                                getOptionLabel={(option) => `${option.id}`}
+                                getOptionValue={(option) => `${option.id}`}
+                                value={configOverrideView && !allowOverride ? currentRegistry : selectedRegistry}
+                                styles={_multiSelectStyles}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option: containerRegistryOption,
+                                    MenuList: containerRegistryMenuList,
+                                    Control: containerRegistryControls,
+                                }}
+                                onChange={handleRegistryChange}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
                     )}
                     {registry.error && <label className="form__error">{registry.error}</label>}
                 </div>
@@ -166,26 +168,27 @@ export default function CIContainerRegistryConfig({
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRepository}</span>
                     ) : (
-                        <input
-                            tabIndex={2}
-                            type="text"
-                            className="form__input"
-                            placeholder={
-                                (selectedRegistry &&
-                                    REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
-                                'Enter repository name'
-                            }
-                            name="repository_name"
-                            value={
-                                configOverrideView && !allowOverride
-                                    ? ciConfig?.dockerRepository || ''
-                                    : repository_name.value
-                            }
-                            onChange={handleOnChangeConfig}
-                            autoFocus={!configOverrideView}
-                            autoComplete={'off'}
-                            disabled={configOverrideView && !allowOverride}
-                        />
+                            <input
+                                tabIndex={2}
+                                type="text"
+                                className="form__input"
+                                placeholder={
+                                    (selectedRegistry &&
+                                        REGISTRY_TYPE_MAP[selectedRegistry.registryType]?.placeholderText) ||
+                                    'Enter repository name'
+                                }
+                                name="repository_name"
+                                value={
+                                    configOverrideView && !allowOverride
+                                        ? ciConfig?.dockerRepository || ''
+                                        : repository_name.value
+                                }
+                                onChange={handleOnChangeConfig}
+                                autoFocus={!configOverrideView}
+                                autoComplete={'off'}
+                                disabled={configOverrideView && !allowOverride}
+                                data-testid="container-repository-textbox"
+                            />
                     )}
                     {repository_name.error && <label className="form__error">{repository_name.error}</label>}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (

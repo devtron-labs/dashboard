@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { ScriptType } from '../ciPipeline/types'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import ReactSelect from 'react-select'
 import { yamlEditorSelectStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
+import { ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 
 export function YAMLScriptComponent({
     editorValue,

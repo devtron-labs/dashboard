@@ -11,10 +11,25 @@ import {
     UpdateNodeRequestBody,
     EditTaintsRequest,
     TerminalDataType,
+    ClusteNotePatchRequest,
+    ClusterDescriptionResponse,
+    ClusterNoteResponse,
+    ClusterEditManifestType,
 } from './types'
+
+export const getClusterNote = (clusterId: string): Promise<ClusterDescriptionResponse> => {
+    return get(`${Routes.CLUSTER_DESCRIPTION}?id=${clusterId}`)
+}
+export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
+    return put(Routes.CLUSTER_NOTE, requestPayload)
+}
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST)
+}
+
+export const getClusterListMin = (): Promise<ClusterListResponse> => {
+    return get(Routes.CLUSTER_LIST_MIN)
 }
 
 export const getClusterCapacity = (clusterId: string): Promise<ClusterCapacityResponse> => {
@@ -87,4 +102,8 @@ export const getClusterEvents = (terminalAccessId: number): Promise<ResponseType
 
 export const updateTaints = (taintData: EditTaintsRequest): Promise<ResponseType> => {
     return put(Routes.TAINTS_EDIT, taintData)
+}
+
+export const clusterManifestEdit = (data: ClusterEditManifestType, option: APIOptions): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.EDIT}`, data, option)
 }

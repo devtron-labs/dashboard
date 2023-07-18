@@ -4,6 +4,8 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import {AppMetaInfo} from "../../../app/types";
+import { DELETE_ACTION } from '../../../../config'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -45,6 +47,8 @@ export interface ChartEnvironmentOptionType {
     clusterName?: string
     clusterId?: number
     active?: boolean
+    isVirtualEnvironment?: boolean
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ChartEnvironmentListType {
@@ -75,6 +79,8 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
     environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
+    isVirtualEnvironmentOnSelector?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface DeploymentAppSelectorType {
@@ -82,6 +88,16 @@ export interface DeploymentAppSelectorType {
     isUpdate: boolean
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
+    allowedDeploymentTypes?: DeploymentAppTypes[]
+}
+
+export interface DeploymentAppRadioGroupType {
+    isDisabled: boolean
+    deploymentAppType: string
+    handleOnChange?: (event) => void
+    allowedDeploymentTypes?: DeploymentAppTypes[]
+    rootClassName?: string
+    isFromCDPipeline?: boolean
 }
 
 export interface ChartProjectSelectorType {
@@ -249,6 +265,10 @@ export interface ChartValuesViewState {
         title: string
         message: string
     }
+    nonCascadeDeleteData: {
+        nonCascade: boolean,
+        clusterName: string,
+    },
     errorResponseCode: number
     invalidAppName: boolean
     invalidAppNameMessage: string
@@ -298,6 +318,7 @@ export enum ChartValuesViewActionTypes {
     projects = 'projects',
     environments = 'environments',
     forceDeleteData = 'forceDeleteData',
+    nonCascadeDeleteData = 'nonCascadeDeleteData',
     errorResponseCode = 'errorResponseCode',
     invalidValueName = 'invalidValueName',
     invalidValueNameMessage = 'invalidValueNameMessage',
@@ -312,10 +333,6 @@ export enum ChartValuesViewActionTypes {
     selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
-export enum DeploymentAppType {
-    Helm = 'helm',
-    GitOps = 'argo_cd',
-}
 
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
@@ -381,8 +398,8 @@ export interface ValuesForDiffStateType {
 
 export interface DeleteChartDialogProps {
     appName: string
-    handleDelete: (force?: boolean) => void
-    toggleConfirmation: () => void
+    handleDelete: (deleteAction: DELETE_ACTION) => void
+    toggleConfirmation: (isDeleteConfirmation:boolean) => void
     isCreateValueView?: boolean
 }
 

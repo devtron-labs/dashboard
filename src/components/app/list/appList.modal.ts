@@ -20,6 +20,36 @@ export const buildInitState = (appListPayload): Promise<any> => {
     })
 }
 
+export const createAppListPayload = (payloadParsedFromUrl, environmentClusterList) => {
+    const clustersMap = new Map()
+    const namespaceMap = new Map()
+    let environments = []
+
+    const entry = environmentClusterList?.entries()
+    if (entry) {
+        for (const [key, value] of entry) {
+            const { namespace, clusterId } = value
+            namespaceMap.set(`${clusterId}_${namespace}`, key)
+            const clusterKeys = clustersMap.get(clusterId) || []
+            clustersMap.set(clusterId, [...clusterKeys, key])
+        }
+    }
+
+    environments.push(...payloadParsedFromUrl.environments)
+
+    payloadParsedFromUrl.namespaces.forEach((item) => {
+        const [cluster, namespace] = item.split('_')
+        if (namespace) {
+            environments.push(namespaceMap.get(`${cluster}_${namespace}`))
+        } else if (+cluster) {
+            const envList = clustersMap.get(+cluster) || []
+            environments = [...environments, ...envList]
+        }
+    })
+    
+    return { ...payloadParsedFromUrl, environments: [...new Set(environments)] }
+}
+
 export const appListModal = (appList) => {
     return appList.map((app) => {
         return {
@@ -47,15 +77,16 @@ const environmentModal = (env) => {
 
     return {
         id: env.environmentId || 0,
-        name: env.environmentName || '',
+        name: env?.environmentName || '',
         lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime, false) : '',
         status: env.status ? handleDeploymentInitiatedStatus(env.status) : 'notdeployed',
         default: env.default ? env.default : false,
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
-        clusterName: env.clusterName || '',
-        namespace: env.namespace || '',
+        clusterName: env?.clusterName || '',
+        namespace: env?.namespace || '',
         appStatus: appStatus,
+        isVirtualEnvironment: env?.isVirtualEnvironment
     }
 }
 
@@ -68,14 +99,15 @@ const getDefaultEnvironment = (envList): Environment => {
     let appStatus = env.appStatus || (env.lastDeployedTime ? '' : 'notdeployed')
     return {
         id: env.environmentId as number,
-        name: env.environmentName,
+        name: env?.environmentName,
         lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime) : '',
         status: handleDeploymentInitiatedStatus(status),
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
-        clusterName: env.clusterName || '',
-        namespace: env.namespace || '',
+        clusterName: env?.clusterName || '',
+        namespace: env?.namespace || '',
         appStatus,
+        isVirtualEnvironment: env?.isVirtualEnvironment
     }
 }
 

@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useHistory, useLocation, useRouteMatch } from 'react-router'
-import { Link } from 'react-router-dom'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
+import { Select, mapByKey } from '../common'
 import {
-    Select,
-    mapByKey,
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    ConditionalWrap,
     useEffectAfterMount,
-} from '../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+} from '@devtron-labs/devtron-fe-common-lib'
 import AdvancedConfig from './AdvancedConfig'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import { deployChartGroup, getChartGroups } from './charts.service'
@@ -175,6 +177,7 @@ export default function ChartGroupAdvanceDeploy() {
                                         rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                         value={project.id}
                                         onChange={(e) => setProject({ id: e.target.value, error: '' })}
+                                        dataTestId="select-project-button"
                                     >
                                         <Select.Button>
                                             {project.id && projectsMap.has(project.id)
@@ -212,6 +215,7 @@ export default function ChartGroupAdvanceDeploy() {
                                         onClick={handleInstall}
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         className="cta dc__ellipsis-right"
+                                        data-testid="deploy_button"
                                     >
                                         {installing ? <Progressing /> : 'Deploy'}
                                     </button>

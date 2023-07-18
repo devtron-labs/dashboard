@@ -36,6 +36,7 @@ import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWa
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import DetectBottom from '../../common/DetectBottom'
+import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -80,6 +81,8 @@ function DiscoverChartList() {
         chartListing,
         applyFilterOnCharts,
         resetPaginationOffset,
+        setGitOpsConfigAvailable,
+        setEnvironmentList
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -107,15 +110,20 @@ function DiscoverChartList() {
 
     useEffect(() => {
         if (!state.loading) {
-
             resetPaginationOffset()
             initialiseFromQueryParams(state.chartRepos);
             callApplyFilterOnCharts(true);
+            getGitOpsModuleInstalledAndConfigured()
 
         }
     }, [location.search, state.loading])
 
-
+    async function getGitOpsModuleInstalledAndConfigured(){
+        await isGitOpsModuleInstalledAndConfigured().then((response) => {
+            setGitOpsConfigAvailable(response.result.isInstalled &&
+                !response.result.isConfigured)
+        })
+    }
 
     const handleDeployButtonClick= (): void => {
       handleActionButtonClick(false)
@@ -240,6 +248,7 @@ function DiscoverChartList() {
                         type="button"
                         className="bcn-0 en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
+                        data-testid="create-button-group-present"
                     >
                         <Add className="icon-dim-18 mr-5" />
                         Create Group
@@ -374,10 +383,10 @@ function DiscoverChartList() {
                                                     {chartList.length ? (
                                                         <>
                                                             <ChartListHeader charts={state.charts} />
-                                                            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+                                                            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`} data-testid={`chart-${!isGrid ? 'list-view' : 'grid-view'}`}>
                                                                 {chartList
                                                                     .slice(0, showDeployModal ? 12 : chartList.length)
-                                                                    .map((chart) => (
+                                                                    .map((chart,index) => (
                                                                         <ChartSelect
                                                                             key={chart.id}
                                                                             chart={chart}
@@ -398,6 +407,7 @@ function DiscoverChartList() {
                                                                                       )
                                                                                     : selectChart(chartId)
                                                                             }
+                                                                            datatestid={`single-${index}`}
                                                                         />
 
                                                                     ))}
@@ -449,13 +459,13 @@ function DiscoverChartList() {
                             >
                                 {state.advanceVisited && (
                                     <div>
-                                        <label className="dc__required-field">Project</label>
+                                        <label className="dc__required-field" data-testid="advanced-option-project-heading">Project</label>
                                         <Select
                                             rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                             value={project.id}
                                             onChange={(e) => setProject({ id: e.target.value, error: '' })}
                                         >
-                                            <Select.Button>
+                                            <Select.Button dataTestIdDropdown="advanced-option-project-list">
                                                 {project.id && projectsMap.has(project.id)
                                                     ? projectsMap.get(project.id).name
                                                     : 'Select project'}
@@ -493,6 +503,7 @@ function DiscoverChartList() {
                                             disabled={state.charts.length === 0}
                                             onClick={handleAdvancedButtonClick}
                                             className="cta cancel dc__ellipsis-right"
+                                            data-testid="advanced-option-button"
                                         >
                                             Advanced Options
                                         </button>
@@ -516,6 +527,7 @@ function DiscoverChartList() {
                                         disabled={state.charts.length === 0}
                                         onClick={handleDeployButtonClick}
                                         className="cta dc__ellipsis-right"
+                                        data-testid="chart-store-single-chart-deploy-to-button"
                                     >
                                         {installing ? (
                                             <Progressing />
@@ -547,6 +559,7 @@ function DiscoverChartList() {
                     handleEnvironmentChangeOfAllCharts={handleEnvironmentChangeOfAllCharts}
                     redirectToAdvancedOptions={redirectToConfigure}
                     validateData={validateData}
+                    setEnvironments={setEnvironmentList}
                 />
             ) : null}
 
@@ -590,16 +603,17 @@ export default function DiscoverCharts() {
 function ChartListHeader({ charts }) {
     return (
         <div>
-            <h3 className="chart-grid__title pl-20 pr-20 pt-16">
+            <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
                 {charts.length === 0 ? 'All Charts' : 'Select Charts'}
             </h3>
-            <p className="mb-0 mt-4 pl-20">
+            <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading" >
                 Select chart to deploy. &nbsp;
                 <a
                     className="dc__link"
                     href={DOCUMENTATION.CHART_LIST}
                     rel="noreferrer noopener"
                     target="_blank"
+                    data-testid="chart-store-link"
                 >
                     Learn more about deploying charts
                 </a>
@@ -624,8 +638,8 @@ export function EmptyChartGroup({
         <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
-                <div className="fs-16 fw-6">{title || 'Chart group'}</div>
-                <div className="cn-7">
+                <div className="fs-16 fw-6" data-testid="chart-group-heading">{title || 'Chart group'}</div>
+                <div className="cn-7" data-testid="chart-group-subheading">
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
@@ -634,6 +648,7 @@ export function EmptyChartGroup({
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
+                        data-testid='chart-group-link'
                     >
                         Learn more about chart groups
                     </a>
@@ -647,6 +662,7 @@ export function EmptyChartGroup({
                         type="button"
                         className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bcn-0 h-32"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
+                        data-testid="chart-group-create-button"
                     >
                         Create group
                     </button>

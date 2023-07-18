@@ -8,9 +8,10 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically } from '../common'
-import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -76,7 +77,7 @@ export default function CustomChartList() {
     const renderUploadButton = (): JSX.Element => {
         return (
             <button onClick={openUploadPopup} className="add-link cta flex">
-                <Upload className="icon-dim-16 mr-8" />
+                <Upload className="icon-dim-16 mr-8"  data-testid="upload-custom-chart-button"/>
                 Upload Chart
             </button>
         )
@@ -132,19 +133,21 @@ export default function CustomChartList() {
 
     const renderEmptyState = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={emptyCustomChart} alt="Empty external links" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="title">Use custom charts in applications</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Import custom charts to use them in apps instead of the default system template.&nbsp;
-                    {renderLearnMoreLink()}
-                </EmptyState.Subtitle>
-                <EmptyState.Button>{renderUploadButton()}</EmptyState.Button>
-            </EmptyState>
+            <GenericEmptyState
+                image={emptyCustomChart}
+                title={EMPTY_STATE_STATUS.CUSTOM_CHART_LIST.TITLE}
+                subTitle={
+                    <>
+                        Import custom charts to use them in apps instead of the default system template.
+                        <div>
+                            {renderLearnMoreLink()}
+                        </div>
+                        
+                    </>    
+                }
+                isButtonAvailable={true}
+                renderButton={renderUploadButton}
+            />
         )
     }
 
@@ -153,7 +156,7 @@ export default function CustomChartList() {
             <div className="chart-list">
                 <div className="cn-9 fw-6 fs-16">Custom charts</div>
                 {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.')}
-                <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
+                <div data-testid="custom-chart-list" className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     <div className="chart-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                         <div>Name</div>
                         <div>Version</div>

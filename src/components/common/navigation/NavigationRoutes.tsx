@@ -1,8 +1,8 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef } from 'react'
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { showError, Progressing, Host, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { getLoginInfo, showError, Progressing, Host, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
-import { ErrorBoundary, getLoginInfo, AppContext } from '../../common'
+import { ErrorBoundary, AppContext } from '../../common'
 import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -14,12 +14,15 @@ import {
     getAppListMin,
     getClusterListMinWithoutAuth,
     getLoginData,
-    getVersionConfig,
     updateLoginCount,
 } from '../../../services/service'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import {
+    getAllModulesInfo,
+    getModuleInfo,
+    getServerInfo,
+} from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
@@ -41,7 +44,7 @@ const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/Resour
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-export const mainContext = createContext(null)
+export const mainContext = createContext<any>(null)
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -69,6 +72,8 @@ export default function NavigationRoutes() {
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    const [environmentId, setEnvironmentId] = useState(null)
+    const contextValue = useMemo(() => ({environmentId, setEnvironmentId}), [environmentId] )
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -192,28 +197,29 @@ export default function NavigationRoutes() {
         }
     }, [])
 
-    useEffect(() => {
-        async function getServerMode() {
-            try {
-                const response = getVersionConfig()
-                const json = await response
-                if (json.code == 200) {
-                    getInit(json.result.serverMode)
-                    setServerMode(json.result.serverMode)
-                    setPageState(ViewType.FORM)
-                }
-            } catch (err) {
-                setPageState(ViewType.ERROR)
+    async function getServerMode() {
+        try {
+            const response = await getAllModulesInfo()
+            let _serverMode = SERVER_MODE.EA_ONLY
+            if (response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED) {
+                _serverMode = SERVER_MODE.FULL
             }
+            getInit(_serverMode)
+            setServerMode(_serverMode)
+            setPageState(ViewType.FORM)
+        } catch (err) {
+            setPageState(ViewType.ERROR)
         }
+    }
 
+    useEffect(() => {
         if (window._env_.K8S_CLIENT) {
             setPageState(ViewType.FORM)
             setLoginLoader(false)
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
-            getCurrentServerInfo(null, true)
+            getCurrentServerInfo()
         }
     }, [])
 
@@ -234,7 +240,7 @@ export default function NavigationRoutes() {
         }
     }, [location.pathname])
 
-    const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
+    const getCurrentServerInfo = async (section?: string) => {
         if (
             currentServerInfo.fetchingServerInfo ||
             (section === 'navigation' && currentServerInfo.serverInfo && location.pathname.includes('/stack-manager'))
@@ -248,7 +254,7 @@ export default function NavigationRoutes() {
         })
 
         try {
-            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'))
+            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'), false)
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
@@ -268,7 +274,11 @@ export default function NavigationRoutes() {
     }
 
     if (pageState === ViewType.LOADING || loginLoader) {
-        return <Progressing pageLoader />
+        return (
+            <div className="full-height-width">
+                <Progressing pageLoader />
+            </div>
+        )
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
@@ -362,6 +372,7 @@ export default function NavigationRoutes() {
                                                 <DevtronStackManager
                                                     serverInfo={currentServerInfo.serverInfo}
                                                     getCurrentServerInfo={getCurrentServerInfo}
+                                                    isSuperAdmin={isSuperAdmin}
                                                 />
                                             </Route>,
                                             <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
@@ -374,9 +385,11 @@ export default function NavigationRoutes() {
                                             </Route>,
                                         ]}
                                         {isSuperAdmin && !window._env_.K8S_CLIENT && (
-                                            <Route path={URLS.JOB}>
-                                                <Jobs />
-                                            </Route>
+                                            <AppContext.Provider value={contextValue}>
+                                                <Route path={URLS.JOB}>
+                                                    <Jobs />
+                                                </Route>
+                                            </AppContext.Provider>
                                         )}
                                         <Route>
                                             <RedirectUserWithSentry
@@ -439,7 +452,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
-    const isArgoInstalled: boolean = argoInfoData?.result.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>

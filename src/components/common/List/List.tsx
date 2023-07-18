@@ -1,5 +1,5 @@
 import React from 'react'
-import Toggle from '../Toggle/Toggle'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import './list.scss'
 

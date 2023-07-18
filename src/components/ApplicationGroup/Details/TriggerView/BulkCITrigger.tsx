@@ -1,8 +1,17 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ServerErrors, Drawer, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { noop, useAsync } from '../../../common'
+import {
+    ServerErrors,
+    Drawer,
+    Progressing,
+    showError,
+    stopPropagation,
+    noop,
+    ConsequenceType,
+    ConsequenceAction,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary, useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
@@ -25,6 +34,10 @@ import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import Tippy from '@tippyjs/react'
 import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_MESSAGING } from '../../Constants'
+import { processConsequenceData } from '../../AppGroup.utils'
+
+const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
+const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 
 export default function BulkCITrigger({
     appList,
@@ -46,6 +59,7 @@ export default function BulkCITrigger({
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
+    const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -56,12 +70,19 @@ export default function BulkCITrigger({
         refreshMaterial,
     }: {
         selectMaterial: (materialId, pipelineId?: number) => void
-        refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+        refreshMaterial: (ciNodeId: number, materialId: number, abortController?: AbortController) => void
     } = useContext(TriggerViewContext)
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    const closeBulkCIModal = (evt) => {
+        abortControllerRef.current.abort()
+        closePopup(evt)
+    }
+
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
-            closePopup(evt)
+            closeBulkCIModal(evt)
         }
     }
     const outsideClickHandler = (evt): void => {
@@ -70,7 +91,7 @@ export default function BulkCITrigger({
             !ciTriggerDetailRef.current.contains(evt.target) &&
             typeof closePopup === 'function'
         ) {
-            closePopup(evt)
+            closeBulkCIModal(evt)
         }
     }
 
@@ -96,12 +117,16 @@ export default function BulkCITrigger({
     }, [])
 
     const getMaterialData = (): void => {
+        abortControllerRef.current = new AbortController()
         const _CIMaterialPromiseList = appList.map((appDetails) =>
             appDetails.isWebhookCI || appDetails.isLinkedCI
                 ? null
-                : getCIMaterialList({
-                      pipelineId: appDetails.ciPipelineId,
-                  }),
+                : getCIMaterialList(
+                      {
+                          pipelineId: appDetails.ciPipelineId,
+                      },
+                      abortControllerRef.current.signal,
+                  ),
         )
         if (_CIMaterialPromiseList?.length) {
             const _materialListMap: Record<string, any[]> = {}
@@ -110,6 +135,9 @@ export default function BulkCITrigger({
                     responses.forEach((res, index) => {
                         _materialListMap[appList[index]?.appId] = res?.['result']
                     })
+                    if (getCIBlockState) {
+                        getPolicyEnforcementData(_materialListMap)
+                    }
                     updateBulkInputMaterial(_materialListMap)
                     if (!selectedApp.isLinkedCI && !selectedApp.isWebhookCI) {
                         setShowRegexModal(
@@ -123,11 +151,45 @@ export default function BulkCITrigger({
                     setLoading(false)
                 })
                 .catch((error) => {
-                    showError(error)
-                    setLoading(false)
+                    if (!abortControllerRef.current.signal.aborted) {
+                        showError(error)
+                        setLoading(false)
+                    }
                 })
         } else {
             setLoading(false)
+        }
+    }
+
+    const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
+        const policyPromiseList = appList.map((appDetails) => {
+            if (appDetails.isWebhookCI || appDetails.isLinkedCI || !_materialListMap[appDetails.appId]) {
+                return null
+            } else {
+                let branchNames = ''
+                for (const material of _materialListMap[appDetails.appId]) {
+                    if (
+                        (!material.isBranchError && !material.isRepoError && !material.isRegex) ||
+                        material.value !== '--'
+                    ) {
+                        branchNames += `${branchNames ? ',' : ''}${material.value}`
+                    }
+                }
+                return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
+            }
+        })
+        if (policyPromiseList?.length) {
+            const policyListMap: Record<string, ConsequenceType> = {}
+            Promise.all(policyPromiseList)
+                .then((responses) => {
+                    responses.forEach((res, index) => {
+                        policyListMap[appList[index]?.appId] = res?.['result']
+                            ? processConsequenceData(res['result'])
+                            : null
+                    })
+                    setAppPolicy(policyListMap)
+                })
+                .catch((error) => {})
         }
     }
 
@@ -137,13 +199,13 @@ export default function BulkCITrigger({
         }
 
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Build image</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
                     disabled={isLoading}
-                    onClick={closePopup}
+                    onClick={closeBulkCIModal}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -268,6 +330,7 @@ export default function BulkCITrigger({
                         regexValue={regexValue}
                         onCloseBranchRegexModal={hideBranchEditModal}
                         hideHeaderFooter={true}
+                        savingRegexValue={isLoading}
                     />
                     <div className="flex right pr-20 pb-20">
                         <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal}>
@@ -317,6 +380,8 @@ export default function BulkCITrigger({
                     appId={selectedApp.appId}
                     fromBulkCITrigger={true}
                     hideSearchHeader={selectedApp.hideSearchHeader}
+                    isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
+                    ciBlockState={appPolicy[selectedApp.appId]}
                 />
             )
         }
@@ -387,6 +452,11 @@ export default function BulkCITrigger({
         }
     }
 
+    const _refreshMaterial = (pipelineId: number, gitMaterialId: number) => {
+        abortControllerRef.current = new AbortController()
+        refreshMaterial(pipelineId, gitMaterialId, abortControllerRef.current)
+    }
+
     const renderSelectedAppMaterial = (appId: number, selectedMaterialList: any[]): JSX.Element | null => {
         if (appId === selectedApp.appId && !!selectedMaterialList.length && !showRegexModal) {
             return (
@@ -395,8 +465,7 @@ export default function BulkCITrigger({
                         material={selectedMaterialList}
                         selectMaterial={selectMaterial}
                         refreshMaterial={{
-                            refresh: refreshMaterial,
-                            title: selectedApp.ciPipelineName,
+                            refresh: _refreshMaterial,
                             pipelineId: +selectedApp.ciPipelineId,
                         }}
                         ciPipelineId={+selectedApp.ciPipelineId}
@@ -428,6 +497,9 @@ export default function BulkCITrigger({
                         <Error className="icon-dim-12 mr-4 mw-14" />
                         <span className="dc__block dc__ellipsis-right">{app.errorMessage}</span>
                     </span>
+                )}
+                {appPolicy[app.appId] && PolicyEnforcementMessage && (
+                    <PolicyEnforcementMessage consequence={appPolicy[app.appId]} />
                 )}
             </div>
         )
@@ -481,7 +553,9 @@ export default function BulkCITrigger({
             (app) =>
                 app.errorMessage &&
                 (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
-                    !app.material.some((_mat) => !_mat.isBranchError && !_mat.isRepoError)),
+                    !app.material.some(
+                        (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
+                    )),
         )
     }
 
@@ -513,12 +587,17 @@ export default function BulkCITrigger({
                         </div>
                     </div>
                 )}
-                <button className="cta flex h-36" onClick={onClickStartBuild} disabled={isStartBuildDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="start-build"
+                    onClick={onClickStartBuild}
+                    disabled={isStartBuildDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (
                         <>
-                            <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                            <PlayIcon className="trigger-btn__icon" />
                             Start Build
                         </>
                     )}

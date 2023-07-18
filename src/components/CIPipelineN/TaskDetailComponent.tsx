@@ -1,19 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { ConfigurationType, ViewType, BuildStageVariable } from '../../config'
+import React, { useState, useContext } from 'react'
+import { ConfigurationType, BuildStageVariable } from '../../config'
 import { RadioGroup } from '../common'
-import {
-    ConditionContainerType,
-    FormErrorObjectType,
-    FormType,
-    PluginType,
-    PluginVariableType,
-    ScriptType,
-    VariableType,
-} from '../ciPipeline/types'
+import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
-import { ServerErrors, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
@@ -28,29 +19,16 @@ export function TaskDetailComponent() {
         setFormData,
         selectedTaskIndex,
         activeStageName,
-        appId,
         formDataErrorObj,
-        calculateLastStepDetail,
         setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         selectedTaskIndex: number
         activeStageName: string
-        appId: number
         formDataErrorObj: FormErrorObjectType
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
-    const [pageState, setPageState] = useState(ViewType.FORM)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')
@@ -60,42 +38,6 @@ export function TaskDetailComponent() {
             ? 'inlineStepDetail'
             : 'pluginRefStepDetail'
 
-    useEffect(() => {
-        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
-            setPageState(ViewType.LOADING)
-            getPluginDetail(formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId, appId)
-                .then((response) => {
-                    setPageState(ViewType.FORM)
-                    processPluginData(response.result)
-                })
-                .catch((error: ServerErrors) => {
-                    setPageState(ViewType.ERROR)
-                    showError(error)
-                })
-        }
-    }, [])
-
-    const setVariableStepIndexInPlugin = (variable): VariableType => {
-        variable.variableStepIndexInPlugin = variable.variableStepIndex
-        delete variable.variableStepIndex
-        return variable
-    }
-
-    const processPluginData = (pluginData) => {
-        const _form = { ...formData }
-        if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {
-            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
-                pluginData.outputVariables?.map(setVariableStepIndexInPlugin)
-            if (_form[activeStageName].steps.length > selectedTaskIndex) {
-                calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
-            }
-        }
-        if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
-            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
-                pluginData.inputVariables?.map(setVariableStepIndexInPlugin)
-        }
-        setFormData(_form)
-    }
     const handleNameChange = (e: any): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].name = e.target.value
@@ -115,7 +57,8 @@ export function TaskDetailComponent() {
 
     const handleTriggerIfParentStageFailChange = (): void => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail = !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
+        _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail =
+            !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
         setFormData(_formData)
     }
 
@@ -157,20 +100,15 @@ export function TaskDetailComponent() {
         setFormData(_formData)
     }
 
-    return pageState === ViewType.LOADING.toString() ? (
-        <div style={{ minHeight: '200px' }} className="flex">
-            <Progressing pageLoader />
-        </div>
-    ) : (
+    return (
         <div>
             <div>
                 <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        Task name
-                    </div>
+                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -190,6 +128,7 @@ export function TaskDetailComponent() {
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        data-testid="preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
@@ -197,8 +136,7 @@ export function TaskDetailComponent() {
                     />
                 </div>
 
-                {
-                    activeStageName === BuildStageVariable.PostBuild &&
+                {activeStageName === BuildStageVariable.PostBuild && (
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
                         <input
@@ -208,7 +146,7 @@ export function TaskDetailComponent() {
                             onChange={handleTriggerIfParentStageFailChange}
                         />
                     </div>
-                }
+                )}
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-12">
@@ -222,10 +160,18 @@ export function TaskDetailComponent() {
                             name="task-type"
                             onChange={handleTaskScriptTypeChange}
                         >
-                            <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
+                            <RadioGroup.Radio
+                                className="left-radius"
+                                value={ScriptType.SHELL}
+                                dataTestId="custom-script-task-name-shell"
+                            >
                                 Shell
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio className="right-radius dc__no-left-border" value={ScriptType.CONTAINERIMAGE}>
+                            <RadioGroup.Radio
+                                className="right-radius dc__no-left-border"
+                                value={ScriptType.CONTAINERIMAGE}
+                                dataTestId="custom-script-task-name-container-image"
+                            >
                                 Container Image
                             </RadioGroup.Radio>
                         </RadioGroup>

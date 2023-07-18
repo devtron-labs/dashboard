@@ -1,21 +1,23 @@
 import React, { useContext, useState, useEffect } from 'react'
-import {
-    FormErrorObjectType,
-    FormType,
-    MountPath,
-    ScriptType,
-    StepType,
-    TaskErrorObj,
-    TaskFieldDescription,
-    TaskFieldLabel,
-} from '../ciPipeline/types'
+import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import OutputDirectoryPath from './OutputDirectoryPath'
 import MultiplePort from './MultiplsPort'
 import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
-import { Checkbox, CHECKBOX_VALUE, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    RadioGroup,
+    RadioGroupItem,
+    FormType,
+    MountPath,
+    ScriptType,
+    StepType,
+    FormErrorObjectType,
+    TaskErrorObj,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import CreatableSelect from 'react-select/creatable'
@@ -242,7 +244,7 @@ export function TaskTypeDetailComponent() {
                                 MenuList: menuList,
                                 Option,
                                 IndicatorSeparator: null,
-                                ValueContainer
+                                ValueContainer,
                             }}
                             noOptionsMessage={(): string => {
                                 return 'No matching options'
@@ -334,6 +336,7 @@ export function TaskTypeDetailComponent() {
                     />
                     <input
                         style={{ width: '80% !important' }}
+                        data-testid="custom-script-container-image-command-textbox"
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         autoComplete="off"
                         placeholder="Eg. “echo”"
@@ -341,7 +344,7 @@ export function TaskTypeDetailComponent() {
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
-                            TaskFieldLabel.COMMAND
+                                TaskFieldLabel.COMMAND
                             ]
                         }
                     />
@@ -349,6 +352,7 @@ export function TaskTypeDetailComponent() {
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
                     <input
+                        data-testid="custom-script-container-image-args-textbox"
                         style={{ width: '80% !important' }}
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         autoComplete="off"
@@ -357,7 +361,7 @@ export function TaskTypeDetailComponent() {
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
-                            TaskFieldLabel.ARGS
+                                TaskFieldLabel.ARGS
                             ]
                         }
                     />
@@ -381,8 +385,12 @@ export function TaskTypeDetailComponent() {
                             handleMountChange(event)
                         }}
                     >
-                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-container-false" value={MountPath.FALSE}>
+                            {MountPath.FALSE}
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-container-true" value={MountPath.TRUE}>
+                            {MountPath.TRUE}
+                        </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
@@ -393,6 +401,7 @@ export function TaskTypeDetailComponent() {
                                 style={{ width: '80% !important' }}
                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
+                                data-testid="script-mount-container-textbox"
                                 placeholder="Eg file/folder"
                                 type="text"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
@@ -430,8 +439,12 @@ export function TaskTypeDetailComponent() {
                             handleMountChange(event)
                         }}
                     >
-                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-host-false" value={MountPath.FALSE}>
+                            {MountPath.FALSE}
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="build-stage-script-mount-host-true" value={MountPath.TRUE}>
+                            {MountPath.TRUE}
+                        </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost && (

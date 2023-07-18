@@ -2,8 +2,7 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop } from '../../common'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
 import {tempMultiSelectStyles} from "../../ciConfig/CIConfig.utils";
 
@@ -138,7 +137,7 @@ export function Option(props) {
 export function DropdownIndicator(props) {
     return (
         <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" />
+            <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
         </components.DropdownIndicator>
     )
 }
@@ -221,8 +220,11 @@ export function GroupHeading(props) {
     if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">
-                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
+                <span className="dc__truncate-text">
+                    {!hideClusterName && (data?.isVirtualEnvironment ? 'Virtual Cluster : ' : 'Cluster : ')}
+                    {data.label}
+                </span>
             </div>
         </components.GroupHeading>
     )
@@ -237,6 +239,22 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
+        <div className="flex left column dc__highlight-text" data-testid={option[environmentfieldName]}>
+            <span
+                className="w-100 dc__ellipsis-right"
+                dangerouslySetInnerHTML={{
+                    __html: option[environmentfieldName].replace(regex, highLightText),
+                }}
+            />
+            <small className="w-100 dc__truncate-text fs-12 cn-7">{option.description}</small>
+        </div>
+    )
+}
+
+export function formatHighlightedTextDescription(option: Environment, inputValue: string, environmentfieldName: string) {
+    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const regex = new RegExp(inputValue, 'gi')
+    return (
         <div className="flex left column dc__highlight-text">
             <span
                 className="w-100 dc__ellipsis-right"
@@ -244,14 +262,32 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
                     __html: option[environmentfieldName].replace(regex, highLightText),
                 }}
             />
-            {option.clusterName && option.namespace && (
+            {option.description && (
                 <small
                     className="cn-6"
                     dangerouslySetInnerHTML={{
-                        __html: (option.clusterName + '/' + option.namespace).replace(regex, highLightText),
+                        __html: (option.description + '').replace(regex, highLightText),
                     }}
                 ></small>
             )}
         </div>
     )
+}
+
+export const groupHeaderStyle = {
+    group: (base) => ({
+        ...base,
+        paddingTop: 0,
+        paddingBottom: 0,
+    }),
+    groupHeading: (base) => ({
+        ...base,
+        fontWeight: 600,
+        fontSize: '12px',
+        textTransform: 'lowercase',
+        height: '28px',
+        color: 'var(--N900)',
+        backgroundColor: 'var(--N100)',
+        marginBottom: 0,
+    }),
 }

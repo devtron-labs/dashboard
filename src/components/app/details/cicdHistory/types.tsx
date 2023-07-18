@@ -1,7 +1,7 @@
-import { CSSProperties } from 'react'
+import React, { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-
+import { UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string
@@ -28,6 +28,14 @@ export interface History {
     stage?: DeploymentStageType
     blobStorageEnabled?: boolean
     isArtifactUploaded?: boolean
+    userApprovalMetadata?: UserApprovalMetadataType
+    IsVirtualEnvironment?: boolean
+    helmPackageName?: string
+    environmentName?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
 }
 
 export interface CiMaterial {
@@ -66,6 +74,14 @@ export interface ArtifactType {
     isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
+    type: HistoryComponentType
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface CopyTippyWithTextType {
@@ -75,8 +91,23 @@ export interface CopyTippyWithTextType {
 }
 
 export interface CIListItemType {
-    type: 'report' | 'artifact'
+    type: 'report' | 'artifact' | 'deployed-artifact'
+    userApprovalMetadata?: UserApprovalMetadataType
+    triggeredBy?: string
     children: any
+    ciPipelineId?: number
+    artifactId?: number
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
+}
+
+export interface ImageComment {
+    id: number
+    comment: string
+    artifactId: number
 }
 
 export interface LogsRendererType {
@@ -99,6 +130,16 @@ export interface ScrollerType {
 export interface GitChangesType {
     gitTriggers: Map<number, GitTriggers>
     ciMaterials: CiMaterial[]
+    artifact?: string
+    userApprovalMetadata?: UserApprovalMetadataType
+    triggeredByEmail?: string
+    imageComment?: ImageComment
+    imageReleaseTags?: ReleaseTag[]
+    artifactId?: number
+    ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 export interface EmptyViewType {
     imgSrc?: string
@@ -127,6 +168,7 @@ export interface HistorySummaryCardType {
     artifact: string
     type: HistoryComponentType
     stage: DeploymentStageType
+    dataTestId?: string
 }
 
 export interface SummaryTooltipCardType {
@@ -151,17 +193,19 @@ export interface TriggerDetailsType {
     type: HistoryComponentType
     stage: DeploymentStageType
     artifact?: string
+    environmentName?: string
+    isJobView?: boolean
 }
 
 export interface TriggerDetailsStatusIconType {
-  status: string
+    status: string
 }
 
 export interface FinishedType {
     status: string
-    startedOn:string
     finishedOn: string
     artifact: string
+    type: HistoryComponentType
 }
 export interface WorkerStatusType {
     message: string
@@ -170,7 +214,6 @@ export interface WorkerStatusType {
 }
 export interface ProgressingStatusType {
     status: string
-    startedOn: string
     message: string
     podStatus: string
     stage: DeploymentStageType
@@ -179,13 +222,13 @@ export interface ProgressingStatusType {
 
 export interface CurrentStatusType {
     status: string
-    startedOn:string
     finishedOn: string
     artifact: string
     message: string
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    isJobView?: boolean
 }
 
 export interface StartDetailsType {
@@ -196,6 +239,8 @@ export interface StartDetailsType {
     gitTriggers: Map<number, GitTriggers>
     artifact: string
     type: HistoryComponentType
+    environmentName?: string
+    isJobView?: boolean
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {
@@ -207,7 +252,7 @@ export enum HistoryComponentType {
     CI = 'CI',
     CD = 'CD',
     GROUP_CI = 'GROUP_CI',
-    GROUP_CD = 'GROUP_CD'
+    GROUP_CD = 'GROUP_CD',
 }
 
 export enum DeploymentStageType {

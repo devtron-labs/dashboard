@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { noop } from '../common'
-import { showError, Progressing, Drawer, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, DeleteDialog, noop, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
@@ -9,7 +8,6 @@ import { Link, useHistory, useLocation, useParams, useRouteMatch } from 'react-r
 import { URLS } from '../../config'
 import { CIConfigDiffViewProps } from './types'
 import { WorkflowType } from '../app/details/triggerView/types'
-import { DockerConfigOverrideType } from '../ciPipeline/types'
 import { CIBuildConfigDiff } from './CIBuildConfigDiff'
 import Tippy from '@tippyjs/react'
 import { getInitDataWithCIPipeline, saveCIPipeline } from '../ciPipeline/ciPipeline.service'
@@ -23,6 +21,7 @@ export default function CIConfigDiffView({
     processedWorkflows,
     toggleConfigOverrideDiffModal,
     reload,
+    gitMaterials,
 }: CIConfigDiffViewProps) {
     const history = useHistory()
     const location = useLocation()
@@ -211,6 +210,7 @@ export default function CIConfigDiffView({
                                     configOverridenPipelines={configOverridenPipelines}
                                     materials={ciConfig?.materials}
                                     globalCIConfig={globalCIConfig}
+                                    gitMaterials = {gitMaterials}
                                 />
                             </div>
                         ))

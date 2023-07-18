@@ -42,7 +42,7 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
     return (
         <label className="dc__tertiary-tab__radio flex fs-13">
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
-            <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
+            <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={name+"-link"}> {name} </div>
         </label>
     )
 }
@@ -62,7 +62,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             updatedTemplate: [],
             readmeResult: [],
             showExamples: true,
-            showHeaderDescription: true,
             showOutputData: true,
             showImpactedtData: false,
             codeEditorPayload: undefined,
@@ -107,32 +106,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 showError(error)
                 this.setState({ view: ViewType.FORM, statusCode: error.code })
             })
-    }
-
-    renderBulkHeaderDescription = () => {
-        return (
-            <div className="deployment-group-list-page ">
-                <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
-                    <Question className="icon-dim-16 mr-13 fcv-5" />
-                    <div>
-                        Run scripts to bulk edit configurations for multiple devtron components.
-                        <a
-                            className="dc__link"
-                            href={DOCUMENTATION.BULK_UPDATE}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                        >
-                            Learn more
-                        </a>
-                    </div>
-                    <Close
-                        style={{ margin: 'auto', marginRight: '0' }}
-                        className="icon-dim-20 cursor"
-                        onClick={() => this.setState({ showHeaderDescription: false })}
-                    />
-                </div>
-            </div>
-        )
     }
 
     handleRunButton = (e) => {
@@ -223,8 +196,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     type="button"
                     className="bulk-run-button cta dc__ellipsis-right pl-12 pr-12 flex mr-12 "
                     onClick={(e) => this.handleRunButton(e)}
+                    data-testid="run-button"
                 >
-                    <span>
+                    <span >
                         <PlayButton className="flex icon-dim-16 mr-8 " />
                     </span>
                     <div>Run</div>
@@ -233,6 +207,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     className="fs-12 en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12"
                     style={{ maxHeight: '32px' }}
                     onClick={() => this.handleShowImpactedObjectButton()}
+                    data-testid="show-impacted-objects-button"
                 >
                     Show Impacted Objects
                 </button>
@@ -274,15 +249,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorBody = () => {
         return (
-            <div>
+            <div className="code-editor-body">
                 <CodeEditor
                     theme="vs-gray--dt"
-                    height={400}
+                    height="calc(60vh - 97px)"
                     value={this.state.codeEditorPayload}
                     mode="yaml"
                     onChange={(event) => {
                         this.handleConfigChange(event)
                     }}
+                    data-testid="code-editor"
                 ></CodeEditor>
                 <div className="bulk-output-drawer bcn-0 fs-13">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top border-btm bcn-0">
@@ -299,7 +275,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             name={OutputObjectTabs.IMPACTED_OBJECTS}
                         />
                     </div>
-                    <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
+                    <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20" data-testid="output-message">
                         {this.state.showOutputData ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
@@ -549,7 +525,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>
                 <div>
                     *CONFIGMAPS: <br /> <br />
-                    {this.state.impactedObjects.configMap.length === 0 ? (
+                    {!this.state.impactedObjects?.configMap?.length ? (
                         <>No Result Found </>
                     ) : (
                         <>
@@ -649,8 +625,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateHeader = () => {
         return (
             <div className="border-btm bcn-0 pt-5 pb-5 flex pr-20">
-                <div className="fw-6 cn-9 pl-20">Sample:</div>
+                <div className="fw-6 cn-9 pl-20" data-testid="sample-application">Sample:</div>
                 <ReactSelect
+                  classNamePrefix='sample-application-select'
                     value={this.state.updatedTemplate[0]}
                     defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"
@@ -694,7 +671,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return (
             <div className="dc__border-right">
                 {this.renderCodeEditorHeader()}
-                <div className="code-editor-body">{this.renderCodeEditorBody()}</div>
+                {this.renderCodeEditorBody()}
             </div>
         )
     }
@@ -733,7 +710,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderBulkEditBody = () => {
         return (
             <div>
-                {this.state.showHeaderDescription ? this.renderBulkHeaderDescription() : null}
                 {!this.state.showExamples ? (
                     <div> {this.renderBulkCodeEditor()}</div>
                 ) : (
@@ -768,12 +744,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
 
         return (
-            <div className="fs-13">
+            <div className="fs-13" >
                 <PageHeader
                     headerName="Bulk Edit"
                     isTippyShown={true}
                     TippyIcon={Question}
-                    tippyMessage={'Learn more'}
+                    tippyMessage="Run scripts to bulk edit configurations for multiple devtron components."
                     tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
                 />
                 {this.props.serverMode == SERVER_MODE.EA_ONLY

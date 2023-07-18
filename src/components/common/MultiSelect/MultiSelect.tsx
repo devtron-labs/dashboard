@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib';
+import { PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib';
 import arrowTriangle from '../../../assets/icons/appstatus/ic-sort-down.svg'
-import { useEffectAfterMount } from '../helpers/Helpers';
 
 const MultiSelectContext = React.createContext(null)
 

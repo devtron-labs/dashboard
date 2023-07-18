@@ -2,6 +2,7 @@
     display: grid;
     grid-template-columns: auto 1fr;
 }
+
 .cluster-modal-number {
     border-radius: 50%;
     z-index: 2;
@@ -9,7 +10,7 @@
 
 .cluster-modal-container {
     width: 440px;
-    height: 120px;
+    height: 100px;
 }
 
 .cluster-inner-container {
@@ -17,7 +18,7 @@
 }
 
 .cluster-modal-wrapper:last-child {
-    .cluster-inner-container{
+    .cluster-inner-container {
         border-left: none;
         padding-bottom: 0;
     }
@@ -31,3 +32,47 @@
 .cluster-modal-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
+
+.cluster-env-list_table {
+    display: grid;
+    column-gap: 12px;
+    grid-template-columns: 20px 170px 1fr 1fr 52px
+}
+
+.override-button.cta.delete {
+    &.cluster-delete-icon {
+        margin-left: 20px;
+        margin-right: auto;
+    }
+}
+
+
+.cluster-list-row {
+    display: grid;
+    grid-template-columns: 24px minmax(278px, 346px) 120px 130px 190px minmax(80px, 90px);
+    grid-column-gap: 16px;
+
+
+    path:last-of-type {
+        fill: var(--R500);
+    }
+}
+
+.saved-cluster-list-row {
+    display: grid;
+    grid-template-columns: 0px minmax(278px, 346px) 100px 360px 190px minmax(80px, 90px);
+    grid-column-gap: 16px;
+
+
+    path:last-of-type {
+        fill: var(--R500);
+    }
+}
+
+.cluster-list-row-1 {
+    display: grid;
+    grid-template-columns: 24px minmax(240px, 250px) 150px 420px minmax(80px, 90px);
+    grid-column-gap: 16px;
+    line-height: 20px;
+} 
+

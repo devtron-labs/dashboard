@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
-import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
-import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { setActionWithExpiry } from '../helpers/Helpers'
+import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
@@ -15,9 +15,12 @@ import {
 } from '../../onboardingGuide/onboarding.utils'
 import HelpNav from './HelpNav'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as QuestionFilled } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
+import { getLoginInfo, getRandomColor, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { BULK_EDIT_HEADER } from './constants'
 
 function PageHeader({
     headerName,
@@ -52,7 +55,7 @@ function PageHeader({
 
     const getCurrentServerInfo = async () => {
         try {
-            const { result } = await getServerInfo()
+            const { result } = await getServerInfo(true, true)
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
@@ -70,12 +73,6 @@ function PageHeader({
         setExpiryDate(+localStorage.getItem('clickedOkay'))
     }, [])
 
-    useEffect(() => {
-        if (!window._env_.K8S_CLIENT) {
-            getCurrentServerInfo()
-        }
-    }, [])
-
     const onClickLogoutButton = () => {
         setShowLogOutCard(!showLogOutCard)
         if (showHelpCard) {
@@ -86,37 +83,41 @@ function PageHeader({
     }
 
     const onClickHelp = (e) => {
-        setShowHelpCard(!showHelpCard)
-        if (showLogOutCard) {
-            setShowLogOutCard(false)
-        }
-        setActionWithExpiry('clickedOkay', 1)
-        hideGettingStartedCard()
-        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
-        ReactGA.event({
-            category: 'Main Navigation',
-            action: `Help Clicked`,
-        })
+      if (!window._env_.K8S_CLIENT && currentServerInfo.serverInfo?.installationType !== InstallationType.ENTERPRISE) {
+          getCurrentServerInfo()
+      }
+      setShowHelpCard(!showHelpCard)
+      if (showLogOutCard) {
+          setShowLogOutCard(false)
+      }
+      setActionWithExpiry('clickedOkay', 1)
+      hideGettingStartedCard()
+      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
+      ReactGA.event({
+          category: 'Main Navigation',
+          action: `Help Clicked`,
+      })
     }
 
     const renderLogoutHelpSection = () => {
         return (
             <>
                 <div className="flex left cursor mr-16" onClick={onClickHelp}>
-                    <span className="icon-dim-24 fcn-9 mr-4 ml-16">
+                    <span className="icon-dim-24 fcn-9 mr-4 ml-16" >
                         <Question />
                     </span>
-                    <span className="fs-13 cn-9">Help</span>
+                    <span className="fs-13 cn-9" data-testid="go-to-get-started">Help</span>
                     <DropDownIcon
-                    style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
-                    className="fcn-9 icon-dim-20 rotate pointer"
-                />
+                        style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
+                        className="fcn-9 icon-dim-20 rotate pointer"
+                    />
                 </div>
                 {!window._env_.K8S_CLIENT && (
                     <div
                         className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
                         onClick={onClickLogoutButton}
                         style={{ backgroundColor: getRandomColor(email) }}
+                        data-testid="profile-button"
                     >
                         {email[0]}
                     </div>
@@ -155,11 +156,14 @@ function PageHeader({
                             <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
-                    <span className="fw-6">{headerName}</span>
+                    <span className="fw-6" data-testid="main-header">
+                        {headerName}
+                    </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
-                    {isTippyShown && (
+                    {isTippyShown && headerName != BULK_EDIT_HEADER && (
                         <a
+                            data-testid="learn-more-symbol"
                             className="dc__link flex"
                             target="_blank"
                             href={tippyRedirectLink}
@@ -174,6 +178,23 @@ function PageHeader({
                                 <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
                             </Tippy>
                         </a>
+                    )}
+                    {isTippyShown && headerName === BULK_EDIT_HEADER && (
+                        <TippyCustomized
+                            theme={TippyTheme.white}
+                            className="w-300 h-100 fcv-5"
+                            placement="bottom"
+                            Icon={QuestionFilled}
+                            heading={headerName}
+                            infoText={tippyMessage}
+                            showCloseButton={true}
+                            trigger="click"
+                            interactive={true}
+                            documentationLink={tippyRedirectLink}
+                            documentationLinkText="Learn More"
+                        >
+                            <TippyIcon className="icon-dim-20 ml-16 cursor fcn-5" />
+                        </TippyCustomized>
                     )}
                     {markAsBeta && renderBetaTag()}
                 </div>

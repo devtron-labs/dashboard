@@ -2,12 +2,13 @@ import React, { useContext } from 'react'
 import Tippy from '@tippyjs/react'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import { LazyImage, noop, ConditionalWrap } from '../../common'
+import { LazyImage, ConditionalWrap } from '../../common'
 import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { SERVER_MODE } from '../../../config'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 interface AllChartSelectProps {
     chart: Chart
@@ -18,6 +19,7 @@ interface AllChartSelectProps {
     subtractChart?: (chartId: number) => void
     selectChart?: (chartId: number) => void
     showDescription?: boolean
+    datatestid ?:string
 }
 
 interface Stepper extends AllChartSelectProps {
@@ -43,6 +45,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
     showCheckBoxOnHoverOnly,
     onClick,
     showDescription,
+    datatestid,
 }) => {
     const { serverMode } = useContext(mainContext)
 
@@ -80,6 +83,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                 showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''
             } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''}`}
             onClick={onClick ? onClickChartSelect : noop}
+            data-testid={`chart-card-${datatestid}`}
         >
             <div className={`${showDescription ? 'dc__chart-list-item__icon-wrapper' : 'dc__chart-grid-item__icon-wrapper'}`}>
                 <LazyImage
@@ -111,6 +115,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                             className={'devtron-stepper__item dc__transparent p-0 cursor'}
                             disabled={selectedCount <= 0}
                             onClick={removeChartTab}
+                            data-testid={`chart-remove-${datatestid}`}
                         >
                             <Minus className="icon-dim-14" />
                         </button>
@@ -131,7 +136,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                             </Tippy>
                         )}
                     >
-                        <button className={'devtron-stepper__item dc__transparent p-0 cursor'} onClick={addchartTab}>
+                        <button className={'devtron-stepper__item dc__transparent p-0 cursor'} onClick={addchartTab} data-testid={`chart-add-${datatestid}`}>
                             <Add className="icon-dim-14" />
                         </button>
                     </ConditionalWrap>

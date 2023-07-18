@@ -19,7 +19,7 @@ interface AdvancedConfig extends AdvancedConfigHelpers {
 
 const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValues, getChartVersionsAndValues, handleEnvironmentChange, handleChartValueChange, handleChartVersionChange, handleValuesYaml, handleNameChange, discardValuesYamlChanges }) => {
     const { environment, loading, chartMetaData: { chartName }, valuesYaml, id, appStoreValuesChartVersion, appStoreApplicationVersionId, appStoreValuesVersionId, appStoreValuesVersionName, kind, name: appName, availableChartVersions, availableChartValues, appStoreApplicationVersion } = chart;
-    const [environments, setEnvironments] = useState(new Map())
+    const [ environments, setEnvironments] = useState(new Map())
     const [showReadme, setReadme] = useState(false)
     const [showDiff, setDiff] = useState(false);
     const [chartValuesLoading, setChartValuesLoading] = useState(false)
@@ -140,10 +140,10 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
         <>
             <div className="advanced-config flex">
                 <form action="" className="advanced-config__form">
-                    <h1 className="form__title form__title--mb-24">{chartName}</h1>
+                    <h1 className="form__title form__title--mb-24" data-testid="advanced-option-heading">{chartName}</h1>
                     {handleNameChange && <div className="flex column left top mb-16">
-                        <label htmlFor="" className="form__label">App name*</label>
-                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} />
+                        <label htmlFor="" className="form__label" data-testid="advanced-option-app-name">App name*</label>
+                        <input type="text" autoComplete="off" className={`form__input ${appName?.error ? 'form__input--error' : ''}`} value={appName.value} onChange={e => handleNameChange(index, e.target.value)} data-testid="advanced-option-app-name-box"/>
                         {appName?.error &&
                             <span className="form__error flex left">
                                 <WarningIcon className="mr-5 icon-dim-16" />{appName?.error || ""}
@@ -152,38 +152,38 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                     </div>}
                     {handleEnvironmentChange && <div className="flex top mb-16">
                         <div className="flex column half left top">
-                            <label htmlFor="" className="form__label">Deploy to environment*</label>
+                            <label htmlFor="" className="form__label" data-testid="advanced-option-environment">Deploy to environment*</label>
                             <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
-                                <Select.Button rootClassName="select-button--default">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
-                                {Array.from(environments.values()).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
+                                <Select.Button rootClassName="select-button--default" dataTestIdDropdown="advanced-option-environment-list">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
+                                {Array.from(environments.values()).filter((itm) => !itm.isVirtualEnvironment).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
                             </Select>
                             {environment?.error && <span className="form__error flex left"><WarningIcon className="mr-5 icon-dim-16" />{environment?.error || ""}</span>}
                         </div>
                         <div className="flex column half left top">
-                            <label htmlFor="" className="form__label">Namespace*</label>
-                            <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} />
+                            <label htmlFor="" className="form__label" data-testid="advanced-option-namespace">Namespace*</label>
+                            <input autoComplete="off" disabled className="form__input" value={environments.has(environment?.id) ? environments.get(environment?.id).namespace : ''} data-testid = "advanced-option-namespace-box" />
                         </div>
                     </div>}
                     <div className="flex top mb-16">
                         <div className="flex column left top half">
-                            <label htmlFor="" className="form__label">Chart version</label>
+                            <label htmlFor="" className="form__label" data-testid="advanced-option-chart-version">Chart version</label>
                             <Select rootClassName="select-button--default" value={appStoreApplicationVersionId} onChange={e => handleChartVersionChangeAdvancedConfig(index, e.target.value)}>
                                 {!availableChartVersions?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                                <Select.Button>{`v${selectedChartVersion.version}`}</Select.Button>
+                                <Select.Button dataTestIdDropdown="advanced-option-chart-version-list">{`v${selectedChartVersion.version}`}</Select.Button>
                                 {availableChartVersions.map(({ id, version }) => <Select.Option key={id} value={id}>{version}</Select.Option>)}
                             </Select>
                         </div>
 
                         <div className="flex column left top half">
                             <label className="form__label form__label--manage-values">
-                                <span>Values</span>
-                                <button type="button" className="text-button p-0" onClick={openSavedValuesList}>
+                                <span data-testid="advanced-option-value">Values</span>
+                                <button type="button" className="text-button p-0" onClick={openSavedValuesList} data-testid="advanced-option-preset-values-button">
                                   Preset values
                                 </button>
                             </label>
                             <Select onChange={handleChartValueChangeAdvancedConfig} value={`${kind}..${appStoreValuesVersionId}`}>
                                 {!chartValuesDropDown?.length && <Select.Async api={() => getChartVersionsAndValues(chart.id, index)} />}
-                                <Select.Button rootClassName="select-button--default">
+                                <Select.Button rootClassName="select-button--default" dataTestIdDropdown="advanced-option-values-list">
                                     <span className="ml-5 select-button__selected-option dc__ellipsis-right" style={{ "width": "100%" }}>
                                         {`${selectedChartValue.name} (v${selectedChartValue.chartVersion})`}
                                     </span>
@@ -213,7 +213,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                             </ul>
                         </div>
                     </div>}
-                    <div className="code-editor-container">
+                    <div className="code-editor-container" data-testid="code-editor-code-editor-container">
                         <CodeEditor
                             value={valuesYaml}
                             noParsing
@@ -224,11 +224,11 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                         >
                             <CodeEditor.Header>
                                 <div className="flex" style={{ justifyContent: 'space-between', width: '100%' }}>
-                                    <span>{appName.value}.yaml</span>
+                                    <span data-testid="code-editor-code-editor-container-heading">{appName.value}.yaml</span>
                                     <div className="flex">
                                         {!handleValuesYaml && <LockIcon className="mr-5" />}
-                                        {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff}>{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
-                                        <button className="cta small  cancel" type="button" onClick={e => setReadme(true)}>Readme</button>
+                                        {handleValuesYaml && <button className="cta small  cancel mr-16" type="button" onClick={handleDiff} data-testid="advanced-option-check-diff-button">{chartValuesLoading ? <Progressing /> : 'Check diff'}</button>}
+                                        <button className="cta small  cancel" type="button" onClick={e => setReadme(true)} data-testid="advanced-option-readme-button">Readme</button>
                                     </div>
                                 </div>
                             </CodeEditor.Header>
@@ -284,7 +284,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
     return (
         <div className="advanced-config__readme">
             <h3>{chart.chartMetaData.chartName}</h3>
-            <div className="readme-config-container">
+            <div className="readme-config-container" data-testid="readme-container">
                 <div className="readme-config--header">
                     <h5 className="flex left">Readme.md</h5>
                     <h5 className="flex left">
@@ -309,7 +309,7 @@ function ReadmeCharts({ readme, valuesYaml, onChange, handleClose, chart }) {
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose}>Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="readme-done-button">Done</button>
             </div>
         </div>
     )
@@ -354,7 +354,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
     return (
         <div className="advanced-config__diff">
             <h3>{chartName}</h3>
-            <div className="readme-config-container">
+            <div className="readme-config-container" data-testid="check-diff-container">
                 {/* TODO: use code editor header */}
                 <div className="readme-config--header">
                     <h5 className="flex left">
@@ -404,7 +404,7 @@ function ValuesDiffViewer({ chartName, appName, valuesYaml, selectedChartValue, 
                 </div>
             </div>
             <div className="flex right">
-                <button className="cta secondary" onClick={handleClose}>Done</button>
+                <button className="cta secondary" onClick={handleClose} data-testid="check-diff-done-button">Done</button>
             </div>
         </div>
     )

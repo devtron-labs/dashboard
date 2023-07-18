@@ -70,6 +70,7 @@ interface CodeEditorInterface {
 
 interface CodeEditorHeaderInterface {
     children?: any;
+    className?: string
     hideDefaultSplitHeader?: boolean;
 }
 interface CodeEditorComposition {
@@ -160,7 +161,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-    
+
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -183,7 +184,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
         editorRef.current = editor
         monacoRef.current = monaco
-        
+
     }
 
     useEffect(() => {
@@ -313,7 +314,6 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
-
                         />
                     }
                 </>
@@ -322,12 +322,14 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     );
 })
 
-const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, hideDefaultSplitHeader }) => {
+const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, className, hideDefaultSplitHeader }) => {
     const { defaultValue } = useCodeEditorContext()
-    return <div className="code-editor__header flex left">
-        {children}
-        {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
-    </div>
+    return (
+        <div className={className || 'code-editor__header flex left'}>
+            {children}
+            {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
+        </div>
+    )
 }
 
 function ThemeChanger({ }) {

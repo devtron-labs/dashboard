@@ -3,54 +3,27 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
-import { showError, Progressing, ErrorScreenNotAuthorized, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenNotAuthorized, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import {
     deleteNotification,
     getSESConfiguration,
     getConfigs,
     getSlackConfiguration,
     getSMTPConfiguration,
+    getWebhookConfiguration,
 } from './notifications.service'
 import slack from '../../assets/img/slack-logo.svg'
 import ses from '../../assets/icons/ic-aws-ses.svg'
+import webhook from '../../assets/icons/ic-CIWebhook.svg';
 import { ReactComponent as SMTP } from '../../assets/icons/ic-smtp.svg'
 import { ViewType } from '../../config/constants'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import DeleteComponent from '../../util/DeleteComponent'
-import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName, EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 import Tippy from '@tippyjs/react'
 import { SMTPConfigModal } from './SMTPConfigModal'
-export interface ConfigurationTabState {
-    view: string
-    showSlackConfigModal: boolean
-    showSESConfigModal: boolean
-    showSMTPConfigModal: boolean
-    slackConfigId: number
-    sesConfigId: number
-    smtpConfigId: number
-    sesConfigurationList: Array<{ id: number; name: string; accessKeyId: string; email: string; isDefault: boolean }>
-    smtpConfigurationList: Array<{
-        id: number
-        name: string
-        port: string
-        host: string
-        email: string
-        isDefault: boolean
-    }>
-    slackConfigurationList: Array<{ id: number; slackChannel: string; projectId: number; webhookUrl: string }>
-    abortAPI: boolean
-    deleting: boolean
-    confirmation: boolean
-    sesConfig: any
-    smtpConfig: any
-    slackConfig: any
-    showDeleteConfigModalType: string
-}
-
-const enum ChannelConfigType {
-    SLACK = 'slack',
-    SES = 'ses',
-}
+import { WebhookConfigModal } from './WebhookConfigModal'
+import { ConfigurationTabState } from './types'
 
 export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     constructor(props) {
@@ -60,21 +33,31 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             showSlackConfigModal: false,
             showSESConfigModal: false,
             showSMTPConfigModal: false,
+            showWebhookConfigModal: false,
             slackConfigId: 0,
             sesConfigId: 0,
             smtpConfigId: 0,
+            webhookConfigId: 0,
             sesConfigurationList: [],
             smtpConfigurationList: [],
             slackConfigurationList: [],
+            webhookConfigurationList: [],
             abortAPI: false,
             deleting: false,
             confirmation: false,
             sesConfig: {},
             smtpConfig: {},
             slackConfig: {},
+            webhookConfig: {},
             showDeleteConfigModalType: '',
         }
         this.getAllChannelConfigs = this.getAllChannelConfigs.bind(this)
+        this.editWebhookHandler = this.editWebhookHandler.bind(this)
+        this.addWebhookConfigHandler = this.addWebhookConfigHandler.bind(this)
+        this.onSaveWebhook = this.onSaveWebhook.bind(this)
+        this.onCloseWebhookModal = this.onCloseWebhookModal.bind(this)
+        this.deleteConfigPayload = this.deleteConfigPayload.bind(this)
+        this.deleteConfigComponent = this.deleteConfigComponent.bind(this)
     }
 
     componentDidMount() {
@@ -88,6 +71,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 state.slackConfigurationList = response.result.slackConfigurationList
                 state.sesConfigurationList = response.result.sesConfigurationList
                 state.smtpConfigurationList = response.result.smtpConfigurationList
+                state.webhookConfigurationList = response.result.webhookConfigurationList
                 state.view = ViewType.FORM
                 this.setState(state)
             })
@@ -97,11 +81,38 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             })
     }
 
+    addWebhookConfigHandler() {
+        this.setState({ showWebhookConfigModal: true, webhookConfigId: 0 })
+    }
+
+    renderWebhookConfigurations() {
+        return (
+            <div key="webhook-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
+                <div className="configuration-tab__header">
+                    <p data-testid="webhook-config-heading-title" className="configuration-tab__title">
+                        <img src={webhook} alt="webhook" className="icon-dim-24 mr-10" />
+                        Webhook Configurations
+                    </p>
+                    <button
+                        type="button"
+                        className="cta flex small"
+                        onClick={this.addWebhookConfigHandler}
+                        data-testid="webhook-config-add-button"
+                    >
+                        <Add className="icon-dim-14 mr-5" />
+                        Add
+                    </button>
+                </div>
+                {this.renderWebhookConfigurationTable()}
+            </div>
+        )
+    }
+
     renderSlackConfigurations() {
         return (
-            <div key="slack-config" className="white-card white-card--configuration-tab mb-16">
+            <div key="slack-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title">
+                    <p data-testid="slack-heading-title" className="configuration-tab__title">
                         <img src={slack} alt="slack" className="icon-dim-24 mr-10" />
                         Slack Configurations
                     </p>
@@ -111,6 +122,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         onClick={(event) => {
                             this.setState({ showSlackConfigModal: true, slackConfigId: 0 })
                         }}
+                        data-testid="slack-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
                         Add
@@ -124,18 +136,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSlackConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.slackConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
-                    <EmptyState>
-                        <EmptyState.Title>
-                            <h3>No Configurations</h3>
-                        </EmptyState.Title>
-                    </EmptyState>
+                <div className="empty-state-height">
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
@@ -170,6 +178,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             slackConfigId: slackConfig.id,
                                                         })
                                                     }}
+                                                    data-testid="slack-configure-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -189,6 +198,87 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.SlackConfigurationTab,
                                                         )
                                                     }}
+                                                    data-testid="slack-configure-delete-button"
+                                                >
+                                                    <Trash className="scn-5 icon-dim-20" />
+                                                </button>
+                                            </Tippy>
+                                        </div>
+                                    </td>
+                                )
+                            })}
+                        </tr>
+                    </tbody>
+                </table>
+            )
+    }
+
+    editWebhookHandler(e) {
+        this.setState({ showWebhookConfigModal: true, webhookConfigId: e.currentTarget.dataset.webhookid })
+    }
+
+    renderWebhookConfigurationTable() {
+        if (this.state.view === ViewType.LOADING) {
+            return (
+                <div className="flex progressing-loader-height">
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (this.state.webhookConfigurationList.length === 0) {
+            return (
+                <div className="empty-state-height">
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
+                </div>
+            )
+        } else
+            return (
+                <table className="w-100">
+                    <thead>
+                        <tr className="configuration-tab__table-header">
+                            <td className="slack-config-table__name dc__truncate-text ">Name</td>
+                            <td className="slack-config-table__webhook dc__truncate-text ">Webhook URL</td>
+                            <td className="slack-config-table__action"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className="mb-8">
+                            {this.state.webhookConfigurationList.map((webhookConfig) => {
+                                return (
+                                    <td key={webhookConfig.id} className="configuration-tab__table-row" data-testid={`webhook-container-${webhookConfig.name}`}>
+                                        <div className="slack-config-table__name dc__truncate-text" data-testid={`webhook-config-name-${webhookConfig.name}`}>
+                                            {webhookConfig.name}
+                                        </div>
+                                        <div className="slack-config-table__webhook dc__truncate-text" data-testid={`webhook-url-${webhookConfig.webhookUrl}`}>
+                                            {webhookConfig.webhookUrl}
+                                        </div>
+                                        <div className="slack-config-table__action">
+                                            <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
+                                                <button
+                                                    type="button"
+                                                    className="dc__transparent dc__align-right mr-16"
+                                                    data-webhookid={webhookConfig.id}
+                                                    onClick={this.editWebhookHandler}
+                                                    data-testid={`webhook-configure-edit-button-${webhookConfig.name}`}
+                                                >
+                                                    <Edit className="icon-dim-20" />
+                                                </button>
+                                            </Tippy>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                                content="Delete"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className="dc__transparent dc__align-right"
+                                                    onClick={() => {
+                                                        this.deleteClickHandler(
+                                                            webhookConfig.id,
+                                                            DeleteComponentsName.WebhookConfigurationTab,
+                                                        )
+                                                    }}
+                                                    data-testid={`webhook-configure-delete-button-${webhookConfig.name}`}
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
@@ -205,9 +295,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSESConfigurations() {
         return (
-            <div key="ses-config" className="white-card white-card--configuration-tab">
+            <div key="ses-config" className="dc__position-rel white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title">
+                    <p data-testid="ses-heading-title" className="configuration-tab__title">
                         <img alt="ses config" src={ses} className="icon-dim-24 mr-10" />
                         SES Configurations
                     </p>
@@ -217,6 +307,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         onClick={(event) => {
                             this.setState({ showSESConfigModal: true, sesConfigId: 0 })
                         }}
+                        data-testid="ses-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
                         Add
@@ -229,9 +320,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSMTPConfigurations() {
         return (
-            <div key="smtp-config" className="white-card white-card--configuration-tab">
+            <div key="smtp-config" className="dc__position-rel white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title flexbox">
+                    <p data-testid="smtp-heading-title" className="configuration-tab__title flexbox">
                         <SMTP className="icon-dim-24 mr-10" />
                         SMTP Configurations
                     </p>
@@ -241,6 +332,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         onClick={(event) => {
                             this.setState({ showSMTPConfigModal: true, smtpConfigId: 0 })
                         }}
+                        data-testid="smtp-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
                         Add
@@ -291,13 +383,24 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
             } else if (type === DeleteComponentsName.SMTPConfigurationTab) {
                 const { result } = await getSMTPConfiguration(configId)
                 this.setState({
-                    sesConfigId: configId,
+                    smtpConfigId: configId,
                     smtpConfig: {
                         ...result,
                         channel: DeleteComponentsName.SMTPConfigurationTab,
                     },
                     confirmation: true,
                     showDeleteConfigModalType: DeleteComponentsName.SMTPConfigurationTab,
+                })
+            } else if (type === DeleteComponentsName.WebhookConfigurationTab) {
+                const { result } = await getWebhookConfiguration(configId)
+                this.setState({
+                    webhookConfigId: configId,
+                    webhookConfig: {
+                        ...result,
+                        channel: DeleteComponentsName.WebhookConfigurationTab,
+                    },
+                    confirmation: true,
+                    showDeleteConfigModalType: DeleteComponentsName.WebhookConfigurationTab,
                 })
             }
         } catch (e) {
@@ -307,18 +410,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSESConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.sesConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
-                    <EmptyState>
-                        <EmptyState.Title>
-                            <h3>No Configurations</h3>
-                        </EmptyState.Title>
-                    </EmptyState>
+                <div className="empty-state-height">
+                   <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
@@ -336,14 +435,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         <tr className="mb-8">
                             {this.state.sesConfigurationList.map((sesConfig) => {
                                 return (
-                                    <td key={sesConfig.id} className="configuration-tab__table-row">
-                                        <div className="ses-config-table__name dc__truncate-text ">
+                                    <td data-testid={`ses-container-${sesConfig.name}`} key={sesConfig.id} className="configuration-tab__table-row">
+                                        <div data-testid={`ses-config-name-${sesConfig.name}`}className="ses-config-table__name dc__truncate-text ">
                                             {sesConfig.name}
                                             {sesConfig.isDefault ? (
                                                 <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="ses-config-table__access-key dc__truncate-text ">
+                                        <div data-testid={`ses-access-key-${sesConfig.accessKeyId}`} className="ses-config-table__access-key dc__truncate-text ">
                                             {sesConfig.accessKeyId}
                                         </div>
                                         <div className="ses-config-table__email dc__truncate-text ">
@@ -360,6 +459,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             sesConfigId: sesConfig.id,
                                                         })
                                                     }}
+                                                    data-testid="ses-config-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -379,6 +479,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.SesConfigurationTab,
                                                         )
                                                     }}
+                                                    data-testid="ses-config-delete-button"
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
@@ -396,18 +497,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     renderSMTPConfigurationTable() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="flex" style={{ height: 'calc(100% - 68px)' }}>
+                <div className="flex progressing-loader-height">
                     <Progressing pageLoader />
                 </div>
             )
         } else if (this.state.smtpConfigurationList.length === 0) {
             return (
-                <div style={{ height: 'calc(100% - 70px)' }}>
-                    <EmptyState>
-                        <EmptyState.Title>
-                            <h3>No Configurations</h3>
-                        </EmptyState.Title>
-                    </EmptyState>
+                <div className="empty-state-height">
+                    <GenericEmptyState title={EMPTY_STATE_STATUS.CONFIGURATION_TAB.TITLE} noImage={true} />
                 </div>
             )
         } else
@@ -426,14 +523,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         <tr className="mb-8">
                             {this.state.smtpConfigurationList.map((smtpConfig) => {
                                 return (
-                                    <td key={smtpConfig.id} className="configuration-tab__table-row">
-                                        <div className="ses-config-table__name dc__truncate-text ">
+                                    <td data-testid={`smtp-container-${smtpConfig.name}`} key={smtpConfig.id} className="configuration-tab__table-row">
+                                        <div data-testid={`smtp-config-name-${smtpConfig.name}`} className="ses-config-table__name dc__truncate-text ">
                                             {smtpConfig.name}
                                             {smtpConfig.isDefault ? (
                                                 <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="smtp-config-table__host dc__truncate-text ">
+                                        <div data-testid={`smtp-config-host-${smtpConfig.host}`} className="smtp-config-table__host dc__truncate-text ">
                                             {smtpConfig.host}
                                         </div>
                                         <div className="smtp-config-table__port dc__truncate-text ">
@@ -453,6 +550,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             smtpConfigId: smtpConfig.id,
                                                         })
                                                     }}
+                                                    data-testid="smtp-config-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -472,6 +570,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.SMTPConfigurationTab,
                                                         )
                                                     }}
+                                                    data-testid="smtp-config-delete-button"
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
@@ -539,6 +638,53 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         }
     }
 
+    onSaveWebhook() {
+        this.setState({ showWebhookConfigModal: false, webhookConfigId: 0 })
+        this.getAllChannelConfigs()
+    }
+
+    onCloseWebhookModal() {
+        this.setState({ showWebhookConfigModal: false, webhookConfigId: 0 })
+    }
+
+    renderWebhookConfigModal() {
+        if (this.state.showWebhookConfigModal) {
+            return (
+                <WebhookConfigModal
+                    webhookConfigId={this.state.webhookConfigId}
+                    onSaveSuccess={this.onSaveWebhook}
+                    closeWebhookConfigModal={this.onCloseWebhookModal}
+                />
+            )
+        }
+    }
+
+    deleteConfigPayload(): any {
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
+            return this.state.slackConfig
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
+            return this.state.sesConfig
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
+            return this.state.webhookConfig
+        }
+        return this.state.smtpConfig
+    }
+
+    deleteConfigComponent(): string {
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab) {
+            return DeleteComponentsName.SlackConfigurationTab
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab) {
+            return DeleteComponentsName.SesConfigurationTab
+        }
+        if(this.state.showDeleteConfigModalType === DeleteComponentsName.WebhookConfigurationTab) {
+            return DeleteComponentsName.WebhookConfigurationTab
+        }
+        return DeleteComponentsName.SMTPConfigurationTab
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -553,42 +699,27 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 </div>
             )
         }
+        const payload  = this.deleteConfigPayload()
         return (
             <>
                 <div className="configuration-tab">
                     {this.renderSESConfigurations()}
                     {this.renderSMTPConfigurations()}
                     {this.renderSlackConfigurations()}
+                    {this.renderWebhookConfigurations()}
                 </div>
                 {this.renderSESConfigModal()}
                 {this.renderSMTPConfigModal()}
                 {this.renderSlackConfigModal()}
+                {this.renderWebhookConfigModal()}
                 {this.state.confirmation && (
                     <DeleteComponent
                         setDeleting={this.setDeleting}
                         deleteComponent={deleteNotification}
-                        payload={
-                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                ? this.state.slackConfig
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
-                                ? this.state.sesConfig
-                                : this.state.smtpConfig
-                        }
-                        title={
-                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                ? this.state.slackConfig.configName
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
-                                ? this.state.sesConfig.configName
-                                : this.state.smtpConfig.configName
-                        }
+                        payload={payload}
+                        title={payload.configName}
                         toggleConfirmation={this.toggleConfirmation}
-                        component={
-                            this.state.showDeleteConfigModalType === DeleteComponentsName.SlackConfigurationTab
-                                ? DeleteComponentsName.SlackConfigurationTab
-                                : this.state.showDeleteConfigModalType === DeleteComponentsName.SesConfigurationTab
-                                ? DeleteComponentsName.SesConfigurationTab
-                                : DeleteComponentsName.SMTPConfigurationTab
-                        }
+                        component={this.deleteConfigComponent()}
                         confirmationDialogDescription={DC_CONFIGURATION_CONFIRMATION_MESSAGE}
                         reload={this.getAllChannelConfigs}
                         configuration="configuration"

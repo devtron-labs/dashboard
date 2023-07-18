@@ -27,6 +27,7 @@ export interface WorkflowEditState {
     noGitOpsConfiguration?: boolean
     envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
+    filteredCIPipelines?: any[]
 }
 
 export interface WorkflowEditProps
@@ -36,6 +37,8 @@ export interface WorkflowEditProps
     respondOnSuccess: () => void
     getWorkflows: () => void
     isJobView?: boolean
+    envList?: any[]
+    ciPipelines?: any[]
 }
 
 export interface AddWorkflowState {
@@ -82,6 +85,8 @@ export interface CDNodeProps{
     deploymentAppDeleteRequest: boolean
     deploymentAppCreated?: boolean
     match: RouteComponentProps['match']
+    description: string
+    isVirtualEnvironment?: boolean
 }
 
 export interface WebhookNodeProps {

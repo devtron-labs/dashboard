@@ -12,6 +12,7 @@ import { showError, Teams, sortCallback, getTeamListMin } from '@devtron-labs/de
 import { createClusterEnvGroup, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
+import { EnvironmentListMinType } from '../../../app/types'
 
 export async function fetchChartVersionsData(
     id: number,
@@ -154,20 +155,24 @@ export async function fetchProjectsAndEnvironments(
 ): Promise<void> {
     Promise.allSettled([
         getTeamListMin(),
-        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin() : getEnvironmentListHelmApps(),
+        serverMode === SERVER_MODE.FULL ? getEnvironmentListMin(true) : getEnvironmentListHelmApps(),
     ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
         const projectListRes: Teams[] = responses[0].value?.result || []
-        const environmentListRes: any[] = responses[1].value?.result || []
+        const environmentListRes: EnvironmentListMinType[] = responses[1].value?.result || []
         let envList = []
 
         if (serverMode === SERVER_MODE.FULL) {
-            envList = createClusterEnvGroup(environmentListRes.map((env) => {
+            envList = createClusterEnvGroup(environmentListRes.map((env) =>
+            {
                 return {
                     value: env.id,
                     label: env.environment_name,
                     active: env.active,
                     namespace: env.namespace,
-                    clusterName: env.cluster_name
+                    clusterName: env.cluster_name,
+                    description: env.description,
+                    isVirtualEnvironment: env.isVirtualEnvironment,
+                    allowedDeploymentTypes: env.allowedDeploymentTypes ?? []
                 }
             }), 'clusterName')
         } else {
@@ -183,6 +188,8 @@ export async function fetchProjectsAndEnvironments(
                         namespace: env.namespace,
                         clusterName: cluster.clusterName,
                         clusterId: cluster.clusterId,
+                        isVirtualEnvironment: env?.isVirtualEnvironment,
+                        allowedDeploymentTypes: env.allowedDeploymentTypes ?? []
                     })),
                 ],
             }))

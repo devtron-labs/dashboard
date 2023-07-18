@@ -222,10 +222,6 @@
     width: 100%;
 }
 
-.title-padding {
-    padding: 17px 20px;
-}
-
 .pipeline-container {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -254,8 +250,11 @@
 }
 
 .task-container {
-    max-height: 235px;
+    max-height: calc(100vh - 330px);
     overflow: auto;
+    &.with-warning{
+      max-height: calc(100vh - 486px);
+    }
 }
 
 .task-item {

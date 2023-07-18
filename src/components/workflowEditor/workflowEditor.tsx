@@ -35,6 +35,7 @@ import nojobs from '../../assets/img/empty-joblist@2x.png'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -60,6 +61,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showOpenCIPipelineBanner:
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
+            filteredCIPipelines: [],
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -87,7 +89,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId)
+        getCreateWorkflows(
+            this.props.match.params.appId,
+            this.props.isJobView,
+        )
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -120,6 +125,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     allDeploymentNodeMap: allDeploymentNodeMap,
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
+                    filteredCIPipelines: result.filteredCIPipelines
                 })
             })
             .catch((errors) => {
@@ -415,7 +421,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
         return (
             <>
-                <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.toggleCIMenu}>
+                <button
+                    type="button"
+                    className="cta dc__no-decor flex mb-20"
+                    data-testid="new-workflow-button"
+                    onClick={this.toggleCIMenu}
+                >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
                 </button>
@@ -440,7 +451,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     renderNewJobPipelineButton = () => {
         return (
-            <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.openCreateModal}>
+            <button
+                type="button"
+                className="cta dc__no-decor flex mb-20"
+                data-testid="job-pipeline-button"
+                onClick={this.openCreateModal}
+            >
                 <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                 Job pipeline
             </button>
@@ -459,11 +475,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     {this.props.isJobView
                         ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}{' '}
+                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br></br>
                     {!this.props.isJobView && (
                         <a
                             className="dc__link"
+                            data-testid="learn-more-about-creating-workflow-link"
                             href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                             target="blank"
                             rel="noreferrer noopener"
@@ -525,6 +542,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     showWebhookTippy={wf.showTippy}
                     hideWebhookTippy={this.hideWebhookTippy}
                     isJobView={this.props.isJobView}
+                    envList={this.props.envList}
+                    filteredCIPipelines={this.state.filteredCIPipelines}
                 />
             )
         })
@@ -584,7 +603,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         } else {
             return (
-                <div className="workflow-editor">
+                <div className="workflow-editor" data-testid="workflow-editor-page">
                     <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                     <p>
                         {this.props.isJobView

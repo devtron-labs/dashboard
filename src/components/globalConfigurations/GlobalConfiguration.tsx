@@ -2,8 +2,8 @@ import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
-import { Toggle, ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorBoundary, importComponentFromFELibrary } from '../common'
+import { showError, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -37,6 +37,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
+const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -171,7 +172,7 @@ function NavItem({ serverMode }) {
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container Registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
     ]
 
     const ConfigOptional = [
@@ -190,16 +191,19 @@ function NavItem({ serverMode }) {
             group: [
                 {
                     name: 'User Permissions',
+                    dataTestId: 'authorization-user-permissions-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'Permission Groups',
+                    dataTestId: 'authorization-permission-groups-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'API Tokens',
+                    dataTestId: 'authorization-api-tokens-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
                     isAvailableInEA: true,
                 },
@@ -252,6 +256,7 @@ function NavItem({ serverMode }) {
                 to={`${route.href}`}
                 key={route.href}
                 activeClassName="active-route"
+                data-testid={route.dataTestId}
                 className={`${
                     route.name === 'API tokens' &&
                     location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
@@ -264,7 +269,7 @@ function NavItem({ serverMode }) {
                     }
                 }}
             >
-                <div className={`flexbox flex-justify ${className || ''}`}>
+                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
                     <div>{route.name}</div>
                 </div>
             </NavLink>
@@ -340,6 +345,7 @@ function NavItem({ serverMode }) {
                                     <NavLink
                                         key={`nav_item_${index}`}
                                         to={route.href}
+                                        data-testid="user-authorization-link"
                                         className={`cursor ${
                                             collapsedState[route.name] ? '' : 'fw-6'
                                         } flex dc__content-space`}
@@ -375,6 +381,15 @@ function NavItem({ serverMode }) {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
+                    {PluginsPolicy && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_PLUGINS}
+                            key={URLS.GLOBAL_CONFIG_PLUGINS}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Plugins</div>
+                        </NavLink>
+                    )}
                     {TagListContainer && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_TAGS}
@@ -526,6 +541,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
+            {PluginsPolicy && (
+                <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
+                    <PluginsPolicy />
+                </Route>
+            )}
             {TagListContainer && (
                 <Route path={URLS.GLOBAL_CONFIG_TAGS}>
                     <TagListContainer />
@@ -557,17 +577,26 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 }
 
 function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle {...props} onSelect={onSelect} selected={enabled} />
+    return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
 }
 
-function DropDown({ className = '', style = {}, src = null, ...props }) {
+function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
+    return (
+        <img
+            {...props}
+            src={src || arrowTriangle}
+            data-testid={dataTestid}
+            alt=""
+            className={`list__arrow ${className}`}
+            style={style}
+        />
+    )
 }
 
-export function List({ children = null, className = '', ...props }) {
+export function List({ dataTestId = '', children = null, className = '', ...props }) {
     return (
-        <div className={`list ${className}`} {...props}>
+        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
         </div>
     )
@@ -599,11 +628,13 @@ export function CustomInput({
     labelClassName = '',
     placeholder = '',
     tabIndex = 1,
+    dataTestid = '',
 }) {
     return (
         <div className="flex column left top">
             <label className={`form__label ${labelClassName}`}>{label}</label>
             <input
+                data-testid={dataTestid}
                 type={type}
                 name={name}
                 autoComplete="off"
@@ -641,6 +672,7 @@ export function ProtectedInput({
     hidden = true,
     labelClassName = '',
     placeholder = '',
+    dataTestid = '',
 }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
@@ -654,6 +686,7 @@ export function ProtectedInput({
             </label>
             <div className="dc__position-rel w-100">
                 <input
+                    data-testid={dataTestid}
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}
                     className={error ? 'form__input form__input--error pl-42' : 'form__input pl-42'}

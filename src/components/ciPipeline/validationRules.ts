@@ -1,5 +1,5 @@
+import { RefVariableType } from '@devtron-labs/devtron-fe-common-lib';
 import { PATTERNS } from '../../config'
-import { RefVariableType } from './types'
 import {
     CHARACTER_ERROR_MIN,
     CHARACTER_ERROR_MAX,
@@ -10,7 +10,7 @@ import {
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
         const regExp = new RegExp(PATTERNS.APP_NAME)
-        if (value.length === 0) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        if (!(value?.length)) return { isValid: false, message: REQUIRED_FIELD_MSG }
         if (value.length < 2) return { isValid: false, message: CHARACTER_ERROR_MIN }
         if (value.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
         else if (!regExp.test(value))

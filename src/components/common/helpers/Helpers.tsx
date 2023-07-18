@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
-import { TOKEN_COOKIE_NAME } from '../../../config'
-import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
+import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
+import { showError, useThrottledEffect, OptionType, noop, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { OptionType } from '../../app/types'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
+import { ToastBody3 as UpdateToast } from '../ToastBody'
 
 const commandLineParser = require('command-line-parser')
 
@@ -25,16 +24,6 @@ export type IntersectionOptions = {
     threshold?: number | number[]
     once?: boolean
     defaultIntersecting?: boolean
-}
-
-export function useEffectAfterMount(cb, dependencies) {
-    const justMounted = React.useRef(true)
-    React.useEffect(() => {
-        if (!justMounted.current) {
-            return cb()
-        }
-        justMounted.current = false
-    }, dependencies)
 }
 
 export function validateEmail(email) {
@@ -152,42 +141,6 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
     }
     return { state, disable, handleOnChange, handleOnSubmit }
-}
-
-export function getRandomColor(email: string): string {
-    // var hash = 0;
-    // for (var i = 0; i < str.length; i++) {
-    //     hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    // }
-    // var colour = '#';
-    // for (var i = 0; i < 3; i++) {
-    //     var value = (hash >> (i * 8)) & 0xFF;
-    //     colour += ('00' + value.toString(16)).substr(-2);
-    // }
-    // return colour;
-    var colors = [
-        '#FFB900',
-        '#D83B01',
-        '#B50E0E',
-        '#E81123',
-        '#B4009E',
-        '#5C2D91',
-        '#0078D7',
-        '#00B4FF',
-        '#008272',
-        '#107C10',
-    ]
-    var sum = 0
-    for (let i = 0; i < email.length; i++) {
-        sum += email.charCodeAt(i)
-    }
-    return colors[sum % colors.length]
-}
-
-export function noop(...args): any {}
-
-export function not(e) {
-    return !e
 }
 
 export function mapByKey(arr: any[], id: string): Map<any, any> {
@@ -502,31 +455,6 @@ export function useOnline() {
     return online
 }
 
-export function getCookie(sKey) {
-    if (!sKey) {
-        return null
-    }
-    return (
-        document.cookie.replace(
-            new RegExp('(?:(?:^|.*;)\\s*' + sKey.replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'),
-            '$1',
-        ) || null
-    )
-}
-
-export function getLoginInfo() {
-    const argocdToken = getCookie(TOKEN_COOKIE_NAME)
-    if (argocdToken) {
-        const jwts = argocdToken.split('.')
-        try {
-            return JSON.parse(atob(jwts[1]))
-        } catch (err) {
-            console.error('error in setting user ', err)
-            return null
-        }
-    }
-}
-
 interface scrollableInterface {
     autoBottomScroll: boolean
 }
@@ -750,7 +678,7 @@ export function useEventSource(
     const eventSourceRef = useRef(null)
 
     function closeEventSource() {
-        if (eventSourceRef.current && eventSourceRef.current.close) eventSourceRef.current.close()
+        if (eventSourceRef.current?.close) eventSourceRef.current.close()
     }
 
     function handleMessage(event) {
@@ -1036,16 +964,19 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary =(componentName: string, defaultComponent?)=>{
-  try {
-    const module = require('@devtron-labs/devtron-fe-lib')
-    return module[componentName]?.default || defaultComponent || null;
-  } catch (e) {
-      if (e['code'] !== 'MODULE_NOT_FOUND') {
-          throw e;
-      }
-      return defaultComponent || null
-  }
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
+    try {
+        const module = require('@devtron-labs/devtron-fe-lib')
+        if (type === 'function') {
+            return module[componentName] || defaultComponent || null
+        }
+        return module[componentName]?.default || defaultComponent || null
+    } catch (e) {
+        if (e['code'] !== 'MODULE_NOT_FOUND') {
+            throw e
+        }
+        return defaultComponent || null
+    }
 }
 
 export const getElapsedTime = (createdAt: Date) => {
@@ -1102,13 +1033,19 @@ export const processK8SObjects = (
         if (!currentData) {
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
-                isExpanded: element.gvk.Kind.toLowerCase() === selectedResourceKind,
+                isExpanded:
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [{ namespaced: element.namespaced, gvk: element.gvk }],
             })
         } else {
             currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
-                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
+                currentData.isExpanded =
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
@@ -1124,20 +1061,37 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionType?: boolean, optionName?: string): { label: string; options: T[] }[] {
+export function createClusterEnvGroup<T>(
+    list: T[],
+    propKey: string,
+    optionLabel?: string,
+    optionValue?: string,
+): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName]} : obj)
+        acc[key].push(
+            optionLabel
+                ? {
+                      label: obj[optionLabel],
+                      value: obj[optionValue ? optionValue : optionLabel],
+                      description: obj['description'],
+                      isVirtualEnvironment: obj['isVirtualEnvironment'],
+                  }
+                : obj,
+        )
         return acc
     }, {})
 
-    return Object.entries(objList).map(([key, value]) => ({
-        label: key,
-        options: value,
-    }))
+    return Object.entries(objList)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, value]) => ({
+            label: key,
+            options: value,
+            isVirtualEnvironment: value[0]['isVirtualEnvironment'], // All the values will be having similar isVirtualEnvironment
+        }))
 }
 
 export const k8sStyledAgeToSeconds = (duration: string): number => {
@@ -1179,6 +1133,16 @@ export const handleOnFocus = (e): void => {
     }
 }
 
+export const highlightSearchedText = (searchText: string, matchString: string): string => {
+    if (!searchText) {
+        return matchString
+    }
+    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+
+    const regex = new RegExp(searchText, 'gi')
+    return matchString.replace(regex, highlightText)
+}
+
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
         category: category,
@@ -1214,6 +1178,64 @@ export const handleOnBlur = (e): void => {
     }
 }
 
-export const parsePassword = (password:string): string => {
+export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+}
+
+export const reloadLocation = () => {
+    window.location.reload()
+}
+
+export const reloadToastBody = () => {
+    return (
+        <UpdateToast
+            onClick={reloadLocation}
+            text="You are viewing an outdated version of Devtron UI."
+            buttonText="Reload"
+        />
+    )
+}
+
+export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
+    const ref = useRef(null)
+    const callbackRef = useRef(callback)
+
+    useLayoutEffect(() => {
+        callbackRef.current = callback
+    }, [callback])
+
+    const handleHeightChange = useCallback(() => {
+        callbackRef.current?.(ref.current.clientHeight)
+    }, [callbackRef])
+
+    useLayoutEffect(() => {
+        if (!ref.current) {
+            return
+        }
+        const observer = new ResizeObserver(handleHeightChange)
+        observer.observe(ref.current)
+        return () => {
+            observer.disconnect()
+        }
+    }, [handleHeightChange, ref])
+
+    return [ref]
+}
+
+export const getDeploymentAppType = (
+    allowedDeploymentTypes: DeploymentAppTypes[],
+    selectedDeploymentAppType: string,
+    isVirtualEnvironment: boolean
+): string => {
+  if (isVirtualEnvironment) {
+      return DeploymentAppTypes.MANIFEST_DOWNLOAD
+  } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+      return ''
+  } else if (
+      selectedDeploymentAppType &&
+      allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
+  ) {
+      return selectedDeploymentAppType
+  }
+  return allowedDeploymentTypes[0]
 }

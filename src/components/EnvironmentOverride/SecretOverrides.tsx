@@ -6,7 +6,6 @@ import { ListComponent, Override } from './ConfigMapOverrides'
 import {
     mapByKey,
     Pencil,
-    not,
     useAsync,
     Select,
     RadioGroup,
@@ -15,7 +14,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE, not } from '@devtron-labs/devtron-fe-common-lib'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -37,7 +36,7 @@ function useSecretContext() {
     return context
 }
 
-export default function SecretOverrides({ parentState, setParentState }: SecretOverridesProps) {
+export default function SecretOverrides({ parentState, setParentState, isJobView }: SecretOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [loading, result, error, reload] = useAsync(() => getEnvironmentSecrets(+appId, +envId), [+appId, +envId])
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -84,6 +83,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
                                     name={name}
                                     type="secret"
                                     label={global ? (data || esoSecretData.secretStore || secretData ? 'modified' : '') : 'env'}
+                                    isJobView={isJobView}
                                 />
                             )
                         })}
@@ -92,7 +92,7 @@ export default function SecretOverrides({ parentState, setParentState }: SecretO
     )
 }
 
-export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
+export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isJobView }) {
     const { secrets, id, reload } = useSecretContext()
     const {
         data = null,
@@ -436,7 +436,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
                 payload[CODE_EDITOR_RADIO_STATE.DATA] = dataArray.reduce((agg, { k, v }) => {
-                    agg[k] = externalType === '' ? btoa(v || '') : v || ''
+                    agg[k] = externalType === '' ? btoa(v ?? '') : v ?? ''
                     return agg
                 }, {})
             } else if (isESO) {
@@ -568,8 +568,8 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                             <Select disabled onChange={(e) => {}}>
                                 <Select.Button>
                                     {externalType
-                                        ? getTypeGroups(externalType).label
-                                        : getTypeGroups()[0].options[0].label}
+                                        ? getTypeGroups(isJobView, externalType).label
+                                        : getTypeGroups(isJobView)[0].options[0].label}
                                 </Select.Button>
                             </Select>
                         </div>
@@ -950,6 +950,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     initialise={() => {}}
                     filePermission={filePermission}
                     subPath={subPath}
+                    isJobView={isJobView}
                 />
             )}
             {state.dialog && (

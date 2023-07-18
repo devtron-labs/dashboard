@@ -14,16 +14,25 @@ export interface BuildDetails {
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
     isJobView?: boolean
+    appIdFromParent?: string
+    appReleaseTags?:[]
+    tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
 }
 
 export interface HistoryLogsType {
     triggerDetails: History
     isBlobStorageConfigured?: boolean
     isJobView?: boolean
+    appIdFromParent?: string
+    appReleaseTags?: []
+    tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
 }
 
 export interface SecurityTabType {
     ciPipelineId: number
     artifactId: number
     status: string
+    appIdFromParent?: string
 }

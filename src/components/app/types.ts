@@ -1,6 +1,7 @@
-import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
+import { AppEnvironment } from '../../services/service.types'
+import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -44,6 +45,7 @@ export interface AddNewAppState {
         appName: boolean
         cloneAppId: boolean
     }
+    createAppLoader: boolean
 }
 
 export interface AppDetails {
@@ -63,8 +65,9 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
+    imageTag?: string
 }
 
 export interface LabelTag {
@@ -435,20 +438,57 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
+    dataTestid?: string
+    closeCustomComponent?: () => void
 }
 
 export interface AppStatusType {
     appStatus: string
     isDeploymentStatus?: boolean
     isJobView?: boolean
+    isVirtualEnv?: boolean
 }
 export interface JobPipeline {
-    ci_pipeline_id: number
-    ci_pipeline_name: string
-    started_on: string
+    ciPipelineID: number
+    ciPipelineName: string
+    startedOn: string
     status: string
+    dataTestId?: string
+    environmentName?: string
+    environmentId?: string 
+    lastTriggeredEnvironmentName?: string
 }
 
 export interface TagChipsContainerType {
   labelTags: TagType[]
 }
+export interface SourceInfoType {
+  appDetails: AppDetails
+  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+  environment: AppEnvironment
+  environments: AppEnvironment[]
+  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+  loadingDetails?: boolean
+  loadingResourceTree?: boolean
+  isVirtualEnvironment?: boolean
+  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface EnvironmentListMinType {
+    active?: boolean
+    appCount?: number
+    cluster_name?: string
+    default?: boolean
+    description?: boolean
+    environmentIdentifier?: string
+    environment_name: string
+    id?: number
+    isClusterCdActive?: boolean
+    isVirtualEnvironment?: boolean
+    namespace?: string
+    allowedDeploymentTypes?: DeploymentAppTypes[]
+}
+

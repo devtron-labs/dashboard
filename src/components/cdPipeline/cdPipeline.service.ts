@@ -22,15 +22,16 @@ export function updateCDPipeline(request) {
     return post(URL, request);
 }
 
-export function deleteCDPipeline(request, force?: boolean) {
+export function deleteCDPipeline(request, force?: boolean, cascadeDelete?: boolean){
     let URL;
-    if(force){
-     URL = `${Routes.CD_CONFIG_PATCH}?force=${force}`;
+    if (force) {
+        URL = `${Routes.CD_CONFIG_PATCH}?force=${force}`
+    } else if (!cascadeDelete) {
+        URL = `${Routes.CD_CONFIG_PATCH}?cascade=${cascadeDelete}`
+    } else {
+        URL = `${Routes.CD_CONFIG_PATCH}`
     }
-    else{
-        URL = `${Routes.CD_CONFIG_PATCH}`;
-    }
-    return post(URL, request);
+    return post(URL, request)
 }
 
 export function getCDPipeline(appId: string, pipelineId: string) {
@@ -39,7 +40,7 @@ export function getCDPipeline(appId: string, pipelineId: string) {
 }
 
 export async function getCDPipelineConfig(appId: string, pipelineId: string): Promise<any> {
-    return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic()]).then(([cdPipelineRes, envListResponse]) => {
+    return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic(true)]).then(([cdPipelineRes, envListResponse]) => {
         let envId = cdPipelineRes.result.environmentId;
         let environments = envListResponse.result || [];
         environments = environments.map((env) => {
@@ -49,6 +50,7 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
                 namespace: env.namespace || "",
                 active: envId == env.id,
                 isClusterCdActive: env.isClusterCdActive,
+                allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             }
         });
         return {

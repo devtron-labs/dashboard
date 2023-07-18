@@ -17,11 +17,16 @@ export const Routes = {
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
+    IMAGE_TAGGING:'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    VALIDATE: 'cluster/validate',
+    SAVECLUSTER: 'cluster/saveClusters',
+    CLUSTER_DESCRIPTION: 'cluster/description',
+    CLUSTER_NOTE: 'cluster/description/note',
 
     CD_CONFIG: 'app/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
@@ -46,14 +51,17 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    APP_LIST_V1: 'v1',
+    APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
+    APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
-    
-    JOB_CI_DETAIL:'job/ci-pipeline/list',
+
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -79,6 +87,7 @@ export const Routes = {
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
+    CHART_LIST_SUBPATH_MIN: 'list/min',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
@@ -146,6 +155,8 @@ export const Routes = {
     DESIRED_MANIFEST: 'application/desired-manifest',
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
+    NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
+    NONCASCADE_DELETE_DEVTRON_APP : 'app/delete',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
@@ -175,6 +186,7 @@ export const Routes = {
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
+    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
@@ -182,6 +194,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',
@@ -211,6 +224,15 @@ export const Routes = {
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
     USER_ROLE_GROUP: 'user/role/group',
+    APP_FILTER_LIST: 'app/app-listing/autocomplete',
+    APP_LIST_GROUP: 'app/list/group',
+    CUSTOM_ROLES: 'rbac/role',
+    GROUPS: 'groups',
+    GROUP: 'group',
+    ROTATE_PODS: 'app/rotate-pods',
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
+    EDIT: 'edit',
+    JOB_CONFIG_ENVIRONMENTS: 'config/environment'
 }
 
 export const ViewType = {
@@ -245,7 +267,7 @@ export const PATTERNS = {
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
-    URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
+    URL: /^(http:\/\/|https:\/\/)?[A-Za-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
     KUBERNETES_KEY:
         /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
@@ -258,11 +280,6 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
-
-export const TriggerTypeMap = {
-    automatic: 'Auto',
-    manual: 'Manual',
 }
 
 export const SourceTypeMap = {
@@ -330,7 +347,9 @@ export const DOCUMENTATION = {
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
-export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
+export const PREVIEW_DEVTRON = 'https://preview.devtron.ai'
+
+export const PRIVACY_POLICY = 'https://devtron.ai/privacy-policy'
 
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
@@ -386,186 +405,56 @@ export enum MODES {
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
-export interface InputDetailType {
-    label: string
-    defaultValue: string
-    placeholder: string
+export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
+export type OCIRegistryStorageConfigType = {
+    CONTAINER ?: OCIRegistryStorageActionType,
+    CHART ?: OCIRegistryStorageActionType,
 }
-export interface RegistryTypeDetailType {
-    value: string
-    label: string
-    desiredFormat: string
-    placeholderText: string
-    gettingStartedLink: string
-    defaultRegistryURL: string
-    registryURL: InputDetailType
-    id: InputDetailType
-    password: InputDetailType
+export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
+    PULL: "PULL",
+    PUSH: "PUSH",
+    PULL_PUSH: "PULL/PUSH",
+}
+export const RegistryStorageType = {
+    CONTAINER: 'CONTAINER',
+    OCI_PRIVATE: 'OCI_PRIVATE',
 }
 
-export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
-    ecr: {
-        value: 'ecr',
-        label: 'ECR',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: 'Eg. xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
-        },
-        id: {
-            label: 'Access key ID*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Secret access key*',
-            defaultValue: '',
-            placeholder: '',
-        },
+export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'Container / OCI Registry',
+    infoText:
+        'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
+    additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export interface RegistryPayloadType {
+    id: string,
+    pluginId: string,
+    registryType: string,
+    isDefault: boolean,
+    isOCICompliantRegistry: boolean,
+    registryUrl: string,
+    awsAccessKeyId?: string,
+    awsSecretAccessKey?: string,
+    awsRegion?: string,
+    username?: string,
+    password?: string,
+    connection?: string,
+    cert?: string,
+    ipsConfig: {
+        id: string,
+        credentialType: string,
+        credentialValue: string,
+        appliedClusterIdsCsv: string,
+        ignoredClusterIdsCsv: string,
     },
-    'docker-hub': {
-        value: 'docker-hub',
-        label: 'Docker',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: 'https://docs.docker.com/docker-hub/',
-        defaultRegistryURL: 'docker.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'docker.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token (Recommended: Token)*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    acr: {
-        value: 'acr',
-        label: 'Azure',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink:
-            'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL/Login Server*',
-            defaultValue: '',
-            placeholder: 'Eg. xxx.azurecr.io',
-        },
-        id: {
-            label: 'Username/Registry Name*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    'artifact-registry': {
-        value: 'artifact-registry',
-        label: 'Artifact Registry (GCP)',
-        desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
-        placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
-        gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: 'Eg. region-docker.pkg.dev',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File*',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    gcr: {
-        value: 'gcr',
-        label: 'GCR',
-        desiredFormat: '(desired format: project-id/repo-name)',
-        placeholderText: 'Eg. project-id/repo_name',
-        gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
-        defaultRegistryURL: 'gcr.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'gcr.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File*',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    quay: {
-        value: 'quay',
-        label: 'Quay',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: '',
-        defaultRegistryURL: 'quay.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'quay.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Token*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    other: {
-        value: 'other',
-        label: 'Other',
-        desiredFormat: '',
-        placeholderText: '',
-        gettingStartedLink: '',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
+    ociRegistryConfig?: OCIRegistryStorageConfigType
+}
+
+export const RegistryTypeName = {
+    'CONTAINER': 'Container registry',
+    'OCI_PRIVATE': 'OCI Registry (Private)',
 }
 
 export const AppCreationType = {
@@ -630,18 +519,26 @@ export const EXTERNAL_TYPES = {
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
+export const MODULE_TYPE_SECURITY = 'security'
+export const SCAN_TOOL_ID_TRIVY = 3
+export const TRIVY_TOOL_VERSION = 'V1'
+export const CLAIR_TOOL_VERSION_V4 = 'V4'
+export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',
-    SECURITY: 'security.clair',
+    SECURITY: 'security',
     BLOB_STORAGE: 'blob-storage',
     GRAFANA: 'monitoring.grafana',
     NOTIFICATION: 'notifier',
+    SECURITY_TRIVY: 'security.trivy',
+    SECURITY_CLAIR: 'security.clair',
 }
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
+    NOT_DEPLOYED: 'not deployed',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -674,14 +571,14 @@ export const CLUSTER_COMMAND = {
         clusterName: 'K8s',
         title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
         command:
-            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml',
+            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd',
     },
     microK8s: {
         heading: 'MicroK8s',
         clusterName: 'microK8s',
         title: 'MicroK8s is a light weight Kubernetes cluster',
         command:
-            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml",
+            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd",
     },
 }
 
@@ -695,6 +592,11 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
+export const MODULE_STATUS = {
+    Installed: 'Installed',
+    Failed: 'Failed',
+    NotEnabled: 'Not enabled',
+}
 
 export const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -755,6 +657,10 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
+    INPROGRESS= 'INPROGRESS',
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED= 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -774,6 +680,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const RESOURCES_NOT_FOUND = 'Resources are not available'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
@@ -782,13 +689,41 @@ export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source 
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE =
     'Source is not configured for one or more git repositories. Please configure and try again.'
-
+export const NO_COMMIT_SELECTED = 'No commit is selected'
 export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
 }
 
 export enum KEY_VALUE {
     KEY = 'key',
     VALUE = 'value',
+}
+
+export enum CONFIGURATION_TYPES {
+    ENVIRONMENT = 'ENVIRONMENT',
+    NAMESPACE = 'NAMESPACE',
+    DESCRIPTION = 'DESCRIPTION',
+}
+
+
+export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
+
+export const POD_ROTATION_INITIATED = 'Pod rotation initiated'
+
+export enum DELETE_ACTION {
+    DELETE= 'delete',
+    FORCE_DELETE= 'force_delete',
+    NONCASCADE_DELETE= 'noncascade_delete',
+}
+export const ManifestMessaging = {
+    POD_NAME_EXIST_IN_NAMESPACE: 'Pod with provided name already exists in namespace',
+    POD_NAME: 'A pod named',
+    ALREADY_EXIST: 'already exists in',
+    NAMESPACE: 'namespace',
+    CONTINUE_TERMINATE_EXISTING_POD:
+        'Continuing will terminate the existing pod and create a new one with the provided manifest.',
+    SURE_WANT_TO_CONTINUE: 'Are you sure you want to continue?',
+    CANCEL: 'Cancel',
+    TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }

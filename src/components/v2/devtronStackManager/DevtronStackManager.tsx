@@ -3,7 +3,6 @@ import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLo
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import {
     ErrorBoundary,
-    ToastBody3 as UpdateToast,
     useInterval,
 } from '../../common'
 import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
@@ -29,21 +28,21 @@ import {
 } from './DevtronStackManager.type'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
-import { getVersionConfig, isGitopsConfigured } from '../../../services/service'
-import { toast } from 'react-toastify'
+import { isGitopsConfigured } from '../../../services/service'
 import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackManager.utils'
 
 export default function DevtronStackManager({
     serverInfo,
     getCurrentServerInfo,
+    isSuperAdmin
 }: {
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
+    isSuperAdmin:boolean
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
         useContext(mainContext)
-    const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
@@ -68,6 +67,10 @@ export default function DevtronStackManager({
     const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)
     const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
     const [showResourceStatusModal, setShowResourceStatusModal] = useState(false)
+    const [dialog, setDialog] = useState<boolean>(false)
+    const [retryState, setRetryState] = useState<boolean>(false)
+    const [successState, setSuccessState] = useState<boolean>(false) 
+    const [toggled, setToggled] = useState<boolean>(false)
     useEffect(() => {
         getModuleDetails()
         getCurrentServerInfo()
@@ -154,25 +157,8 @@ export default function DevtronStackManager({
 
     useEffect(() => {
         if (serverMode === SERVER_MODE.FULL) return
-        //Check for SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
-        getVersionConfig()
-            .then((response) => {
-                if (response.code == 200 && response.result.serverMode === SERVER_MODE.FULL) {
-                    if (!toast.isActive(updateToastRef.current)) {
-                        updateToastRef.current = toast.info(
-                            <UpdateToast
-                                onClick={() => {
-                                    window.location.reload()
-                                }}
-                                text="You are viewing an outdated version of Devtron UI."
-                                buttonText="Reload"
-                            />,
-                            { autoClose: false, closeButton: false },
-                        )
-                    }
-                }
-            })
-            .catch((errors) => {})
+        //Check for CICD status to update SERVER_MODE on every route change if Current SERVER_MODE is EA_ONLY
+        getModuleInfo(ModuleNameMap.CICD)
     }, [location])
 
     const setModuleStatusInContext = (moduleName: string, moduleStatus: ModuleStatus) => {
@@ -209,6 +195,8 @@ export default function DevtronStackManager({
                     setSelectedModule({
                         ...currentModule,
                         installationStatus: result.status,
+                        moduleType: result.moduleType,
+                        enabled: result.enabled,
                     })
                     setModuleStatusInContext(result.name, result.status)
                     _stackDetails.discoverModulesList[currentModuleIndex] = currentModule
@@ -262,7 +250,12 @@ export default function DevtronStackManager({
          * - If in full mode then resolve all modules as INSTALLED which has isIncludedInLegacyFullPackage as true
          * - Else create a promise to fetch the details
          */
-        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) => getModuleInfo(module.name))
+        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) =>
+            getModuleInfo(
+                module.name,
+                module.name === ModuleNameMap.SECURITY_CLAIR || module.name === ModuleNameMap.SECURITY_TRIVY,
+            ),
+        )
 
         const _discoverModulesList: ModuleDetails[] = []
         const _installedModulesList: ModuleDetails[] = []
@@ -285,6 +278,8 @@ export default function DevtronStackManager({
                             ...currentModule,
                             installationStatus: result?.status,
                             moduleResourcesStatus: result?.moduleResourcesStatus,
+                            enabled: result?.enabled,
+                            moduleType: result?.moduleType,
                         }
 
                         /**
@@ -419,6 +414,19 @@ export default function DevtronStackManager({
                         history={history}
                         location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
+                        isSuperAdmin={isSuperAdmin}
+                        setSelectedModule={setSelectedModule}
+                        setStackDetails={setStackDetails}
+                        stackDetails={stackDetails}
+                        dialog={dialog}
+                        setDialog={setDialog}
+                        retryState={retryState}
+                        setRetryState={setRetryState}
+                        successState={successState}
+                        setSuccessState={setSuccessState}
+                        setToggled={setToggled}
+                        toggled={toggled}
+                        
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -434,6 +442,18 @@ export default function DevtronStackManager({
                         history={history}
                         location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
+                        setSelectedModule={setSelectedModule}
+                        isSuperAdmin={isSuperAdmin}
+                        setStackDetails={setStackDetails}
+                        stackDetails={stackDetails}
+                        dialog={dialog}
+                        setDialog={setDialog}
+                        retryState={retryState}
+                        setRetryState={setRetryState}
+                        successState={successState}
+                        setSuccessState={setSuccessState}
+                        setToggled={setToggled}
+                        toggled={toggled}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>

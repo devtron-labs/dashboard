@@ -17,7 +17,7 @@ import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.s
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getAbsoluteProjectPath, _multiSelectStyles } from './CIConfig.utils'
 import { OptionType } from '../app/types'
-import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
     BuilderIdOptionType,
     CIBuildpackBuildOptionsProps,
@@ -26,7 +26,7 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
@@ -65,6 +65,23 @@ export const repositoryOption = (props): JSX.Element => {
     )
 }
 
+export const releaseTagOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props} onClick={stopPropagation}>
+            {props.value}
+        </components.Option>
+    )
+}
+
+export const checkoutPathOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            {props.value}
+        </components.Option>
+    )
+}
 export const repositoryControls = (props): JSX.Element => {
     let value = ''
     if (props.hasValue) {
@@ -469,6 +486,7 @@ export default function CIBuildpackBuildOptions({
                         </div>
                     ) : (
                         <ReactSelect
+                            classNamePrefix="build-config__select-repository-containing-code"
                             className="m-0"
                             tabIndex={3}
                             isSearchable={false}
@@ -528,6 +546,7 @@ export default function CIBuildpackBuildOptions({
                                 ./
                             </span>
                             <input
+                                data-testid="build-pack-project-path-textbox"
                                 tabIndex={4}
                                 type="text"
                                 className="form__input file-name"
@@ -561,6 +580,7 @@ export default function CIBuildpackBuildOptions({
                             </div>
                         ) : (
                             <ReactSelect
+                                classNamePrefix="build-pack-language-dropdown"
                                 className="m-0"
                                 tabIndex={3}
                                 options={supportedLanguagesList}
@@ -586,6 +606,7 @@ export default function CIBuildpackBuildOptions({
                             </span>
                         ) : (
                             <ReactSelect
+                                classNamePrefix="build-pack-version-dropdown"
                                 className="m-0"
                                 tabIndex={3}
                                 isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
@@ -634,6 +655,7 @@ export default function CIBuildpackBuildOptions({
                         <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
                     ) : (
                         <CreatableSelect
+                            classNamePrefix="build-pack-select-builder-dropdown"
                             placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
                             className="m-0"
                             tabIndex={3}

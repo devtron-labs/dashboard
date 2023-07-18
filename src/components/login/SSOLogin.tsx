@@ -1,15 +1,14 @@
-
 import React, { Component } from 'react'
 import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
 import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
-import CodeEditor from '../CodeEditor/CodeEditor';
+import CodeEditor from '../CodeEditor/CodeEditor'
 import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
 import { ViewType, DOCUMENTATION } from '../../config'
-import { toast } from 'react-toastify';
-import yamlJsParser from 'yaml';
-import sample from './sampleConfig.json';
+import { toast } from 'react-toastify'
+import yamlJsParser from 'yaml'
+import sample from './sampleConfig.json'
 import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
@@ -19,45 +18,52 @@ import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
 import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import warn from '../../assets/icons/ic-warning.svg';
-import './login.scss';
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
+import warn from '../../assets/icons/ic-warning.svg'
+import './login.scss'
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 
 export const SwitchItemValues = {
     Sample: 'sample',
     Configuration: 'configuration',
-};
+}
 
 enum SSOProvider {
-    google = "google",
-    github = "github",
-    gitlab = "gitlab",
-    microsoft = "microsoft",
-    ldap = "ldap",
-    oidc = "oidc",
-    openshift = "openshift"
+    google = 'google',
+    github = 'github',
+    gitlab = 'gitlab',
+    microsoft = 'microsoft',
+    ldap = 'ldap',
+    oidc = 'oidc',
+    openshift = 'openshift',
 }
 
 const ssoMap = {
-    google: "https://dexidp.io/docs/connectors/google/",
-    github: "https://dexidp.io/docs/connectors/github/",
-    gitlab: "https://dexidp.io/docs/connectors/gitlab/",
-    microsoft: "https://dexidp.io/docs/connectors/microsoft/",
-    ldap: "https://dexidp.io/docs/connectors/ldap/",
-    oidc: "https://dexidp.io/docs/connectors/oidc/",
-    openshift: "https://dexidp.io/docs/connectors/openshift/",
+    google: 'https://dexidp.io/docs/connectors/google/',
+    github: 'https://dexidp.io/docs/connectors/github/',
+    gitlab: 'https://dexidp.io/docs/connectors/gitlab/',
+    microsoft: 'https://dexidp.io/docs/connectors/microsoft/',
+    ldap: 'https://dexidp.io/docs/connectors/ldap/',
+    oidc: 'https://dexidp.io/docs/connectors/oidc/',
+    openshift: 'https://dexidp.io/docs/connectors/openshift/',
 }
 
 const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
     switch (SSOName) {
-        case "Google": return <Google />
-        case "GitHub": return <GitHub />
-        case "GitLab": return <GitLab />
-        case "Microsoft": return <Microsoft />
-        case "LDAP": return <LDAP />
-        case "OIDC": return <OIDC />
-        case "OpenShift": return <Openshift />
+        case 'Google':
+            return <Google />
+        case 'GitHub':
+            return <GitHub />
+        case 'GitLab':
+            return <GitLab />
+        case 'Microsoft':
+            return <Microsoft />
+        case 'LDAP':
+            return <LDAP />
+        case 'OIDC':
+            return <OIDC />
+        case 'OpenShift':
+            return <Openshift />
     }
 }
 
@@ -65,7 +71,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
     return (
         <label className="dc__tertiary-tab__radio">
             <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
-            <span className="dc__tertiary-tab sso-icons">
+            <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
                 <aside className="login__icon-alignment">
                     <SSOTabIcons SSOName={SSOName} />
                 </aside>
@@ -152,10 +158,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     setConfig(response: any, newsso: any): void {
-        if (response.result?.config?.config?.clientID === '') {
+        const config = response.result?.config?.config
+        if ( config?.hasOwnProperty('clientID') && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (response.result?.config?.config?.clientSecret === '') {
+        if ( config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
         let newConfig: SSOConfigType
@@ -203,18 +210,22 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     checkConfigJson(ssoConfig) {
-        if (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID) {
+        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)) {
             ssoConfig.clientID = ''
         }
-        if (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret) {
+        if (ssoConfig?.hasOwnProperty('clientID') && (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)) {
             ssoConfig.clientSecret = ''
         }
         return ssoConfig
     }
 
     saveSSO(response): void {
-        response.result.config.config.clientID = ''
-        response.result.config.config.clientSecret = ''
+        if (response.result.config.config.hasOwnProperty('clientID')) {
+            response.result.config.config.clientID = ''
+        }
+        if (response.result.config.config.hasOwnProperty('clientSecret')) {
+            response.result.config.config.clientSecret = ''
+        }
         this.setConfig(response, this.state.sso.toLowerCase())
         let ssoConfig = response.result
         this.setState({
@@ -256,7 +267,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
-
                 this.saveSSO(response)
                 this.setState({
                     showToggling: false,
@@ -348,13 +358,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
 
-        let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
-
-        if (!newConfig.clientID) {
-            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
-        }
-        if (!newConfig.clientSecret) {
-            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        const newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
+        if (newConfig) {
+            if (newConfig.hasOwnProperty('clientID') && !newConfig.clientID) {
+                newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
+            }
+            if (newConfig.hasOwnProperty('clientSecret') && !newConfig.clientSecret) {
+                newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+            }
         }
         let value = yamlJsParser.stringify(newConfig)
 
@@ -468,7 +479,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         return (
             <section className="global-configuration__component">
-                <h2 className="form__title">SSO Login Services</h2>
+                <h2 className="form__title" data-testid="sso-login-heading">
+                    SSO Login Services
+                </h2>
                 <p className="form__subtitle">
                     Configure and manage login service for your organization.
                     <span>
@@ -527,6 +540,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             className="form__input"
                             value={this.state.ssoConfig.url}
                             onChange={this.handleURLChange}
+                            data-testid="sso-url-input"
                         />
                         {this.state.isError.url && <div className="form__error">{this.state.isError.url}</div>}
                         <div className="flex left fw-4 pt-4">
@@ -552,6 +566,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             type="submit"
                             disabled={this.state.saveLoading}
                             className={`cta`}
+                            data-testid={`sso-save-button`}
                         >
                             {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
                         </button>
@@ -576,7 +591,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>
+                            <button
+                                type="submit"
+                                className="cta  sso__warn-button"
+                                data-testid="confirm-sso-button"
+                                onClick={this.saveNewSSO}
+                            >
                                 Confirm
                             </button>
                         </ConfirmationDialog.ButtonGroup>

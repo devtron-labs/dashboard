@@ -1,6 +1,7 @@
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -21,6 +22,16 @@ export enum AppType {
     DEVTRON_APP = 'devtron_app',
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
+}
+
+export enum K8sResourcePayloadAppType {
+    DEVTRON_APP = 0,
+    HELM_APP = 1,
+}
+
+export enum K8sResourcePayloadDeploymentType {
+    HELM_INSTALLED = 0,
+    ARGOCD_INSTALLED = 1,
 }
 
 export interface EnvDetails {
@@ -141,10 +152,6 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
-export enum DeploymentAppType {
-    helm = 'helm',
-    argo_cd = 'argo_cd',
-}
 
 export interface AppDetails {
     appId: number
@@ -175,12 +182,16 @@ export interface AppDetails {
     additionalData?: any
     clusterId?: number
     notes?: string
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean
     externalCi?: boolean
     clusterName?: string
     dockerRegistryId?: string
     deploymentAppDeleteRequest?: boolean
+    userApprovalConfig?: string
+    isVirtualEnvironment?: boolean
+    imageTag?: string
+    helmPackageName?: string
 }
 
 interface MaterialInfo {
@@ -390,10 +401,12 @@ export interface LogsComponentProps extends NodeDetailPropsType {
 }
 
 export interface TerminalComponentProps {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
+    selectedTab: (_tabName: string, _url?: string) => void
+    isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    selectedContainer: Map<string, string>
+    setSelectedContainer: (containerName: Map<string, string>) => void
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
@@ -447,6 +460,7 @@ export interface SelectedResourceType {
     namespace: string
     name: string
     containers: OptionsBase[]
+    selectedContainer?: string
 }
 
 export interface ResourceInfoActionPropsType {

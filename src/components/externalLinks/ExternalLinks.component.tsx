@@ -22,13 +22,14 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState } from  '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
-        <button onClick={handleOnClick} className="add-link cta flex">
+        <button onClick={handleOnClick} className="add-link cta flex" data-testid="external-links-add-link">
             <AddIcon className="icon-dim-16 mr-8" />
             Add link
         </button>
@@ -54,27 +55,28 @@ export const NoExternalLinksView = ({
     userRole: UserRoleType
     history: any
 }): JSX.Element => {
+    const handleButton = () => {
+        return (
+            <AddLinkButton handleOnClick={handleAddLinkClick} />
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyExternalLinks} alt="Empty external links" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="title">Add external links</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
+        <GenericEmptyState
+            image={EmptyExternalLinks}
+            title={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.TITLE}
+            heightToDeduct={120}
+            subTitle={
                 <>
-                    Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
-                    {isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
-                    page.&nbsp;
-                    <ExternalLinksLearnMore />
+                    {`Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
+                    ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
+                    page. `}
+                    {<ExternalLinksLearnMore />}
                 </>
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <AddLinkButton handleOnClick={handleAddLinkClick} />
-            </EmptyState.Button>
-            {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
-        </EmptyState>
+            }
+            isButtonAvailable={true}
+            renderButton={handleButton}
+            children={isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
+        />
     )
 }
 
@@ -98,15 +100,11 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
 
 export const NoMatchingResults = (): JSX.Element => {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={NoResults} width="250" height="200" alt="No matching results" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn't find any matching external link configuration</EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={NoResults}
+            title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
+            subTitle={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.SUBTITLE}
+        />
     )
 }
 
@@ -181,7 +179,9 @@ export const AppLevelExternalLinks = ({
                         alt={linkOption.label}
                         onError={onImageLoadError}
                     />
-                    <span className="dc__ellipsis-right">{linkOption.label}</span>
+                    <span className="dc__ellipsis-right" data-testid="overview_external_link_value">
+                        {linkOption.label}
+                    </span>
                 </a>
             </ConditionalWrap>
         )
@@ -189,7 +189,7 @@ export const AppLevelExternalLinks = ({
 
     if (isOverviewPage && appLevelExternalLinks.length === 0) {
         return (
-            <div className="flex left flex-wrap">
+            <div className="flex left flex-wrap" data-testid="overview-no-external-links">
                 Configure frequently visited links to quickly access from here.&nbsp;
                 <ExternalLinksLearnMore />
             </div>
@@ -197,8 +197,8 @@ export const AppLevelExternalLinks = ({
     }
 
     return (
-      appLevelExternalLinks.length > 0 && (
-            <div className="app-level__external-links flex left w-100 mb-14 bcn-0">
+        appLevelExternalLinks.length > 0 && (
+            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
@@ -307,7 +307,11 @@ export const FilterMenuList = (props): JSX.Element => {
         <components.MenuList {...props}>
             {props.children}
             <div className="flex dc__react-select__bottom bcn-0 p-8">
-                <button className="flex cta apply-filter" onClick={props.handleFilterQueryChanges}>
+                <button
+                    data-testid="external-link-filter-button"
+                    className="flex cta apply-filter"
+                    onClick={props.handleFilterQueryChanges}
+                >
                     Apply Filter
                 </button>
             </div>

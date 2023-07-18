@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -13,6 +13,7 @@ import {
     Reload,
     RadioGroup,
     RadioGroupItem,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
@@ -58,6 +59,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
+            createAppLoader: false,
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -88,13 +90,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     escKeyPressHandler(evt): void {
-        if (evt && evt.key === 'Escape' && typeof this.props.close === 'function') {
+        if (!this.state.createAppLoader && evt && evt.key === 'Escape' && typeof this.props.close === 'function') {
             evt.preventDefault()
             this.props.close(evt)
         }
     }
     outsideClickHandler(evt): void {
         if (
+            !this.state.createAppLoader &&
             this.createAppRef.current &&
             !this.createAppRef.current.contains(evt.target) &&
             typeof this.props.close === 'function'
@@ -178,7 +181,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             request['description'] = this.state.form.description
         }
 
-        this.setState({ disableForm: true })
+        this.setState({ disableForm: true, createAppLoader: true })
         const createAPI = this.props.isJobView ? createJob : createApp
         createAPI(request)
             .then((response) => {
@@ -198,6 +201,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             showErrors: false,
                             appNameErrors: false,
                             tags: response.result?.labels?.tags,
+                            createAppLoader: false,
                         },
                         () => {
                             toast.success(
@@ -219,7 +223,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 } else {
                     showError(errors)
                 }
-                this.setState({ disableForm: false, showErrors: false, appNameErrors: false })
+                this.setState({ disableForm: false, showErrors: false, appNameErrors: false, createAppLoader: false })
             })
     }
 
@@ -269,10 +273,15 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close}>
+                <button
+                    type="button"
+                    className="dc__transparent flex icon-dim-24"
+                    onClick={this.state.createAppLoader ? noop : this.props.close}
+                    data-testid={`close-create-custom${this.props.isJobView ? 'job' : 'app'}-wing`}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -292,28 +301,31 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
-                    <input
-                        ref={(node) => (this._inputAppName = node)}
-                        className="form__input"
-                        type="text"
-                        name="app-name"
-                        value={this.state.form.appName}
-                        placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                        autoComplete="off"
-                        autoFocus={true}
-                        tabIndex={1}
-                        onChange={this.handleAppname}
-                        required
-                    />
-                    <span className="form__error">
-                        {appNameErrors && !this.state.isValid.appName ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[0].message} <br />
-                            </>
-                        ) : null}
-                    </span>
+                    <div className={`${this.props.isJobView ? "mb-12" : ""}`}>
+                        <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
+                        <input
+                            ref={(node) => (this._inputAppName = node)}
+                            data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
+                            className="form__input"
+                            type="text"
+                            name="app-name"
+                            value={this.state.form.appName}
+                            placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
+                            autoComplete="off"
+                            autoFocus={true}
+                            tabIndex={1}
+                            onChange={this.handleAppname}
+                            required
+                        />
+                        <span className="form__error">
+                            {appNameErrors && !this.state.isValid.appName ? (
+                                <>
+                                    <Error className="form__icon form__icon--error" />
+                                    {errorObject[0].message} <br />
+                                </>
+                            ) : null}
+                        </span>
+                    </div>
                     {!this.props.isJobView && (
                         <span className="form__text-field-info form__text-field-info--create-app">
                             <Info className="form__icon form__icon--info form__icon--create-app" />
@@ -324,6 +336,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         <>
                             <span className="form__label">Description</span>
                             <textarea
+                                data-testid="description-textbox"
                                 className="form__textarea"
                                 name="job-description"
                                 value={this.state.form.description}
@@ -344,19 +357,31 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank}>Create from scratch</RadioGroupItem>
-                        <RadioGroupItem value={AppCreationType.Existing}>
+                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">
+                            Create from scratch
+                        </RadioGroupItem>
+                        <RadioGroupItem
+                            value={AppCreationType.Existing}
+                            dataTestId={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}
+                        >
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block">
-                            <span className="form__label dc__required-field">
+                        <div
+                            className="form__row clone-apps dc__inline-block"
+                            data-testid={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}
+                        >
+                            <span
+                                className="form__label dc__required-field"
+                                data-testid={`Clone-${this.props.isJobView ? 'job' : 'app'}-option`}
+                            >
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
                             <AsyncSelect
+                                classNamePrefix={`${this.props.isJobView ? 'job' : 'app'}-name-for-clone`}
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}
@@ -394,6 +419,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className="form__row">
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
+                        classNamePrefix="create-app__select-project"
                         className="m-0"
                         tabIndex={4}
                         isMulti={false}
@@ -434,11 +460,20 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <button className="cta flex h-36" onClick={this.createApp}>
+                <ButtonWithLoader
+                    rootClassName="flex cta h-36"
+                    onClick={this.createApp}
+                    dataTestId={`${
+                        this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
+                    }-${this.props.isJobView ? 'job' : 'app'}-button-on-drawer`}
+                    disabled={this.state.createAppLoader}
+                    isLoading={this.state.createAppLoader}
+                    loaderColor="white"
+                >
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'
                     }`}
-                </button>
+                </ButtonWithLoader>
             </div>
         )
     }

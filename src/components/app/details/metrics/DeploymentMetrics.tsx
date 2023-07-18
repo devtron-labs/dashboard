@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
 import { DatePicker } from '../../../common';
-import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import { DeploymentTable } from './DeploymentTable';
-import { getAppOtherEnvironment } from '../../../../services/service';
+import { getAppOtherEnvironmentMin } from '../../../../services/service';
 import { DeploymentTableModal } from './DeploymentTableModal';
 import { BenchmarkModal } from './BenchmarkModal';
 import moment from 'moment';
@@ -37,6 +37,7 @@ import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclam
 import ReactGA from 'react-ga4';
 import './deploymentMetrics.scss';
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types';
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging';
 
 
 export default class DeploymentMetrics extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
@@ -125,7 +126,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     callGetAppOtherEnv(prevEnvId: string | undefined) {
-        getAppOtherEnvironment(this.props.match.params.appId).then((envResponse) => {
+        getAppOtherEnvironmentMin(this.props.match.params.appId).then((envResponse) => {
             let allEnv= envResponse.result?.filter(env => env.prod).map((env) => {
                 return {
                     label: env.environmentName,
@@ -141,8 +142,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 view: this.props.match.params.envId || callAPIOnEnvOfPrevApp ? ViewType.LOADING : ViewType.FORM,
 
             });
-        }).then(() => {
-            if (prevEnvId && this.state.environments.find(e => Number(e.value) === Number(prevEnvId))) {
+            if (prevEnvId && allEnv.find(e => Number(e.value) === Number(prevEnvId))) {
                 let url = generatePath(this.props.match.path, { appId: this.props.match.params.appId, envId: prevEnvId });
                 this.props.history.push(url);
             }
@@ -209,7 +209,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderInputs() {
         return <div className="deployment-metrics__inputs bcn-0">
-            <div className='w-180'>
+            <div className='w-180' data-testid="select-environment">
                 <ReactSelect defaultValue={this.state.selectedEnvironment}
                     value={this.state.selectedEnvironment}
                     placeholder="Select Environment"
@@ -219,7 +219,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     }}
                     styles={{ ...styles }}
                     onChange={(selected) => { this.handleEnvironmentChange(selected) }}
-                    options={this.state.filteredEnvironment} />
+                    options={this.state.filteredEnvironment.sort((a,b)=>(a.label>b.label)?1:-1)} />
             </div>
             <div className="dc__align-right ">
                 {this.props.match.params.envId ?
@@ -391,37 +391,42 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     renderEmptyState() {
         let env = this.state.environments.find(e => e.value === Number(this.props.match.params.envId));
         let envName = env ? env.label : "";
-        return <div>
-            {this.renderInputs()}
-            <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <EmptyState >
-                    <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
-                    <EmptyState.Title><h4>No deployments found</h4></EmptyState.Title>
-                    <EmptyState.Subtitle>{`There are no deployments in this period on '${envName}'.`}</EmptyState.Subtitle>
-                </EmptyState>
+        return (
+            <div>
+                {this.renderInputs()}
+                <div
+                    className="dc__position-rel"
+                    style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 150px' }}
+                >
+                    <GenericEmptyState
+                        image={AppNotDeployed}
+                        title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
+                        subTitle={`There are no deployments in this period on '${envName}'.`}
+                    />
+                </div>
             </div>
-        </div>
+        )
     }
 
     renderNoEnvironmentView() {
-        return <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
-            <EmptyState >
-                <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
-                <EmptyState.Title><h4>Deployment Metrics</h4></EmptyState.Title>
-                <EmptyState.Subtitle>This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.</EmptyState.Subtitle>
-            </EmptyState>
-        </div >
+        return <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
+            <GenericEmptyState
+                image={SelectEnvImage}
+                title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
+                subTitle={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.SUBTITLE}
+        />
+        </div>
     }
 
     renderSelectEnvironmentView() {
         return <div>
             {this.renderInputs()}
-            <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <EmptyState >
-                    <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
-                    <EmptyState.Title><h4>Select an Environment</h4></EmptyState.Title>
-                    <EmptyState.Subtitle>Please select an Enviroment to view deployment metrics.</EmptyState.Subtitle>
-                </EmptyState>
+            <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
+                <GenericEmptyState
+                    image={SelectEnvImage}
+                    title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.SUBTITLE}
+                />
             </div>
         </div>
     }
@@ -487,7 +492,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     value={-1} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
                             </label>
-                            <label className="dc__tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio" data-testid="success-deployment-status">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 0}
                                     value={0} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">
@@ -495,7 +500,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     Success ({this.state.totalDeployments - this.state.failedDeployments})
                                 </span>
                             </label>
-                            <label className="dc__tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio" data-testid="failed-deployment-status">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 1}
                                     value={1} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">

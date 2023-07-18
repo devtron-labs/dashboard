@@ -13,9 +13,11 @@ import { NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 
-export const getNodeDetailTabs = (nodeType: NodeType) => {
+export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-        return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
+        if (isResourceBrowserTab) {
+            return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
+        } else return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
     } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
         return [NodeDetailTab.LOGS]
     } else {
@@ -232,6 +234,7 @@ export const getContainerSelectStyles = () => {
             backgroundColor: 'transparent',
             minHeight: '24px !important',
             cursor: 'pointer',
+            height: '28px',
         }),
         singleValue: (base) => ({
             ...base,
@@ -241,8 +244,31 @@ export const getContainerSelectStyles = () => {
             textAlign: 'left',
             marginLeft: '2px',
         }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
         indicatorsContainer: (provided) => ({
             ...provided,
+            height: '28px',
+        }),
+        group: (base) => ({
+            ...base,
+            paddingTop: 0,
+            paddingBottom: 0,
+        }),
+        groupHeading: (base) => ({
+            ...base,
+            fontWeight: 600,
+            fontSize: '12px',
+            textTransform: 'normal',
+            height: '28px',
+            color: 'var(--N900)',
+            backgroundColor: 'var(--N100)',
+            marginBottom: 0,
+            display: 'flex',
+            alignItems: 'center'
         }),
     }
 }
@@ -264,9 +290,15 @@ export const getShellSelectStyles = () => {
             textAlign: 'left',
             color: '#06c',
         }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
         indicatorsContainer: (provided) => ({
             ...provided,
-        }),
+            height: '28px',
+        })
     }
 }
 

@@ -155,6 +155,7 @@ function ResourceFilterOptions({
                         onFocus={focusHandler}
                         onBlur={focusHandler}
                         disabled={isSearchInputDisabled}
+                        data-testid="search-input-for-resource"
                     />
                     {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearSearchInput}>

@@ -104,11 +104,6 @@
     overflow: auto;
 }
 
-.select-material--trigger-view__sidebar {
-    height: calc(100vh - 106px);
-    padding-bottom: 106px;
-}
-
 .select-material__empty-state-container {
     height: calc(100% - 74px);
     display: flex;
@@ -135,6 +130,9 @@
     background-color: transparent;
     padding: 0px;
     margin: 0 0 12px;
+    &:hover {
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
 }
 
 .material-history__header {
@@ -152,9 +150,16 @@
     justify-content: space-between;
     align-items: center;
     background-color: var(--white);
-    padding: 16px;
     border-radius: 4px;
     cursor: pointer;
+    
+    &.material-history__approved-image {
+        grid-template-columns: repeat(4, auto) 1fr;
+    }
+
+    &.material-history__approved-image-disabled {
+        grid-template-columns: repeat(3, auto) 1fr;
+    }
 }
 
 .material-history__info {
@@ -199,7 +204,6 @@
 }
 
 .material-history__changes-btn {
-    height: 36px;
     font-size: 12px;
     font-weight: 600;
     font-style: normal;
@@ -208,11 +212,10 @@
     letter-spacing: normal;
     color: var(--N700);
     text-align: right;
-    padding: 8px 16px;
     width: 100%;
+    margin: 5px 0;
     background-color: var(--white);
     border: none;
-    box-shadow: inset 0 1px 0 0 var(--N200);
     font-family: 'Open Sans', sans-serif;
     display: flex;
     justify-content: flex-end;
@@ -333,7 +336,7 @@
         border-radius: 4px;
         background-color: var(--B500);
         color: var(--white);
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         line-height: 1.43;
         letter-spacing: normal;
@@ -360,8 +363,8 @@
 
 .trigger-btn__icon,
 .trigger-job-btn__icon {
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
     margin-right: 6px;
 }
 
@@ -426,12 +429,12 @@
     align-items: center;
 
     .form__checkbox-container {
-        height: 32px;
-        width: 32px;
+        height: 20px;
+        width: 20px;
     }
 
     .form__checkbox-label {
-        margin-left: 24px;
+        margin-left: 16px;
     }
 }
 
@@ -566,6 +569,7 @@
     align-items: center;
     justify-content: center;
     background-color: var(--N000);
+    border-radius: 0 0 4px 4px;
 }
 
 .security-tab-empty__title {
@@ -589,17 +593,22 @@
 
 .tab-list {
     &.tab-list--vulnerability {
-        padding: 0 20px;
+        padding: 0 0 0 20px;
         background-color: var(--N000);
         border: solid 1px var(--N200);
         border-left: none;
         border-right: none;
+        border-radius: 0;
+        &.tab-bottom-radius {
+            border-radius: 0 0 4px 4px;
+            border-bottom: 0;
+        }
     }
 }
 
 .tab-list__tab-link {
     &.tab-list__tab-link--vulnerability {
-        padding: 10px 0;
+        padding: 8px 0;
     }
 }
 

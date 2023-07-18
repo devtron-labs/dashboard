@@ -45,7 +45,7 @@
 
 .form__row {
     display: block;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     position: relative;
 }
 
@@ -66,7 +66,7 @@
 
 .form__label {
     font-size: 13px;
-    line-height: 1.67;
+    line-height: 20px;
     color: var(--N700);
     font-weight: 500;
     display: block;
@@ -225,8 +225,8 @@ p.sentence-case:first-letter {
     border-radius: 4px;
     background-color: var(--white);
 
-    &.ecr-authType__radio-group,
     &.permission-type__radio-group,
+    &.regisrty-form__radio-group,
     &.chartrepo-type__radio-group,
     &.external-link-scope__radio-group {
         border: none;
@@ -239,12 +239,27 @@ p.sentence-case:first-letter {
                 padding: 12px 16px 12px 0;
             }
 
+            &.form__radio-item-content {
+                padding: 16px 16px 16px 0;
+            }
+
             input:checked ~ .form__radio-item-content .radio__button {
                 background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 100%);
                 border: 1.5px solid var(--B500);
             }
         }
     }
+
+    &.regisrty-form__radio-group {
+        .form__radio-item.disabled {
+            background-color: var(--N000) !important;
+            opacity: 0.5;
+        }
+        .form__radio-item .form__radio-item-content {
+            padding: 16px 16px 16px 0;
+        }
+    }
+
 }
 
 .form__checkbox {

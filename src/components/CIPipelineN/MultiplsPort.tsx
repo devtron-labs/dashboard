@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
-import { FormType, PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
+import { PortMap, TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ciPipelineContext } from './CIPipeline'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+import { FormType } from '@devtron-labs/devtron-fe-common-lib'
 
 function MultiplePort() {
     const {
@@ -51,7 +52,11 @@ function MultiplePort() {
                     taskField={TaskFieldLabel.PORTMAPPING}
                     contentDescription={TaskFieldDescription.PORTMAPPING}
                 />
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addMultiplePort}>
+                <div
+                    data-testid="custom-script-container-image-add-port-button"
+                    className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32"
+                    onClick={addMultiplePort}
+                >
                     <Add className="add-icon mt-6" />
                     Add port
                 </div>
@@ -62,6 +67,7 @@ function MultiplePort() {
                     elm[PortMap.PORTONCONTAINER] !== 0 && (
                         <div className="custom-input__port-map pl-220 mt-8" key={`multiple-port-${index}`}>
                             <input
+                                data-testid="custom-script-container-image-host-port-textbox"
                                 style={{ width: '80% !important' }}
                                 className="w-100 bcn-1 dc__border dc__left-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
@@ -74,6 +80,7 @@ function MultiplePort() {
                             />
                             <div className="flex dc__border-top dc__border-bottom">:</div>
                             <input
+                                data-testid="custom-script-container-image-container-port-textbox"
                                 style={{ width: '80% !important' }}
                                 className="w-100 bcn-1 dc__border dc__right-radius-4 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"

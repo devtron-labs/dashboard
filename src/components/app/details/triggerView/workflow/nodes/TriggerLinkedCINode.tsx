@@ -25,6 +25,7 @@ export interface CINodeProps extends RouteComponentProps<{}> {
     inputMaterialsNew?: any[];
     colorCode?: string;
     fromAppGrouping: boolean
+    isCITriggerBlocked?: boolean
 }
 
 export class TriggerLinkedCINode extends Component<CINodeProps> {
@@ -45,15 +46,15 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
-            return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            return <div data-testid="cd-trigger-status" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
             </div>
         else return (
-            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            <div data-testid="cd-trigger-status" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
                 {!this.props.fromAppGrouping && (
                     <>
-                        <span className="mr-5 ml-5">/</span>
+                        {this.props.status && <span className="mr-5 ml-5">/</span>}
                         <Link to={url} className="workflow-node__details-link">
                             Details
                         </Link>
@@ -71,15 +72,24 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                 <img src={link} className="icon-dim-12 mr-5" alt="" />
                 {this.props.linkedCount}
             </span> : null}
-            <div className="workflow-node__trigger-type  workflow-node-trigger-type--external-ci">{this.props.triggerType}</div>
+            <div
+                className={`workflow-node__trigger-type workflow-node-trigger-type--external-ci ${
+                    this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
+                }`}
+                style={{
+                    opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
+                }}
+            >
+                {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
+            </div>
             <div className="workflow-node__title flex">
                 <div className="workflow-node__full-width-minus-Icon">
-                    <span className="workflow-node__text-light">Build: Linked</span>
+                    <span className="workflow-node__text-light" data-testid="linked-indication-name">Build: Linked</span>
                     <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                         <div className="dc__ellipsis-left">{this.props.title}</div>
                     </Tippy>
                 </div>
-                <div className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>
+                <div data-testid="ci-trigger-build-linked" className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>
             </div>
             {this.renderStatus()}
         </div>

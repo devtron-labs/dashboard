@@ -46,6 +46,11 @@ export interface Environment {
     ciArtifactId: number;
     clusterName: string;
     namespace: string;
+    isVirtualEnvironment?: boolean
+}
+
+export interface EnvironmentClusterList {
+    environmentClusterAppListData: any
 }
 
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
@@ -59,6 +64,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     setAppCount: React.Dispatch<React.SetStateAction<number>>
     updateDataSyncing: (loading: boolean) => void
     isArgoInstalled: boolean
+    environmentClusterList: EnvironmentClusterList
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {

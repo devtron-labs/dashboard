@@ -3,11 +3,17 @@ import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
-import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { useForm } from '../common'
-import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildConfigType,
+    CIBuildType,
+    showError,
+    Progressing,
+    ConfirmationDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, ProcessedWorkflowsType } from './types'
+import { CIBuildArgType, CIConfigFormProps, LoadingState, ProcessedWorkflowsType } from './types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
@@ -43,7 +49,8 @@ export default function CIConfigForm({
     navItems,
     parentState,
     setParentState,
-    setLoadingData,
+    loadingStateFromParent,
+    setLoadingStateFromParent,
 }: CIConfigFormProps) {
     const history = useHistory()
     const currentMaterial =
@@ -54,7 +61,21 @@ export default function CIConfigForm({
             : ciConfig?.ciBuildConfig?.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
             : sourceConfig.material[0]
+    const buildCtxGitMaterial =
+        allowOverride && selectedCIPipeline?.isDockerConfigOverridden
+            ? sourceConfig.material.find(
+                  (material) =>
+                      material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
+              )
+            : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
+            ? sourceConfig.material.find(
+                  (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
+              )
+            : sourceConfig.material[0]
+    const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
+    const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
+        useState(currentBuildContextGitMaterial)
     const currentRegistry =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
@@ -68,7 +89,11 @@ export default function CIConfigForm({
     )
     const [args, setArgs] = useState<CIBuildArgType[]>([])
     const [buildEnvArgs, setBuildEnvArgs] = useState<CIBuildArgType[]>([])
-    const [loading, setLoading] = useState(false)
+    const [loadingDataState, setLoadingDataState] = useState<LoadingState>({
+        loading: false,
+        failed: false,
+    })
+    const [apiInProgress, setApiInProgress] = useState(false)
     const targetPlatformMap = getTargetPlatformMap()
     let _selectedPlatforms = []
     let _customTargetPlatorm = false
@@ -88,7 +113,16 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value),
+        initCurrentCIBuildConfig(
+            allowOverride,
+            ciConfig,
+            selectedCIPipeline,
+            selectedMaterial,
+            selectedBuildContextGitMaterial,
+            state.dockerfile.value,
+            state.buildContext.value,
+            state.useRootBuildContext.value,
+        ),
     )
 
     useEffect(() => {
@@ -170,6 +204,7 @@ export default function CIConfigForm({
                 }, {}),
                 dockerfileRepository: repository.value,
                 targetPlatform: targetPlatforms,
+                buildContext: buildContext.value,
             }
         }
 
@@ -184,7 +219,7 @@ export default function CIConfigForm({
             appName: '',
             ...(ciConfig && ciConfig.version ? { version: ciConfig.version } : {}),
         }
-        setLoading(true)
+        setApiInProgress(true)
         try {
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
@@ -198,7 +233,7 @@ export default function CIConfigForm({
         } catch (err) {
             showError(err)
         } finally {
-            setLoading(false)
+            setApiInProgress(false)
         }
     }
 
@@ -242,7 +277,14 @@ export default function CIConfigForm({
                     processing: true,
                 })
                 const { result } = await getWorkflowList(appId)
-                const { workflows } = processWorkflow(result, ciConfig, null, null, WorkflowCreate, WorkflowCreate.workflow)
+                const { workflows } = processWorkflow(
+                    result,
+                    ciConfig,
+                    null,
+                    null,
+                    WorkflowCreate,
+                    WorkflowCreate.workflow,
+                )
 
                 setProcessedWorkflows({ processing: false, workflows })
             } catch (err) {
@@ -277,6 +319,15 @@ export default function CIConfigForm({
                         },
                     })
                     break
+                case DockerConfigOverrideKeys.buildContext:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, {
+                        ...currentCIBuildConfig,
+                        dockerBuildConfig: {
+                            ...currentCIBuildConfig.dockerBuildConfig,
+                            buildContext: e.target.value,
+                        },
+                    })
+                    break
                 default:
                     break
             }
@@ -290,13 +341,15 @@ export default function CIConfigForm({
         }
     }
 
-    const { repository, dockerfile, projectPath, registry, repository_name, key, value } = state
+    const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
     return (
         <>
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
                 {!configOverrideView && (
                     <div className="flex dc__content-space mb-20">
-                        <h2 className="form__title m-0-imp">Build Configuration</h2>
+                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
+                            Build Configuration
+                        </h2>
                         <a
                             className="flex right dc__link"
                             rel="noreferrer noopener"
@@ -330,8 +383,11 @@ export default function CIConfigForm({
                     allowOverride={allowOverride}
                     selectedCIPipeline={selectedCIPipeline}
                     currentMaterial={currentMaterial}
+                    currentBuildContextGitMaterial={currentBuildContextGitMaterial}
                     selectedMaterial={selectedMaterial}
+                    selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
                     setSelectedMaterial={setSelectedMaterial}
+                    setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
                     formState={state}
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     args={args}
@@ -346,31 +402,33 @@ export default function CIConfigForm({
                     setShowCustomPlatformWarning={setShowCustomPlatformWarning}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
-                    setInProgress={configOverrideView ? setLoadingData : setLoading}
+                    setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
                 />
             </div>
             {!configOverrideView && (
                 <div className="save-build-configuration form__buttons dc__position-abs bcn-0 dc__border-top">
                     <button
+                        data-testid="build_config_save_and_next_button"
                         tabIndex={5}
                         type="button"
                         className="flex cta h-36"
                         onClick={handleOnSubmit}
-                        disabled={loading}
+                        disabled={
+                            apiInProgress ||
+                            (currentCIBuildConfig.ciBuildType !== CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                                (loadingDataState.loading ||
+                                    loadingDataState.failed ||
+                                    loadingStateFromParent?.loading ||
+                                    loadingStateFromParent?.failed))
+                        }
                     >
-                        {loading ? (
-                            <Progressing />
-                        ) : (
+                        {!isCiPipeline ? (
                             <>
-                                {!isCiPipeline ? (
-                                    <>
-                                        Save & Next
-                                        <NextIcon className="icon-dim-16 ml-5 scn-0" />
-                                    </>
-                                ) : (
-                                    'Save Configuration'
-                                )}
+                                Save & Next
+                                <NextIcon className="icon-dim-16 ml-5 scn-0" />
                             </>
+                        ) : (
+                            'Save Configuration'
                         )}
                     </button>
                 </div>
@@ -385,6 +443,7 @@ export default function CIConfigForm({
                     processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
+                    gitMaterials={sourceConfig.material}
                 />
             )}
         </>

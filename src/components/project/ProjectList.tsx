@@ -60,7 +60,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     handleChange(event, index: number, key: 'name'): void {
         const { projects, isValid, errorMessage } = { ...this.state }
-        if (event.target.value && event.target.value.length > 2) {
+        if(event.target.value.includes(' ')){
+            isValid[key] = false
+            errorMessage[key] = `Do not use 'spaces' in name`
+
+        }else if (event.target.value && event.target.value.length > 2) {
             isValid[key] = true
             errorMessage[key] = ''
         } else {
@@ -96,21 +100,20 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     saveProject(index: number, key: 'name'): void {
         let { projects, isValid, errorMessage } = { ...this.state };
         let project = this.state.projects[index];
-        if (!project.name) {
-            isValid[key] = false;
-            errorMessage[key] = REQUIRED_FIELD_MSG
-            this.setState({ isValid });
+        if (!isValid?.[key]) {
             return
-        }
-        else if (this.isProjectNameExists(index, project.name)) {
-            isValid[key] = false;
-            errorMessage[key] = PROJECT_EXIST_MSG
-            this.setState({ isValid });
-            return
-        }
-        else {
-            isValid[key] = true;
-            errorMessage[key]= ""
+        } else {
+            if (!project.name) {
+                isValid[key] = false
+                errorMessage[key] = REQUIRED_FIELD_MSG
+                this.setState({ isValid })
+                return
+            } else if (this.isProjectNameExists(index, project.name)) {
+                isValid[key] = false
+                errorMessage[key] = PROJECT_EXIST_MSG
+                this.setState({ isValid })
+                return
+            }
         }
         this.setState({ loadingData: true, isValid });
         createProject(project).then((response) => {
@@ -148,7 +151,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     renderPageHeader() {
         return (
             <>
-                <h1 className="form__title">Projects</h1>
+                <h1 className="form__title" data-testid="project-list-title">
+                    Projects
+                </h1>
                 <p className="form__subtitle">
                     Manage your organization's projects.&nbsp;
                     <a
@@ -168,7 +173,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         let unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
             return (
-                <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.addProject}>
+                <div data-testid="project-add-project-button" className="white-card white-card--add-new-item mb-16 dashed" onClick={this.addProject}>
                     <Add className="icon-dim-24 fcb-5 mr-16" />
                     <span className="list__add-item">Add Project</span>
                 </div>
@@ -185,7 +190,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             return <ErrorScreenManager code={this.state.code} />
         } else {
             return (
-                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                <section className="global-configuration__component flex-1">
                     {this.renderPageHeader()}
                     {this.renderAddProject()}
                     {this.state.projects.map((project, index) => {

@@ -3,10 +3,11 @@ import { TriggerStatus } from '../../../../config'
 import { RouteComponentProps } from 'react-router'
 import { CIMaterialType } from '../../MaterialHistory'
 import { Link } from 'react-router-dom'
-import { DEFAULT_STATUS, URLS } from '../../../../../../config'
+import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { TriggerViewContext } from '../../config'
+import { DEFAULT_ENV } from '../../Constants'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -29,6 +30,14 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     branch: string
     fromAppGrouping: boolean
     isJobView?: boolean
+    index?: number
+    isCITriggerBlocked?: boolean
+    ciBlockState?: {
+        action: any
+        metadataField: string
+    }
+    filteredCIPipelines?: any[]
+    environmentLists?: any[]
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -48,36 +57,63 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         this.props.history.push(this.getCIDetailsURL())
     }
 
+    hideDetails(status: string = '') {
+        return (
+            status === DEFAULT_STATUS.toLowerCase() ||
+            status === BUILD_STATUS.NOT_TRIGGERED ||
+            status === BUILD_STATUS.NOT_DEPLOYED ||
+            status === ''
+        )
+    }
+
     renderStatus() {
-        let url = this.getCIDetailsURL()
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-        if (hideDetails)
+        const url = this.getCIDetailsURL()
+        const status = this.props.status ? this.props.status.toLowerCase() : ''
+        if (this.hideDetails(status))
             return (
-                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    {this.props.status}
+                <div
+                    data-testid={`ci-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status mb-6"
+                    style={{ color: TriggerStatus[status] }}
+                >
+                    {this.props.status ? this.props.status : BUILD_STATUS.NOT_TRIGGERED}
                 </div>
             )
         else
             return (
-                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <div
+                    data-testid={`ci-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status mb-6"
+                    style={{ color: TriggerStatus[status] }}
+                >
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
-                        <span className="mr-5 ml-5">/</span>
-                        <Link to={url} className="workflow-node__details-link">
-                            Details
-                        </Link>
+                    {this.props.status && <span className="mr-5 ml-5">/</span>}
+                    <Link
+                        data-testid={`ci-trigger-select-details-button-${this.props.title}`}
+                        to={url}
+                        className="workflow-node__details-link"
+                    >
+                        Details
+                    </Link>
                 </div>
             )
     }
 
     renderCardContent(context) {
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-
+        const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
+        let _selectedEnv
+        if (this.props.isJobView) {
+            let _selectedPipeline = this.props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == this.props.id)
+            let envId = _selectedPipeline?.environmentId
+            if (!_selectedPipeline?.environmentId && _selectedPipeline?.lastTriggeredEnvId === -1) {
+                envId = 0
+            } else if (_selectedPipeline?.lastTriggeredEnvId !== -1) {
+                envId = _selectedPipeline?.lastTriggeredEnvId
+            }
+            _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+        }
         return (
             <div
                 className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
@@ -88,22 +124,34 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 {this.props.linkedCount ? (
                     <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.linkedCount}>
                         <span className="link-count">
-                            {' '}
                             <img src={link} className="icon-dim-12 mr-5" alt="" />
                             {this.props.linkedCount}
                         </span>
                     </Tippy>
                 ) : null}
-                <div className="workflow-node__trigger-type workflow-node__trigger-type--ci">
-                    {this.props.triggerType}
+                <div
+                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci ${
+                        this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
+                    }`}
+                    style={{
+                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4
+                    }}
+                >
+                    {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
                 </div>
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        <span className="workflow-node__text-light">{this.props.isJobView ? 'Job' : 'Build'}</span>
+                        {!this.props.isJobView && <span className="workflow-node__text-light">Build</span>}
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
+                        {this.props.isJobView && _selectedEnv && (
+                            <>
+                                <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>
+                                {_selectedEnv.name === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>}
+                            </>
+                        )}
                     </div>
                     <div
                         className={`workflow-node__icon-common ml-8 ${
@@ -114,6 +162,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 {this.renderStatus()}
                 <div className="workflow-node__btn-grp">
                     <button
+                        data-testid={`workflow-build-select-material-button-${this.props.index}`}
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {
                             event.stopPropagation()

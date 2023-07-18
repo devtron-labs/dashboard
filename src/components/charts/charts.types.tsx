@@ -231,6 +231,20 @@ export interface DiscoverChartsViewProps extends DiscoverChartsContainerState {
     closeChartGroupModal: (...args) => void;
 }
 
+export interface EnvironmentType {
+    active?: boolean
+    appCount?: number
+    cluster_name: string
+    default?: boolean
+    description?: string
+    environmentIdentifier?: string
+    environment_name: string
+    id: number
+    isClusterCdActive?: string
+    isVirtualEnvironment?: boolean
+    namespace?: string
+}
+
 export interface ChartGroupState {
     chartGroups: any;
     chartRepos: any[];
@@ -241,7 +255,7 @@ export interface ChartGroupState {
     name?: string;
     description?: string;
     projects: any[],
-    environments: any[];
+    environments: EnvironmentType[];
     advanceVisited: boolean;
     loading: boolean;
     chartGroupDetailsLoading: boolean;
@@ -290,6 +304,8 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     applyFilterOnCharts: (qs: string, resetPage?: boolean) => Promise<void>;
     setCharts: (charts: ChartGroupEntry[]) => void;
     resetPaginationOffset: ()=> void;
+    setGitOpsConfigAvailable: (isGitOpsConfigAvailable: boolean) => void
+    setEnvironmentList: (environmentList) => void
 }
 
 export interface HelmTemplateChartRequest {

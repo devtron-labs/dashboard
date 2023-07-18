@@ -34,3 +34,5 @@ export const OSSHelpOptions: HelpOptionType[] = [
         icon: EditFile,
     }
 ]
+
+export const BULK_EDIT_HEADER =  "Bulk Edit"

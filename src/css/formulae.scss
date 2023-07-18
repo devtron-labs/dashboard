@@ -196,7 +196,7 @@ $color-suffix: 00;
     border-radius: 4px;
     text-decoration: none;
     outline: none;
-    min-width: 64px;
+    min-width: 56px;
     text-transform: capitalize;
     line-height: 40px;
     text-align: center;
@@ -264,7 +264,7 @@ $color-suffix: 00;
         @include cta(white, var(--N700), var(--N200));
 
         &:hover {
-            @include cta(white, var(--N700), var(--N700));
+            @include cta(white, var(--N700), var(--N300));
         }
 
         &:active,
@@ -351,13 +351,18 @@ $color-suffix: 00;
     border-style: dashed !important;
 }
 
-.text-underline-dashed{
+.text-underline-dashed {
     border-bottom: 1px dashed var(--N400);
 }
 
 .text-underline-dashed-300 {
     border-bottom: 1px dashed var(--N300);
 }
+
+.text-underline-dashed-200 {
+    border-bottom: 1px dashed var(--N200);
+}
+
 
 .header {
     position: fixed;

@@ -10,6 +10,7 @@ import {
     getExCIPipelineURL,
     getWebhookDetailsURL,
     ConditionalWrap,
+    importComponentFromFELibrary,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
 import {
@@ -28,6 +29,9 @@ import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
+
+const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -54,6 +58,8 @@ export interface WorkflowProps
     showWebhookTippy?: boolean
     hideWebhookTippy?: () => void
     isJobView?: boolean
+    envList?: any[]
+    filteredCIPipelines?: any[]
 }
 
 interface WorkflowState {
@@ -319,6 +325,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 isJobView={this.props.isJobView}
+                showPluginWarning={node.showPluginWarning}
+                envList={this.props.envList}
+                filteredCIPipelines={this.props.filteredCIPipelines}
             />
         )
     }
@@ -340,6 +349,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 title={node.title}
                 environmentName={node.environmentName}
                 environmentId={node.environmentId}
+                description={node.description}
                 triggerType={node.triggerType}
                 deploymentStrategy={node.deploymentStrategy}
                 toggleCDMenu={() => {
@@ -351,6 +361,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
                 match={this.props.match}
+                isVirtualEnvironment={node.isVirtualEnvironment}
             />
         )
     }
@@ -368,16 +379,34 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }, [])
     }
 
+    onClickNodeEdge = (nodeId: number) => {
+        const ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
+        this.props.history.push(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
+    }
+
     renderEdgeList() {
+        const edges = this.getEdges()
         return this.getEdges().map((edgeNode) => {
+            if (ApprovalNodeEdge) {
+                return (
+                    <ApprovalNodeEdge
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
+                        startNode={edgeNode.startNode}
+                        endNode={edgeNode.endNode}
+                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        edges={edges}
+                    />
+                )
+            }
+
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                     startNode={edgeNode.startNode}
                     endNode={edgeNode.endNode}
-                    onClickEdge={() => {}}
-                    deleteEdge={() => {}}
-                    onMouseOverEdge={(startNode, endNode) => {}}
+                    onClickEdge={noop}
+                    deleteEdge={noop}
+                    onMouseOverEdge={noop}
                 />
             )
         })
