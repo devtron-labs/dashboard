@@ -39,8 +39,6 @@ import CreatableSelect from 'react-select/creatable'
 function EphemeralContainerDrawer({
     setEphemeralContainerDrawer,
     params,
-    containerList,
-    resourceContainers,
     setResourceContainers,
     ephemeralContainerType,
     setEphemeralContainerType,
@@ -50,6 +48,7 @@ function EphemeralContainerDrawer({
     setImageListOption,
     isResourceBrowserView,
     containers,
+    setContainers,
     switchSelectedContainer,
     onClickShowLaunchEphemeral,
     selectedNamespaceByClickingPod,
@@ -163,26 +162,14 @@ function EphemeralContainerDrawer({
     }
 
     const getOptions = () => {
-        if (isResourceBrowserView) {
-            setTargetContainerOption(
-                resourceContainers.map((container) => {
-                    return {
-                        label: container.name,
-                        value: container.name,
-                    }
-                }),
-            )
-        } else {
-            setTargetContainerOption(
-                containerList &&
-                    containerList?.[0]?.containers.map((res) => {
-                        return {
-                            value: res,
-                            label: res,
-                        }
-                    }),
-            )
-        }
+        setTargetContainerOption(
+            containers.map((res) => {
+                return {
+                    value: res.name,
+                    label: res.name,
+                }
+            }),
+        )
     }
 
     const handleKeyDown = (event) => {
@@ -443,7 +430,7 @@ function EphemeralContainerDrawer({
                     isInitContainer: false,
                     isEphemeralContainer: true,
                 } as Options)
-
+                setContainers(_containers)
                 setResourceContainers(_containers)
                 setEphemeralContainerDrawer(false)
                 switchSelectedContainer(containerName)

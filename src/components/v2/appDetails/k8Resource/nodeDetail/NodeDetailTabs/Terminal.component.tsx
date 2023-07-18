@@ -11,17 +11,17 @@ import {
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import { AppType, TerminalComponentProps } from '../../../appDetails.type'
+import {AppType, TerminalComponentProps, Options} from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
-import { TerminalSelectionListDataType } from './terminal/terminal.type'
-import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
-import { TerminalWrapperType } from './terminal/constants'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
-import { toast } from 'react-toastify'
-import { components } from 'react-select'
-import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
+import {TerminalSelectionListDataType} from './terminal/terminal.type'
+import {get, showError, stopPropagation} from '@devtron-labs/devtron-fe-common-lib'
+import {SocketConnectionType} from '../../../../../ClusterNodes/constants'
+import {TerminalWrapperType} from './terminal/constants'
+import {getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl} from '../nodeDetail.api'
+import {toast} from 'react-toastify'
+import {components} from 'react-select'
+import {ReactComponent as Cross} from '../../../../../../assets/icons/ic-cross.svg'
 import Tippy from '@tippyjs/react'
 
 let clusterTimeOut
@@ -37,7 +37,8 @@ function TerminalComponent({
     selectedContainerName,
     setSelectedContainerName,
     switchSelectedContainer,
-    selectedNamespaceByClickingPod
+    selectedNamespaceByClickingPod,
+    setContainers,
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string }>()
     const { url } = useRouteMatch()
@@ -84,7 +85,7 @@ function TerminalComponent({
               params
           )
               .then((response: any) => {
-                  const _containers = []
+                  const _containers : Options[] = []
                   let containerName = response.result
                     containers?.forEach((con) => {
                       if (containerName !== con.name) {
@@ -92,6 +93,7 @@ function TerminalComponent({
                       }
                   })
                   switchSelectedContainer(containers?.[0]?.name || '')
+                  setContainers(_containers)
                   toast.success('Deleted successfully')
               })
               .catch((error) => {
