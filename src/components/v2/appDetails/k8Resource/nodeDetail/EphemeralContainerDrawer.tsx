@@ -78,26 +78,28 @@ function EphemeralContainerDrawer({
     }, [])
     const handleEphemeralContainerTypeClick = (containerType) => {
         let jsonManifest = JSON.parse(JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)))
-        if (containerType === EDITOR_VIEW.ADVANCED) {
-            jsonManifest["name"] = ephemeralForm.basicData.containerName
-            jsonManifest["image"] = ephemeralForm.basicData.image
-            jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containerList.length && containerList[0]?.containers[0])
-            setEphemeralFormAdvanced({
-                ...ephemeralFormAdvanced,
-                advancedData: {
-                    manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
-                },
-            })
-        } else {
-            setEphemeralForm({
-                ...ephemeralForm,
-                basicData: {
-                    ...ephemeralForm.basicData,
-                    containerName: jsonManifest["name"] || '',
-                    image: jsonManifest["image"] || '',
-                    targetContainerName: jsonManifest["targetContainerName"] || ''
-                },
-            })
+        if (jsonManifest) {
+            if (containerType === EDITOR_VIEW.ADVANCED) {
+                jsonManifest["name"] = ephemeralForm.basicData?.containerName || ''
+                jsonManifest["image"] = ephemeralForm.basicData?.image || ''
+                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containerList.length && containerList[0]?.containers[0]) || ''
+                setEphemeralFormAdvanced({
+                    ...ephemeralFormAdvanced,
+                    advancedData: {
+                        manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
+                    },
+                })
+            } else {
+                setEphemeralForm({
+                    ...ephemeralForm,
+                    basicData: {
+                        ...ephemeralForm.basicData,
+                        containerName: jsonManifest["name"] || '',
+                        image: jsonManifest["image"] || '',
+                        targetContainerName: jsonManifest["targetContainerName"] || ''
+                    },
+                })
+            }
         }
         setEphemeralContainerType(containerType)
     }
@@ -126,12 +128,6 @@ function EphemeralContainerDrawer({
             basicData: {
                 ...ephemeralForm.basicData,
                 containerName: e.target.value,
-            },
-        })
-        setEphemeralFormAdvanced({
-            ...ephemeralFormAdvanced,
-            advancedData: {
-                manifest: '',
             },
         })
     }
@@ -177,6 +173,16 @@ function EphemeralContainerDrawer({
     const handleContainerSelectChange = (selected, key, defaultOptions) => {
         let defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
+            const newImageOption = {
+                value: selected.value,
+                label: selected.value,
+            }
+            const existingImageOption = imageListOption.find((option) => option.value === selected.value)
+            if (!existingImageOption) {
+                const newImageListOption = [newImageOption, ...imageListOption]
+                setImageListOption(newImageListOption)
+            }
+
             setSelectedImageList(selected)
         } else {
             setSelectedTargetContainer(selected)
@@ -189,6 +195,8 @@ function EphemeralContainerDrawer({
             },
         })
     }
+
+
     const getOptions = () => {
         if (isResourceBrowserView) {
             setTargetContainerOption(
