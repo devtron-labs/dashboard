@@ -330,7 +330,7 @@ export function TaskList({
                                         <Trash className="icon-dim-16 mr-10" />
                                         Remove
                                     </div>
-                                    {taskDetail.stepType && (
+                                    {!isJobView && taskDetail.stepType && (
                                         <div
                                             className="flex left p-8 pointer dc__hover-n50"
                                             data-index={index}
