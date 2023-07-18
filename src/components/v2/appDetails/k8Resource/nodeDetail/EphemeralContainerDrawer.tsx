@@ -37,7 +37,7 @@ import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 
 function EphemeralContainerDrawer({
-    setEphemeralContainerDrawer,
+    setShowEphemeralContainerDrawer,
     params,
     containerList,
     resourceContainers,
@@ -161,7 +161,6 @@ function EphemeralContainerDrawer({
             },
         })
     }
-console.log(resourceContainers)
     const getOptions = () => {
         if (isResourceBrowserView) {
             setTargetContainerOption(
@@ -379,7 +378,7 @@ console.log(resourceContainers)
 
     const onSave = () => {
         setLoader(true)
-        setEphemeralContainerDrawer(true)
+        setShowEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
             namespace: isResourceBrowserView
                 ? selectedNamespaceByClickingPod
@@ -421,7 +420,7 @@ console.log(resourceContainers)
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')
-                setEphemeralContainerDrawer(false)
+                setShowEphemeralContainerDrawer(false)
                 setEphemeralForm({
                     ...ephemeralForm,
                     basicData: {
@@ -445,12 +444,12 @@ console.log(resourceContainers)
                 } as Options)
 
                 setResourceContainers(_containers)
-                setEphemeralContainerDrawer(false)
+                setShowEphemeralContainerDrawer(false)
                 switchSelectedContainer(containerName)
             })
             .catch((err) => {
                 showError(err)
-                setEphemeralContainerDrawer(true)
+                setShowEphemeralContainerDrawer(true)
             })
             .finally(() => {
                 setLoader(false)
