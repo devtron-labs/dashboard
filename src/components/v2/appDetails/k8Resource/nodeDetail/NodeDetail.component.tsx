@@ -90,6 +90,12 @@ function NodeDetailComponent({
         }
     }, [loadingResources, params.node])
 
+    const isExternalEphemeralContainer = (cmds: string[], name: string):boolean => {
+        const matchingCmd = `sh ${name}-devtron.sh`
+        const internal = cmds?.find((cmd) => cmd.includes(matchingCmd) )
+        return !internal
+    }
+
     const getContainersFromManifest = async () => {
         try {
             const { result } = await getManifestResource(
@@ -99,7 +105,6 @@ function NodeDetailComponent({
                 isResourceBrowserView,
                 selectedResource,
             )
-
             const _resourceContainers = []
             if (result?.manifest?.spec) {
                 if (Array.isArray(result.manifest.spec.containers)) {
@@ -123,13 +128,20 @@ function NodeDetailComponent({
                 }
 
                 if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
+                    const ephemeralContainerStatusMap = new Map<string,string[]>()
+                    result.manifest.spec.ephemeralContainers.forEach((con) => {
+                        ephemeralContainerStatusMap.set(con.name,con.command as string[])
+                    })
                     let ephemeralContainers = []
                     result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
+                        //con.state contains three states running,waiting and terminated
+                        // at any point of time only one state will be there
                         if (_container.state.running) {
                             ephemeralContainers.push({
                                 name: _container.name,
                                 isInitContainer: false,
                                 isEphemeralContainer: true,
+                                isExternal: isExternalEphemeralContainer(ephemeralContainerStatusMap.get(_container.name),_container.name)
                             })
                         }
                     })

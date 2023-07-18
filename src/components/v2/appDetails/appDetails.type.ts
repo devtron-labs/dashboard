@@ -429,6 +429,7 @@ export interface OptionsBase {
     name: string;
     isInitContainer?: boolean
     isEphemeralContainer?: boolean
+    isExternal?: boolean
 }
 
 export interface Options extends OptionsBase {

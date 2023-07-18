@@ -26,7 +26,7 @@ export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boo
 }
 
 export const flatContainers = (pod: PodMetaData): string[] => {
-    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers || [])]
+    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers.map((_con) => { return _con.name }) || [])]
 }
 
 export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
@@ -42,9 +42,10 @@ export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
             isEphemeralContainer: false,
         })) || []),
         ...(pod?.ephemeralContainers?.map((_container) => ({
-            name: _container,
+            name: _container.name,
             isInitContainer: false,
             isEphemeralContainer: true,
+            isExternal: _container.isExternal
         })) || []),
     ]
 }
@@ -329,7 +330,8 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
                 ephemralContainerOptions.push({
                     label: _container.name,
                     value: _container.name,
-                    isEphemeralContainer: _container.isEphemeralContainer
+                    isEphemeralContainer: _container.isEphemeralContainer,
+                    isExternal:           _container.isExternal
                 })
             } else {
                 containerOptions.push({

@@ -112,12 +112,14 @@ function TerminalComponent({
                                   className="default-white"
                                   arrow={false}
                                   placement="bottom"
-                                  content="Remove container"
+                                  content= {`${data.isExternal ? "Externally created ephemeral containers cannot be removed" : "Remove container"}`}
                               >
                                   <Cross
-                                      className={`icon-dim-16 cursor ${props.isFocused ? 'scr-5' : ''}`}
+                                      className={`icon-dim-16 ${data.isExternal ? 'cursor-not-allowed dc__opacity-0_5' : 'cursor'} ${props.isFocused && !data.isExternal ? 'scr-5' : ''}`}
                                       onClick={(selected) => {
-                                          deleteEphemeralContainer(props.label)
+                                          if(data.isExternal) {
+                                              deleteEphemeralContainer(props.label)
+                                          }
                                       }}
                                   />
                               </Tippy>
