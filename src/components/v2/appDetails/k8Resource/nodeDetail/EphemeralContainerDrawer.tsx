@@ -173,6 +173,16 @@ function EphemeralContainerDrawer({
     const handleContainerSelectChange = (selected, key, defaultOptions) => {
         let defaultVal = defaultOptions.length && defaultOptions[0]
         if (key === 'image') {
+            const newImageOption = {
+                value: selected.value,
+                label: selected.value,
+            }
+            const existingImageOption = imageListOption.find((option) => option.value === selected.value)
+            if (!existingImageOption) {
+                const newImageListOption = [newImageOption, ...imageListOption]
+                setImageListOption(newImageListOption)
+            }
+
             setSelectedImageList(selected)
         } else {
             setSelectedTargetContainer(selected)
@@ -185,6 +195,7 @@ function EphemeralContainerDrawer({
             },
         })
     }
+    
 
     const getOptions = () => {
         if (isResourceBrowserView) {
