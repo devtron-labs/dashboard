@@ -8,7 +8,12 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
-import { EphemeralContainerDrawerType, EphemeralForm, EphemeralFormAdvancedType, ResponsePayload } from './nodeDetail.type'
+import {
+    EphemeralContainerDrawerType,
+    EphemeralForm,
+    EphemeralFormAdvancedType,
+    ResponsePayload,
+} from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
@@ -34,6 +39,7 @@ import { ReactComponent as QuestionIcon } from '../../../../v2/assets/icons/ic-q
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
+import { selectStyles } from './nodeDetail.util'
 
 function EphemeralContainerDrawer({
     setShowEphemeralContainerDrawer,
@@ -79,9 +85,10 @@ function EphemeralContainerDrawer({
         let jsonManifest = JSON.parse(JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)))
         if (jsonManifest) {
             if (containerType === EDITOR_VIEW.ADVANCED) {
-                jsonManifest["name"] = ephemeralForm.basicData?.containerName || ''
-                jsonManifest["image"] = ephemeralForm.basicData?.image || ''
-                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containers.length && containers[0].name) || ''
+                jsonManifest['name'] = ephemeralForm.basicData?.containerName || ''
+                jsonManifest['image'] = ephemeralForm.basicData?.image || ''
+                jsonManifest['targetContainerName'] =
+                    ephemeralForm.basicData.targetContainerName || (containers.length && containers[0].name) || ''
                 setEphemeralFormAdvanced({
                     ...ephemeralFormAdvanced,
                     advancedData: {
@@ -102,9 +109,12 @@ function EphemeralContainerDrawer({
         }
         setEphemeralContainerType(containerType)
         const parsedImage = yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image
-        const parsedImageOption = {label : parsedImage, value: parsedImage }
-        imageListOption.push(parsedImageOption)
-        setSelectedImageList(parsedImageOption)
+        const parsedImageOption = { label: parsedImage, value: parsedImage }
+        const selectedimageValue = imageListOption.find((imageList) => parsedImage === imageList.value)
+        if (!selectedimageValue) {
+            imageListOption.push(parsedImageOption)
+        }
+        setSelectedImageList(selectedimageValue ? selectedimageValue : parsedImageOption)
     }
 
     const getImageList = () => {
@@ -118,7 +128,10 @@ function EphemeralContainerDrawer({
                     ...ephemeralForm,
                     basicData: {
                         ...ephemeralForm.basicData,
-                        image: yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image || option?.[0]?.value || '',
+                        image:
+                            yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image ||
+                            option?.[0]?.value ||
+                            '',
                     },
                 })
             }
@@ -198,15 +211,16 @@ function EphemeralContainerDrawer({
         })
     }
 
-
     const getOptions = () => {
         setTargetContainerOption(
-            containers.filter((container) => (!container.isEphemeralContainer && !container.isInitContainer) ).map((res) => {
-                return {
-                    value: res.name,
-                    label: res.name,
-                }
-            }),
+            containers
+                .filter((container) => !container.isEphemeralContainer && !container.isInitContainer)
+                .map((res) => {
+                    return {
+                        value: res.name,
+                        label: res.name,
+                    }
+                }),
         )
     }
 
@@ -218,7 +232,7 @@ function EphemeralContainerDrawer({
 
     const renderBasicEphemeral = (): JSX.Element => {
         return (
-            <div>
+            <div className="p-20">
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
@@ -235,7 +249,7 @@ function EphemeralContainerDrawer({
                     </div>
                     <div>
                         <input
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 h-36"
                             data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={handleContainerChange}
@@ -258,7 +272,7 @@ function EphemeralContainerDrawer({
                     </div>
 
                     <CreatableSelect
-                        value={selectedImageList || imageListOption[0]   }
+                        value={selectedImageList || imageListOption[0]}
                         options={imageListOption}
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
@@ -267,7 +281,7 @@ function EphemeralContainerDrawer({
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
                         }}
-                        styles={multiSelectStyles}
+                        styles={selectStyles}
                         onKeyDown={handleKeyDown}
                     />
                 </div>
@@ -292,28 +306,13 @@ function EphemeralContainerDrawer({
                         className="select-width"
                         classNamePrefix="select-token-expiry-duration"
                         isSearchable={false}
-                        onChange={(e) =>
-                            handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])
-                        }
+                        onChange={(e) => handleEphemeralChange(e, 'targetContainerName', targetContainerOption[0])}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
                             Option,
                         }}
-                        styles={{
-                            ...multiSelectStyles,
-                            control: (base) => ({
-                                ...base,
-                                minHeight: '36px',
-                                fontWeight: '400',
-                                backgroundColor: 'var(--N50)',
-                                cursor: 'pointer',
-                            }),
-                            dropdownIndicator: (base) => ({
-                                ...base,
-                                padding: '0 8px',
-                            }),
-                        }}
+                        styles={selectStyles}
                     />
                 </div>
             </div>
@@ -380,7 +379,6 @@ function EphemeralContainerDrawer({
             <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
-                    height={300}
                     mode="yaml"
                     onChange={handleManifestAdvanceConfiguration}
                     readOnly={switchManifest === SwitchItemValues.Sample}
@@ -512,9 +510,7 @@ function EphemeralContainerDrawer({
             <div className="bcn-0 h-100 dc__position-rel">
                 {renderEphemeralHeaders()}
                 {renderEphemeralContainerType()}
-                <div className="p-20 ">
-                    {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : renderAdvancedEphemeral()}
-                </div>
+                {ephemeralContainerType === EDITOR_VIEW.BASIC ? renderBasicEphemeral() : renderAdvancedEphemeral()}
                 {renderEphemeralFooter()}
             </div>
         </Drawer>

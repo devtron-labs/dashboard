@@ -224,6 +224,9 @@ function NodeDetailComponent({
 
     const onClickShowLaunchEphemeral = (): void => {
         setShowEphemeralContainerDrawer(!showEphemeralContainerDrawer)
+        if(showEphemeralContainerDrawer){
+          setEphemeralContainerType(EDITOR_VIEW.BASIC)
+        }
     }
 
     const switchSelectedContainer = (containerName: string) => {
