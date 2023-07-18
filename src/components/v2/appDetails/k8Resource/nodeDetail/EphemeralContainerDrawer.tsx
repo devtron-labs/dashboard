@@ -198,7 +198,7 @@ function EphemeralContainerDrawer({
 
     const getOptions = () => {
         setTargetContainerOption(
-            containers.map((res) => {
+            containers.filter((container) => (!container.isEphemeralContainer && !container.isInitContainer) ).map((res) => {
                 return {
                     value: res.name,
                     label: res.name,
