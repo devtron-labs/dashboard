@@ -11,6 +11,7 @@ import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
+import { EnvironmentList } from './EnvironmentList'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
@@ -20,6 +21,9 @@ export function Sidebar({
     pluginList,
     mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
+    environments,
+    selectedEnv,
+    setSelectedEnv
 }: CIPipelineSidebarType) {
     const {
         formData,
@@ -105,31 +109,34 @@ export function Sidebar({
     return (
         <div className="dc__position-rel">
             {activeStageName !== BuildStageVariable.Build ? (
-                <div className="sidebar-action-container sidebar-action-container-border">
-                    {configurationType === ConfigurationType.GUI && (
-                        <>
-                            {!isJobView && MandatoryPluginWarning && showMandatoryWarning() && (
-                                <MandatoryPluginWarning
-                                    stage={activeStageName}
-                                    mandatoryPluginData={mandatoryPluginData}
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    formDataErrorObj={formDataErrorObj}
-                                    setFormDataErrorObj={setFormDataErrorObj}
-                                    allPluginList={pluginList}
-                                    handleApplyPlugin={handleApplyPlugin}
+                <>
+                    <div className="sidebar-action-container sidebar-action-container-border">
+                        {configurationType === ConfigurationType.GUI && (
+                            <>
+                                {!isJobView && MandatoryPluginWarning && showMandatoryWarning() && (
+                                    <MandatoryPluginWarning
+                                        stage={activeStageName}
+                                        mandatoryPluginData={mandatoryPluginData}
+                                        formData={formData}
+                                        setFormData={setFormData}
+                                        formDataErrorObj={formDataErrorObj}
+                                        setFormDataErrorObj={setFormDataErrorObj}
+                                        allPluginList={pluginList}
+                                        handleApplyPlugin={handleApplyPlugin}
+                                    />
+                                )}
+                                <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
+                                <TaskList
+                                    withWarning={showMandatoryWarning()}
+                                    mandatoryPluginsMap={mandatoryPluginsMap}
+                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                    isJobView={isJobView}
                                 />
-                            )}
-                            <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList
-                                withWarning={showMandatoryWarning()}
-                                mandatoryPluginsMap={mandatoryPluginsMap}
-                                setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                isJobView={isJobView}
-                            />
-                        </>
-                    )}
-                </div>
+                            </>
+                        )}
+                    </div>
+                    {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
+                </>
             ) : (
                 <div className="sidebar-action-container sidebar-action-container-border pr-20">
                     <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">

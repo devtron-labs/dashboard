@@ -35,11 +35,13 @@ export interface EnvironmentOverrideComponentProps {
     environments: AppEnvironment[]
     appList?: ConfigAppList[]
     setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
+    isJobView?: boolean,
 }
 
 export interface CommonEnvironmentOverridesProps {
     parentState: ComponentStates
     setParentState: React.Dispatch<React.SetStateAction<ComponentStates>>
+    isJobView?: boolean
 }
 
 export interface ConfigMapOverridesProps extends CommonEnvironmentOverridesProps {}
@@ -55,4 +57,5 @@ export interface ListComponentType {
     type: string
     label: string
     appChartRef: { id: number; version: string; name: string }
+    isJobView?: boolean
 }

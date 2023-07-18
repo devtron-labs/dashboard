@@ -449,11 +449,14 @@ export interface AppStatusType {
     isVirtualEnv?: boolean
 }
 export interface JobPipeline {
-    ci_pipeline_id: number
-    ci_pipeline_name: string
-    started_on: string
+    ciPipelineID: number
+    ciPipelineName: string
+    startedOn: string
     status: string
     dataTestId?: string
+    environmentName?: string
+    environmentId?: string 
+    lastTriggeredEnvironmentName?: string
 }
 
 export interface TagChipsContainerType {

@@ -41,6 +41,8 @@ import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.t
 import { createAppLabels } from '../service'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
+import { environmentName } from '../../Jobs/Utils'
+import { DEFAULT_ENV } from '../details/triggerView/Constants'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
@@ -387,7 +389,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 )
         }
     }
-
+    
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -400,24 +402,25 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="env-deployments-info-wrapper w-100">
                 <div
-                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space"
+                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-start"
                     data-testid="overview-configured-pipeline"
                 >
-                    <div className="m-tb-8">Pipeline name</div>
+                    <div className="m-tb-8 w-300">Pipeline name</div>
                     <div className="flex">
                         <div className="m-tb-8 mr-16 w-150">Last run status</div>
+                        <div className="m-tb-8 mr-16 w-150">Run in environment</div>
                         <div className="w-150 m-tb-8">Last run at</div>
                     </div>
                 </div>
                 {jobPipelines.map((jobPipeline, index) => (
-                    <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex">
-                        <div className="h-20 m-tb-8 cb-5 fs-13">
+                    <div key={jobPipeline.ciPipelineID} className="flex dc__content-start">
+                        <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
-                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
+                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineName}/`}
                                 className="fs-13"
                                 data-testid={`overview-link-pipeline${index}`}
                             >
-                                {jobPipeline.ci_pipeline_name}
+                                {jobPipeline.ciPipelineName}
                             </Link>
                         </div>
                         <div className="flex">
@@ -427,14 +430,21 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             >
                                 {getStatusIcon(jobPipeline.status)}
                                 {jobPipeline.status === 'CANCELLED' ? (
-                                    <div>Cancelled</div>
+                                    <div>Aborted</div>
                                 ) : (
                                     <div>{jobPipeline.status}</div>
                                 )}
                             </div>
+                            <div
+                                data-testid={`${jobPipeline.environmentName}-${index}`}
+                                className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
+                            >
+                                {environmentName(jobPipeline)}
+                                {environmentName(jobPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                            </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
-                                {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
-                                    ? handleUTCTime(jobPipeline.started_on, true)
+                                {jobPipeline.startedOn !== '0001-01-01T00:00:00Z'
+                                    ? handleUTCTime(jobPipeline.startedOn, true)
                                     : '-'}
                             </div>
                         </div>

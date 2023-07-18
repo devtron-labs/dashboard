@@ -5,6 +5,7 @@ import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export interface CINodeProps {
     x: number
@@ -28,6 +29,8 @@ export interface CINodeProps {
     hideWebhookTippy?: () => void
     isJobView?: boolean
     showPluginWarning?: boolean
+    envList?: any[]
+    filteredCIPipelines?: any[]
 }
 
 export class CINode extends Component<CINodeProps> {
@@ -64,6 +67,8 @@ export class CINode extends Component<CINodeProps> {
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
         const _linkedBuildText = this.props.isLinkedCI ? 'Build: Linked' : _buildText
         const pipeline = this.props.isJobView ? 'Job' : _linkedBuildText
+        const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
+        const env = currPipeline?.environmentId ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId) : undefined
 
         return (
             <>
@@ -88,7 +93,7 @@ export class CINode extends Component<CINodeProps> {
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
                                 <span className="workflow-node__text-light" data-testid="linked-indication-name">
-                                    {pipeline}
+                                    {!this.props.isJobView && pipeline}
                                 </span>
                                 <Tippy
                                     className="default-tt"
@@ -98,6 +103,9 @@ export class CINode extends Component<CINodeProps> {
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
+                                {this.props.isJobView && <>
+                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span></>}
                             </div>
                             {this.renderNodeIcon()}
                         </div>
