@@ -4,7 +4,7 @@ import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.s
 import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { NodeDetailTab, ResponsePayload } from '../nodeDetail.type'
+import { NodeDetailTab } from '../nodeDetail.type'
 import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
@@ -14,7 +14,7 @@ import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
 import { toast } from 'react-toastify'
-import Select, { components } from 'react-select'
+import Select from 'react-select'
 import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
@@ -32,8 +32,6 @@ import {
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
-import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
-import { EDITOR_VIEW } from '../../../../../deploymentConfig/constants'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')

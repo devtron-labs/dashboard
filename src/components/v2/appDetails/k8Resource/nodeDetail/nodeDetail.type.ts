@@ -1,6 +1,6 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib';
 import React from 'react'
-import {Options, OptionsBase, PodMetaData} from "../../appDetails.type";
+import {Options, OptionsBase } from "../../appDetails.type";
 
 export enum NodeDetailTab {
     EVENTS = 'EVENTS',
