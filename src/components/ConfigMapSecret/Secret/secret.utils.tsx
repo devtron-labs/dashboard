@@ -8,6 +8,8 @@ import { SECRET_TOAST_INFO } from './constants'
 import YAML from 'yaml'
 import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../ConfigMap/ConfigMap.type'
 import { unlockEnvSecret } from '../service'
+import { CM_SECRET_STATE } from '../Constants'
+import { processCurrentData } from '../ConfigMap/ConfigMap.reducer'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -335,33 +337,18 @@ export async function unlockSecrets(
     appId: number,
     envId: number,
     name: string,
-    global: boolean,
-    isESO: boolean,
     dispatch: (action: ConfigMapAction) => void,
 ) {
     try {
         const {
             result: { configData: secretData },
         } = await unlockEnvSecret(id, appId, envId, name)
-        let data = secretData[0].data
-        let temp = {}
-        for (let i in data) {
-            temp[i] = secretData[0].externalType === '' ? atob(data[i]) : data[i]
-        }
-
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
             payload: {
                 secretMode: false,
-                duplicate:
-                    name && global && !isESO
-                        ? Object.keys(temp).map((k) => ({
-                              k,
-                              v: temp[k],
-                              keyError: '',
-                              valueError: '',
-                          }))
-                        : temp,
+                cmSecretState: CM_SECRET_STATE.OVERRIDDEN,
+                currentData: processCurrentData(secretData[0], CM_SECRET_STATE.INHERITED, 'secret'),
             },
         })
         if (secretData[0].secretData) {
@@ -419,43 +406,42 @@ export function handleSecretDataYamlChange(
                     refreshInterval: null,
                 },
             })
-            return
-        }
-        if (isESO) {
-            dispatch({
-                type: ConfigMapActionTypes.multipleOptions,
-                payload: {
-                    secretStore: json.secretStore,
-                    secretStoreRef: json.secretStoreRef,
-                    refreshInterval: json.refreshInterval,
-                },
-            })
-        }
-        if (!isESO && Array.isArray(json)) {
-            json = json.map((j) => {
-                let temp = {}
-                temp['isBinary'] = j.isBinary
-                if (j.key) {
-                    temp['fileName'] = j.key
+        } else {
+            if (isESO) {
+                dispatch({
+                    type: ConfigMapActionTypes.multipleOptions,
+                    payload: {
+                        secretStore: json.secretStore,
+                        secretStoreRef: json.secretStoreRef,
+                        refreshInterval: json.refreshInterval,
+                    },
+                })
+                if (Array.isArray(json?.esoData)) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setEsoData,
+                        payload: json.esoData,
+                    })
                 }
-                if (j.property) {
-                    temp['property'] = j.property
-                }
-                if (j.name) {
-                    temp['name'] = j.name
-                }
-                return temp
-            })
-            dispatch({
-                type: ConfigMapActionTypes.setSecretData,
-                payload: json,
-            })
-        }
-        if (isESO && Array.isArray(json?.esoData)) {
-            dispatch({
-                type: ConfigMapActionTypes.setEsoData,
-                payload: json.esoData,
-            })
+            } else if (Array.isArray(json)) {
+                json = json.map((j) => {
+                    let temp = {}
+                    temp['isBinary'] = j.isBinary
+                    if (j.key) {
+                        temp['fileName'] = j.key
+                    }
+                    if (j.property) {
+                        temp['property'] = j.property
+                    }
+                    if (j.name) {
+                        temp['name'] = j.name
+                    }
+                    return temp
+                })
+                dispatch({
+                    type: ConfigMapActionTypes.setSecretData,
+                    payload: json,
+                })
+            }
         }
     } catch (error) {}
 }

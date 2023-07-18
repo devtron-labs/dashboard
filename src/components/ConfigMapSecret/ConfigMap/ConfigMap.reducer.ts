@@ -3,6 +3,7 @@ import { CM_SECRET_STATE } from '../Constants'
 import { getSecretInitState } from '../Secret/secret.utils'
 import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './ConfigMap.type'
 import YAML from 'yaml'
+import { decode } from '../../../util/Util'
 
 const initialDuplicate = (configMapSecretData, isOverrideView, componentType) => {
     if (isOverrideView && configMapSecretData?.global) {
@@ -26,11 +27,12 @@ const initialDuplicate = (configMapSecretData, isOverrideView, componentType) =>
     return null
 }
 
-const secureValues = (data, isSecretMode) => {
-    return Object.keys(data).map((k) => {
+const secureValues = (data, isSecretMode, isExternalType) => {
+    const decodedData = isExternalType ? decode(data) : data
+    return Object.keys(decodedData).map((k) => {
         let value = '********'
         if (!isSecretMode) {
-            value = typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k]
+            value = typeof decodedData[k] === 'object' ? YAML.stringify(decodedData[k], { indent: 2 }) : decodedData[k]
         }
         return {
             k,
@@ -41,21 +43,20 @@ const secureValues = (data, isSecretMode) => {
     })
 }
 
-const currentData = (configMapSecretData, isOverrideView, componentType) => {
-    let processedData = null
-    if (isOverrideView && configMapSecretData?.global) {
-        if (configMapSecretData?.data) {
-            processedData = secureValues(configMapSecretData.data, configMapSecretData.secretMode)
-        } else if (configMapSecretData?.defaultData) {
-            processedData = secureValues(configMapSecretData.defaultData, configMapSecretData.secretMode)
-        } else if (
-            componentType === 'secret' &&
-            (configMapSecretData?.secretData || configMapSecretData?.esoSecretData?.esoData)
-        ) {
-            processedData = configMapSecretData.secretData || configMapSecretData.esoSecretData
-        }
+export const processCurrentData = (configMapSecretData, cmSecretStateLabel, componentType) => {
+    if (configMapSecretData?.data) {
+        return secureValues(
+            configMapSecretData.data,
+            configMapSecretData.secretMode,
+            componentType === 'secret' && configMapSecretData.externalType === '',
+        )
+    } else if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
+        return secureValues(
+            configMapSecretData.defaultData,
+            configMapSecretData.secretMode,
+            componentType === 'secret' && configMapSecretData.externalType === '',
+        )
     }
-    return processedData
 }
 
 export const initState = (
@@ -70,7 +71,7 @@ export const initState = (
         dialog: false,
         subPath: configMapSecretData?.subPath ?? '',
         filePermission: { value: configMapSecretData?.filePermission ?? '', error: '' },
-        currentData: currentData(configMapSecretData, isOverrideView, componentType),
+        currentData: processCurrentData(configMapSecretData, cmSecretStateLabel, componentType),
         duplicate: initialDuplicate(configMapSecretData, isOverrideView, componentType),
         externalValues: configMapSecretData?.data
             ? Object.keys(configMapSecretData.data).map((k) => ({
@@ -100,28 +101,27 @@ export const initState = (
         cmSecretState: cmSecretStateLabel,
         ...secretInitState,
     }
-    console.log('reducer', initialState, configMapSecretData)
     return initialState
 }
 
 export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction) => {
     switch (action.type) {
-        case ConfigMapActionTypes.removeDuplicate:
-            return { ...state, duplicate: null, volumeMountPath: { value: '', error: '' } }
+        case ConfigMapActionTypes.deleteOverride:
+            return { ...action.payload }
         case ConfigMapActionTypes.addParam:
             return {
                 ...state,
-                duplicate: state.duplicate.concat([{ k: '', v: '', keyError: '', valueError: '' }]),
+                currentData: state.currentData.concat([{ k: '', v: '', keyError: '', valueError: '' }]),
             }
         case ConfigMapActionTypes.keyValueChange:
-            let duplicate = state.duplicate
-            duplicate[action.payload.index] = {
+            let _currentData = state.currentData
+            _currentData[action.payload.index] = {
                 k: action.payload.k,
                 v: action.payload.v,
                 keyError: '',
                 valueError: '',
             }
-            return { ...state, duplicate: [...duplicate] }
+            return { ...state, currentData: [..._currentData] }
         case ConfigMapActionTypes.keyValueDelete:
             let dup = [...state.duplicate]
             dup.splice(action.payload.index, 1)

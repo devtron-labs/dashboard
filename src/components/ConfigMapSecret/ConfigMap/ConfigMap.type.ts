@@ -44,7 +44,7 @@ export interface ConfigMapSecretState extends ConfigMapAction, SecretState {
 
 export enum ConfigMapActionTypes {
     createDuplicate = 'createDuplicate',
-    removeDuplicate = 'removeDuplicate',
+    deleteOverride = 'deleteOverride',
     addParam = 'addParam',
     keyValueChange = 'keyValueChange',
     keyValueDelete = 'keyValueDelete',

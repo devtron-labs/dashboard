@@ -65,9 +65,6 @@ export interface ConfigMapSecretFormProps {
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
-    id
-    configMapSecretData: any
-    isOverrideView: boolean
     componentType: string
     state
     dispatch
