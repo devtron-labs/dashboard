@@ -49,7 +49,7 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
-import { PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
@@ -123,7 +123,7 @@ export default function CIPipeline({
             steps: [],
         },
     })
-    const [formDataErrorObj, setFormDataErrorObj] = useState({
+    const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
         preBuildStage: {
             steps: [],

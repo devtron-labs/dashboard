@@ -33,7 +33,7 @@ import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
 
-export const pipelineContext = createContext<PipelineContext<any>>(null)
+export const pipelineContext = createContext<PipelineContext>(null)
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null

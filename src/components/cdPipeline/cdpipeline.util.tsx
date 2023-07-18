@@ -15,7 +15,7 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 
 export const styles = {
     control: (base, state) => ({
@@ -246,7 +246,7 @@ export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
 export const calculateLastStepDetailsLogic = (
     _formData: PipelineFormType,
     activeStageName: string,
-    _formDataErrorObj: any,
+    _formDataErrorObj: PipelineFormDataErrorType,
     isFromAddNewTask,
     startIndex: number,
     isFromMoveTask: boolean,

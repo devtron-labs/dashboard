@@ -130,7 +130,26 @@ export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType
     postBuildStage?: PipelineBuildStageType;
 }
 
-export interface PipelineContext<T> {
+export interface PipelineFormDataErrorType {
+    name: { message?: string, isValid: boolean },
+    envNameError?: { message?: string, isValid: boolean },
+    nameSpaceError?: { message?: string, isValid: boolean },
+    containerRegistryError?: { isValid: boolean, message?: string },
+    repositoryError?: { isValid: boolean, message?: string },
+    preBuildStage: {
+        steps: any[],
+        isValid: Boolean,
+    },
+    buildStage: {
+        isValid: Boolean,
+    },
+    postBuildStage: {
+        steps: any[],
+        isValid: Boolean,
+    },
+}
+
+export interface PipelineContext {
     formData: PipelineFormType
     setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
     selectedTaskIndex: number
@@ -145,8 +164,8 @@ export interface PipelineContext<T> {
         index: number
         calculatedStageVariables: Map<string, VariableType>[]
     }
-    formDataErrorObj: T
-    setFormDataErrorObj: React.Dispatch<React.SetStateAction<T>>
+    formDataErrorObj: PipelineFormDataErrorType
+    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     configurationType: string
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>

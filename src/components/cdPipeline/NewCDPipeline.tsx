@@ -50,7 +50,7 @@ import Tippy from '@tippyjs/react'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 
 export enum deleteDialogType {
@@ -151,7 +151,7 @@ export default function NewCDPipeline({
         ? SourceTypeMap.WEBHOOK
         : ''
 
-    const [formDataErrorObj, setFormDataErrorObj] = useState({
+    const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
         envNameError: { isValid: true },
         nameSpaceError: { isValid: true },
@@ -228,7 +228,6 @@ export default function NewCDPipeline({
                 variable.value = variable.name
                 variable.description = variable.description || ''
                 variable.variableType = RefVariableType.GLOBAL
-                variable.format = variable.format
                 delete variable.name
                 return variable
             })
@@ -621,6 +620,7 @@ export default function NewCDPipeline({
             name: validationRules.name(_formData.name),
             envNameError: validationRules.environment(_formData.environmentId),
         } // validating name always as it's a mandatory field
+        let isReposAndContainerRegistoryValid = true
         if (!isVirtualEnvironment) {
             _formDataErrorObj.nameSpaceError = validationRules.namespace(_formData.namespace)
         }
@@ -631,13 +631,17 @@ export default function NewCDPipeline({
             _formDataErrorObj.repositoryError = validationRules.repository(formData.repoName)
         }
 
-        // if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
-        //     valid = !!pipelineConfig.containerRegistryName && !!pipelineConfig.repoName
-        // }
+        if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
+            if(_formDataErrorObj.repositoryError.isValid && _formDataErrorObj.containerRegistryError.isValid){
+                isReposAndContainerRegistoryValid = true
+            }else {
+                isReposAndContainerRegistoryValid = false
+            }
+        }
 
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid =
-                _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid && _formDataErrorObj.repositoryError.isValid
+                _formDataErrorObj.name.isValid && _formDataErrorObj.envNameError.isValid && isReposAndContainerRegistoryValid
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
