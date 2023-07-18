@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { components } from 'react-select'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
