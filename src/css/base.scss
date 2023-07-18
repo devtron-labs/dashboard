@@ -326,6 +326,10 @@ a:focus {
     right: 0;
 }
 
+.dc__left-30 {
+    left: 30px;
+}
+
 .dc__left-35 {
     left: 35px;
 }
@@ -2097,6 +2101,13 @@ button.anchor {
     }
 }
 
+.dc__environment-icon {
+    width: 18px;
+    height: 18px;
+    background-size: contain;
+    background-image: url('../assets/icons/ic-env.svg');
+}
+
 .xterm .xterm-viewport {
     width: initial !important;
 }
@@ -2446,6 +2457,10 @@ textarea,
 
 .mw-232 {
     min-width: 232px;
+}
+
+.w-auto-imp {
+    width: auto !important;
 }
 
 .w-32 {

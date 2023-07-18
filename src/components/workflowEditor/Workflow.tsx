@@ -58,6 +58,8 @@ export interface WorkflowProps
     showWebhookTippy?: boolean
     hideWebhookTippy?: () => void
     isJobView?: boolean
+    envList?: any[]
+    filteredCIPipelines?: any[]
 }
 
 interface WorkflowState {
@@ -324,6 +326,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 isJobView={this.props.isJobView}
                 showPluginWarning={node.showPluginWarning}
+                envList={this.props.envList}
+                filteredCIPipelines={this.props.filteredCIPipelines}
             />
         )
     }
