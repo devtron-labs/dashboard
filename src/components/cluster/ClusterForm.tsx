@@ -847,9 +847,8 @@ export default function ClusterForm({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="dc__align-reload-center">
                     <div
-                        className="flex flex-align-center w-100 flex-justify bcn-0 p-20"
+                        className="dc__position-relr"
                         style={{ height: 'calc(100vh - 110px)' }}
                     >
                         <GenericEmptyState
@@ -858,7 +857,6 @@ export default function ClusterForm({
                             subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
                         />
                     </div>
-                </div>
                 <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
                     <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled={true}>
                         Cancel
