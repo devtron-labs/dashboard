@@ -58,17 +58,17 @@ function EphemeralContainerDrawer({
     const [loader, setLoader] = useState<boolean>(false)
     const appDetails = IndexStore.getAppDetails()
     const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
-      basicData: {
-          targetContainerName: '',
-          containerName: 'debugger',
-          image: '',
-      },
-  })
-  const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
-      advancedData: {
-          manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
-      },
-  })
+        basicData: {
+            targetContainerName: '',
+            containerName: 'debugger',
+            image: '',
+        },
+    })
+    const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
+        advancedData: {
+            manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 }),
+        },
+    })
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
     const [selectedTargetContainer, setSelectedTargetContainer] = useState<OptionType>(null)
 
@@ -80,9 +80,12 @@ function EphemeralContainerDrawer({
         let jsonManifest = JSON.parse(JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)))
         if (jsonManifest) {
             if (containerType === EDITOR_VIEW.ADVANCED) {
-                jsonManifest["name"] = ephemeralForm.basicData?.containerName || ''
-                jsonManifest["image"] = ephemeralForm.basicData?.image || ''
-                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containerList.length && containerList[0]?.containers[0]) || ''
+                jsonManifest['name'] = ephemeralForm.basicData?.containerName || ''
+                jsonManifest['image'] = ephemeralForm.basicData?.image || ''
+                jsonManifest['targetContainerName'] =
+                    ephemeralForm.basicData.targetContainerName ||
+                    (containerList.length && containerList[0]?.containers[0]) ||
+                    ''
                 setEphemeralFormAdvanced({
                     ...ephemeralFormAdvanced,
                     advancedData: {
@@ -94,9 +97,9 @@ function EphemeralContainerDrawer({
                     ...ephemeralForm,
                     basicData: {
                         ...ephemeralForm.basicData,
-                        containerName: jsonManifest["name"] || '',
-                        image: jsonManifest["image"] || '',
-                        targetContainerName: jsonManifest["targetContainerName"] || ''
+                        containerName: jsonManifest['name'] || '',
+                        image: jsonManifest['image'] || '',
+                        targetContainerName: jsonManifest['targetContainerName'] || '',
                     },
                 })
             }
@@ -115,7 +118,7 @@ function EphemeralContainerDrawer({
                     ...ephemeralForm,
                     basicData: {
                         ...ephemeralForm.basicData,
-                        image: option?.[0]?.value || ''
+                        image: option?.[0]?.value || '',
                     },
                 })
             }
@@ -196,22 +199,26 @@ function EphemeralContainerDrawer({
         })
     }
 
-
     const getOptions = () => {
         if (isResourceBrowserView) {
             setTargetContainerOption(
-                resourceContainers.filter((resourceContainer) => (!resourceContainer.isEphemeralContainer && !resourceContainer.isInitContainer)).map((container) => {
-                    return {
-                        label: container.name,
-                        value: container.name,
-                    }
-                }),
+                resourceContainers
+                    .filter(
+                        (resourceContainer) =>
+                            !resourceContainer.isEphemeralContainer && !resourceContainer.isInitContainer,
+                    )
+                    .map((container) => {
+                        return {
+                            label: container.name,
+                            value: container.name,
+                        }
+                    }),
             )
             setEphemeralForm({
                 ...ephemeralForm,
                 basicData: {
                     ...ephemeralForm.basicData,
-                    targetContainerName: (resourceContainers.length && resourceContainers[0]?.name) || ''
+                    targetContainerName: (resourceContainers.length && resourceContainers[0]?.name) || '',
                 },
             })
         } else {
@@ -228,16 +235,16 @@ function EphemeralContainerDrawer({
                 ...ephemeralForm,
                 basicData: {
                     ...ephemeralForm.basicData,
-                    targetContainerName: (containerList.length && containerList[0]?.containers[0]) || ''
+                    targetContainerName: (containerList.length && containerList[0]?.containers[0]) || '',
                 },
             })
         }
     }
 
     const handleKeyDown = (event) => {
-      if (event.key === 'Enter' || event.key === 'Tab') {
-        event.target.blur()
-    }
+        if (event.key === 'Enter' || event.key === 'Tab') {
+            event.target.blur()
+        }
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -246,10 +253,13 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
-                            className="default-white"
+                            className="default-tt"
                             arrow={false}
-                            placement="left"
-                            content={EPHEMERAL_CONTAINER.CONTAINER_NAME}
+                            content={
+                                <span style={{ display: 'block', width: '220px' }}>
+                                    {EPHEMERAL_CONTAINER.CONTAINER_NAME}
+                                </span>
+                            }
                         >
                             <span className="text-underline-dashed">Container name prefix</span>
                         </Tippy>
@@ -268,10 +278,11 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
-                            className="default-white"
+                            className="default-tt"
                             arrow={false}
-                            placement="left"
-                            content={EPHEMERAL_CONTAINER.IMAGE}
+                            content={
+                                <span style={{ display: 'block', width: '220px' }}>{EPHEMERAL_CONTAINER.IMAGE}</span>
+                            }
                         >
                             <span className="text-underline-dashed">Image</span>
                         </Tippy>
@@ -294,10 +305,13 @@ function EphemeralContainerDrawer({
                 <div className="dc__row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
                         <Tippy
-                            className="default-white"
+                            className="default-tt"
                             arrow={false}
-                            placement="left"
-                            content={EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
+                            content={
+                                <span style={{ display: 'block', width: '220px' }}>
+                                    {EPHEMERAL_CONTAINER.TARGET_CONTAINER_NAME}
+                                </span>
+                            }
                         >
                             <span className="text-underline-dashed">Target Container Name</span>
                         </Tippy>
@@ -417,9 +431,7 @@ function EphemeralContainerDrawer({
         setLoader(true)
         setShowEphemeralContainerDrawer(true)
         let payload: ResponsePayload = {
-            namespace: isResourceBrowserView
-                ? selectedNamespaceByClickingPod
-                : appDetails.namespace,
+            namespace: isResourceBrowserView ? selectedNamespaceByClickingPod : appDetails.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
             podName: isResourceBrowserView ? params.node : params.podName,
         }
@@ -453,7 +465,7 @@ function EphemeralContainerDrawer({
             appDetails.appId,
             appDetails.appType,
             isResourceBrowserView,
-            params
+            params,
         )
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')
