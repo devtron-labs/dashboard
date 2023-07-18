@@ -41,7 +41,7 @@ export interface EphemeralContainerDrawerType {
     params: ParamsType
     containerList: Array<PodMetaData>
     resourceContainers: Array<OptionsBase>
-    setResourceContainers: any
+    setResourceContainers: React.Dispatch<React.SetStateAction<OptionsBase[]>>
     ephemeralContainerType: string
     setEphemeralContainerType: React.Dispatch<React.SetStateAction<string>>
     targetContainerOption: OptionType[]
