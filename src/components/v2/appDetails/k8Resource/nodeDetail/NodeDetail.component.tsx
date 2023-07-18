@@ -50,7 +50,7 @@ function NodeDetailComponent({
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
-    const [showEphemeralContainerDrawer, setEphemeralContainerDrawer] = useState<boolean>(false)
+    const [showEphemeralContainerDrawer, setShowEphemeralContainerDrawer] = useState<boolean>(false)
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
     const [targetContainerOption, setTargetContainerOption] = useState<OptionType[]>([])
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
@@ -223,7 +223,7 @@ function NodeDetailComponent({
     }
 
     const onClickShowLaunchEphemeral = (): void => {
-        setEphemeralContainerDrawer(!showEphemeralContainerDrawer)
+        setShowEphemeralContainerDrawer(!showEphemeralContainerDrawer)
     }
 
     const switchSelectedContainer = (containerName: string) => {
@@ -360,7 +360,7 @@ function NodeDetailComponent({
             )}
             {showEphemeralContainerDrawer && (
                 <EphemeralContainerDrawer
-                    setEphemeralContainerDrawer={setEphemeralContainerDrawer}
+                    setShowEphemeralContainerDrawer={setShowEphemeralContainerDrawer}
                     onClickShowLaunchEphemeral={onClickShowLaunchEphemeral}
                     params={params}
                     setResourceContainers={setResourceContainers}

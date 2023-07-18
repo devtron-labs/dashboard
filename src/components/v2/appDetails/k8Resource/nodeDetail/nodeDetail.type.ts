@@ -37,7 +37,7 @@ export interface EphemeralFormAdvancedType {
     }
 }
 export interface EphemeralContainerDrawerType {
-    setEphemeralContainerDrawer: React.Dispatch<React.SetStateAction<boolean>>
+    setShowEphemeralContainerDrawer: React.Dispatch<React.SetStateAction<boolean>>
     params: ParamsType
     setResourceContainers: any
     ephemeralContainerType: string
