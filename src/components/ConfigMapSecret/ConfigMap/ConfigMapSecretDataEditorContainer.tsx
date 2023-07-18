@@ -20,6 +20,7 @@ import {
 } from '../Secret/secret.utils'
 import { KeyValueFileInput } from '../../util/KeyValueFileInput'
 import { useParams } from 'react-router-dom'
+import { CM_SECRET_STATE } from '../Constants'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
     ({
@@ -30,32 +31,30 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         state,
         dispatch,
         tempArr,
+        handleSecretFetch,
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
         const { appId, envId } = useParams<{ appId; envId }>()
-        function memoisedRemove(e, idx) {
-            dispatch({ type: ConfigMapActionTypes.keyValueDelete, payload: { index: idx } })
-        }
+        // function memoisedRemove(e, idx) {
+        //     dispatch({ type: ConfigMapActionTypes.keyValueDelete, payload: { index: idx } })
+        // }
         const memoisedHandleChange = (index, k, v) => dispatch({ type: 'key-value-change', value: { index, k, v } })
 
         function setKeyValueArray(arr) {
             tempArr.current = arr
         }
+        console.log('editor', state,configMapSecretData)
         const { yaml, handleYamlChange, error } = useKeyValueYaml(
-            configMapSecretData?.global ? state.duplicate : state.externalValues,
+            state.currentData,
             setKeyValueArray,
             PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
             `Key must consist of alphanumeric characters, '.', '-' and '_'`,
         )
-
-        const { yaml: lockedYaml } = useKeyValueYaml(
-            (configMapSecretData?.global ? state.duplicate : state.externalValues).map(({ k, v }) => ({
-                k,
-                v: Array(8).fill('*').join(''),
-            })),
-            setKeyValueArray,
-            PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
-            `Key must consist of alphanumeric characters, '.', '-' and '_'`,
-        )
+        // const { yaml: lockedYaml } = useKeyValueYaml(
+        //     data,
+        //     setKeyValueArray,
+        //     PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
+        //     `Key must consist of alphanumeric characters, '.', '-' and '_'`,
+        // )
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
 
@@ -64,14 +63,14 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         function changeEditorMode() {
             if (state.yamlMode) {
-                if (state.duplicate) {
-                    dispatch({
-                        type: ConfigMapActionTypes.multipleOptions,
-                        payload: { duplicate: tempArr.current, yamlMode: !state.yamlMode },
-                    })
-                    tempArr.current = []
-                    return
-                }
+                //if (state.duplicate) {
+                dispatch({
+                    type: ConfigMapActionTypes.multipleOptions,
+                    payload: { currentData: tempArr.current, yamlMode: !state.yamlMode },
+                })
+                tempArr.current = []
+                return
+                //}
                 tempArr.current = []
             }
             dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
@@ -179,12 +178,13 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
         }
 
-        const getCodeEditorData = (): string => {
-            if (componentType === 'secret') return state.secretMode || state.locked ? lockedYaml : yaml
-            else {
-                return state.duplicate ? yaml : YAML.stringify(configMapSecretData?.defaultData, { indent: 2 })
-            }
-        }
+        // const getCodeEditorData = (): string => {
+        //     if (componentType === 'secret') return state.secretMode ? lockedYaml : yaml
+        //     else {
+        //         return yaml //: YAML.stringify(configMapSecretData?.defaultData, { indent: 2 })
+        //         return state.duplicate ? yaml : YAML.stringify(configMapSecretData?.defaultData, { indent: 2 })
+        //     }
+        // }
 
         const externalSecretEditor = (): JSX.Element => {
             if ((isHashiOrAWS || isESO) && state.yamlMode) {
@@ -202,7 +202,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                             inline
                             height={350}
                             onChange={handleSecretYamlChange}
-                            readOnly={state.secretMode && state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE}
+                            readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
                             shebang={
                                 state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
                                     ? '#Check sample for usage.'
@@ -254,55 +254,71 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         const renderKeyValue = (): JSX.Element => {
             if (configMapSecretData?.global) {
-                if (state.duplicate) {
-                    return (
-                        <>
-                            {state.duplicate.map((config, idx) => (
-                                <KeyValueInput
-                                    keyLabel={
-                                        state.externalType === '' && state.selectedType === 'volume'
-                                            ? 'File Name'
-                                            : 'Key'
-                                    }
-                                    valueLabel={
-                                        state.externalType === '' && state.selectedType === 'volume'
-                                            ? 'File Content'
-                                            : 'Value'
-                                    }
-                                    key={`editable-${idx}`}
-                                    {...{ ...config, v: state.locked ? Array(8).fill('*').join('') : config.v }}
-                                    index={idx}
-                                    onChange={state.locked ? null : memoisedHandleChange}
-                                />
-                            ))}
-                        </>
-                    )
-                } else {
-                    return (
-                        <>
-                            {Object.keys(state.defaultData).map((config, idx) => (
-                                <KeyValueInput
-                                    keyLabel={
-                                        state.externalType === '' && state.selectedType === 'volume'
-                                            ? 'File Name'
-                                            : 'Key'
-                                    }
-                                    valueLabel={
-                                        state.externalType === '' && state.selectedType === 'volume'
-                                            ? 'File Content'
-                                            : 'Value'
-                                    }
-                                    onDelete={null}
-                                    key={`locked-${idx}`}
-                                    k={config}
-                                    v={Array(8).fill('*').join('')}
-                                    index={idx}
-                                    onChange={null}
-                                />
-                            ))}
-                        </>
-                    )
+                {
+                    ;[...state.currentData].map((config, idx) => (
+                        <KeyValueInput
+                            keyLabel={
+                                state.externalType === '' && state.selectedType === 'volume' ? 'File Name' : 'Key'
+                            }
+                            valueLabel={
+                                state.externalType === '' && state.selectedType === 'volume' ? 'File Content' : 'Value'
+                            }
+                            key={`editable-${idx}`}
+                            {...{ ...config, v: state.secretMode ? Array(8).fill('*').join('') : config.v }}
+                            index={idx}
+                            onChange={state.secretMode ? null : memoisedHandleChange}
+                        />
+                    ))
                 }
+                // if (state.duplicate) {
+                //     return (
+                //         <>
+                //             {state.currentData.map((config, idx) => (
+                //                 <KeyValueInput
+                //                     keyLabel={
+                //                         state.externalType === '' && state.selectedType === 'volume'
+                //                             ? 'File Name'
+                //                             : 'Key'
+                //                     }
+                //                     valueLabel={
+                //                         state.externalType === '' && state.selectedType === 'volume'
+                //                             ? 'File Content'
+                //                             : 'Value'
+                //                     }
+                //                     key={`editable-${idx}`}
+                //                     {...{ ...config, v: state.locked ? Array(8).fill('*').join('') : config.v }}
+                //                     index={idx}
+                //                     onChange={state.locked ? null : memoisedHandleChange}
+                //                 />
+                //             ))}
+                //         </>
+                //     )
+                // } else {
+                //     return (
+                //         <>
+                //             {Object.keys(state.defaultData).map((config, idx) => (
+                //                 <KeyValueInput
+                //                     keyLabel={
+                //                         state.externalType === '' && state.selectedType === 'volume'
+                //                             ? 'File Name'
+                //                             : 'Key'
+                //                     }
+                //                     valueLabel={
+                //                         state.externalType === '' && state.selectedType === 'volume'
+                //                             ? 'File Content'
+                //                             : 'Value'
+                //                     }
+                //                     onDelete={null}
+                //                     key={`locked-${idx}`}
+                //                     k={config}
+                //                     v={Array(8).fill('*').join('')}
+                //                     index={idx}
+                //                     onChange={null}
+                //                 />
+                //             ))}
+                //         </>
+                //     )
+                // }
             } else {
                 return (
                     <>
@@ -353,9 +369,9 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                     </RadioGroup.Radio>
                                 </RadioGroup>
                             )}
-                            {isOverrideView && configMapSecretData?.global && state.locked && (
-                                <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={handleEditSecret}>
-                                    <Pencil className="pointer" />
+                            {state.secretMode && (
+                                <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={handleSecretFetch}>
+                                    <Pencil />
                                 </div>
                             )}
                         </div>
@@ -363,12 +379,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         {state.yamlMode ? (
                             <div className="yaml-container">
                                 <CodeEditor
-                                    value={getCodeEditorData()}
+                                    value={yaml}
                                     mode="yaml"
                                     inline
                                     height={350}
                                     onChange={handleYamlChange}
-                                    readOnly={isOverrideView && configMapSecretData?.global && state.locked}
+                                    readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
                                     shebang="#key: value"
                                 >
                                     <CodeEditor.Header>
@@ -389,7 +405,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     </>
                 )}
                 {externalSecretEditor()}
-                {(!isOverrideView || state.duplicate) && !state.yamlMode && !state.locked && (
+                {state.cmSecretState !== CM_SECRET_STATE.INHERITED && !state.yamlMode && !state.secretMode && (
                     <span className="dc__bold anchor pointer" onClick={handleAddParam}>
                         +Add params
                     </span>

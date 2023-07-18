@@ -1,10 +1,11 @@
 import { PATTERNS } from '../../../config'
+import { CM_SECRET_STATE } from '../Constants'
 import { getSecretInitState } from '../Secret/secret.utils'
-import { ConfigMapAction, ConfigMapActionTypes, ConfigMapState } from './ConfigMap.type'
+import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './ConfigMap.type'
 import YAML from 'yaml'
 
-const initialDuplicate = (configMapSecretData, isOverrideView) => {
-    if (!isOverrideView) {
+const initialDuplicate = (configMapSecretData, isOverrideView, componentType) => {
+    if (isOverrideView && configMapSecretData?.global) {
         if (configMapSecretData?.data) {
             return Object.keys(configMapSecretData.data).map((k) => ({
                 k,
@@ -15,38 +16,62 @@ const initialDuplicate = (configMapSecretData, isOverrideView) => {
                 keyError: '',
                 valueError: '',
             }))
-        } else {
-            return [{ k: '', v: '', keyError: '', valueError: '' }]
-        }
-    } else {
-        if (configMapSecretData?.data) {
-            return configMapSecretData.name && configMapSecretData.global
-                ? Object.keys(configMapSecretData.data).map((k) => ({
-                      k,
-                      v: configMapSecretData.data[k],
-                      keyError: '',
-                      valueError: '',
-                  }))
-                : configMapSecretData.data
-        } else if (configMapSecretData?.name && configMapSecretData?.global) {
-            return (
-                configMapSecretData.secretData ||
-                (configMapSecretData.esoSecretData?.esoData && configMapSecretData.esoSecretData)
-            )
-        } else {
-            return null
+        } else if (
+            componentType === 'secret' &&
+            (configMapSecretData?.secretData || configMapSecretData?.esoSecretData?.esoData)
+        ) {
+            return configMapSecretData.secretData || configMapSecretData.esoSecretData
         }
     }
+    return null
 }
 
-export const initState = (configMapSecretData, isOverrideView: boolean, componentType: string): ConfigMapState => {
+const secureValues = (data, isSecretMode) => {
+    return Object.keys(data).map((k) => {
+        let value = '********'
+        if (!isSecretMode) {
+            value = typeof data[k] === 'object' ? YAML.stringify(data[k], { indent: 2 }) : data[k]
+        }
+        return {
+            k,
+            v: value,
+            keyError: '',
+            valueError: '',
+        }
+    })
+}
+
+const currentData = (configMapSecretData, isOverrideView, componentType) => {
+    let processedData = null
+    if (isOverrideView && configMapSecretData?.global) {
+        if (configMapSecretData?.data) {
+            processedData = secureValues(configMapSecretData.data, configMapSecretData.secretMode)
+        } else if (configMapSecretData?.defaultData) {
+            processedData = secureValues(configMapSecretData.defaultData, configMapSecretData.secretMode)
+        } else if (
+            componentType === 'secret' &&
+            (configMapSecretData?.secretData || configMapSecretData?.esoSecretData?.esoData)
+        ) {
+            processedData = configMapSecretData.secretData || configMapSecretData.esoSecretData
+        }
+    }
+    return processedData
+}
+
+export const initState = (
+    configMapSecretData,
+    isOverrideView: boolean,
+    componentType: string,
+    cmSecretStateLabel: CM_SECRET_STATE,
+): ConfigMapState | ConfigMapSecretState => {
     const secretInitState = componentType === 'secret' ? getSecretInitState(configMapSecretData, isOverrideView) : {}
-    return {
+    const initialState = {
         loading: false,
         dialog: false,
         subPath: configMapSecretData?.subPath ?? '',
         filePermission: { value: configMapSecretData?.filePermission ?? '', error: '' },
-        duplicate: initialDuplicate(configMapSecretData, isOverrideView),
+        currentData: currentData(configMapSecretData, isOverrideView, componentType),
+        duplicate: initialDuplicate(configMapSecretData, isOverrideView, componentType),
         externalValues: configMapSecretData?.data
             ? Object.keys(configMapSecretData.data).map((k) => ({
                   k,
@@ -72,8 +97,11 @@ export const initState = (configMapSecretData, isOverrideView: boolean, componen
             error: '',
         },
         yamlMode: true,
+        cmSecretState: cmSecretStateLabel,
         ...secretInitState,
     }
+    console.log('reducer', initialState, configMapSecretData)
+    return initialState
 }
 
 export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction) => {
@@ -162,10 +190,10 @@ export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction)
             return { ...state, externalValues: action.payload }
         case ConfigMapActionTypes.setCodeEditorRadio:
             return { ...state, codeEditorRadio: action.payload }
-        case ConfigMapActionTypes.unlock:
-            return { ...state, locked: action.payload }
-        case ConfigMapActionTypes.toggleSecretMode:
-            return { ...state, secretMode: action.payload }
+        // case ConfigMapActionTypes.unlock:
+        //     return { ...state, locked: action.payload }
+        // case ConfigMapActionTypes.toggleSecretMode:
+        //     return { ...state, secretMode: action.payload }
 
         case ConfigMapActionTypes.multipleOptions:
             return { ...state, ...action.payload }

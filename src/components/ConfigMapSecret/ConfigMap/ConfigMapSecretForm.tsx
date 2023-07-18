@@ -45,7 +45,7 @@ import {
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import { ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from '../Constants'
+import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from '../Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
 import { getSecretKeys, updateSecret } from '../../secrets/service'
 import YAML from 'yaml'
@@ -62,20 +62,15 @@ export const ConfigMapSecretForm = React.memo(
         componentType,
         update,
         index,
+        cmSecretStateLabel,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
         const [state, dispatch] = useReducer(
             memoizedReducer,
-            initState(configMapSecretData, isOverrideView, componentType),
+            initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel),
         )
-        const tabs = [
-            { title: 'Environment Variable', value: 'environment' },
-            { title: 'Data Volume', value: 'volume' },
-        ].map((data) => ({
-            ...data,
-            active: data.value === state.selectedType,
-        }))
+
         const { appId, envId } = useParams<{ appId; envId }>()
 
         const isChartVersion309OrBelow =
@@ -86,10 +81,10 @@ export const ConfigMapSecretForm = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
-        useEffect(() => {
-            if (!configMapSecretData?.name || (!configMapSecretData?.global && configMapSecretData?.defaultData)) return
-            handleSecretFetch()
-        }, [])
+        // useEffect(() => {
+        //     if (!configMapSecretData?.name || configMapSecretData.externalType !== '') return
+        //     handleSecretFetch()
+        // }, [])
 
         // useEffect(() => {
         //     if (configMapSecretData?.data) {
@@ -110,7 +105,7 @@ export const ConfigMapSecretForm = React.memo(
         //         })
         //     }
         // }, [configMapSecretData?.data])
-
+        console.log('main', state, configMapSecretData)
         useEffect(() => {
             if (isESO && !state.yamlMode) {
                 dispatch({
@@ -121,11 +116,12 @@ export const ConfigMapSecretForm = React.memo(
 
         async function handleSecretFetch() {
             try {
-                const { result } = envId
-                    ? await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
-                    : await getSecretKeys(id, appId, configMapSecretData?.name)
+                const { result } =
+                    state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN || state.cmSecretState === CM_SECRET_STATE.ENV
+                        ? await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
+                        : await getSecretKeys(id, appId, configMapSecretData?.name)
                 update(index, result)
-                dispatch({ type: ConfigMapActionTypes.toggleSecretMode, payload: false })
+                //dispatch({ type: ConfigMapActionTypes.toggleSecretMode, payload: false })
             } catch (err) {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             }
@@ -133,7 +129,7 @@ export const ConfigMapSecretForm = React.memo(
 
         async function handleOverride(e) {
             e.preventDefault()
-            if (state.duplicate) {
+            if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) {
                 if (state.data) {
                     dispatch({ type: ConfigMapActionTypes.toggleDialog })
                 } else {
@@ -359,7 +355,7 @@ export const ConfigMapSecretForm = React.memo(
                 if (state.selectedType === 'volume') {
                     payload['mountPath'] = state.volumeMountPath.value
                     if (!isChartVersion309OrBelow) {
-                        payload['subPath'] = state.subPath
+                        payload['subPath'] = state.isSubPathChecked
                     }
                     if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
                         payload['filePermission'] =
@@ -520,14 +516,15 @@ export const ConfigMapSecretForm = React.memo(
         return (
             <>
                 <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-20">
-                    {isOverrideView && configMapSecretData?.name && configMapSecretData?.global && (
+                    {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
+                        state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
                         <Override
                             external={
                                 state.selectedType === 'environment' &&
                                 ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
                                     (componentType === 'configmap' && state.external))
                             }
-                            overridden={!!state.duplicate}
+                            overridden={state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
                             onClick={handleOverride}
                             loading={state.overrideLoading}
                             type={componentType}
@@ -554,9 +551,7 @@ export const ConfigMapSecretForm = React.memo(
                                             GroupHeading,
                                         }}
                                         classNamePrefix="secret-data-type"
-                                        isDisabled={
-                                            isOverrideView && configMapSecretData?.name && configMapSecretData?.global
-                                        }
+                                        isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                     />
                                     {isESO && (
                                         <InfoColourBar
@@ -579,9 +574,7 @@ export const ConfigMapSecretForm = React.memo(
                                         Option,
                                     }}
                                     classNamePrefix="configmap-data-type"
-                                    isDisabled={
-                                        isOverrideView && configMapSecretData?.name && configMapSecretData?.global
-                                    }
+                                    isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 />
                             )}
                         </div>
@@ -625,7 +618,7 @@ export const ConfigMapSecretForm = React.memo(
                             value={state.selectedType}
                             name="DeploymentAppTypeGroup"
                             onChange={toggleSelectedType}
-                            disabled={!!(isOverrideView && configMapSecretData?.name && configMapSecretData?.global)}
+                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                             className="radio-group-no-border"
                         >
                             <RadioGroupItem
@@ -656,12 +649,12 @@ export const ConfigMapSecretForm = React.memo(
                                     value={state.volumeMountPath.value}
                                     autoComplete="off"
                                     tabIndex={5}
-                                    label={'Volume mount path*'}
-                                    placeholder={'/directory-path'}
-                                    helperText={'Keys are mounted as files to volume'}
+                                    label="Volume mount path*"
+                                    placeholder="/directory-path"
+                                    helperText="Keys are mounted as files to volume"
                                     error={state.volumeMountPath.error}
                                     onChange={onMountPathChange}
-                                    disabled={!state.duplicate}
+                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 />
                             </div>
                             <div className="mb-16">
@@ -669,7 +662,7 @@ export const ConfigMapSecretForm = React.memo(
                                     isChecked={state.isSubPathChecked}
                                     onClick={stopPropagation}
                                     rootClassName="top"
-                                    disabled={!state.duplicate}
+                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={toggleSubpath}
                                 >
@@ -718,7 +711,7 @@ export const ConfigMapSecretForm = React.memo(
                                             placeholder={'Enter keys (Eg. username,configs.json)'}
                                             error={state.externalSubpathValues.error}
                                             onChange={onExternalSubpathValuesChange}
-                                            disabled={!state.duplicate}
+                                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                         />
                                     </div>
                                 )}
@@ -728,7 +721,9 @@ export const ConfigMapSecretForm = React.memo(
                                     isChecked={state.isFilePermissionChecked}
                                     onClick={stopPropagation}
                                     rootClassName=""
-                                    disabled={!state.duplicate || isChartVersion309OrBelow}
+                                    disabled={
+                                        state.cmSecretState === CM_SECRET_STATE.INHERITED || isChartVersion309OrBelow
+                                    }
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={toggleFilePermission}
                                 >
@@ -772,7 +767,10 @@ export const ConfigMapSecretForm = React.memo(
                                         placeholder={'eg. 0400 or 400'}
                                         error={state.filePermission.error}
                                         onChange={onFilePermissionChange}
-                                        disabled={!state.duplicate || isChartVersion309OrBelow}
+                                        disabled={
+                                            state.cmSecretState === CM_SECRET_STATE.INHERITED ||
+                                            isChartVersion309OrBelow
+                                        }
                                     />
                                 </div>
                             )}
@@ -789,7 +787,7 @@ export const ConfigMapSecretForm = React.memo(
                                     placeholder="Enter Role ARN"
                                     error={state.roleARN.error}
                                     onChange={handleRoleARNChange}
-                                    disabled={!state.duplicate || state.locked}
+                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
                                 />
                             </div>
                         </div>
@@ -802,11 +800,12 @@ export const ConfigMapSecretForm = React.memo(
                         state={state}
                         dispatch={dispatch}
                         tempArr={tempArr}
+                        handleSecretFetch={handleSecretFetch}
                     />
                     {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
                         <div className="form__buttons">
                             <button
-                                disabled={state.locked}
+                                disabled={state.secretMode}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
                                 className="cta"

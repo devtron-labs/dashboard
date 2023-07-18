@@ -20,3 +20,10 @@ export const ConfigMapSecretUsageMap = {
     environment: { title: 'Environment Variable', value: 'environment' },
     volume: { title: 'Data Volume', value: 'volume' },
 }
+
+export enum CM_SECRET_STATE {
+    BASE = '',
+    INHERITED = 'Inheriting',
+    OVERRIDDEN = 'Overridden',
+    ENV = 'Env',
+}

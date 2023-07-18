@@ -43,36 +43,8 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
         }
     }
 
-    function update(index, result) {
-        if (!index && !result) {
-            init()
-            return
-        }
-        try {
-          setConfigMap((list) => {
-                let configData = list.configData
-                if (result === null) {
-                    //delete
-                    configData.splice(index, 1)
-                    list.configData = [...configData]
-                    return { ...list }
-                } else if (typeof index !== 'number' && Array.isArray(result.configData)) {
-                    //insert after create success
-                    configData.unshift({
-                        ...result.configData[0],
-                        data: result.configData[0].data,
-                    })
-                    list.configData = [...configData]
-                    return { ...list }
-                } else {
-                    list.configData[index] = {
-                        ...list.configData[index],
-                        data: result.configData[0].data,
-                    }
-                    return { ...list }
-                }
-            })
-        } catch (err) {}
+    function update() {
+        init()
     }
 
     if (parentState === ComponentStates.loading || !configMap || configMapLoading)

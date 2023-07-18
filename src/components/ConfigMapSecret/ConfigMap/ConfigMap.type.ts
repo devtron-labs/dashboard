@@ -1,6 +1,23 @@
+import { CM_SECRET_STATE } from '../Constants'
+
 interface ValueWithError {
     value: string
-    error: ''
+    error: string
+}
+
+export interface SecretState {
+    externalType: string
+    roleARN: ValueWithError
+    esoData: any
+    secretData: any
+    secretDataYaml: string
+    codeEditorRadio: string
+    esoDataSecret: any
+    secretStore: any
+    secretStoreRef: any
+    refreshInterval: any
+    esoSecretYaml: string
+    secretMode: boolean
 }
 
 export interface ConfigMapState {
@@ -9,6 +26,7 @@ export interface ConfigMapState {
     subPath: string
     filePermission: ValueWithError
     duplicate: any
+    currentData: any
     external: boolean
     externalValues: { k: string; v: any; keyError: string; valueError: string }[]
     selectedType: string
@@ -18,6 +36,10 @@ export interface ConfigMapState {
     isFilePermissionChecked: boolean
     configName: ValueWithError
     yamlMode: boolean
+    cmSecretState: CM_SECRET_STATE
+}
+export interface ConfigMapSecretState extends ConfigMapAction, SecretState {
+
 }
 
 export enum ConfigMapActionTypes {

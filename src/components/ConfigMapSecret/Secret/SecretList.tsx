@@ -31,6 +31,7 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     if (config.data) {
                         config.data = decode(config.data) //doesnt do anything because data.value will be empty
                     }
+                    config.secretMode = true
                     return config
                 })
             }
@@ -71,17 +72,26 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     return { ...list }
                 } else {
                     //unlock
-                    configData[index] =
-                        result && Array.isArray(result.configData) && result.configData.length > 0
-                            ? result.configData[0]
-                            : null
-                    list.configData[index] = {
-                        ...list.configData[index],
-                        data:
-                            result.configData[0].externalType === ''
-                                ? decode(result.configData[0].data)
-                                : result.configData[0].data,
+                    // configData[index] =
+                    //     result && Array.isArray(result.configData) && result.configData.length > 0
+                    //         ? result.configData[0]
+                    //         : null
+                    const updatedData =
+                        result.configData[0].externalType === ''
+                            ? decode(result.configData[0].data)
+                            : result.configData[0].data
+                    const selectedConfigData = list.configData[index]
+                    if (selectedConfigData.global) {
+                        if (selectedConfigData.data) {
+                            configData.data = updatedData
+                        } else {
+                          selectedConfigData.defaultData = updatedData
+                        }
+                    } else {
+                      selectedConfigData.data = updatedData
                     }
+                    selectedConfigData.secretMode = false
+                    list.configData[index] = selectedConfigData
                     return { ...list }
                 }
             })

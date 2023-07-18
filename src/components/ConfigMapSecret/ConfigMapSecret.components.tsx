@@ -32,6 +32,7 @@ import { ConfigMapSecretForm } from './ConfigMap/ConfigMapSecretForm'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { deleteConfig, deleteEnvConfigMap, deleteEnvSecret, deleteSecret } from './service'
+import { CM_SECRET_STATE } from './Constants'
 
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
@@ -109,6 +110,23 @@ export function ConfigMapSecretContainer({
     const [collapsed, toggleCollapse] = useState(true)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const { appId, envId } = useParams<{ appId; envId }>()
+    let cmSecretStateLabel = CM_SECRET_STATE.BASE
+    if (isOverrideView) {
+        if (
+            data &&
+            (Object.keys(data.defaultData ?? {}).length ||
+                (componentType === 'secret' &&
+                    (Object.keys(data.defaultSecretData ?? {}).length ||
+                        Object.keys(data.defaultESOSecretData ?? {}).length)))
+        ) {
+            cmSecretStateLabel =
+                data.data || (componentType === 'secret' && (data.esoSecretData?.secretStore || data.secretData))
+                    ? CM_SECRET_STATE.OVERRIDDEN
+                    : CM_SECRET_STATE.INHERITED
+        } else {
+            cmSecretStateLabel = CM_SECRET_STATE.ENV
+        }
+    }
 
     const updateCollapsed = (): void => {
         toggleCollapse(!collapsed)
@@ -174,26 +192,9 @@ export function ConfigMapSecretContainer({
                 componentType={componentType}
                 update={update}
                 index={index}
+                cmSecretStateLabel={cmSecretStateLabel}
             />
         )
-    }
-
-    const renderLabel = (): JSX.Element => {
-        let labelText = ''
-        if (isOverrideView) {
-            if (data?.defaultData || data?.global) {
-                labelText =
-                    data.data || (componentType === 'secret' && (data.esoSecretData?.secretStore || data.secretData))
-                        ? 'Overridden'
-                        : 'Inheriting'
-            } else {
-                labelText = 'env'
-            }
-        }
-        if (labelText) {
-            return <div className="flex tag ml-12">{labelText}</div>
-        }
-        return null
     }
 
     return (
@@ -210,7 +211,7 @@ export function ConfigMapSecretContainer({
                         className={`flex left ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
                     >
                         {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
-                        {renderLabel()}
+                        {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                     </div>
                     <div className="flex right">
                         {!collapsed && title && (

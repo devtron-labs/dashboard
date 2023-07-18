@@ -6,7 +6,7 @@ import { OptionType, multiSelectStyles, showError } from '@devtron-labs/devtron-
 import { toast } from 'react-toastify'
 import { SECRET_TOAST_INFO } from './constants'
 import YAML from 'yaml'
-import { ConfigMapAction, ConfigMapActionTypes } from '../ConfigMap/ConfigMap.type'
+import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../ConfigMap/ConfigMap.type'
 import { unlockEnvSecret } from '../service'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
@@ -352,7 +352,6 @@ export async function unlockSecrets(
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
             payload: {
-                locked: false,
                 secretMode: false,
                 duplicate:
                     name && global && !isESO
@@ -461,7 +460,7 @@ export function handleSecretDataYamlChange(
     } catch (error) {}
 }
 
-export const getSecretInitState = (configMapSecretData, isOverrideView) => {
+export const getSecretInitState = (configMapSecretData, isOverrideView): SecretState => {
     let tempSecretData, jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
         tempSecretData = configMapSecretData.secretData
@@ -508,8 +507,7 @@ export const getSecretInitState = (configMapSecretData, isOverrideView) => {
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
-        locked: isOverrideView && configMapSecretData?.global && !configMapSecretData?.mountPath,
-        secretMode: !!configMapSecretData?.name,
+        secretMode: configMapSecretData?.secretMode,
     }
 }
 

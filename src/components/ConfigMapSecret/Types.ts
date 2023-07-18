@@ -1,4 +1,5 @@
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { CM_SECRET_STATE } from './Constants'
 
 export interface KeyValueInputInterface {
     keyLabel: string
@@ -60,6 +61,7 @@ export interface ConfigMapSecretFormProps {
     componentType: string
     update: (...args) => void
     index: number
+    cmSecretStateLabel: CM_SECRET_STATE
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
@@ -70,6 +72,7 @@ export interface ConfigMapSecretDataEditorContainerProps {
     state
     dispatch
     tempArr
+    handleSecretFetch
 }
 
 export interface ConfigMapSecretProps {
