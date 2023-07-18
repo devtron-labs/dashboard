@@ -81,7 +81,7 @@ function EphemeralContainerDrawer({
         if (containerType === EDITOR_VIEW.ADVANCED) {
             jsonManifest["name"] = ephemeralForm.basicData.containerName
             jsonManifest["image"] = ephemeralForm.basicData.image
-            jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName
+            jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containerList.length && containerList[0]?.containers[0])
             setEphemeralFormAdvanced({
                 ...ephemeralFormAdvanced,
                 advancedData: {
@@ -93,8 +93,8 @@ function EphemeralContainerDrawer({
                 ...ephemeralForm,
                 basicData: {
                     ...ephemeralForm.basicData,
-                    containerName: jsonManifest["name"] || '', 
-                    image: jsonManifest["image"] || '', 
+                    containerName: jsonManifest["name"] || '',
+                    image: jsonManifest["image"] || '',
                     targetContainerName: jsonManifest["targetContainerName"] || ''
                 },
             })
@@ -203,7 +203,7 @@ function EphemeralContainerDrawer({
                 ...ephemeralForm,
                 basicData: {
                     ...ephemeralForm.basicData,
-                    targetContainerName: resourceContainers?.[0]?.value || ''
+                    targetContainerName: (resourceContainers.length && resourceContainers[0]?.name) || ''
                 },
             })
         } else {
@@ -220,7 +220,7 @@ function EphemeralContainerDrawer({
                 ...ephemeralForm,
                 basicData: {
                     ...ephemeralForm.basicData,
-                    targetContainerName: containerList?.[0]?.value || ''
+                    targetContainerName: (containerList.length && containerList[0]?.containers[0]) || ''
                 },
             })
         }
@@ -278,20 +278,7 @@ function EphemeralContainerDrawer({
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
                         }}
-                        styles={{
-                            ...multiSelectStyles,
-                            control: (base) => ({
-                                ...base,
-                                minHeight: '36px',
-                                fontWeight: '400',
-                                backgroundColor: 'var(--N50)',
-                                cursor: 'pointer',
-                            }),
-                            dropdownIndicator: (base) => ({
-                                ...base,
-                                padding: '0 8px',
-                            }),
-                        }}
+                        styles={multiSelectStyles}
                         onKeyDown={handleKeyDown}
                     />
                 </div>
