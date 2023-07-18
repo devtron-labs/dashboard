@@ -10,7 +10,7 @@ import {
     NodeDetailTab,
     ParamsType,
 } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options } from '../../appDetails.type'
+import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -42,7 +42,7 @@ function NodeDetailComponent({
     const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
-    const [resourceContainers, setResourceContainers] = useState([])
+    const [resourceContainers, setResourceContainers] = useState<OptionsBase[]>([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
     const [hideManagedFields, setHideManagedFields] = useState(true)

@@ -1,6 +1,6 @@
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib';
 import React from 'react'
-import {Options} from "../../appDetails.type";
+import {Options, OptionsBase, PodMetaData} from "../../appDetails.type";
 
 export enum NodeDetailTab {
     EVENTS = 'EVENTS',
@@ -39,7 +39,7 @@ export interface EphemeralFormAdvancedType {
 export interface EphemeralContainerDrawerType {
     setShowEphemeralContainerDrawer: React.Dispatch<React.SetStateAction<boolean>>
     params: ParamsType
-    setResourceContainers: any
+    setResourceContainers: React.Dispatch<React.SetStateAction<OptionsBase[]>>
     ephemeralContainerType: string
     setEphemeralContainerType: React.Dispatch<React.SetStateAction<string>>
     targetContainerOption: OptionType[]

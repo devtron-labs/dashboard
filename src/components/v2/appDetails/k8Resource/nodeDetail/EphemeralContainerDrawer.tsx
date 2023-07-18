@@ -81,7 +81,7 @@ function EphemeralContainerDrawer({
             if (containerType === EDITOR_VIEW.ADVANCED) {
                 jsonManifest["name"] = ephemeralForm.basicData?.containerName || ''
                 jsonManifest["image"] = ephemeralForm.basicData?.image || ''
-                jsonManifest["targetContainerName"] = ephemeralForm.basicData?.targetContainerName || ''
+                jsonManifest["targetContainerName"] = ephemeralForm.basicData.targetContainerName || (containers.length && containers[0]) || ''
                 setEphemeralFormAdvanced({
                     ...ephemeralFormAdvanced,
                     advancedData: {
@@ -259,20 +259,7 @@ function EphemeralContainerDrawer({
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
                         }}
-                        styles={{
-                            ...multiSelectStyles,
-                            control: (base) => ({
-                                ...base,
-                                minHeight: '36px',
-                                fontWeight: '400',
-                                backgroundColor: 'var(--N50)',
-                                cursor: 'pointer',
-                            }),
-                            dropdownIndicator: (base) => ({
-                                ...base,
-                                padding: '0 8px',
-                            }),
-                        }}
+                        styles={multiSelectStyles}
                         onKeyDown={handleKeyDown}
                     />
                 </div>
