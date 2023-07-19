@@ -39,9 +39,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        let envId = this.state.selectedCIPipeline?.environmentId || 0
-        const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
-        this.props.setSelectedEnv(_selectedEnv)
+        if(this.props.isJobView && this.props.environmentLists?.length > 0) {
+            let envId = this.state.selectedCIPipeline?.environmentId || 0
+            const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+            this.props.setSelectedEnv(_selectedEnv)
+        }
     }
 
     async getSecurityModuleStatus(): Promise<void> {
