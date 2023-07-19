@@ -96,14 +96,15 @@ export default function CIConfig({
         }
     }
     async function getAirGapEnvironmentValue() {
-        setLoading(true)
         try {
+            setLoading(true)
             const {result} = await getEnvironmentData()
             setIsAirGapped(result.isAirGapEnvironment)
           
         } catch (err) {
             setIsAirGapped(false)
         } finally {
+            setLoading(false)
         }   
     }
     function updateLoadingState(isLoading: boolean, skipPageReload: boolean) {
