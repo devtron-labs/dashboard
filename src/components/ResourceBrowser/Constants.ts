@@ -43,19 +43,6 @@ export const FILTER_SELECT_COMMON_STYLES = {
     }),
 }
 
-export const FILTER_MULTI_SELECT_STYLES = {
-    ...tempMultiSelectStyles,
-    ...FILTER_SELECT_COMMON_STYLES,
-    menu: (base) => ({
-        ...base,
-        width: '200px',
-        right: '0px',
-        zIndex: 9999,
-        textAlign: 'left',
-        display: 'inline'
-    }),
-}
-
 export const KIND_SEARCH_COMMON_STYLES = {
     ...FILTER_SELECT_COMMON_STYLES,
     control: (base, state) => ({

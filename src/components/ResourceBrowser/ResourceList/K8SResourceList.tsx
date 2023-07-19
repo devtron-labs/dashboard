@@ -41,8 +41,6 @@ export function K8SResourceList({
     setSearchApplied,
     handleFilterChanges,
     clearSearch,
-    extraPodColumns,
-    setExtraPodColumns,
     isCreateModalOpen,
     addTab,
 }: K8SResourceListType) {
@@ -61,24 +59,6 @@ export function K8SResourceList({
     const resourceListRef = useRef<HTMLDivElement>(null)
     const showPaginatedView = resourceList?.data?.length >= 100
 
-    const isExtraPodColumn = (column : string) : boolean =>{
-        for(let i=0;i<podColumns?.length;i++){
-            if(podColumns[i] === column)return true
-        }
-        return false
-    }
-
-    const canShowColumn = (column : string) : boolean =>{
-        const flag = isExtraPodColumn(column)
-        if (!flag){
-            return true
-        }
-        for(let i=0;i<extraPodColumns?.length;i++){
-            if(extraPodColumns[i] === column) return true
-        }
-        return false
-    }
-
     useEffect(() => {
         if (resourceList?.headers.length) {
             /**
@@ -95,7 +75,7 @@ export function K8SResourceList({
 
     useEffect(() => {
         resetPaginator()
-    }, [nodeType, extraPodColumns])
+    }, [nodeType])
 
     const resetPaginator = () => {
         setResourceListOffset(0)
@@ -143,7 +123,7 @@ export function K8SResourceList({
 
     const handleNodeClick = (e) => {
         const {name} = e.currentTarget.dataset
-        const beginpart = window.location.href.split('/')[0]
+        const beginpart = window.location.href.split('/resource-browser')[0]
         const _url = `${beginpart}/clusters/${clusterId}/${name}`
         window.open(_url, 'blank')
     }
@@ -205,8 +185,8 @@ export function K8SResourceList({
                             </div>
                         </div>
                     ) : (
-                        (selectedResource?.gvk?.Kind == 'Pod' ? canShowColumn(columnName) : true) &&
-                        (columnName === 'node' ? (
+                        (selectedResource?.gvk?.Kind === 'Pod' &&  columnName === 'node' ?
+                         (
                             <div className="dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150">
                                 <a
                                     className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
@@ -289,7 +269,7 @@ export function K8SResourceList({
             >
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
-                        (selectedResource?.gvk?.Kind == 'Pod' ? canShowColumn(columnName) : true) &&
+                        (selectedResource?.gvk?.Kind == 'Pod'  &&
                         <div
                             key={columnName}
                             className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
@@ -304,7 +284,7 @@ export function K8SResourceList({
                         >
                             {columnName}
                         </div>
-                    ))}
+                    )))}
                 </div>
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
@@ -366,7 +346,6 @@ export function K8SResourceList({
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
-                setExtraPodColumns={setExtraPodColumns}
                 isSearchInputDisabled={resourceListLoader}
                 isCreateModalOpen={isCreateModalOpen}
             />

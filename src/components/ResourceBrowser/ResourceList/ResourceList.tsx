@@ -114,7 +114,6 @@ export default function ResourceList() {
         new: new AbortController(),
     })
     const searchWorkerRef = useRef(null)
-    const [extraPodColumns, setExtraPodColumns] = useState<string[]>(podColumns)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -634,8 +633,6 @@ export default function ResourceList() {
                     handleFilterChanges={handleFilterChanges}
                     clearSearch={clearSearch}
                     isCreateModalOpen={showCreateResourceModal}
-                    extraPodColumns={extraPodColumns}
-                    setExtraPodColumns={setExtraPodColumns}
                     addTab={addTab}
                 />
             </div>

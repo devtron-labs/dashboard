@@ -9,7 +9,6 @@ import { ReactComponent as PodColumnIcon } from '../../../assets/icons/ic-nav-ge
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import {
     ALL_NAMESPACE_OPTION,
-    FILTER_MULTI_SELECT_STYLES,
     FILTER_SELECT_COMMON_STYLES,
     NAMESPACE_NOT_APPLICABLE_OPTION
 } from '../Constants'
@@ -39,7 +38,6 @@ function ResourceFilterOptions({
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
-    setExtraPodColumns,
     isCreateModalOpen,
 }: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
@@ -49,7 +47,6 @@ function ResourceFilterOptions({
     }>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
     const searchInputRef = useRef<HTMLInputElement>(null)
-    const [openMenu, setOpenMenu] = useState<boolean>(false)
     useEffect(() => {
         if (!isCreateModalOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
@@ -192,16 +189,9 @@ function ResourceFilterOptions({
                             classNamePrefix="resource-filter-select"
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
-                            styles={FILTER_MULTI_SELECT_STYLES}
-                            menuIsOpen={openMenu}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator: null,
-                                Control: () => (
-                                    <div onClick={() => setOpenMenu(!openMenu)} className="flex">
-                                        <PodColumnIcon className="icon-dim-24 scn-6" />
-                                    </div>
-                                ),
                             }}
                         />
                     )}

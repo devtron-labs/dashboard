@@ -128,8 +128,6 @@ export interface ResourceFilterOptionsProps {
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
     isCreateModalOpen?: boolean
-    setExtraPodColumns?: React.Dispatch<React.SetStateAction<string[]>>
-    extraPodColumns?: string[]
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
