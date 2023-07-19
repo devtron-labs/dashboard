@@ -117,6 +117,7 @@ function TerminalComponent({
                                   <Cross
                                       className={`icon-dim-16 ${data.isExternal ? 'cursor-not-allowed dc__opacity-0_5' : 'cursor'} ${props.isFocused && !data.isExternal ? 'scr-5' : ''}`}
                                       onClick={(selected) => {
+                                          stopPropagation(selected)
                                           if(!data.isExternal) {
                                               deleteEphemeralContainer(props.label)
                                           }
