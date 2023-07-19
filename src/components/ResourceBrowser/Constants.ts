@@ -1,5 +1,6 @@
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import {tempMultiSelectStyles} from "../ciConfig/CIConfig.utils";
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -39,6 +40,19 @@ export const FILTER_SELECT_COMMON_STYLES = {
     input: (base) => ({
         ...base,
         paddingLeft: '24px',
+    }),
+}
+
+export const FILTER_MULTI_SELECT_STYLES = {
+    ...tempMultiSelectStyles,
+    ...FILTER_SELECT_COMMON_STYLES,
+    menu: (base) => ({
+        ...base,
+        width: '200px',
+        right: '0px',
+        zIndex: 9999,
+        textAlign: 'left',
+        display: 'inline'
     }),
 }
 

@@ -4,6 +4,7 @@ import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
+import {tempMultiSelectStyles} from "../../ciConfig/CIConfig.utils";
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -92,6 +93,20 @@ export const styles = {
             backgroundColor: state.isFocused ? 'var(--N50)' : 'white',
         }
     },
+}
+export function PodColumnOption(props) {
+    return (
+        <div>
+            <components.Option {...props}>
+                <input
+                    type="checkbox"
+                    checked={props.isSelected}
+                    onChange={() => null}
+                />{" "}
+                <label>{props.label}</label>
+            </components.Option>
+        </div>
+    );
 }
 
 export function Option(props) {

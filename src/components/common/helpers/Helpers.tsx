@@ -950,7 +950,7 @@ export const convertToOptionsList = (
     customValue?: string,
     customFieldKey?: string,
 ): OptionType[] => {
-    return arr.map((ele) => {
+    return arr?.map((ele) => {
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,

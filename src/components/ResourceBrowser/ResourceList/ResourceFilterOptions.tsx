@@ -1,16 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
-import ReactSelect from 'react-select'
-import { Option } from '../../../components/v2/common/ReactSelect.utils'
+import ReactSelect, { MultiValue } from 'react-select'
+import {Option, PodColumnOption} from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as PodColumnIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
-import { ConditionalWrap } from '../../common'
+import {
+    ALL_NAMESPACE_OPTION,
+    FILTER_MULTI_SELECT_STYLES,
+    FILTER_SELECT_COMMON_STYLES,
+    NAMESPACE_NOT_APPLICABLE_OPTION
+} from '../Constants'
+import { ConditionalWrap, convertToOptionsList } from '../../common'
 import { OptionType } from '../../app/types'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { components } from "react-select";
+import {podColumns} from "../Utils";
+import {tempMultiSelectStyles} from "../../ciConfig/CIConfig.utils";
 
 function ResourceFilterOptions({
     selectedResource,
@@ -31,6 +40,7 @@ function ResourceFilterOptions({
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
+    setExtraPodColumns,
     isCreateModalOpen,
 }: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
@@ -40,7 +50,9 @@ function ResourceFilterOptions({
     }>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
     const searchInputRef = useRef<HTMLInputElement>(null)
-
+    const podColumnOptions = convertToOptionsList(podColumns)
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>(podColumnOptions)
+    const [openMenu, setOpenMenu] = useState<boolean>(false)
     useEffect(() => {
         if (!isCreateModalOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
@@ -98,6 +110,30 @@ function ResourceFilterOptions({
     const clearSearchInput = () => {
         clearSearch()
         searchInputRef.current?.focus()
+    }
+
+    const handlePodColumnsChange = (option: MultiValue<OptionType>): void => {
+        setSelectedColumns(option)
+    }
+
+    const handleFocus = () => {
+        setOpenMenu(!openMenu)
+    }
+    const handleApply = (e) => {
+        setOpenMenu(false)
+        let columns = selectedColumns?.map((ele)=> {
+            return ele.value
+        })
+        setExtraPodColumns(columns)
+    }
+
+    const  podColumnOptionsMenuList = (props): JSX.Element => {
+        return <components.MenuList {...props}>
+            {props.children}
+            <button type="button" className="filter__apply" onClick={ handleApply } style={{position: "sticky", top: "40px"}}>
+                Apply
+            </button>
+        </components.MenuList>
     }
 
     return (
@@ -175,6 +211,32 @@ function ResourceFilterOptions({
                             ValueContainer: ResourceValueContainerWithIcon,
                         }}
                     />
+                    {selectedResource?.gvk?.Kind == 'Pod' && resourceList?.headers?.length > 0 && (
+                        <ReactSelect
+                            placeholder="Select Columns"
+                            className="ml-8"
+                            isMulti
+                            classNamePrefix="resource-filter-select"
+                            options={podColumnOptions}
+                            onChange={handlePodColumnsChange}
+                            closeMenuOnSelect={false}
+                            hideSelectedOptions={false}
+                            styles={FILTER_MULTI_SELECT_STYLES}
+                            menuIsOpen={openMenu}
+                            value={selectedColumns}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator: null,
+                                Option: (props) => <PodColumnOption {...props} className="cn-7"/>,
+                                MenuList: podColumnOptionsMenuList,
+                                Control: () => (
+                                    <div onClick={() => setOpenMenu(!openMenu)} className="flex">
+                                        <PodColumnIcon className="icon-dim-24 scn-6" />
+                                    </div>
+                                ),
+                            }}
+                        />
+                    )}
                 </ConditionalWrap>
             </div>
         </div>
