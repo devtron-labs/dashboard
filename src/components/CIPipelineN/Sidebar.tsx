@@ -182,6 +182,8 @@ export function Sidebar({
             addConfigSecrets(updatedList)
         }
 
+        const searchGroupHeading = (props) => <GroupHeading {...props} hideClusterName />
+
         return (
             <>
                 <div className="sidebar-action-container-border pb-12">
@@ -209,7 +211,7 @@ export function Sidebar({
                                     IndicatorSeparator: null,
                                     Option,
                                     IndicatorsContainer: () => null,
-                                    GroupHeading: (props) => <GroupHeading {...props} hideClusterName />,
+                                    GroupHeading: searchGroupHeading,
                                 }}
                                 styles={tempMultiSelectStyles}
                                 onChange={addConfigSecrets}

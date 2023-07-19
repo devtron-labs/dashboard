@@ -639,9 +639,7 @@ export default function NewCDPipeline({
         }
 
         if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
-            if (_formDataErrorObj.repositoryError.isValid && _formDataErrorObj.containerRegistryError.isValid) {
-                isReposAndContainerRegistoryValid = true
-            } else {
+            if (!(_formDataErrorObj.repositoryError.isValid && _formDataErrorObj.containerRegistryError.isValid)) {
                 isReposAndContainerRegistoryValid = false
             }
         }
@@ -1032,12 +1030,15 @@ export default function NewCDPipeline({
     }
 
     const renderCDPipelineModal = () => {
-        const title =
-            isWebhookCD && workflowId === '0'
-                ? DEPLOY_IMAGE_EXTERNALSOURCE
-                : cdPipelineId
-                ? EDIT_DEPLOYMENT_PIPELINE
-                : CREATE_DEPLOYMENT_PIPELINE
+        let title;
+        if (isWebhookCD && workflowId === '0') {
+            title = DEPLOY_IMAGE_EXTERNALSOURCE;
+        } else if (cdPipelineId) {
+            title = EDIT_DEPLOYMENT_PIPELINE;
+        } else {
+            title = CREATE_DEPLOYMENT_PIPELINE;
+        }
+        
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
