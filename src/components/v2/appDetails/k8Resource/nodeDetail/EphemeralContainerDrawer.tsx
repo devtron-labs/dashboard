@@ -1,6 +1,5 @@
 import {
     Drawer,
-    multiSelectStyles,
     OptionType,
     showError,
     TippyCustomized,
