@@ -82,39 +82,43 @@ function EphemeralContainerDrawer({
     }, [])
 
     const handleEphemeralContainerTypeClick = (containerType) => {
-        let jsonManifest = JSON.parse(JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)))
-        if (jsonManifest) {
-            if (containerType === EDITOR_VIEW.ADVANCED) {
-                jsonManifest['name'] = ephemeralForm.basicData?.containerName || ''
-                jsonManifest['image'] = ephemeralForm.basicData?.image || ''
-                jsonManifest['targetContainerName'] =
-                    ephemeralForm.basicData.targetContainerName || (containers.length && containers[0].name) || ''
-                setEphemeralFormAdvanced({
-                    ...ephemeralFormAdvanced,
-                    advancedData: {
-                        manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
-                    },
-                })
-            } else {
-                setEphemeralForm({
-                    ...ephemeralForm,
-                    basicData: {
-                        ...ephemeralForm.basicData,
-                        containerName: jsonManifest['name'] || '',
-                        image: jsonManifest['image'] || '',
-                        targetContainerName: jsonManifest['targetContainerName'] || '',
-                    },
-                })
+        try {
+            let jsonManifest = JSON.parse(
+                JSON.stringify(yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest)),
+            )
+            if (jsonManifest) {
+                if (containerType === EDITOR_VIEW.ADVANCED) {
+                    jsonManifest['name'] = ephemeralForm.basicData?.containerName || ''
+                    jsonManifest['image'] = ephemeralForm.basicData?.image || ''
+                    jsonManifest['targetContainerName'] =
+                        ephemeralForm.basicData.targetContainerName || (containers.length && containers[0].name) || ''
+                    setEphemeralFormAdvanced({
+                        ...ephemeralFormAdvanced,
+                        advancedData: {
+                            manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
+                        },
+                    })
+                } else {
+                    setEphemeralForm({
+                        ...ephemeralForm,
+                        basicData: {
+                            ...ephemeralForm.basicData,
+                            containerName: jsonManifest['name'] || '',
+                            image: jsonManifest['image'] || '',
+                            targetContainerName: jsonManifest['targetContainerName'] || '',
+                        },
+                    })
+                }
             }
-        }
-        setEphemeralContainerType(containerType)
-        const parsedImage = yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image
-        const parsedImageOption = { label: parsedImage, value: parsedImage }
-        const selectedimageValue = imageListOption.find((imageList) => parsedImage === imageList.value)
-        if (!selectedimageValue) {
-            imageListOption.push(parsedImageOption)
-        }
-        setSelectedImageList(selectedimageValue ? selectedimageValue : parsedImageOption)
+            setEphemeralContainerType(containerType)
+            const parsedImage = yamlJsParser.parse(ephemeralFormAdvanced.advancedData.manifest).image
+            const parsedImageOption = { label: parsedImage, value: parsedImage }
+            const selectedimageValue = imageListOption.find((imageList) => parsedImage === imageList.value)
+            if (!selectedimageValue) {
+                imageListOption.push(parsedImageOption)
+            }
+            setSelectedImageList(selectedimageValue ? selectedimageValue : parsedImageOption)
+        } catch (err) {}
     }
 
     const getImageList = () => {
@@ -202,13 +206,15 @@ function EphemeralContainerDrawer({
         } else {
             setSelectedTargetContainer(selected)
         }
-        setEphemeralForm({
-            ...ephemeralForm,
-            basicData: {
-                ...ephemeralForm.basicData,
-                [key]: selected?.value ?? defaultVal,
-            },
-        })
+        try {
+            setEphemeralForm({
+                ...ephemeralForm,
+                basicData: {
+                    ...ephemeralForm.basicData,
+                    [key]: selected?.value ?? defaultVal,
+                },
+            })
+        } catch (err) {}
     }
 
     const getOptions = () => {
