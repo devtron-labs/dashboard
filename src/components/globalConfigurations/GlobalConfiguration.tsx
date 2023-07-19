@@ -424,7 +424,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <div className="flexbox dc__align-reload-center">
+                        <div className="flexbox">
                             <ClusterList
                                 {...props}
                                 serverMode={serverMode}
@@ -440,7 +440,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_HOST_URL}
                     render={(props) => {
                         return (
-                            <div className="flexbox dc__align-reload-center">
+                            <div className="flexbox">
                                 <HostURLConfiguration
                                     {...props}
                                     isSuperAdmin={isSuperAdmin}
@@ -456,7 +456,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_GITOPS}
                     render={(props) => {
                         return (
-                            <div className="flexbox dc__align-reload-center">
+                            <div className="flexbox">
                                 <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                             </div>
                         )
@@ -467,7 +467,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_PROJECT}
                     render={(props) => {
                         return (
-                            <div className="flexbox dc__align-reload-center">
+                            <div className="flexbox">
                                 <Project {...props} isSuperAdmin={isSuperAdmin} />
                             </div>
                         )
@@ -478,7 +478,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_GIT}
                     render={(props) => {
                         return (
-                            <div className="flexbox dc__align-reload-center">
+                            <div className="flexbox">
                                 <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                             </div>
                         )
@@ -489,7 +489,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                     render={(props) => {
                         return (
-                            <div className="flexbox dc__align-reload-center">
+                            <div className="flexbox">
                                 <Docker
                                     {...props}
                                     handleChecklistUpdate={handleChecklistUpdate}
