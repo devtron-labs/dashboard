@@ -48,7 +48,7 @@ export function getDeploymentStatusDetail(
     } else {
             appendUrl = Routes.DEPLOYMENT_STATUS
         }
-      return get(`${appendUrl}/${appId}/${envId}${`?showTimeline=${showTimeline}`}${triggerId ? `?wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `?installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
+      return get(`${appendUrl}/${appId}/${envId}${`?showTimeline=${showTimeline}`}${triggerId ? `&wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `&installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

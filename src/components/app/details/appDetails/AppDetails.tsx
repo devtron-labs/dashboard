@@ -163,7 +163,7 @@ export default function AppDetail() {
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
-                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} isHelmApp={false}/>
+                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment}/>
                 </div>
             )}
             {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
@@ -546,7 +546,6 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     setRotateModal={isAppDeployment ? setRotateModal : null}
-                    isHelmApp={false}
                 />
             </div>
             {!loadingResourceTree && (

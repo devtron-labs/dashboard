@@ -35,7 +35,6 @@ export function SourceInfo({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
-    isHelmApp,
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -318,7 +317,7 @@ export function SourceInfo({
                                 isVirtualEnvironment={isVirtualEnvironment}
                                 appId={params.appId}
                                 envId={params.envId}
-                                isHelmApp={isHelmApp}
+                                isHelmApp={false}
                             />
                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
