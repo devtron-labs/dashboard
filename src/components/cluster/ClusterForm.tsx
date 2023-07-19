@@ -847,16 +847,16 @@ export default function ClusterForm({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div
-                    className="flex flex-align-center w-100 flex-justify bcn-0 p-20"
-                    style={{ height: 'calc(100vh - 110px)' }}
-                >
-                    <GenericEmptyState
-                        SvgImage={MechanicalOperation}
-                        title={EMPTY_STATE_STATUS.LOADING_CLUSTER.TITLE}
-                        subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
-                    />
-                </div>
+                    <div
+                        className="dc__position-rel"
+                        style={{ height: 'calc(100vh - 110px)' }}
+                    >
+                        <GenericEmptyState
+                            image={MechanicalOperation}
+                            title={EMPTY_STATE_STATUS.LOADING_CLUSTER.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.LOADING_CLUSTER.SUBTITLE}
+                        />
+                    </div>
                 <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
                     <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled={true}>
                         Cancel
