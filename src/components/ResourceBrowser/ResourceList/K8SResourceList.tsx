@@ -19,6 +19,7 @@ import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import {podColumns} from "../Utils";
+import cluster from 'cluster'
 
 export function K8SResourceList({
     selectedResource,
@@ -139,6 +140,13 @@ export function K8SResourceList({
         }
     }
 
+    const handleNodeClick = (e) => {
+        const {name} = e.currentTarget.dataset
+        const beginpart = window.location.href.split('/')[0]
+        const _url = `${beginpart}/clusters/${clusterId}/${name}`
+        window.open(_url, 'blank')
+    }
+
     const getStatusClass = (status: string) => {
         let statusPostfix = status?.toLowerCase()
 
@@ -196,22 +204,40 @@ export function K8SResourceList({
                             </div>
                         </div>
                     ) : (
-                        (selectedResource?.gvk?.Kind == 'Pod' ? canShowColumn(columnName): true) && (
+                        (selectedResource?.gvk?.Kind == 'Pod' ? canShowColumn(columnName) : true) &&
+                        (columnName === 'node' ? (
+                            <div className="dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150">
+                                <a
+                                    className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
+                                    data-name={resourceData[columnName]}
+                                    onClick={handleNodeClick}
+                                >
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: highlightSearchedText(
+                                                searchText,
+                                                resourceData[columnName].toString(),
+                                            ),
+                                        }}
+                                    ></span>
+                                </a>
+                            </div>
+                        ) : (
                             <div
-                            key={`${resourceData.name}-${idx}`}
-                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
-                                columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
-                                    : ''
-                            }`}
-                        >
-                            <span
-                                dangerouslySetInnerHTML={{
-                                    __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
-                                }}
-                            ></span>
-                        </div>
-                        )
+                                key={`${resourceData.name}-${idx}`}
+                                className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                                    columnName === 'status'
+                                        ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
+                                        : ''
+                                }`}
+                            >
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
+                                    }}
+                                ></span>
+                            </div>
+                        ))
                     ),
                 )}
             </div>
