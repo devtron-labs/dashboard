@@ -688,6 +688,8 @@ export default function NewCDPipeline({
         const request = responseCode()
 
         const _form = { ...formData }
+        console.log(cdPipelineId);
+        
         let promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
         promise
             .then((response) => {
@@ -707,7 +709,7 @@ export default function NewCDPipeline({
                         pipelineConfigFromRes.cdPipelineId
                             ? 'Deployment pipeline updated'
                             : 'Deployment pipeline created',
-                        !_form.ciPipelineId,
+                        !cdPipelineId,
                     )
                     getWorkflows()
                 }
