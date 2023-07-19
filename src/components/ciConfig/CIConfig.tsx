@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
+import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails, getEnvironmentData } from '../../services/service'
 import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
@@ -33,9 +33,12 @@ export default function CIConfig({
         configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
     )
     const { appId } = useParams<{ appId: string }>()
+    const [isAirgapped,setIsAirGapped] = useState(false)
 
     useEffect(() => {
+        
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
+            getAirGapEnvironmentValue()
             initialise()
         }
     }, [])
@@ -92,7 +95,17 @@ export default function CIConfig({
             setLoading(false)
         }
     }
-
+    async function getAirGapEnvironmentValue() {
+        setLoading(true)
+        try {
+            const {result} = await getEnvironmentData()
+            setIsAirGapped(result.isAirGapEnvironment)
+          
+        } catch (err) {
+            setIsAirGapped(false)
+        } finally {
+        }   
+    }
     function updateLoadingState(isLoading: boolean, skipPageReload: boolean) {
         if (!skipPageReload) {
             setLoading(isLoading)
@@ -147,6 +160,7 @@ export default function CIConfig({
             setParentState={setParentState}
             loadingStateFromParent={loadingStateFromParent}
             setLoadingStateFromParent={setLoadingStateFromParent}
+            isAirGapped={isAirgapped}
         />
     )
 }

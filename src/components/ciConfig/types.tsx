@@ -124,6 +124,7 @@ export interface CIConfigFormProps {
     setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
+    isAirGapped?: boolean
 }
 
 export interface AdvancedConfigOptionsProps {
@@ -257,6 +258,7 @@ export interface CIDockerFileConfigProps {
     currentCIBuildConfig: CIBuildConfigType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
+    isAirGapped?: boolean
 }
 
 export interface CICreateDockerfileOptionProps {

@@ -13,6 +13,7 @@ import {
     dashboardLoggedIn,
     getAppListMin,
     getClusterListMinWithoutAuth,
+    getEnvironmentData,
     getLoginData,
     updateLoginCount,
 } from '../../../services/service'
@@ -74,6 +75,7 @@ export default function NavigationRoutes() {
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({environmentId, setEnvironmentId}), [environmentId] )
+    const [isAirgapped, setIsAirGapped] = useState(false)
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -212,6 +214,15 @@ export default function NavigationRoutes() {
         }
     }
 
+    async function getAirGapEnvironmentValue() {
+        try {
+            const {result} = await getEnvironmentData()
+            setIsAirGapped(result.isAirGapEnvironment)
+        } catch (err) {
+            setIsAirGapped(false)
+        }
+    }
+
     useEffect(() => {
         if (window._env_.K8S_CLIENT) {
             setPageState(ViewType.FORM)
@@ -221,6 +232,7 @@ export default function NavigationRoutes() {
             getServerMode()
             getCurrentServerInfo()
         }
+        getAirGapEnvironmentValue()
     }, [])
 
     useEffect(() => {
@@ -314,6 +326,7 @@ export default function NavigationRoutes() {
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
                             isSuperAdmin={isSuperAdmin}
+                            isAirgapped={isAirgapped}
                         />
                     )}
                     {serverMode && (

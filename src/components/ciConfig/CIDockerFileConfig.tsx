@@ -59,6 +59,7 @@ export default function CIDockerFileConfig({
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
     setLoadingState,
+    isAirGapped
 }: CIDockerFileConfigProps) {
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
     const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
@@ -342,17 +343,20 @@ export default function CIDockerFileConfig({
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
+                    const isDisabled = isAirGapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
+                    const content = !isDisabled ? option.info : 'This feature is disabled'
+                    const condition = (configOverrideView && allowOverride) || isDisabled
 
                     return (
                         <Fragment key={option.id}>
                             <ConditionalWrap
-                                condition={configOverrideView && allowOverride}
+                                condition={condition}
                                 wrap={(children) => (
                                     <Tippy
                                         className="default-tt w-250"
                                         arrow={false}
                                         placement="top"
-                                        content={option.info}
+                                        content={content}
                                     >
                                         <div className="flex top left flex-1">{children}</div>
                                     </Tippy>
@@ -365,9 +369,10 @@ export default function CIDockerFileConfig({
                                         configOverrideView ? 'h-40' : 'h-80'
                                     } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
                                         isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
-                                    }`}
+                                    } 
+                                    ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
                                     onClick={() => {
-                                        handleCIBuildTypeOptionSelection(option.id)
+                                        if (!isDisabled) handleCIBuildTypeOptionSelection(option.id)
                                     }}
                                 >
                                     {showTick && (

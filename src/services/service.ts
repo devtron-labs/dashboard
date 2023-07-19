@@ -439,6 +439,11 @@ export function getAppCheckList(): Promise<any> {
     return get(URL)
 }
 
+export function getEnvironmentData(): Promise<any> {
+    const URL = `${Routes.ENVIRONMENT_DATA}`
+    return get(URL)
+}
+
 export const getGitProviderList = () => {
     const URL = `${Routes.GIT_PROVIDER}`
     return get(URL)
