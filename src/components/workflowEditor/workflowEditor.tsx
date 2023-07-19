@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { WorkflowEditProps, WorkflowEditState } from './types'
+import React, { Component, createContext } from 'react'
+import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
 import {
@@ -16,7 +16,6 @@ import { deleteWorkflow } from './service'
 import AddWorkflow from './CreateWorkflow'
 import add from '../../assets/icons/misc/addWhite.svg'
 import CIPipeline from '../CIPipelineN/CIPipeline'
-import CDPipeline from '../cdPipeline/CDPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
@@ -32,6 +31,9 @@ import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
+import NewCDPipeline from '../cdPipeline/NewCDPipeline'
+
+export const pipelineContext = createContext<PipelineContext>(null)
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
@@ -205,7 +207,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.history.push(
             `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 workflowId || 0
-            }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}`,
+            }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}/0/build`,
         )
     }
 
@@ -219,7 +221,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
         if (this.state.noGitOpsConfiguration) {
             this.setState({
                 showNoGitOpsWarningPopup: true,
@@ -331,15 +333,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <Route
                         path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
                             (pipeline) =>
-                                `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
+                                `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId`,
                         )}
-                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                        render={({ location, match }: { location: any; match: any }) => {
                             const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
                             const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
                             return (
-                                <CDPipeline
+                                <NewCDPipeline
                                     match={match}
-                                    history={history}
                                     location={location}
                                     appName={this.state.appName}
                                     close={this.closePipeline}
