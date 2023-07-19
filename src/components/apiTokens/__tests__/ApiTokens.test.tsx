@@ -27,7 +27,7 @@ describe('APITokenList', () => {
         const reload = jest.fn();
         const { container , getByText } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
             wrapper:BrowserRouter});
-        const generateTokenButton = container.querySelector('.app-status-card__divider') as HTMLElement;
+        const generateTokenButton = container.querySelector('.flex.cta.h-32.ml-10') as HTMLElement;
         expect(generateTokenButton).toBeInTheDocument();
         fireEvent.click(generateTokenButton);
 
