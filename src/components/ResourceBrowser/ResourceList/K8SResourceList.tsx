@@ -264,7 +264,6 @@ export function K8SResourceList({
             >
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
-                        (selectedResource?.gvk?.Kind == 'Pod'  &&
                         <div
                             key={columnName}
                             className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
@@ -279,7 +278,7 @@ export function K8SResourceList({
                         >
                             {columnName}
                         </div>
-                    )))}
+                    ))}
                 </div>
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
