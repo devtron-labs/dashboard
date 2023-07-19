@@ -98,7 +98,8 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 <div className="chartRepo_form__subtitle dc__float-left dc__bold">
                     Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
                 </div>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
+                {/* TODO remove commented code later */}
+                {/* <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                     <div className="chartRepo_form__subtitle dc__float-right">
                         <a
                             rel="noreferrer noopener"
@@ -112,7 +113,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                             <span>Refetch Charts</span>
                         </a>
                     </div>
-                </Tippy>
+                </Tippy> */}
                 {[]
                     .concat(result && Array.isArray(result.result) ? result.result : [])
                     .sort((a, b) => a.name.localeCompare(b.name))
@@ -193,7 +194,8 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                         title={id && !collapsed ? 'Edit repository' : name || 'Add repository'}
                         subtitle={collapsed ? url : null}
                     />
-                    {id && (
+                     {/* Todo: remove after integration with chart store */}
+                    {/* {id && (
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -208,7 +210,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                                 )}
                             </span>
                         </Tippy>
-                    )}
+                    )} */}
                 </div>
                 {id && (
                     <List.DropDown

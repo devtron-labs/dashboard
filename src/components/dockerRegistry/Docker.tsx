@@ -872,8 +872,6 @@ function DockerForm({
           </div>
       )
     }
-    console.log(state.registryType.value)
-
 
     const renderOCIPublic = () => {
       if (registryStorageType === RegistryStorageType.OCI_PUBLIC && selectedDockerRegistryType.value !== 'gcr') {
