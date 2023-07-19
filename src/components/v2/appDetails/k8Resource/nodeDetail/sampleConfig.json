@@ -1,7 +1,6 @@
 {
     "sampleManifest": {
         "name": "debugger",
-        "command": ["sh"],
         "image": "quay.io/devtron/ubuntu-k8s-utils:latest",
         "targetContainerName": "demo-app",
         "stdin": true,
