@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect, { MultiValue } from 'react-select'
-import {Option, PodColumnOption} from '../../v2/common/ReactSelect.utils'
+import {Option} from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -19,7 +19,6 @@ import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { components } from "react-select";
 import {podColumns} from "../Utils";
-import {tempMultiSelectStyles} from "../../ciConfig/CIConfig.utils";
 
 function ResourceFilterOptions({
     selectedResource,
@@ -227,7 +226,6 @@ function ResourceFilterOptions({
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator: null,
-                                Option: (props) => <PodColumnOption {...props} className="cn-7"/>,
                                 MenuList: podColumnOptionsMenuList,
                                 Control: () => (
                                     <div onClick={() => setOpenMenu(!openMenu)} className="flex">

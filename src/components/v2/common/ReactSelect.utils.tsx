@@ -94,20 +94,6 @@ export const styles = {
         }
     },
 }
-export function PodColumnOption(props) {
-    return (
-        <div>
-            <components.Option {...props}>
-                <input
-                    type="checkbox"
-                    checked={props.isSelected}
-                    onChange={() => null}
-                />{" "}
-                <label>{props.label}</label>
-            </components.Option>
-        </div>
-    );
-}
 
 export function Option(props) {
     const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props

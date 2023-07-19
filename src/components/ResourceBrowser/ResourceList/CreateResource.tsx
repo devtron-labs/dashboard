@@ -5,7 +5,7 @@ import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.sv
 import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import mechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as mechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
 import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
@@ -116,7 +116,7 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
         if (loader) {
             return (
                 <GenericEmptyState
-                    image={mechanicalOperation}
+                    SvgImage={mechanicalOperation}
                     title={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.title}
                     subTitle={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.subTitle}
                 />
