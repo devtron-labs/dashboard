@@ -421,10 +421,18 @@ export default function NewCDPipeline({
         form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
         if (pipelineConfigFromRes?.preDeployStage) {
-            form.preBuildStage = pipelineConfigFromRes.preDeployStage
+            if(pipelineConfigFromRes.preDeployStage.steps?.length > 0){
+                form.preBuildStage = pipelineConfigFromRes.preDeployStage
+            }else {
+                form.preBuildStage = {...pipelineConfigFromRes.preDeployStage, steps: []}
+            }
         }
         if (pipelineConfigFromRes?.postDeployStage) {
-            form.postBuildStage = pipelineConfigFromRes?.postDeployStage
+            if(pipelineConfigFromRes.postDeployStage.steps?.length > 0){
+                form.postBuildStage = pipelineConfigFromRes?.postDeployStage
+            }else {
+                form.postDeployStage = {...pipelineConfigFromRes.postDeployStage, steps: []}
+            }
         }
         form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
         form.preStageConfigMapSecretNames = {
@@ -528,6 +536,8 @@ export default function NewCDPipeline({
             manifestStorageType: formData.generatedHelmPushAction === GeneratedHelmPush.PUSH ? 'helm_repo' : '',
             runPreStageInEnv: formData.runPreStageInEnv,
             runPostStageInEnv: formData.runPostStageInEnv,
+            preDeployStage: {},
+            postDeployStage: {}
         }
 
         if (isVirtualEnvironment) {
@@ -562,7 +572,7 @@ export default function NewCDPipeline({
                             : formData.preBuildStage.triggerType,
                 }
             }
-            pipeline['preDeployStage'] = preBuildStage
+            pipeline.preDeployStage = preBuildStage
         }
         if (formData.postBuildStage.steps.length > 0) {
             let postBuildStage = formData.postBuildStage
@@ -575,7 +585,7 @@ export default function NewCDPipeline({
                             : formData.postBuildStage.triggerType,
                 }
             }
-            pipeline['postDeployStage'] = postBuildStage
+            pipeline.postDeployStage = postBuildStage
         }
 
         return request
