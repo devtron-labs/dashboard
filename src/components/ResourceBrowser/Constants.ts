@@ -1,6 +1,5 @@
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import {tempMultiSelectStyles} from "../ciConfig/CIConfig.utils";
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,

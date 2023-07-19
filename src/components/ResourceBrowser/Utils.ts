@@ -6,7 +6,6 @@ import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
 import { K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType } from './Types'
 
-export const podColumns = ['ip','node','nominated node','readiness gates']
 const updatePersistedTabsData = (key: string, value: any) => {
     try {
         const persistedTabsData = localStorage.getItem('persisted-tabs-data')

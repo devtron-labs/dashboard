@@ -62,7 +62,6 @@ import {
     getParentAndChildNodes,
     getUpdatedNodeSelectionData,
     getUpdatedResourceSelectionData,
-    podColumns,
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'

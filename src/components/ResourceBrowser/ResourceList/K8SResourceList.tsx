@@ -18,8 +18,6 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import {podColumns} from "../Utils";
-import cluster from 'cluster'
 
 export function K8SResourceList({
     selectedResource,

@@ -5,19 +5,16 @@ import {Option} from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as PodColumnIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import {
     ALL_NAMESPACE_OPTION,
     FILTER_SELECT_COMMON_STYLES,
     NAMESPACE_NOT_APPLICABLE_OPTION
 } from '../Constants'
-import { ConditionalWrap, convertToOptionsList } from '../../common'
+import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { components } from "react-select";
-import {podColumns} from "../Utils";
 
 function ResourceFilterOptions({
     selectedResource,
