@@ -38,7 +38,9 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
     }
 
     useEffect(() => {
-        setDownloadPopupOpen(downloader)
+        if(typeof setDownloadPopupOpen === 'function'){
+            setDownloadPopupOpen(downloader)
+        }
     }, [downloader])
 
     return (

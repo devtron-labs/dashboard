@@ -510,7 +510,7 @@ export default function CIPipeline({
         }
 
         let _ciPipeline = ciPipeline
-        if (selectedEnv.id !== 0) {
+        if(selectedEnv && selectedEnv.id !== 0) {
             _ciPipeline.environmentId = selectedEnv.id
         } else {
             _ciPipeline.environmentId = undefined
