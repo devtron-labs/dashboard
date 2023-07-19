@@ -475,6 +475,7 @@ export interface SourceInfoType {
   loadingResourceTree?: boolean
   isVirtualEnvironment?: boolean
   setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+  isHelmApp: boolean
 }
 
 export interface EnvironmentListMinType {

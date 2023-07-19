@@ -37,17 +37,18 @@ export function deleteArgoCDAppWithNonCascade(appType:string, appId:number, envI
 export function getDeploymentStatusDetail(
     appId: string,
     envId: string,
+    showTimeline: boolean,
     triggerId?: string,
     isHelmApps?: boolean,
-    installedAppVersionHistoryId?: number
+    installedAppVersionHistoryId?: number, 
 ): Promise<DeploymentStatusDetailsResponse> {
     let appendUrl
     if (isHelmApps) {
         appendUrl = Routes.HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP
     } else {
-      appendUrl = Routes.DEPLOYMENT_STATUS
-    }
-      return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `?installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
+            appendUrl = Routes.DEPLOYMENT_STATUS
+        }
+      return get(`${appendUrl}/${appId}/${envId}${`?showTimeline=${showTimeline}`}${triggerId ? `?wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `?installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

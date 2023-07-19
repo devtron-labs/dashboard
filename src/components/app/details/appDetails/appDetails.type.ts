@@ -207,4 +207,7 @@ export interface DeploymentStatusCardType {
   deploymentTriggerTime?: string
   triggeredBy?: string
   isVirtualEnvironment?: boolean
+  appId?: string
+  envId?: string
+  isHelmApp?: boolean
 }

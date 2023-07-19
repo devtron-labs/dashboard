@@ -163,7 +163,7 @@ export default function AppDetail() {
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
-                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
+                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} isHelmApp={false}/>
                 </div>
             )}
             {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
@@ -257,7 +257,7 @@ export const Details: React.FC<DetailsType> = ({
 
     const getDeploymentDetailStepsData = (): void => {
         // Deployments status details for Devtron apps
-        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId, false).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
@@ -348,7 +348,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
-        getDeploymentStatusDetail(params.appId, params.envId)
+        getDeploymentStatusDetail(params.appId, params.envId, false)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     if (deploymentAppType === DeploymentAppTypes.HELM) {
@@ -546,6 +546,7 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     setRotateModal={isAppDeployment ? setRotateModal : null}
+                    isHelmApp={false}
                 />
             </div>
             {!loadingResourceTree && (
