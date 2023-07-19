@@ -688,7 +688,6 @@ export default function NewCDPipeline({
         const request = responseCode()
 
         const _form = { ...formData }
-        console.log(cdPipelineId);
         
         let promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
         promise
