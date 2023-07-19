@@ -20,7 +20,7 @@ import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import  novulnerability from '../../../../assets/img/ic-vulnerability-not-found.svg';
+import { ReactComponent as Novulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg';
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -65,7 +65,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        
+
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -420,7 +420,7 @@ export function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
     return (
         <div className="flex h-100 dc__position-rel">
             <GenericEmptyState
-                SvgImage={novulnerability}
+                SvgImage={Novulnerability}
                 title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.TITLE}
                 subTitle={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND.SUBTITLE}
                 children={
