@@ -418,6 +418,7 @@ export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionT
 export const RegistryStorageType = {
     CONTAINER: 'CONTAINER',
     OCI_PRIVATE: 'OCI_PRIVATE',
+    OCI_PUBLIC: 'OCI_PUBLIC'
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -455,6 +456,7 @@ export interface RegistryPayloadType {
 export const RegistryTypeName = {
     'CONTAINER': 'Container registry',
     'OCI_PRIVATE': 'OCI Registry (Private)',
+    'OCI_PUBLIC': 'OCI Registry (Public)'
 }
 
 export const AppCreationType = {
