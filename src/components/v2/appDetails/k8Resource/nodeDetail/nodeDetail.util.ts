@@ -26,7 +26,7 @@ export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boo
 }
 
 export const flatContainers = (pod: PodMetaData): string[] => {
-    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers.map((_con) => { return _con.name }) || [])]
+    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers?.map((_con) => { return _con.name }) || [])]
 }
 
 export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
