@@ -49,8 +49,6 @@ function ResourceFilterOptions({
     }>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
     const searchInputRef = useRef<HTMLInputElement>(null)
-    const podColumnOptions = convertToOptionsList(podColumns)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>(podColumnOptions)
     const [openMenu, setOpenMenu] = useState<boolean>(false)
     useEffect(() => {
         if (!isCreateModalOpen) {
@@ -109,30 +107,6 @@ function ResourceFilterOptions({
     const clearSearchInput = () => {
         clearSearch()
         searchInputRef.current?.focus()
-    }
-
-    const handlePodColumnsChange = (option: MultiValue<OptionType>): void => {
-        setSelectedColumns(option)
-    }
-
-    const handleFocus = () => {
-        setOpenMenu(!openMenu)
-    }
-    const handleApply = (e) => {
-        setOpenMenu(false)
-        let columns = selectedColumns?.map((ele)=> {
-            return ele.value
-        })
-        setExtraPodColumns(columns)
-    }
-
-    const  podColumnOptionsMenuList = (props): JSX.Element => {
-        return <components.MenuList {...props}>
-            {props.children}
-            <button type="button" className="filter__apply" onClick={ handleApply } style={{position: "sticky", top: "40px"}}>
-                Apply
-            </button>
-        </components.MenuList>
     }
 
     return (
@@ -216,17 +190,13 @@ function ResourceFilterOptions({
                             className="ml-8"
                             isMulti
                             classNamePrefix="resource-filter-select"
-                            options={podColumnOptions}
-                            onChange={handlePodColumnsChange}
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
                             styles={FILTER_MULTI_SELECT_STYLES}
                             menuIsOpen={openMenu}
-                            value={selectedColumns}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator: null,
-                                MenuList: podColumnOptionsMenuList,
                                 Control: () => (
                                     <div onClick={() => setOpenMenu(!openMenu)} className="flex">
                                         <PodColumnIcon className="icon-dim-24 scn-6" />
