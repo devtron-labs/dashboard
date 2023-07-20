@@ -55,7 +55,7 @@ export default function DeploymentDetailSteps({
     },[isVirtualEnvironment])
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(appId, envId, triggerId, isHelmApps, installedAppVersionHistoryId).then(
+        getDeploymentStatusDetail(appId, envId, true, triggerId, isHelmApps, installedAppVersionHistoryId).then(
             (deploymentStatusDetailRes) => {
                 deploymentStatus !== 'Aborted' && processDeploymentStatusData(deploymentStatusDetailRes.result)
             }
