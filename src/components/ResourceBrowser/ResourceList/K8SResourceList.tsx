@@ -198,7 +198,7 @@ export function K8SResourceList({
                                         className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                         data-name={resourceData[columnName]}
                                         onClick={handleNodeClick}
-                                    ></a>
+                                    >{Children}</a>
                                 )}
                             >
                                 <span
