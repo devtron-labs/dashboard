@@ -315,6 +315,9 @@ export function SourceInfo({
                                 loadingResourceTree={loadingResourceTree}
                                 hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
                                 isVirtualEnvironment={isVirtualEnvironment}
+                                appId={params.appId}
+                                envId={params.envId}
+                                isHelmApp={false}
                             />
                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (

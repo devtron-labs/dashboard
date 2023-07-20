@@ -1,5 +1,6 @@
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
+import { PipelineBuildStageType } from '../workflowEditor/types'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -47,7 +48,7 @@ export interface CDStageType {
     cdWorkflowRunnerId?: number
 }
 export interface Environment {
-    description: string
+    description?: string
     id: number
     name: string
     namespace: string
@@ -185,4 +186,46 @@ export interface AdvanceCDPipelineModalProps {
     selectStrategy: (selection: string) => void
     deleteStage: (key: 'preStage' | 'postStage') => void
     renderAddStage: (key: 'preStage' | 'postStage') => void
+}
+
+interface ConfigSecretType {
+    label: string,
+    value: string,
+    type: string,
+}
+
+export interface CDFormType {
+    name: string
+    ciPipelineId: number
+    environmentId: number
+    environmentName: string
+    namespace: string
+    environments: Environment[]
+    deploymentAppType: string
+    triggerType: string
+    preBuildStage?: PipelineBuildStageType;
+    postBuildStage?: PipelineBuildStageType;
+    strategies: DeploymentStrategy[]
+    savedStrategies: SavedDeploymentStrategy[]
+    preStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }
+    postStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }
+    requiredApprovals: string
+    userApprovalConfig?: {
+        requiredCount: number
+    }
+    isClusterCdActive: boolean
+    deploymentAppCreated: boolean,
+    clusterName: string
+    runPreStageInEnv: boolean,
+    runPostStageInEnv: boolean,
+    allowedDeploymentTypes: DeploymentAppTypes[]
+    containerRegistryName: string
+    repoName: string
+    selectedRegistry: any
+    generatedHelmPushAction: string
+}
+
+export interface InputVariablesFromInputListType {
+    preBuildStage: Map<string, VariableType>[]
+    postBuildStage: Map<string, VariableType>[]
 }

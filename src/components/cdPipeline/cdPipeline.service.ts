@@ -1,4 +1,4 @@
-import { Routes } from '../../config';
+import { Routes, TriggerType } from '../../config';
 import { post, get, sortCallback } from '@devtron-labs/devtron-fe-common-lib';
 import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service';
 
@@ -39,10 +39,17 @@ export function getCDPipeline(appId: string, pipelineId: string) {
     return get(URL);
 }
 
+export function getCDPipelineV2(appId: string, pipelineId: string) {
+    const URL = `${Routes.V2_CD_CONFIG}/${appId}/${pipelineId}`;
+    return get(URL);
+}
+
 export async function getCDPipelineConfig(appId: string, pipelineId: string): Promise<any> {
-    return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic(true)]).then(([cdPipelineRes, envListResponse]) => {
+    return Promise.all([getCDPipelineV2(appId, pipelineId), getEnvironmentListMinPublic(true)]).then(([cdPipelineRes, envListResponse]) => {
         let envId = cdPipelineRes.result.environmentId;
+        let cdPipeline = cdPipelineRes.result
         let environments = envListResponse.result || [];
+        
         environments = environments.map((env) => {
             return {
                 id: env.id,
@@ -53,9 +60,22 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
                 allowedDeploymentTypes: env.allowedDeploymentTypes || [],
             }
         });
+
+        let env = environments.find((e) => e.id === cdPipeline.environmentId)
+
+        const form = {
+            name: cdPipeline.name,
+            environmentId: cdPipeline.environmentId,
+            namespace: env.namespace,
+            triggerType: cdPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
+            preBuildStage: cdPipeline.preDeployStage || { id: 0, triggerType: TriggerType.Auto, steps: [] },
+            postBuildStage: cdPipeline.postDeployStage || { id: 0, triggerType: TriggerType.Auto, steps: [] },
+        }
+
         return {
             pipelineConfig: cdPipelineRes.result,
-            environments
+            environments,
+            form
         }
     })
 }
@@ -67,21 +87,44 @@ export function getConfigMapAndSecrets(appId: string, envId) {
 
         configmaps.sort((a, b) => { sortCallback('name', a, b) });
         secrets.sort((a, b) => { sortCallback('name', a, b) });
-        configmaps = configmaps.map((configmap) => {
+        let _configmaps = configmaps.map((configmap) => {
             return {
                 name: configmap.name,
                 type: 'configmaps'
             }
         })
-        secrets = secrets.map((secret) => {
+        const _secrets = secrets.map((secret) => {
             return {
                 name: secret.name,
                 type: 'secrets'
             }
         })
+
+        const configSecretsList = [{
+            label: 'ConfigMaps',
+            options:  configmaps.map((configmap) => {
+                return {
+                    label: configmap.name,
+                    value: configmap.name,
+                    type: 'configmaps'
+                }
+            })
+        },{
+            label: 'Secrets',
+            options:  secrets.map((secret) => {
+                return {
+                    label: secret.name,
+                    value: secret.name,
+                    type: 'secrets'
+                }
+            })
+        }]
+
+
         return {
             code: configMapResponse.code,
-            result: configmaps.concat(secrets)
+            result: _configmaps.concat(_secrets),
+            list: configSecretsList
         }
     })
 }
