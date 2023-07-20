@@ -193,12 +193,12 @@ export function K8SResourceList({
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
-                                wrap={(Children) => (
+                                wrap={(children) => (
                                     <a
                                         className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                         data-name={resourceData[columnName]}
                                         onClick={handleNodeClick}
-                                    >{Children}</a>
+                                    >{children}</a>
                                 )}
                             >
                                 <span
