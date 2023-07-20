@@ -1,5 +1,5 @@
-import { ReactComponent as GotToBuildDeploy } from '../../../assets/icons/go-to-buildanddeploy@2x.svg'
-import { ReactComponent as GoToEnvOverride } from '../../../assets/icons/go-to-envoverride@2x.svg'
+import { ReactComponent as GotToBuildDeploy } from '../../../assets/icons/go-to-buildanddeploy.svg'
+import { ReactComponent as GoToEnvOverride } from '../../../assets/icons/go-to-envoverride.svg'
 import { DOCUMENTATION } from '../../../config'
 import { PrimaryOptionType } from './types'
 
