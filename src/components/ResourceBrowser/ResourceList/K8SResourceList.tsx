@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Children, useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { highlightSearchedText } from '../../common/helpers/Helpers'
@@ -191,30 +191,22 @@ export function K8SResourceList({
                                     : ''
                             }`}
                         >
-                            <>
-                            {columnName === 'node' ? (
+                            <ConditionalWrap
+                                condition={columnName === 'node'}
+                                wrap={(Children) => (
                                     <a
                                         className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                         data-name={resourceData[columnName]}
                                         onClick={handleNodeClick}
-                                    >
-                                    <span
-                                        dangerouslySetInnerHTML={{
-                                            __html: highlightSearchedText(
-                                                searchText,
-                                                resourceData[columnName].toString(),
-                                            ),
-                                        }}
-                                    ></span>
-                                    </a>
-                            ) : (
+                                    ></a>
+                                )}
+                            >
                                 <span
                                     dangerouslySetInnerHTML={{
                                         __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
                                     }}
                                 ></span>
-                            )}
-                            </>
+                            </ConditionalWrap>
                         </div>
                     ),
                 )}
