@@ -738,7 +738,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         options={getTypeGroups(props?.isJobView)}
                         defaultValue={
                             externalType && externalType !== ''
-                                ? getTypeGroups(props?.isJobView, externalType)
+                                ? getTypeGroups(false, externalType)
                                 : getTypeGroups()[0].options[0]
                         }
                         onChange={onChange}
