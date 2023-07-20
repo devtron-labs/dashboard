@@ -215,14 +215,16 @@ export default function NavigationRoutes() {
     }
 
     async function getAirGapEnvironmentValue() {
-        try {
-            const { result } = await getEnvironmentData()
-            setIsAirGapped(result.isAirGapEnvironment)
-            if (typeof Storage !== 'undefined') {
-                localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
+        if (!localStorage.getItem('isAirGapped')) {
+            try {
+                const { result } = await getEnvironmentData()
+                setIsAirGapped(result.isAirGapEnvironment)
+                if (typeof Storage !== 'undefined') {
+                    localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
+                }
+            } catch (err) {
+                setIsAirGapped(false)
             }
-        } catch (err) {
-            setIsAirGapped(false)
         }
     }
 
