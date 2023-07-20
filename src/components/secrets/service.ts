@@ -9,10 +9,10 @@ export function updateSecret(id, appId, configData) {
     })
 }
 
-export function deleteSecret(id, appId, name){
-    return trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
-}
-
 export function getSecretKeys(id, appId, name){
     return get(`${Routes.APP_CREATE_SECRET}/edit/${appId}/${id}?name=${name}`)
+}
+
+export function deleteSecret(id, appId, name){
+  return trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
 }

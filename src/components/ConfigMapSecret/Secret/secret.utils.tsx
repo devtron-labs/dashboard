@@ -4,12 +4,11 @@ import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
 import { OptionType, multiSelectStyles, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { SECRET_TOAST_INFO } from './constants'
+import { SECRET_TOAST_INFO } from '../Constants'
 import YAML from 'yaml'
-import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../ConfigMap/ConfigMap.type'
-import { unlockEnvSecret } from '../service'
+import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../Types'
 import { CM_SECRET_STATE } from '../Constants'
-import { processCurrentData } from '../ConfigMap/ConfigMap.reducer'
+import { processCurrentData } from '../ConfigMapSecret.reducer'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 

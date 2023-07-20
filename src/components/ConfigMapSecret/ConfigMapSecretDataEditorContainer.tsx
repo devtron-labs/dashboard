@@ -1,11 +1,10 @@
 import React from 'react'
-import { Info, RadioGroup, Pencil } from '../../common'
-import { KeyValueInput, useKeyValueYaml } from '../ConfigMapSecret.components'
-import CodeEditor from '../../CodeEditor/CodeEditor'
+import { Info, RadioGroup } from '../common'
+import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
+import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
-import { PATTERNS } from '../../../config'
-import { ConfigMapSecretDataEditorContainerProps } from '../Types'
-import { ConfigMapActionTypes } from './ConfigMap.type'
+import { PATTERNS } from '../../config'
+import { ConfigMapActionTypes,ConfigMapSecretDataEditorContainerProps } from './Types'
 import {
     CODE_EDITOR_RADIO_STATE,
     CODE_EDITOR_RADIO_STATE_VALUE,
@@ -16,11 +15,11 @@ import {
     hasHashiOrAWS,
     sampleJSONs,
     VIEW_MODE,
-} from '../Secret/secret.utils'
-import { KeyValueFileInput } from '../../util/KeyValueFileInput'
-import { CM_SECRET_STATE } from '../Constants'
-import { ReactComponent as ShowIcon } from '../../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as HideIcon } from '../../../assets/icons/ic-visibility-off.svg'
+} from './Secret/secret.utils'
+import { KeyValueFileInput } from '../util/KeyValueFileInput'
+import { CM_SECRET_STATE } from './Constants'
+import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
     ({ componentType, state, dispatch, tempArr }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {

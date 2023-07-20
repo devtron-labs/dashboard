@@ -1,9 +1,9 @@
-import { PATTERNS } from '../../../config'
-import { CM_SECRET_STATE } from '../Constants'
-import { getSecretInitState } from '../Secret/secret.utils'
-import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './ConfigMap.type'
+import { PATTERNS } from '../../config'
+import { CM_SECRET_STATE } from './Constants'
+import { getSecretInitState } from './Secret/secret.utils'
+import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './Types'
 import YAML from 'yaml'
-import { decode } from '../../../util/Util'
+import { decode } from '../../util/Util'
 
 const initialDuplicate = (configMapSecretData, isOverrideView, componentType) => {
     if (isOverrideView && configMapSecretData?.global) {

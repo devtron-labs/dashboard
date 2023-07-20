@@ -25,14 +25,12 @@ import {
     TabProps,
     keyValueYaml,
 } from './Types'
-import SecretForm from './Secret/SecretForm'
-import ConfigMapForm from './ConfigMap/ConfigMapForm'
-import './ConfigMap.scss'
-import { ConfigMapSecretForm } from './ConfigMap/ConfigMapSecretForm'
+import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { deleteConfig, deleteEnvConfigMap, deleteEnvSecret, deleteSecret } from './service'
 import { CM_SECRET_STATE } from './Constants'
+import './ConfigMap.scss'
 
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
@@ -228,28 +226,6 @@ export function ConfigMapSecretContainer({
             </section>
             {showDeleteModal && renderDeleteCMModal()}
         </>
-    )
-}
-
-export function Tab({ title, value, active, onClick, type, disabled }: TabProps) {
-    const handleTabChange = (): void => {
-        if (!disabled) {
-            onClick(value)
-        }
-    }
-    return (
-        <nav
-            className={`form__tab white-card flex left ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
-            onClick={handleTabChange}
-        >
-            <div className="tab__selector"></div>
-            <div
-                data-testid={`${type}-${title.toLowerCase().split(' ').join('-')}-radio-button`}
-                className="tab__title"
-            >
-                {title}
-            </div>
-        </nav>
     )
 }
 

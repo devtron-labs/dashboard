@@ -6,9 +6,10 @@ import {
     updateConfig,
     deleteEnvSecret,
     deleteEnvConfigMap,
-} from '../service'
+    getSecretKeys, updateSecret
+} from './service'
 import { useParams } from 'react-router'
-import { CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../../common'
+import { CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../common'
 import {
     showError,
     Progressing,
@@ -23,12 +24,11 @@ import {
     RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import warningIcon from '../../../assets/img/warning-medium.svg'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../../config'
-import { Override, Tab, validateKeyValuePair } from '../ConfigMapSecret.components'
-import { ConfigMapSecretFormProps } from '../Types'
-import { ConfigMapReducer, initState, processCurrentData } from './ConfigMap.reducer'
-import { ConfigMapActionTypes } from './ConfigMap.type'
+import warningIcon from '../../assets/img/warning-medium.svg'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import { Override, validateKeyValuePair } from './ConfigMapSecret.components'
+import { ConfigMapActionTypes, ConfigMapSecretFormProps } from './Types'
+import { ConfigMapReducer, initState, processCurrentData } from './ConfigMapSecret.reducer'
 import ReactSelect from 'react-select'
 import {
     SecretOptions,
@@ -41,16 +41,14 @@ import {
     prepareSecretOverrideData,
     secretValidationInfoToast,
     CODE_EDITOR_RADIO_STATE,
-} from '../Secret/secret.utils'
-import { Option } from '../../v2/common/ReactSelect.utils'
+} from './Secret/secret.utils'
+import { Option } from '../v2/common/ReactSelect.utils'
 import { NavLink } from 'react-router-dom'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
-import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from '../Constants'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
-import { getSecretKeys, updateSecret } from '../../secrets/service'
-import YAML from 'yaml'
-import '../../EnvironmentOverride/environmentOverride.scss'
-import { INVALID_YAML_MSG } from '../../../config/constantMessaging'
+import { INVALID_YAML_MSG } from '../../config/constantMessaging'
+import '../EnvironmentOverride/environmentOverride.scss'
 
 export const ConfigMapSecretForm = React.memo(
     ({

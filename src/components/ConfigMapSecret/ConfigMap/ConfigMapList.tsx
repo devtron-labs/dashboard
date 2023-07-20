@@ -6,7 +6,7 @@ import { DOCUMENTATION } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
-import './ConfigMap.scss'
+import '../ConfigMap.scss'
 import { ConfigMapListProps } from '../Types'
 import { ComponentStates } from '../../EnvironmentOverride/EnvironmentOverrides.type'
 
