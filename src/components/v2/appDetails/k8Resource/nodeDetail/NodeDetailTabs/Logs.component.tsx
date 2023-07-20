@@ -9,7 +9,7 @@ import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib';
+import { Checkbox, CHECKBOX_VALUE, Host} from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -73,6 +73,7 @@ function LogsComponent({
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
+
     const handlePodSelection = (selectedOption: string) => {
         const pods = getSelectedPodList(selectedOption)
         const containers = new Set(pods[0].containers ?? [])
@@ -459,7 +460,6 @@ function LogsComponent({
                         {(podContainerOptions?.containerOptions ?? []).length > 0 && (
                             <React.Fragment>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
-
                                 <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
