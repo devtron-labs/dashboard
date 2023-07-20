@@ -37,6 +37,7 @@ import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
+import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -100,7 +101,7 @@ function DiscoverChartList() {
     const [isGrid, setIsGrid] = useState<boolean>(true)
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
-
+    const [showSourcePopoUp, setShowSourcePopoUp] = useState<boolean>(false)
 
     const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
@@ -267,6 +268,11 @@ function DiscoverChartList() {
                 </span>
             )
         }
+
+    const onChangeShowSourcePopup = () => {
+        setShowSourcePopoUp(true)
+    }
+
         return (
             <div className="m-0 flex left ">
                 {state.charts.length > 0 && (
@@ -278,7 +284,17 @@ function DiscoverChartList() {
                     </>
                 )}
                 <span className="fs-16 cn-9">
-                    {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
+                    {state.charts.length === 0 ? (
+                        <>
+                            Chart Store
+                            <button className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16" onChange={onChangeShowSourcePopup}>
+                                <SourceIcon className="mr-4"/>
+                                Source
+                            </button>
+                        </>
+                    ) : (
+                        'Deploy multiple charts'
+                    )}
                 </span>
             </div>
         )
