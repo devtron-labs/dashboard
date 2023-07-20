@@ -88,7 +88,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     {renderSearchToken()}
                     <button
                         data-testid="api-token-generate-button"
-                        className="flex cta h-32 ml-10 app-status-card__divider"
+                        className="flex cta h-32 ml-10"
                         onClick={handleGenerateRowAction}
                     >
                         Generate new token
