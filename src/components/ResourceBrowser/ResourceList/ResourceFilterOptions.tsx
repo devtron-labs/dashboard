@@ -178,20 +178,6 @@ function ResourceFilterOptions({
                             ValueContainer: ResourceValueContainerWithIcon,
                         }}
                     />
-                    {selectedResource?.gvk?.Kind == 'Pod' && resourceList?.headers?.length > 0 && (
-                        <ReactSelect
-                            placeholder="Select Columns"
-                            className="ml-8"
-                            isMulti
-                            classNamePrefix="resource-filter-select"
-                            closeMenuOnSelect={false}
-                            hideSelectedOptions={false}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator: null,
-                            }}
-                        />
-                    )}
                 </ConditionalWrap>
             </div>
         </div>
