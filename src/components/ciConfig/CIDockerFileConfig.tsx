@@ -355,12 +355,7 @@ export default function CIDockerFileConfig({
                             <ConditionalWrap
                                 condition={condition}
                                 wrap={(children) => (
-                                    <Tippy
-                                        className="default-tt w-250"
-                                        arrow={false}
-                                        placement="top"
-                                        content={content}
-                                    >
+                                    <Tippy className="default-tt w-250" arrow={false} placement="top" content={content}>
                                         <div className="flex top left flex-1">{children}</div>
                                     </Tippy>
                                 )}
@@ -374,7 +369,9 @@ export default function CIDockerFileConfig({
                                         isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                     } 
                                     ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
-                                    onClick={()=>handleCIBuildTypeOptionSelection(option.id,isDisabled)}
+                                    onClick={() => {
+                                        handleCIBuildTypeOptionSelection(option.id, isDisabled)
+                                    }}
                                 >
                                     {showTick && (
                                         <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
