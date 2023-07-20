@@ -567,3 +567,22 @@
     flex-basis: 240px;
     border-right: 1px solid var(--N200);
 }
+
+.chart-store__list{
+    position: fixed;
+    left: 66px;
+    top: 60px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    height: 500px;
+    overflow: scroll;
+}
+
+.chart-list__add{
+  position: fixed;
+  left: 250px;
+  top: 100px;
+  display: grid;
+  grid-template-rows: 36px 36px;
+  z-index: 2;
+}

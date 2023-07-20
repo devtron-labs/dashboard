@@ -23,13 +23,11 @@ import DeleteComponent from '../../util/DeleteComponent'
 import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import TippyCustomized from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import { ChartFormFields } from './ChartRepoType'
 import {ChartRepoType} from "./chartRepo.types";
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
-    const [fetching, setFetching] = useState(false)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -45,22 +43,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
         const maxRange = 4294967296
         const num = randomBytes[0] / maxRange
         return Math.floor(num * range) + min
-    }
-
-    async function refetchCharts(e) {
-        if (fetching) {
-            return
-        }
-        setFetching(true)
-        toast.success(TOAST_INFO.RE_SYNC)
-        await reSyncChartRepo()
-            .then((response) => {
-                setFetching(false)
-            })
-            .catch((error) => {
-                showError(error)
-                setFetching(false)
-            })
     }
 
     if (!isSuperAdmin) {
@@ -98,7 +80,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 <div className="chartRepo_form__subtitle dc__float-left dc__bold">
                     Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
                 </div>
-                {/* TODO remove commented code later */}
+                  {/* TODO remove commented code later */}
                 {/* <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                     <div className="chartRepo_form__subtitle dc__float-right">
                         <a
@@ -114,7 +96,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                         </a>
                     </div>
                 </Tippy> */}
-                {[]
+                 {[]
                     .concat(result && Array.isArray(result.result) ? result.result : [])
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((chart) => (
@@ -195,7 +177,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                         subtitle={collapsed ? url : null}
                     />
                      {/* Todo: remove after integration with chart store */}
-                    {/* {id && (
+                     {id && (
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -210,7 +192,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                                 )}
                             </span>
                         </Tippy>
-                    )} */}
+                    )}
                 </div>
                 {id && (
                     <List.DropDown

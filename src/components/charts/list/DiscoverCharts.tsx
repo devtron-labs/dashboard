@@ -38,6 +38,7 @@ import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
+import ChartListPopUp from './ChartListPopUp'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -273,30 +274,40 @@ function DiscoverChartList() {
         setShowSourcePopoUp(true)
     }
 
+    const toggleChartListPopUp = (): void => {
+        setShowSourcePopoUp(!setShowSourcePopoUp)
+    }
+
         return (
-            <div className="m-0 flex left ">
-                {state.charts.length > 0 && (
-                    <>
-                        <NavLink to={match.url} className="dc__devtron-breadcrumb__item">
-                            <span className="cb-5 fs-16 cursor">Discover </span>
-                        </NavLink>
-                        <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
-                    </>
-                )}
-                <span className="fs-16 cn-9">
-                    {state.charts.length === 0 ? (
+            <>
+                <div className="m-0 flex left ">
+                    {state.charts.length > 0 && (
                         <>
-                            Chart Store
-                            <button className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16" onChange={onChangeShowSourcePopup}>
-                                <SourceIcon className="mr-4"/>
-                                Source
-                            </button>
+                            <NavLink to={match.url} className="dc__devtron-breadcrumb__item">
+                                <span className="cb-5 fs-16 cursor">Discover </span>
+                            </NavLink>
+                            <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
                         </>
-                    ) : (
-                        'Deploy multiple charts'
                     )}
-                </span>
-            </div>
+                    <span className="fs-16 cn-9">
+                        {state.charts.length === 0 ? (
+                            <>
+                                Chart Store
+                                <button
+                                    className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16"
+                                    onClick={onChangeShowSourcePopup}
+                                >
+                                    <SourceIcon className="mr-4" />
+                                    <span className="fs-12">Source</span>
+                                </button>
+                            </>
+                        ) : (
+                            'Deploy multiple charts'
+                        )}
+                    </span>
+                </div>
+                <div>{showSourcePopoUp && <ChartListPopUp onClose={toggleChartListPopUp} />}</div>
+            </>
         )
     }
 

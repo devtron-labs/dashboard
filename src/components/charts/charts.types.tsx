@@ -348,3 +348,18 @@ export interface HelmProjectUpdatePayload {
     appName: string
     teamId: number
 }
+
+export interface ChartListPopUpType{
+  onClose:() => void
+}
+
+export interface ChartListType {
+    active: boolean
+    allow_insecure_connection: boolean
+    authMode: string
+    default: boolean
+    id: number
+    isEditable: boolean
+    name: String
+    url: string
+}
