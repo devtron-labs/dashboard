@@ -1910,6 +1910,10 @@ button.anchor {
     border: 1px solid var(--N200);
 }
 
+.dc__border-dashed {
+    border: 1px dashed var(--N200);
+}
+
 .dc__border-n1 {
     border: 1px solid var(--N100);
 }

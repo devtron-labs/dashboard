@@ -281,7 +281,10 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
+export interface TriggerViewProps extends RouteComponentProps<{
+    appId: string
+    envId: string
+}> {
     isJobView?: boolean
 }
 
@@ -350,6 +353,7 @@ export interface TriggerViewState {
     appReleaseTags?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    configs?: boolean
 }
 
 //-- begining of response type objects for trigger view
