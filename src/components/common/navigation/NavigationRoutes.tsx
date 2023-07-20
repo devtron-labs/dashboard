@@ -225,6 +225,9 @@ export default function NavigationRoutes() {
             } catch (err) {
                 setIsAirGapped(false)
             }
+        }else{
+            const isAirGap = JSON.parse(localStorage.getItem('isAirGapped'))
+            setIsAirGapped(isAirGap)
         }
     }
 
@@ -235,9 +238,9 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
+            getAirGapEnvironmentValue()
             getCurrentServerInfo()
         }
-        getAirGapEnvironmentValue()
     }, [])
 
     useEffect(() => {
@@ -319,6 +322,7 @@ export default function NavigationRoutes() {
                     setModuleInInstallingState,
                     installedModuleMap,
                     currentServerInfo,
+                    isAirgapped
                 }}
             >
                 <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>

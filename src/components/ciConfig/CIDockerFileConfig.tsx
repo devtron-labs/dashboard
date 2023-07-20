@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -32,6 +32,7 @@ import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
 import { FEATURE_DISABLED } from '../../config/constantMessaging'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -60,7 +61,6 @@ export default function CIDockerFileConfig({
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
     setLoadingState,
-    isAirGapped
 }: CIDockerFileConfigProps) {
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
     const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
@@ -133,6 +133,7 @@ export default function CIDockerFileConfig({
         checkoutPathArray.push({ label: buildContextCheckoutPath, value: buildContextCheckoutPath })
     }
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
+    const { isAirgapped } = useContext(mainContext)
 
     useEffect(() => {
         let checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
@@ -346,7 +347,7 @@ export default function CIDockerFileConfig({
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
-                    const isDisabled = isAirGapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
+                    const isDisabled = isAirgapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
                     const content = !isDisabled ? option.info : FEATURE_DISABLED
                     const condition = (configOverrideView && allowOverride) || isDisabled
 

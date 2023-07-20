@@ -51,7 +51,6 @@ export default function CIConfigForm({
     setParentState,
     loadingStateFromParent,
     setLoadingStateFromParent,
-    isAirGapped
 }: CIConfigFormProps) {
     const history = useHistory()
     const currentMaterial =
@@ -404,7 +403,6 @@ export default function CIConfigForm({
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     setLoadingState={configOverrideView ? setLoadingStateFromParent : setLoadingDataState}
-                    isAirGapped={isAirGapped}
                 />
             </div>
             {!configOverrideView && (
