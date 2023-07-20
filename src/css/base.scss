@@ -3463,3 +3463,16 @@ textarea::placeholder {
         }
     }
 }
+
+.dc__row-container {
+  display: grid;
+  grid-template-columns: 220px auto;
+
+  .radio-group {
+      justify-content: flex-start;
+  }
+
+  .form__radio-item {
+      min-width: 0px !important;
+  }
+}
