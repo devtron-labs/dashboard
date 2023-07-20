@@ -78,14 +78,16 @@ function DeploymentStatusCard({
         )
     }
     const getDeploymentDetailStepsData = (): void => {
-        // Deployments status details for Helm apps
+        // detailed deployments status
         getDeploymentStatusDetail(appId, envId, true, '', isHelmApp).then((deploymentStatusDetailRes) => {
             processDeploymentStatusDetailsData(deploymentStatusDetailRes.result)
         })
     }
 
     const onClickLastDeploymentStatus = (e) => {
-        getDeploymentDetailStepsData()
+        if (!hideDetails){
+            getDeploymentDetailStepsData()
+        } 
         if (loadingResourceTree) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)

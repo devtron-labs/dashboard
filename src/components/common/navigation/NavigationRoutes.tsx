@@ -385,11 +385,11 @@ export default function NavigationRoutes() {
                                             </Route>,
                                         ]}
                                         {isSuperAdmin && !window._env_.K8S_CLIENT && (
-                                            <AppContext.Provider value={contextValue}>
-                                                <Route path={URLS.JOB}>
+                                            <Route path={URLS.JOB}>
+                                                <AppContext.Provider value={contextValue}>
                                                     <Jobs />
-                                                </Route>
-                                            </AppContext.Provider>
+                                                </AppContext.Provider>
+                                            </Route>
                                         )}
                                         <Route>
                                             <RedirectUserWithSentry
