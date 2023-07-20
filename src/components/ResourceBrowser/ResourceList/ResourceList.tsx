@@ -113,6 +113,7 @@ export default function ResourceList() {
         new: new AbortController(),
     })
     const searchWorkerRef = useRef(null)
+
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -519,10 +520,10 @@ export default function ResourceList() {
         const _selectedResource = selectedNode?.isFromEvent
             ? getEventObjectTypeGVK(k8SObjectMap, nodeType)
             : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
+
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
-
 
         return {
             clusterId: Number(clusterId),

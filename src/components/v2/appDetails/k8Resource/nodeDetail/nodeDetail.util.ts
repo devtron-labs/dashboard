@@ -26,7 +26,7 @@ export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boo
 }
 
 export const flatContainers = (pod: PodMetaData): string[] => {
-    return [...(pod?.containers || []), ...(pod?.initContainers || []), ...(pod?.ephemeralContainers?.map((_con) => { return _con.name }) || [])]
+    return [...(pod?.containers || []), ...(pod?.initContainers || [])]
 }
 
 export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
@@ -34,18 +34,10 @@ export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
         ...(pod?.containers?.map((_container) => ({
             name: _container,
             isInitContainer: false,
-            isEphemeralContainer: false,
         })) || []),
         ...(pod?.initContainers?.map((_container) => ({
             name: _container,
             isInitContainer: true,
-            isEphemeralContainer: false,
-        })) || []),
-        ...(pod?.ephemeralContainers?.map((_container) => ({
-            name: _container.name,
-            isInitContainer: false,
-            isEphemeralContainer: true,
-            isExternal: _container.isExternal
         })) || []),
     ]
 }
@@ -109,7 +101,7 @@ export function getPodContainerOptions(
             logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0].name as string)
 
         const containerOptions = containers.map((_container) => {
-            return { ..._container, selected: _container.name === _selectedContainerName, isEphemeralContainer: _container.isEphemeralContainer, isInitContainer:  _container.isInitContainer}
+            return { ..._container, selected: _container.name === _selectedContainerName }
         })
 
         return {
@@ -314,10 +306,9 @@ export const getContainerOptions = (containers: string[]) => {
     return Array.isArray(containers) ? containers.map((container) => ({ label: container, value: container })) : []
 }
 
-export const getGroupedContainerOptions = (containers: Options[], isTerminal?: boolean) => {
+export const getGroupedContainerOptions = (containers: Options[]) => {
     const containerOptions = [],
-        initContainerOptions = [],
-        ephemralContainerOptions = []
+        initContainerOptions = []
 
     if (Array.isArray(containers) && containers.length > 0) {
         for (const _container of containers) {
@@ -325,13 +316,6 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
                 initContainerOptions.push({
                     label: _container.name,
                     value: _container.name,
-                })
-            } else if (_container.isEphemeralContainer) {
-                ephemralContainerOptions.push({
-                    label: _container.name,
-                    value: _container.name,
-                    isEphemeralContainer: _container.isEphemeralContainer,
-                    isExternal:           _container.isExternal
                 })
             } else {
                 containerOptions.push({
@@ -343,7 +327,7 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
 
         const groupedOptions = [
             {
-                label: 'Main containers',
+                label: 'Containers',
                 options: containerOptions.sort(sortOptionsByLabel),
             },
         ]
@@ -355,30 +339,8 @@ export const getGroupedContainerOptions = (containers: Options[], isTerminal?: b
             })
         }
 
-        if (ephemralContainerOptions.length > 0){
-            groupedOptions.push({
-                label: 'Ephemeral containers',
-                options: ephemralContainerOptions.sort(sortOptionsByLabel),
-            })
-        }
-
         return groupedOptions
     }
 
     return []
-}
-
-export const selectStyles = {
-    ...multiSelectStyles,
-    control: (base) => ({
-        ...base,
-        minHeight: '36px',
-        fontWeight: '400',
-        backgroundColor: 'var(--N50)',
-        cursor: 'pointer',
-    }),
-    dropdownIndicator: (base) => ({
-        ...base,
-        padding: '0 8px',
-    }),
 }
