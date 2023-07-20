@@ -13,6 +13,7 @@ import {
     ReleaseTag,
     ImageComment,
     DeploymentAppTypes,
+    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
@@ -541,6 +542,14 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
+export interface PrePostDeployStageType {  
+    isValid: boolean;
+    steps: TaskErrorObj[];
+    triggerType: string
+    name: string
+    status: string
+}
+
 export interface CdPipeline {
     id: number
     environmentId: number
@@ -568,6 +577,8 @@ export interface CdPipeline {
     isVirtualEnvironment?: boolean
     deploymentAppType: DeploymentAppTypes
     helmPackageName?: string
+    preDeployStage?: PrePostDeployStageType
+    postDeployStage?: PrePostDeployStageType
 }
 
 export interface CdPipelineResult {

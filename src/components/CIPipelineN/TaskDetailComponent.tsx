@@ -4,14 +4,14 @@ import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import { PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
-import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function TaskDetailComponent() {
     const {
@@ -21,14 +21,8 @@ export function TaskDetailComponent() {
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-    } = useContext(ciPipelineContext)
+        isCdPipeline
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')
@@ -136,7 +130,7 @@ export function TaskDetailComponent() {
                     />
                 </div>
 
-                {activeStageName === BuildStageVariable.PostBuild && (
+                {!isCdPipeline && activeStageName === BuildStageVariable.PostBuild && (
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
                         <input

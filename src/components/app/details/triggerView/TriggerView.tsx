@@ -904,7 +904,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return
         }
         let envId
-        if(this.state.selectedEnv.id!==0){
+        if(this.state.selectedEnv && this.state.selectedEnv.id!==0){
             envId = this.state.selectedEnv.id
         }
         const payload = {
