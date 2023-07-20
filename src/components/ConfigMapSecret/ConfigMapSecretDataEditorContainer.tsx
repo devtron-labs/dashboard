@@ -160,18 +160,22 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             }
         }
 
+        const getESOYaml = () => {
+            if (state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE) {
+                return sample
+            } else if (isESO) {
+                return state.esoSecretYaml
+            } else {
+                return state.secretDataYaml
+            }
+        }
+
         const externalSecretEditor = (): JSX.Element => {
             if ((isHashiOrAWS || isESO) && state.yamlMode) {
                 return (
                     <div className="yaml-container">
                         <CodeEditor
-                            value={
-                                state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
-                                    ? sample
-                                    : isESO
-                                    ? state.esoSecretYaml
-                                    : state.secretDataYaml
-                            }
+                            value={getESOYaml()}
                             mode="yaml"
                             inline
                             height={350}
@@ -208,18 +212,16 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     <React.Fragment>
                         {isHashiOrAWS &&
                             state.secretData.map((data, index) => (
-                                <div>
-                                    <KeyValueFileInput
-                                        key={index}
-                                        index={index}
-                                        fileName={data.fileName}
-                                        name={data.name}
-                                        property={data.property}
-                                        isBinary={data.isBinary}
-                                        handleChange={handleSecretDataChange}
-                                        handleDelete={handleSecretDataDelete}
-                                    />
-                                </div>
+                                <KeyValueFileInput
+                                    key={index}
+                                    index={index}
+                                    fileName={data.fileName}
+                                    name={data.name}
+                                    property={data.property}
+                                    isBinary={data.isBinary}
+                                    handleChange={handleSecretDataChange}
+                                    handleDelete={handleSecretDataDelete}
+                                />
                             ))}
                     </React.Fragment>
                 )
@@ -228,43 +230,38 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         return (
             <>
-                {!state.external && (
-                    <>
-                        <div className="flex left mb-16">
-                            <b className="mr-5 dc__bold dc__required-field">Data</b>
-                            {!isESO && (
-                                <RadioGroup
-                                    className="gui-yaml-switch"
-                                    name="yaml-mode"
-                                    initialTab={state.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
-                                    disabled={false}
-                                    onChange={changeEditorMode}
-                                >
-                                    <RadioGroup.Radio value={VIEW_MODE.GUI}>
-                                        {VIEW_MODE.GUI.toUpperCase()}
-                                    </RadioGroup.Radio>
-                                    <RadioGroup.Radio value={VIEW_MODE.YAML}>
-                                        {VIEW_MODE.YAML.toUpperCase()}
-                                    </RadioGroup.Radio>
-                                </RadioGroup>
-                            )}
-                            {(!state.unAuthorized && componentType === 'secret') && (
-                                <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={toggleSecretMode}>
-                                    {state.secretMode ? (
-                                        <>
-                                            <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" />
-                                            Show values
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HideIcon className="icon-dim-16 mr-4 mw-18 cursor" />
-                                            Hide values
-                                        </>
-                                    )}
-                                </div>
+                <div className="flex left mb-16">
+                    <b className="mr-5 dc__bold dc__required-field">Data</b>
+                    {!isESO && (
+                        <RadioGroup
+                            className="gui-yaml-switch"
+                            name="yaml-mode"
+                            initialTab={state.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                            disabled={false}
+                            onChange={changeEditorMode}
+                        >
+                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                        </RadioGroup>
+                    )}
+                    {componentType === 'secret' && !state.unAuthorized && (
+                        <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={toggleSecretMode}>
+                            {state.secretMode ? (
+                                <>
+                                    <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" />
+                                    Show values
+                                </>
+                            ) : (
+                                <>
+                                    <HideIcon className="icon-dim-16 mr-4 mw-18 cursor" />
+                                    Hide values
+                                </>
                             )}
                         </div>
-
+                    )}
+                </div>
+                {!state.external && (
+                    <>
                         {state.yamlMode ? (
                             <div className="yaml-container">
                                 <CodeEditor

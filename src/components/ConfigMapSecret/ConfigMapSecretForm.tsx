@@ -26,7 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import { Override, validateKeyValuePair } from './ConfigMapSecret.components'
 import { ConfigMapActionTypes, ConfigMapSecretFormProps } from './Types'
 import { ConfigMapReducer, initState, processCurrentData } from './ConfigMapSecret.reducer'
@@ -42,9 +42,9 @@ import {
     prepareSecretOverrideData,
     secretValidationInfoToast,
     CODE_EDITOR_RADIO_STATE,
+    ExternalSecretHelpNote,
 } from './Secret/secret.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
-import { NavLink } from 'react-router-dom'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
@@ -152,7 +152,7 @@ export const ConfigMapSecretForm = React.memo(
             e.preventDefault()
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isErrorInForm = false
-            if (componentType === 'secret' && state.externalType === '' && state.unAuthorized) {
+            if (componentType === 'secret' && state.unAuthorized) {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 return
             }
@@ -231,7 +231,7 @@ export const ConfigMapSecretForm = React.memo(
                         isErrorInForm = true
                     }
                 }
-                if (state.isSubPathChecked && state.isExternalValues) {
+                if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
                     if (!state.externalSubpathValues.value) {
                         dispatch({
                             type: ConfigMapActionTypes.setExternalSubpathValues,
@@ -343,7 +343,7 @@ export const ConfigMapSecretForm = React.memo(
                                 : `${state.filePermission.value}`
                     }
 
-                    if (state.isSubPathChecked && state.external) {
+                    if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
                         const externalSubpathKey = state.externalSubpathValues.value.replace(/\s+/g, '').split(',')
                         const secretKeys = {}
                         externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
@@ -375,7 +375,6 @@ export const ConfigMapSecretForm = React.memo(
             } catch (err) {
                 showError(err)
                 dispatch({ type: ConfigMapActionTypes.error })
-            } finally {
             }
         }
 
@@ -443,27 +442,8 @@ export const ConfigMapSecretForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.setRoleARN, payload: { value: e.target.value, error: '' } })
         }
 
-        const ExternalSecretHelpNote = () => {
-            return (
-                <div className="fs-13 fw-4 lh-18">
-                    <NavLink
-                        to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
-                        className="dc__link"
-                        target="_blank"
-                    >
-                        External Secrets Operator
-                    </NavLink>
-                    &nbsp;should be installed in the target cluster.&nbsp;
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.EXTERNAL_SECRET}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
-                </div>
-            )
+        const submitButtonText = (): string => {
+            return `Save ${configMapSecretData?.name ? ' changes' : ''}`
         }
 
         return (
@@ -472,11 +452,6 @@ export const ConfigMapSecretForm = React.memo(
                     {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
                         state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
                         <Override
-                            // external={
-                            //     state.selectedType === 'environment' &&
-                            //     ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
-                            //         (componentType === 'configmap' && state.external))
-                            // }
                             overridden={state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
                             onClick={handleOverride}
                             loading={state.overrideLoading}
@@ -654,7 +629,7 @@ export const ConfigMapSecretForm = React.memo(
                                         )}
                                     </span>
                                 </Checkbox>
-                                {state.external && state.isSubPathChecked && (
+                                {state.externalType === 'KubernetesSecret' && state.isSubPathChecked && (
                                     <div className="mb-16">
                                         <CustomInput
                                             value={state.externalSubpathValues.value}
@@ -746,12 +721,14 @@ export const ConfigMapSecretForm = React.memo(
                             </div>
                         </div>
                     )}
-                    <ConfigMapSecretDataEditorContainer
-                        componentType={componentType}
-                        state={state}
-                        dispatch={dispatch}
-                        tempArr={tempArr}
-                    />
+                    {state.externalType !== 'KubernetesSecret' && (
+                        <ConfigMapSecretDataEditorContainer
+                            componentType={componentType}
+                            state={state}
+                            dispatch={dispatch}
+                            tempArr={tempArr}
+                        />
+                    )}
                     {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
                         <div className="form__buttons">
                             <button
@@ -761,13 +738,7 @@ export const ConfigMapSecretForm = React.memo(
                                 className="cta"
                                 onClick={handleSubmit}
                             >
-                                {state.submitLoading ? (
-                                    <Progressing />
-                                ) : (
-                                    `${configMapSecretData?.name ? 'Update' : 'Save'} ${
-                                        componentType === 'secret' ? 'Secret' : 'ConfigMap'
-                                    }`
-                                )}
+                                {state.submitLoading ? <Progressing /> : submitButtonText()}
                             </button>
                         </div>
                     )}

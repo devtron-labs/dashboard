@@ -4,11 +4,12 @@ import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
 import { OptionType, multiSelectStyles, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { SECRET_TOAST_INFO } from '../Constants'
+import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
 import YAML from 'yaml'
 import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../Types'
-import { CM_SECRET_STATE } from '../Constants'
 import { processCurrentData } from '../ConfigMapSecret.reducer'
+import { NavLink } from 'react-router-dom'
+import { DOCUMENTATION, URLS } from '../../../config'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -343,9 +344,6 @@ export const secretValidationInfoToast = (isESO, secretStore, secretStoreRef) =>
 
 export async function prepareSecretOverrideData(configMapSecretData, dispatch: (action: ConfigMapAction) => void) {
     try {
-        // const {
-        //     result: { configData: secretData },
-        // } = await unlockEnvSecret(id, appId, envId, name)
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
             payload: {
@@ -497,7 +495,7 @@ export const getSecretInitState = (configMapSecretData, isOverrideView): SecretS
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
         secretMode: configMapSecretData?.secretMode,
-        unAuthorized: configMapSecretData?.unAuthorized ?? true,
+        unAuthorized: configMapSecretData?.unAuthorized ?? !!configMapSecretData?.name,
     }
 }
 
@@ -505,3 +503,26 @@ export const ConfigMapOptions: OptionType[] = [
     { value: '', label: 'Kubernetes ConfigMap' },
     { value: 'KubernetesConfigMap', label: 'Kubernetes External ConfigMap' },
 ]
+
+export const ExternalSecretHelpNote = () => {
+    return (
+        <div className="fs-13 fw-4 lh-18">
+            <NavLink
+                to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
+                className="dc__link"
+                target="_blank"
+            >
+                External Secrets Operator
+            </NavLink>
+            &nbsp;should be installed in the target cluster.&nbsp;
+            <a
+                className="dc__link"
+                href={DOCUMENTATION.EXTERNAL_SECRET}
+                rel="noreferrer noopener"
+                target="_blank"
+            >
+                Learn more
+            </a>
+        </div>
+    )
+}

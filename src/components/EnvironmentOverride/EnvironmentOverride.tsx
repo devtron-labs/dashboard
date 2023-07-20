@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import ConfigMapOverrides from './ConfigMapOverrides'
-import SecretOverrides from './SecretOverrides'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
 import { mapByKey, ErrorBoundary, useAppContext, useAsync } from '../common'
 import { Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
@@ -156,7 +154,4 @@ export default function EnvironmentOverride({
             </div>
         </ErrorBoundary>
     )
-}
-function getJobOtherEnvironment(appId: string): Promise<unknown> {
-    throw new Error('Function not implemented.')
 }
