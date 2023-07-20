@@ -248,12 +248,14 @@ export default function CIDockerFileConfig({
         })
     }
 
-    const handleCIBuildTypeOptionSelection = (id: CIBuildType) => {
-        setCIBuildTypeOption(id)
-        setCurrentCIBuildConfig({
-            ...currentCIBuildConfig,
-            ciBuildType: id,
-        })
+    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled:boolean) => {
+        if (!isDisabled) {
+            setCIBuildTypeOption(id)
+            setCurrentCIBuildConfig({
+                ...currentCIBuildConfig,
+                ciBuildType: id,
+            })
+        }  
     }
 
     const canShowTick = (id: CIBuildType) => {
@@ -338,10 +340,6 @@ export default function CIDockerFileConfig({
         )
     }
 
-    const handleCIBuildType = (isDisabled:boolean,option:any) => {
-        if (!isDisabled) handleCIBuildTypeOptionSelection(option.id)
-    }
-
     const renderCIBuildTypeOptions = () => {
         return (
             <div className="flex mb-16">
@@ -376,7 +374,7 @@ export default function CIDockerFileConfig({
                                         isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                     } 
                                     ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
-                                    onClick={()=>handleCIBuildType(isDisabled,option)}
+                                    onClick={()=>handleCIBuildTypeOptionSelection(option.id,isDisabled)}
                                 >
                                     {showTick && (
                                         <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
