@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
@@ -183,37 +183,39 @@ export function K8SResourceList({
                             </div>
                         </div>
                     ) : (
-                        (selectedResource?.gvk?.Kind === 'Pod' &&  columnName === 'node' ?
-                         (
-                            <div className="dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150">
-                                <a
-                                    className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
-                                    data-name={resourceData[columnName]}
-                                    onClick={handleNodeClick}
-                                >
+                        <div
+                            key={`${resourceData.name}-${idx}`}
+                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                                columnName === 'status'
+                                    ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
+                                    : ''
+                            }`}
+                        >
+                            <>
+                            {columnName === 'node' ? (
+                                    <a
+                                        className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
+                                        data-name={resourceData[columnName]}
+                                        onClick={handleNodeClick}
+                                    >
                                     <span
                                         dangerouslySetInnerHTML={{
-                                            __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
+                                            __html: highlightSearchedText(
+                                                searchText,
+                                                resourceData[columnName].toString(),
+                                            ),
                                         }}
                                     ></span>
-                                </a>
-                            </div>
-                        ) : (
-                            <div
-                                key={`${resourceData.name}-${idx}`}
-                                className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
-                                    columnName === 'status'
-                                        ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
-                                        : ''
-                                }`}
-                            >
+                                    </a>
+                            ) : (
                                 <span
                                     dangerouslySetInnerHTML={{
                                         __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
                                     }}
                                 ></span>
-                            </div>
-                        ))
+                            )}
+                            </>
+                        </div>
                     ),
                 )}
             </div>
