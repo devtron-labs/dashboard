@@ -39,7 +39,7 @@ import {
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
-import { withRouter, NavLink } from 'react-router-dom'
+import { withRouter, NavLink, Route } from 'react-router-dom'
 import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
@@ -57,6 +57,7 @@ import {
 } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { getChannelConfigs } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -98,6 +99,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             environmentLists: [],
             appReleaseTags:[],
             tagsEditable:false,
+            configs: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -106,6 +108,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
         this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
+        this.getConfigs = this.getConfigs.bind(this)
     }
 
     componentWillUnmount() {
@@ -117,6 +120,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getHostURLConfig()
         this.getWorkflows()
         this.getEnvironments()
+        this.getConfigs()
     }
 
     getEnvironments = () => {
@@ -134,6 +138,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((error) => {
                 showError(error)
+            })
+        this.getConfigs()
+    }
+
+    getConfigs() {
+        getChannelConfigs()
+            .then((response) => {
+                let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
+                this.setState({configs: isConfigPresent})
             })
     }
 
@@ -601,7 +614,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag?: string) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
@@ -611,6 +624,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
+            imageTag ? imageTag : ''
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -1138,6 +1152,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     closeApprovalModal = (e): void => {
         preventBodyScroll(false)
         this.setState({ showApprovalModal: false })
+        this.props.history.push({
+            search: ''
+        })
     }
 
     hideWebhookModal = () => {
@@ -1363,30 +1380,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderApprovalMaterial() {
-        if (ApprovalMaterialModal && this.state.showApprovalModal) {
+        if (ApprovalMaterialModal && this.state.showApprovalModal && this.props.location.search.includes("approval-node")) {
             const node: NodeAttr = this.getCDNode()
-
             return (
                 <ApprovalMaterialModal
-                    appId={Number(this.props.match.params.appId)}
-                    pipelineId={this.state.cdNodeId}
-                    stageType={DeploymentNodeType[this.state.nodeType]}
-                    node={node}
-                    materialType={this.state.materialType}
-                    isLoading={this.state.isLoading}
-                    changeTab={this.changeTab}
-                    closeApprovalModal={this.closeApprovalModal}
-                    toggleSourceInfo={this.toggleSourceInfo}
-                    onClickCDMaterial={this.onClickCDMaterial}
-                    getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
-                    ciPipelineId={node.connectingCiPipelineId}
-                    appReleaseTagNames={this.state.appReleaseTags}
-                    setAppReleaseTagNames={this.setAppReleaseTags}
-                    tagsEditable={this.state.tagsEditable}
-                    setTagsEditable={this.setTagsEditable}
-                    hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
-                />
+                appId={Number(this.props.match.params.appId)}
+                pipelineId={this.state.cdNodeId}
+                stageType={DeploymentNodeType[this.state.nodeType]}
+                node={node}
+                materialType={this.state.materialType}
+                isLoading={this.state.isLoading}
+                changeTab={this.changeTab}
+                closeApprovalModal={this.closeApprovalModal}
+                toggleSourceInfo={this.toggleSourceInfo}
+                onClickCDMaterial={this.onClickCDMaterial}
+                getModuleInfo={getModuleInfo}
+                GitCommitInfoGeneric={GitCommitInfoGeneric}
+                ciPipelineId={node.connectingCiPipelineId}
+                appReleaseTagNames={this.state.appReleaseTags}
+                setAppReleaseTagNames={this.setAppReleaseTags}
+                tagsEditable={this.state.tagsEditable}
+                setTagsEditable={this.setTagsEditable}
+                hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                configs={this.state.configs}
+            />
             )
         }
 
