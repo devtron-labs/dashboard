@@ -10,7 +10,7 @@ import '../ConfigMap.scss'
 import { ConfigMapListProps } from '../Types'
 import { ComponentStates } from '../../EnvironmentOverride/EnvironmentOverrides.type'
 
-export default function ConfigMapList({ isOverrideView, parentState, setParentState }: ConfigMapListProps) {
+export default function ConfigMapList({ isJobView, isOverrideView, parentState, setParentState }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [configMap, setConfigMap] = useState<{ id: number; configData: any[]; appId: number }>()
     const [configMapLoading, setConfigMapLoading] = useState(true)
@@ -70,6 +70,7 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                     componentType="configmap"
                     id={configMap?.id ?? 0}
                     isOverrideView={isOverrideView}
+                    isJobView={isJobView}
                 />
                 {configMap?.configData.map((cm, idx) => {
                     return (
@@ -83,6 +84,7 @@ export default function ConfigMapList({ isOverrideView, parentState, setParentSt
                             index={idx}
                             id={configMap?.id}
                             isOverrideView={isOverrideView}
+                            isJobView={isJobView}
                         />
                     )
                 })}

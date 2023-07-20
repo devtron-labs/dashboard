@@ -9,7 +9,7 @@ import InfoIconWithTippy from '../InfoIconWithTippy'
 import { ConfigMapListProps } from '../Types'
 import { getSecretList } from '../service'
 
-export default function SecretList({ isOverrideView, parentState, setParentState }: ConfigMapListProps) {
+export default function SecretList({ isJobView, isOverrideView, parentState, setParentState }: ConfigMapListProps) {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
@@ -106,6 +106,7 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     id={list?.id ?? 0}
                     update={update}
                     isOverrideView={isOverrideView}
+                    isJobView={isJobView}
                 />
                 {list?.configData?.map((cs, idx) => (
                     <ConfigMapSecretContainer
@@ -118,6 +119,7 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                         update={update}
                         index={idx}
                         isOverrideView={isOverrideView}
+                        isJobView={isJobView}
                     />
                 ))}
             </div>

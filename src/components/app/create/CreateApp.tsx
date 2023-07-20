@@ -301,29 +301,31 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
-                    <input
-                        ref={(node) => (this._inputAppName = node)}
-                        data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
-                        className="form__input"
-                        type="text"
-                        name="app-name"
-                        value={this.state.form.appName}
-                        placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                        autoComplete="off"
-                        autoFocus={true}
-                        tabIndex={1}
-                        onChange={this.handleAppname}
-                        required
-                    />
-                    <span className="form__error">
-                        {appNameErrors && !this.state.isValid.appName ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[0].message} <br />
-                            </>
-                        ) : null}
-                    </span>
+                    <div className={`${this.props.isJobView ? "mb-12" : ""}`}>
+                        <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
+                        <input
+                            ref={(node) => (this._inputAppName = node)}
+                            data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
+                            className="form__input"
+                            type="text"
+                            name="app-name"
+                            value={this.state.form.appName}
+                            placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
+                            autoComplete="off"
+                            autoFocus={true}
+                            tabIndex={1}
+                            onChange={this.handleAppname}
+                            required
+                        />
+                        <span className="form__error">
+                            {appNameErrors && !this.state.isValid.appName ? (
+                                <>
+                                    <Error className="form__icon form__icon--error" />
+                                    {errorObject[0].message} <br />
+                                </>
+                            ) : null}
+                        </span>
+                    </div>
                     {!this.props.isJobView && (
                         <span className="form__text-field-info form__text-field-info--create-app">
                             <Info className="form__icon form__icon--info form__icon--create-app" />

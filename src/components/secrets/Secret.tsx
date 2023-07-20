@@ -59,7 +59,7 @@ import { NavLink } from 'react-router-dom'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import { getSecretList } from '../ConfigMapSecret/service'
 
-const Secret = ({ respondOnSuccess, ...props }) => {
+const Secret = ({ respondOnSuccess, isJobView } : {respondOnSuccess: ()=> void, isJobView?: boolean }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
@@ -147,6 +147,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                 appChartRef={appChartRef}
                 update={update}
                 initialise={initialise}
+                isJobView={isJobView}
             />
             {list &&
                 Array.isArray(list.configData) &&
@@ -162,6 +163,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
                             update={update}
                             index={idx}
                             initialise={initialise}
+                            isJobView={isJobView}
                         />
                     ))}
         </div>
@@ -187,6 +189,7 @@ export function CollapsedSecretForm({
     filePermission = '',
     subPath = false,
     esoSecretData = null,
+    isJobView = false,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -208,7 +211,7 @@ export function CollapsedSecretForm({
                     mountPath={mountPath}
                     roleARNData={roleARN}
                     type={type}
-                    //external={external}
+                    external={external}
                     data={data}
                     id={id}
                     appId={appId}
@@ -216,12 +219,13 @@ export function CollapsedSecretForm({
                     collapse={(e) => toggleCollapse(!collapsed)}
                     update={update}
                     index={index}
-                    //keyValueEditable={false}
-                    //initialise={initialise}
+                    keyValueEditable={false}
+                    initialise={initialise}
                     externalTypeData={externalType}
                     subPath={subPath}
                     filePermission={filePermission}
                     esoSecret={esoSecretData}
+                    isJobView={isJobView}
                 />
             )}
         </section>
@@ -730,10 +734,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
-                        options={getTypeGroups()}
+                        options={getTypeGroups(props?.isJobView)}
                         defaultValue={
                             externalType && externalType !== ''
-                                ? getTypeGroups(externalType)
+                                ? getTypeGroups(props?.isJobView, externalType)
                                 : getTypeGroups()[0].options[0]
                         }
                         onChange={onChange}

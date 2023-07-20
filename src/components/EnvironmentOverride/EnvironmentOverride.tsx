@@ -15,15 +15,16 @@ import {
     SECTION_HEADING_INFO,
 } from './EnvironmentOverrides.type'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
-import { getAppOtherEnvironmentMin } from '../../services/service'
 import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
 import SecretList from '../ConfigMapSecret/Secret/SecretList'
 import InfoIconWithTippy from '../ConfigMapSecret/InfoIconWithTippy'
+import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin } from '../../services/service'
 
 export default function EnvironmentOverride({
     appList,
     environments,
     setEnvironments,
+    isJobView,
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -33,7 +34,7 @@ export default function EnvironmentOverride({
     const { environmentId, setEnvironmentId } = useAppContext()
     const [headingData, setHeadingData] = useState<SectionHeadingType>()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironmentMin(params.appId),
+        () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
         [params.appId],
         !!params.appId,
     )
@@ -135,14 +136,27 @@ export default function EnvironmentOverride({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
-                        <ConfigMapList isOverrideView={true} parentState={viewState} setParentState={setViewState} />
+                        <ConfigMapList
+                            isOverrideView={true}
+                            parentState={viewState}
+                            setParentState={setViewState}
+                            isJobView={isJobView}
+                        />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
-                        <SecretList isOverrideView={true} parentState={viewState} setParentState={setViewState} />
+                        <SecretList
+                            isOverrideView={true}
+                            parentState={viewState}
+                            setParentState={setViewState}
+                            isJobView={isJobView}
+                        />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>
             </div>
         </ErrorBoundary>
     )
+}
+function getJobOtherEnvironment(appId: string): Promise<unknown> {
+    throw new Error('Function not implemented.')
 }

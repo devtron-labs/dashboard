@@ -228,7 +228,7 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
     } else if (!props.schemaJson?.size) {
         return (
             <GenericEmptyState
-                image={Error}
+                SvgImage={Error}
                 title=""
                 subTitle={EMPTY_STATE_STATUS.CHART_VALUES_GUIT_VIEW.SUBTITLE}
             />

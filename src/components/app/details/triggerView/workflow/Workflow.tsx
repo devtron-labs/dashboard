@@ -175,6 +175,8 @@ export class Workflow extends Component<WorkflowProps> {
                     index={this.props.index}
                     isCITriggerBlocked={node.isCITriggerBlocked}
                     ciBlockState={node.ciBlockState}
+                    filteredCIPipelines={this.props.filteredCIPipelines}
+                    environmentLists={this.props.environmentLists}
                 />
             )
         }

@@ -224,7 +224,7 @@ export interface SecretFormProps {
     roleARNData: string
     name: string
     index: number
-    //external: boolean
+    external: boolean
     externalTypeData: string
     secret: SecretData[]
     esoSecret?: EsoSecretData
@@ -232,12 +232,13 @@ export interface SecretFormProps {
     data: { k: string; v: string }[]
     isUpdate: boolean
     mountPath: string
-    //keyValueEditable?: boolean
+    keyValueEditable?: boolean
     filePermission: string
     subPath: boolean
     update: (...args) => void
     collapse: (...args) => void
-    //initialise?: () => void
+    initialise?: () => void
+    isJobView?: boolean
 }
 
 export interface BasicFieldDataType {

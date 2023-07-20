@@ -37,7 +37,7 @@ const EXTERNAL_TYPES = {
     KubernetesConfigMap: 'Kubernetes External ConfigMap',
 }
 
-const ConfigMap = ({ respondOnSuccess, ...props }) => {
+const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void, isJobView?: boolean } ) => {
     const { appId } = useParams<{ appId }>()
     const [configmap, setConfigmap] = useState<{ id: number; configData: any[]; appId: number }>()
     const [configmapLoading, setConfigmapLoading] = useState(true)
@@ -103,6 +103,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
                         id={configmap?.id}
                         update={reload}
                         index={idx}
+                        isJobView={isJobView}
                     />
                 )
             })}
@@ -199,6 +200,7 @@ export function CollapsedConfigMapForm({
     index = null,
     filePermission = '',
     subPath = false,
+    isJobView = false,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -228,6 +230,7 @@ export function CollapsedConfigMapForm({
                         index,
                         filePermission,
                         subPath,
+                        isJobView,
                         ...rest,
                     }}
                 />
@@ -403,6 +406,7 @@ export function ConfigMapForm({
     update: updateForm,
     subPath,
     filePermission,
+    isJobView = false,
 }) {
     const [selectedTab, selectTab] = useState(type === 'environment' ? 'Environment Variable' : 'Data Volume')
     const [isExternalValues, toggleExternalValues] = useState(external)
@@ -685,13 +689,15 @@ export function ConfigMapForm({
                         }}
                     >
                         <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
-                            {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
+                            {isExternalValues && !isJobView ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option dataTestIdMenuList = {`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
-                                {name}
-                            </Select.Option>
-                        ))}
+                            
+                            (!(isJobView && name == "Kubernetes External ConfigMap") && (
+                                <Select.Option dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
+                                    {name}
+                                </Select.Option>
+)                            )))}
                     </Select>
                 </div>
             </div>

@@ -22,7 +22,6 @@ import {
     KeyValueInputInterface,
     KeyValueValidated,
     ResizableTextareaProps,
-    TabProps,
     keyValueYaml,
 } from './Types'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
@@ -104,6 +103,7 @@ export function ConfigMapSecretContainer({
     index,
     id,
     isOverrideView,
+    isJobView
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
@@ -195,6 +195,7 @@ export function ConfigMapSecretContainer({
                 update={update}
                 index={index}
                 cmSecretStateLabel={cmSecretStateLabel}
+                isJobView={isJobView}
             />
         )
     }

@@ -45,7 +45,7 @@ function useConfigMapContext() {
     return context
 }
 
-export default function ConfigMapOverrides({ parentState, setParentState }: ConfigMapOverridesProps) {
+export default function ConfigMapOverrides({ parentState, setParentState, isJobView }: ConfigMapOverridesProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     // const [loading, result, error, reload] = useAsync(() => getEnvironmentConfigs(+appId, +envId), [+appId, +envId]);
     const [configMapList, setConfigMapList] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -62,18 +62,21 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
         async function initialise() {
             setConfigMapLoading(true)
             try {
-                const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
                 const configmapRes = await getEnvironmentConfigs(appId, envId)
+                if (!isJobView) {
+                    const appChartRefRes = await getAppChartRefForAppAndEnv(appId, envId)
+                    if (!appChartRefRes.result) {
+                        toast.error('Error happened while fetching the results. Please try again')
+                        return
+                    }
+                    setAppChartRef(appChartRefRes.result)
+                }
                 setConfigMapList({
                     appId: configmapRes.result.appId,
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
                 })
-                if (!appChartRefRes.result) {
-                    toast.error('Error happened while fetching the results. Please try again')
-                    return
-                }
-                setAppChartRef(appChartRefRes.result)
+
             } catch (error) {
                 setParentState(ComponentStates.failed)
                 showError(error)
@@ -114,7 +117,8 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
                         name={name}
                         appChartRef={appChartRef}
                         type="config-map"
-                        label={defaultData ? (data ? 'Overridden' : 'Inheriting') : 'env'}
+                        label={defaultData ? (data ? 'modified' : null) : 'env'}
+                        isJobView={isJobView}
                     />
                 ))}
             </ConfigMapContext.Provider>
@@ -122,7 +126,7 @@ export default function ConfigMapOverrides({ parentState, setParentState }: Conf
     )
 }
 
-export function ListComponent({ name = '', type, label = '', appChartRef }: ListComponentType) {
+export function ListComponent({ name = '', type, label = '', appChartRef, isJobView }: ListComponentType) {
     const [isCollapsed, toggleCollapse] = useState(true)
 
     const handleOverrideListClick = () => {
@@ -157,10 +161,15 @@ export function ListComponent({ name = '', type, label = '', appChartRef }: List
                 )}
             </div>
             {!isCollapsed && type !== 'config-map' && (
-                <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />
+                <OverrideSecretForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} isJobView={isJobView}/>
             )}
             {!isCollapsed && type !== 'secret' && (
-                <OverrideConfigMapForm name={name} appChartRef={appChartRef} toggleCollapse={toggleCollapse} />
+                <OverrideConfigMapForm
+                    name={name}
+                    appChartRef={appChartRef}
+                    toggleCollapse={toggleCollapse}
+                    isJobView={isJobView}
+                />
             )}
         </div>
     )
@@ -170,12 +179,14 @@ interface ConfigMapProps {
     name?: string
     appChartRef: { id: number; version: string; name: string }
     toggleCollapse: any
+    isJobView?: boolean
 }
 
 const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideConfigMapForm({
     name,
     appChartRef,
     toggleCollapse,
+    isJobView,
 }) {
     const { configMapList, id, reload } = useConfigMapContext()
     const configmap = configMapList.configData.find((cm) => cm.name === name)
@@ -457,7 +468,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
                                 <Select.Button>
-                                    {external ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
+                                    {external && !isJobView ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                                 </Select.Button>
                             </Select>
                         </div>
@@ -701,6 +712,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                     update={(isSuccess) => reload()}
                     subPath={subPath}
                     filePermission={filePermission}
+                    isJobView={isJobView}
                 />
             )}
             {state.dialog && (

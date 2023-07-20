@@ -61,6 +61,7 @@ export const ConfigMapSecretForm = React.memo(
         update,
         index,
         cmSecretStateLabel,
+        isJobView
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
@@ -488,10 +489,10 @@ export const ConfigMapSecretForm = React.memo(
                                 <>
                                     <ReactSelect
                                         placeholder="Select Secret Type"
-                                        options={getTypeGroups()}
+                                        options={getTypeGroups(isJobView)}
                                         defaultValue={
                                             state.externalType && state.externalType !== ''
-                                                ? getTypeGroups(state.externalType)
+                                                ? getTypeGroups(isJobView, state.externalType)
                                                 : getTypeGroups()[0].options[0]
                                         }
                                         onChange={toggleExternalType}

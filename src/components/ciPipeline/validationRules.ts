@@ -21,6 +21,23 @@ export class ValidationRules {
         else return { isValid: true, message: '' }
     }
 
+    namespace = (name: string): { isValid: boolean; message: string } => {
+        const regExp = new RegExp(PATTERNS.NAMESPACE)
+        if (!(name?.length)) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        if (name.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
+        else if (!regExp.test(name))
+            return {
+                isValid: false,
+                message: ERROR_MESSAGE_FOR_VALIDATION,
+            }
+        else return { isValid: true, message: '' }
+    }
+
+    environment = (id: number): { isValid: boolean; message: string } => {
+        if (!id) return { isValid: false, message:REQUIRED_FIELD_MSG  }
+        else return { isValid: true, message: null }
+    }
+
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
             return { message: REQUIRED_FIELD_MSG, isValid: false }
@@ -117,5 +134,15 @@ export class ValidationRules {
         } else {
             return { message: null, isValid: true }
         }
+    }
+
+    containerRegistry = (containerRegistry: string): { isValid: boolean; message: string } => {
+        if (!containerRegistry.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        else return { isValid: true, message: null }
+    }
+
+    repository = (repository: string): { isValid: boolean; message: string } => {
+        if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        else return { isValid: true, message: null }
     }
 }
