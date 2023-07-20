@@ -31,6 +31,7 @@ export interface History {
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
     helmPackageName?: string
+    environmentName?: string
     imageComment?: ImageComment
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
@@ -192,6 +193,8 @@ export interface TriggerDetailsType {
     type: HistoryComponentType
     stage: DeploymentStageType
     artifact?: string
+    environmentName?: string
+    isJobView?: boolean
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -225,6 +228,7 @@ export interface CurrentStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    isJobView?: boolean
 }
 
 export interface StartDetailsType {
@@ -235,6 +239,8 @@ export interface StartDetailsType {
     gitTriggers: Map<number, GitTriggers>
     artifact: string
     type: HistoryComponentType
+    environmentName?: string
+    isJobView?: boolean
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {

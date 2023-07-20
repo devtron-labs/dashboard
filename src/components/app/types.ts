@@ -1,8 +1,6 @@
-import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { DeploymentAppTypes } from '../../config'
 import { AppEnvironment } from '../../services/service.types'
-import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -67,7 +65,7 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
     imageTag?: string
 }
@@ -451,11 +449,14 @@ export interface AppStatusType {
     isVirtualEnv?: boolean
 }
 export interface JobPipeline {
-    ci_pipeline_id: number
-    ci_pipeline_name: string
-    started_on: string
+    ciPipelineID: number
+    ciPipelineName: string
+    startedOn: string
     status: string
     dataTestId?: string
+    environmentName?: string
+    environmentId?: string 
+    lastTriggeredEnvironmentName?: string
 }
 
 export interface TagChipsContainerType {

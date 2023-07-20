@@ -1,4 +1,4 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import moment from 'moment'
 import {
@@ -147,8 +147,8 @@ export function getClusterListMin() {
     return get(URL)
 }
 
-export function getDockerRegistryStatus(): Promise<ResponseType> {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status`
+export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`
     return get(URL)
 }
 
@@ -160,6 +160,29 @@ export function getDockerRegistryList(): Promise<ResponseType> {
 export function getAppOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
     const URL = `${Routes.APP_OTHER_ENVIRONMENT_MIN}?app-id=${appId}`
     return get(URL)
+}
+
+export function getJobOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
+    const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}/${appId}`
+    return get(URL)
+}
+
+export function addJobEnvironment(data): Promise<ResponseType> {
+    const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}`
+    const payload = {
+        envId: (Number)(data.envId),
+        appId: (Number)(data.appId)
+    }
+    return post(URL, payload)
+}
+
+export function deleteJobEnvironment(data): Promise<ResponseType> {
+    const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}`
+    const payload = {
+        envId: (Number)(data.envId),
+        appId: (Number)(data.appId)
+    }
+    return trash(URL, payload)
 }
 
 export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {

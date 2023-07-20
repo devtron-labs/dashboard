@@ -1547,6 +1547,7 @@ function NoUsers({ onClick }) {
             image={EmptyImage}
             title={EMPTY_STATE_STATUS.NO_USER.TITLE}
             subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
+            isButtonAvailable={true}
             renderButton={handleNoUserButton}
         />
     )

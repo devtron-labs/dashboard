@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { AppStreamData, AppType, DeploymentAppType } from './appDetails.type'
+import { AppStreamData, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
@@ -11,7 +11,7 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
 import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
@@ -63,7 +63,7 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
         // Get deployment status timeline on argocd apps
-        if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd || appDetails?.deploymentAppType === DeploymentAppType.manifest_download) {
+        if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS || appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
             getDeploymentDetailStepsData()
         }
         isVirtualEnv.current = appDetails?.isVirtualEnvironment
@@ -79,7 +79,8 @@ const AppDetailsComponent = ({
     }
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
+        // Deployments status details for Helm apps
+        getDeploymentStatusDetail(params.appId, params.envId, false, '', true).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
@@ -139,6 +140,7 @@ const AppDetailsComponent = ({
                         loadingResourceTree={loadingResourceTree}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
+                        isHelmApp={true}
                     />
                 )}
             </div>

@@ -9,6 +9,7 @@ import {
     multiSelectStyles,
     useEffectAfterMount,
     Drawer,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -79,7 +80,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appDetails.type'
+import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
@@ -116,6 +117,11 @@ export default function AppDetail() {
 
     useEffect(() => {
         if (otherEnvsLoading) return
+        // If there is only one environment, redirect to that environment
+        if (!params.envId && otherEnvsResult?.result?.length === 1) { 
+            const newUrl = getAppDetailsURL(params.appId, otherEnvsResult?.result[0].environmentId)
+            push(newUrl)
+        }
         if (
             !params.envId &&
             environmentId &&
@@ -157,7 +163,7 @@ export default function AppDetail() {
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
-                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
+                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment}/>
                 </div>
             )}
             {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
@@ -241,7 +247,7 @@ export const Details: React.FC<DetailsType> = ({
         appDetails &&
             !!appDetails.appName &&
             !!appDetails.environmentName &&
-            appDetails.deploymentAppType !== DeploymentAppType.helm,
+            appDetails.deploymentAppType !== DeploymentAppTypes.HELM,
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
@@ -251,7 +257,7 @@ export const Details: React.FC<DetailsType> = ({
 
     const getDeploymentDetailStepsData = (): void => {
         // Deployments status details for Devtron apps
-        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId, false).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
@@ -341,11 +347,11 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
-        getDeploymentStatusDetail(params.appId, params.envId)
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
+        getDeploymentStatusDetail(params.appId, params.envId, false)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
-                    if (deploymentAppType === DeploymentAppType.helm) {
+                    if (deploymentAppType === DeploymentAppTypes.HELM) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:

@@ -63,7 +63,6 @@ export const NoExternalLinksView = ({
     return (
         <GenericEmptyState
             image={EmptyExternalLinks}
-            classname="title dc__position-rel"
             title={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.TITLE}
             heightToDeduct={120}
             subTitle={

@@ -1,5 +1,5 @@
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import React, { CSSProperties } from 'react'
+import React from 'react'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
@@ -42,12 +42,13 @@ export default function CDEmptyState({
         )
     }
     return (
-        <div style={{ backgroundColor: 'var(--window-bg)' }}>
+        <div className="dc__position-rel" style={{ backgroundColor: 'var(--window-bg)' }}>
           <GenericEmptyState
                 image={imgSource || AppNotDeployed}
                 classname="fs-16"
                 title={title ? title : EMPTY_STATE_STATUS.CD_EMPTY_STATE.TITLE}
                 subTitle={subtitle ? subtitle : EMPTY_STATE_STATUS.CD_EMPTY_STATE.SUBTITLE}
+                isButtonAvailable={true}
                 renderButton={handleCDEmptyStateButton}
             />
         </div>

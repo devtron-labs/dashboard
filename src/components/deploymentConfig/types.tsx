@@ -216,6 +216,7 @@ export interface SecretFormProps {
     update: (...args) => void
     collapse: (...args) => void
     initialise?: () => void
+    isJobView?: boolean
 }
 
 export interface BasicFieldDataType {

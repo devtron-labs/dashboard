@@ -54,6 +54,8 @@ import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { createTaintsList } from '../cluster/cluster.util'
+import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import { URLS } from '../../config'
 
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
@@ -632,7 +634,12 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                   }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
-
+    const handleResourceClick=(e)=>{
+        const {name,namespace}=e.currentTarget.dataset
+        const beginpart=window.location.href.split('/clusters')[0]
+        const _url=`${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
+        window.open(_url,'_blank')
+    }
     const renderPodHeaderCell = (
         columnName: string,
         sortingFieldName: string,
@@ -700,8 +707,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <span
-                                                    className="dc__inline-block dc__ellipsis-right lh-20"
+                                                    className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
+                                                    data-name={pod.name}
+                                                    data-namespace={pod.namespace}
+                                                    onClick={handleResourceClick}
                                                 >
                                                     {pod.name}
                                                 </span>

@@ -25,6 +25,7 @@ export default function ResourceListEmptyState({
             image={imgSource ?? emptyCustomChart}
             title={title ?? 'No resources found'}
             subTitle={subTitle}
+            isButtonAvailable={true}
             renderButton={handleButton}
         />
     )
