@@ -1,4 +1,4 @@
-import React, { Children, useEffect, useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { highlightSearchedText } from '../../common/helpers/Helpers'
