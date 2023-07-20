@@ -79,7 +79,8 @@ const AppDetailsComponent = ({
     }
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
+        // Deployments status details for Helm apps
+        getDeploymentStatusDetail(params.appId, params.envId, false, '', true).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
@@ -139,6 +140,7 @@ const AppDetailsComponent = ({
                         loadingResourceTree={loadingResourceTree}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
+                        isHelmApp={true}
                     />
                 )}
             </div>
