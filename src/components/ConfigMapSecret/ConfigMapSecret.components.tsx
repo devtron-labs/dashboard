@@ -23,7 +23,7 @@ import {
     KeyValueInputInterface,
     KeyValueValidated,
     ResizableTextareaProps,
-    keyValueYaml,
+    KeyValueYaml,
 } from './Types'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { useParams } from 'react-router-dom'
@@ -342,7 +342,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     return { isValid, arr }
 }
 
-export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, keyError): keyValueYaml {
+export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, keyError): KeyValueYaml {
     //input containing array of [{k, v, keyError, valueError}]
     //return {yaml, handleYamlChange}
     const [yaml, setYaml] = useState('')

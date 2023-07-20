@@ -30,7 +30,7 @@ export interface ResizableTextareaProps {
     dataTestId?: string
 }
 
-export interface keyValueYaml {
+export interface KeyValueYaml {
     yaml: string
     handleYamlChange: any
     error: string

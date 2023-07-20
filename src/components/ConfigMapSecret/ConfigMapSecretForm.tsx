@@ -26,7 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import { Override, validateKeyValuePair } from './ConfigMapSecret.components'
 import { ConfigMapActionTypes, ConfigMapSecretFormProps } from './Types'
 import { ConfigMapReducer, initState, processCurrentData } from './ConfigMapSecret.reducer'
