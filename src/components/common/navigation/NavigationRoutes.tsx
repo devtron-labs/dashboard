@@ -216,10 +216,10 @@ export default function NavigationRoutes() {
 
     async function getAirGapEnvironmentValue() {
         try {
-            const {result} = await getEnvironmentData()
+            const { result } = await getEnvironmentData()
             setIsAirGapped(result.isAirGapEnvironment)
-            if(typeof Storage !== 'undefined') {
-                localStorage.setItem('isAirGapped',result.isAirGapEnvironment)
+            if (typeof Storage !== 'undefined') {
+                localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
             }
         } catch (err) {
             setIsAirGapped(false)

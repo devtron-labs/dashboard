@@ -31,6 +31,7 @@ import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
+import { FEATURE_DISABLED } from '../../config/constantMessaging'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -337,6 +338,10 @@ export default function CIDockerFileConfig({
         )
     }
 
+    const handleCIBuildType = (isDisabled:boolean,option:any) => {
+        if (!isDisabled) handleCIBuildTypeOptionSelection(option.id)
+    }
+
     const renderCIBuildTypeOptions = () => {
         return (
             <div className="flex mb-16">
@@ -344,7 +349,7 @@ export default function CIDockerFileConfig({
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
                     const isDisabled = isAirGapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
-                    const content = !isDisabled ? option.info : 'This feature is disabled'
+                    const content = !isDisabled ? option.info : FEATURE_DISABLED
                     const condition = (configOverrideView && allowOverride) || isDisabled
 
                     return (
@@ -371,9 +376,7 @@ export default function CIDockerFileConfig({
                                         isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
                                     } 
                                     ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
-                                    onClick={() => {
-                                        if (!isDisabled) handleCIBuildTypeOptionSelection(option.id)
-                                    }}
+                                    onClick={()=>handleCIBuildType(isDisabled,option)}
                                 >
                                     {showTick && (
                                         <div className="build-type-selection flex icon-dim-16 bcb-5 dc__position-abs">
