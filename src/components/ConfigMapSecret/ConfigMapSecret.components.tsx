@@ -16,6 +16,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as KeyIcon } from '../../assets/icons/ic-key.svg'
 import {
     ConfigMapSecretProps,
     KeyValue,
@@ -103,7 +104,7 @@ export function ConfigMapSecretContainer({
     index,
     id,
     isOverrideView,
-    isJobView
+    isJobView,
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
@@ -111,8 +112,7 @@ export function ConfigMapSecretContainer({
     let cmSecretStateLabel = CM_SECRET_STATE.BASE
     if (isOverrideView) {
         if (
-            data &&
-            data.global &&
+            data?.global &&
             (data.external ||
                 Object.keys(data.defaultData ?? {}).length ||
                 (componentType === 'secret' &&
@@ -176,7 +176,7 @@ export function ConfigMapSecretContainer({
             return <Add className="configuration-list__logo icon-dim-24 fcb-5" />
         } else {
             if (componentType === 'secret') {
-                return <File className="configuration-list__logo icon-dim-24" />
+                return <KeyIcon className="configuration-list__logo icon-dim-24" />
             } else {
                 return <File className="configuration-list__logo icon-dim-24" />
             }
@@ -405,6 +405,20 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
 }
 
 export function Override({ overridden, onClick, loading = false, type }) {
+    const renderButtonContent = (): JSX.Element => {
+        if (loading) {
+            return <Progressing />
+        } else if (overridden) {
+            return (
+                <>
+                    <DeleteIcon className="icon-dim-16 mr-8" />
+                    <span>Delete override</span>
+                </>
+            )
+        } else {
+            return <>Allow override</>
+        }
+    }
     return (
         <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
             {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
@@ -423,16 +437,7 @@ export function Override({ overridden, onClick, loading = false, type }) {
                 className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
                 onClick={onClick}
             >
-                {loading ? (
-                    <Progressing />
-                ) : overridden ? (
-                    <>
-                        <DeleteIcon className="icon-dim-16 mr-8" />
-                        <span>Delete override</span>
-                    </>
-                ) : (
-                    'Allow override'
-                )}
+                {renderButtonContent()}
             </button>
         </div>
     )

@@ -34,9 +34,9 @@ export default function ConfigMapList({ isJobView, isOverrideView, parentState, 
             if (appChartRefRes) {
                 setAppChartRef(appChartRefRes)
             }
-            setParentState && setParentState(ComponentStates.loaded)
+            setParentState?.(ComponentStates.loaded)
         } catch (error) {
-            setParentState && setParentState(ComponentStates.failed)
+            setParentState?.(ComponentStates.failed)
             showError(error)
         } finally {
             setConfigMapLoading(false)
