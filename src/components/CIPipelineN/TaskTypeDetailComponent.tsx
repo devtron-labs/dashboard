@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import OutputDirectoryPath from './OutputDirectoryPath'
 import MultiplePort from './MultiplsPort'
-import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
@@ -11,12 +10,8 @@ import {
     CHECKBOX_VALUE,
     RadioGroup,
     RadioGroupItem,
-    FormType,
     MountPath,
     ScriptType,
-    StepType,
-    FormErrorObjectType,
-    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -29,6 +24,7 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
 import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -39,15 +35,7 @@ export function TaskTypeDetailComponent() {
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-    }: {
-        selectedTaskIndex: number
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
     const containerImageOptions = ['alpine:latest', 'python:latest', 'node:lts-slim'].map((containerImage) => ({

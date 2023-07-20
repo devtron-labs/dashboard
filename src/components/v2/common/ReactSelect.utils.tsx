@@ -77,7 +77,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'white',
         }
     },
     singleValue: (base, state) => {

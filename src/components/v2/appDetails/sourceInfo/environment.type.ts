@@ -6,6 +6,7 @@ export interface EnvironmentStatusComponentType {
     loadingResourceTree: boolean
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     isVirtualEnvironment?: boolean
+    isHelmApp?: boolean
 
 }
 export interface AppEnvironment {
