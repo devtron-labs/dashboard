@@ -4,7 +4,7 @@ import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
 import { PATTERNS } from '../../config'
-import { ConfigMapActionTypes,ConfigMapSecretDataEditorContainerProps } from './Types'
+import { ConfigMapActionTypes, ConfigMapSecretDataEditorContainerProps } from './Types'
 import {
     CODE_EDITOR_RADIO_STATE,
     CODE_EDITOR_RADIO_STATE_VALUE,
@@ -248,7 +248,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                     </RadioGroup.Radio>
                                 </RadioGroup>
                             )}
-                            {!state.unAuthorized && (
+                            {(!state.unAuthorized && componentType === 'secret') && (
                                 <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={toggleSecretMode}>
                                     {state.secretMode ? (
                                         <>
