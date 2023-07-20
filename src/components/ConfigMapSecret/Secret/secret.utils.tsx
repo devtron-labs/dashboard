@@ -208,49 +208,50 @@ export const dataHeaders = {
     ),
 }
 
+export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
+    const noGroups: any[] = [
+            { value: '', label: 'Kubernetes Secret' },
+            { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
+        ],
+        esoGroups: any[] = [
+            { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
+            { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
+            { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
+            { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
+        ],
+        ksoGroups: any[] = [
+            { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
+            { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
+            { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
+        ]
 
-export const getTypeGroups = (isJobView?:boolean, typeValue?: string) => {
-  const noGroups: any[] = [
-          { value: '', label: 'Kubernetes Secret' },
-          { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
-      ],
-      esoGroups: any[] = [
-          { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
-          { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
-          { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
-          { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
-      ],
-      ksoGroups: any[] = [
-          { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
-          { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
-          { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
-      ]
+    if (isJobView) {
+        const externalType = [...noGroups].find((x) => x.value === typeValue)
+        if (typeValue) return externalType
+        return [
+            {
+                label: '',
+                options: noGroups,
+            },
+        ]
+    }
+    const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
 
-  if(isJobView){
-      return [
-          {
-              label: '',
-              options: noGroups
-          }
-      ]
-  }
-  const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
-
-  if (typeValue) return externalType
-  return [
-      {
-          label: '',
-          options: noGroups,
-      },
-      {
-          label: 'External Secret Operator (ESO)',
-          options: esoGroups,
-      },
-      {
-          label: 'Kubernetes External Secret (KES)',
-          options: ksoGroups,
-      },
-  ]
+    if (typeValue) return externalType
+    return [
+        {
+            label: '',
+            options: noGroups,
+        },
+        {
+            label: 'External Secret Operator (ESO)',
+            options: esoGroups,
+        },
+        {
+            label: 'Kubernetes External Secret (KES)',
+            options: ksoGroups,
+        },
+    ]
 }
 
 export function SecretOptions(props) {

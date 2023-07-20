@@ -6,7 +6,8 @@ import {
     updateConfig,
     deleteEnvSecret,
     deleteEnvConfigMap,
-    getSecretKeys, updateSecret
+    getSecretKeys,
+    updateSecret,
 } from './service'
 import { useParams } from 'react-router'
 import { CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../common'
@@ -61,7 +62,7 @@ export const ConfigMapSecretForm = React.memo(
         update,
         index,
         cmSecretStateLabel,
-        isJobView
+        isJobView,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
@@ -151,7 +152,7 @@ export const ConfigMapSecretForm = React.memo(
             e.preventDefault()
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isErrorInForm = false
-            if (state.unAuthorized) {
+            if (componentType === 'secret' && state.externalType === '' && state.unAuthorized) {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 return
             }
