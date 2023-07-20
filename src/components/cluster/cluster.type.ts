@@ -29,6 +29,7 @@ export interface DataListType{
     active: boolean
     defaultClusterComponent: number
     insecureSkipTlsVerify: boolean
+    proxyUrl: string
 }
 
 export interface SaveClusterPayloadType {
@@ -40,6 +41,7 @@ export interface SaveClusterPayloadType {
     prometheus_url: string,
     prometheusAuth: Record<string, string>,
     server_url: string,
+    proxyUrl: string,
 }
 
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'

@@ -87,6 +87,10 @@ export default function ClusterForm({
     prometheus_url,
     prometheusAuth,
     defaultClusterComponent,
+    proxyUrl,
+    toConnectViaProxy,
+    toggleCheckProxyUrlConnection,
+    setProxyUrlConnectionFalse,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -136,6 +140,7 @@ export default function ClusterForm({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
+            proxyUrl: { value: proxyUrl?.value ? proxyUrl.value : '', error: ''},
             tlsClientKey: { value: config?.tls_key, error: '' },
             tlsClientCert: { value: config?.cert_data, error: '' },
             certificateAuthorityData: { value: config?.cert_auth_data, error: '' },
@@ -180,6 +185,10 @@ export default function ClusterForm({
             },
             prometheusTlsClientCert: {
                 required: false,
+            },
+            proxyUrl: {
+                required: id ? toConnectViaProxy : false,
+                validator: { error: 'incorrect URL', regex: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
@@ -227,6 +236,7 @@ export default function ClusterForm({
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
                     active: true,
                     prometheus_url: '',
+                    proxyUrl: _dataList.proxyUrl,
                     prometheusAuth: {
                         userName: '',
                         password: '',
@@ -323,6 +333,7 @@ export default function ClusterForm({
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
                             id: _cluster['id'],
+                            proxyUrl: _cluster['proxyUrl'],
                         }
                     }),
                 ])
@@ -365,6 +376,7 @@ export default function ClusterForm({
                 cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
+            proxyUrl: state.proxyUrl?.value,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
                 userName: prometheusToggleEnabled ? state.userName.value : '',
@@ -383,6 +395,13 @@ export default function ClusterForm({
         } else {
             payload['server_url'] = urlValue
         }
+        const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
+        if (proxyUrlValue.endsWith('/')) {
+            payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
+        } else {
+            payload['proxyUrl'] = proxyUrlValue
+        }
+
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value
@@ -415,6 +434,7 @@ export default function ClusterForm({
                 />,
             )
             toggleShowAddCluster()
+            setProxyUrlConnectionFalse()
             setTlsConnectionFalse()
             reload()
             toggleEditMode((e) => !e)
@@ -450,6 +470,7 @@ export default function ClusterForm({
             tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
+        proxyUrl: state.proxyUrl.value,
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
@@ -518,6 +539,7 @@ export default function ClusterForm({
 
     const handleCloseButton = () => {
         if (id) {
+            setProxyUrlConnectionFalse()
             setTlsConnectionFalse()
             toggleEditMode((e) => !e)
             return
@@ -531,6 +553,7 @@ export default function ClusterForm({
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
         }
+        setProxyUrlConnectionFalse()
         setTlsConnectionFalse()
         toggleShowAddCluster()
 
@@ -598,6 +621,49 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
+                {id !== 1 && (
+                    <>
+                        <hr />
+                        <div className="dc__position-rel flex left dc__hover mb-20">
+                            <Checkbox
+                                isChecked={toConnectViaProxy}
+                                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                                value={'CHECKED'}
+                                onChange={toggleCheckProxyUrlConnection}
+                            >
+                                <div data-testid="to_connect_via_proxy_checkbox" className="mr-4 flex center">
+                                   Connect to this cluster via proxy {toConnectViaProxy}
+                                </div>
+                            </Checkbox>
+                        </div>
+                        {toConnectViaProxy && (
+                            <>
+                                <div className="form__row">
+                                    <span
+                                        data-testid="proxy_url_data"
+                                        className="form__label dc__required-field"
+                                    >
+                                        Proxy URL
+                                    </span>
+                                    <ResizableTextarea
+                                        dataTestId="proxy_url_data_input"
+                                        className="dc__resizable-textarea__with-max-height w-100"
+                                        name="proxyUrl"
+                                        value={state.proxyUrl.value}
+                                        onChange={handleOnChange}
+                                        placeholder={'eg. http://proxy.example.org'}
+                                    />
+                                    {state.proxyUrl.error && (
+                                        <label htmlFor="" className="form__error">
+                                            <FormError className="form__icon form__icon--error" />
+                                            {state.proxyUrl.error}
+                                        </label>
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
                 {id !== 1 && (
                     <>
                         <hr />

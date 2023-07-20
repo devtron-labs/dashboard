@@ -52,8 +52,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             browseFile: false,
             isClusterDetails: false,
             showEditCluster: false,
+            toConnectViaProxy: false,
         }
         this.initialise = this.initialise.bind(this)
+        this.toggleCheckProxyUrlConnection = this.toggleCheckProxyUrlConnection.bind(this)
+        this.setProxyUrlConnectionFalse = this.setProxyUrlConnectionFalse.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
         this.setTlsConnectionFalse = this.setTlsConnectionFalse.bind(this)
         this.toggleShowAddCluster = this.toggleShowAddCluster.bind(this)
@@ -156,6 +159,18 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         clearInterval(this.timerRef)
     }
 
+    toggleCheckProxyUrlConnection() {
+        if (this.state.toConnectViaProxy){
+            this.setState({proxyUrl : ''})
+        }
+        this.setState({ toConnectViaProxy : !this.state.toConnectViaProxy})
+
+    }
+
+    setProxyUrlConnectionFalse() {
+        this.setState({ toConnectViaProxy : false})
+    }
+
     toggleCheckTlsConnection() {
         this.setState({ isTlsConnection: !this.state.isTlsConnection })
     }
@@ -237,6 +252,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     serverMode={this.props.serverMode}
                                     showEditCluster={this.state.showEditCluster}
                                     toggleShowAddCluster={this.toggleShowEditCluster}
+                                    toggleCheckProxyUrlConnection={this.toggleCheckProxyUrlConnection}
+                                    setProxyUrlConnectionFalse={this.setProxyUrlConnectionFalse}
                                     toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
                                     isTlsConnection={this.state.isTlsConnection}
@@ -259,6 +276,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 defaultClusterComponent={this.state.defaultClusterComponent}
                                 isTlsConnection={this.state.isTlsConnection}
                                 isClusterDetails={this.state.isClusterDetails}
+                                proxyUrl={this.state.proxyUrl}
+                                toConnectViaProxy={this.state.toConnectViaProxy}
+                                toggleCheckProxyUrlConnection={this.toggleCheckProxyUrlConnection}
+                                setProxyUrlConnectionFalse={this.setProxyUrlConnectionFalse}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 setTlsConnectionFalse={this.setTlsConnectionFalse}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
@@ -288,9 +309,12 @@ function Cluster({
     environments,
     reload,
     prometheus_url,
+    proxyUrl,
     serverMode,
     isTlsConnection,
     toggleShowAddCluster,
+    toggleCheckProxyUrlConnection,
+    setProxyUrlConnectionFalse,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
     isVirtualCluster
@@ -325,6 +349,8 @@ function Cluster({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
+            proxyUrl: {value: proxyUrl, error: '' },
+            toConnectViaProxy: {value: proxyUrl!='',error:''},
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
@@ -345,6 +371,13 @@ function Cluster({
             url: {
                 required: true,
                 validator: { error: 'URL is required', regex: /^.*$/ },
+            },
+            proxyUrl: {
+                required: false,
+                validator: { error: 'Incorrect Url', regex: /^.*$/ },
+            },
+            toConnectViaProxy: {
+                required: false,
             },
             authType: {
                 required: false,
@@ -459,6 +492,12 @@ function Cluster({
         } else {
             payload['server_url'] = urlValue
         }
+        const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
+        if (proxyUrlValue.endsWith('/')) {
+            payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
+        } else {
+            payload['proxyUrl'] = proxyUrlValue
+        }
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -487,6 +526,7 @@ function Cluster({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
+            proxyUrl: state.proxyUrl.value,
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
@@ -757,6 +797,10 @@ function Cluster({
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
+                                proxyUrl={state.proxyUrl}
+                                toConnectViaProxy={state.toConnectViaProxy.value}
+                                toggleCheckProxyUrlConnection={toggleCheckProxyUrlConnection}
+                                setProxyUrlConnectionFalse={setProxyUrlConnectionFalse}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
                                 toggleShowAddCluster={toggleShowAddCluster}
