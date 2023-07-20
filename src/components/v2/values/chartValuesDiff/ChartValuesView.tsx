@@ -1279,12 +1279,12 @@ function ChartValuesView({
     const renderChartValuesEditor = () => {
         return (
             <div
-                className={`chart-values-view__editor ${
+                className={`chart-values-view__editor dc__position-rel ${
                     commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
                 }`}
             >
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                    <GenericEmptyState SvgImage={ErrorExclamation} classname="icon-dim-20 mb-10" title="" subTitle={commonState.valuesEditorError} />
+                    <GenericEmptyState SvgImage={ErrorExclamation} classname="icon-dim-20 dc__align-reload-center" title="" subTitle={commonState.valuesEditorError} />
 
                 ) : (
                     <ChartValuesEditor
