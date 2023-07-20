@@ -25,7 +25,7 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
-import MechanicalOperation from '../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as MechanicalOperation} from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
     DEFAULT_SECRET_PLACEHOLDER,
@@ -914,7 +914,7 @@ export default function ClusterForm({
                     </button>
                 </div>
                 <div
-                    className="flex flex-align-center w-100 flex-justify bcn-0 p-20"
+                    className="dc__position-rel"
                     style={{ height: 'calc(100vh - 110px)' }}
                 >
                     <GenericEmptyState

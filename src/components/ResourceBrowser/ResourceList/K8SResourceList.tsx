@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
@@ -119,6 +119,13 @@ export function K8SResourceList({
         }
     }
 
+    const handleNodeClick = (e) => {
+        const {name} = e.currentTarget.dataset
+        const beginpart = window.location.href.split('/resource-browser')[0]
+        const _url = `${beginpart}/clusters/${clusterId}/${name}`
+        window.open(_url, 'blank')
+    }
+
     const getStatusClass = (status: string) => {
         let statusPostfix = status?.toLowerCase()
 
@@ -184,11 +191,22 @@ export function K8SResourceList({
                                     : ''
                             }`}
                         >
-                            <span
-                                dangerouslySetInnerHTML={{
-                                    __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
-                                }}
-                            ></span>
+                            <ConditionalWrap
+                                condition={columnName === 'node'}
+                                wrap={(children) => (
+                                    <a
+                                        className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
+                                        data-name={resourceData[columnName]}
+                                        onClick={handleNodeClick}
+                                    >{children}</a>
+                                )}
+                            >
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
+                                    }}
+                                ></span>
+                            </ConditionalWrap>
                         </div>
                     ),
                 )}

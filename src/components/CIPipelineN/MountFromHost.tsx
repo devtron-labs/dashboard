@@ -2,9 +2,8 @@ import React, { useContext } from 'react'
 import { MountPathMap } from '../ciPipeline/types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 function MountFromHost() {
     const {
@@ -13,13 +12,7 @@ function MountFromHost() {
         setFormData,
         activeStageName,
         formDataErrorObj,
-    }: {
-        selectedTaskIndex: number
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const addMountDirectoryfromHost = () => {
         const _formData = { ...formData }
 
