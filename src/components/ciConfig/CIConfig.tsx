@@ -33,7 +33,7 @@ export default function CIConfig({
         configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
     )
     const { appId } = useParams<{ appId: string }>()
-    const [isAirgapped,setIsAirGapped] = useState(false)
+    const [isAirgapped, setIsAirGapped] = useState(false)
 
     useEffect(() => {
         
@@ -96,16 +96,9 @@ export default function CIConfig({
         }
     }
     async function getAirGapEnvironmentValue() {
-        try {
-            setLoading(true)
-            const {result} = await getEnvironmentData()
-            setIsAirGapped(result.isAirGapEnvironment)
-          
-        } catch (err) {
-            setIsAirGapped(false)
-        } finally {
-            setLoading(false)
-        }   
+        if (typeof Storage !== 'undefined' && localStorage.getItem('isAirGapped')){
+            setIsAirGapped(true)
+        } 
     }
     function updateLoadingState(isLoading: boolean, skipPageReload: boolean) {
         if (!skipPageReload) {
