@@ -393,7 +393,9 @@ function EphemeralContainerDrawer({
                             <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                             <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                         </Switch>
-                        <CodeEditor.ValidationError />
+                        <div className="w-70 ml-8">
+                            <CodeEditor.ValidationError />
+                        </div>
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
