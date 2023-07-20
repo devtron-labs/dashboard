@@ -923,12 +923,12 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isJobVie
                     appId={Number(appId)}
                     name={name}
                     external={external}
-                    roleARNData={roleARN}
-                    secret={secretDataValue.map((s) => {
+                    roleARN={roleARN}
+                    secretData={secretDataValue.map((s) => {
                         return { key: s.fileName, name: s.name, property: s.property, isBinary: s.isBinary }
                     })}
-                    esoSecret={esoSecretData}
-                    externalTypeData={externalType}
+                    esoSecretData={esoSecretData}
+                    externalType={externalType}
                     data={state.duplicate}
                     type={type}
                     mountPath={mountPath}

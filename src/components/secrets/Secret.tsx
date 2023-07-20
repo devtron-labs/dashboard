@@ -27,6 +27,7 @@ import {
 } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify'
 import { KeyValueInput, useKeyValueYaml, validateKeyValuePair } from '../configMaps/ConfigMap'
+import { getSecretList } from '../../services/service'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { DOCUMENTATION, MODES, PATTERNS, ROLLOUT_DEPLOYMENT, URLS } from '../../config'
 import YAML from 'yaml'
@@ -57,7 +58,6 @@ import {
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { NavLink } from 'react-router-dom'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
-import { getSecretList } from '../ConfigMapSecret/service'
 
 const Secret = ({ respondOnSuccess, isJobView } : {respondOnSuccess: ()=> void, isJobView?: boolean }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -207,9 +207,9 @@ export function CollapsedSecretForm({
                 <SecretForm
                     name={name}
                     appChartRef={appChartRef}
-                    secret={secretData}
+                    secretData={secretData}
                     mountPath={mountPath}
-                    roleARNData={roleARN}
+                    roleARN={roleARN}
                     type={type}
                     external={external}
                     data={data}
@@ -221,10 +221,10 @@ export function CollapsedSecretForm({
                     index={index}
                     keyValueEditable={false}
                     initialise={initialise}
-                    externalTypeData={externalType}
+                    externalType={externalType}
                     subPath={subPath}
                     filePermission={filePermission}
-                    esoSecret={esoSecretData}
+                    esoSecretData={esoSecretData}
                     isJobView={isJobView}
                 />
             )}
@@ -262,10 +262,10 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const [externalValues, setExternalValues] = useState([])
     const [configName, setName] = useState({ value: props.name, error: '' })
     const [volumeMountPath, setVolumeMountPath] = useState({ value: props.mountPath, error: '' })
-    const [roleARN, setRoleARN] = useState({ value: props.roleARNData, error: '' })
+    const [roleARN, setRoleARN] = useState({ value: props.roleARN, error: '' })
     const [loading, setLoading] = useState(false)
     const [secretMode, toggleSecretMode] = useState(props.isUpdate)
-    const [externalType, setExternalType] = useState(props.externalTypeData)
+    const [externalType, setExternalType] = useState(props.externalType)
     const { appId, envId } = useParams<{ appId; envId }>()
     const [yamlMode, toggleYamlMode] = useState(true)
     const { yaml, handleYamlChange, error } = useKeyValueYaml(
@@ -296,7 +296,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
     const isHashiOrAWS = hasHashiOrAWS(externalType)
 
     const isESO = hasESO(externalType)
-    let tempSecretData: any[] = props?.secret || []
+    let tempSecretData: any[] = props?.secretData || []
     tempSecretData = tempSecretData.map((s) => {
         return {
             fileName: s.key,
@@ -305,7 +305,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             property: s.property,
         }
     })
-    let jsonForSecretDataYaml: any[] = props?.secret || []
+    let jsonForSecretDataYaml: any[] = props?.secretData || []
     jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
         let temp = {}
         temp['isBinary'] = j.isBinary
@@ -321,15 +321,15 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         return temp
     })
     const isEsoSecretData =
-        (props.esoSecret?.secretStore || props.esoSecret?.secretStoreRef) &&
-        props.esoSecret?.esoData.length > 0
-    const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecret?.esoData)
-    const [secretStore, setSecretStore] = useState(props.esoSecret?.secretStore)
+        (props.esoSecretData?.secretStore || props.esoSecretData?.secretStoreRef) &&
+        props.esoSecretData?.esoData.length > 0
+    const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecretData?.esoData)
+    const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
-    const [secretStoreRef, setScretStoreRef] = useState(props.esoSecret?.secretStoreRef)
-    const [refreshInterval, setRefreshInterval] = useState<string>(props.esoSecret.refreshInterval)
+    const [secretStoreRef, setScretStoreRef] = useState(props.esoSecretData?.secretStoreRef)
+    const [refreshInterval, setRefreshInterval] = useState<string>(props.esoSecretData?.refreshInterval)
     const [secretDataYaml, setSecretDataYaml] = useState(YAML.stringify(jsonForSecretDataYaml))
-    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecret) : '')
+    const [esoSecretYaml, setEsoYaml] = useState(isEsoSecretData ? YAML.stringify(props?.esoSecretData) : '')
     const [codeEditorRadio, setCodeEditorRadio] = useState(CODE_EDITOR_RADIO_STATE.DATA)
     const isExternalValues = externalType !== 'KubernetesSecret'
     const tabs = [{ title: 'Environment Variable' }, { title: 'Data Volume' }].map((data) => ({
@@ -733,6 +733,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
+
                         placeholder="Select Secret Type"
                         options={getTypeGroups(props?.isJobView)}
                         defaultValue={

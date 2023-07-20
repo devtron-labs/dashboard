@@ -221,13 +221,13 @@ export interface SecretFormProps {
     id: number
     appChartRef: { id: number; version: string; name: string }
     appId: number
-    roleARNData: string
+    roleARN: string
     name: string
     index: number
     external: boolean
-    externalTypeData: string
-    secret: SecretData[]
-    esoSecret?: EsoSecretData
+    externalType: string
+    secretData: SecretData[]
+    esoSecretData?: EsoSecretData
     type: string
     data: { k: string; v: string }[]
     isUpdate: boolean

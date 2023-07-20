@@ -17,14 +17,7 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import {
-    showError,
-    Progressing,
-    ConfirmationDialog,
-    Checkbox,
-    CHECKBOX_VALUE,
-    not,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE, not } from '@devtron-labs/devtron-fe-common-lib'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -135,11 +128,7 @@ export function ListComponent({ name = '', type, label = '', appChartRef, isJobV
 
     return (
         <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
-            <div
-                className="environment-override-list pointer left flex"
-                onClick={handleOverrideListClick}
-                data-testid="click-to-add-configmaps-secret"
-            >
+            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick} data-testid="click-to-add-configmaps-secret">
                 {name ? (
                     type === 'config-map' ? (
                         <FileIcon className="icon-dim-24" />
@@ -612,25 +601,22 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         </div>
                     ) : null}
                     {!external && (
+                        <div className="flex left mb-16">
+                            <b className="mr-5 dc__bold">Data*</b>
+                            <RadioGroup
+                                className="gui-yaml-switch"
+                                name="yaml-mode"
+                                initialTab={yamlMode ? 'yaml' : 'gui'}
+                                disabled={false}
+                                onChange={changeEditorMode}
+                            >
+                                <RadioGroup.Radio value="gui" dataTestId="gui-from-config-map">GUI</RadioGroup.Radio>
+                                <RadioGroup.Radio value="yaml" dataTestId="yaml-from-config-map">YAML</RadioGroup.Radio>
+                            </RadioGroup>
+                        </div>
+                    )}
+                    {!external && (
                         <>
-                            <div className="flex left mb-16">
-                                <b className="mr-5 dc__bold">Data*</b>
-                                <RadioGroup
-                                    className="gui-yaml-switch"
-                                    name="yaml-mode"
-                                    initialTab={yamlMode ? 'yaml' : 'gui'}
-                                    disabled={false}
-                                    onChange={changeEditorMode}
-                                >
-                                    <RadioGroup.Radio value="gui" dataTestId="gui-from-config-map">
-                                        GUI
-                                    </RadioGroup.Radio>
-                                    <RadioGroup.Radio value="yaml" dataTestId="yaml-from-config-map">
-                                        YAML
-                                    </RadioGroup.Radio>
-                                </RadioGroup>
-                            </div>
-
                             {yamlMode ? (
                                 <div className="yaml-container">
                                     <CodeEditor

@@ -201,6 +201,14 @@ export function getEnvironmentConfigs(appId, envId) {
 export function getEnvironmentSecrets(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
 }
+//TODO:move to configmap and secret component
+export function getConfigMapList(appId: string) {
+  return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`)
+}
+
+export function getSecretList(appId: string) {
+  return get(`${Routes.APP_CREATE_SECRET}/${appId}`)
+}
 
 export function getWorkflowList(appId) {
     const URL = `${Routes.WORKFLOW}/${appId}`
