@@ -1,9 +1,0 @@
-{
-    "sampleManifest": {
-        "name": "debugger",
-        "image": "quay.io/devtron/ubuntu-k8s-utils:latest",
-        "targetContainerName": "demo-app",
-        "stdin": true,
-        "tty": true
-    }
-}
