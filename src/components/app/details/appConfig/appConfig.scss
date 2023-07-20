@@ -37,6 +37,18 @@
             }
         }
 
+        &.config-protection__side-nav {
+            grid-template-rows: 110px repeat(6, 36px) 54px 36px 1fr auto;
+
+            &.hide-app-config-help {
+                grid-template-rows: repeat(6, 36px) 54px 36px 1fr auto;
+    
+                &.hide-external-links {
+                    grid-template-rows: repeat(6, 36px) 54px 1fr auto;
+                }
+            }
+        }
+
         .help-container {
             background-color: #f3f0ff;
             padding: 8px 12px;

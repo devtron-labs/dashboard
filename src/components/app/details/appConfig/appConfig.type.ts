@@ -59,6 +59,7 @@ export interface AppConfigNavigationProps {
     deleteApp: () => void
     canShowExternalLinks: boolean
     showCannotDeleteTooltip: boolean
+    isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
     getRepo: string
     isJobView: boolean
@@ -66,6 +67,7 @@ export interface AppConfigNavigationProps {
 }
 
 export interface AppComposeRouterProps {
+    appId: string
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     respondOnSuccess: () => void
