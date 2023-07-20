@@ -38,7 +38,7 @@ import {
     ConfigMapOptions,
     hasHashiOrAWS,
     hasESO,
-    unlockSecrets,
+    prepareSecretOverrideData,
     secretValidationInfoToast,
     CODE_EDITOR_RADIO_STATE,
 } from '../Secret/secret.utils'
@@ -81,6 +81,13 @@ export const ConfigMapSecretForm = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
+
+        useEffect(() => {
+            if (componentType === 'secret' && configMapSecretData?.name) {
+                handleSecretFetch()
+            }
+        }, [])
+
         useEffect(() => {
             if (isESO && !state.yamlMode) {
                 dispatch({
@@ -99,12 +106,18 @@ export const ConfigMapSecretForm = React.memo(
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: {
-                        secretMode: false,
+                        unAuthorized: false,
                         currentData: processCurrentData(result.configData[0], cmSecretStateLabel, componentType),
                     },
                 })
             } catch (err) {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+                dispatch({
+                    type: ConfigMapActionTypes.toggleUnAuthorized,
+                    payload: {
+                        unAuthorized: true,
+                    },
+                })
             }
         }
 
@@ -123,13 +136,7 @@ export const ConfigMapSecretForm = React.memo(
             } else {
                 //duplicate
                 if (componentType === 'secret') {
-                    unlockSecrets(
-                        id,
-                        +appId,
-                        +envId,
-                        state.configName.value,
-                        dispatch,
-                    )
+                    prepareSecretOverrideData(configMapSecretData, dispatch)
                 } else {
                     dispatch({
                         type: ConfigMapActionTypes.multipleOptions,
@@ -145,7 +152,7 @@ export const ConfigMapSecretForm = React.memo(
             e.preventDefault()
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isErrorInForm = false
-            if (state.secretMode) {
+            if (state.unAuthorized) {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 return
             }
@@ -246,12 +253,12 @@ export const ConfigMapSecretForm = React.memo(
                 }
             }
 
-            let dataArray = state.yamlMode ? tempArr.current : state.currentData
+            let dataArray = state.yamlMode && !state.secretMode ? tempArr.current : state.currentData
             const { isValid, arr } = validateKeyValuePair(dataArray)
             if (!isValid) {
                 toast.error(INVALID_YAML_MSG)
                 dispatch({
-                    type: ConfigMapActionTypes.setExternalValues,
+                    type: ConfigMapActionTypes.updateCurrentData,
                     payload: arr,
                 })
                 return
@@ -346,18 +353,15 @@ export const ConfigMapSecretForm = React.memo(
                 dispatch({ type: ConfigMapActionTypes.submitLoading })
                 let toastTitle = ''
                 if (!envId) {
-                    const { result } =
-                        componentType === 'secret'
-                            ? await updateSecret(id, +appId, payload)
-                            : await updateConfig(id, +appId, payload)
+                    componentType === 'secret'
+                        ? await updateSecret(id, +appId, payload)
+                        : await updateConfig(id, +appId, payload)
                     toastTitle = `${payload.name ? 'Updated' : 'Saved'}`
-                    update(index, result)
                 } else {
                     componentType === 'secret'
                         ? await overRideSecret(id, +appId, +envId, [payload])
                         : await overRideConfigMap(id, +appId, +envId, [payload])
                     toastTitle = 'Overridden'
-                    update()
                 }
                 toast.success(
                     <div className="toast">
@@ -365,6 +369,7 @@ export const ConfigMapSecretForm = React.memo(
                         <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                     </div>,
                 )
+                update()
                 toggleCollapse((collapse) => !collapse)
                 dispatch({ type: ConfigMapActionTypes.success })
             } catch (err) {
@@ -467,11 +472,11 @@ export const ConfigMapSecretForm = React.memo(
                     {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
                         state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
                         <Override
-                            external={
-                                state.selectedType === 'environment' &&
-                                ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
-                                    (componentType === 'configmap' && state.external))
-                            }
+                            // external={
+                            //     state.selectedType === 'environment' &&
+                            //     ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                            //         (componentType === 'configmap' && state.external))
+                            // }
                             overridden={state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
                             onClick={handleOverride}
                             loading={state.overrideLoading}
@@ -499,7 +504,7 @@ export const ConfigMapSecretForm = React.memo(
                                             GroupHeading,
                                         }}
                                         classNamePrefix="secret-data-type"
-                                        isDisabled={configMapSecretData?.name}
+                                        isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                     />
                                     {isESO && (
                                         <InfoColourBar
@@ -522,7 +527,7 @@ export const ConfigMapSecretForm = React.memo(
                                         Option,
                                     }}
                                     classNamePrefix="configmap-data-type"
-                                    isDisabled={configMapSecretData?.name}
+                                    isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 />
                             )}
                         </div>
@@ -566,7 +571,7 @@ export const ConfigMapSecretForm = React.memo(
                             value={state.selectedType}
                             name="DeploymentAppTypeGroup"
                             onChange={toggleSelectedType}
-                            disabled={configMapSecretData?.name}
+                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                             className="radio-group-no-border"
                         >
                             <RadioGroupItem
@@ -710,7 +715,7 @@ export const ConfigMapSecretForm = React.memo(
                                         value={state.filePermission.value}
                                         autoComplete="off"
                                         tabIndex={5}
-                                        label={''}
+                                        label=""
                                         dataTestid="configmap-file-permission-textbox"
                                         placeholder={'eg. 0400 or 400'}
                                         error={state.filePermission.error}
@@ -724,6 +729,7 @@ export const ConfigMapSecretForm = React.memo(
                             )}
                         </>
                     )}
+
                     {(isHashiOrAWS || isESO) && (
                         <div className="form__row form__row--flex">
                             <div className="w-50">
@@ -735,7 +741,7 @@ export const ConfigMapSecretForm = React.memo(
                                     placeholder="Enter Role ARN"
                                     error={state.roleARN.error}
                                     onChange={handleRoleARNChange}
-                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
+                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 />
                             </div>
                         </div>
@@ -745,12 +751,11 @@ export const ConfigMapSecretForm = React.memo(
                         state={state}
                         dispatch={dispatch}
                         tempArr={tempArr}
-                        handleSecretFetch={handleSecretFetch}
                     />
                     {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
                         <div className="form__buttons">
                             <button
-                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
+                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
                                 className="cta"

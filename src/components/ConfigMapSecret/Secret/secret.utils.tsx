@@ -332,27 +332,21 @@ export const secretValidationInfoToast = (isESO, secretStore, secretStoreRef) =>
     toast.error(errorMessage)
 }
 
-export async function unlockSecrets(
-    id: number,
-    appId: number,
-    envId: number,
-    name: string,
-    dispatch: (action: ConfigMapAction) => void,
-) {
+export async function prepareSecretOverrideData(configMapSecretData, dispatch: (action: ConfigMapAction) => void) {
     try {
-        const {
-            result: { configData: secretData },
-        } = await unlockEnvSecret(id, appId, envId, name)
+        // const {
+        //     result: { configData: secretData },
+        // } = await unlockEnvSecret(id, appId, envId, name)
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
             payload: {
                 secretMode: false,
                 cmSecretState: CM_SECRET_STATE.OVERRIDDEN,
-                currentData: processCurrentData(secretData[0], CM_SECRET_STATE.INHERITED, 'secret'),
+                currentData: processCurrentData(configMapSecretData, CM_SECRET_STATE.INHERITED, 'secret'),
             },
         })
-        if (secretData[0].secretData) {
-            let json = secretData[0].secretData.map((s) => {
+        if (configMapSecretData.secretData) {
+            let json = configMapSecretData.secretData.map((s) => {
                 return {
                     fileName: s.key,
                     name: s.name,
@@ -362,18 +356,18 @@ export async function unlockSecrets(
             })
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
-                payload: { secretDataYaml: YAML.stringify(secretData[0].secretData), secretData: json },
+                payload: { secretDataYaml: YAML.stringify(configMapSecretData.secretData), secretData: json },
             })
         }
-        if (secretData[0].esoSecretData?.esoData) {
+        if (configMapSecretData.esoSecretData?.esoData) {
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
                 payload: {
-                    esoData: secretData[0].esoSecretData.esoData,
-                    secretStore: secretData[0].esoSecretData.secretStore,
-                    secretStoreRef: secretData[0].esoSecretData.secretStoreRef,
-                    refreshInterval: secretData[0].esoSecretData.refreshInterval,
-                    esoYaml: YAML.stringify(secretData[0].esoSecretData),
+                    esoData: configMapSecretData.esoSecretData.esoData,
+                    secretStore: configMapSecretData.esoSecretData.secretStore,
+                    secretStoreRef: configMapSecretData.esoSecretData.secretStoreRef,
+                    refreshInterval: configMapSecretData.esoSecretData.refreshInterval,
+                    esoYaml: YAML.stringify(configMapSecretData.esoSecretData),
                 },
             })
         }
@@ -494,6 +488,7 @@ export const getSecretInitState = (configMapSecretData, isOverrideView): SecretS
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
         secretMode: configMapSecretData?.secretMode,
+        unAuthorized: configMapSecretData?.unAuthorized ?? true,
     }
 }
 

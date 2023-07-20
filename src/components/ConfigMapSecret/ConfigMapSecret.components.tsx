@@ -114,13 +114,17 @@ export function ConfigMapSecretContainer({
     if (isOverrideView) {
         if (
             data &&
-            (Object.keys(data.defaultData ?? {}).length ||
+            data.global &&
+            (data.external ||
+                Object.keys(data.defaultData ?? {}).length ||
                 (componentType === 'secret' &&
                     (Object.keys(data.defaultSecretData ?? {}).length ||
                         Object.keys(data.defaultESOSecretData ?? {}).length)))
         ) {
             cmSecretStateLabel =
-                data.data || (componentType === 'secret' && (data.esoSecretData?.secretStore || data.secretData))
+                data.external || // TODO: need to work on external type as this will always show overridden
+                data.data ||
+                (componentType === 'secret' && (data.esoSecretData?.secretStore || data.secretData))
                     ? CM_SECRET_STATE.OVERRIDDEN
                     : CM_SECRET_STATE.INHERITED
         } else {
@@ -423,44 +427,36 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
     return { yaml, handleYamlChange, error }
 }
 
-export function Override({ external, overridden, onClick, loading = false, type = 'ConfigMap' }) {
+export function Override({ overridden, onClick, loading = false, type }) {
     return (
         <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
             {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
                 <div className="override-title" data-testid="env-override-title">
-                    {external
-                        ? 'Nothing to override'
-                        : overridden
-                        ? 'Base configurations are overridden'
-                        : 'Inheriting base configurations'}
+                    {overridden ? 'Base configurations are overridden' : 'Inheriting base configurations'}
                 </div>
                 <div className="override-subtitle" data-testid="env-override-subtitle">
-                    {external
-                        ? `This ${type} does not have any overridable values.`
-                        : overridden
+                    {overridden
                         ? 'Deleting will discard the current overrides and base configuration will be applicable to this environment.'
                         : `Overriding will fork the ${type} for this environment. Updating the base values will no longer affect this configuration.`}
                 </div>
             </div>
-            {!external && (
-                <button
-                    data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
-                    onClick={onClick}
-                >
-                    {loading ? (
-                        <Progressing />
-                    ) : overridden ? (
-                        <>
-                            <DeleteIcon className="icon-dim-16 mr-8" />
-                            <span>Delete override</span>
-                        </>
-                    ) : (
-                        'Allow override'
-                    )}
-                </button>
-            )}
+            <button
+                data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
+                className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                onClick={onClick}
+            >
+                {loading ? (
+                    <Progressing />
+                ) : overridden ? (
+                    <>
+                        <DeleteIcon className="icon-dim-16 mr-8" />
+                        <span>Delete override</span>
+                    </>
+                ) : (
+                    'Allow override'
+                )}
+            </button>
         </div>
     )
 }

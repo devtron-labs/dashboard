@@ -19,18 +19,26 @@ import {
 } from '../Secret/secret.utils'
 import { KeyValueFileInput } from '../../util/KeyValueFileInput'
 import { CM_SECRET_STATE } from '../Constants'
+import { ReactComponent as ShowIcon } from '../../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as HideIcon } from '../../../assets/icons/ic-visibility-off.svg'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
-    ({
-        componentType,
-        state,
-        dispatch,
-        tempArr,
-        handleSecretFetch,
-    }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
-        const memoisedHandleChange = (index, k, v) =>
-            dispatch({ type: ConfigMapActionTypes.keyValueChange, value: { index, k, v } })
-        const memoisedRemove = (e, idx) => dispatch({ type: ConfigMapActionTypes.keyValueDelete, value: { index: idx } })
+    ({ componentType, state, dispatch, tempArr }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
+        const memoisedHandleChange = (index, k, v) => {
+            const _currentData = [...state.currentData]
+            _currentData[index] = {
+                k: k,
+                v: v,
+                keyError: '',
+                valueError: '',
+            }
+            dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
+        }
+        const memoisedRemove = (e, idx) => {
+            const _currentData = [...state.currentData]
+            _currentData.splice(idx, 1)
+            dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
+        }
 
         function setKeyValueArray(arr) {
             tempArr.current = arr
@@ -55,12 +63,15 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         function changeEditorMode() {
             if (state.yamlMode) {
-                dispatch({
-                    type: ConfigMapActionTypes.multipleOptions,
-                    payload: { currentData: tempArr.current, yamlMode: !state.yamlMode },
-                })
+                if (!state.secretMode) {
+                    dispatch({
+                        type: ConfigMapActionTypes.multipleOptions,
+                        payload: { currentData: tempArr.current, yamlMode: !state.yamlMode },
+                    })
+                    tempArr.current = []
+                    return
+                }
                 tempArr.current = []
-                return
             }
             dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
         }
@@ -72,7 +83,9 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     payload: [...state.secretData, { fileName: '', property: '', isBinary: true, name: '' }],
                 })
             } else {
-                dispatch({ type: ConfigMapActionTypes.addParam })
+                const _currentData = [...state.currentData]
+                _currentData.push({ k: '', v: '', keyError: '', valueError: '' })
+                dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
             }
         }
 
@@ -135,6 +148,19 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
         }
 
+        const toggleSecretMode = () => {
+            if (!state.secretMode) {
+                dispatch({
+                    type: ConfigMapActionTypes.multipleOptions,
+                    payload: { secretMode: true, currentData: tempArr.current },
+                })
+            } else {
+                dispatch({
+                    type: ConfigMapActionTypes.toggleSecretMode,
+                })
+            }
+        }
+
         const externalSecretEditor = (): JSX.Element => {
             if ((isHashiOrAWS || isESO) && state.yamlMode) {
                 return (
@@ -151,7 +177,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                             inline
                             height={350}
                             onChange={handleSecretYamlChange}
-                            readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
+                            readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
                             shebang={
                                 state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
                                     ? '#Check sample for usage.'
@@ -223,9 +249,19 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                     </RadioGroup.Radio>
                                 </RadioGroup>
                             )}
-                            {state.secretMode && (
-                                <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={handleSecretFetch}>
-                                    <Pencil />
+                            {!state.unAuthorized && (
+                                <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={toggleSecretMode}>
+                                    {state.secretMode ? (
+                                        <>
+                                            <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" />
+                                            Show values
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HideIcon className="icon-dim-16 mr-4 mw-18 cursor" />
+                                            Hide values
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -233,12 +269,16 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         {state.yamlMode ? (
                             <div className="yaml-container">
                                 <CodeEditor
-                                    value={componentType === 'secret' && state.secretMode ? lockedYaml : yaml}
+                                    value={
+                                        componentType === 'secret' && (state.secretMode || state.unAuthorized)
+                                            ? lockedYaml
+                                            : yaml
+                                    }
                                     mode="yaml"
                                     inline
                                     height={350}
                                     onChange={handleYamlChange}
-                                    readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode}
+                                    readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
                                     shebang="#key: value"
                                 >
                                     <CodeEditor.Header>
@@ -255,7 +295,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                             </div>
                         ) : (
                             <>
-                                {[...state.currentData].map((config, idx) => (
+                                {state.currentData.map((config, idx) => (
                                     <KeyValueInput
                                         keyLabel={
                                             state.externalType === '' && state.selectedType === 'volume'
@@ -268,10 +308,16 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                                 : 'Value'
                                         }
                                         key={`editable-${idx}`}
-                                        {...{ ...config, v: state.secretMode ? Array(8).fill('*').join('') : config.v }}
+                                        {...{
+                                            ...config,
+                                            v:
+                                                state.secretMode || state.unAuthorized
+                                                    ? Array(8).fill('*').join('')
+                                                    : config.v,
+                                        }}
                                         index={idx}
                                         onChange={
-                                            state.cmSecretState === CM_SECRET_STATE.INHERITED || state.secretMode
+                                            state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized
                                                 ? null
                                                 : memoisedHandleChange
                                         }
@@ -283,7 +329,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     </>
                 )}
                 {externalSecretEditor()}
-                {state.cmSecretState !== CM_SECRET_STATE.INHERITED && !state.yamlMode && !state.secretMode && (
+                {state.cmSecretState !== CM_SECRET_STATE.INHERITED && !state.yamlMode && !state.unAuthorized && (
                     <span className="dc__bold anchor pointer" onClick={handleAddParam}>
                         +Add params
                     </span>

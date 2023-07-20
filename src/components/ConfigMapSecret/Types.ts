@@ -69,7 +69,6 @@ export interface ConfigMapSecretDataEditorContainerProps {
     state
     dispatch
     tempArr
-    handleSecretFetch
 }
 
 export interface ConfigMapSecretProps {

@@ -27,16 +27,12 @@ const initialDuplicate = (configMapSecretData, isOverrideView, componentType) =>
     return null
 }
 
-const secureValues = (data, isSecretMode, isExternalType) => {
+const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data
     return Object.keys(decodedData).map((k) => {
-        let value = '********'
-        if (!isSecretMode) {
-            value = typeof decodedData[k] === 'object' ? YAML.stringify(decodedData[k], { indent: 2 }) : decodedData[k]
-        }
         return {
             k,
-            v: value,
+            v: typeof decodedData[k] === 'object' ? YAML.stringify(decodedData[k], { indent: 2 }) : decodedData[k],
             keyError: '',
             valueError: '',
         }
@@ -47,13 +43,11 @@ export const processCurrentData = (configMapSecretData, cmSecretStateLabel, comp
     if (configMapSecretData?.data) {
         return secureValues(
             configMapSecretData.data,
-            configMapSecretData.secretMode,
             componentType === 'secret' && configMapSecretData.externalType === '',
         )
     } else if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
-            configMapSecretData.secretMode,
             componentType === 'secret' && configMapSecretData.externalType === '',
         )
     }
@@ -104,57 +98,19 @@ export const initState = (
     return initialState
 }
 
-export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction) => {
+export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapAction) => {
     switch (action.type) {
         case ConfigMapActionTypes.deleteOverride:
             return { ...action.payload }
-        case ConfigMapActionTypes.addParam:
-            return {
-                ...state,
-                currentData: state.currentData.concat([{ k: '', v: '', keyError: '', valueError: '' }]),
-            }
-        case ConfigMapActionTypes.keyValueChange:
-            let _currentData = state.currentData
-            _currentData[action.payload.index] = {
-                k: action.payload.k,
-                v: action.payload.v,
-                keyError: '',
-                valueError: '',
-            }
-            return { ...state, currentData: [..._currentData] }
-        case ConfigMapActionTypes.keyValueDelete:
-            let dup = [...state.duplicate]
-            dup.splice(action.payload.index, 1)
-            return { ...state, duplicate: [...dup] }
         case ConfigMapActionTypes.submitLoading:
             return { ...state, submitLoading: true }
         case ConfigMapActionTypes.overrideLoading:
             return { ...state, overrideLoading: true }
-        case ConfigMapActionTypes.createErrors:
-            return {
-                ...state,
-                duplicate: state.duplicate.reduce((agg, dup) => {
-                    if (!!dup.k && typeof dup.v === 'string') return agg
-                    return [
-                        ...agg,
-                        {
-                            ...dup,
-                            keyError:
-                                typeof dup.v === 'string' && !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(dup.k)
-                                    ? "Key must consist of alphanumeric characters, '.', '-' and '_'"
-                                    : '',
-                            valueError: dup.v !== 'string' && dup.k ? 'Both key value pairs are required' : '',
-                        },
-                    ]
-                }, []),
-            }
         case ConfigMapActionTypes.success:
         case ConfigMapActionTypes.error:
             return { ...state, submitLoading: false, overrideLoading: false }
         case ConfigMapActionTypes.toggleDialog:
             return { ...state, dialog: !state.dialog }
-        case ConfigMapActionTypes.yamlToValues:
-            return { ...state, duplicate: action.payload }
         case ConfigMapActionTypes.setExternal:
             return { ...state, external: action.payload }
         case ConfigMapActionTypes.setSelectedType:
@@ -186,14 +142,14 @@ export const ConfigMapReducer = (state: ConfigMapState, action: ConfigMapAction)
             return { ...state, secretData: action.payload }
         case ConfigMapActionTypes.setRoleARN:
             return { ...state, roleARN: action.payload }
-        case ConfigMapActionTypes.setExternalValues:
-            return { ...state, externalValues: action.payload }
         case ConfigMapActionTypes.setCodeEditorRadio:
             return { ...state, codeEditorRadio: action.payload }
-        // case ConfigMapActionTypes.unlock:
-        //     return { ...state, locked: action.payload }
-        // case ConfigMapActionTypes.toggleSecretMode:
-        //     return { ...state, secretMode: action.payload }
+        case ConfigMapActionTypes.updateCurrentData:
+            return { ...state, currentData: action.payload }
+        case ConfigMapActionTypes.toggleSecretMode:
+            return { ...state, secretMode: !state.secretMode }
+        case ConfigMapActionTypes.toggleUnAuthorized:
+            return { ...state, unAuthorized: action.payload }
 
         case ConfigMapActionTypes.multipleOptions:
             return { ...state, ...action.payload }

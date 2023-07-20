@@ -18,6 +18,7 @@ export interface SecretState {
     refreshInterval: any
     esoSecretYaml: string
     secretMode: boolean
+    unAuthorized: boolean
 }
 
 export interface ConfigMapState {
@@ -38,26 +39,18 @@ export interface ConfigMapState {
     yamlMode: boolean
     cmSecretState: CM_SECRET_STATE
 }
-export interface ConfigMapSecretState extends ConfigMapAction, SecretState {
-
-}
+export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
 export enum ConfigMapActionTypes {
-    createDuplicate = 'createDuplicate',
     deleteOverride = 'deleteOverride',
-    addParam = 'addParam',
-    keyValueChange = 'keyValueChange',
-    keyValueDelete = 'keyValueDelete',
     submitLoading = 'submitLoading',
     overrideLoading = 'overrideLoading',
-    createErrors = 'createErrors',
     success = 'success',
     error = 'error',
     toggleDialog = 'toggleDialog',
     setExternal = 'setExternal',
     setSelectedType = 'setSelectedType',
     setVolumeMountPath = 'setVolumeMountPath',
-    yamlToValues = 'yamlToValues',
     setIsSubPathChecked = 'setIsSubPathChecked',
     setExternalSubpathValues = 'setExternalSubpathValues',
     setIsFilePermissionChecked = 'setIsFilePermissionChecked',
@@ -71,10 +64,10 @@ export enum ConfigMapActionTypes {
     setEsoData = 'setEsoData',
     setSecretData = 'setSecretData',
     setRoleARN = 'setRoleARN',
-    setExternalValues = 'setExternalValues',
     setCodeEditorRadio = 'setCodeEditorRadio',
-    unlock = 'unlock',
+    updateCurrentData = 'updateCurrentData',
     toggleSecretMode = 'toggleSecretMode',
+    toggleUnAuthorized = 'toggleUnAuthorized',
 }
 
 export interface ConfigMapAction {

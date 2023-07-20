@@ -28,10 +28,8 @@ export default function SecretList({ isOverrideView, parentState, setParentState
             ])
             if (Array.isArray(secretData.configData)) {
                 secretData.configData = secretData.configData.map((config) => {
-                    if (config.data) {
-                        config.data = decode(config.data) //doesnt do anything because data.value will be empty
-                    }
-                    config.secretMode = true
+                    config.secretMode = config.externalType === ''
+                    config.unAuthorized = true
                     return config
                 })
             }
@@ -63,34 +61,24 @@ export default function SecretList({ isOverrideView, parentState, setParentState
                     //insert after create success
                     configData.unshift({
                         ...result.configData[0],
-                        data:
-                            result.configData[0].externalType === ''
-                                ? decode(result.configData[0].data)
-                                : result.configData[0].data,
+                        data: result.configData[0].data,
                     })
                     list.configData = [...configData]
                     return { ...list }
                 } else {
-                    //unlock
-                    // configData[index] =
-                    //     result && Array.isArray(result.configData) && result.configData.length > 0
-                    //         ? result.configData[0]
-                    //         : null
-                    const updatedData =
-                        result.configData[0].externalType === ''
-                            ? decode(result.configData[0].data)
-                            : result.configData[0].data
+                    const updatedData = result.configData[0].data
                     const selectedConfigData = list.configData[index]
                     if (selectedConfigData.global) {
                         if (selectedConfigData.data) {
                             configData.data = updatedData
                         } else {
-                          selectedConfigData.defaultData = updatedData
+                            selectedConfigData.defaultData = updatedData
                         }
                     } else {
-                      selectedConfigData.data = updatedData
+                        selectedConfigData.data = updatedData
                     }
                     selectedConfigData.secretMode = false
+                    selectedConfigData.unAuthorized = false
                     list.configData[index] = selectedConfigData
                     return { ...list }
                 }
