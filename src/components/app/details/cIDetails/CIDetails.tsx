@@ -65,7 +65,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        
+
         const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
