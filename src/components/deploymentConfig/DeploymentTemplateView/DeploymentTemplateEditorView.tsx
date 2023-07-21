@@ -101,10 +101,11 @@ export default function DeploymentTemplateEditorView({
             setFetchingValues(true)
             const isEnvOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
             const isChartVersionOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
-
-            const _getDeploymentTemplate = isChartVersionOption
+            const _isEnvOption = isEnvOverride || isEnvOption
+            const _chartVersionOption = isChartVersionOption
                 ? getDefaultDeploymentTemplate(appId, selectedOption.value)
-                : isEnvOverride || isEnvOption
+                : _isEnvOption
+            const _getDeploymentTemplate = _chartVersionOption
                 ? getEnvDeploymentTemplate(appId, isEnvOption ? selectedOption.id : envId, selectedOption.value)
                 : getDeploymentTemplate(+appId, +selectedOption.value)
 
@@ -114,11 +115,7 @@ export default function DeploymentTemplateEditorView({
                         const _fetchedValues = {
                             ...state.fetchedValues,
                             [selectedOption.id]: YAML.stringify(
-                                isChartVersionOption
-                                    ? result.defaultAppOverride
-                                    : isEnvOverride || isEnvOption
-                                    ? result.environmentConfig?.envOverrideValues || result?.globalConfig
-                                    : result.globalConfig.defaultAppOverride,
+                                processFetchedValues(result, isChartVersionOption, _isEnvOption),
                             ),
                         }
                         setFetchedValues(_fetchedValues)
@@ -137,6 +134,16 @@ export default function DeploymentTemplateEditorView({
             setSelectedOption(null)
         }
     }, [state.openComparison])
+
+    const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
+        if (isChartVersionOption) {
+            return result.defaultAppOverride
+        } else if (_isEnvOption) {
+            return result.environmentConfig?.envOverrideValues || result?.globalConfig
+        } else {
+            return result.globalConfig.defaultAppOverride
+        }
+    }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
         dispatch({
@@ -265,6 +272,17 @@ export default function DeploymentTemplateEditorView({
         setBasicFieldValues(_basicFieldValues)
     }
 
+    const getOverrideClass = () => {
+        if (isEnvOverride) {
+            if (!!state.duplicate) {
+                return 'bcy-1'
+            }
+            return 'bcb-1'
+        } else {
+            return ''
+        }
+    }
+
     const renderCodeEditor = (): JSX.Element => {
         return (
             <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
@@ -286,9 +304,7 @@ export default function DeploymentTemplateEditorView({
                     )}
                     {state.showReadme && (
                         <CodeEditor.Header
-                            className={`code-editor__header flex left p-0-imp ${
-                                isEnvOverride ? (!!state.duplicate ? 'bcy-1' : 'bcb-1') : ''
-                            }`}
+                            className={`code-editor__header flex left p-0-imp ${getOverrideClass()}`}
                             hideDefaultSplitHeader={true}
                         >
                             <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
@@ -320,11 +336,7 @@ export default function DeploymentTemplateEditorView({
                                         globalChartRef={globalChartRef}
                                     />
                                 </div>
-                                <div
-                                    className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${
-                                        isEnvOverride ? (!!state.duplicate ? 'bcy-1' : 'bcb-1') : ''
-                                    }`}
-                                >
+                                <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
                                     {renderEditorHeading(
                                         isEnvOverride,
                                         !!state.duplicate,

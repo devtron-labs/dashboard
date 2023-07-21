@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getAppOtherEnvironmentMin, getChartReferences } from '../../services/service'
 import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
-import { showError, useEffectAfterMount, not, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
     DeploymentConfigProps,
@@ -238,7 +238,7 @@ export default function DeploymentConfig({
                 payload: {
                     isBasicLocked: _isBasicViewLocked,
                     currentEditorView: _currentViewEditor,
-                    yamlMode: _currentViewEditor === EDITOR_VIEW.BASIC ? false : true,
+                    yamlMode: _currentViewEditor === EDITOR_VIEW.ADVANCED,
                 },
             })
         }
@@ -413,7 +413,7 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.multipleOptions,
             payload: {
                 showReadme: !state.showReadme,
-                openComparison: state.showReadme && state.selectedTabIndex === 2 ? true : false,
+                openComparison: state.showReadme && state.selectedTabIndex === 2,
             },
         })
     }
@@ -537,8 +537,6 @@ export default function DeploymentConfig({
                         hideSaveChangesCTA={
                             state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
                         }
-                        latestDraft={state.latestDraft}
-                        reloadDrafts={fetchAllDrafts}
                     />
                 )}
             </form>
@@ -572,24 +570,24 @@ export default function DeploymentConfig({
                         isCiPipeline={isCiPipeline}
                         toggleAppMetrics={toggleAppMetrics}
                         selectedChart={state.selectedChart}
-                        latestDraft={state.latestDraft}
-                        reloadDrafts={fetchAllDrafts}
                     />
                 )}
             </form>
         )
     }
 
+    const getValueForContext = () => {
+        return {
+            isUnSet,
+            state,
+            dispatch,
+            environments: environments || [],
+            changeEditorMode: changeEditorMode,
+        }
+    }
+
     return (
-        <DeploymentConfigContext.Provider
-            value={{
-                isUnSet,
-                state,
-                dispatch,
-                environments: environments || [],
-                changeEditorMode: changeEditorMode,
-            }}
-        >
+        <DeploymentConfigContext.Provider value={getValueForContext()}>
             <div
                 className={`app-compose__deployment-config dc__window-bg ${
                     state.openComparison || state.showReadme ? 'full-view' : 'h-100'

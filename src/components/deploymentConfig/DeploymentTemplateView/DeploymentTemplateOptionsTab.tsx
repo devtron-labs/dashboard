@@ -87,19 +87,6 @@ export default function DeploymentTemplateOptionsTab({
                     </RadioGroup>
                 )}
             </div>
-
-            {/* {yamlMode && (
-                <CompareOptions
-                    isComparisonAvailable={isComparisonAvailable}
-                    isEnvOverride={isEnvOverride}
-                    openComparison={openComparison}
-                    handleComparisonClick={handleComparisonClick}
-                    chartConfigLoading={chartConfigLoading}
-                    openReadMe={openReadMe}
-                    isReadMeAvailable={isReadMeAvailable}
-                    handleReadMeClick={handleReadMeClick}
-                />
-            )} */}
         </div>
     )
 }

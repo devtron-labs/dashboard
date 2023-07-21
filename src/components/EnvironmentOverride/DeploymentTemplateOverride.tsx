@@ -256,7 +256,7 @@ export default function DeploymentTemplateOverride({
                 currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
-            statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.BASIC ? false : true
+            statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.ADVANCED
             statesToUpdate['currentViewEditor'] = _currentViewEditor
             statesToUpdate['isBasicLocked'] = _isBasicLocked
         }
@@ -462,7 +462,7 @@ function DeploymentTemplateOverrideForm({
             type: DeploymentConfigStateActionTypes.multipleOptions,
             payload: {
                 showReadme: !state.showReadme,
-                openComparison: state.showReadme && state.selectedTabIndex === 2 ? true : false,
+                openComparison: state.showReadme && state.selectedTabIndex === 2,
             },
         })
     }
@@ -508,6 +508,15 @@ function DeploymentTemplateOverrideForm({
     }
 
     const overridden = !!state.duplicate
+    const getOverrideActionState = () => {
+        if (loading) {
+            return <Progressing />
+        } else if (overridden) {
+            return 'Delete override'
+        } else {
+            return 'Allow override'
+        }
+    }
     const renderOverrideInfoStrip = () => {
         return (
             <div
@@ -528,30 +537,31 @@ function DeploymentTemplateOverrideForm({
                     className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
                     onClick={handleOverride}
                 >
-                    {loading ? <Progressing /> : overridden ? 'Delete override' : 'Allow override'}
+                    {getOverrideActionState()}
                 </span>
             </div>
         )
     }
 
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+    const getValueForContext = () => {
+        return {
+            isUnSet: false,
+            state: {
+                ...state,
+                isBasicLocked: state.isBasicLocked,
+                chartConfigLoading: chartRefLoading,
+                readme: state.data.readme,
+                schema: state.data.schema,
+            },
+            dispatch,
+            environments: environments || [],
+            changeEditorMode: changeEditorMode,
+        }
+    }
 
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
     return (
-        <DeploymentConfigContext.Provider
-            value={{
-                isUnSet: false,
-                state: {
-                    ...state,
-                    isBasicLocked: state.isBasicLocked,
-                    chartConfigLoading: chartRefLoading,
-                    readme: state.data.readme,
-                    schema: state.data.schema,
-                },
-                dispatch,
-                environments: environments || [],
-                changeEditorMode: changeEditorMode,
-            }}
-        >
+        <DeploymentConfigContext.Provider value={getValueForContext()}>
             <ConfigToolbar
                 loading={state.loading || state.chartConfigLoading}
                 selectedTabIndex={state.selectedTabIndex}

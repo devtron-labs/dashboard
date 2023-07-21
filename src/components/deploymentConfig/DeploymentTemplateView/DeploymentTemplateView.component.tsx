@@ -281,6 +281,16 @@ export const CompareWithDropdown = ({
         _initOptions()
     }, [environments, charts])
 
+    const getSelectedOption = () => {
+        if (isEnvOverride) {
+            return baseTemplateOption as DeploymentChartOptionType
+        } else if (environments.length > 0) {
+            return environments[0]
+        } else {
+            return charts[0]
+        }
+    }
+
     const _initOptions = () => {
         const _groupOptions = []
 
@@ -304,13 +314,7 @@ export const CompareWithDropdown = ({
 
         setGroupedOptions(_groupOptions)
         if (!selectedOption) {
-            setSelectedOption(
-                isEnvOverride
-                    ? (baseTemplateOption as DeploymentChartOptionType)
-                    : environments.length > 0
-                    ? environments[0]
-                    : charts[0],
-            )
+            setSelectedOption(getSelectedOption())
         }
     }
 
@@ -457,6 +461,16 @@ export const SaveConfirmationDialog = ({ save }) => {
         })
     }
 
+    const getButtonState = () => {
+        if (state.loading) {
+            return <Progressing />
+        } else if (state.chartConfig.id) {
+            return 'Update'
+        } else {
+            return 'Save'
+        }
+    }
+
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon src={warningIcon} />
@@ -478,7 +492,7 @@ export const SaveConfirmationDialog = ({ save }) => {
                     className="cta"
                     onClick={save}
                 >
-                    {state.loading ? <Progressing /> : state.chartConfig.id ? 'Update' : 'Save'}
+                    {getButtonState()}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>
