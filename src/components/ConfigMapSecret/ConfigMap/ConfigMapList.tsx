@@ -81,6 +81,7 @@ export default function ConfigMapList({
                 <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts flex left">
                     ConfigMaps
                     <InfoIconWithTippy
+                        titleText="ConfigMaps"
                         infoText="ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object."
                         documentationLink={DOCUMENTATION.APP_CREATE_CONFIG_MAP}
                     />

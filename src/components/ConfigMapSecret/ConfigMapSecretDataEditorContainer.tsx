@@ -172,22 +172,77 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         const externalSecretEditor = (): JSX.Element => {
             if ((isHashiOrAWS || isESO) && state.yamlMode) {
+                return renderCodeEditor(
+                    getESOYaml(),
+                    handleSecretYamlChange,
+                    state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
+                        ? '#Check sample for usage.'
+                        : dataHeaders[state.externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT],
+                )
+            } else {
                 return (
-                    <div className="yaml-container">
-                        <CodeEditor
-                            value={getESOYaml()}
-                            mode="yaml"
-                            inline
-                            height={350}
-                            onChange={handleSecretYamlChange}
-                            readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
-                            shebang={
-                                state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
-                                    ? '#Check sample for usage.'
-                                    : dataHeaders[state.externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT]
+                    <>
+                        {isHashiOrAWS &&
+                            state.secretData.map((data, index) => (
+                                <KeyValueFileInput
+                                    key={index}
+                                    index={index}
+                                    fileName={data.fileName}
+                                    name={data.name}
+                                    property={data.property}
+                                    isBinary={data.isBinary}
+                                    handleChange={handleSecretDataChange}
+                                    handleDelete={handleSecretDataDelete}
+                                />
+                            ))}
+                    </>
+                )
+            }
+        }
+
+        const renderGUIEditor = (): JSX.Element => {
+            return (
+                <>
+                    {state.currentData.map((config, idx) => (
+                        <KeyValueInput
+                            keyLabel={
+                                state.externalType === '' && state.selectedType === 'volume' ? 'File Name' : 'Key'
                             }
-                        >
-                            <CodeEditor.Header>
+                            valueLabel={
+                                state.externalType === '' && state.selectedType === 'volume' ? 'File Content' : 'Value'
+                            }
+                            key={`editable-${idx}`}
+                            {...{
+                                ...config,
+                                v: state.secretMode || state.unAuthorized ? Array(8).fill('*').join('') : config.v,
+                            }}
+                            index={idx}
+                            onChange={
+                                state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized
+                                    ? null
+                                    : memoisedHandleChange
+                            }
+                            onDelete={memoisedRemove}
+                        />
+                    ))}
+                </>
+            )
+        }
+
+        const renderCodeEditor = (value: string, handleOnChange: (yaml) => void, sheBangText: string): JSX.Element => {
+            return (
+                <div className="yaml-container">
+                    <CodeEditor
+                        value={value}
+                        mode="yaml"
+                        inline
+                        height={350}
+                        onChange={handleOnChange}
+                        readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
+                        shebang={sheBangText}
+                    >
+                        <CodeEditor.Header>
+                            {state.external ? (
                                 <RadioGroup
                                     className="gui-yaml-switch"
                                     name="data-mode"
@@ -202,34 +257,54 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                         {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
                                     </RadioGroup.Radio>
                                 </RadioGroup>
-                                <CodeEditor.Clipboard />
-                            </CodeEditor.Header>
-                        </CodeEditor>
-                    </div>
-                )
+                            ) : (
+                                <CodeEditor.ValidationError />
+                            )}
+
+                            <CodeEditor.Clipboard />
+                        </CodeEditor.Header>
+                        {!state.external && error && (
+                            <div className="validation-error-block">
+                                <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
+                                <div>{error}</div>
+                            </div>
+                        )}
+                    </CodeEditor>
+                </div>
+            )
+        }
+
+        const getCodeEditorValue = (): string => {
+            if (componentType === 'secret' && (state.secretMode || state.unAuthorized)) {
+                return lockedYaml
             } else {
-                return (
-                    <React.Fragment>
-                        {isHashiOrAWS &&
-                            state.secretData.map((data, index) => (
-                                <KeyValueFileInput
-                                    key={index}
-                                    index={index}
-                                    fileName={data.fileName}
-                                    name={data.name}
-                                    property={data.property}
-                                    isBinary={data.isBinary}
-                                    handleChange={handleSecretDataChange}
-                                    handleDelete={handleSecretDataDelete}
-                                />
-                            ))}
-                    </React.Fragment>
-                )
+                return yaml
             }
         }
 
-        return (
-            <>
+        const renderSecretShowHide = (): JSX.Element => {
+            if (componentType === 'secret' && !state.external && !state.unAuthorized) {
+                return (
+                    <div style={{ marginLeft: 'auto' }} className="edit flex cursor" onClick={toggleSecretMode}>
+                        {state.secretMode ? (
+                            <>
+                                <ShowIcon className="icon-dim-16 mr-4 mw-18" />
+                                Show values
+                            </>
+                        ) : (
+                            <>
+                                <HideIcon className="icon-dim-16 mr-4 mw-18" />
+                                Hide values
+                            </>
+                        )}
+                    </div>
+                )
+            }
+            return null
+        }
+
+        const renderDataEditorSelector = (): JSX.Element => {
+            return (
                 <div className="flex left mb-16">
                     <b className="mr-5 dc__bold dc__required-field">Data</b>
                     {!isESO && (
@@ -244,84 +319,19 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                             <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
                         </RadioGroup>
                     )}
-                    {componentType === 'secret' && !state.unAuthorized && (
-                        <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={toggleSecretMode}>
-                            {state.secretMode ? (
-                                <>
-                                    <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" />
-                                    Show values
-                                </>
-                            ) : (
-                                <>
-                                    <HideIcon className="icon-dim-16 mr-4 mw-18 cursor" />
-                                    Hide values
-                                </>
-                            )}
-                        </div>
-                    )}
+                    {renderSecretShowHide()}
                 </div>
+            )
+        }
+
+        return (
+            <>
+                {renderDataEditorSelector()}
                 {!state.external && (
                     <>
-                        {state.yamlMode ? (
-                            <div className="yaml-container">
-                                <CodeEditor
-                                    value={
-                                        componentType === 'secret' && (state.secretMode || state.unAuthorized)
-                                            ? lockedYaml
-                                            : yaml
-                                    }
-                                    mode="yaml"
-                                    inline
-                                    height={350}
-                                    onChange={handleYamlChange}
-                                    readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
-                                    shebang="#key: value"
-                                >
-                                    <CodeEditor.Header>
-                                        <CodeEditor.ValidationError />
-                                        <CodeEditor.Clipboard />
-                                    </CodeEditor.Header>
-                                    {error && (
-                                        <div className="validation-error-block">
-                                            <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
-                                            <div>{error}</div>
-                                        </div>
-                                    )}
-                                </CodeEditor>
-                            </div>
-                        ) : (
-                            <>
-                                {state.currentData.map((config, idx) => (
-                                    <KeyValueInput
-                                        keyLabel={
-                                            state.externalType === '' && state.selectedType === 'volume'
-                                                ? 'File Name'
-                                                : 'Key'
-                                        }
-                                        valueLabel={
-                                            state.externalType === '' && state.selectedType === 'volume'
-                                                ? 'File Content'
-                                                : 'Value'
-                                        }
-                                        key={`editable-${idx}`}
-                                        {...{
-                                            ...config,
-                                            v:
-                                                state.secretMode || state.unAuthorized
-                                                    ? Array(8).fill('*').join('')
-                                                    : config.v,
-                                        }}
-                                        index={idx}
-                                        onChange={
-                                            state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized
-                                                ? null
-                                                : memoisedHandleChange
-                                        }
-                                        onDelete={memoisedRemove}
-                                    />
-                                ))}
-                            </>
-                        )}
+                        {state.yamlMode
+                            ? renderCodeEditor(getCodeEditorValue(), handleYamlChange, '#key: value')
+                            : renderGUIEditor()}
                     </>
                 )}
                 {externalSecretEditor()}

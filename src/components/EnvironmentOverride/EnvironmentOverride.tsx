@@ -115,6 +115,7 @@ export default function EnvironmentOverride({
                         {formTitle()}
                         {headingData.title}
                         <InfoIconWithTippy
+                            titleText={headingData.title}
                             infoText={headingData.subtitle}
                             documentationLink={headingData.learnMoreLink}
                         />

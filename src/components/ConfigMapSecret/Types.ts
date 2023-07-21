@@ -162,3 +162,9 @@ export interface ConfigMapAction {
     type: ConfigMapActionTypes
     payload?: any
 }
+
+export interface InfoIconWithTippyType {
+    titleText: string
+    infoText: string
+    documentationLink: string
+}
