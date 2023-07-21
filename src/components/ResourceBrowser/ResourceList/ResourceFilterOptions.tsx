@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
-import { Option } from '../../../components/v2/common/ReactSelect.utils'
+import {Option} from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import {
+    ALL_NAMESPACE_OPTION,
+    FILTER_SELECT_COMMON_STYLES,
+    NAMESPACE_NOT_APPLICABLE_OPTION
+} from '../Constants'
 import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -40,7 +44,6 @@ function ResourceFilterOptions({
     }>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
     const searchInputRef = useRef<HTMLInputElement>(null)
-
     useEffect(() => {
         if (!isCreateModalOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
