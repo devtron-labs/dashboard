@@ -29,9 +29,9 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
 }
 export const ClearFiltersLabel = 'Clear filters'
-export const DefaultJobNote =`## Describe this Job
+export const DefaultJobNote =`## Describe this application
 
-Describe your Devtron Job in a few words. This will help others understand the purpose and configuration of your job. Keep it concise and informative!
+Describe this application in a few words. The description could include the purpose, features, benefits, and target audience of your application. A well-written description will help users know about this application and how it works. Keep it concise and informative!
 `
 
 export const StatusConstants = {

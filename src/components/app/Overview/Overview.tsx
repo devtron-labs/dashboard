@@ -481,7 +481,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             initialDescriptionText={DefaultJobNote}
                             initialDescriptionUpdatedBy={DefaultJobNote}
                             initialDescriptionUpdatedOn={''}
-                            initaislModifiedDescriptionText={''}
+                            initialEditDescriptionView={true}
                         />
                     }
                     {renderLabelTags()}
@@ -500,7 +500,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             initialDescriptionText={DefaultJobNote}
                             initialDescriptionUpdatedBy={DefaultJobNote}
                             initialDescriptionUpdatedOn={''}
-                            initaislModifiedDescriptionText={''}
+                            initialEditDescriptionView={true}
                         />
                     }
                     {renderLabelTags()}

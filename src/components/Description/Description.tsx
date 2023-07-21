@@ -45,18 +45,17 @@ export default function ClusterDescription({
     initialDescriptionText,
     initialDescriptionUpdatedBy,
     initialDescriptionUpdatedOn,
-    initaislModifiedDescriptionText,
+    initialEditDescriptionView,
 }) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
-    const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(true)
+    const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(initialEditDescriptionView)
     const [descriptionText, setDescriptionText] = useState<string>(initialDescriptionText)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(initialDescriptionUpdatedBy)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>(initialDescriptionUpdatedOn)
-    const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>(initaislModifiedDescriptionText)
+    const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>(initialDescriptionText)
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
-
     const toggleDescriptionView = () => {
         if (isAuthorized()) {
             let isConfirmed: boolean = true
@@ -320,26 +319,28 @@ export default function ClusterDescription({
                                 },
                             }}
                         />
-                        <div className="form cluster__description-footer pt-12 pb-12">
-                            <div className="form__buttons pl-16 pr-16">
-                                <button
-                                    data-testid="description-edit-cancel-button"
-                                    className="cta cancel flex h-36 mr-12"
-                                    type="button"
-                                    onClick={toggleDescriptionView}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    data-testid="description-edit-save-button"
-                                    className="cta flex h-36"
-                                    type="submit"
-                                    onClick={updateClusterAbout}
-                                >
-                                    Save
-                                </button>
+                        {initialEditDescriptionView && (
+                            <div className="form cluster__description-footer pt-12 pb-12">
+                                <div className="form__buttons pl-16 pr-16">
+                                    <button
+                                        data-testid="description-edit-cancel-button"
+                                        className="cta cancel flex h-36 mr-12"
+                                        type="button"
+                                        onClick={toggleDescriptionView}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        data-testid="description-edit-save-button"
+                                        className="cta flex h-36"
+                                        type="submit"
+                                        onClick={updateClusterAbout}
+                                    >
+                                        Save
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
             </div>

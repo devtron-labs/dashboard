@@ -119,7 +119,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     initialDescriptionText={descriptionText}
                     initialDescriptionUpdatedBy={descriptionUpdatedBy}
                     initialDescriptionUpdatedOn={descriptionUpdatedOn}
-                    initaislModifiedDescriptionText={modifiedDescriptionText}
+                    initialEditDescriptionView={true}
                 />
             )}
         </div>

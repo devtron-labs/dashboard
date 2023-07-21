@@ -31,6 +31,7 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
+import ClusterDescription from '../../Description/Description'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -60,6 +61,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneAppId: true,
             },
             createAppLoader: false,
+            showClusterDescription: false,
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -301,8 +303,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <div className={`${this.props.isJobView ? "mb-12" : ""}`}>
-                        <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
+                    <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
+                        <span className="form__label dc__required-field">
+                            {this.props.isJobView ? 'Job' : 'App'} Name
+                        </span>
                         <input
                             ref={(node) => (this._inputAppName = node)}
                             data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
@@ -332,20 +336,41 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             Apps are NOT env specific and can be used to deploy to multiple environments.
                         </span>
                     )}
-                    {this.props.isJobView && (
-                        <>
-                            <span className="form__label">Description</span>
+                    <>
+                        <span className="form__label mt-16">Description</span>
+                        {this.state.showClusterDescription ? (
+                            <div className="h-auto">
+                                <ClusterDescription
+                                    isClusterTerminal={false}
+                                    clusterId={0}
+                                    isSuperAdmin={true}
+                                    appId={this.state.form.appId}
+                                    initialDescriptionText={''}
+                                    initialDescriptionUpdatedBy={''}
+                                    initialDescriptionUpdatedOn={''}
+                                    initialEditDescriptionView={false}
+                                />
+                            </div>
+                        ) : (
                             <textarea
                                 data-testid="description-textbox"
-                                className="form__textarea"
-                                name="job-description"
+                                className="form__textarea h-76-imp"
+                                name={this.props.isJobView ? 'job-description' : 'app-description'}
                                 value={this.state.form.description}
-                                placeholder="Describe this job"
+                                placeholder={
+                                    this.props.isJobView
+                                        ? 'Describe this job'
+                                        : 'Write a description for this application'
+                                }
                                 tabIndex={2}
-                                onChange={this.handleDescription}
+                                // onChange={this.handleDescription}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    this.setState({ showClusterDescription: true })
+                                }}
                             />
-                        </>
-                    )}
+                        )}
+                    </>
                 </div>
 
                 <div className="form__row clone-apps dc__inline-block">

@@ -46,6 +46,7 @@ export interface AddNewAppState {
         cloneAppId: boolean
     }
     createAppLoader: boolean
+    showClusterDescription: boolean
 }
 
 export interface AppDetails {
