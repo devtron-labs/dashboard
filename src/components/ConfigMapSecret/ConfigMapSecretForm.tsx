@@ -28,7 +28,7 @@ import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import { Override, validateKeyValuePair } from './ConfigMapSecret.components'
-import { ConfigMapActionTypes, ConfigMapSecretFormProps } from './Types'
+import { ConfigMapActionTypes, ConfigMapSecretFormProps, KeyValueValidated } from './Types'
 import { ConfigMapReducer, initState, processCurrentData } from './ConfigMapSecret.reducer'
 import ReactSelect from 'react-select'
 import {
@@ -148,26 +148,73 @@ export const ConfigMapSecretForm = React.memo(
             }
         }
 
-        async function handleSubmit(e) {
-            e.preventDefault()
+        const validateFilePermission = (): boolean => {
+            let isFilePermissionValid = true
+            if (!state.filePermission.value) {
+                dispatch({
+                    type: ConfigMapActionTypes.setFilePermission,
+                    payload: { value: state.filePermission.value, error: 'This is a required field' },
+                })
+                isFilePermissionValid = false
+            } else if (state.filePermission.value.length > 4) {
+                dispatch({
+                    type: ConfigMapActionTypes.setFilePermission,
+                    payload: {
+                        value: state.filePermission.value,
+                        error: 'More than 4 characters are not allowed',
+                    },
+                })
+                isFilePermissionValid = false
+            } else if (state.filePermission.value.length === 4) {
+                if (!state.filePermission.value.startsWith('0')) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setFilePermission,
+                        payload: {
+                            value: state.filePermission.value,
+                            error: '4 characters are allowed in octal format only, first character should be 0',
+                        },
+                    })
+                    isFilePermissionValid = false
+                }
+            } else if (state.filePermission.value.length < 3) {
+                dispatch({
+                    type: ConfigMapActionTypes.setFilePermission,
+                    payload: { value: state.filePermission.value, error: 'Atleast 3 character are required' },
+                })
+                isFilePermissionValid = false
+            }
+            if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(state.filePermission.value)) {
+                dispatch({
+                    type: ConfigMapActionTypes.setFilePermission,
+                    payload: {
+                        value: state.filePermission.value,
+                        error: 'This is octal number, use numbers between 0 to 7',
+                    },
+                })
+                isFilePermissionValid = false
+            }
+            return isFilePermissionValid
+        }
+
+        const validateForm = (): KeyValueValidated => {
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
-            let isErrorInForm = false
+            let isFormValid = true
             if (componentType === 'secret' && state.unAuthorized) {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
-                return
+                return { isValid: false, arr: [] }
             }
             if (!state.configName.value) {
                 dispatch({
                     type: ConfigMapActionTypes.setConfigName,
                     payload: { value: state.configName.value, error: 'This is a required field' },
                 })
-                isErrorInForm = true
+                isFormValid = false
             } else if (state.configName.value.length > 253) {
                 dispatch({
                     type: ConfigMapActionTypes.setConfigName,
                     payload: { value: state.configName.value, error: 'More than 253 characters are not allowed' },
                 })
-                isErrorInForm = true
+                isFormValid = false
             } else if (!configMapSecretNameRegex.test(state.configName.value)) {
                 dispatch({
                     type: ConfigMapActionTypes.setConfigName,
@@ -176,7 +223,7 @@ export const ConfigMapSecretForm = React.memo(
                         error: `Name must start and end with an alphanumeric character. It can contain only lowercase alphanumeric characters, '-' or '.'`,
                     },
                 })
-                isErrorInForm = true
+                isFormValid = false
             }
             if (state.selectedType === 'volume') {
                 if (!state.volumeMountPath.value) {
@@ -184,52 +231,10 @@ export const ConfigMapSecretForm = React.memo(
                         type: ConfigMapActionTypes.setVolumeMountPath,
                         payload: { value: state.volumeMountPath.value, error: 'This is a required field' },
                     })
-                    isErrorInForm = true
+                    isFormValid = false
                 }
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
-                    if (!state.filePermission.value) {
-                        dispatch({
-                            type: ConfigMapActionTypes.setFilePermission,
-                            payload: { value: state.filePermission.value, error: 'This is a required field' },
-                        })
-                        isErrorInForm = true
-                    } else if (state.filePermission.value.length > 4) {
-                        dispatch({
-                            type: ConfigMapActionTypes.setFilePermission,
-                            payload: {
-                                value: state.filePermission.value,
-                                error: 'More than 4 characters are not allowed',
-                            },
-                        })
-                        isErrorInForm = true
-                    } else if (state.filePermission.value.length === 4) {
-                        if (!state.filePermission.value.startsWith('0')) {
-                            dispatch({
-                                type: ConfigMapActionTypes.setFilePermission,
-                                payload: {
-                                    value: state.filePermission.value,
-                                    error: '4 characters are allowed in octal format only, first character should be 0',
-                                },
-                            })
-                            isErrorInForm = true
-                        }
-                    } else if (state.filePermission.value.length < 3) {
-                        dispatch({
-                            type: ConfigMapActionTypes.setFilePermission,
-                            payload: { value: state.filePermission.value, error: 'Atleast 3 character are required' },
-                        })
-                        isErrorInForm = true
-                    }
-                    if (!new RegExp(PATTERNS.ALL_DIGITS_BETWEEN_0_AND_7).test(state.filePermission.value)) {
-                        dispatch({
-                            type: ConfigMapActionTypes.setFilePermission,
-                            payload: {
-                                value: state.filePermission.value,
-                                error: 'This is octal number, use numbers between 0 to 7',
-                            },
-                        })
-                        isErrorInForm = true
-                    }
+                    isFormValid = validateFilePermission()
                 }
                 if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
                     if (!state.externalSubpathValues.value) {
@@ -237,7 +242,7 @@ export const ConfigMapSecretForm = React.memo(
                             type: ConfigMapActionTypes.setExternalSubpathValues,
                             payload: { value: state.externalSubpathValues.value, error: 'This is a required field' },
                         })
-                        isErrorInForm = true
+                        isFormValid = false
                     } else if (
                         !new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_MULTPLS_KEYS).test(state.externalSubpathValues.value)
                     ) {
@@ -248,7 +253,7 @@ export const ConfigMapSecretForm = React.memo(
                                 error: 'Use (a-z), (0-9), (-), (_),(.); Use (,) to separate multiple keys',
                             },
                         })
-                        isErrorInForm = true
+                        isFormValid = false
                     }
                 }
             }
@@ -261,96 +266,104 @@ export const ConfigMapSecretForm = React.memo(
                     type: ConfigMapActionTypes.updateCurrentData,
                     payload: arr,
                 })
-                return
+                isFormValid = false
             }
 
-            if (isErrorInForm) {
-                return
-            }
-            if (componentType)
-                if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
-                    toast.error(`Please add ${componentType} data before saving.`)
-                    return
-                }
-
-            if (componentType === 'secret' && (isHashiOrAWS || isESO)) {
-                let isValid = true
+            if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
+                toast.error(`Please add ${componentType} data before saving.`)
+                isFormValid = false
+            } else if (componentType === 'secret' && (isHashiOrAWS || isESO)) {
+                let isValidSecretData = false
                 if (isESO) {
-                    isValid = state.esoData?.reduce((isValid, s) => {
-                        isValid = isValid && !!s?.secretKey && !!s.key
-                        return isValid
+                    isValidSecretData = state.esoData?.reduce((isValidSecretData, s) => {
+                        isValidSecretData = isValidSecretData && !!s?.secretKey && !!s.key
+                        return isValidSecretData
                     }, !state.secretStore != !state.secretStoreRef && !!state.esoData?.length)
                 } else {
-                    isValid = state.secretData.reduce((isValid, s) => {
-                        isValid = isValid && !!s.fileName && !!s.name
-                        return isValid
+                    isValidSecretData = state.secretData.reduce((isValidSecretData, s) => {
+                        isValidSecretData = isValidSecretData && !!s.fileName && !!s.name
+                        return isValidSecretData
                     }, !!state.secretData.length)
                 }
 
-                if (!isValid) {
+                if (!isValidSecretData) {
                     secretValidationInfoToast(isESO, state.secretStore, state.secretStoreRef)
-                    return
+                    isFormValid = false
                 }
             }
-            try {
-                const data = arr.reduce((agg, curr) => {
-                    if (!curr.k) return agg
-                    let value = curr.v ?? ''
-                    agg[curr.k] = componentType === 'secret' && state.externalType === '' ? btoa(value) : value
-                    return agg
-                }, {})
-                let payload = {
-                    name: state.configName.value,
-                    type: state.selectedType,
-                    external: state.external,
-                    data: data, //dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
-                }
-                if (componentType === 'secret') {
-                    payload['roleARN'] = ''
-                    payload['externalType'] = state.externalType
-                    if (isHashiOrAWS) {
-                        payload['secretData'] = state.secretData.map((s) => {
-                            return {
-                                key: s.fileName,
-                                name: s.name,
-                                isBinary: s.isBinary,
-                                property: s.property,
-                            }
-                        })
-                        payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
-                        payload['roleARN'] = state.roleARN.value
-                        delete payload[CODE_EDITOR_RADIO_STATE.DATA]
-                    } else if (isESO) {
-                        payload['esoSecretData'] = {
-                            secretStore: state.secretStore,
-                            esoData: state.esoData,
-                            secretStoreRef: state.secretStoreRef,
-                            refreshInterval: state.refreshInterval,
-                        }
-                        payload['roleARN'] = state.roleARN.value
-                        delete payload[CODE_EDITOR_RADIO_STATE.DATA]
-                    }
-                }
-                if (state.selectedType === 'volume') {
-                    payload['mountPath'] = state.volumeMountPath.value
-                    if (!isChartVersion309OrBelow) {
-                        payload['subPath'] = state.isSubPathChecked
-                    }
-                    if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
-                        payload['filePermission'] =
-                            state.filePermission.value.length == 3
-                                ? `0${state.filePermission.value}`
-                                : `${state.filePermission.value}`
-                    }
+            return { isValid: isFormValid, arr }
+        }
 
-                    if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
-                        const externalSubpathKey = state.externalSubpathValues.value.replace(/\s+/g, '').split(',')
-                        const secretKeys = {}
-                        externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
-                        payload['data'] = secretKeys
+        const createPayload = (arr) => {
+            const data = arr.reduce((agg, curr) => {
+                if (!curr.k) return agg
+                let value = curr.v ?? ''
+                agg[curr.k] = componentType === 'secret' && state.externalType === '' ? btoa(value) : value
+                return agg
+            }, {})
+            let payload = {
+                name: state.configName.value,
+                type: state.selectedType,
+                external: state.external,
+                data: data, //dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
+            }
+            if (componentType === 'secret') {
+                payload['roleARN'] = ''
+                payload['externalType'] = state.externalType
+                if (isHashiOrAWS) {
+                    payload['secretData'] = state.secretData.map((s) => {
+                        return {
+                            key: s.fileName,
+                            name: s.name,
+                            isBinary: s.isBinary,
+                            property: s.property,
+                        }
+                    })
+                    payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
+                    payload['roleARN'] = state.roleARN.value
+                    delete payload[CODE_EDITOR_RADIO_STATE.DATA]
+                } else if (isESO) {
+                    payload['esoSecretData'] = {
+                        secretStore: state.secretStore,
+                        esoData: state.esoData,
+                        secretStoreRef: state.secretStoreRef,
+                        refreshInterval: state.refreshInterval,
                     }
+                    payload['roleARN'] = state.roleARN.value
+                    delete payload[CODE_EDITOR_RADIO_STATE.DATA]
                 }
+            }
+            if (state.selectedType === 'volume') {
+                payload['mountPath'] = state.volumeMountPath.value
+                if (!isChartVersion309OrBelow) {
+                    payload['subPath'] = state.isSubPathChecked
+                }
+                if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
+                    payload['filePermission'] =
+                        state.filePermission.value.length == 3
+                            ? `0${state.filePermission.value}`
+                            : `${state.filePermission.value}`
+                }
+
+                if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
+                    const externalSubpathKey = state.externalSubpathValues.value.replace(/\s+/g, '').split(',')
+                    const secretKeys = {}
+                    externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
+                    payload['data'] = secretKeys
+                }
+            }
+            return payload
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault()
+            const { isValid, arr } = validateForm()
+            if (!isValid) {
+                return
+            }
+            try {
                 dispatch({ type: ConfigMapActionTypes.submitLoading })
+                const payload = createPayload(arr)
                 let toastTitle = ''
                 if (!envId) {
                     componentType === 'secret'
@@ -446,98 +459,183 @@ export const ConfigMapSecretForm = React.memo(
             return `Save ${configMapSecretData?.name ? ' changes' : ''}`
         }
 
-        return (
-            <>
-                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-20">
-                    {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
-                        state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
-                        <Override
-                            overridden={state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
-                            onClick={handleOverride}
-                            loading={state.overrideLoading}
-                            type={componentType}
-                        />
-                    )}
-                    <div className="form__row">
-                        <label className="form__label">Data type</label>
-                        <div className="form-row__select-external-type">
-                            {componentType === 'secret' ? (
-                                <>
-                                    <ReactSelect
-                                        placeholder="Select Secret Type"
-                                        options={getTypeGroups(isJobView)}
-                                        defaultValue={
-                                            state.externalType && state.externalType !== ''
-                                                ? getTypeGroups(isJobView, state.externalType)
-                                                : getTypeGroups()[0].options[0]
-                                        }
-                                        onChange={toggleExternalType}
-                                        styles={groupStyle()}
-                                        components={{
-                                            IndicatorSeparator: null,
-                                            Option: SecretOptions,
-                                            GroupHeading,
-                                        }}
-                                        classNamePrefix="secret-data-type"
-                                        isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
-                                    />
-                                    {isESO && (
-                                        <InfoColourBar
-                                            classname="info_bar cn-9 mt-16 lh-20"
-                                            message={<ExternalSecretHelpNote />}
-                                            Icon={InfoIcon}
-                                            iconSize={20}
-                                        />
-                                    )}
-                                </>
-                            ) : (
-                                <ReactSelect
-                                    placeholder="Select ConfigMap Type"
-                                    options={ConfigMapOptions}
-                                    value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
-                                    onChange={toggleExternalValues}
-                                    styles={groupStyle()}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option,
-                                    }}
-                                    classNamePrefix="configmap-data-type"
-                                    isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
-                                />
-                            )}
+        const renderRollARN = (): JSX.Element => {
+            if (isHashiOrAWS || isESO) {
+                return (
+                    <div className="form__row form__row--flex">
+                        <div className="w-50">
+                            <CustomInput
+                                dataTestid="enter-role-ARN"
+                                value={state.roleARN.value}
+                                autoComplete="off"
+                                label="Role ARN"
+                                placeholder="Enter Role ARN"
+                                error={state.roleARN.error}
+                                onChange={handleRoleARNChange}
+                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                            />
                         </div>
                     </div>
-                    {(state.externalType === 'KubernetesSecret' || (componentType !== 'secret' && state.external)) && (
-                        <InfoColourBar
-                            classname="info_bar cn-9 mt-16 mb-16 lh-20"
-                            message={
-                                <div className="flex column left">
-                                    <div className="dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</div>
-                                    <div className="dc__info-subtitle">
-                                        {EXTERNAL_INFO_TEXT[componentType].infoText}
-                                    </div>
-                                </div>
-                            }
-                            Icon={InfoIcon}
-                            iconSize={20}
-                        />
-                    )}
-                    {!configMapSecretData?.name && (
-                        <div className="form__row">
-                            <label className="form__label">Name*</label>
-                            <input
-                                data-testid={`${componentType}-name-textbox`}
-                                value={state.configName.value}
+                )
+            }
+            return null
+        }
+
+        const renderFilePermission = (): JSX.Element => {
+            return (
+                <>
+                    <div className="mb-16">
+                        <Checkbox
+                            isChecked={state.isFilePermissionChecked}
+                            onClick={stopPropagation}
+                            rootClassName=""
+                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || isChartVersion309OrBelow}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={toggleFilePermission}
+                        >
+                            <span data-testid="configmap-file-permission-checkbox" className="mr-5">
+                                Set File Permission (same as
+                                <a
+                                    href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
+                                    className="ml-5 mr-5 anchor"
+                                    target="_blank"
+                                    rel="noopener noreferer"
+                                >
+                                    defaultMode
+                                </a>
+                                for secrets in kubernetes)<br></br>
+                                {isChartVersion309OrBelow ? (
+                                    <span className="fs-12 fw-5">
+                                        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                        <span className="cn-7 ml-5">Learn more about </span>
+                                        <a
+                                            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+                                            rel="noreferrer noopener"
+                                            target="_blank"
+                                        >
+                                            Deployment Template &gt; Chart Version
+                                        </a>
+                                    </span>
+                                ) : null}
+                            </span>
+                        </Checkbox>
+                    </div>
+                    {state.isFilePermissionChecked && (
+                        <div className="mb-16">
+                            <CustomInput
+                                value={state.filePermission.value}
                                 autoComplete="off"
-                                autoFocus
-                                onChange={onConfigNameChange}
-                                type="text"
-                                className={`form__input`}
-                                placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
+                                tabIndex={5}
+                                label=""
+                                dataTestid="configmap-file-permission-textbox"
+                                placeholder={'eg. 0400 or 400'}
+                                error={state.filePermission.error}
+                                onChange={onFilePermissionChange}
+                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || isChartVersion309OrBelow}
                             />
-                            {state.configName.error && <label className="form__error">{state.configName.error}</label>}
                         </div>
                     )}
+                </>
+            )
+        }
+
+        const renderSubPathCheckBoxContent = (): JSX.Element => {
+            return (
+                <span data-testid={`${componentType}-sub-path-checkbox`} className="mb-0">
+                    Set SubPath (same as
+                    <a
+                        href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
+                        className="ml-5 mr-5 anchor"
+                        target="_blank"
+                        rel="noopener noreferer"
+                    >
+                        subPath
+                    </a>
+                    for volume mount)<br></br>
+                    {state.isSubPathChecked && (
+                        <span className="mb-0 cn-5 fs-11">
+                            {state.external
+                                ? 'Please provide keys of config map to be mounted'
+                                : 'Keys will be used as filename for subpath'}
+                        </span>
+                    )}
+                    {isChartVersion309OrBelow && (
+                        <span className="fs-12 fw-5">
+                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                            <span className="cn-7 ml-5">Learn more about </span>
+                            <a
+                                href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+                                rel="noreferrer noopener"
+                                target="_blank"
+                            >
+                                Deployment Template &gt; Chart Version
+                            </a>
+                        </span>
+                    )}
+                </span>
+            )
+        }
+
+        const renderSubPath = (): JSX.Element => {
+            return (
+                <div className="mb-16">
+                    <Checkbox
+                        isChecked={state.isSubPathChecked}
+                        onClick={stopPropagation}
+                        rootClassName="top"
+                        disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={toggleSubpath}
+                    >
+                        {renderSubPathCheckBoxContent()}
+                    </Checkbox>
+                    {state.externalType === 'KubernetesSecret' && state.isSubPathChecked && (
+                        <div className="mb-16">
+                            <CustomInput
+                                value={state.externalSubpathValues.value}
+                                autoComplete="off"
+                                tabIndex={5}
+                                label={''}
+                                placeholder={'Enter keys (Eg. username,configs.json)'}
+                                error={state.externalSubpathValues.error}
+                                onChange={onExternalSubpathValuesChange}
+                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                            />
+                        </div>
+                    )}
+                </div>
+            )
+        }
+
+        const renderUsageTypeVolumeDetails = (): JSX.Element => {
+            if (state.selectedType !== 'volume') {
+                return null
+            }
+            return (
+                <>
+                    <div className="form__row">
+                        <CustomInput
+                            dataTestid={`${componentType}-volume-path-textbox`}
+                            value={state.volumeMountPath.value}
+                            autoComplete="off"
+                            tabIndex={5}
+                            label="Volume mount path*"
+                            placeholder="/directory-path"
+                            helperText="Keys are mounted as files to volume"
+                            error={state.volumeMountPath.error}
+                            onChange={onMountPathChange}
+                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                        />
+                    </div>
+                    {renderSubPath()}
+                    {renderFilePermission()}
+                </>
+            )
+        }
+
+        const configMapSecretUsageTypeSelector = (): JSX.Element => {
+            return (
+                <>
                     <label className="form__label form__label--lower">
                         How do you want to use this {componentType === 'secret' ? 'Secret' : 'ConfigMap'}?
                     </label>
@@ -569,158 +667,129 @@ export const ConfigMapSecretForm = React.memo(
                             </RadioGroupItem>
                         </RadioGroup>
                     </div>
-                    {state.selectedType === 'volume' && (
-                        <>
-                            <div className="form__row">
-                                <CustomInput
-                                    dataTestid={`${componentType}-volume-path-textbox`}
-                                    value={state.volumeMountPath.value}
-                                    autoComplete="off"
-                                    tabIndex={5}
-                                    label="Volume mount path*"
-                                    placeholder="/directory-path"
-                                    helperText="Keys are mounted as files to volume"
-                                    error={state.volumeMountPath.error}
-                                    onChange={onMountPathChange}
-                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
-                                />
-                            </div>
-                            <div className="mb-16">
-                                <Checkbox
-                                    isChecked={state.isSubPathChecked}
-                                    onClick={stopPropagation}
-                                    rootClassName="top"
-                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
-                                    value={CHECKBOX_VALUE.CHECKED}
-                                    onChange={toggleSubpath}
-                                >
-                                    <span data-testid={`${componentType}-sub-path-checkbox`} className="mb-0">
-                                        Set SubPath (same as
-                                        <a
-                                            href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
-                                            className="ml-5 mr-5 anchor"
-                                            target="_blank"
-                                            rel="noopener noreferer"
-                                        >
-                                            subPath
-                                        </a>
-                                        for volume mount)<br></br>
-                                        {state.isSubPathChecked && (
-                                            <span className="mb-0 cn-5 fs-11">
-                                                {state.external
-                                                    ? 'Please provide keys of config map to be mounted'
-                                                    : 'Keys will be used as filename for subpath'}
-                                            </span>
-                                        )}
-                                        {isChartVersion309OrBelow && (
-                                            <span className="fs-12 fw-5">
-                                                <span className="cr-5">
-                                                    Supported for Chart Versions 3.10 and above.
-                                                </span>
-                                                <span className="cn-7 ml-5">Learn more about </span>
-                                                <a
-                                                    href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-                                                    rel="noreferrer noopener"
-                                                    target="_blank"
-                                                >
-                                                    Deployment Template &gt; Chart Version
-                                                </a>
-                                            </span>
-                                        )}
-                                    </span>
-                                </Checkbox>
-                                {state.externalType === 'KubernetesSecret' && state.isSubPathChecked && (
-                                    <div className="mb-16">
-                                        <CustomInput
-                                            value={state.externalSubpathValues.value}
-                                            autoComplete="off"
-                                            tabIndex={5}
-                                            label={''}
-                                            placeholder={'Enter keys (Eg. username,configs.json)'}
-                                            error={state.externalSubpathValues.error}
-                                            onChange={onExternalSubpathValuesChange}
-                                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="mb-16">
-                                <Checkbox
-                                    isChecked={state.isFilePermissionChecked}
-                                    onClick={stopPropagation}
-                                    rootClassName=""
-                                    disabled={
-                                        state.cmSecretState === CM_SECRET_STATE.INHERITED || isChartVersion309OrBelow
-                                    }
-                                    value={CHECKBOX_VALUE.CHECKED}
-                                    onChange={toggleFilePermission}
-                                >
-                                    <span data-testid="configmap-file-permission-checkbox" className="mr-5">
-                                        Set File Permission (same as
-                                        <a
-                                            href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
-                                            className="ml-5 mr-5 anchor"
-                                            target="_blank"
-                                            rel="noopener noreferer"
-                                        >
-                                            defaultMode
-                                        </a>
-                                        for secrets in kubernetes)<br></br>
-                                        {isChartVersion309OrBelow ? (
-                                            <span className="fs-12 fw-5">
-                                                <span className="cr-5">
-                                                    Supported for Chart Versions 3.10 and above.
-                                                </span>
-                                                <span className="cn-7 ml-5">Learn more about </span>
-                                                <a
-                                                    href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-                                                    rel="noreferrer noopener"
-                                                    target="_blank"
-                                                >
-                                                    Deployment Template &gt; Chart Version
-                                                </a>
-                                            </span>
-                                        ) : null}
-                                    </span>
-                                </Checkbox>
-                            </div>
-                            {state.isFilePermissionChecked && (
-                                <div className="mb-16">
-                                    <CustomInput
-                                        value={state.filePermission.value}
-                                        autoComplete="off"
-                                        tabIndex={5}
-                                        label=""
-                                        dataTestid="configmap-file-permission-textbox"
-                                        placeholder={'eg. 0400 or 400'}
-                                        error={state.filePermission.error}
-                                        onChange={onFilePermissionChange}
-                                        disabled={
-                                            state.cmSecretState === CM_SECRET_STATE.INHERITED ||
-                                            isChartVersion309OrBelow
-                                        }
-                                    />
-                                </div>
-                            )}
-                        </>
-                    )}
+                </>
+            )
+        }
 
-                    {(isHashiOrAWS || isESO) && (
-                        <div className="form__row form__row--flex">
-                            <div className="w-50">
-                                <CustomInput
-                                    dataTestid="enter-role-ARN"
-                                    value={state.roleARN.value}
-                                    autoComplete="off"
-                                    label="Role ARN"
-                                    placeholder="Enter Role ARN"
-                                    error={state.roleARN.error}
-                                    onChange={handleRoleARNChange}
-                                    disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
-                                />
+        const renderName = (): JSX.Element => {
+            if (configMapSecretData?.name) {
+                return null
+            }
+            return (
+                <div className="form__row">
+                    <label className="form__label">Name*</label>
+                    <input
+                        data-testid={`${componentType}-name-textbox`}
+                        value={state.configName.value}
+                        autoComplete="off"
+                        autoFocus
+                        onChange={onConfigNameChange}
+                        type="text"
+                        className={`form__input`}
+                        placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
+                    />
+                    {state.configName.error && <label className="form__error">{state.configName.error}</label>}
+                </div>
+            )
+        }
+
+        const renderExternalInfo = (): JSX.Element => {
+            if (state.externalType === 'KubernetesSecret' || (componentType !== 'secret' && state.external)) {
+                return (
+                    <InfoColourBar
+                        classname="info_bar cn-9 mt-16 mb-16 lh-20"
+                        message={
+                            <div className="flex column left">
+                                <div className="dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</div>
+                                <div className="dc__info-subtitle">{EXTERNAL_INFO_TEXT[componentType].infoText}</div>
                             </div>
-                        </div>
+                        }
+                        Icon={InfoIcon}
+                        iconSize={20}
+                    />
+                )
+            }
+            return null
+        }
+
+        const secretDataTypeSelectWithInfo = (): JSX.Element => {
+            return (
+                <>
+                    <ReactSelect
+                        placeholder="Select Secret Type"
+                        options={getTypeGroups(isJobView)}
+                        defaultValue={
+                            state.externalType && state.externalType !== ''
+                                ? getTypeGroups(isJobView, state.externalType)
+                                : getTypeGroups()[0].options[0]
+                        }
+                        onChange={toggleExternalType}
+                        styles={groupStyle()}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: SecretOptions,
+                            GroupHeading,
+                        }}
+                        classNamePrefix="secret-data-type"
+                        isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                    />
+                    {isESO && (
+                        <InfoColourBar
+                            classname="info_bar cn-9 mt-16 lh-20"
+                            message={<ExternalSecretHelpNote />}
+                            Icon={InfoIcon}
+                            iconSize={20}
+                        />
                     )}
+                </>
+            )
+        }
+
+        const dataTypeSelector = (): JSX.Element => {
+            return (
+                <div className="form__row">
+                    <label className="form__label">Data type</label>
+                    <div className="form-row__select-external-type">
+                        {componentType === 'secret' ? (
+                            secretDataTypeSelectWithInfo()
+                        ) : (
+                            <ReactSelect
+                                placeholder="Select ConfigMap Type"
+                                options={ConfigMapOptions}
+                                value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
+                                onChange={toggleExternalValues}
+                                styles={groupStyle()}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option,
+                                }}
+                                classNamePrefix="configmap-data-type"
+                                isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                            />
+                        )}
+                    </div>
+                </div>
+            )
+        }
+
+        return (
+            <>
+                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-20">
+                    {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
+                        state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
+                        <Override
+                            overridden={state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
+                            onClick={handleOverride}
+                            loading={state.overrideLoading}
+                            type={componentType}
+                        />
+                    )}
+                    {dataTypeSelector()}
+                    {renderExternalInfo()}
+                    {renderName()}
+                    {configMapSecretUsageTypeSelector()}
+                    {renderUsageTypeVolumeDetails()}
+                    {renderRollARN()}
                     {state.externalType !== 'KubernetesSecret' && (
                         <ConfigMapSecretDataEditorContainer
                             componentType={componentType}
