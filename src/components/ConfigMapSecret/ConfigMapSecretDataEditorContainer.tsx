@@ -283,17 +283,17 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         }
 
         const renderSecretShowHide = (): JSX.Element => {
-            if (componentType === 'secret' && !state.unAuthorized) {
+            if (componentType === 'secret' && !state.external && !state.unAuthorized) {
                 return (
-                    <div style={{ marginLeft: 'auto' }} className="edit flex" onClick={toggleSecretMode}>
+                    <div style={{ marginLeft: 'auto' }} className="edit flex cursor" onClick={toggleSecretMode}>
                         {state.secretMode ? (
                             <>
-                                <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" />
+                                <ShowIcon className="icon-dim-16 mr-4 mw-18" />
                                 Show values
                             </>
                         ) : (
                             <>
-                                <HideIcon className="icon-dim-16 mr-4 mw-18 cursor" />
+                                <HideIcon className="icon-dim-16 mr-4 mw-18" />
                                 Hide values
                             </>
                         )}
