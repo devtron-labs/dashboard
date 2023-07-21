@@ -385,20 +385,18 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
 
 const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapAction) => void): void => {
     if (isESO) {
+        const payload = {
+            secretStore: json.secretStore,
+            secretStoreRef: json.secretStoreRef,
+            refreshInterval: json.refreshInterval,
+        }
+        if (Array.isArray(json?.esoData)) {
+            payload['setEsoData'] = json.esoData
+        }
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
-            payload: {
-                secretStore: json.secretStore,
-                secretStoreRef: json.secretStoreRef,
-                refreshInterval: json.refreshInterval,
-            },
+            payload,
         })
-        if (Array.isArray(json?.esoData)) {
-            dispatch({
-                type: ConfigMapActionTypes.setEsoData,
-                payload: json.esoData,
-            })
-        }
     } else if (Array.isArray(json)) {
         json = json.map((j) => {
             let temp = {}
