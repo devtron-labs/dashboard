@@ -74,7 +74,7 @@ export default function NavigationRoutes() {
         setHelpGettingStartedClicked(true)
     }
     const [environmentId, setEnvironmentId] = useState(null)
-    const contextValue = useMemo(() => ({environmentId, setEnvironmentId}), [environmentId] )
+    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
     const [isAirgapped, setIsAirGapped] = useState(false)
 
     const getInit = async (_serverMode: string) => {
@@ -225,7 +225,7 @@ export default function NavigationRoutes() {
             } catch (err) {
                 setIsAirGapped(false)
             }
-        }else{
+        } else {
             const isAirGap = JSON.parse(localStorage.getItem('isAirGapped'))
             setIsAirGapped(isAirGap)
         }
@@ -238,8 +238,8 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
-            if(getEnvironmentData){
-            getAirGapEnvironmentValue()
+            if (getEnvironmentData) {
+                getAirGapEnvironmentValue()
             }
             getCurrentServerInfo()
         }
@@ -324,7 +324,7 @@ export default function NavigationRoutes() {
                     setModuleInInstallingState,
                     installedModuleMap,
                     currentServerInfo,
-                    isAirgapped
+                    isAirgapped,
                 }}
             >
                 <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
