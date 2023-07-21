@@ -172,40 +172,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         const externalSecretEditor = (): JSX.Element => {
             if ((isHashiOrAWS || isESO) && state.yamlMode) {
-                return (
-                    <div className="yaml-container">
-                        <CodeEditor
-                            value={getESOYaml()}
-                            mode="yaml"
-                            inline
-                            height={350}
-                            onChange={handleSecretYamlChange}
-                            readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
-                            shebang={
-                                state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
-                                    ? '#Check sample for usage.'
-                                    : dataHeaders[state.externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT]
-                            }
-                        >
-                            <CodeEditor.Header>
-                                <RadioGroup
-                                    className="gui-yaml-switch"
-                                    name="data-mode"
-                                    initialTab={state.codeEditorRadio}
-                                    disabled={false}
-                                    onChange={handleCodeEditorRadioChange}
-                                >
-                                    <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
-                                        {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
-                                    </RadioGroup.Radio>
-                                    <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
-                                        {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
-                                    </RadioGroup.Radio>
-                                </RadioGroup>
-                                <CodeEditor.Clipboard />
-                            </CodeEditor.Header>
-                        </CodeEditor>
-                    </div>
+                renderCodeEditor(
+                    getESOYaml(),
+                    handleSecretYamlChange,
+                    state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
+                        ? '#Check sample for usage.'
+                        : dataHeaders[state.externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT],
                 )
             } else {
                 return (
@@ -257,25 +229,41 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             )
         }
 
-        const renderCodeEditor = (): JSX.Element => {
+        const renderCodeEditor = (value: string, handleOnChange: (yaml) => void, sheBangText: string): JSX.Element => {
             return (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={
-                            componentType === 'secret' && (state.secretMode || state.unAuthorized) ? lockedYaml : yaml
-                        }
+                        value={value}
                         mode="yaml"
                         inline
                         height={350}
-                        onChange={handleYamlChange}
+                        onChange={handleOnChange}
                         readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
-                        shebang="#key: value"
+                        shebang={sheBangText}
                     >
                         <CodeEditor.Header>
-                            <CodeEditor.ValidationError />
+                            {state.external ? (
+                                <RadioGroup
+                                    className="gui-yaml-switch"
+                                    name="data-mode"
+                                    initialTab={state.codeEditorRadio}
+                                    disabled={false}
+                                    onChange={handleCodeEditorRadioChange}
+                                >
+                                    <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                        {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                                    </RadioGroup.Radio>
+                                    <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                        {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                                    </RadioGroup.Radio>
+                                </RadioGroup>
+                            ) : (
+                                <CodeEditor.ValidationError />
+                            )}
+
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>
-                        {error && (
+                        {!state.external && error && (
                             <div className="validation-error-block">
                                 <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
                                 <div>{error}</div>
@@ -284,6 +272,14 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     </CodeEditor>
                 </div>
             )
+        }
+
+        const getCodeEditorValue = (): string => {
+            if (componentType === 'secret' && (state.secretMode || state.unAuthorized)) {
+                return lockedYaml
+            } else {
+                return yaml
+            }
         }
 
         const renderSecretShowHide = (): JSX.Element => {
@@ -331,7 +327,13 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         return (
             <>
                 {renderDataEditorSelector()}
-                {!state.external && <>{state.yamlMode ? renderCodeEditor() : renderGUIEditor()}</>}
+                {!state.external && (
+                    <>
+                        {state.yamlMode
+                            ? renderCodeEditor(getCodeEditorValue(), handleYamlChange, '#key: value')
+                            : renderGUIEditor()}
+                    </>
+                )}
                 {externalSecretEditor()}
                 {state.cmSecretState !== CM_SECRET_STATE.INHERITED && !state.yamlMode && !state.unAuthorized && (
                     <span className="dc__bold anchor pointer" onClick={handleAddParam}>
