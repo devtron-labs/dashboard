@@ -172,7 +172,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         const externalSecretEditor = (): JSX.Element => {
             if ((isHashiOrAWS || isESO) && state.yamlMode) {
-                renderCodeEditor(
+                return renderCodeEditor(
                     getESOYaml(),
                     handleSecretYamlChange,
                     state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
