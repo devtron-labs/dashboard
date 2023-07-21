@@ -16,18 +16,52 @@ export default function DeploymentConfigFormCTA({
     disableButton,
     toggleAppMetrics,
     selectedChart,
+    hideSaveChangesCTA,
 }: DeploymentConfigFormCTAProps) {
     const _disabled = disableButton || loading
 
     const renderWrappedChildren = (children) => {
-        return <Tippy
-            className="default-tt w-200"
-            arrow={false}
-            placement="top"
-            content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
-        >
-            {children}
-        </Tippy>
+        return (
+            <Tippy
+                className="default-tt w-200"
+                arrow={false}
+                placement="top-end"
+                content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
+            >
+                {children}
+            </Tippy>
+        )
+    }
+
+    const renderButton = () => {
+        return (
+            <ConditionalWrap condition={isEnvOverride && disableButton} wrap={renderWrappedChildren}>
+                <button
+                    className={`form-submit-cta cta flex h-36 ${_disabled ? 'disabled' : ''}`}
+                    type={_disabled ? 'button' : 'submit'}
+                    data-testid={`${
+                        !isEnvOverride && !isCiPipeline
+                            ? 'base-deployment-template-save-and-next-button'
+                            : 'base-deployment-template-save-changes-button'
+                    }`}
+                >
+                    {loading ? (
+                        <Progressing />
+                    ) : (
+                        <>
+                            {!isEnvOverride && !isCiPipeline ? (
+                                <>
+                                    Save & Next
+                                    <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
+                                </>
+                            ) : (
+                                'Save changes'
+                            )}
+                        </>
+                    )}
+                </button>
+            </ConditionalWrap>
+        )
     }
 
     return (
@@ -86,35 +120,7 @@ export default function DeploymentConfigFormCTA({
                         </div>
                     </div>
                 )}
-                <ConditionalWrap
-                    condition={isEnvOverride && disableButton}
-                    wrap={renderWrappedChildren}
-                >
-                    <button
-                        className={`form-submit-cta cta flex h-36 ${_disabled ? 'disabled' : ''}`}
-                        type={_disabled ? 'button' : 'submit'}
-                        data-testid={`${
-                            !isEnvOverride && !isCiPipeline
-                                ? 'base-deployment-template-save-and-next-button'
-                                : 'base-deployment-template-save-changes-button'
-                        }`}
-                    >
-                        {loading ? (
-                            <Progressing />
-                        ) : (
-                            <>
-                                {!isEnvOverride && !isCiPipeline ? (
-                                    <>
-                                        Save & Next
-                                        <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
-                                    </>
-                                ) : (
-                                    'Save changes'
-                                )}
-                            </>
-                        )}
-                    </button>
-                </ConditionalWrap>
+                {!hideSaveChangesCTA && renderButton()}
             </div>
         )
     )

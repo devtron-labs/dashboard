@@ -105,6 +105,7 @@ export interface DeploymentConfigFormCTAProps {
     disableButton?: boolean
     toggleAppMetrics: () => void
     selectedChart: DeploymentChartVersionType
+    hideSaveChangesCTA?: boolean
 }
 
 export interface CompareWithDropdownProps {
@@ -166,6 +167,7 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
+    isDraftMode?: boolean
 }
 
 export interface DeploymentConfigContextType {
@@ -287,11 +289,17 @@ export interface DeploymentConfigStateType {
     currentEditorView: string
     basicFieldValues: Record<string, any>
     basicFieldValuesErrorObj: BasicFieldErrorObj
-    data: any,
+    data: any
     duplicate: any
-    dialog: boolean,
+    dialog: boolean
     latestAppChartRef: any
     latestChartRef: any
+    showSaveChangsModal: boolean
+    isConfigProtectionEnabled: boolean
+    allDrafts: any[]
+    latestDraft: any
+    activityHistory: any
+    showComments: boolean
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -323,6 +331,9 @@ export enum DeploymentConfigStateActionTypes {
     data = 'data',
     toggleDialog = 'toggleDialog',
     reset = 'reset',
+    toggleSaveChangesModal = 'toggleSaveChangesModal',
+    allDrafts = 'allDrafts',
+    toggleDraftComments = 'toggleDraftComments',
     multipleOptions = 'multipleOptions',
 }
 

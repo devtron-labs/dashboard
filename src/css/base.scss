@@ -2467,6 +2467,10 @@ textarea,
     width: 32px !important;
 }
 
+.w-36 {
+    width: 36px !important;
+}
+
 .min-w-800 {
     min-width: 800px;
 }
@@ -3216,6 +3220,10 @@ textarea::placeholder {
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__bg-g5 {
+    background-color: var(--G500) !important;
 }
 
 .dc__hover-n100:hover {

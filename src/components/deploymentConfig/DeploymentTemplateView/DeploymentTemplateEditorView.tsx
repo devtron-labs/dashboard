@@ -36,6 +36,7 @@ export default function DeploymentTemplateEditorView({
     environmentName,
     editorOnChange,
     handleOverride,
+    isDraftMode,
 }: DeploymentTemplateEditorViewProps) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const envVariableSectionRef = useRef(null)

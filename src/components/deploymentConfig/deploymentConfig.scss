@@ -39,6 +39,15 @@
         }
     }
 
+    &.comments-view {
+        display: grid;
+        grid-template-columns: 1fr 286px;
+        position: absolute;
+        left: 56px;
+        width: calc(100% - 56px);
+        height: calc(100% - 78px);
+    }
+
     &.full-view {
         position: absolute;
         left: 56px;
@@ -94,7 +103,7 @@
                     &.bcb-1 {
                         background: var(--B100);
                     }
-        
+
                     &.bcy-1 {
                         background: var(--Y100);
                     }
@@ -114,6 +123,7 @@
             &.cta {
                 min-width: 125px;
                 padding: 0 8px;
+
                 &.disabled {
                     opacity: 0.5;
                     cursor: not-allowed;
@@ -218,12 +228,15 @@
     &.gui {
         height: calc(100% - 160px);
     }
+
     &.gui-with-warning {
         height: calc(100% - 192px);
     }
+
     &.scrollable {
         overflow: hidden scroll;
     }
+
     .w-650-px {
         width: 650px;
     }
@@ -325,6 +338,7 @@
 
 .chart_select__group {
     padding: 0;
+
     .chart_select__group-heading {
         font-size: 12px;
         font-weight: 600;
@@ -335,9 +349,11 @@
         margin-bottom: 0;
     }
 }
+
 .chart_select__option {
     font-size: 13px;
     font-weight: 400;
+
     &.chart_select__option--is-disabled {
         color: var(--N700);
         pointer-events: none;
@@ -348,6 +364,7 @@
     background-color: rgb(255, 255, 255);
     bottom: 0 !important;
     margin: 0 !important;
+
     .upload-icon-stroke {
         path {
             stroke: var(--B500);
@@ -370,6 +387,7 @@
             border-radius: 0;
             margin-bottom: 0;
         }
+
         .form__row--gui-container {
             &.gui {
                 height: calc(100% - 220px);
@@ -382,9 +400,11 @@
     width: 400px;
     max-height: 350px;
     overflow: auto;
+
     .top-0 {
         top: 0;
     }
+
     .chart-row {
         &:hover:not(.bcb-1) {
             background-color: var(--N50);

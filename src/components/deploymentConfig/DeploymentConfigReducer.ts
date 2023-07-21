@@ -29,6 +29,12 @@ export const initDeploymentConfigState: DeploymentConfigStateType = {
     dialog: false,
     latestAppChartRef: null,
     latestChartRef: null,
+    showSaveChangsModal: false,
+    isConfigProtectionEnabled: false,
+    allDrafts: [],
+    latestDraft: null,
+    activityHistory: [],
+    showComments: false,
 }
 
 export const deploymentConfigReducer = (state: DeploymentConfigStateType, action?: DeploymentConfigStateAction) => {
@@ -93,6 +99,12 @@ export const deploymentConfigReducer = (state: DeploymentConfigStateType, action
             return { ...state, dialog: !state.dialog }
         case DeploymentConfigStateActionTypes.reset:
             return { ...initDeploymentConfigState }
+        case DeploymentConfigStateActionTypes.toggleSaveChangesModal:
+            return { ...state, showSaveChangsModal: !state.showSaveChangsModal }
+        case DeploymentConfigStateActionTypes.allDrafts:
+            return { ...state, allDrafts: action.payload }
+        case DeploymentConfigStateActionTypes.toggleDraftComments:
+            return { ...state, showComments: !state.showComments }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
