@@ -142,6 +142,7 @@ interface NavigationType extends RouteComponentProps<{}> {
     moduleInInstallingState: string
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
     isSuperAdmin: boolean
+    isAirgapped: boolean
 }
 
 export default class Navigation extends Component<
@@ -365,7 +366,7 @@ export default class Navigation extends Component<
                                 }
                             }
                         })}
-                        {!window._env_.K8S_CLIENT && (
+                        {!window._env_.K8S_CLIENT && !this.props.isAirgapped && (
                             <>
                                 <div className="short-nav__divider" />
                                 {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
