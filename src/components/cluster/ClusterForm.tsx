@@ -561,6 +561,12 @@ export default function ClusterForm({
         reload()
     }
 
+    const test = () => {
+        toggleCheckProxyUrlConnection()
+        console.log(state)
+        state.proxyUrl = ''
+    }
+
     const renderUrlAndBearerToken = () => {
         return (
             <>
@@ -629,7 +635,7 @@ export default function ClusterForm({
                                 isChecked={toConnectViaProxy}
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
                                 value={'CHECKED'}
-                                onChange={toggleCheckProxyUrlConnection}
+                                onChange={test}
                             >
                                 <div data-testid="to_connect_via_proxy_checkbox" className="mr-4 flex center">
                                    Connect to this cluster via proxy {toConnectViaProxy}
@@ -649,7 +655,7 @@ export default function ClusterForm({
                                         dataTestId="proxy_url_data_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="proxyUrl"
-                                        value={state.proxyUrl.value}
+                                        value={proxyUrl.value}
                                         onChange={handleOnChange}
                                         placeholder={'eg. http://proxy.example.org'}
                                     />

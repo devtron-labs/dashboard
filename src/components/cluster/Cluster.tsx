@@ -160,9 +160,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     toggleCheckProxyUrlConnection() {
-        if (this.state.toConnectViaProxy){
-            this.setState({proxyUrl : ''})
-        }
         this.setState({ toConnectViaProxy : !this.state.toConnectViaProxy})
 
     }
@@ -526,7 +523,7 @@ function Cluster({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
-            proxyUrl: state.proxyUrl.value,
+            proxyUrl: state.toConnectViaProxy.value ? state.proxyUrl?.value : '',
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
