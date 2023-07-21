@@ -32,10 +32,10 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
     const [fetching, setFetching] = useState<boolean>(false)
     const [loading, setLoading] = useState(false)
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
-    const [enabled, toggleEnabled] = useState()
+    const [enabled, toggleEnabled] = useState<boolean>()
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
     const [noResults, setNoResults] = useState(false)
-
+    const isEmpty = chartList.length && !filteredChartList.length
     useEffect(() => {
         getChartFilter()
     }, [])
@@ -51,11 +51,11 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
     const renderAddPopUp = (): JSX.Element => {
         return (
             <div className="chart-list__add w-200 en-2 bw-1 br-4 bcn-0 fw-4 fs-13 cn-9 mt-8">
-                <NavLink className="pl-8 pr-8 flex left" to={URLS.GLOBAL_CONFIG_CHART}>
+                <NavLink className="dc__no-decor pl-8 pr-8 flex left cn-9" to={URLS.GLOBAL_CONFIG_CHART}>
                     Add Chart repositories
                 </NavLink>
 
-                <NavLink className="pl-8 pr-8 flex left" to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}>
+                <NavLink className="dc__no-decor pl-8 pr-8 flex left cn-9" to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}>
                     Add OCI Registries
                 </NavLink>
             </div>
@@ -63,13 +63,14 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
     }
     const renderChartListHeaders = () => {
         return (
-            <div className="pt-12 pb-12 pl-16 pr-16 flex dc__content-space dc__border-bottom fw-6">
+            <div className="dc__position-fixed w-400 dc__zi-20 bcn-0 pt-12 pb-12 pl-16 pr-16 flex dc__content-space dc__border-bottom fw-6">
                 <span>Helm chart sources</span>
                 <div className="flex">
-                    <div className="flex cb-5 fw-6 cursor" onClick={toggleAddPopUp}>
+                    <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
                         <Add className="icon-dim-20 fcb-5 mr-8" />
                         Add
                     </div>
+                    {rendeRefetch()}
                     <div className="dc__divider ml-12 mr-4" />
                     <button className="dc__transparent flex mr-8" onClick={onClose}>
                         <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
@@ -139,24 +140,52 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
         )
     }
 
-    const renderChartList = () => {
-       if (chartList.length && !filteredChartList.length) {
-        return (renderEmptyState(true))
+    const rendeRefetch = () => {
+        if (isEmpty) {
+            return (
+                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
+                    <div className="chartRepo_form__subtitle dc__float-right">
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
+                            onClick={refetchCharts}
+                        >
+                            <span>
+                                <SyncIcon />
+                            </span>
+                        </a>
+                    </div>
+                </Tippy>
+            )
+        }
     }
+
+    const onSelectToggle = (active) => {
+        toggleEnabled(active)
+    }
+
+    const renderChartList = () => {
+        if (isEmpty) {
+            return renderEmptyState(true)
+        }
         return (
             <div>
                 {filteredChartList.length > 0 &&
                     filteredChartList.map((list) => {
                         return (
-                            <div className="flex dc__content-space pt-6 pb-6 pl-16 pr-16">
-                                <div>{list.name}</div>
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="top"
-                                    content="Refetch chart from repositories"
-                                >
-                                    <div className="chartRepo_form__subtitle">
+                            <div className="chart-list__row mb-12">
+                                <List>
+                                    <List.Logo>
+                                        <div className={'dc__registry-icon ' + list.registryProvider}></div>
+                                    </List.Logo>
+                                    <div>{list.name}</div>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="top"
+                                        content="Refetch chart from repositories"
+                                    >
                                         <a
                                             rel="noreferrer noopener"
                                             target="_blank"
@@ -167,29 +196,27 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                                                 <SyncIcon className="scn-5" />
                                             </span>
                                         </a>
+                                    </Tippy>
 
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="bottom"
-                                            content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                                    >
+                                        <span
+                                            data-testid={`${'name'}-chart-repo-toggle-button`}
+                                            style={{ marginLeft: 'auto' }}
                                         >
-                                            <span
-                                                data-testid={`${'name'}-chart-repo-toggle-button`}
-                                                style={{ marginLeft: 'auto' }}
-                                            >
-                                                {loading ? (
-                                                    <Progressing />
-                                                ) : (
-                                                    <List.Toggle
-                                                        onSelect={(en) => toggleEnabled(en)}
-                                                        enabled={enabled}
-                                                    />
-                                                )}
-                                            </span>
-                                        </Tippy>
-                                    </div>
-                                </Tippy>
+                                            <div>
+                                                <List.Toggle
+                                                    onSelect={() => onSelectToggle(list.active)}
+                                                    enabled={list.active ?? enabled}
+                                                />
+                                            </div>
+                                        </span>
+                                    </Tippy>
+                                </List>
                             </div>
                         )
                     })}
@@ -253,7 +280,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
         return (
             <GenericEmptyState
                 image={noChartFound ? NoResults : EmptyFolder}
-                title={noChartFound ? <>No result for "{searchText}"</> : EMPTY_STATE_STATUS.CHART.NO_SOURCE_TITLE }
+                title={noChartFound ? <>No result for "{searchText}"</> : EMPTY_STATE_STATUS.CHART.NO_SOURCE_TITLE}
                 subTitle={noChartFound ? EMPTY_STATE_STATUS.CHART.NO_CHART_FOUND : renderInfoText(true)}
                 imageType={ImageType.Medium}
                 classname="dc__align-reload-center"
@@ -269,21 +296,20 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                     <span className="dc__loading-dots mt-12">Loading Chart source</span>
                 </div>
             )
-        }
-          else if (!chartList.length) {
+        } else if (!chartList.length) {
             return renderEmptyState()
         }
         return (
-            <>
+            <div className="chart-list__body h-100">
                 {renderChartListSearch()}
                 {renderChartList()}
-            </>
+            </div>
         )
     }
 
     return (
         <div className="dc__transparent-div bcn-0">
-            <div className="chart-store__list w-400 br-4 bcn-0 en-2 bw-1 fw-4">
+            <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13">
                 {renderChartListHeaders()}
                 {renderChartListBody()}
             </div>

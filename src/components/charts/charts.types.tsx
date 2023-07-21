@@ -362,4 +362,5 @@ export interface ChartListType {
     isEditable: boolean
     name: String
     url: string
+    registryProvider?: string
 }
