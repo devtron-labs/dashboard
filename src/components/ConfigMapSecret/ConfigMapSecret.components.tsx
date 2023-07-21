@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import {
     DeleteDialog,
     Progressing,
+    noop,
     not,
     showError,
     stopPropagation,
@@ -31,7 +32,10 @@ import { toast } from 'react-toastify'
 import { deleteConfig, deleteEnvConfigMap, deleteEnvSecret, deleteSecret } from './service'
 import { CM_SECRET_STATE } from './Constants'
 import './ConfigMap.scss'
+import { importComponentFromFELibrary } from '../common'
 
+const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
+const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
         keyLabel,
@@ -105,10 +109,27 @@ export function ConfigMapSecretContainer({
     id,
     isOverrideView,
     isJobView,
+    isProtected,
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
+    const [isLoader, setLoader] = useState<boolean>(false)
+    const [draftData, setDraftData] = useState('')
     const { appId, envId } = useParams<{ appId; envId }>()
+
+    async function getDraftData() {
+        try {
+            setLoader(true)
+            const { result: draftData } = await getDraft(data.draftId)
+            setDraftData(draftData)
+            toggleCollapse(false)
+        } catch (error) {
+            setDraftData('')
+            showError(error)
+        } finally {
+            setLoader(false)
+        }
+    }
     let cmSecretStateLabel = CM_SECRET_STATE.BASE
     if (isOverrideView) {
         if (
@@ -131,7 +152,12 @@ export function ConfigMapSecretContainer({
     }
 
     const updateCollapsed = (): void => {
-        toggleCollapse(!collapsed)
+        //toggleCollapse(!collapsed)
+        if (collapsed && getDraft && isProtected && data?.draftId) {
+            getDraftData()
+        } else {
+            toggleCollapse(!collapsed)
+        }
     }
 
     const closeDeleteModal = (): void => {
@@ -196,6 +222,7 @@ export function ConfigMapSecretContainer({
                 index={index}
                 cmSecretStateLabel={cmSecretStateLabel}
                 isJobView={isJobView}
+                draftData={draftData}
             />
         )
     }
@@ -220,10 +247,33 @@ export function ConfigMapSecretContainer({
                         {!collapsed && title && (
                             <Trash className="icon-n4 cursor icon-delete" onClick={openDeleteModal} />
                         )}
-                        {title && <img className="configuration-list__arrow pointer" src={arrowTriangle} />}
+                        {title && isLoader ? (
+                            <Progressing />
+                        ) : (
+                            <img className="configuration-list__arrow pointer" src={arrowTriangle} />
+                        )}
                     </div>
                 </article>
-                {!collapsed && renderDetails()}
+
+                {!collapsed && (
+                    <>
+                        <ConfigToolbar
+                            loading={isLoader}
+                            selectedTabIndex={1}
+                            handleTabSelection={noop}
+                            isDraftMode={true}
+                            handleDiscardDraft={noop}
+                            noReadme={true}
+                            showReadme={false}
+                            handleReadMeClick={noop}
+                            handleCommentClick={noop}
+                            isApprovalPending={true}
+                            approvalUsers={[]}
+                            activityHistory={[]}
+                        />
+                        {renderDetails()}
+                    </>
+                )}
             </section>
             {showDeleteModal && renderDeleteCMModal()}
         </>

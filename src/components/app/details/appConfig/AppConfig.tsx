@@ -839,10 +839,10 @@ function AppComposeRouter({
                                 )}
                             />,
                             <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
-                                <ConfigMapList />
+                                <ConfigMapList isProtected={true}/>
                             </Route>,
                             <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
-                                <SecretList />
+                                <SecretList isProtected={true} />
                             </Route>,
                             <Route
                                 key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}

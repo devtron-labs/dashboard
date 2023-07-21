@@ -9,8 +9,16 @@ import { getConfigMapList } from '../service'
 import '../ConfigMap.scss'
 import { ConfigMapListProps } from '../Types'
 import { ComponentStates } from '../../EnvironmentOverride/EnvironmentOverrides.type'
+import { importComponentFromFELibrary } from '../../common'
+const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 
-export default function ConfigMapList({ isJobView, isOverrideView, parentState, setParentState }: ConfigMapListProps) {
+export default function ConfigMapList({
+    isJobView,
+    isOverrideView,
+    isProtected,
+    parentState,
+    setParentState,
+}: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [configMap, setConfigMap] = useState<{ id: number; configData: any[]; appId: number }>()
     const [configMapLoading, setConfigMapLoading] = useState(true)
@@ -22,10 +30,27 @@ export default function ConfigMapList({ isJobView, isOverrideView, parentState, 
 
     async function init(isInit?: boolean) {
         try {
-            const [{ result: appChartRefRes }, { result: configMapRes }] = await Promise.all([
+            const [{ result: appChartRefRes }, { result: configMapRes }, { result: draftData }] = await Promise.all([
                 isInit ? getAppChartRefForAppAndEnv(appId, envId) : { result: null },
                 getConfigMapList(appId, envId),
+                isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 1) : { result: null },
             ])
+            const draftDataMap = {}
+            if (draftData?.length) {
+                for (const data of draftData) {
+                    draftDataMap[data.resourceName] = data
+                }
+            }
+            if (Array.isArray(configMapRes.configData)) {
+                configMapRes.configData = configMapRes.configData.map((config) => {
+                    config.secretMode = config.externalType === ''
+                    config.unAuthorized = true
+                    if (draftDataMap[config.name]) {
+                        config.draftId = draftDataMap[config.name].draftId
+                    }
+                    return config
+                })
+            }
             setConfigMap({
                 appId: configMapRes.appId,
                 id: configMapRes.id,
@@ -71,6 +96,7 @@ export default function ConfigMapList({ isJobView, isOverrideView, parentState, 
                     id={configMap?.id ?? 0}
                     isOverrideView={isOverrideView}
                     isJobView={isJobView}
+                    isProtected={isProtected}
                 />
                 {configMap?.configData.map((cm, idx) => {
                     return (
@@ -85,6 +111,7 @@ export default function ConfigMapList({ isJobView, isOverrideView, parentState, 
                             id={configMap?.id}
                             isOverrideView={isOverrideView}
                             isJobView={isJobView}
+                            isProtected={isProtected}
                         />
                     )
                 })}

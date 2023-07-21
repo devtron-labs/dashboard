@@ -8,8 +8,16 @@ import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
 import { ConfigMapListProps } from '../Types'
 import { getSecretList } from '../service'
+import { importComponentFromFELibrary } from '../../common'
+const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 
-export default function SecretList({ isJobView, isOverrideView, parentState, setParentState }: ConfigMapListProps) {
+export default function SecretList({
+    isJobView,
+    isOverrideView,
+    isProtected,
+    parentState,
+    setParentState,
+}: ConfigMapListProps) {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
@@ -21,14 +29,24 @@ export default function SecretList({ isJobView, isOverrideView, parentState, set
 
     async function init(isFromInit?: boolean) {
         try {
-            const [{ result: appChartRefRes }, { result: secretData }] = await Promise.all([
+            const [{ result: appChartRefRes }, { result: secretData }, { result: draftData }] = await Promise.all([
                 isFromInit ? getAppChartRefForAppAndEnv(appId, envId) : { result: null },
                 getSecretList(appId, envId),
+                isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 2) : { result: null },
             ])
+            const draftDataMap = {}
+            if (draftData?.length) {
+                for (const data of draftData) {
+                    draftDataMap[data.resourceName] = data
+                }
+            }
             if (Array.isArray(secretData.configData)) {
                 secretData.configData = secretData.configData.map((config) => {
                     config.secretMode = config.externalType === ''
                     config.unAuthorized = true
+                    if (draftDataMap[config.name]) {
+                        config.draftId = draftDataMap[config.name].draftId
+                    }
                     return config
                 })
             }
@@ -107,6 +125,7 @@ export default function SecretList({ isJobView, isOverrideView, parentState, set
                     update={update}
                     isOverrideView={isOverrideView}
                     isJobView={isJobView}
+                    isProtected={isProtected}
                 />
                 {list?.configData?.map((cs, idx) => (
                     <ConfigMapSecretContainer
@@ -120,6 +139,7 @@ export default function SecretList({ isJobView, isOverrideView, parentState, set
                         index={idx}
                         isOverrideView={isOverrideView}
                         isJobView={isJobView}
+                        isProtected={isProtected}
                     />
                 ))}
             </div>

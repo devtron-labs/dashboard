@@ -136,6 +136,7 @@ export default function EnvironmentOverride({
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
                         <ConfigMapList
                             isOverrideView={true}
+                            isProtected={true}
                             parentState={viewState}
                             setParentState={setViewState}
                             isJobView={isJobView}
@@ -145,6 +146,7 @@ export default function EnvironmentOverride({
                         <SecretList
                             isOverrideView={true}
                             parentState={viewState}
+                            isProtected={true}
                             setParentState={setViewState}
                             isJobView={isJobView}
                         />

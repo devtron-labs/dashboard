@@ -49,6 +49,7 @@ export interface KeyValueValidated {
 export interface ConfigMapListProps {
     isJobView?: boolean
     isOverrideView?: boolean
+    isProtected?: boolean
     parentState?: ComponentStates
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
 }
@@ -64,6 +65,7 @@ export interface ConfigMapSecretFormProps {
     index: number
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
+    draftData: string
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
@@ -83,6 +85,7 @@ export interface ConfigMapSecretProps {
     id?: number
     isOverrideView?: boolean
     isJobView: boolean
+    isProtected: boolean
 }
 
 interface ValueWithError {
