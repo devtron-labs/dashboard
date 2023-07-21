@@ -29,6 +29,10 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
 }
 export const ClearFiltersLabel = 'Clear filters'
+export const DefaultJobNote =`## Describe this Job
+
+Describe your Devtron Job in a few words. This will help others understand the purpose and configuration of your job. Keep it concise and informative!
+`
 
 export const StatusConstants = {
     NOT_DEPLOYED: {

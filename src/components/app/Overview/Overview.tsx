@@ -35,7 +35,7 @@ import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants } from '../list-new/Constants'
+import { StatusConstants , DefaultJobNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { createAppLabels } from '../service'
@@ -43,6 +43,8 @@ import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
+import ClusterAbout from '../../ClusterNodes/ClusterAbout'
+import ClusterDescription from '../../Description/Description'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
@@ -466,80 +468,22 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    const handleDescriptionChange = (e) => {
-        setNewDescription(e.target.value)
-    }
-
-    const handleCancel = () => {
-        setNewDescription(appMetaInfo?.description) // reset to previously saved value
-        setEditMode(false)
-    }
-
-    const switchToEditMode = () => {
-        setEditMode(true)
-    }
-
-    const renderJobDescription = () => {
-        return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-                <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="job-description-header">
-                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
-                        Description
-                    </div>
-                    {editMode ? (
-                        <div className="flex left ml-auto dc__gap-8">
-                            <button
-                                className="btn btn-link p-0 fs-14 fw-6 cn-7"
-                                data-testid="cancel-button"
-                                onClick={handleCancel}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="btn btn-link p-0 fs-14 fw-6 cb-5"
-                                data-testid="job-description-save-button"
-                                type="submit"
-                                onClick={handleSave}
-                            >
-                                Save
-                            </button>
-                        </div>
-                    ) : (
-                        <div
-                            className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto"
-                            data-testid="job-description-edit"
-                            onClick={switchToEditMode}
-                        >
-                            <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                            Edit
-                        </div>
-                    )}
-                </div>
-                {editMode ? (
-                    <div className="flex left flex-wrap dc__gap-8 w-100">
-                        <textarea
-                            data-testid="job-description-textbox"
-                            placeholder="No description"
-                            value={newDescription}
-                            onChange={handleDescriptionChange}
-                            className="flex left flex-wrap dc__gap-8 dc__description-textarea"
-                        />
-                    </div>
-                ) : (
-                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100" data-testid="job-description-text">
-                        {newDescription ? newDescription : <span className="cn-7 fs-13">No description</span>}
-                    </div>
-                )}
-            </div>
-        )
-    }
-
     function renderOverviewContent(isJobOverview) {
         if (isJobOverview) {
             return (
                 <div className="app-overview-wrapper dc__overflow-scroll">
-                    {renderJobDescription()}
+                    {
+                        <ClusterDescription
+                            isClusterTerminal={false}
+                            clusterId={0}
+                            isSuperAdmin={true}
+                            appId={appId}
+                            initialDescriptionText={DefaultJobNote}
+                            initialDescriptionUpdatedBy={DefaultJobNote}
+                            initialDescriptionUpdatedOn={''}
+                            initaislModifiedDescriptionText={''}
+                        />
+                    }
                     {renderLabelTags()}
                     {renderWorkflowsStatus()}
                 </div>
@@ -547,6 +491,18 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         } else {
             return (
                 <div className="app-overview-wrapper dc__overflow-scroll">
+                    {
+                        <ClusterDescription
+                            isClusterTerminal={false}
+                            clusterId={0}
+                            isSuperAdmin={true}
+                            appId={appId}
+                            initialDescriptionText={DefaultJobNote}
+                            initialDescriptionUpdatedBy={DefaultJobNote}
+                            initialDescriptionUpdatedOn={''}
+                            initaislModifiedDescriptionText={''}
+                        />
+                    }
                     {renderLabelTags()}
                     {renderAppLevelExternalLinks()}
                     {renderEnvironmentDeploymentsStatus()}
