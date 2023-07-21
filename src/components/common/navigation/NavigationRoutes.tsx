@@ -215,7 +215,7 @@ export default function NavigationRoutes() {
     }
 
     async function getAirGapEnvironmentValue() {
-        if (!localStorage.getItem('isAirGapped') && getEnvironmentData) {
+        if (!localStorage.getItem('isAirGapped')) {
             try {
                 const { result } = await getEnvironmentData()
                 setIsAirGapped(result.isAirGapEnvironment)
@@ -238,7 +238,9 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
+            if(getEnvironmentData){
             getAirGapEnvironmentValue()
+            }
             getCurrentServerInfo()
         }
     }, [])
