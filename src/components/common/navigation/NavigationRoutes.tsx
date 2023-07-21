@@ -13,7 +13,6 @@ import {
     dashboardLoggedIn,
     getAppListMin,
     getClusterListMinWithoutAuth,
-    getEnvironmentData,
     getLoginData,
     updateLoginCount,
 } from '../../../services/service'
@@ -24,7 +23,7 @@ import {
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { useAsync } from '../helpers/Helpers'
+import { importComponentFromFELibrary, useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
@@ -46,6 +45,7 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 export const mainContext = createContext<any>(null)
+const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -215,7 +215,7 @@ export default function NavigationRoutes() {
     }
 
     async function getAirGapEnvironmentValue() {
-        if (!localStorage.getItem('isAirGapped')) {
+        if (!localStorage.getItem('isAirGapped') && getEnvironmentData) {
             try {
                 const { result } = await getEnvironmentData()
                 setIsAirGapped(result.isAirGapEnvironment)
