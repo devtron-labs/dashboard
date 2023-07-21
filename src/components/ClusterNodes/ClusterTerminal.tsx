@@ -998,3 +998,4 @@ export default function ClusterTerminal({
         </>
     )
 }
+

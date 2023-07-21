@@ -227,3 +227,4 @@ export const deleteEphemeralUrl = (
     }
     return trash(url, requestData)
 }
+
