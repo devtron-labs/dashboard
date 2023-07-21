@@ -574,8 +574,9 @@
     top: 60px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    height: 500px;
+    max-height: 500px;
     overflow: scroll;
+    min-height: 500px;
 }
 
 .chart-list__add{
@@ -585,4 +586,9 @@
   display: grid;
   grid-template-rows: 36px 36px;
   z-index: 2;
+}
+
+.empty-state img{
+  width: 200px;
+  height: auto;
 }

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { ChartListPopUpType, ChartListType } from '../charts.types'
-import { showError, Progressing, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    InfoColourBar,
+    GenericEmptyState,
+    ImageType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -8,13 +14,15 @@ import { getChartRepoList } from '../../../services/service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
-import { TOAST_INFO } from '../../../config/constantMessaging'
+import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import EmptyFolder from '../../../assets/img/Empty-folder.png'
+import NoResults from '../../../assets/img/empty-noresult@2x.png'
 
 function ChartListPopUp({ onClose }: ChartListPopUpType) {
     const [searchApplied, setSearchApplied] = useState<boolean>(false)
@@ -41,15 +49,17 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
     }
 
     const renderAddPopUp = (): JSX.Element => {
-      return <div className="chart-list__add w-200 en-2 bw-1 br-4 bcn-0 fw-4 fs-13 cn-9 mt-8">
-          <NavLink className="pl-8 pr-8 flex left" to={URLS.GLOBAL_CONFIG_CHART}>
-                   Add Chart repositories
+        return (
+            <div className="chart-list__add w-200 en-2 bw-1 br-4 bcn-0 fw-4 fs-13 cn-9 mt-8">
+                <NavLink className="pl-8 pr-8 flex left" to={URLS.GLOBAL_CONFIG_CHART}>
+                    Add Chart repositories
                 </NavLink>
 
                 <NavLink className="pl-8 pr-8 flex left" to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}>
-                   Add OCI Registries
+                    Add OCI Registries
                 </NavLink>
-      </div>
+            </div>
+        )
     }
     const renderChartListHeaders = () => {
         return (
@@ -65,9 +75,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                         <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                     </button>
                 </div>
-                {
-                  showAddPopUp && renderAddPopUp()
-                }
+                {showAddPopUp && renderAddPopUp()}
             </div>
         )
     }
@@ -78,7 +86,6 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
             const [{ result: chartRepoListResp }] = await Promise.all([getChartRepoList()])
             let chartRepos = chartRepoListResp || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
-            console.log(chartRepos)
             setChartList(chartRepos)
             setFilteredChartList(chartRepos)
         } catch (err) {
@@ -104,25 +111,40 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
             })
     }
 
-    const renderInfoText = (): JSX.Element => {
+    const renderInfoText = (isEmptyState?: boolean): JSX.Element => {
+        const renderNavigationeToOCIRepository = () => {
+            return (
+                <>
+                    <NavLink className="ml-4 mr-4" to={URLS.GLOBAL_CONFIG_CHART}>
+                        Chart repositories
+                    </NavLink>
+                    or
+                    <NavLink className="ml-4 mr-4" to={URLS.GLOBAL_CONFIG_DOCKER}>
+                        OCI Registries
+                    </NavLink>
+                </>
+            )
+        }
         return (
             <div>
-                Showing Chart repositories and OCI Registries (used as chart repositories). You can add other
-                <NavLink className="ml-4" to={URLS.GLOBAL_CONFIG_CHART}>
-                    Chart repositories{' '}
-                </NavLink>
-                or
-                <NavLink className="ml-4" to={URLS.GLOBAL_CONFIG_DOCKER}>
-                    OCI Registries
-                </NavLink>
-                as chart sources.
+                {isEmptyState ? (
+                    <>Add a {renderNavigationeToOCIRepository()} to view and deploy helm charts.</>
+                ) : (
+                    <>
+                        Showing Chart repositories and OCI Registries (used as chart repositories). You can add other{' '}
+                        {renderNavigationeToOCIRepository()} as chart sources.
+                    </>
+                )}
             </div>
         )
     }
 
     const renderChartList = () => {
+       if (chartList.length && !filteredChartList.length) {
+        return (renderEmptyState(true))
+    }
         return (
-            <>
+            <div>
                 {filteredChartList.length > 0 &&
                     filteredChartList.map((list) => {
                         return (
@@ -177,7 +199,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                     Icon={Help}
                     iconClass="icon-dim-20 fcv-5"
                 />
-            </>
+            </div>
         )
     }
 
@@ -227,12 +249,43 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
         )
     }
 
+    const renderEmptyState = (noChartFound?: boolean) => {
+        return (
+            <GenericEmptyState
+                image={noChartFound ? NoResults : EmptyFolder}
+                title={noChartFound ? <>No result for "{searchText}"</> : EMPTY_STATE_STATUS.CHART.NO_SOURCE_TITLE }
+                subTitle={noChartFound ? EMPTY_STATE_STATUS.CHART.NO_CHART_FOUND : renderInfoText(true)}
+                imageType={ImageType.Medium}
+                classname="dc__align-reload-center"
+            />
+        )
+    }
+
+    const renderChartListBody = () => {
+        if (isLoading) {
+            return (
+                <div className="mh-400 flex column">
+                    <Progressing size={24} />
+                    <span className="dc__loading-dots mt-12">Loading Chart source</span>
+                </div>
+            )
+        }
+          else if (!chartList.length) {
+            return renderEmptyState()
+        }
+        return (
+            <>
+                {renderChartListSearch()}
+                {renderChartList()}
+            </>
+        )
+    }
+
     return (
         <div className="dc__transparent-div bcn-0">
             <div className="chart-store__list w-400 br-4 bcn-0 en-2 bw-1 fw-4">
                 {renderChartListHeaders()}
-                {renderChartListSearch()}
-                {renderChartList()}
+                {renderChartListBody()}
             </div>
         </div>
     )

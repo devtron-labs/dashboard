@@ -238,6 +238,10 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No deployments',
         SUBTITLE: 'No deployment history available for the',
     },
+    CHART:{
+        NO_SOURCE_TITLE: 'No chart source configured',
+        NO_CHART_FOUND: 'Could not find any matching chart source'
+    },
     CHART_DEPLOYMENT_HISTORY: {
         SUBTITLE:
             'Data for previous deployments is not available. History for any new deployment will be available here.',
@@ -375,6 +379,7 @@ export const EMPTY_STATE_STATUS = {
     CD_MATERIAL: {
         TITLE: 'No Image Available',
     },
+
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
