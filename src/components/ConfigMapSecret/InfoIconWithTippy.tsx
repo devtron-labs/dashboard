@@ -4,14 +4,14 @@ import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { InfoIconWithTippyType } from './Types'
 
-export default function InfoIconWithTippy({ infoText, documentationLink }: InfoIconWithTippyType) {
+export default function InfoIconWithTippy({titleText, infoText, documentationLink }: InfoIconWithTippyType) {
     return (
         <TippyCustomized
             theme={TippyTheme.white}
             className="w-300 h-100 fcv-5"
             placement="right"
             Icon={QuestionFilled}
-            heading="API tokens"
+            heading={titleText}
             infoText={infoText}
             showCloseButton={true}
             trigger="click"

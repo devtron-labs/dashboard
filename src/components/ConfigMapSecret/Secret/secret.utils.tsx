@@ -383,6 +383,44 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
     }
 }
 
+const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapAction) => void): void => {
+    if (isESO) {
+        dispatch({
+            type: ConfigMapActionTypes.multipleOptions,
+            payload: {
+                secretStore: json.secretStore,
+                secretStoreRef: json.secretStoreRef,
+                refreshInterval: json.refreshInterval,
+            },
+        })
+        if (Array.isArray(json?.esoData)) {
+            dispatch({
+                type: ConfigMapActionTypes.setEsoData,
+                payload: json.esoData,
+            })
+        }
+    } else if (Array.isArray(json)) {
+        json = json.map((j) => {
+            let temp = {}
+            temp['isBinary'] = j.isBinary
+            if (j.key) {
+                temp['fileName'] = j.key
+            }
+            if (j.property) {
+                temp['property'] = j.property
+            }
+            if (j.name) {
+                temp['name'] = j.name
+            }
+            return temp
+        })
+        dispatch({
+            type: ConfigMapActionTypes.setSecretData,
+            payload: json,
+        })
+    }
+}
+
 export function handleSecretDataYamlChange(
     yaml: any,
     codeEditorRadio: string,
@@ -408,41 +446,7 @@ export function handleSecretDataYamlChange(
                 },
             })
         } else {
-            if (isESO) {
-                dispatch({
-                    type: ConfigMapActionTypes.multipleOptions,
-                    payload: {
-                        secretStore: json.secretStore,
-                        secretStoreRef: json.secretStoreRef,
-                        refreshInterval: json.refreshInterval,
-                    },
-                })
-                if (Array.isArray(json?.esoData)) {
-                    dispatch({
-                        type: ConfigMapActionTypes.setEsoData,
-                        payload: json.esoData,
-                    })
-                }
-            } else if (Array.isArray(json)) {
-                json = json.map((j) => {
-                    let temp = {}
-                    temp['isBinary'] = j.isBinary
-                    if (j.key) {
-                        temp['fileName'] = j.key
-                    }
-                    if (j.property) {
-                        temp['property'] = j.property
-                    }
-                    if (j.name) {
-                        temp['name'] = j.name
-                    }
-                    return temp
-                })
-                dispatch({
-                    type: ConfigMapActionTypes.setSecretData,
-                    payload: json,
-                })
-            }
+            handleValidJson(isESO, json, dispatch)
         }
     } catch (error) {}
 }
@@ -507,20 +511,11 @@ export const ConfigMapOptions: OptionType[] = [
 export const ExternalSecretHelpNote = () => {
     return (
         <div className="fs-13 fw-4 lh-18">
-            <NavLink
-                to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
-                className="dc__link"
-                target="_blank"
-            >
+            <NavLink to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`} className="dc__link" target="_blank">
                 External Secrets Operator
             </NavLink>
             &nbsp;should be installed in the target cluster.&nbsp;
-            <a
-                className="dc__link"
-                href={DOCUMENTATION.EXTERNAL_SECRET}
-                rel="noreferrer noopener"
-                target="_blank"
-            >
+            <a className="dc__link" href={DOCUMENTATION.EXTERNAL_SECRET} rel="noreferrer noopener" target="_blank">
                 Learn more
             </a>
         </div>

@@ -92,6 +92,7 @@ export default function SecretList({ isJobView, isOverrideView, parentState, set
                 <h1 className="form__title form__title--artifacts flex left">
                     Secrets
                     <InfoIconWithTippy
+                        titleText="Secrets"
                         infoText="A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys."
                         documentationLink={DOCUMENTATION.APP_CREATE_SECRET}
                     />

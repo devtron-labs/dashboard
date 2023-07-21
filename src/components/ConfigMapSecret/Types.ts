@@ -161,6 +161,7 @@ export interface ConfigMapAction {
 }
 
 export interface InfoIconWithTippyType {
+    titleText: string
     infoText: string
     documentationLink: string
 }
