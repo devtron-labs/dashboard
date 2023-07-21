@@ -18,7 +18,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
-import { getAppChartRef, getConfigMapList } from '../../services/service'
+import { getAppChartRef } from '../../services/service'
 import { overRideConfigMap, deleteConfigMap as deleteEnvironmentConfig } from '../EnvironmentOverride/service'
 import { toast } from 'react-toastify'
 import CodeEditor from '../CodeEditor/CodeEditor'
@@ -30,6 +30,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import './ConfigMap.scss'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
+import { getConfigMapList } from '../ConfigMapSecret/service'
 
 const EXTERNAL_TYPES = {
     '': 'Kubernetes ConfigMap',

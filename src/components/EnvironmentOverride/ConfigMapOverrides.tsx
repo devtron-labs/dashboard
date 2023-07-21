@@ -69,7 +69,7 @@ export default function ConfigMapOverrides({ parentState, setParentState, isJobV
                     id: configmapRes.result.id,
                     configData: configmapRes.result.configData || [],
                 })
-               
+
             } catch (error) {
                 setParentState(ComponentStates.failed)
                 showError(error)

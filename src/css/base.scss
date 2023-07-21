@@ -959,8 +959,19 @@ button.anchor {
 
 .dc__configuration-list {
     display: grid;
-    grid-template-columns: 24px 1fr 24px;
+    grid-template-columns: 24px 1fr 54px;
     grid-column-gap: 16px;
+    .tag{
+      border: 1px solid var(--N200);
+      height: 20px;
+      line-height: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--N900);
+      padding: 0 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
 }
 
 .animate-background {

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import ConfigMapOverrides from './ConfigMapOverrides'
-import SecretOverrides from './SecretOverrides'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
 import { mapByKey, ErrorBoundary, useAppContext, useAsync } from '../common'
 import { Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
@@ -15,6 +13,9 @@ import {
     SECTION_HEADING_INFO,
 } from './EnvironmentOverrides.type'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
+import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
+import SecretList from '../ConfigMapSecret/Secret/SecretList'
+import InfoIconWithTippy from '../ConfigMapSecret/InfoIconWithTippy'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin } from '../../services/service'
 
 export default function EnvironmentOverride({
@@ -31,7 +32,7 @@ export default function EnvironmentOverride({
     const { environmentId, setEnvironmentId } = useAppContext()
     const [headingData, setHeadingData] = useState<SectionHeadingType>()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => !isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId),
+        () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
         [params.appId],
         !!params.appId,
     )
@@ -107,23 +108,18 @@ export default function EnvironmentOverride({
         <ErrorBoundary>
             <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
                 {headingData && (
-                    <>
-                        <h1 className="form__title form__title--artifacts flex left" data-testid="environment-override-header">
-                            {formTitle()}
-                            {headingData.title}
-                        </h1>
-                        <div className="form__subtitle">
-                            {headingData.subtitle}&nbsp;
-                            <a
-                                className="dc__link"
-                                rel="noreferre noopener"
-                                href={headingData.learnMoreLink}
-                                target="blank"
-                            >
-                                Learn more
-                            </a>
-                        </div>
-                    </>
+                    <h1
+                        className="form__title form__title--artifacts flex left"
+                        data-testid="environment-override-header"
+                    >
+                        {formTitle()}
+                        {headingData.title}
+                        <InfoIconWithTippy
+                            titleText={headingData.title}
+                            infoText={headingData.subtitle}
+                            documentationLink={headingData.learnMoreLink}
+                        />
+                    </h1>
                 )}
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
@@ -139,10 +135,20 @@ export default function EnvironmentOverride({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
-                        <ConfigMapOverrides parentState={viewState} setParentState={setViewState} isJobView={isJobView}/>
+                        <ConfigMapList
+                            isOverrideView={true}
+                            parentState={viewState}
+                            setParentState={setViewState}
+                            isJobView={isJobView}
+                        />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
-                        <SecretOverrides parentState={viewState} setParentState={setViewState} isJobView={isJobView}/>
+                        <SecretList
+                            isOverrideView={true}
+                            parentState={viewState}
+                            setParentState={setViewState}
+                            isJobView={isJobView}
+                        />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>
@@ -150,7 +156,3 @@ export default function EnvironmentOverride({
         </ErrorBoundary>
     )
 }
-function getJobOtherEnvironment(appId: string): Promise<unknown> {
-    throw new Error('Function not implemented.')
-}
-

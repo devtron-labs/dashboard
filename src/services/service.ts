@@ -203,11 +203,11 @@ export function getEnvironmentSecrets(appId, envId) {
 }
 //TODO:move to configmap and secret component
 export function getConfigMapList(appId: string) {
-    return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`)
+  return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`)
 }
 
 export function getSecretList(appId: string) {
-    return get(`${Routes.APP_CREATE_SECRET}/${appId}`)
+  return get(`${Routes.APP_CREATE_SECRET}/${appId}`)
 }
 
 export function getWorkflowList(appId) {
@@ -414,12 +414,15 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
     })
 }
 
-export function getChartReferencesForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
-    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`
-    return get(URL)
+export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
+  let envParam = ''
+  if (envId) {
+      envParam = `/${envId}`
+  }
+  return get(`${Routes.CHART_REFERENCES_MIN}/${appId}${envParam}`)
 }
 
-export function getAppChartRefForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
+export function getAppChartRefForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
     return getChartReferencesForAppAndEnv(appId, envId).then((response) => {
         const {
             result: { chartRefs, latestEnvChartRef, latestAppChartRef },
