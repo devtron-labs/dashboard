@@ -113,8 +113,6 @@
     }
 
     .form-cta-section {
-        height: 76px;
-
         .form-app-metrics-cta {
             width: 88%;
         }
@@ -227,10 +225,18 @@
 .form__row--gui-container {
     &.gui {
         height: calc(100% - 160px);
+
+        &.read-only-mode {
+            height: calc(100% - 128px);
+        }
     }
 
     &.gui-with-warning {
         height: calc(100% - 192px);
+
+        &.read-only-mode {
+            height: calc(100% - 160px);
+        }
     }
 
     &.scrollable {
@@ -253,6 +259,10 @@
     display: grid;
     grid-template-rows: 32px 1fr;
     overflow: hidden;
+
+    &.read-only-mode {
+        height: calc(100% - 92px);
+    }
 
     &.form__row {
         margin-bottom: 0;
@@ -380,6 +390,10 @@
     .deployment-template-override-form {
         .form__row--code-editor-container {
             height: calc(100% - 184px);
+
+            &.read-only-mode {
+                height: calc(100% - 152px);
+            }
         }
 
         .override-container {
@@ -391,6 +405,10 @@
         .form__row--gui-container {
             &.gui {
                 height: calc(100% - 220px);
+
+                &.read-only-mode {
+                    height: calc(100% - 188px);
+                }
             }
         }
     }

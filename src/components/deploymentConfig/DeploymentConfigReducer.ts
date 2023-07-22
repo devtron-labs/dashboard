@@ -1,6 +1,11 @@
-import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes, DeploymentConfigStateType } from './types'
+import {
+    DeploymentConfigStateAction,
+    DeploymentConfigStateActionTypes,
+    DeploymentConfigStateWithDraft,
+} from './types'
 
-export const initDeploymentConfigState: DeploymentConfigStateType = {
+export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
+    publishedState: null,
     charts: [],
     chartsMetadata: {},
     selectedChartRefId: 0,
@@ -37,8 +42,13 @@ export const initDeploymentConfigState: DeploymentConfigStateType = {
     showComments: false,
 }
 
-export const deploymentConfigReducer = (state: DeploymentConfigStateType, action?: DeploymentConfigStateAction) => {
+export const deploymentConfigReducer = (
+    state: DeploymentConfigStateWithDraft,
+    action?: DeploymentConfigStateAction,
+) => {
     switch (action.type) {
+        case DeploymentConfigStateActionTypes.draftState:
+            return { ...state, draftState: action.payload }
         case DeploymentConfigStateActionTypes.loading:
             return { ...state, loading: action.payload }
         case DeploymentConfigStateActionTypes.charts:

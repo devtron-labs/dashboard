@@ -5,6 +5,7 @@ import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
 
 export default function DeploymentConfigFormCTA({
     loading,
@@ -16,7 +17,7 @@ export default function DeploymentConfigFormCTA({
     disableButton,
     toggleAppMetrics,
     selectedChart,
-    hideSaveChangesCTA,
+    readOnlyMode,
 }: DeploymentConfigFormCTAProps) {
     const _disabled = disableButton || loading
 
@@ -64,16 +65,22 @@ export default function DeploymentConfigFormCTA({
         )
     }
 
-    return (
-        selectedChart && (
-            <div
-                className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
-                    showAppMetricsToggle ? 'dc__content-space' : 'right'
-                }`}
-            >
-                {showAppMetricsToggle && (
-                    <div className="form-app-metrics-cta flex top left">
-                        {loading ? (
+    const renderApplicationMetrics = () => {
+        if (!showAppMetricsToggle) {
+            return null
+        } else if (readOnlyMode) {
+            return (
+                <div className="flex left fs-13 fw-4 lh-20 cn-9">
+                    <InfoIcon className="icon-dim-16 mr-8" />
+                    Application metrics are
+                    <span className="fw-6 ml-4">{isAppMetricsEnabled ? 'Enabled' : 'Not enabled'}</span>
+                </div>
+            )
+        } else {
+            return (
+                <div className="form-app-metrics-cta flex top left">
+                    {loading ? (
+                        <>
                             <Progressing
                                 data-testid="app-metrics-checkbox-loading"
                                 styles={{
@@ -81,7 +88,10 @@ export default function DeploymentConfigFormCTA({
                                     marginRight: '16px',
                                 }}
                             />
-                        ) : (
+                            <span className="fs-13 fw-4 lh-20">Application metrics</span>
+                        </>
+                    ) : (
+                        <>
                             <Checkbox
                                 rootClassName={`mt-2 mr-8 ${
                                     !selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''
@@ -92,35 +102,47 @@ export default function DeploymentConfigFormCTA({
                                 dataTestId="app-metrics-checkbox"
                                 disabled={disableCheckbox || !selectedChart.isAppMetricsSupported}
                             />
-                        )}
-                        <div className="flex column left">
-                            <div className="fs-13 mb-4">
-                                <b className="fw-6 cn-9 mr-8">
-                                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
-                                </b>
-                                <a
-                                    data-testid="app-metrics-learnmore-link"
-                                    href={DOCUMENTATION.APP_METRICS}
-                                    target="_blank"
-                                    className="fw-4 cb-5 dc__underline-onhover"
+                            <div className="flex column left">
+                                <div className="fs-13 mb-4">
+                                    <b className="fw-6 cn-9 mr-8">
+                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
+                                    </b>
+                                    <a
+                                        data-testid="app-metrics-learnmore-link"
+                                        href={DOCUMENTATION.APP_METRICS}
+                                        target="_blank"
+                                        className="fw-4 cb-5 dc__underline-onhover"
+                                    >
+                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
+                                    </a>
+                                </div>
+                                <div
+                                    data-testid="app-metrics-info-text"
+                                    className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}
                                 >
-                                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
-                                </a>
+                                    {!selectedChart.isAppMetricsSupported
+                                        ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.notSupported(
+                                              selectedChart.name,
+                                          )
+                                        : DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.supported}
+                                </div>
                             </div>
-                            <div
-                                data-testid="app-metrics-info-text"
-                                className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}
-                            >
-                                {!selectedChart.isAppMetricsSupported
-                                    ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.notSupported(
-                                          selectedChart.name,
-                                      )
-                                    : DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.supported}
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {!hideSaveChangesCTA && renderButton()}
+                        </>
+                    )}
+                </div>
+            )
+        }
+    }
+
+    return (
+        selectedChart && (
+            <div
+                className={`form-cta-section flex pr-20 pl-20 ${showAppMetricsToggle ? 'dc__content-space' : 'right'} ${
+                    readOnlyMode ? 'h-44' : 'h-76'
+                }`}
+            >
+                {renderApplicationMetrics()}
+                {!readOnlyMode && renderButton()}
             </div>
         )
     )

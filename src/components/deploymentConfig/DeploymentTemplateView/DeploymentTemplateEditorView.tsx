@@ -36,7 +36,7 @@ export default function DeploymentTemplateEditorView({
     environmentName,
     editorOnChange,
     handleOverride,
-    isDraftMode,
+    isDraftView,
 }: DeploymentTemplateEditorViewProps) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const envVariableSectionRef = useRef(null)
@@ -101,11 +101,9 @@ export default function DeploymentTemplateEditorView({
             setFetchingValues(true)
             const isEnvOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
             const isChartVersionOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
-            const _isEnvOption = isEnvOverride || isEnvOption
-            const _chartVersionOption = isChartVersionOption
+            const _getDeploymentTemplate = isChartVersionOption
                 ? getDefaultDeploymentTemplate(appId, selectedOption.value)
-                : _isEnvOption
-            const _getDeploymentTemplate = _chartVersionOption
+                : isEnvOverride || isEnvOption
                 ? getEnvDeploymentTemplate(appId, isEnvOption ? selectedOption.id : envId, selectedOption.value)
                 : getDeploymentTemplate(+appId, +selectedOption.value)
 
@@ -115,7 +113,7 @@ export default function DeploymentTemplateEditorView({
                         const _fetchedValues = {
                             ...state.fetchedValues,
                             [selectedOption.id]: YAML.stringify(
-                                processFetchedValues(result, isChartVersionOption, _isEnvOption),
+                                processFetchedValues(result, isChartVersionOption, isEnvOverride || isEnvOption),
                             ),
                         }
                         setFetchedValues(_fetchedValues)
@@ -285,7 +283,7 @@ export default function DeploymentTemplateEditorView({
 
     const renderCodeEditor = (): JSX.Element => {
         return (
-            <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
+            <div className={`form__row--code-editor-container dc__border-top dc__border-bottom ${readOnly ? 'read-only-mode' : ''}`}>
                 <CodeEditor
                     defaultValue={
                         (selectedOption?.id === -1 ? defaultValue : state.fetchedValues[selectedOption?.id]) || ''
@@ -384,7 +382,7 @@ export default function DeploymentTemplateEditorView({
             <div
                 className={`form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
-                }`}
+                } ${readOnly ? 'read-only-mode' : ''}`}
             >
                 {state.chartConfigLoading || !value || fetchingValues ? (
                     <div className="flex h-100">

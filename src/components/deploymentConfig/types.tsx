@@ -105,7 +105,7 @@ export interface DeploymentConfigFormCTAProps {
     disableButton?: boolean
     toggleAppMetrics: () => void
     selectedChart: DeploymentChartVersionType
-    hideSaveChangesCTA?: boolean
+    readOnlyMode: boolean
 }
 
 export interface CompareWithDropdownProps {
@@ -167,12 +167,12 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
-    isDraftMode?: boolean
+    isDraftView?: boolean
 }
 
 export interface DeploymentConfigContextType {
     isUnSet: boolean
-    state: DeploymentConfigStateType
+    state: DeploymentConfigStateWithDraft
     dispatch: React.Dispatch<DeploymentConfigStateAction>
     environments: AppEnvironment[]
     changeEditorMode: () => void
@@ -294,6 +294,10 @@ export interface DeploymentConfigStateType {
     dialog: boolean
     latestAppChartRef: any
     latestChartRef: any
+}
+
+export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
+    publishedState: DeploymentConfigStateType
     showSaveChangsModal: boolean
     isConfigProtectionEnabled: boolean
     allDrafts: any[]
@@ -303,6 +307,7 @@ export interface DeploymentConfigStateType {
 }
 
 export enum DeploymentConfigStateActionTypes {
+    draftState = 'draftState',
     loading = 'loading',
     charts = 'charts',
     chartsMetadata = 'chartsMetadata',
