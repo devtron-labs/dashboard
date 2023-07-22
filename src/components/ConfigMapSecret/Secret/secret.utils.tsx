@@ -449,7 +449,7 @@ export function handleSecretDataYamlChange(
     } catch (error) {}
 }
 
-export const getSecretInitState = (configMapSecretData, isOverrideView): SecretState => {
+export const getSecretInitState = (configMapSecretData): SecretState => {
     let tempSecretData, jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
         tempSecretData = configMapSecretData.secretData

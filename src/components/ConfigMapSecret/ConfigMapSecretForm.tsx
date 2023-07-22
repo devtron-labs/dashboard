@@ -8,6 +8,8 @@ import {
     deleteEnvConfigMap,
     getSecretKeys,
     updateSecret,
+    deleteSecret,
+    deleteConfig,
 } from './service'
 import { useParams } from 'react-router'
 import { CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../common'
@@ -23,6 +25,7 @@ import {
     ToastBody,
     RadioGroup,
     RadioGroupItem,
+    DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
@@ -391,13 +394,18 @@ export const ConfigMapSecretForm = React.memo(
             }
         }
 
-        async function handleDelete(e) {
+        async function handleDelete() {
             try {
-                componentType === 'secret'
-                    ? await deleteEnvSecret(id, appId, +envId, configMapSecretData?.name)
-                    : await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
-                toast.success('Restored to global.')
-
+                if (!envId) {
+                    componentType === 'secret'
+                        ? await deleteSecret(id, appId, configMapSecretData?.name)
+                        : await deleteConfig(id, appId, configMapSecretData?.name)
+                } else {
+                    componentType === 'secret'
+                        ? await deleteEnvSecret(id, appId, +envId, configMapSecretData?.name)
+                        : await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
+                }
+                toast.success(configMapSecretData.overridden ? 'Restored to global.' : 'Successfully deleted')
                 update()
                 toggleCollapse(not)
                 dispatch({ type: ConfigMapActionTypes.success })
@@ -405,7 +413,10 @@ export const ConfigMapSecretForm = React.memo(
                 showError(err)
                 dispatch({ type: ConfigMapActionTypes.error })
             } finally {
-                dispatch({ type: ConfigMapActionTypes.toggleDialog })
+                dispatch({
+                    type: ConfigMapActionTypes.multipleOptions,
+                    payload: { dialog: false, showDeleteModal: false },
+                })
             }
         }
 
@@ -457,6 +468,51 @@ export const ConfigMapSecretForm = React.memo(
 
         const submitButtonText = (): string => {
             return `Save ${configMapSecretData?.name ? ' changes' : ''}`
+        }
+
+        const closeDeleteModal = (): void => {
+            dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: false })
+        }
+
+        const openDeleteModal = (e): void => {
+            dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: true })
+        }
+
+        const renderDeleteOverRideModal = (): JSX.Element => {
+            return (
+                <ConfirmationDialog className="confirmation-dialog__body--w-400">
+                    <ConfirmationDialog.Icon src={warningIcon} />
+                    <ConfirmationDialog.Body
+                        title="Delete override ?"
+                        subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone."
+                    />
+                    <ConfirmationDialog.ButtonGroup>
+                        <button
+                            type="button"
+                            className="cta cancel"
+                            onClick={(e) => dispatch({ type: ConfigMapActionTypes.toggleDialog })}
+                        >
+                            Cancel
+                        </button>
+                        <button type="button" className="cta delete" onClick={handleDelete}>
+                            Confirm
+                        </button>
+                    </ConfirmationDialog.ButtonGroup>
+                </ConfirmationDialog>
+            )
+        }
+
+        const renderDeleteCMModal = (): JSX.Element => {
+            return (
+                <DeleteDialog
+                    title={`Delete ${componentType === 'secret' ? 'Secret' : 'ConfigMap'} '${
+                        configMapSecretData?.name
+                    }' ?`}
+                    description={`'${configMapSecretData?.name}' will not be used in future deployments. Are you sure?`}
+                    closeDelete={closeDeleteModal}
+                    delete={handleDelete}
+                />
+            )
         }
 
         const renderRollARN = (): JSX.Element => {
@@ -800,6 +856,9 @@ export const ConfigMapSecretForm = React.memo(
                     )}
                     {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
                         <div className="form__buttons">
+                            <button className="cta delete" onClick={openDeleteModal}>
+                                Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
+                            </button>
                             <button
                                 disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
@@ -813,27 +872,8 @@ export const ConfigMapSecretForm = React.memo(
                     )}
                 </form>
 
-                {state.dialog && (
-                    <ConfirmationDialog className="confirmation-dialog__body--w-400">
-                        <ConfirmationDialog.Icon src={warningIcon} />
-                        <ConfirmationDialog.Body
-                            title="Delete override ?"
-                            subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone."
-                        />
-                        <ConfirmationDialog.ButtonGroup>
-                            <button
-                                type="button"
-                                className="cta cancel"
-                                onClick={(e) => dispatch({ type: ConfigMapActionTypes.toggleDialog })}
-                            >
-                                Cancel
-                            </button>
-                            <button type="button" className="cta delete" onClick={handleDelete}>
-                                Confirm
-                            </button>
-                        </ConfirmationDialog.ButtonGroup>
-                    </ConfirmationDialog>
-                )}
+                {configMapSecretData?.name && state.showDeleteModal && renderDeleteCMModal()}
+                {state.dialog && renderDeleteOverRideModal()}
             </>
         )
     },

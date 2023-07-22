@@ -112,10 +112,8 @@ export function ConfigMapSecretContainer({
     isProtected,
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
-    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
     const [isLoader, setLoader] = useState<boolean>(false)
-    const [draftData, setDraftData] = useState('')
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const [draftData, setDraftData] = useState(null)
 
     async function getDraftData() {
         try {
@@ -132,20 +130,8 @@ export function ConfigMapSecretContainer({
     }
     let cmSecretStateLabel = CM_SECRET_STATE.BASE
     if (isOverrideView) {
-        if (
-            data?.global &&
-            (data.external ||
-                Object.keys(data.defaultData ?? {}).length ||
-                (componentType === 'secret' &&
-                    (Object.keys(data.defaultSecretData ?? {}).length ||
-                        Object.keys(data.defaultESOSecretData ?? {}).length)))
-        ) {
-            cmSecretStateLabel =
-                data.external || // TODO: need to work on external type as this will always show overridden
-                data.data ||
-                (componentType === 'secret' && (data.esoSecretData?.secretStore || data.secretData))
-                    ? CM_SECRET_STATE.OVERRIDDEN
-                    : CM_SECRET_STATE.INHERITED
+        if (data?.global) {
+            cmSecretStateLabel = data.overridden ? CM_SECRET_STATE.OVERRIDDEN : CM_SECRET_STATE.INHERITED
         } else {
             cmSecretStateLabel = CM_SECRET_STATE.ENV
         }
@@ -160,42 +146,7 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const closeDeleteModal = (): void => {
-        setShowDeleteModal(false)
-    }
-
-    const openDeleteModal = (e): void => {
-        stopPropagation(e)
-        setShowDeleteModal(true)
-    }
-
-    const handleDelete = async () => {
-        try {
-            if (!envId) {
-                componentType === 'secret' ? await deleteSecret(id, appId, title) : await deleteConfig(id, appId, title)
-            } else {
-                componentType === 'secret'
-                    ? await deleteEnvSecret(id, appId, +envId, title)
-                    : await deleteEnvConfigMap(id, appId, envId, title)
-            }
-            update(index, null)
-            toggleCollapse(not)
-            toast.success('Successfully deleted')
-        } catch (err) {
-            showError(err)
-        }
-    }
-
-    const renderDeleteCMModal = () => {
-        return (
-            <DeleteDialog
-                title={`Delete ${componentType === 'secret' ? 'Secret' : 'ConfigMap'} '${title}' ?`}
-                description={`'${title}' will not be used in future deployments. Are you sure?`}
-                closeDelete={closeDeleteModal}
-                delete={handleDelete}
-            />
-        )
-    }
+    const handleTabSelection = (index: number): void => {}
 
     const renderIcon = (): JSX.Element => {
         if (!title) {
@@ -244,8 +195,11 @@ export function ConfigMapSecretContainer({
                         {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                     </div>
                     <div className="flex right">
-                        {!collapsed && title && (
-                            <Trash className="icon-n4 cursor icon-delete" onClick={openDeleteModal} />
+                        {collapsed && title && (
+                            <>
+                                <i>In draft</i>
+                                <Trash className="icon-n4 cursor icon-delete" />
+                            </>
                         )}
                         {title && isLoader ? (
                             <Progressing />
@@ -257,25 +211,26 @@ export function ConfigMapSecretContainer({
 
                 {!collapsed && (
                     <>
-                        <ConfigToolbar
-                            loading={isLoader}
-                            selectedTabIndex={1}
-                            handleTabSelection={noop}
-                            isDraftMode={true}
-                            handleDiscardDraft={noop}
-                            noReadme={true}
-                            showReadme={false}
-                            handleReadMeClick={noop}
-                            handleCommentClick={noop}
-                            isApprovalPending={true}
-                            approvalUsers={[]}
-                            activityHistory={[]}
-                        />
+                        {ConfigToolbar && (
+                            <ConfigToolbar
+                                loading={isLoader}
+                                selectedTabIndex={1}
+                                handleTabSelection={handleTabSelection}
+                                isDraftMode={draftData?.draftState === 1}
+                                handleDiscardDraft={noop}
+                                noReadme={true}
+                                showReadme={false}
+                                handleReadMeClick={noop}
+                                handleCommentClick={noop}
+                                isApprovalPending={true}
+                                approvalUsers={draftData?.approvers}
+                                activityHistory={[]}
+                            />
+                        )}
                         {renderDetails()}
                     </>
                 )}
             </section>
-            {showDeleteModal && renderDeleteCMModal()}
         </>
     )
 }

@@ -126,6 +126,7 @@ export interface ConfigMapState {
     configName: ValueWithError
     yamlMode: boolean
     cmSecretState: CM_SECRET_STATE
+    showDeleteModal: boolean
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
@@ -156,6 +157,7 @@ export enum ConfigMapActionTypes {
     updateCurrentData = 'updateCurrentData',
     toggleSecretMode = 'toggleSecretMode',
     toggleUnAuthorized = 'toggleUnAuthorized',
+    setShowDeleteModal = 'setShowDeleteModal',
 }
 
 export interface ConfigMapAction {
@@ -168,3 +170,5 @@ export interface InfoIconWithTippyType {
     infoText: string
     documentationLink: string
 }
+
+
