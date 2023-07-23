@@ -6,7 +6,6 @@ import { DOCUMENTATION } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
-import '../ConfigMap.scss'
 import { ConfigMapListProps } from '../Types'
 import { ComponentStates } from '../../EnvironmentOverride/EnvironmentOverrides.type'
 import { importComponentFromFELibrary } from '../../common'
@@ -47,6 +46,7 @@ export default function ConfigMapList({
                     config.unAuthorized = true
                     if (draftDataMap[config.name]) {
                         config.draftId = draftDataMap[config.name].draftId
+                        config.draftState = draftDataMap[config.name].draftState
                     }
                     return config
                 })

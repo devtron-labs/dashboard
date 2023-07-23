@@ -12,7 +12,12 @@ import {
     deleteConfig,
 } from './service'
 import { useParams } from 'react-router'
-import { CustomInput, isVersionLessThanOrEqualToTarget, isChartRef3090OrBelow } from '../common'
+import {
+    CustomInput,
+    isVersionLessThanOrEqualToTarget,
+    isChartRef3090OrBelow,
+    importComponentFromFELibrary,
+} from '../common'
 import {
     showError,
     Progressing,
@@ -49,10 +54,14 @@ import {
 } from './Secret/secret.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as InfoIconOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import '../EnvironmentOverride/environmentOverride.scss'
+import './ConfigMapSecret.scss'
+
+const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 
 export const ConfigMapSecretForm = React.memo(
     ({
@@ -66,12 +75,15 @@ export const ConfigMapSecretForm = React.memo(
         index,
         cmSecretStateLabel,
         isJobView,
+        readonlyView,
+        isProtectedView,
+        draftMode,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
         const [state, dispatch] = useReducer(
             memoizedReducer,
-            initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel),
+            initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel, draftMode),
         )
 
         const { appId, envId } = useParams<{ appId; envId }>()
@@ -86,7 +98,12 @@ export const ConfigMapSecretForm = React.memo(
         const isESO = componentType === 'secret' && hasESO(state.externalType)
 
         useEffect(() => {
-            if (componentType === 'secret' && configMapSecretData?.name) {
+            if (
+                componentType === 'secret' &&
+                configMapSecretData?.name &&
+                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
+                !draftMode
+            ) {
                 handleSecretFetch()
             }
         }, [])
@@ -98,6 +115,13 @@ export const ConfigMapSecretForm = React.memo(
                 })
             }
         }, [isESO, state.yamlMode])
+
+        useEffect(() => {
+            dispatch({
+                type: ConfigMapActionTypes.reInit,
+                payload: initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel, draftMode),
+            })
+        }, [configMapSecretData])
 
         async function handleSecretFetch() {
             try {
@@ -132,8 +156,14 @@ export const ConfigMapSecretForm = React.memo(
                 } else {
                     //temporary copy, removecopy
                     dispatch({
-                        type: ConfigMapActionTypes.deleteOverride,
-                        payload: initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel),
+                        type: ConfigMapActionTypes.reInit,
+                        payload: initState(
+                            configMapSecretData,
+                            isOverrideView,
+                            componentType,
+                            cmSecretStateLabel,
+                            draftMode,
+                        ),
                     })
                 }
             } else {
@@ -239,7 +269,11 @@ export const ConfigMapSecretForm = React.memo(
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
                     isFormValid = validateFilePermission()
                 }
-                if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
+                if (
+                    state.isSubPathChecked &&
+                    ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                        (componentType !== 'secret' && state.external))
+                ) {
                     if (!state.externalSubpathValues.value) {
                         dispatch({
                             type: ConfigMapActionTypes.setExternalSubpathValues,
@@ -348,7 +382,11 @@ export const ConfigMapSecretForm = React.memo(
                             : `${state.filePermission.value}`
                 }
 
-                if (state.isSubPathChecked && state.externalType !== 'KubernetesSecret') {
+                if (
+                    state.isSubPathChecked &&
+                    ((componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                        (componentType !== 'secret' && state.external))
+                ) {
                     const externalSubpathKey = state.externalSubpathValues.value.replace(/\s+/g, '').split(',')
                     const secretKeys = {}
                     externalSubpathKey.forEach((key) => (secretKeys[key] = ''))
@@ -365,29 +403,40 @@ export const ConfigMapSecretForm = React.memo(
                 return
             }
             try {
-                dispatch({ type: ConfigMapActionTypes.submitLoading })
-                const payload = createPayload(arr)
-                let toastTitle = ''
-                if (!envId) {
-                    componentType === 'secret'
-                        ? await updateSecret(id, +appId, payload)
-                        : await updateConfig(id, +appId, payload)
-                    toastTitle = `${payload.name ? 'Updated' : 'Saved'}`
+                const payloadData = createPayload(arr)
+                if (isProtectedView) {
+                    console.log(payloadData)
+                    dispatch({
+                        type: ConfigMapActionTypes.multipleOptions,
+                        payload: {
+                            showDraftSaveModal: true,
+                            draftPayload: JSON.stringify({ id: id ?? 0, appId: appId, configData: [payloadData] }),
+                        },
+                    })
                 } else {
-                    componentType === 'secret'
-                        ? await overRideSecret(id, +appId, +envId, [payload])
-                        : await overRideConfigMap(id, +appId, +envId, [payload])
-                    toastTitle = 'Overridden'
+                    dispatch({ type: ConfigMapActionTypes.submitLoading })
+                    let toastTitle = ''
+                    if (!envId) {
+                        componentType === 'secret'
+                            ? await updateSecret(id, +appId, payloadData)
+                            : await updateConfig(id, +appId, payloadData)
+                        toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
+                    } else {
+                        componentType === 'secret'
+                            ? await overRideSecret(id, +appId, +envId, [payloadData])
+                            : await overRideConfigMap(id, +appId, +envId, [payloadData])
+                        toastTitle = 'Overridden'
+                    }
+                    toast.success(
+                        <div className="toast">
+                            <div className="toast__title">{toastTitle}</div>
+                            <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
+                        </div>,
+                    )
+                    update()
+                    toggleCollapse((collapse) => !collapse)
+                    dispatch({ type: ConfigMapActionTypes.success })
                 }
-                toast.success(
-                    <div className="toast">
-                        <div className="toast__title">{toastTitle}</div>
-                        <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                    </div>,
-                )
-                update()
-                toggleCollapse((collapse) => !collapse)
-                dispatch({ type: ConfigMapActionTypes.success })
             } catch (err) {
                 showError(err)
                 dispatch({ type: ConfigMapActionTypes.error })
@@ -478,6 +527,10 @@ export const ConfigMapSecretForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: true })
         }
 
+        const toggleDraftSaveModal = (e): void => {
+            dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
+        }
+
         const renderDeleteOverRideModal = (): JSX.Element => {
             return (
                 <ConfirmationDialog className="confirmation-dialog__body--w-400">
@@ -528,7 +581,9 @@ export const ConfigMapSecretForm = React.memo(
                                 placeholder="Enter Role ARN"
                                 error={state.roleARN.error}
                                 onChange={handleRoleARNChange}
-                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                                disabled={
+                                    !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
+                                }
                             />
                         </div>
                     </div>
@@ -545,7 +600,10 @@ export const ConfigMapSecretForm = React.memo(
                             isChecked={state.isFilePermissionChecked}
                             onClick={stopPropagation}
                             rootClassName=""
-                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || isChartVersion309OrBelow}
+                            disabled={
+                                (!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)) ||
+                                isChartVersion309OrBelow
+                            }
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={toggleFilePermission}
                         >
@@ -587,7 +645,11 @@ export const ConfigMapSecretForm = React.memo(
                                 placeholder={'eg. 0400 or 400'}
                                 error={state.filePermission.error}
                                 onChange={onFilePermissionChange}
-                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED || isChartVersion309OrBelow}
+                                disabled={
+                                    (!draftMode &&
+                                        (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)) ||
+                                    isChartVersion309OrBelow
+                                }
                             />
                         </div>
                     )}
@@ -639,7 +701,7 @@ export const ConfigMapSecretForm = React.memo(
                         isChecked={state.isSubPathChecked}
                         onClick={stopPropagation}
                         rootClassName="top"
-                        disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                        disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={toggleSubpath}
                     >
@@ -655,7 +717,9 @@ export const ConfigMapSecretForm = React.memo(
                                 placeholder={'Enter keys (Eg. username,configs.json)'}
                                 error={state.externalSubpathValues.error}
                                 onChange={onExternalSubpathValuesChange}
-                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                                disabled={
+                                    !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
+                                }
                             />
                         </div>
                     )}
@@ -680,7 +744,7 @@ export const ConfigMapSecretForm = React.memo(
                             helperText="Keys are mounted as files to volume"
                             error={state.volumeMountPath.error}
                             onChange={onMountPathChange}
-                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                            disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
                         />
                     </div>
                     {renderSubPath()}
@@ -700,7 +764,7 @@ export const ConfigMapSecretForm = React.memo(
                             value={state.selectedType}
                             name="DeploymentAppTypeGroup"
                             onChange={toggleSelectedType}
-                            disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                            disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
                             className="radio-group-no-border"
                         >
                             <RadioGroupItem
@@ -787,7 +851,7 @@ export const ConfigMapSecretForm = React.memo(
                             GroupHeading,
                         }}
                         classNamePrefix="secret-data-type"
-                        isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                        isDisabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
                     />
                     {isESO && (
                         <InfoColourBar
@@ -820,7 +884,9 @@ export const ConfigMapSecretForm = React.memo(
                                     Option,
                                 }}
                                 classNamePrefix="configmap-data-type"
-                                isDisabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                                isDisabled={
+                                    !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
+                                }
                             />
                         )}
                     </div>
@@ -828,39 +894,56 @@ export const ConfigMapSecretForm = React.memo(
             )
         }
 
+        if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED && !configMapSecretData) {
+            return (
+                <div className="h-200 flex">
+                    <div className="w-200 flex column">
+                        <InfoIconOutlined className="icon-dim-20 fcn-5" />
+                        <div className="dc__text-center">No published version of this file is available</div>
+                    </div>
+                </div>
+            )
+        }
+
         return (
             <>
-                <form onSubmit={handleSubmit} className="override-config-map-form white-card__config-map mt-20">
+                <form>
                     {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
                         state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
                         <Override
-                            overridden={state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
+                            overridden={draftMode || state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
                             onClick={handleOverride}
                             loading={state.overrideLoading}
                             type={componentType}
+                            readonlyView={readonlyView}
                         />
                     )}
-                    {dataTypeSelector()}
-                    {renderExternalInfo()}
-                    {renderName()}
-                    {configMapSecretUsageTypeSelector()}
-                    {renderUsageTypeVolumeDetails()}
-                    {renderRollARN()}
-                    {state.externalType !== 'KubernetesSecret' && (
-                        <ConfigMapSecretDataEditorContainer
-                            componentType={componentType}
-                            state={state}
-                            dispatch={dispatch}
-                            tempArr={tempArr}
-                        />
-                    )}
-                    {!(configMapSecretData?.external && configMapSecretData?.selectedType === 'environment') && (
-                        <div className="form__buttons">
+                    <div className="pr-16 pl-16 dc__border-bottom mt-20">
+                        {dataTypeSelector()}
+                        {renderExternalInfo()}
+                        {renderName()}
+                        {configMapSecretUsageTypeSelector()}
+                        {renderUsageTypeVolumeDetails()}
+                        {renderRollARN()}
+                        {state.externalType !== 'KubernetesSecret' && (
+                            <ConfigMapSecretDataEditorContainer
+                                componentType={componentType}
+                                state={state}
+                                dispatch={dispatch}
+                                tempArr={tempArr}
+                                readonlyView={readonlyView}
+                                draftMode={draftMode}
+                            />
+                        )}
+                    </div>
+
+                    {!readonlyView && (
+                        <div className="flex dc__content-space pt-16 pr-16 pb-16 pl-16">
                             <button className="cta delete" onClick={openDeleteModal}>
                                 Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
                             </button>
                             <button
-                                disabled={state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                                disabled={!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
                                 className="cta"
@@ -874,6 +957,17 @@ export const ConfigMapSecretForm = React.memo(
 
                 {configMapSecretData?.name && state.showDeleteModal && renderDeleteCMModal()}
                 {state.dialog && renderDeleteOverRideModal()}
+                {state.showDraftSaveModal && (
+                    <SaveChangesModal
+                        appId={+appId}
+                        envId={+envId}
+                        resourceType={componentType === 'secret' ? 2 : 1}
+                        resourceName={state.configName.value}
+                        action={1}
+                        data={state.draftPayload}
+                        toggleSaveChangesModal={toggleDraftSaveModal}
+                    />
+                )}
             </>
         )
     },

@@ -449,7 +449,7 @@ export function handleSecretDataYamlChange(
     } catch (error) {}
 }
 
-export const getSecretInitState = (configMapSecretData): SecretState => {
+export const getSecretInitState = (configMapSecretData, draftMode: boolean): SecretState => {
     let tempSecretData, jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
         tempSecretData = configMapSecretData.secretData
@@ -497,7 +497,7 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
         secretMode: configMapSecretData?.secretMode,
-        unAuthorized: configMapSecretData?.unAuthorized ?? !!configMapSecretData?.name,
+        unAuthorized: configMapSecretData?.unAuthorized ?? (!draftMode && !!configMapSecretData?.name),
     }
 }
 

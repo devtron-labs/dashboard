@@ -22,7 +22,14 @@ import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.
 import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
-    ({ componentType, state, dispatch, tempArr }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
+    ({
+        componentType,
+        state,
+        dispatch,
+        tempArr,
+        readonlyView,
+        draftMode,
+    }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
             _currentData[index] = {
@@ -218,7 +225,10 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                             }}
                             index={idx}
                             onChange={
-                                state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized
+                                !draftMode &&
+                                (state.cmSecretState === CM_SECRET_STATE.INHERITED ||
+                                    readonlyView ||
+                                    state.unAuthorized)
                                     ? null
                                     : memoisedHandleChange
                             }
@@ -238,7 +248,10 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         inline
                         height={350}
                         onChange={handleOnChange}
-                        readOnly={state.cmSecretState === CM_SECRET_STATE.INHERITED || state.unAuthorized}
+                        readOnly={
+                            !draftMode &&
+                            (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView || state.unAuthorized)
+                        }
                         shebang={sheBangText}
                     >
                         <CodeEditor.Header>
@@ -335,11 +348,13 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     </>
                 )}
                 {externalSecretEditor()}
-                {state.cmSecretState !== CM_SECRET_STATE.INHERITED && !state.yamlMode && !state.unAuthorized && (
-                    <span className="dc__bold anchor pointer" onClick={handleAddParam}>
-                        +Add params
-                    </span>
-                )}
+                {(state.cmSecretState !== CM_SECRET_STATE.INHERITED || draftMode) &&
+                    !state.unAuthorized &&
+                    !state.yamlMode && (
+                        <span className="dc__bold anchor pointer" onClick={handleAddParam}>
+                            +Add params
+                        </span>
+                    )}
             </>
         )
     },

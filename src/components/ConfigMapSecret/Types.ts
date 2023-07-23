@@ -65,14 +65,18 @@ export interface ConfigMapSecretFormProps {
     index: number
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
-    draftData: string
+    readonlyView: boolean
+    isProtectedView: boolean
+    draftMode: boolean
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
     componentType: string
-    state
-    dispatch
+    state: ConfigMapSecretState
+    dispatch: (action: ConfigMapAction) => void
     tempArr
+    readonlyView: boolean
+    draftMode: boolean
 }
 
 export interface ConfigMapSecretProps {
@@ -83,7 +87,7 @@ export interface ConfigMapSecretProps {
     data?: any
     index?: number
     id?: number
-    isOverrideView?: boolean
+  isOverrideView?: boolean
     isJobView: boolean
     isProtected: boolean
 }
@@ -127,11 +131,13 @@ export interface ConfigMapState {
     yamlMode: boolean
     cmSecretState: CM_SECRET_STATE
     showDeleteModal: boolean
+    showDraftSaveModal: boolean
+    draftPayload: any
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
 export enum ConfigMapActionTypes {
-    deleteOverride = 'deleteOverride',
+    reInit = 'reInit',
     submitLoading = 'submitLoading',
     overrideLoading = 'overrideLoading',
     success = 'success',
@@ -158,6 +164,7 @@ export enum ConfigMapActionTypes {
     toggleSecretMode = 'toggleSecretMode',
     toggleUnAuthorized = 'toggleUnAuthorized',
     setShowDeleteModal = 'setShowDeleteModal',
+    toggleDraftSaveModal = 'toggleDraftSaveModal',
 }
 
 export interface ConfigMapAction {
@@ -170,5 +177,3 @@ export interface InfoIconWithTippyType {
     infoText: string
     documentationLink: string
 }
-
-

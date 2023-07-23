@@ -3,7 +3,6 @@ import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
 import { DOCUMENTATION } from '../../../config'
-import '../ConfigMap.scss'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
 import { ConfigMapListProps } from '../Types'
@@ -34,23 +33,33 @@ export default function SecretList({
                 getSecretList(appId, envId),
                 isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 2) : { result: null },
             ])
-            const draftDataMap = {}
+            const draftDataMap = {},
+                draftDataArr = []
+            let configData = []
             if (draftData?.length) {
                 for (const data of draftData) {
                     draftDataMap[data.resourceName] = data
                 }
             }
             if (Array.isArray(secretData.configData)) {
-                secretData.configData = secretData.configData.map((config) => {
+                configData = secretData.configData.map((config) => {
                     config.secretMode = config.externalType === ''
                     config.unAuthorized = true
                     if (draftDataMap[config.name]) {
                         config.draftId = draftDataMap[config.name].draftId
+                        config.draftState = draftDataMap[config.name].draftState
                     }
+                    delete draftDataMap[config.name]
                     return config
                 })
             }
-            setList(secretData)
+            const remainingDrafts = Object.keys(draftDataMap)
+            if (remainingDrafts.length > 0) {
+                for (const name of remainingDrafts) {
+                    draftDataArr.push({ ...draftDataMap[name], name, isNew: true })
+                }
+            }
+            setList({ ...secretData, configData: [...draftDataArr, ...configData] })
             if (appChartRefRes) {
                 setAppChartRef(appChartRefRes.result)
             }
