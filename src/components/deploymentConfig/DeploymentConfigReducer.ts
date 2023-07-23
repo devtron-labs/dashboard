@@ -1,8 +1,4 @@
-import {
-    DeploymentConfigStateAction,
-    DeploymentConfigStateActionTypes,
-    DeploymentConfigStateWithDraft,
-} from './types'
+import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes, DeploymentConfigStateWithDraft } from './types'
 
 export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     publishedState: null,

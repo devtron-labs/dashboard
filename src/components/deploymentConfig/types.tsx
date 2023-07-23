@@ -104,8 +104,8 @@ export interface DeploymentConfigFormCTAProps {
     disableCheckbox?: boolean
     disableButton?: boolean
     toggleAppMetrics: () => void
-    selectedChart: DeploymentChartVersionType
-    readOnlyMode: boolean
+    isDraftMode: boolean
+    reload: () => void,
 }
 
 export interface CompareWithDropdownProps {
@@ -115,6 +115,7 @@ export interface CompareWithDropdownProps {
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
     setSelectedOption: React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    isDraftMode: boolean
 }
 
 export interface ChartTypeVersionOptionsProps {
@@ -158,6 +159,16 @@ export interface DeploymentTemplateOptionsTabProps {
     changeEditorMode?: () => void
 }
 
+
+export interface DeploymentTemplateReadOnlyEditorViewProps {
+    isEnvOverride?: boolean
+    environmentName?: string
+    value: string
+    defaultValue?: string
+    readOnly?: boolean
+    globalChartRefId?: number
+}
+
 export interface DeploymentTemplateEditorViewProps {
     isEnvOverride?: boolean
     environmentName?: string
@@ -167,7 +178,6 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
-    isDraftView?: boolean
 }
 
 export interface DeploymentConfigContextType {

@@ -130,10 +130,7 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
-            if (
-                state.selectedChart.name === ROLLOUT_DEPLOYMENT ||
-                state.selectedChart.name === DEPLOYMENT
-            ) {
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues || result.globalConfig)
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,
@@ -172,10 +169,7 @@ export default function DeploymentTemplateOverride({
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
             } else {
                 //remove copy
-                if (
-                    state.selectedChart.name === ROLLOUT_DEPLOYMENT ||
-                    state.selectedChart.name === DEPLOYMENT
-                ) {
+                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                     if (state.isBasicLockedInBase !== null && state.isBasicLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
                         let _isBasicLocked = false
@@ -636,10 +630,10 @@ function DeploymentTemplateOverrideForm({
                         }
                         isAppMetricsEnabled={state.data.appMetrics}
                         toggleAppMetrics={handleAppMetrics}
-                        selectedChart={state.selectedChart}
-                        readOnlyMode={
+                        isDraftMode={
                             state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
                         }
+                        reload={undefined}
                     />
                 )}
             </form>

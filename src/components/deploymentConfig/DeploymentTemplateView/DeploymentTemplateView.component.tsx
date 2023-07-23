@@ -3,111 +3,24 @@ import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { versionComparator } from '../../common'
-import { ConditionalWrap, ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
-import { ReactComponent as Arrows } from '../../../assets/icons/ic-arrows-left-right.svg'
-import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import warningIcon from '../../../assets/icons/ic-info-filled.svg'
 import {
     ChartTypeVersionOptionsProps,
-    CompareOptionsProps,
     CompareWithDropdownProps,
     DeploymentChartGroupOptionType,
     DeploymentChartOptionType,
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
 } from '../types'
-import {
-    COMPARE_VALUES_TIPPY_CONTENT,
-    DEPLOYMENT_TEMPLATE_LABELS_KEYS,
-    getCommonSelectStyles,
-    README_TIPPY_CONTENT,
-} from '../constants'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles } from '../constants'
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-
-const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, disabled?: boolean) => {
-    const handleReadMeOptionClick = () => {
-        if (disabled) {
-            return
-        }
-
-        handleReadMeClick()
-    }
-
-    return (
-        <span
-            className={`dt-view-option flex cursor fs-13 fw-6 cn-7 ${openReadMe ? 'opened' : ''} ${
-                disabled ? 'disabled' : ''
-            }`}
-            onClick={handleReadMeOptionClick}
-            data-testid={`base-deployment-template-${!openReadMe ? 'readme' : 'hidereadme'}-button`}
-        >
-            {openReadMe ? (
-                <>
-                    <Close className="option-close-icon icon-dim-16 mr-8" />
-                    Hide README
-                </>
-            ) : (
-                <>
-                    <File className="option-open-icon icon-dim-16 mr-8" />
-                    README
-                </>
-            )}
-        </span>
-    )
-}
-
-const renderComparisonOption = (openComparison: boolean, handleComparisonClick: () => void, disabled: boolean) => {
-    const handleComparisonOptionClick = () => {
-        if (disabled) {
-            return
-        }
-
-        handleComparisonClick()
-    }
-
-    return (
-        <span
-            className={`dt-view-option flex cursor fs-13 fw-6 cn-7 mr-10 ${openComparison ? 'opened' : ''} ${
-                disabled ? 'disabled' : ''
-            }`}
-            onClick={handleComparisonOptionClick}
-            data-testid={`base-deployment-template-${!openComparison ? 'comparevalues' : 'hidecomparison'}-button`}
-        >
-            {openComparison ? (
-                <>
-                    <Close className="option-close-icon icon-dim-16 mr-8" />
-                    Hide comparison
-                </>
-            ) : (
-                <>
-                    <Arrows className="option-open-icon icon-dim-16 mr-8" />
-                    Compare values
-                </>
-            )}
-        </span>
-    )
-}
-
-const getComparisonTippyContent = (isComparisonAvailable: boolean, isEnvOverride?: boolean) => {
-    if (isComparisonAvailable) {
-        return isEnvOverride
-            ? COMPARE_VALUES_TIPPY_CONTENT.compareEnvValueWithOtherValues
-            : COMPARE_VALUES_TIPPY_CONTENT.compareBaseValueWithOtherValues
-    }
-
-    return (
-        <>
-            <h2 className="fs-12 fw-6 lh-18 m-0">{COMPARE_VALUES_TIPPY_CONTENT.nothingToCompare}</h2>
-            <p className="fs-12 fw-4 lh-18 m-0">{COMPARE_VALUES_TIPPY_CONTENT.noCDPipelineCreated}</p>
-        </>
-    )
-}
+import moment from 'moment'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -183,56 +96,6 @@ export const ChartTypeVersionOptions = ({
     )
 }
 
-export const CompareOptions = ({
-    isComparisonAvailable,
-    isEnvOverride,
-    openComparison,
-    handleComparisonClick,
-    chartConfigLoading,
-    openReadMe,
-    isReadMeAvailable,
-    handleReadMeClick,
-}: CompareOptionsProps) => {
-    return (
-        <div className="flex">
-            <ConditionalWrap
-                condition={!openComparison && !chartConfigLoading}
-                wrap={(children) => (
-                    <Tippy
-                        className="default-tt w-200"
-                        arrow={false}
-                        placement="bottom"
-                        content={getComparisonTippyContent(isComparisonAvailable, isEnvOverride)}
-                    >
-                        {children}
-                    </Tippy>
-                )}
-            >
-                {renderComparisonOption(
-                    openComparison,
-                    handleComparisonClick,
-                    chartConfigLoading || !isComparisonAvailable,
-                )}
-            </ConditionalWrap>
-            <ConditionalWrap
-                condition={!openReadMe && (chartConfigLoading || !isReadMeAvailable)}
-                wrap={(children) => (
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={chartConfigLoading ? README_TIPPY_CONTENT.fetching : README_TIPPY_CONTENT.notAvailable}
-                    >
-                        {children}
-                    </Tippy>
-                )}
-            >
-                {renderReadMeOption(openReadMe, handleReadMeClick, chartConfigLoading || !isReadMeAvailable)}
-            </ConditionalWrap>
-        </div>
-    )
-}
-
 const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
     return (
         <div className="flex left column">
@@ -262,6 +125,7 @@ export const CompareWithDropdown = ({
     selectedOption,
     setSelectedOption,
     globalChartRef,
+    isDraftMode,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState<DeploymentChartGroupOptionType[]>([
         {
@@ -282,7 +146,7 @@ export const CompareWithDropdown = ({
     }, [environments, charts])
 
     const getSelectedOption = () => {
-        if (isEnvOverride) {
+        if (isEnvOverride || isDraftMode) {
             return baseTemplateOption as DeploymentChartOptionType
         } else if (environments.length > 0) {
             return environments[0]
@@ -295,7 +159,7 @@ export const CompareWithDropdown = ({
         const _groupOptions = []
 
         // Push base template option if in environment override view
-        if (isEnvOverride) {
+        if (isEnvOverride || isDraftMode) {
             _groupOptions.push({
                 label: '',
                 options: [baseTemplateOption],
@@ -388,12 +252,12 @@ export const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 148px)'
+        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 230px)'
     } else if (isEnvOverride) {
         return 'calc(100vh - 266px)'
     }
 
-    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 204px)'
+    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
 }
 
 export const renderEditorHeading = (
@@ -403,14 +267,25 @@ export const renderEditorHeading = (
     environmentName: string,
     selectedChart: DeploymentChartVersionType,
     handleOverride: (e: any) => Promise<void>,
+    latestDraft: any,
+    activityTime: any,
 ) => {
     return (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
                 {!readOnly && <Edit className="icon-dim-16 mr-10" />}
-                {`${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
-                    selectedChart ? `(${selectedChart.version})` : ''
-                }`}
+                {!!latestDraft ? (
+                    <>
+                        <span className="fw-6 mr-4">Last saved draft</span>
+                        <span className="fw-4">
+                            {activityTime ? `on ${moment(activityTime).format('ddd, DD MMM YYYY HH:mm A')}` : ''}
+                        </span>
+                    </>
+                ) : (
+                    `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
+                        selectedChart ? `(${selectedChart.version})` : ''
+                    }`
+                )}
                 {isEnvOverride && readOnly && (
                     <Tippy
                         className="default-tt w-200"

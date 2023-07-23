@@ -8,16 +8,20 @@ import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
 interface DeploymentTemplateOptionsTabProps {
-    disableVersionSelect?
-    codeEditorValue
+    codeEditorValue: string
+    disableVersionSelect?: boolean
 }
 
 export default function DeploymentTemplateOptionsTab({
-    disableVersionSelect,
     codeEditorValue,
+    disableVersionSelect,
 }: DeploymentTemplateOptionsTabProps) {
     const { isUnSet, state, dispatch, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const currentStateValues =
+        state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+            ? state.publishedState
+            : state
 
     if (state.openComparison || state.showReadme) return null
 
@@ -36,27 +40,32 @@ export default function DeploymentTemplateOptionsTab({
             <div className="flex">
                 <ChartTypeVersionOptions
                     isUnSet={isUnSet}
-                    charts={state.charts}
-                    chartsMetadata={state.chartsMetadata}
-                    selectedChart={state.selectedChart}
+                    charts={currentStateValues.charts}
+                    chartsMetadata={currentStateValues.chartsMetadata}
+                    selectedChart={currentStateValues.selectedChart}
                     selectChart={selectChart}
-                    selectedChartRefId={state.selectedChartRefId}
+                    selectedChartRefId={currentStateValues.selectedChartRefId}
                     disableVersionSelect={disableVersionSelect}
                 />
-                {(state.selectedChart?.name === ROLLOUT_DEPLOYMENT || state.selectedChart?.name === DEPLOYMENT) && (
+                {(currentStateValues.selectedChart?.name === ROLLOUT_DEPLOYMENT ||
+                    currentStateValues.selectedChart?.name === DEPLOYMENT) && (
                     <RadioGroup
                         className="gui-yaml-switch pl-16"
                         name="yaml-mode"
-                        initialTab={state.yamlMode ? 'yaml' : 'gui'}
-                        disabled={state.isBasicLocked}
+                        initialTab={currentStateValues.yamlMode ? 'yaml' : 'gui'}
+                        disabled={currentStateValues.isBasicLocked}
                         onChange={changeEditorMode}
                     >
                         <RadioGroup.Radio
                             dataTestid="base-deployment-template-basic-button"
                             value="gui"
-                            canSelect={!state.chartConfigLoading && !state.isBasicLocked && codeEditorValue}
-                            isDisabled={state.isBasicLocked}
-                            showTippy={state.isBasicLocked}
+                            canSelect={
+                                !currentStateValues.chartConfigLoading &&
+                                !currentStateValues.isBasicLocked &&
+                                codeEditorValue
+                            }
+                            isDisabled={currentStateValues.isBasicLocked}
+                            showTippy={currentStateValues.isBasicLocked}
                             tippyClass="default-white no-content-padding tippy-shadow"
                             dataTestId="base-deployment-template-basic-button"
                             tippyContent={
@@ -69,16 +78,16 @@ export default function DeploymentTemplateOptionsTab({
                                 </>
                             }
                         >
-                            {state.isBasicLocked && <Locked className="icon-dim-12 mr-6" />}
+                            {currentStateValues.isBasicLocked && <Locked className="icon-dim-12 mr-6" />}
                             Basic
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
                             value="yaml"
                             canSelect={
                                 disableVersionSelect &&
-                                state.chartConfigLoading &&
+                                currentStateValues.chartConfigLoading &&
                                 codeEditorValue &&
-                                state.basicFieldValuesErrorObj?.isValid
+                                currentStateValues.basicFieldValuesErrorObj?.isValid
                             }
                             dataTestId="base-deployment-template-advanced-button"
                         >

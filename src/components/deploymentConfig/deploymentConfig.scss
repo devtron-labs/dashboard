@@ -29,6 +29,7 @@
 
 .app-compose__deployment-config {
     min-width: 960px;
+    height: calc(100vh - 102px);
 
     .white-card__deployment-config {
         height: calc(100% - 39px);
@@ -41,26 +42,58 @@
 
     &.comments-view {
         display: grid;
-        grid-template-columns: 1fr 286px;
+        grid-template-columns: 1fr 0;
         position: absolute;
         left: 56px;
         width: calc(100% - 56px);
         height: calc(100% - 78px);
+        animation: comments-view-opening;
+        animation-duration: 200ms;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+
+    @keyframes comments-view-opening {
+        0% {
+            grid-template-columns: 1fr 0;
+        }
+
+        100% {
+            grid-template-columns: 1fr 286px;
+        }
     }
 
     &.full-view {
-        position: absolute;
-        left: 56px;
-        width: calc(100% - 56px);
         height: calc(100% - 78px);
 
         .white-card__deployment-config {
             height: calc(100% - 37px);
-
             grid-template-columns: 1fr 1fr;
 
             &.comparison-view {
                 grid-template-columns: 1fr;
+
+                .form-cta-section {
+                    .form-app-metrics-cta {
+                        width: 38%;
+                    }
+                }
+            }
+
+            &.readme-view {
+                grid-template-areas: 'readme editor' 'empty form-cta';
+
+                .dt-readme {
+                    grid-area: readme;
+                }
+
+                .form__row--code-editor-container {
+                    grid-area: editor;
+                }
+
+                .form-cta-section {
+                    grid-area: form-cta;
+                }
             }
         }
 
@@ -147,7 +180,7 @@
         }
 
         .dt-readme-markdown {
-            height: calc(100vh - 146px);
+            height: calc(100vh - 232px);
             overflow: scroll;
         }
     }
