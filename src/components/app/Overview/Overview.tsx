@@ -475,9 +475,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     {
                         <ClusterDescription
                             isClusterTerminal={false}
-                            clusterId={0}
                             isSuperAdmin={true}
-                            appId={appId}
+                            appId={Number(appId)}
                             initialDescriptionText={DefaultJobNote}
                             initialDescriptionUpdatedBy={DefaultJobNote}
                             initialDescriptionUpdatedOn={''}
@@ -494,9 +493,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     {
                         <ClusterDescription
                             isClusterTerminal={false}
-                            clusterId={0}
                             isSuperAdmin={true}
-                            appId={appId}
+                            appId={Number(appId)}
                             initialDescriptionText={DefaultAppNote}
                             initialDescriptionUpdatedBy={DefaultAppNote}
                             initialDescriptionUpdatedOn={''}

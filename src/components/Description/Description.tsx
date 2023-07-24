@@ -46,6 +46,17 @@ export default function ClusterDescription({
     initialDescriptionUpdatedBy,
     initialDescriptionUpdatedOn,
     initialEditDescriptionView,
+    updateCreateAppFormDescription,
+} : {
+    isClusterTerminal: boolean,
+    clusterId?: string,
+    isSuperAdmin: boolean,
+    appId?: number,
+    initialDescriptionText: string,
+    initialDescriptionUpdatedBy: string,
+    initialDescriptionUpdatedOn: string,
+    initialEditDescriptionView: boolean,
+    updateCreateAppFormDescription?: (string) => void
 }) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
@@ -69,6 +80,12 @@ export default function ClusterDescription({
             }
         }
     }
+
+    useEffect (()=>{
+        if (typeof updateCreateAppFormDescription === 'function') {
+            updateCreateAppFormDescription(modifiedDescriptionText)   
+        }
+    }, [modifiedDescriptionText])
 
     const validateDescriptionText = (): boolean => {
         let isValid = true

@@ -115,7 +115,6 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     isClusterTerminal={true}
                     clusterId={clusterId}
                     isSuperAdmin={isSuperAdmin}
-                    appId={0}
                     initialDescriptionText={descriptionText}
                     initialDescriptionUpdatedBy={descriptionUpdatedBy}
                     initialDescriptionUpdatedOn={descriptionUpdatedOn}

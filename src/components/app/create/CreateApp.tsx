@@ -171,16 +171,23 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             return
         }
 
+        const genericNoteResponseBean = {
+            id: 0,
+            description: this.state.form.description,
+            updatedBy: '',
+            updatedOn: null,
+        }
+
         const request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
+            description: genericNoteResponseBean,
             labels: labelTags,
         }
 
         if (this.props.isJobView) {
             request['appType'] = 2 // type 2 is for job type
-            request['description'] = this.state.form.description
         }
 
         this.setState({ disableForm: true, createAppLoader: true })
@@ -239,6 +246,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         form.appCreationType = appCreationType
         isValid.cloneAppId = appCreationType === AppCreationType.Blank
         this.setState({ form, isValid })
+    }
+
+    updateCreateAppFormDescription = (description : string) :void => {
+        const { form } = { ...this.state }
+        form.description = description
+        this.setState({ form })
     }
 
     handleCloneAppChange = ({ value }): void => {
@@ -342,13 +355,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             <div className="h-auto">
                                 <ClusterDescription
                                     isClusterTerminal={false}
-                                    clusterId={0}
                                     isSuperAdmin={true}
                                     appId={this.state.form.appId}
                                     initialDescriptionText={''}
                                     initialDescriptionUpdatedBy={''}
                                     initialDescriptionUpdatedOn={''}
                                     initialEditDescriptionView={false}
+                                    updateCreateAppFormDescription={this.updateCreateAppFormDescription}
                                 />
                             </div>
                         ) : (
