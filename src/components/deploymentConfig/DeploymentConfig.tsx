@@ -1,23 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Reducer, createContext, useContext, useEffect, useReducer } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getAppOtherEnvironmentMin, getChartReferences } from '../../services/service'
-import { useJsonYaml, useAsync } from '../common'
+import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
+import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    showError,
-    Progressing,
-    ConfirmationDialog,
-    useEffectAfterMount,
-    not,
-} from '@devtron-labs/devtron-fe-common-lib'
-import warningIcon from '../../assets/icons/ic-info-filled.svg'
-import {
-    DeploymentConfigFormCTA,
-    DeploymentTemplateEditorView,
-    DeploymentTemplateOptionsTab,
-} from './DeploymentTemplateView'
-import { BasicFieldErrorObj, ChartMetadataType, DeploymentChartVersionType, DeploymentConfigProps } from './types'
+    DeploymentConfigContextType,
+    DeploymentConfigProps,
+    DeploymentConfigStateAction,
+    DeploymentConfigStateActionTypes,
+    DeploymentConfigStateWithDraft,
+} from './types'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import YAML from 'yaml'
 import './deploymentConfig.scss'
@@ -33,6 +27,22 @@ import {
     validateBasicView,
 } from './DeploymentConfig.utils'
 import { BASIC_FIELDS, EDITOR_VIEW } from './constants'
+import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
+import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'
+import DeploymentTemplateOptionsTab from './DeploymentTemplateView/DeploymentTemplateOptionsTab'
+import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigToolbar'
+import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
+import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
+import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
+
+const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
+const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
+const DraftComments = importComponentFromFELibrary('DraftComments')
+const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
+const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
+const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
+
+export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -42,37 +52,21 @@ export default function DeploymentConfig({
     environments,
     setEnvironments,
 }: DeploymentConfigProps) {
-    const { currentServerInfo } = useContext(mainContext)
-    const [charts, setCharts] = useState<DeploymentChartVersionType[]>([])
-    const [chartsMetadata, setChartsMetadata] = useState<Record<string, ChartMetadataType>>({})
-    const [selectedChartRefId, selectChartRefId] = useState(0)
-    const [selectedChart, selectChart] = useState<DeploymentChartVersionType>(null)
-    const [template, setTemplate] = useState('')
-    const [schemas, setSchema] = useState()
-    const [loading, setLoading] = useState(false)
-    const [chartConfig, setChartConfig] = useState(null)
-    const [isAppMetricsEnabled, setAppMetricsEnabled] = useState(false)
-    const [tempFormData, setTempFormData] = useState('')
-    const [obj, , , error] = useJsonYaml(tempFormData, 4, 'yaml', true)
-    const [chartConfigLoading, setChartConfigLoading] = useState(null)
-    const [showConfirmation, toggleConfirmation] = useState(false)
-    const [showReadme, setShowReadme] = useState(false)
-    const [openComparison, setOpenComparison] = useState(false)
-    const [readme, setReadme] = useState('')
     const history = useHistory()
-    const { appId, envId } = useParams<{ appId: string; envId: string }>()
-    const [fetchedValues, setFetchedValues] = useState<Record<number | string, string>>({})
-    const [yamlMode, toggleYamlMode] = useState(true)
-    const [isBasicLocked, setIsBasicLocked] = useState(false)
-    const [currentEditorView, setEditorView] = useState(null)
-    const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
-    const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
+    const { appId } = useParams<{ appId: string }>()
+    const { currentServerInfo } = useContext(mainContext)
+    const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
+        deploymentConfigReducer,
+        initDeploymentConfigState,
+    )
+    const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
         () => getAppOtherEnvironmentMin(appId),
         [appId],
         !!appId,
     )
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
+    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
     useEffect(() => {
         initialise()
@@ -80,7 +74,7 @@ export default function DeploymentConfig({
 
     useEffectAfterMount(() => {
         fetchDeploymentTemplate()
-    }, [selectedChart])
+    }, [state.selectedChart])
 
     useEffect(() => {
         if (!environmentsLoading && environmentResult?.result) {
@@ -88,43 +82,200 @@ export default function DeploymentConfig({
         }
     }, [environmentsLoading, environmentResult])
 
-    async function initialise() {
-        setChartConfigLoading(true)
-        try {
-            const {
-                result: { chartRefs, latestAppChartRef, latestChartRef, chartMetadata },
-            } = await getChartReferences(+appId)
-            setCharts(chartRefs)
-            setChartsMetadata(chartMetadata)
-            let selectedChartId: number = latestAppChartRef || latestChartRef
-            let chart = chartRefs.find((chart) => chart.id === selectedChartId)
-            selectChartRefId(selectedChartId)
-            selectChart(chart)
-        } catch (err) {
-        } finally {
-            setChartConfigLoading(false)
+    const updateRefsData = (chartRefsData, clearPublishedState?) => {
+        const payload = {
+            ...chartRefsData,
+            chartConfigLoading: false,
         }
+
+        if (clearPublishedState) {
+            payload.selectedTabIndex = state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex
+            payload.publishedState = null
+            payload.allDrafts = []
+            payload.latestDraft = null
+            payload.activityHistory = []
+        }
+
+        dispatch({
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload,
+        })
+    }
+
+    async function initialise() {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.chartConfigLoading,
+            payload: true,
+        })
+        Promise.all([
+            getChartReferences(+appId),
+            typeof getConfigProtections === 'function' ? getConfigProtections(Number(appId)) : { result: null },
+        ])
+            .then(([chartRefResp, configProtectionsResp]) => {
+                const { chartRefs, latestAppChartRef, latestChartRef, chartMetadata } = chartRefResp.result
+                const selectedChartId: number = latestAppChartRef || latestChartRef
+                const chart = chartRefs.find((chart) => chart.id === selectedChartId)
+                const isConfigProtectionEnabled =
+                    configProtectionsResp.result?.find(
+                        (config) => config.appId === Number(appId) && config.envId === -1,
+                    )?.state === 1
+
+                const chartRefsData = {
+                    charts: chartRefs,
+                    chartsMetadata: chartMetadata,
+                    selectedChartRefId: selectedChartId,
+                    selectedChart: chart,
+                    isConfigProtectionEnabled,
+                }
+
+                if (isConfigProtectionEnabled && typeof getAllDrafts === 'function') {
+                    fetchAllDrafts(chartRefsData)
+                } else {
+                    updateRefsData(chartRefsData)
+                }
+            })
+            .catch((err) => {
+                showError(err)
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.chartConfigLoading,
+                    payload: false,
+                })
+            })
+    }
+
+    const fetchAllDrafts = (chartRefsData) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.chartConfigLoading,
+            payload: true,
+        })
+        getAllDrafts(Number(appId), -1, 3)
+            .then((allDraftsResp) => {
+                if (allDraftsResp.result) {
+                    const allDrafts = allDraftsResp.result
+                        .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
+                        .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
+                    const latestDraft = allDrafts[0]
+                    if (
+                        typeof getDraft === 'function' &&
+                        latestDraft &&
+                        (latestDraft.draftState === 1 || latestDraft.draftState === 4)
+                    ) {
+                        getDraftAndActivity(allDrafts, latestDraft, chartRefsData)
+                    } else {
+                        updateRefsData(chartRefsData)
+                    }
+                } else {
+                    updateRefsData(chartRefsData, !!state.publishedState)
+                }
+            })
+            .catch((e) => {
+                updateRefsData(chartRefsData)
+            })
+    }
+
+    const getDraftAndActivity = (allDrafts, latestDraft, chartRefsData) => {
+        getDraft(latestDraft.draftId)
+            .then((draftResp) => {
+                const {
+                    valuesOverride,
+                    id,
+                    refChartTemplate,
+                    refChartTemplateVersion,
+                    isAppMetricsEnabled,
+                    chartRefId,
+                    readme,
+                    schema,
+                    isBasicViewLocked,
+                    currentViewEditor,
+                } = JSON.parse(draftResp.result.data)
+
+                const payload = {
+                    chartConfigLoading: false,
+                    template: valuesOverride,
+                    schema,
+                    readme,
+                    chartConfig: {
+                        id,
+                        refChartTemplate,
+                        refChartTemplateVersion,
+                        chartRefId,
+                        readme,
+                    },
+                    isAppMetricsEnabled: isAppMetricsEnabled,
+                    tempFormData: YAML.stringify(valuesOverride, null),
+                    latestDraft: draftResp.result,
+                    allDrafts,
+                    ...{
+                        ...chartRefsData,
+                        selectedChartRefId: chartRefId,
+                        selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
+                    },
+                }
+
+                if (chartRefsData) {
+                    payload['publishedState'] = chartRefsData
+                } else if (!state.publishedState) {
+                    payload['publishedState'] = state
+                }
+
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.multipleOptions,
+                    payload,
+                })
+
+                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
+                    updateTemplateFromBasicValue(valuesOverride)
+                    parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload)
+                }
+            })
+            .catch((e) => {
+                updateRefsData(chartRefsData)
+            })
+    }
+
+    const toggleYamlMode = (yamlMode: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.yamlMode,
+            payload: yamlMode,
+        })
     }
 
     const parseDataForView = async (
         _isBasicViewLocked: boolean,
         _currentViewEditor: string,
         template,
+        templateData,
     ): Promise<void> => {
         if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
                 result: { defaultAppOverride },
-            } = await getDeploymentTemplate(+appId, +selectedChart.id, true)
+            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, true)
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
-        if (!currentEditorView || !_currentViewEditor) {
+
+        if (!state.currentEditorView || !_currentViewEditor) {
             _currentViewEditor =
                 _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
-            setIsBasicLocked(_isBasicViewLocked)
-            setEditorView(_currentViewEditor)
-            toggleYamlMode(_currentViewEditor === EDITOR_VIEW.BASIC ? false : true)
+
+            const payload = {
+                isBasicLocked: _isBasicViewLocked,
+                currentEditorView: _currentViewEditor,
+                yamlMode: _currentViewEditor === EDITOR_VIEW.ADVANCED,
+            }
+
+            if (templateData['publishedState']) {
+                payload['publishedState'] = {
+                    ...templateData['publishedState'],
+                    ...payload,
+                }
+            }
+
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload,
+            })
         }
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
@@ -134,19 +285,50 @@ export default function DeploymentConfig({
                 !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
                 !_basicFieldValues[BASIC_FIELDS.RESOURCES]
             ) {
-                setIsBasicLocked(true)
-                setEditorView(EDITOR_VIEW.ADVANCED)
-                toggleYamlMode(true)
+                const payload = {
+                    isBasicLocked: true,
+                    currentEditorView: EDITOR_VIEW.ADVANCED,
+                    yamlMode: true,
+                }
+
+                if (templateData['publishedState']) {
+                    payload['publishedState'] = {
+                        ...templateData['publishedState'],
+                        ...payload,
+                    }
+                }
+
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.multipleOptions,
+                    payload,
+                })
             } else {
-                setIsBasicLocked(_isBasicViewLocked)
-                setBasicFieldValues(_basicFieldValues)
-                setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+                const payload = {
+                    isBasicLocked: _isBasicViewLocked,
+                    basicFieldValues: _basicFieldValues,
+                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                }
+
+                if (templateData['publishedState']) {
+                    payload['publishedState'] = {
+                        ...templateData['publishedState'],
+                        ...payload,
+                    }
+                }
+
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.multipleOptions,
+                    payload,
+                })
             }
         }
     }
 
     async function fetchDeploymentTemplate() {
-        setChartConfigLoading(true)
+        dispatch({
+            type: DeploymentConfigStateActionTypes.chartConfigLoading,
+            payload: true,
+        })
         try {
             const {
                 result: {
@@ -163,21 +345,48 @@ export default function DeploymentConfig({
                         currentViewEditor,
                     },
                 },
-            } = await getDeploymentTemplate(+appId, +selectedChart.id)
-            setTemplate(defaultAppOverride)
-            setSchema(schema)
-            setReadme(readme)
-            setChartConfig({ id, refChartTemplate, refChartTemplateVersion, chartRefId, readme })
-            setAppMetricsEnabled(isAppMetricsEnabled)
-            setTempFormData(YAML.stringify(defaultAppOverride, null))
-            if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
+            } = await getDeploymentTemplate(+appId, +state.selectedChart.id)
+
+            const templateData = {
+                template: defaultAppOverride,
+                schema,
+                readme,
+                chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
+                isAppMetricsEnabled: isAppMetricsEnabled,
+                tempFormData: YAML.stringify(defaultAppOverride, null),
+            }
+
+            let payload = {}
+            if (state.publishedState) {
+                payload['publishedState'] = {
+                    ...state.publishedState,
+                    ...templateData,
+                }
+
+                if (state.selectedChart.id !== payload['publishedState'].selectedChart.id) {
+                    payload['readme'] = readme
+                    payload['schema'] = schema
+                }
+            } else {
+                payload = templateData
+            }
+
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload,
+            })
+
+            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(defaultAppOverride)
-                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride)
+                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride, payload)
             }
         } catch (err) {
             showError(err)
         } finally {
-            setChartConfigLoading(false)
+            dispatch({
+                type: DeploymentConfigStateActionTypes.chartConfigLoading,
+                payload: false,
+            })
         }
     }
 
@@ -186,62 +395,46 @@ export default function DeploymentConfig({
         if (!obj) {
             toast.error(error)
             return
-        }
-        if (
-            (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
-            !yamlMode &&
-            !basicFieldValuesErrorObj.isValid
+        } else if (
+            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
+            !state.yamlMode &&
+            !state.basicFieldValuesErrorObj.isValid
         ) {
             toast.error('Some required fields are missing')
             return
+        } else if (state.isConfigProtectionEnabled) {
+            toggleSaveChangesModal()
+            return
         }
-        if (chartConfig.id) {
+
+        if (state.chartConfig.id) {
             //update flow, might have overridden
-            toggleConfirmation(true)
+            dispatch({
+                type: DeploymentConfigStateActionTypes.showConfirmation,
+                payload: true,
+            })
         } else {
             save()
         }
     }
 
     async function save() {
-        setLoading(true)
+        dispatch({
+            type: DeploymentConfigStateActionTypes.loading,
+            payload: true,
+        })
         try {
-            let requestBody = {
-                ...(chartConfig.chartRefId === selectedChart.id ? chartConfig : {}),
-                appId: +appId,
-                chartRefId: selectedChart.id,
-                valuesOverride: obj,
-                defaultAppOverride: template,
-                isAppMetricsEnabled,
-            }
-            if (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) {
-                requestBody.isBasicViewLocked = isBasicLocked
-                requestBody.currentViewEditor = isBasicLocked ? EDITOR_VIEW.ADVANCED : currentEditorView
-                if (!yamlMode) {
-                    requestBody.valuesOverride = patchBasicData(obj, basicFieldValues)
-                }
-            }
-            const api = chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
+            const requestBody = prepareDataToSave(true)
+            const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
             reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
-            setFetchedValues({})
-            toast.success(
-                <div className="toast">
-                    <div
-                        className="toast__title"
-                        data-testid={`${
-                            chartConfig.id
-                                ? 'update-base-deployment-template-popup'
-                                : 'saved-base-deployment-template-popup'
-                        }`}
-                    >
-                        {chartConfig.id ? 'Updated' : 'Saved'}
-                    </div>
-                    <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                </div>,
-            )
+            dispatch({
+                type: DeploymentConfigStateActionTypes.fetchedValues,
+                payload: {},
+            })
+            toast.success(<SuccessToastBody chartConfig={state.chartConfig} />)
 
             if (!isCiPipeline) {
                 const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.DEPLOYMENT_TEMPLATE)
@@ -250,171 +443,250 @@ export default function DeploymentConfig({
         } catch (err) {
             showError(err)
         } finally {
-            setLoading(false)
-            toggleConfirmation(false)
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload: { loading: false, showConfirmation: false },
+            })
         }
     }
 
     const toggleAppMetrics = () => {
-        setAppMetricsEnabled(!isAppMetricsEnabled)
-    }
-
-    const closeConfirmationDialog = () => {
-        toggleConfirmation(false)
+        dispatch({
+            type: DeploymentConfigStateActionTypes.isAppMetricsEnabled,
+            payload: !state.isAppMetricsEnabled,
+        })
     }
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
-        setTempFormData(str)
+        dispatch({
+            type: DeploymentConfigStateActionTypes.tempFormData,
+            payload: str,
+        })
         if (
-            selectedChart &&
-            (selectedChart.name === ROLLOUT_DEPLOYMENT || selectedChart.name === DEPLOYMENT) &&
+            state.selectedChart &&
+            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
             str &&
-            currentEditorView &&
-            !isBasicLocked &&
+            state.currentEditorView &&
+            !state.isBasicLocked &&
             !fromBasic
         ) {
             try {
-                setIsBasicLocked(isBasicValueChanged(YAML.parse(str)))
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.isBasicLocked,
+                    payload: isBasicValueChanged(YAML.parse(str)),
+                })
             } catch (error) {}
         }
     }
 
     const handleReadMeClick = () => {
-        setShowReadme(!showReadme)
-
-        if (openComparison) {
-            setOpenComparison(false)
-        }
+        dispatch({
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload: {
+                showReadme: !state.showReadme,
+                openComparison: state.showReadme && state.selectedTabIndex === 2,
+            },
+        })
     }
 
     const handleComparisonClick = () => {
-        setOpenComparison(!openComparison)
-
-        if (showReadme) {
-            setShowReadme(false)
-        }
+        dispatch({
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload: { openComparison: !state.openComparison, showReadme: false },
+        })
     }
 
     const changeEditorMode = (): void => {
-        if (basicFieldValuesErrorObj && !basicFieldValuesErrorObj.isValid) {
+        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             toggleYamlMode(false)
             return
         }
-        if (isBasicLocked) {
+        if (state.isBasicLocked) {
             return
         }
 
         try {
-            const parsedCodeEditorValue = YAML.parse(tempFormData)
-            if (yamlMode) {
+            const parsedCodeEditorValue = YAML.parse(state.tempFormData)
+            if (state.yamlMode) {
                 const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-                setBasicFieldValues(_basicFieldValues)
-                setBasicFieldValuesErrorObj(validateBasicView(_basicFieldValues))
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.multipleOptions,
+                    payload: {
+                        basicFieldValues: _basicFieldValues,
+                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
+                    },
+                })
             } else {
-                const newTemplate = patchBasicData(parsedCodeEditorValue, basicFieldValues)
+                const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
                 updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAML.stringify(newTemplate), !yamlMode)
+                editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
             }
-            toggleYamlMode(not)
+            toggleYamlMode(!state.yamlMode)
         } catch (error) {}
     }
 
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+    const handleTabSelection = (index: number) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.selectedTabIndex,
+            payload: index,
+        })
 
-    return (
-        <div className={`app-compose__deployment-config ${openComparison || showReadme ? 'full-view' : 'h-100'}`}>
+        switch (index) {
+            case 1:
+            case 3:
+                if (state.selectedTabIndex == 2) {
+                    toggleYamlMode(state.isBasicLocked)
+                    handleComparisonClick()
+                }
+                break
+            case 2:
+                if (!state.openComparison) {
+                    toggleYamlMode(true)
+                    handleComparisonClick()
+                }
+                break
+            default:
+                break
+        }
+    }
+
+    const toggleSaveChangesModal = () => {
+        dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
+    }
+
+    const toggleDraftComments = () => {
+        dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
+    }
+
+    const prepareDataToSave = (skipReadme?: boolean) => {
+        const requestData = {
+            ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
+            appId: +appId,
+            chartRefId: state.selectedChart.id,
+            valuesOverride: obj,
+            defaultAppOverride: state.template,
+            isAppMetricsEnabled: state.isAppMetricsEnabled,
+        }
+        if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
+            requestData.isBasicViewLocked = state.isBasicLocked
+            requestData.currentViewEditor = state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView
+            if (!state.yamlMode) {
+                requestData.valuesOverride = patchBasicData(obj, state.basicFieldValues)
+            }
+        }
+
+        if (!skipReadme) {
+            requestData.readme = state.readme
+            requestData.schema = state.schema
+        }
+
+        return requestData
+    }
+
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+    const renderValuesView = () => {
+        return (
             <form
                 action=""
-                className={`white-card__deployment-config p-0 bcn-0 h-100 ${openComparison ? 'comparison-view' : ''}`}
+                className={`white-card__deployment-config p-0 bcn-0 ${state.openComparison ? 'comparison-view' : ''} ${
+                    state.showReadme ? 'readme-view' : ''
+                }`}
                 onSubmit={handleSubmit}
             >
                 <DeploymentTemplateOptionsTab
-                    isComparisonAvailable={true}
-                    openComparison={openComparison}
-                    handleComparisonClick={handleComparisonClick}
-                    chartConfigLoading={chartConfigLoading}
-                    isReadMeAvailable={!!readme}
-                    openReadMe={showReadme}
-                    handleReadMeClick={handleReadMeClick}
-                    isUnSet={isUnSet}
-                    charts={charts}
-                    chartsMetadata={chartsMetadata}
-                    selectedChart={selectedChart}
-                    selectChart={selectChart}
-                    selectedChartRefId={selectedChartRefId}
-                    yamlMode={yamlMode}
-                    isBasicViewLocked={isBasicLocked}
-                    codeEditorValue={tempFormData}
-                    basicFieldValuesErrorObj={basicFieldValuesErrorObj}
-                    changeEditorMode={changeEditorMode}
+                    codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
+                    disableVersionSelect={readOnlyPublishedMode}
                 />
-                <DeploymentTemplateEditorView
-                    appId={appId}
-                    envId={envId}
-                    isUnSet={isUnSet}
-                    openComparison={openComparison}
-                    showReadme={showReadme}
-                    chartConfigLoading={chartConfigLoading}
-                    readme={readme}
-                    value={tempFormData}
-                    editorOnChange={editorOnChange}
-                    schemas={schemas}
-                    charts={charts || []}
-                    selectedChart={selectedChart}
-                    environments={environments || []}
-                    fetchedValues={fetchedValues}
-                    setFetchedValues={setFetchedValues}
-                    yamlMode={yamlMode}
-                    basicFieldValues={basicFieldValues}
-                    setBasicFieldValues={setBasicFieldValues}
-                    basicFieldValuesErrorObj={basicFieldValuesErrorObj}
-                    setBasicFieldValuesErrorObj={setBasicFieldValuesErrorObj}
-                    changeEditorMode={changeEditorMode}
-                />
-                {!openComparison && !showReadme && (
-                    <DeploymentConfigFormCTA
-                        loading={loading || chartConfigLoading}
-                        showAppMetricsToggle={
-                            charts &&
-                            selectedChart &&
-                            appMetricsEnvironmentVariableEnabled &&
-                            grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-                            yamlMode
-                        }
-                        isAppMetricsEnabled={isAppMetricsEnabled}
-                        isCiPipeline={isCiPipeline}
-                        toggleAppMetrics={toggleAppMetrics}
-                        selectedChart={selectedChart}
+                {readOnlyPublishedMode ? (
+                    <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
+                ) : (
+                    <DeploymentTemplateEditorView
+                        defaultValue={state.publishedState?.tempFormData}
+                        value={state.tempFormData}
+                        globalChartRefId={state.publishedState?.selectedChartRefId}
+                        editorOnChange={editorOnChange}
                     />
                 )}
+                <DeploymentConfigFormCTA
+                    loading={state.loading || state.chartConfigLoading}
+                    showAppMetricsToggle={
+                        state.charts &&
+                        state.selectedChart &&
+                        appMetricsEnvironmentVariableEnabled &&
+                        grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                        state.yamlMode
+                    }
+                    isAppMetricsEnabled={
+                        readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
+                    }
+                    isCiPipeline={isCiPipeline}
+                    toggleAppMetrics={toggleAppMetrics}
+                    isDraftMode={readOnlyPublishedMode}
+                    reload={initialise}
+                />
             </form>
-            {showConfirmation && (
-                <ConfirmationDialog>
-                    <ConfirmationDialog.Icon src={warningIcon} />
-                    <ConfirmationDialog.Body title="Retain overrides and update" />
-                    <p>Changes will only be applied to environments using default configuration.</p>
-                    <p>Environments using overriden configurations will not be updated.</p>
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            data-testid="base-deployment-template-cancel-button"
-                            type="button"
-                            className="cta cancel"
-                            onClick={closeConfirmationDialog}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            data-testid="base_deployment_template_update_button"
-                            type="button"
-                            className="cta"
-                            onClick={save}
-                        >
-                            {loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )}
-        </div>
+        )
+    }
+
+    const getValueForContext = () => {
+        return {
+            isUnSet: state.latestDraft && state.selectedTabIndex === 1 ? false : isUnSet,
+            state,
+            dispatch,
+            environments: environments || [],
+            changeEditorMode: changeEditorMode,
+        }
+    }
+
+    return (
+        <DeploymentConfigContext.Provider value={getValueForContext()}>
+            <div
+                className={`app-compose__deployment-config dc__window-bg ${
+                    state.openComparison || state.showReadme ? 'full-view' : ''
+                } ${state.showComments ? 'comments-view' : ''}`}
+            >
+                <div className="dc__border br-4 m-12 dc__overflow-hidden" style={{ height: 'calc(100vh - 102px)' }}>
+                    <ConfigToolbar
+                        loading={state.loading || state.chartConfigLoading}
+                        draftId={state.latestDraft?.draftId}
+                        draftVersionId={state.latestDraft?.draftVersionId}
+                        selectedTabIndex={state.selectedTabIndex}
+                        handleTabSelection={handleTabSelection}
+                        noReadme={!state.yamlMode}
+                        showReadme={state.showReadme}
+                        isReadmeAvailable={!!state.readme}
+                        handleReadMeClick={handleReadMeClick}
+                        handleCommentClick={toggleDraftComments}
+                        isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
+                        isApprovalPending={state.latestDraft?.draftState === 4}
+                        approvalUsers={state.latestDraft?.approvers}
+                        activityHistory={state.activityHistory}
+                        reloadDrafts={initialise}
+                    />
+                    {renderValuesView()}
+                    {SaveChangesModal && state.showSaveChangsModal && (
+                        <SaveChangesModal
+                            appId={Number(appId)}
+                            envId={-1}
+                            resourceType={3}
+                            resourceName="BaseDeploymentTemplate"
+                            prepareDataToSave={prepareDataToSave}
+                            toggleSaveChangesModal={toggleSaveChangesModal}
+                            latestDraft={state.latestDraft}
+                            reloadDrafts={initialise}
+                        />
+                    )}
+                    {state.showConfirmation && <SaveConfirmationDialog save={save} />}
+                </div>
+                {DraftComments && state.showComments && (
+                    <DraftComments
+                        draftId={state.latestDraft?.draftId}
+                        draftVersionId={state.latestDraft?.draftVersionId}
+                        toggleDraftComments={toggleDraftComments}
+                    />
+                )}
+            </div>
+        </DeploymentConfigContext.Provider>
     )
 }

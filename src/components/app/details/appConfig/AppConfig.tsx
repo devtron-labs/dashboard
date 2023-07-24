@@ -15,6 +15,7 @@ import {
     useAsync,
     ConditionalWrap,
     createClusterEnvGroup,
+    importComponentFromFELibrary
 } from '../../../common'
 import {
     showError,
@@ -77,6 +78,7 @@ const ConfigMap = lazy(() => import('../../../configMaps/ConfigMap'))
 const Secret = lazy(() => import('../../../secrets/Secret'))
 const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
+const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 
 //stage: last configured stage
 function isUnlocked(stage: string): AppStageUnlockedType {
@@ -261,6 +263,12 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView:
                 currentStep: completedSteps,
             },
             {
+                title: 'Protect Configuration',
+                href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
+                stage: 'PROTECT_CONFIGURATION',
+                isLocked: false,
+            },
+            {
                 title: 'Environment Override',
                 href: `/app/${appId}/edit/env-override`,
                 stage: 'ENV_OVERRIDE',
@@ -411,7 +419,6 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 _lastConfiguredStage = lastConfiguredStage.stageName
                 _configs = isUnlocked(_lastConfiguredStage)
             }
-
         }
 
         return {
@@ -531,6 +538,8 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                             showCannotDeleteTooltip ? '' : 'dc__position-rel'
                         } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
                             _canShowExternalLinks ? '' : 'hide-external-links'
+                        } ${
+                            state.isUnlocked.workflowEditor && ConfigProtectionView ? 'config-protection__side-nav' : ''
                         }`}
                     >
                         <Navigation
@@ -538,6 +547,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                             navItems={state.navItems}
                             canShowExternalLinks={_canShowExternalLinks}
                             showCannotDeleteTooltip={showCannotDeleteTooltip}
+                            isWorkflowEditorUnlocked={state.isUnlocked.workflowEditor}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             getRepo={showRepoOnDelete}
                             isJobView={isJobView}
@@ -548,6 +558,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     </div>
                     <div className="app-compose__main">
                         <AppComposeRouter
+                            appId={appId}
                             navItems={state.navItems}
                             isUnlocked={state.isUnlocked}
                             isCiPipeline={state.isCiPipeline}
@@ -611,10 +622,7 @@ function renderNavItem(item: CustomNavItemsType) {
         >
             <span className="dc__ellipsis-right nav-text">{item.title}</span>
             {item.isLocked && (
-                <Lock
-                    className="app-compose__nav-icon icon-dim-20"
-                    data-testid={`${linkDataTestName}-lockicon`}
-                />
+                <Lock className="app-compose__nav-icon icon-dim-20" data-testid={`${linkDataTestName}-lockicon`} />
             )}
         </NavLink>
     )
@@ -625,6 +633,7 @@ function Navigation({
     deleteApp,
     canShowExternalLinks,
     showCannotDeleteTooltip,
+    isWorkflowEditorUnlocked,
     toggleRepoSelectionTippy,
     getRepo,
     isJobView,
@@ -642,7 +651,17 @@ function Navigation({
                     return (
                         canShowExternalLinks && (
                             <div key={item.stage}>
-                                {item.stage === 'EXTERNAL_LINKS' && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
+                                <div className="dc__border-bottom-n1 mt-8 mb-8" />
+                                {renderNavItem(item)}
+                            </div>
+                        )
+                    )
+                } else if (item.stage === 'PROTECT_CONFIGURATION') {
+                    return (
+                        isWorkflowEditorUnlocked &&
+                        ConfigProtectionView && (
+                            <div key={item.stage}>
+                                {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
                                 {renderNavItem(item)}
                             </div>
                         )
@@ -701,6 +720,7 @@ function Navigation({
 }
 
 function AppComposeRouter({
+    appId,
     isUnlocked,
     navItems,
     respondOnSuccess,
@@ -823,6 +843,11 @@ function AppComposeRouter({
                         {canShowExternalLinks && (
                             <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
                                 <ExternalLinks isAppConfigView={true} userRole={userRole} />
+                            </Route>
+                        )}
+                        {isUnlocked.workflowEditor && ConfigProtectionView && (
+                            <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
+                                <ConfigProtectionView appId={Number(appId)} />
                             </Route>
                         )}
                         {isUnlocked.workflowEditor && [
