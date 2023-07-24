@@ -248,10 +248,12 @@ export class Workflow extends Component<WorkflowProps> {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
                 let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
-                edgeList.push({
-                    startNode: node,
-                    endNode: endNode,
-                })
+                if(endNode){
+                    edgeList.push({
+                        startNode: node,
+                        endNode: endNode,
+                    })
+                }
             })
             return edgeList
         }, [])
