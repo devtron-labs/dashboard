@@ -62,6 +62,7 @@ import '../EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
+const submitDraftRequest = importComponentFromFELibrary('submitDraftRequest', null, 'function')
 
 export const ConfigMapSecretForm = React.memo(
     ({
@@ -447,15 +448,38 @@ export const ConfigMapSecretForm = React.memo(
 
         async function handleDelete() {
             try {
-                if (!envId) {
-                    componentType === 'secret'
-                        ? await deleteSecret(id, appId, configMapSecretData?.name)
-                        : await deleteConfig(id, appId, configMapSecretData?.name)
+                if (draftMode) {
+                  //console.log(payloadData)
+                    dispatch({
+                        type: ConfigMapActionTypes.multipleOptions,
+                        payload: {
+                            showDraftSaveModal: true,
+                            draftPayload: JSON.stringify({ id: id ?? 0, appId: appId, configData: [] }),
+                        },
+                    })
+                    // const requestPayload: ConfigDraftRequest = {
+                    //     appId: +appId,
+                    //     envId: +envId,
+                    //     resource: componentType==='secret'? 2:1,
+                    //     resourceName: state.configName.value,
+                    //     action: 3,
+                    //     data: '',
+                    //     userComment: comment,
+                    // }
+                    // await submitDraftRequest(requestPayload)
+
                 } else {
-                    componentType === 'secret'
-                        ? await deleteEnvSecret(id, appId, +envId, configMapSecretData?.name)
-                        : await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
+                    if (!envId) {
+                        componentType === 'secret'
+                            ? await deleteSecret(id, appId, configMapSecretData?.name)
+                            : await deleteConfig(id, appId, configMapSecretData?.name)
+                    } else {
+                        componentType === 'secret'
+                            ? await deleteEnvSecret(id, appId, +envId, configMapSecretData?.name)
+                            : await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
+                    }
                 }
+
                 toast.success(configMapSecretData.overridden ? 'Restored to global.' : 'Successfully deleted')
                 update()
                 toggleCollapse(not)
@@ -530,11 +554,12 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const toggleDraftSaveModal = (reload?: boolean): void => {
-          if(reload){
-            update()
-          } else{
-            dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
-          }
+            if (reload) {
+                update()
+                toggleCollapse((collapse) => !collapse)
+            } else {
+                dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
+            }
         }
 
         const renderDeleteOverRideModal = (): JSX.Element => {
@@ -944,10 +969,16 @@ export const ConfigMapSecretForm = React.memo(
                     </div>
 
                     {!readonlyView && (
-                        <div className="flex dc__content-space pt-16 pr-16 pb-16 pl-16">
-                            <button className="cta delete" onClick={openDeleteModal}>
-                                Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
-                            </button>
+                        <div
+                            className={`flex ${
+                                state.cmSecretState !== CM_SECRET_STATE.INHERITED ? 'dc__content-space' : 'right'
+                            } pt-16 pr-16 pb-16 pl-16`}
+                        >
+                            {state.cmSecretState !== CM_SECRET_STATE.INHERITED && (
+                                <button className="cta delete" onClick={openDeleteModal}>
+                                    Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
+                                </button>
+                            )}
                             <button
                                 disabled={!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}

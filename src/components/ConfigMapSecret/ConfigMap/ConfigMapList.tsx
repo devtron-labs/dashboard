@@ -34,14 +34,16 @@ export default function ConfigMapList({
                 getConfigMapList(appId, envId),
                 isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 1) : { result: null },
             ])
-            const draftDataMap = {}
+            const draftDataMap = {},
+                draftDataArr = []
+            let configData = []
             if (draftData?.length) {
                 for (const data of draftData) {
                     draftDataMap[data.resourceName] = data
                 }
             }
             if (Array.isArray(configMapRes.configData)) {
-                configMapRes.configData = configMapRes.configData.map((config) => {
+                configData = configMapRes.configData.map((config) => {
                     config.secretMode = config.externalType === ''
                     config.unAuthorized = true
                     if (draftDataMap[config.name]) {
@@ -51,10 +53,16 @@ export default function ConfigMapList({
                     return config
                 })
             }
+            const remainingDrafts = Object.keys(draftDataMap)
+            if (remainingDrafts.length > 0) {
+                for (const name of remainingDrafts) {
+                    draftDataArr.push({ ...draftDataMap[name], name, isNew: true })
+                }
+            }
             setConfigMap({
                 appId: configMapRes.appId,
                 id: configMapRes.id,
-                configData: configMapRes.configData || [],
+                configData: [...draftDataArr, ...configData] || [],
             })
             if (appChartRefRes) {
                 setAppChartRef(appChartRefRes)
