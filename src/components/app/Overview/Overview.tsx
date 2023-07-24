@@ -14,7 +14,6 @@ import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
-import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -38,12 +37,10 @@ import AppStatus from '../AppStatus'
 import { StatusConstants , DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { createAppLabels } from '../service'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import ClusterAbout from '../../ClusterNodes/ClusterAbout'
 import ClusterDescription from '../../Description/Description'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
@@ -54,7 +51,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
-    const [editMode, setEditMode] = useState(false)
+    const [descriptionId,setDescriptionId] = useState<number>(0)
     const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description?.description)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>(appMetaInfo?.description?.updatedOn)
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>(appMetaInfo?.description?.updatedBy)
@@ -80,6 +77,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
             setNewUpdatedOn(_date)
+            setNewDescription(appMetaInfo?.description?.description)
+            setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
+            setDescriptionId(appMetaInfo?.description?.id)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -170,23 +170,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 description={appMetaInfo.description.description}
             />
         )
-    }
-
-    const handleSave = async () => {
-        try {
-            const payload = {
-                id: parseInt(appId),
-                description: newDescription,
-                labels: appMetaInfo.labels,
-            }
-
-            const appLabel = await createAppLabels(payload)
-
-            setNewDescription(appLabel.result.description)
-
-
-            setEditMode(false)
-        } catch (error) {}
     }
 
     const renderSideInfoColumn = () => {
@@ -484,10 +467,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isClusterTerminal={false}
                             isSuperAdmin={true}
                             appId={Number(appId)}
-                            descriptionId={0}
-                            initialDescriptionText={newDescription? newDescription: DefaultJobNote}
+                            descriptionId={descriptionId}
+                            initialDescriptionText={newDescription ? newDescription: DefaultJobNote}
                             initialDescriptionUpdatedBy={newUpdatedBy}
-                            initialDescriptionUpdatedOn={newUpdatedBy}
+                            initialDescriptionUpdatedOn={newUpdatedOn}
                             initialEditDescriptionView={true}
                         />
                     }
@@ -503,7 +486,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isClusterTerminal={false}
                             isSuperAdmin={true}
                             appId={Number(appId)}
-                            descriptionId={0}
+                            descriptionId={descriptionId}
                             initialDescriptionText={newDescription? newDescription: DefaultAppNote}
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedOn}
