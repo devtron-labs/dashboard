@@ -16,6 +16,7 @@ import ClusterDescription from '../Description/Description'
 export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPropType) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
+    const [descriptionId,setDescriptionId] = useState<number>(0)
     const [descriptionText, setDescriptionText] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>('')
@@ -34,6 +35,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     let _date: string
                     if (response.result.clusterNote) {
                         setDescriptionText(response.result.clusterNote.description)
+                        setDescriptionId(response.result.clusterNote.id)
                         setModifiedDescriptionText(response.result.clusterNote.description)
                         setDescriptionUpdatedBy(response.result.clusterNote.updatedBy)
                         _moment = moment(response.result.clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
@@ -41,6 +43,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                         setDescriptionUpdatedOn(_date)
                     } else {
                         setDescriptionText(defaultClusterNote)
+                        setDescriptionId(0)
                         setModifiedDescriptionText(defaultClusterNote)
                         setDescriptionUpdatedBy('')
                         setDescriptionUpdatedOn('')
@@ -115,6 +118,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     isClusterTerminal={true}
                     clusterId={clusterId}
                     isSuperAdmin={isSuperAdmin}
+                    descriptionId={descriptionId}
                     initialDescriptionText={descriptionText}
                     initialDescriptionUpdatedBy={descriptionUpdatedBy}
                     initialDescriptionUpdatedOn={descriptionUpdatedOn}

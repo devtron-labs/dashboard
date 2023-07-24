@@ -42,20 +42,22 @@ export default function ClusterDescription({
     clusterId,
     isSuperAdmin,
     appId,
+    descriptionId,
     initialDescriptionText,
     initialDescriptionUpdatedBy,
     initialDescriptionUpdatedOn,
     initialEditDescriptionView,
     updateCreateAppFormDescription,
-}: {
-    isClusterTerminal: boolean
-    clusterId?: string
-    isSuperAdmin: boolean
-    appId?: number
-    initialDescriptionText: string
-    initialDescriptionUpdatedBy: string
-    initialDescriptionUpdatedOn: string
-    initialEditDescriptionView: boolean
+} : {
+    isClusterTerminal: boolean,
+    clusterId?: string,
+    isSuperAdmin: boolean,
+    appId?: number,
+    descriptionId: number,
+    initialDescriptionText: string,
+    initialDescriptionUpdatedBy: string,
+    initialDescriptionUpdatedOn: string,
+    initialEditDescriptionView: boolean,
     updateCreateAppFormDescription?: (string) => void
 }) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
@@ -110,7 +112,7 @@ export default function ClusterDescription({
             return
         }
         const requestPayload = {
-            // id:
+            id: descriptionId,
             identifier: Number(appId),
             description: modifiedDescriptionText,
         }
@@ -141,7 +143,7 @@ export default function ClusterDescription({
             return
         }
         const requestPayload = {
-            // id:
+            id: descriptionId,
             identifier: Number(clusterId),
             description: modifiedDescriptionText,
         }

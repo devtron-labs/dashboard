@@ -183,7 +183,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             const appLabel = await createAppLabels(payload)
 
             setNewDescription(appLabel.result.description)
-            
+
 
             setEditMode(false)
         } catch (error) {}
@@ -484,6 +484,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isClusterTerminal={false}
                             isSuperAdmin={true}
                             appId={Number(appId)}
+                            descriptionId={0}
                             initialDescriptionText={newDescription? newDescription: DefaultJobNote}
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedBy}
@@ -502,6 +503,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isClusterTerminal={false}
                             isSuperAdmin={true}
                             appId={Number(appId)}
+                            descriptionId={0}
                             initialDescriptionText={newDescription? newDescription: DefaultAppNote}
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedOn}

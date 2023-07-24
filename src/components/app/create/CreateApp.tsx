@@ -357,6 +357,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                     isClusterTerminal={false}
                                     isSuperAdmin={true}
                                     appId={this.state.form.appId}
+                                    descriptionId={0}
                                     initialDescriptionText={''}
                                     initialDescriptionUpdatedBy={''}
                                     initialDescriptionUpdatedOn={''}
