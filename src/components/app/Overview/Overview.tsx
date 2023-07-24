@@ -35,7 +35,7 @@ import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants , DefaultJobNote } from '../list-new/Constants'
+import { StatusConstants , DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { createAppLabels } from '../service'
@@ -497,8 +497,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             clusterId={0}
                             isSuperAdmin={true}
                             appId={appId}
-                            initialDescriptionText={DefaultJobNote}
-                            initialDescriptionUpdatedBy={DefaultJobNote}
+                            initialDescriptionText={DefaultAppNote}
+                            initialDescriptionUpdatedBy={DefaultAppNote}
                             initialDescriptionUpdatedOn={''}
                             initialEditDescriptionView={true}
                         />

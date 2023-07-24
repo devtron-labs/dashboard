@@ -29,9 +29,14 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
 }
 export const ClearFiltersLabel = 'Clear filters'
-export const DefaultJobNote =`## Describe this application
+export const DefaultAppNote =`## Describe this application
 
 Describe this application in a few words. The description could include the purpose, features, benefits, and target audience of your application. A well-written description will help users know about this application and how it works. Keep it concise and informative!
+`
+
+export const DefaultJobNote =`## Describe this job
+
+Describe this job in a few words. The description could include the purpose, features, benefits, and target audience of your job. A well-written description will help users know about this job and how it works. Keep it concise and informative!
 `
 
 export const StatusConstants = {
