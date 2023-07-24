@@ -174,7 +174,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if (isProtected && data.draftId && (data.draftState === 1 || data.draftState === 4)) {
+        if (title && isProtected && data.draftId && (data.draftState === 1 || data.draftState === 4)) {
             return (
                 <>
                     <ConfigToolbar

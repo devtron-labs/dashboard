@@ -165,6 +165,8 @@ export const ConfigMapSecretForm = React.memo(
                             draftMode,
                         ),
                     })
+                    update()
+                    toggleCollapse((collapse) => !collapse)
                 }
             } else {
                 //duplicate
@@ -527,8 +529,12 @@ export const ConfigMapSecretForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: true })
         }
 
-        const toggleDraftSaveModal = (e): void => {
+        const toggleDraftSaveModal = (reload?: boolean): void => {
+          if(reload){
+            update()
+          } else{
             dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
+          }
         }
 
         const renderDeleteOverRideModal = (): JSX.Element => {
