@@ -533,7 +533,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         stageIndex++
     }
     let cdDownstreams = []
-    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postDeployStage?.steps || cdPipeline.preStage?.config)) {
+    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postDeployStage?.steps || cdPipeline.postStage?.config)) {
         cdDownstreams = [`${WorkflowNodeType.POST_CD}-${cdPipeline.id}`]
     }
 
