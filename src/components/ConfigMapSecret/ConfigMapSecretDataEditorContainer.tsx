@@ -317,6 +317,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         }
 
         const renderDataEditorSelector = (): JSX.Element => {
+            if (
+                (componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                (componentType !== 'secret' && state.external)
+            ) {
+                return null
+            }
             return (
                 <div className="flex left mb-16">
                     <b className="mr-5 dc__bold dc__required-field">Data</b>

@@ -141,22 +141,6 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    async function discardDraftData() {
-        try {
-            setLoader(true)
-            await updateDraftState(data.draftId, draftData.draftVersionId, 2)
-            toggleCollapse(true)
-        } catch (error) {
-            showError(error)
-        } finally {
-            setLoader(false)
-        }
-    }
-
-    const handleDiscardDraft = (): void => {
-        discardDraftData()
-    }
-
     const handleTabSelection = (index: number): void => {
         setSelectedTab(index)
     }
@@ -179,10 +163,11 @@ export function ConfigMapSecretContainer({
                 <>
                     <ConfigToolbar
                         loading={isLoader}
+                        draftId={draftData.draftId}
+                        draftVersionId={draftData.draftVersionId}
                         selectedTabIndex={selectedTab}
                         handleTabSelection={handleTabSelection}
                         isDraftMode={draftData?.draftState === 1 || draftData?.draftState === 4}
-                        handleDiscardDraft={handleDiscardDraft}
                         noReadme={true}
                         showReadme={false}
                         handleReadMeClick={noop}
@@ -190,6 +175,8 @@ export function ConfigMapSecretContainer({
                         isApprovalPending={draftData?.draftState === 4}
                         approvalUsers={draftData?.approvers}
                         activityHistory={[]}
+                        isReadmeAvailable={false}
+                        reloadDrafts={update}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}
@@ -223,6 +210,15 @@ export function ConfigMapSecretContainer({
                 readonlyView={false}
                 isProtectedView={isProtected}
                 draftMode={false}
+                latestDraftData={
+                    draftData?.draftId
+                        ? {
+                              draftId: draftData?.draftId,
+                              draftState: draftData?.draftState,
+                              draftVersionId: draftData?.draftVersionId,
+                          }
+                        : null
+                }
             />
         )
     }
@@ -319,8 +315,8 @@ export function ProtectedConfigMapSecretDetails({
         return prepareHistoryData(
             { values, codeEditorValue },
             componentType === 'secret'
-                ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME
-                : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME,
+                ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
+                : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
         )
     }
 
@@ -331,8 +327,8 @@ export function ProtectedConfigMapSecretDetails({
         return prepareHistoryData(
             { values, codeEditorValue },
             componentType === 'secret'
-                ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME
-                : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME,
+                ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
+                : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
         )
     }
 
@@ -387,6 +383,15 @@ export function ProtectedConfigMapSecretDetails({
                 readonlyView={selectedTab === 1}
                 isProtectedView={true}
                 draftMode={selectedTab === 3}
+                latestDraftData={
+                    draftData?.draftId
+                        ? {
+                              draftId: draftData?.draftId,
+                              draftState: draftData?.draftState,
+                              draftVersionId: draftData?.draftVersionId,
+                          }
+                        : null
+                }
             />
         )
     }

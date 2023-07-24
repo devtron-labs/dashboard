@@ -68,6 +68,7 @@ export interface ConfigMapSecretFormProps {
     readonlyView: boolean
     isProtectedView: boolean
     draftMode: boolean
+    latestDraftData: any
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {

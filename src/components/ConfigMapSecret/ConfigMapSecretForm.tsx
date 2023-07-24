@@ -62,7 +62,7 @@ import '../EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
-const submitDraftRequest = importComponentFromFELibrary('submitDraftRequest', null, 'function')
+const DeleteModal = importComponentFromFELibrary('DeleteModal')
 
 export const ConfigMapSecretForm = React.memo(
     ({
@@ -79,6 +79,7 @@ export const ConfigMapSecretForm = React.memo(
         readonlyView,
         isProtectedView,
         draftMode,
+        latestDraftData,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
@@ -151,7 +152,7 @@ export const ConfigMapSecretForm = React.memo(
 
         async function handleOverride(e) {
             e.preventDefault()
-            if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) {
+            if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN || draftMode) {
                 if (configMapSecretData.data) {
                     dispatch({ type: ConfigMapActionTypes.toggleDialog })
                 } else {
@@ -399,6 +400,10 @@ export const ConfigMapSecretForm = React.memo(
             return payload
         }
 
+        const preparePayload = () => {
+            return state.draftPayload
+        }
+
         async function handleSubmit(e) {
             e.preventDefault()
             const { isValid, arr } = validateForm()
@@ -413,7 +418,7 @@ export const ConfigMapSecretForm = React.memo(
                         type: ConfigMapActionTypes.multipleOptions,
                         payload: {
                             showDraftSaveModal: true,
-                            draftPayload: JSON.stringify({ id: id ?? 0, appId: appId, configData: [payloadData] }),
+                            draftPayload: { id: id ?? 0, appId: appId, configData: [payloadData] },
                         },
                     })
                 } else {
@@ -449,7 +454,7 @@ export const ConfigMapSecretForm = React.memo(
         async function handleDelete() {
             try {
                 if (draftMode) {
-                  //console.log(payloadData)
+                    //console.log(payloadData)
                     dispatch({
                         type: ConfigMapActionTypes.multipleOptions,
                         payload: {
@@ -467,7 +472,6 @@ export const ConfigMapSecretForm = React.memo(
                     //     userComment: comment,
                     // }
                     // await submitDraftRequest(requestPayload)
-
                 } else {
                     if (!envId) {
                         componentType === 'secret'
@@ -554,15 +558,28 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const toggleDraftSaveModal = (reload?: boolean): void => {
-            if (reload) {
-                update()
-                toggleCollapse((collapse) => !collapse)
-            } else {
-                dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
-            }
+            dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
+        }
+
+        const reloadData = (): void => {
+            update()
+            toggleCollapse((collapse) => !collapse)
         }
 
         const renderDeleteOverRideModal = (): JSX.Element => {
+            if (isProtectedView && DeleteModal) {
+                return (
+                    <DeleteModal
+                        appId={+appId}
+                        envId={+envId}
+                        resourceType={componentType === 'secret' ? 2 : 1}
+                        resourceName={state.configName.value}
+                        latestDraft={latestDraftData}
+                        toggleDeleteModal={closeDeleteModal}
+                        reloadDrafts={reloadData}
+                    />
+                )
+            }
             return (
                 <ConfirmationDialog className="confirmation-dialog__body--w-400">
                     <ConfirmationDialog.Icon src={warningIcon} />
@@ -1000,11 +1017,23 @@ export const ConfigMapSecretForm = React.memo(
                         envId={+envId}
                         resourceType={componentType === 'secret' ? 2 : 1}
                         resourceName={state.configName.value}
-                        action={1}
-                        data={state.draftPayload}
+                        prepareDataToSave={preparePayload}
                         toggleSaveChangesModal={toggleDraftSaveModal}
+                        latestDraft={latestDraftData}
+                        reloadDrafts={reloadData}
                     />
                 )}
+                {/* {state.showDraftDeleteModal && (
+                    <DeleteModal
+                        appId={+appId}
+                        envId={+envId}
+                        resourceType={componentType === 'secret' ? 2 : 1}
+                        resourceName={state.configName.value}
+                        latestDraft={latestDraftData}
+                        toggleDeleteModal={closeDeleteModal}
+                        reloadDrafts={reloadData}
+                    />
+                )} */}
             </>
         )
     },
