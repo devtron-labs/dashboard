@@ -52,9 +52,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [descriptionId,setDescriptionId] = useState<number>(0)
-    const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description?.description)
-    const [newUpdatedOn, setNewUpdatedOn] = useState<string>(appMetaInfo?.description?.updatedOn)
-    const [newUpdatedBy, setNewUpdatedBy] = useState<string>(appMetaInfo?.description?.updatedBy)
+    const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
+    const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
+    const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -76,9 +76,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             setCurrentLabelTags(appMetaInfo.labels)
             _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
+            const description = appMetaInfo?.description?.description ? appMetaInfo?.description?.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
             setNewUpdatedOn(_date)
-            setNewDescription(appMetaInfo?.description?.description)
             setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
+            setNewDescription(description)
             setDescriptionId(appMetaInfo?.description?.id)
             setIsLoading(false)
         }
@@ -468,7 +469,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isSuperAdmin={true}
                             appId={Number(appId)}
                             descriptionId={descriptionId}
-                            initialDescriptionText={newDescription ? newDescription: DefaultJobNote}
+                            initialDescriptionText={newDescription}
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedOn}
                             initialEditDescriptionView={true}
@@ -487,7 +488,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isSuperAdmin={true}
                             appId={Number(appId)}
                             descriptionId={descriptionId}
-                            initialDescriptionText={newDescription? newDescription: DefaultAppNote}
+                            initialDescriptionText={newDescription}
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedOn}
                             initialEditDescriptionView={true}
@@ -508,7 +509,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
             {renderSideInfoColumn()}
-            {renderOverviewContent(isJobOverview)}
+            {!isLoading && renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>
