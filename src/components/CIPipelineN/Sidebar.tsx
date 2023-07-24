@@ -348,7 +348,7 @@ export function Sidebar({
                                     isJobView={isJobView}
                                 />
                             </div>
-                            {isCdPipeline && formData.generatedHelmPushAction === GeneratedHelmPush.PUSH && triggerPipelineMode()}
+                            {isCdPipeline && (!isVirtualEnvironment || formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) && triggerPipelineMode()}
                         </>
                     )}
                     {isJobView && <EnvironmentList isBuildStage={true} environments={environments} selectedEnv={selectedEnv} setSelectedEnv={setSelectedEnv} />}
