@@ -265,7 +265,7 @@ export default function ClusterDescription({
 
     return (
         <div className="cluster__body-details">
-            <div data-testid="cluster-note-wrapper" className="dc__overflow-auto pl-16 pr-16 pt-16 pb-16 mb-16">
+           <div data-testid="cluster-note-wrapper" className={`dc__overflow-auto ${initialEditDescriptionView ? 'pl-16 pr-16 pt-16 pb-16 mb-16' : ''}`}>
                 {isEditDescriptionView ? (
                     <div className="min-w-500 bcn-0 br-4 dc__border w-100">
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
@@ -305,10 +305,10 @@ export default function ClusterDescription({
                     <div className="min-w-500">
                         <ReactMde
                             classes={{
-                                reactMde: 'mark-down-editor-container',
+                                reactMde: `mark-down-editor-container ${initialEditDescriptionView ? '' : 'create-app-description'}`,
                                 toolbar: 'mark-down-editor-toolbar tab-list',
                                 preview: 'mark-down-editor-preview',
-                                textArea: 'mark-down-editor-textarea-wrapper',
+                                textArea: `mark-down-editor-textarea-wrapper ${initialEditDescriptionView ? '' : 'h-200-imp'}`,
                             }}
                             getIcon={(commandName: string) => editorCustomIcon(commandName)}
                             toolbarCommands={MARKDOWN_EDITOR_COMMANDS}

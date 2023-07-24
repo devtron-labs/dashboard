@@ -37,8 +37,8 @@
     }
 
     .mark-down-editor-container {
-        border-bottom: none !important;
-        border-radius: 3px 3px 0 0 !important;
+        border-bottom: none;
+        border-radius: 3px 3px 0 0;
         font-family: 'Open Sans', Arial, sans-serif !important;
         font-size: 13px !important;
         line-height: 1.67;
@@ -131,5 +131,10 @@
 .cluster__description-footer {
     border-radius: 0 0 3px 3px;
     border: 1px solid var(--N200);
+}
+
+.create-app-description{
+    border-bottom: 1px solid var(--N200) !important;
+    border-radius: 3px !important;
 }
 
