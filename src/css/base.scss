@@ -2478,6 +2478,10 @@ textarea,
     width: 32px !important;
 }
 
+.w-36 {
+    width: 36px !important;
+}
+
 .min-w-800 {
     min-width: 800px;
 }
@@ -2795,6 +2799,10 @@ textarea,
     height: 66px !important;
 }
 
+.h-76 {
+    height: 76px !important;
+}
+
 .h-80 {
     height: 80px !important;
 }
@@ -2862,6 +2870,10 @@ textarea,
 
 .mh-92 {
     min-height: 92px;
+}
+
+.mh-150 {
+    min-height: 150px !important;
 }
 
 .mh-200 {
@@ -2987,6 +2999,10 @@ textarea,
 .p-lr-12 {
     padding-left: 12px !important;
     padding-right: 12px !important;
+}
+
+.p-0-imp {
+    padding: 0 !important;
 }
 
 .pb-0-imp {
@@ -3219,6 +3235,10 @@ textarea::placeholder {
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__bg-g5 {
+    background-color: var(--G500) !important;
 }
 
 .dc__hover-n100:hover {
