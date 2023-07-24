@@ -214,7 +214,7 @@ export default function NewCDPipeline({
                 _form.strategies = strategies
                 getAvailablePlugins()
                 if (cdPipelineId) {
-                    getCDPipeline(_form)
+                    getCDPipeline(_form, dockerRegistries)
                 } else {
                     getEnvCDPipelineName(_form)
                     if (strategies.length > 0) {
@@ -298,11 +298,11 @@ export default function NewCDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
-    const getCDPipeline = (form): void => {
+    const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
             .then((result) => {
                 let pipelineConfigFromRes = result.pipelineConfig
-                updateStateFromResponse(pipelineConfigFromRes, result.environments, form)
+                updateStateFromResponse(pipelineConfigFromRes, result.environments, form, dockerRegistries)
                 const preBuildVariable = calculateLastStepDetail(
                     false,
                     result.form,
@@ -372,7 +372,7 @@ export default function NewCDPipeline({
         }
     }
 
-    const updateStateFromResponse = (pipelineConfigFromRes, environments, form): void => {
+    const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
         sortObjectArrayAlphabetically(environments, 'name')
         environments = environments.map((env) => {
             return {
@@ -640,15 +640,11 @@ export default function NewCDPipeline({
         let isReposAndContainerRegistoryValid = true
         if (!isVirtualEnvironment) {
             _formDataErrorObj.nameSpaceError = validationRules.namespace(_formData.namespace)
-        }
-        if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
+        } else if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
             _formDataErrorObj.containerRegistryError = validationRules.containerRegistry(
                 formData.containerRegistryName || '',
             )
             _formDataErrorObj.repositoryError = validationRules.repository(formData.repoName)
-        }
-
-        if (formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) {
             if (!(_formDataErrorObj.repositoryError.isValid && _formDataErrorObj.containerRegistryError.isValid)) {
                 isReposAndContainerRegistoryValid = false
             }
@@ -704,7 +700,7 @@ export default function NewCDPipeline({
             .then((response) => {
                 if (response.result) {
                     let pipelineConfigFromRes = response.result.pipelines[0]
-                    updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form)
+                    updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form, dockerRegistries)
                     let envName = pipelineConfigFromRes.environmentName
                     if (!envName) {
                         let selectedEnv: Environment = _form.environments.find((env) => env.id == _form.environmentId)

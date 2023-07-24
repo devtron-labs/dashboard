@@ -223,6 +223,11 @@ export const getTypeGroups = (isJobView?:boolean, typeValue?: string) => {
             { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
         ]
 
+    const groupList = isJobView ? noGroups : [...noGroups, ...esoGroups, ...ksoGroups]
+    const externalType = groupList.find((x) => x.value === typeValue)
+
+    if (typeValue) return externalType
+
     if(isJobView){
         return [
             {
@@ -231,9 +236,7 @@ export const getTypeGroups = (isJobView?:boolean, typeValue?: string) => {
             }
         ]
     }
-    const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
 
-    if (typeValue) return externalType
     return [
         {
             label: '',

@@ -1,6 +1,7 @@
 import { Routes } from '../../../../../config';
-import { DeploymentAppTypes, post, put } from '@devtron-labs/devtron-fe-common-lib';
+import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
+import { ParamsType } from './nodeDetail.type';
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
@@ -77,7 +78,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     )[0]
     const applicationObject =
         appDetails.deploymentAppType == DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
-    
+
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
@@ -104,7 +105,6 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     }
     return requestBody
 }
-
 
 export const updateManifestResourceHelmApps = (
     ad: AppDetails,
@@ -175,4 +175,55 @@ export const createResource = (
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
     return post(Routes.CREATE_RESOURCE, requestData)
+}
+
+export const generateEphemeralUrl = (
+    requestData,
+    clusterId: number,
+    environmentId: number,
+    namespace: string,
+    appName: string,
+    appId: number,
+    appType: string,
+    isResourceBrowserView: boolean,
+    params: ParamsType,
+) => {
+    const appIds =
+        appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
+            : getAppId(clusterId, namespace, appName)
+    let url: string = 'k8s/resources/ephemeralContainers'
+    if (isResourceBrowserView) {
+        url += `?identifier=${params.clusterId}`
+    } else {
+        url += `?identifier=${appIds}&appType=${appType === AppType.DEVTRON_APP ? '0' : '1'}`
+    }
+
+    return post(url, requestData)
+}
+
+export const deleteEphemeralUrl = (
+    requestData,
+    clusterId: number,
+    environmentId: number,
+    namespace: string,
+    appName: string,
+    appId: number,
+    appType: string,
+    isResourceBrowserView: boolean,
+    params: ParamsType,
+) => {
+    const appIds =
+        appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
+            : getAppId(clusterId, namespace, appName)
+
+    let url: string = 'k8s/resources/ephemeralContainers'
+    const appTypes = appType === AppType.DEVTRON_APP ? '0' : '1'
+    if (isResourceBrowserView) {
+        url += `?identifier=${params.clusterId}`
+    } else {
+        url += `?identifier=${appIds}&appType=${appTypes}`
+    }
+    return trash(url, requestData)
 }
