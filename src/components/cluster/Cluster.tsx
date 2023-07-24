@@ -187,7 +187,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 
     render() {
         if (!this.props.isSuperAdmin) {
-            return <ErrorScreenNotAuthorized />
+            return (
+                <div className="dc__align-reload-center">
+                    <ErrorScreenNotAuthorized />
+                </div>
+            )
         } else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
