@@ -55,7 +55,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [editMode, setEditMode] = useState(false)
-    const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
+    const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description?.description)
+    const [newUpdatedOn, setNewUpdatedOn] = useState<string>(appMetaInfo?.description?.updatedOn)
+    const [newUpdatedBy, setNewUpdatedBy] = useState<string>(appMetaInfo?.description?.updatedBy)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -69,11 +71,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
+    let _moment: moment.Moment
+    let _date: string
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            setNewDescription(appMetaInfo?.description)
+            _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
+            setNewUpdatedOn(_date)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -146,7 +152,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
-                description={appMetaInfo.description}
+                description={appMetaInfo.description.description}
                 isJobOverview={isJobOverview}
             />
         )
@@ -161,7 +167,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 currentLabelTags={currentLabelTags}
-                description={appMetaInfo.description}
+                description={appMetaInfo.description.description}
             />
         )
     }
@@ -177,6 +183,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             const appLabel = await createAppLabels(payload)
 
             setNewDescription(appLabel.result.description)
+            
 
             setEditMode(false)
         } catch (error) {}
@@ -477,9 +484,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isClusterTerminal={false}
                             isSuperAdmin={true}
                             appId={Number(appId)}
-                            initialDescriptionText={DefaultJobNote}
-                            initialDescriptionUpdatedBy={DefaultJobNote}
-                            initialDescriptionUpdatedOn={''}
+                            initialDescriptionText={newDescription? newDescription: DefaultJobNote}
+                            initialDescriptionUpdatedBy={newUpdatedBy}
+                            initialDescriptionUpdatedOn={newUpdatedBy}
                             initialEditDescriptionView={true}
                         />
                     }
@@ -495,9 +502,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             isClusterTerminal={false}
                             isSuperAdmin={true}
                             appId={Number(appId)}
-                            initialDescriptionText={DefaultAppNote}
-                            initialDescriptionUpdatedBy={DefaultAppNote}
-                            initialDescriptionUpdatedOn={''}
+                            initialDescriptionText={newDescription? newDescription: DefaultAppNote}
+                            initialDescriptionUpdatedBy={newUpdatedBy}
+                            initialDescriptionUpdatedOn={newUpdatedOn}
                             initialEditDescriptionView={true}
                         />
                     }

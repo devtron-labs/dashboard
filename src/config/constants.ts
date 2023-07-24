@@ -27,6 +27,7 @@ export const Routes = {
     SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
     CLUSTER_NOTE: 'cluster/description/note',
+    APPLICATION_NOTE: 'app/description/note',
 
     CD_CONFIG: 'app/cd-pipeline',
     V2_CD_CONFIG: 'app/v2/cd-pipeline',

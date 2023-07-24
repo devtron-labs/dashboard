@@ -79,11 +79,18 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: string
+    description: description
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
+}
+
+interface description{
+    id: number
+    description: string
+    updatedBy: string
+    updatedOn: string
 }
 
 export interface AppHeaderType {

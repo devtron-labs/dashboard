@@ -175,7 +175,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             id: 0,
             description: this.state.form.description,
             updatedBy: '',
-            updatedOn: null,
+            updatedOn: null, 
         }
 
         const request = {

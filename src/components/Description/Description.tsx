@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getClusterNote, patchClusterNote } from '../ClusterNodes/clusterNodes.service'
+import { getClusterNote, patchApplicationNote, patchClusterNote } from '../ClusterNodes/clusterNodes.service'
 import ReactMde from 'react-mde'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { showError, Progressing, ErrorScreenManager, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
@@ -47,15 +47,15 @@ export default function ClusterDescription({
     initialDescriptionUpdatedOn,
     initialEditDescriptionView,
     updateCreateAppFormDescription,
-} : {
-    isClusterTerminal: boolean,
-    clusterId?: string,
-    isSuperAdmin: boolean,
-    appId?: number,
-    initialDescriptionText: string,
-    initialDescriptionUpdatedBy: string,
-    initialDescriptionUpdatedOn: string,
-    initialEditDescriptionView: boolean,
+}: {
+    isClusterTerminal: boolean
+    clusterId?: string
+    isSuperAdmin: boolean
+    appId?: number
+    initialDescriptionText: string
+    initialDescriptionUpdatedBy: string
+    initialDescriptionUpdatedOn: string
+    initialEditDescriptionView: boolean
     updateCreateAppFormDescription?: (string) => void
 }) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
@@ -81,9 +81,9 @@ export default function ClusterDescription({
         }
     }
 
-    useEffect (()=>{
+    useEffect(() => {
         if (typeof updateCreateAppFormDescription === 'function') {
-            updateCreateAppFormDescription(modifiedDescriptionText)   
+            updateCreateAppFormDescription(modifiedDescriptionText)
         }
     }, [modifiedDescriptionText])
 
@@ -104,16 +104,45 @@ export default function ClusterDescription({
         return true
     }
 
-    const updateClusterAbout = (): void => {
-        if (!isClusterTerminal) {
-            return
-        }
+    const updateApplicationAbout = (): void => {
         const isValidate = validateDescriptionText()
         if (!isValidate) {
             return
         }
         const requestPayload = {
-            clusterId: Number(clusterId),
+            // id:
+            identifier: Number(appId),
+            description: modifiedDescriptionText,
+        }
+        setClusterAboutLoader(true)
+        patchApplicationNote(requestPayload)
+            .then((response) => {
+                if (response.result) {
+                    setDescriptionText(response.result.description)
+                    setDescriptionUpdatedBy(response.result.updatedBy)
+                    let _moment = moment(response.result.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+                    const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
+                    setDescriptionUpdatedOn(_date)
+                    setModifiedDescriptionText(response.result.description)
+                    toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
+                    setEditDescriptionView(true)
+                }
+                setClusterAboutLoader(false)
+            })
+            .catch((error) => {
+                showError(error)
+                setClusterAboutLoader(false)
+            })
+    }
+
+    const updateClusterAbout = (): void => {
+        const isValidate = validateDescriptionText()
+        if (!isValidate) {
+            return
+        }
+        const requestPayload = {
+            // id:
+            identifier: Number(clusterId),
             description: modifiedDescriptionText,
         }
         setClusterAboutLoader(true)
@@ -265,7 +294,10 @@ export default function ClusterDescription({
 
     return (
         <div className="cluster__body-details">
-           <div data-testid="cluster-note-wrapper" className={`dc__overflow-auto ${initialEditDescriptionView ? 'pl-16 pr-16 pt-16 pb-16 mb-16' : ''}`}>
+            <div
+                data-testid="cluster-note-wrapper"
+                className={`dc__overflow-auto ${initialEditDescriptionView ? 'pl-16 pr-16 pt-16 pb-16 mb-16' : ''}`}
+            >
                 {isEditDescriptionView ? (
                     <div className="min-w-500 bcn-0 br-4 dc__border w-100">
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
@@ -305,10 +337,14 @@ export default function ClusterDescription({
                     <div className="min-w-500">
                         <ReactMde
                             classes={{
-                                reactMde: `mark-down-editor-container ${initialEditDescriptionView ? '' : 'create-app-description'}`,
+                                reactMde: `mark-down-editor-container ${
+                                    initialEditDescriptionView ? '' : 'create-app-description'
+                                }`,
                                 toolbar: 'mark-down-editor-toolbar tab-list',
                                 preview: 'mark-down-editor-preview',
-                                textArea: `mark-down-editor-textarea-wrapper ${initialEditDescriptionView ? '' : 'h-200-imp'}`,
+                                textArea: `mark-down-editor-textarea-wrapper ${
+                                    initialEditDescriptionView ? '' : 'h-200-imp'
+                                }`,
                             }}
                             getIcon={(commandName: string) => editorCustomIcon(commandName)}
                             toolbarCommands={MARKDOWN_EDITOR_COMMANDS}
@@ -351,7 +387,13 @@ export default function ClusterDescription({
                                         data-testid="description-edit-save-button"
                                         className="cta flex h-36"
                                         type="submit"
-                                        onClick={updateClusterAbout}
+                                        onClick={() => {
+                                            if (isClusterTerminal) {
+                                                updateClusterAbout()
+                                            } else {
+                                                updateApplicationAbout()
+                                            }
+                                        }}
                                     >
                                         Save
                                     </button>
