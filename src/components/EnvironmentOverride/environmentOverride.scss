@@ -110,6 +110,14 @@ section.config-map-overrides {
 .override-config-map-form,
 .override-secrets-form {
     padding-bottom: 24px;
+    .configmap-secret-usage-radio {
+        .form__radio-item {
+            &.disabled {
+                opacity: 0.5;
+                background-color: transparent;
+            }
+        }
+    }
 }
 
 div.override-container {

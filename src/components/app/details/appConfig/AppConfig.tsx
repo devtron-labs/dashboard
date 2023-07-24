@@ -61,8 +61,9 @@ import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
 import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
+import SecretList from '../../../ConfigMapSecret/Secret/SecretList'
+import ConfigMapList from '../../../ConfigMapSecret/ConfigMap/ConfigMapList'
 import ReactSelect, { components } from 'react-select'
-import { DropdownIndicator } from '../../../cdPipeline/cdpipeline.util'
 import { groupHeading } from '../../../CIPipelineN/Constants'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
@@ -779,12 +780,12 @@ function AppComposeRouter({
                             <Route
                                 key={`${path}/${URLS.APP_CM_CONFIG}`}
                                 path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} isJobView={isJobView}/>}                                
+                                render={(props) => <ConfigMapList isJobView={isJobView}/>}
                             />,
                             <Route
                                 key={`${path}/${URLS.APP_CS_CONFIG}`}
                                 path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} isJobView={isJobView}/>}
+                                render={(props) => <SecretList isJobView={isJobView}/>}
                             />,
                             <Route
                                 key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
@@ -862,16 +863,12 @@ function AppComposeRouter({
                                     />
                                 )}
                             />,
-                            <Route
-                                key={`${path}/${URLS.APP_CM_CONFIG}`}
-                                path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
-                            />,
-                            <Route
-                                key={`${path}/${URLS.APP_CS_CONFIG}`}
-                                path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
-                            />,
+                            <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                                <ConfigMapList />
+                            </Route>,
+                            <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                                <SecretList />
+                            </Route>,
                             <Route
                                 key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                                 path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
@@ -935,7 +932,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
         setDeleteView(false)
         setDeletePipeline(null)
     }
-    
+
     const deleteEnvHandler = () => {
         let requestBody = {envId: envOverride.environmentId, appId: appId}
         deleteJobEnvironment(requestBody)
@@ -999,14 +996,14 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
     }
 
     const showDeleteDialog = (pipeline: any): JSX.Element => {
-        
+
         const workFlows = workflowsRes?.workflows
         let workFlow
         if(pipeline) {
             workFlows?.forEach((workflow) => {
                 workflow.tree.forEach((ciPipeline) => {
                     if(!workFlow){
-                        workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline 
+                        workFlow = pipeline.id === ciPipeline.componentId  && ciPipeline
                     }
                 })
             })
@@ -1065,7 +1062,7 @@ const EnvOverrideRoute = ({ envOverride, environmentList, isJobView, ciPipelines
                 {isJobView && deletePopUpMenu()}
                 {isJobView && showDelete && showDeleteDialog(deletePipeline)}
             </div>
-            
+
             {!collapsed && (
                 <div className="environment-routes">
                     {!isJobView && <NavLink
@@ -1211,10 +1208,10 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes, getWorkflows} : {is
                                 <Add className="icon-dim-18 fcb-5 mr-8" />
                                 <div className="fw-6 fs-13 cb-5">Add Environment</div></div>) : (
                             <>
-                                <ReactSelect 
+                                <ReactSelect
                                     autoFocus
                                     menuIsOpen
-                                    isSearchable                                   
+                                    isSearchable
                                     menuPlacement="auto"
                                     closeMenuOnScroll={true}
                                     placeholder="Select Environment"
@@ -1230,7 +1227,7 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes, getWorkflows} : {is
                                         IndicatorSeparator: null,
                                         DropdownIndicator: null,
                                         GroupHeading: groupHeading,
-                                        ValueContainer: ValueContainer             
+                                        ValueContainer: ValueContainer
                                     }}
                                     styles={{
                                         ...groupStyle(),

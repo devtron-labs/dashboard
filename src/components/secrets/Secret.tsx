@@ -189,7 +189,7 @@ export function CollapsedSecretForm({
     filePermission = '',
     subPath = false,
     esoSecretData = null,
-    isJobView = false, 
+    isJobView = false,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -733,7 +733,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
-                        
+
                         placeholder="Select Secret Type"
                         options={getTypeGroups(props?.isJobView)}
                         defaultValue={
