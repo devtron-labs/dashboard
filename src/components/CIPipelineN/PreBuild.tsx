@@ -9,6 +9,8 @@ import {
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
+import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
+import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
 import { PluginCardListContainer } from './PluginCardListContainer'
@@ -163,20 +165,22 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         if (isJobView) {
             return nojobs
         } else if (activeStageName === BuildStageVariable.PreBuild) {
-            return EmptyPreBuild
+            return isCdPipeline ? EmptyPreDeployment : EmptyPreBuild
         } else {
-            return EmptyPostBuild
+            return isCdPipeline ? EmptyPostDeployment : EmptyPostBuild
         }
     }
 
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
-            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
+            const _postText = isCdPipeline ? 'deployment' : 'build'
+            const _postSubtitleText = isCdPipeline ? 'deployment' : 'the container image is built'
+            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? `pre-${_postText}` : `post-${_postText}`
             const _execOrderText = activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
             const _title = isJobView ? 'No tasks configured' : `No ${_preBuildText} tasks configured`
             const _subtitle = isJobView
                 ? 'Configure tasks to be executed by this job.'
-                : `Here, you can configure tasks to be executed ${_execOrderText} the container image is built.`
+                : `Here, you can configure tasks to be executed ${_execOrderText} ${_postSubtitleText}.`
 
             return (
                 <CDEmptyState
