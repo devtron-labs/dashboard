@@ -41,7 +41,6 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
-const getDraftVersion = importComponentFromFELibrary('getDraftVersion', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
@@ -175,8 +174,8 @@ export default function DeploymentConfig({
     }
 
     const getDraftAndActivity = (allDrafts, latestDraft, chartRefsData) => {
-        Promise.all([getDraft(latestDraft.draftId), getDraftVersion(latestDraft.draftId)])
-            .then(([draftResp, draftVersionResp]) => {
+        getDraft(latestDraft.draftId)
+            .then((draftResp) => {
                 const {
                     valuesOverride,
                     id,
@@ -206,9 +205,6 @@ export default function DeploymentConfig({
                     tempFormData: YAML.stringify(valuesOverride, null),
                     latestDraft: draftResp.result,
                     allDrafts,
-                    activityHistory: draftVersionResp.result?.versionMetadata?.sort(
-                        (a, b) => b.draftVersionId - a.draftVersionId,
-                    ),
                     ...{
                         ...chartRefsData,
                         selectedChartRefId: chartRefId,
