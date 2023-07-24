@@ -302,33 +302,56 @@ export function ProtectedConfigMapSecretDetails({
         }
     }
 
+    const getCodeEditorData = (cmSecretData, isOverridden) => {
+        if (isOverridden) {
+            if (Object.keys(cmSecretData.defaultData ?? {}).length > 0) {
+                return cmSecretData.defaultData
+            } else if (componentType === 'secret') {
+                if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
+                    return cmSecretData.defaultSecretData
+                } else if (Object.keys(data.defaultESOSecretData ?? {}).length > 0) {
+                    return cmSecretData.defaultESOSecretData
+                }
+            }
+        }
+        if (Object.keys(cmSecretData.data ?? {}).length > 0) {
+            return cmSecretData.data
+        } else if (componentType === 'secret') {
+            if (Object.keys(cmSecretData.secretData ?? {}).length > 0) {
+                return cmSecretData.secretData
+            } else if (Object.keys(cmSecretData.esoSecretData ?? {}).length > 0) {
+                return cmSecretData.esoSecretData
+            }
+        }
+    }
+
     const getCurrentConfig = (): DeploymentHistoryDetail => {
         let currentConfigData = {},
-            values = {},
             codeEditorValue = { displayName: 'data', value: '' }
         try {
             currentConfigData = JSON.parse(draftData.data).configData[0]
-            values = { ...currentConfigData }
-            codeEditorValue.value = JSON.stringify(currentConfigData['data']) ?? ''
-            delete values['data']
+            codeEditorValue.value = JSON.stringify(getCodeEditorData(currentConfigData, false)) ?? ''
         } catch (error) {}
         return prepareHistoryData(
-            { values, codeEditorValue },
+            { ...currentConfigData, codeEditorValue },
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            true,
         )
     }
 
     const getBaseConfig = (): DeploymentHistoryDetail => {
-        const values = { ...data }
-        const codeEditorValue = { displayName: 'data', value: JSON.stringify(data.data ?? data.defaultData) ?? '' }
-        delete values['data']
+        const codeEditorValue = {
+            displayName: 'data',
+            value: JSON.stringify(getCodeEditorData(data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
+        }
         return prepareHistoryData(
-            { values, codeEditorValue },
+            {...data, codeEditorValue },
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            true,
         )
     }
 

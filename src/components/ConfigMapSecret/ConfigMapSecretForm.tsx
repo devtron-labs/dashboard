@@ -152,7 +152,7 @@ export const ConfigMapSecretForm = React.memo(
 
         async function handleOverride(e) {
             e.preventDefault()
-            if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN || draftMode) {
+            if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) {
                 if (configMapSecretData.data) {
                     dispatch({ type: ConfigMapActionTypes.toggleDialog })
                 } else {
@@ -956,16 +956,17 @@ export const ConfigMapSecretForm = React.memo(
         return (
             <>
                 <form>
-                    {(state.cmSecretState === CM_SECRET_STATE.INHERITED ||
-                        state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
-                        <Override
-                            overridden={draftMode || state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
-                            onClick={handleOverride}
-                            loading={state.overrideLoading}
-                            type={componentType}
-                            readonlyView={readonlyView}
-                        />
-                    )}
+                    {!draftMode &&
+                        (state.cmSecretState === CM_SECRET_STATE.INHERITED ||
+                            state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
+                            <Override
+                                overridden={draftMode || state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN}
+                                onClick={handleOverride}
+                                loading={state.overrideLoading}
+                                type={componentType}
+                                readonlyView={readonlyView}
+                            />
+                        )}
                     <div className="pr-16 pl-16 dc__border-bottom mt-20">
                         {dataTypeSelector()}
                         {renderExternalInfo()}
@@ -988,10 +989,10 @@ export const ConfigMapSecretForm = React.memo(
                     {!readonlyView && (
                         <div
                             className={`flex ${
-                                state.cmSecretState !== CM_SECRET_STATE.INHERITED ? 'dc__content-space' : 'right'
+                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? 'dc__content-space' : 'right'
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
-                            {state.cmSecretState !== CM_SECRET_STATE.INHERITED && (
+                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && (
                                 <button className="cta delete" onClick={openDeleteModal}>
                                     Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
                                 </button>
@@ -1023,17 +1024,6 @@ export const ConfigMapSecretForm = React.memo(
                         reloadDrafts={reloadData}
                     />
                 )}
-                {/* {state.showDraftDeleteModal && (
-                    <DeleteModal
-                        appId={+appId}
-                        envId={+envId}
-                        resourceType={componentType === 'secret' ? 2 : 1}
-                        resourceName={state.configName.value}
-                        latestDraft={latestDraftData}
-                        toggleDeleteModal={closeDeleteModal}
-                        reloadDrafts={reloadData}
-                    />
-                )} */}
             </>
         )
     },
