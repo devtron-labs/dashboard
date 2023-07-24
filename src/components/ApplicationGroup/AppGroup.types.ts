@@ -298,6 +298,7 @@ export interface CreateGroupAppListType {
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
+    unauthorizedApps?: String[]
     closePopup: (e, groupId?: number) => void
 }
 
@@ -337,12 +338,25 @@ export interface EnvGroupListType {
     description: string
 }
 
+export interface CheckPermissionType{
+    id?: number
+    appIds: number[]
+    name?: string
+    description?: string
+    envId?: number
+    active?: boolean
+}
+
 export interface EnvGroupListResponse extends ResponseType {
     result?: EnvGroupListType[]
 }
 
 export interface EnvGroupResponse extends ResponseType {
     result?: EnvGroupListType
+}
+
+export interface CheckPermissionResponse extends ResponseType {
+    result?: boolean
 }
 
 export interface GroupOptionType extends OptionType {

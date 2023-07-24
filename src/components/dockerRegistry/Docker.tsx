@@ -104,7 +104,7 @@ useEffect(() => {
             className="global-configuration__component flex-1"
             data-testid="select-existing-container-registry-list"
         >
-            <div className="flex left fs-16 cn-9 fw-6 mb-20" data-testid="container-oci-registry-heading">
+            <div className="flex left fs-16 cn-9 fw-6 mb-20 dc__align-reload-center" data-testid="container-oci-registry-heading">
                 Container / OCI Registry
                 <TippyCustomized
                     theme={TippyTheme.white}

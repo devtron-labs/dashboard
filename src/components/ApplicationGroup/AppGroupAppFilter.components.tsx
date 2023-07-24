@@ -14,6 +14,8 @@ import { AppGroupAppFilterContextType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { appGroupPermission } from './AppGroup.service'
+import { toast } from 'react-toastify'
 
 export const ValueContainer = (props): JSX.Element => {
     const { appListOptions, selectedAppList, selectedFilterTab, selectedGroupFilter }: AppGroupAppFilterContextType =
@@ -87,7 +89,7 @@ export const Option = (props): JSX.Element => {
                 )
             }
         } else {
-            if (props.isFocused && isSuperAdmin) {
+            if (props.isFocused) {
                 return (
                     <div className="flex">
                         <Tippy className="default-tt" arrow={false} content="Edit group">

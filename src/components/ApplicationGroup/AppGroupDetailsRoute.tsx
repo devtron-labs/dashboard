@@ -9,6 +9,8 @@ import {
     DeleteDialog,
     showError,
     GenericEmptyState,
+    ServerErrors,
+    ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
@@ -21,12 +23,13 @@ import { EnvSelector } from './EnvSelector'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { deleteEnvGroup, getAppGroupList, getEnvAppList, getEnvGroupList } from './AppGroup.service'
+import { deleteEnvGroup, getAppGroupList, getEnvAppList, getEnvGroupList, appGroupPermission } from './AppGroup.service'
 import {
     AppGroupAdminType,
     AppGroupAppFilterContextType,
     AppGroupListType,
     ApplistEnvType,
+    CheckPermissionType,
     CreateGroupAppListType,
     EnvHeaderType,
     GroupOptionType,
@@ -40,6 +43,7 @@ import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 import { toast } from 'react-toastify'
 import CreateAppGroup from './CreateAppGroup'
+import { loginAsAdmin } from '../login/login.service'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -70,6 +74,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
     const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
     const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
+    const [unauthorizedApps, setUnauthorizedApps] = useState<String[]>()
+    const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
         if (envList?.result) {
@@ -91,7 +97,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setAppListOptions([])
             setAppGroupListData(null)
         }
-    }, [envId])
+    }, [envId])   
 
     const getSavedFilterData = async (groupId?: number): Promise<void> => {
         setSelectedAppList([])
@@ -149,6 +155,39 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         setAppListLoading(false)
     }
+    
+    async function getPermissionCheck(payload: CheckPermissionType) {
+        setLoading(true)
+        try {
+            const {result} = await appGroupPermission(envId, payload)
+            if(result === true) {
+                setShowCreateGroup(true)
+            } 
+        } catch (err) {
+            if(err['code'] === 403) {
+                err['errors'].map((errors) => {
+                    setUnauthorizedApps([...errors['userMessage']['unauthorizedApps']])
+                })
+                if (unauthorizedApps?.length) {
+                    setShowCreateGroup(false)
+                    toast.info(
+                        <ToastBody
+                            title="Cannot create filter"
+                            subtitle="You can create a filter with only those applications for which you have admin/manager permission."
+                        />,
+                        {
+                            className: 'devtron-toast unauthorized',
+                        },
+                    )
+                } else {
+                    setShowCreateGroup(true)
+                }
+                showError(err)
+            }
+            setLoading(false)
+        }
+        
+    }
 
     const openCreateGroup = (e, groupId?: string) => {
         stopPropagation(e)
@@ -171,7 +210,21 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
-        setShowCreateGroup(true)
+        const _appIds : number[] = []
+        for(let app of _allAppList) {
+            if(app.isSelected) {
+                _appIds.push(+app.id)
+            }
+        }
+        let _permissionData = {
+            id: 1,
+            appIds: _appIds,
+            name: "",
+            description: "",
+            envId: +envId,
+            active: true,
+        }
+        getPermissionCheck(_permissionData)
     }
 
     const closeCreateGroup = (e, groupId?: number) => {
@@ -305,8 +358,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 isSuperAdmin={isSuperAdmin}
             />
             {renderRoute()}
-            {isSuperAdmin && showCreateGroup && (
-                <CreateAppGroup appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
+            {showCreateGroup && (
+                <CreateAppGroup unauthorizedApps={unauthorizedApps} appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
             )}
             {isSuperAdmin && showDeleteGroup && (
                 <DeleteDialog
