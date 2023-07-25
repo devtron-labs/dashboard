@@ -168,7 +168,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 err['errors'].map((errors) => {
                     setUnauthorizedApps([...errors['userMessage']['unauthorizedApps']])
                 })
-                if (unauthorizedApps?.length && (unauthorizedApps.length === selectedAppList.length)) {
+                if (unauthorizedApps?.length) {
                     setShowCreateGroup(false)
                     if(!_edit) {
                         toast.info(
@@ -353,7 +353,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             )
         }
     }
-
+    
     return (
         <div className="env-details-page">
             <EnvHeader
@@ -375,7 +375,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             />
             {renderRoute()}
             {showCreateGroup && (
-                <CreateAppGroup unauthorizedApps={unauthorizedApps} appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
+                <CreateAppGroup
+                    unauthorizedApps={unauthorizedApps}
+                    appList={allAppsList}
+                    selectedAppGroup={clickedGroup}
+                    closePopup={closeCreateGroup}
+                />
             )}
             {showDeleteGroup && (
                 <DeleteDialog
