@@ -358,7 +358,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     !state.unAuthorized &&
                     !state.yamlMode && (
                         <span className="dc__bold anchor pointer" onClick={handleAddParam}>
-                            +Add params
+                            + Add params
                         </span>
                     )}
             </>
