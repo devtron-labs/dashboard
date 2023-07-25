@@ -71,13 +71,11 @@ export const Option = (props): JSX.Element => {
     }
 
     const showEditPopup = (e) => {
-        const _edit = true
-        openCreateGroup(e, data.value, _edit)
+        openCreateGroup(e, data.value, true)
     }
 
     const showDeletePopup = (e) => {
-        const _delete = true
-        openDeleteGroup(e, data.value, _delete)
+        openDeleteGroup(e, data.value, true)
     }
 
     const renderOptionIcon = (): JSX.Element => {
