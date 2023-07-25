@@ -132,6 +132,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
     const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
     const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
+    const [fliteredWorkflowDataUpdated, setfliteredWorkflowDataUpdated] = useState<boolean>(false)
     const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
     const { queryParams } = useSearchString()
 
@@ -149,20 +150,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setSelectedAppList([])
             getWorkflowsData()
         }
-        if(location.search.includes('approval-node')) {
-            setShowApprovalModal(true)
-            // console.log(selectedCDNode, "CDNode")
-
-            onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
-        }
         return () => {
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         }
-    }, [filteredAppIds,location.search])
+    }, [filteredAppIds])
 
-    // useEffect(() => {
-        
-    // }, [location.search])
+    useEffect(() => {
+        if(location.search.includes('approval-node') && filteredWorkflows?.length) {
+            setShowApprovalModal(true)
+            onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
+        }
+    }, [location.search, fliteredWorkflowDataUpdated])
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -229,6 +227,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
         _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
         setFilteredWorkflows(_filteredWorkflows)
+        setfliteredWorkflowDataUpdated(true)
     }
 
     const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
@@ -740,7 +739,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
             .then((data) => {
                 let _selectedNode
-                console.log(filteredWorkflows, "node")
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
@@ -751,7 +749,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 node.userApprovalConfig = data.userApprovalConfig
                                 node.requestedUserId = data.requestedUserId
                             }
-                            console.log(_selectedNode, "node")
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId
@@ -770,7 +767,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setWorkflowID(_workflowId)
                 setSelectedAppID(_appID)
                 setFilteredWorkflows(_workflows)
-                setSelectedCDNode({ id: +cdNodeId, name: _selectedNode?.name, type: _selectedNode.type })
+                setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
                 setShowCDModal(!isApprovalNode)
                 setShowApprovalModal(isApprovalNode)
