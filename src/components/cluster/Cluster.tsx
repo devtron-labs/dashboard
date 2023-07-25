@@ -320,7 +320,7 @@ function Cluster({
     const isDefaultCluster = (): boolean => {
         return id == 1
     }
-    console.log("proxyUrl, 323",proxyUrl)
+
     const { state } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
