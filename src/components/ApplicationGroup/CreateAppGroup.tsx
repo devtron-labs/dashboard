@@ -310,10 +310,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         )
     }
 
-    const handleFunction = async (e): Promise<void> => {
-        handleSave(e)
-    }
-
     const handleSave = async (e): Promise<void> => { 
         e.preventDefault()
         if (!appGroupName || appGroupDescription?.length > 50) {
@@ -357,7 +353,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                 <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
-                <button className="cta flex h-36" onClick={handleFunction}>
+                <button className="cta flex h-36" onClick={handleSave}>
                     {selectedAppGroup?.value ? 'Update' : 'Save'}
                 </button>
             </div>
