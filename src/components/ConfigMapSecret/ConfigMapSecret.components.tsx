@@ -104,6 +104,8 @@ export function ConfigMapSecretContainer({
     isOverrideView,
     isJobView,
     isProtected,
+    toggleDraftComments,
+    reduceOpacity,
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
@@ -132,17 +134,27 @@ export function ConfigMapSecretContainer({
         }
     }
 
-    const updateCollapsed = (): void => {
-        //toggleCollapse(!collapsed)
-        if (collapsed && getDraft && isProtected && data?.draftId) {
-            getDraftData()
+    const updateCollapsed = (_collapsed?: boolean): void => {
+        if (_collapsed !== undefined) {
+            toggleCollapse(_collapsed)
         } else {
-            toggleCollapse(!collapsed)
+            if (collapsed && getDraft && isProtected && data?.draftId) {
+                getDraftData()
+            } else {
+                toggleCollapse(!collapsed)
+                if(!collapsed){
+                  toggleDraftComments(null)
+                }
+            }
         }
     }
 
     const handleTabSelection = (index: number): void => {
         setSelectedTab(index)
+    }
+
+    const toggleDraftCommentModal = () => {
+        toggleDraftComments({ draftId: draftData.draftId, draftVersionId: draftData.draftVersionId, index: index })
     }
 
     const renderIcon = (): JSX.Element => {
@@ -170,17 +182,16 @@ export function ConfigMapSecretContainer({
                         isDraftMode={draftData?.draftState === 1 || draftData?.draftState === 4}
                         noReadme={true}
                         showReadme={false}
+                        isReadmeAvailable={false}
                         handleReadMeClick={noop}
-                        handleCommentClick={noop}
+                        handleCommentClick={toggleDraftCommentModal}
                         isApprovalPending={draftData?.draftState === 4}
                         approvalUsers={draftData?.approvers}
-                        activityHistory={[]}
-                        isReadmeAvailable={false}
                         reloadDrafts={update}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}
-                        toggleCollapse={toggleCollapse}
+                        updateCollapsed={updateCollapsed}
                         data={data}
                         id={id}
                         isOverrideView={isOverrideView}
@@ -198,7 +209,7 @@ export function ConfigMapSecretContainer({
         return (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}
-                toggleCollapse={toggleCollapse}
+                updateCollapsed={updateCollapsed}
                 configMapSecretData={data}
                 id={id}
                 isOverrideView={isOverrideView}
@@ -235,12 +246,20 @@ export function ConfigMapSecretContainer({
         return null
     }
 
+    const handleCMSecretClick = () => {
+        updateCollapsed()
+    }
+
     return (
         <>
-            <section className={`pt-20 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'}`}>
+            <section
+                className={`pt-20 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
+                    reduceOpacity ? 'dc__disable-click dc__opacity-0_5' : ''
+                }`}
+            >
                 <article
                     className="dc__configuration-list pointer pr-16 pl-16 mb-20"
-                    onClick={updateCollapsed}
+                    onClick={handleCMSecretClick}
                     data-testid="click-to-add-configmaps-secret"
                 >
                     {renderIcon()}
@@ -275,7 +294,7 @@ export function ConfigMapSecretContainer({
 
 export function ProtectedConfigMapSecretDetails({
     appChartRef,
-    toggleCollapse,
+    updateCollapsed,
     data,
     id,
     isOverrideView,
@@ -347,7 +366,7 @@ export function ProtectedConfigMapSecretDetails({
             value: JSON.stringify(getCodeEditorData(data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
         }
         return prepareHistoryData(
-            {...data, codeEditorValue },
+            { ...data, codeEditorValue },
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
@@ -359,7 +378,7 @@ export function ProtectedConfigMapSecretDetails({
         try {
             setLoader(true)
             await updateDraftState(data.draftId, draftData.draftVersionId, 4)
-            toggleCollapse(true)
+            updateCollapsed(true)
         } catch (error) {
             showError(error)
         } finally {
@@ -394,7 +413,7 @@ export function ProtectedConfigMapSecretDetails({
         return (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}
-                toggleCollapse={toggleCollapse}
+                updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
                 id={id}
                 isOverrideView={isOverrideView}

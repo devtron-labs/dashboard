@@ -67,7 +67,7 @@ const DeleteModal = importComponentFromFELibrary('DeleteModal')
 export const ConfigMapSecretForm = React.memo(
     ({
         appChartRef,
-        toggleCollapse,
+        updateCollapsed,
         configMapSecretData,
         id,
         isOverrideView,
@@ -168,7 +168,7 @@ export const ConfigMapSecretForm = React.memo(
                         ),
                     })
                     update()
-                    toggleCollapse((collapse) => !collapse)
+                    updateCollapsed()
                 }
             } else {
                 //duplicate
@@ -442,7 +442,7 @@ export const ConfigMapSecretForm = React.memo(
                         </div>,
                     )
                     update()
-                    toggleCollapse((collapse) => !collapse)
+                    updateCollapsed()
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
@@ -454,24 +454,7 @@ export const ConfigMapSecretForm = React.memo(
         async function handleDelete() {
             try {
                 if (draftMode) {
-                    //console.log(payloadData)
-                    dispatch({
-                        type: ConfigMapActionTypes.multipleOptions,
-                        payload: {
-                            showDraftSaveModal: true,
-                            draftPayload: JSON.stringify({ id: id ?? 0, appId: appId, configData: [] }),
-                        },
-                    })
-                    // const requestPayload: ConfigDraftRequest = {
-                    //     appId: +appId,
-                    //     envId: +envId,
-                    //     resource: componentType==='secret'? 2:1,
-                    //     resourceName: state.configName.value,
-                    //     action: 3,
-                    //     data: '',
-                    //     userComment: comment,
-                    // }
-                    // await submitDraftRequest(requestPayload)
+                    //:TODO Add the draft node delete after verification
                 } else {
                     if (!envId) {
                         componentType === 'secret'
@@ -486,7 +469,7 @@ export const ConfigMapSecretForm = React.memo(
 
                 toast.success(configMapSecretData.overridden ? 'Restored to global.' : 'Successfully deleted')
                 update()
-                toggleCollapse(not)
+                updateCollapsed(false)
                 dispatch({ type: ConfigMapActionTypes.success })
             } catch (err) {
                 showError(err)
@@ -563,7 +546,7 @@ export const ConfigMapSecretForm = React.memo(
 
         const reloadData = (): void => {
             update()
-            toggleCollapse((collapse) => !collapse)
+            updateCollapsed()
         }
 
         const renderDeleteOverRideModal = (): JSX.Element => {
@@ -604,6 +587,19 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const renderDeleteCMModal = (): JSX.Element => {
+            if (isProtectedView && DeleteModal) {
+                return (
+                    <DeleteModal
+                        appId={+appId}
+                        envId={+envId}
+                        resourceType={componentType === 'secret' ? 2 : 1}
+                        resourceName={state.configName.value}
+                        latestDraft={latestDraftData}
+                        toggleDeleteModal={closeDeleteModal}
+                        reloadDrafts={reloadData}
+                    />
+                )
+            }
             return (
                 <DeleteDialog
                     title={`Delete ${componentType === 'secret' ? 'Secret' : 'ConfigMap'} '${

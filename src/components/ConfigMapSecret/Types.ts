@@ -50,13 +50,14 @@ export interface ConfigMapListProps {
     isJobView?: boolean
     isOverrideView?: boolean
     isProtected?: boolean
+    parentName?: string
     parentState?: ComponentStates
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
 }
 
 export interface ConfigMapSecretFormProps {
     appChartRef: { id: number; version: string; name: string }
-    toggleCollapse: React.Dispatch<React.SetStateAction<boolean>>
+    updateCollapsed: (collapse?: boolean)=> void
     configMapSecretData: any
     id
     isOverrideView: boolean
@@ -80,6 +81,12 @@ export interface ConfigMapSecretDataEditorContainerProps {
     draftMode: boolean
 }
 
+export interface DraftDetailsForCommentDrawerType {
+    draftId: number
+    draftVersionId: number
+    index: number
+}
+
 export interface ConfigMapSecretProps {
     componentType: string
     title: string
@@ -88,9 +95,11 @@ export interface ConfigMapSecretProps {
     data?: any
     index?: number
     id?: number
-  isOverrideView?: boolean
+    isOverrideView?: boolean
     isJobView: boolean
     isProtected: boolean
+    toggleDraftComments?: (data: DraftDetailsForCommentDrawerType) => void
+    reduceOpacity?: boolean
 }
 
 interface ValueWithError {
