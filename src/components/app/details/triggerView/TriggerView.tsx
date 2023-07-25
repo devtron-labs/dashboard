@@ -59,6 +59,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { getChannelConfigs } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { CDNode } from '../../../workflowEditor/nodes/CDNode'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -121,6 +122,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflows()
         this.getEnvironments()
         this.getConfigs()
+        if (ApprovalMaterialModal && this.props.location.search.includes("approval-node")) {
+            this.setState({
+                showApprovalModal: true
+            })
+            const searchParams = new URLSearchParams(this.props.location.search);
+            const nodeId = searchParams.get('approval-node');
+            this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+        }
     }
 
     getEnvironments = () => {
@@ -652,6 +661,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     })
                     workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.nodes = nodes
+                    console.log(workflow,"workflow")
                     return workflow
                 })
                 this.setState({
@@ -1380,7 +1390,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderApprovalMaterial() {
-        if (ApprovalMaterialModal && this.state.showApprovalModal && this.props.location.search.includes("approval-node")) {
+        if (ApprovalMaterialModal && this.state.showApprovalModal) {
             const node: NodeAttr = this.getCDNode()
             return (
                 <ApprovalMaterialModal
