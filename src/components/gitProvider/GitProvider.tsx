@@ -105,6 +105,7 @@ export default function GitProvider({ ...props }) {
         )
     }
     if (isPageLoading) {
+        return <Progressing pageLoader />;
     }
     if (isErrorLoading) {
         return <ErrorScreenManager code={error?.code} />
