@@ -79,14 +79,14 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: description
+    description: Description
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
 }
 
-interface description{
+interface Description{
     id: number
     description: string
     updatedBy: string
