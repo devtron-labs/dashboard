@@ -275,9 +275,10 @@ export function getCDMaterialList(
     isApprovalNode?: boolean,
     imageTag?: string
 ): Promise<CDMaterialResponseType> {
+    const image = (imageTag && imageTag === '') ? '' : imageTag
     const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
         isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-    }${ (imageTag && imageTag !== '') ? `&search=${imageTag}` : ''}`
+    }`
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
