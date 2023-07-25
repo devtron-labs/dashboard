@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
+import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo, Children } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import { ErrorBoundary, useAsync, sortOptionsByLabel } from '../common'
 import {
@@ -9,8 +9,8 @@ import {
     DeleteDialog,
     showError,
     GenericEmptyState,
-    ServerErrors,
     ToastBody,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
@@ -43,7 +43,6 @@ import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 import { toast } from 'react-toastify'
 import CreateAppGroup from './CreateAppGroup'
-import { loginAsAdmin } from '../login/login.service'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -158,6 +157,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     
     async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean) {
         setLoading(true)
+        setUnauthorizedApps([])
         try {
             const {result} = await appGroupPermission(envId, payload)
             if(result === true) {
@@ -168,7 +168,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 err['errors'].map((errors) => {
                     setUnauthorizedApps([...errors['userMessage']['unauthorizedApps']])
                 })
-                if (unauthorizedApps?.length) {
+                if (unauthorizedApps && selectedAppList && unauthorizedApps.length === selectedAppList.length) {
                     setShowCreateGroup(false)
                     if(!_edit) {
                         toast.info(
@@ -251,10 +251,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }
 
-    const openDeleteGroup = (e, groupId: string, _delete?: boolean) => {
+    const openDeleteGroup = (e, groupId: string) => {
         stopPropagation(e)
         setClickedGroup(groupFilterOptions.find((group) => group.value === groupId))
-        setShowDeleteGroup(_delete)
+        setShowDeleteGroup(true)
     }
 
     async function handleDelete() {
@@ -383,12 +383,27 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 />
             )}
             {showDeleteGroup && (
-                <DeleteDialog
-                    title={`Delete filter '${clickedGroup?.label}' ?`}
-                    description="Are you sure you want to delete this filter?"
-                    delete={handleDelete}
-                    closeDelete={closeDeleteGroup}
-                />
+                <ConditionalWrap
+                    condition={false}
+                    wrap={() =>
+                        (toast.info(
+                            <ToastBody
+                                title="Cannot delete filter"
+                                subtitle="You can delete a filter with only those applications for which you have admin/manager permission."
+                            />,
+                            {
+                                className: 'devtron-toast unauthorized',
+                            },
+                        ))
+                    }
+                >
+                    <DeleteDialog
+                        title={`Delete filter '${clickedGroup?.label}' ?`}
+                        description="Are you sure you want to delete this filter?"
+                        delete={handleDelete}
+                        closeDelete={closeDeleteGroup}
+                    />
+                </ConditionalWrap>
             )}
         </div>
     )
