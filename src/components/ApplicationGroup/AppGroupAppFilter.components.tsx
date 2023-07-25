@@ -14,8 +14,6 @@ import { AppGroupAppFilterContextType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { appGroupPermission } from './AppGroup.service'
-import { toast } from 'react-toastify'
 
 export const ValueContainer = (props): JSX.Element => {
     const { appListOptions, selectedAppList, selectedFilterTab, selectedGroupFilter }: AppGroupAppFilterContextType =

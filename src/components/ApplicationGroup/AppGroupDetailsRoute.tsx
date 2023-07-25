@@ -10,7 +10,6 @@ import {
     showError,
     GenericEmptyState,
     ToastBody,
-    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
@@ -75,6 +74,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
     const [unauthorizedApps, setUnauthorizedApps] = useState<String[]>()
     const [isLoading, setLoading] = useState(true)
+    const [isPopupBox, setIsPopupBox] = useState(true)
 
     useEffect(() => {
         if (envList?.result) {
@@ -155,22 +155,23 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppListLoading(false)
     }
     
-    async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean) {
+    async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean) {
         setLoading(true)
         setUnauthorizedApps([])
         try {
             const {result} = await appGroupPermission(envId, payload)
-            if(result === true) {
+            if(result === true && !_edit && !_delete) {
                 setShowCreateGroup(true)
-            } 
+            } else if(result === true && _edit) {
+                setShowCreateGroup(true)
+            }
         } catch (err) {
             if(err['code'] === 403) {
                 err['errors'].map((errors) => {
                     setUnauthorizedApps([...errors['userMessage']['unauthorizedApps']])
                 })
-                if (unauthorizedApps && selectedAppList && unauthorizedApps.length === selectedAppList.length) {
+                if (unauthorizedApps && unauthorizedApps.length>0 && unauthorizedApps.length === selectedAppList.length) {
                     setShowCreateGroup(false)
-                    if(!_edit) {
                         toast.info(
                             <ToastBody
                                 title="Cannot create filter"
@@ -180,19 +181,35 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 className: 'devtron-toast unauthorized',
                             },
                         )
-                    } else if(_edit) {
-                        toast.info(
-                            <ToastBody
-                                title="Cannot edit filter"
-                                subtitle="You can edit a filter with only those applications for which you have admin/manager permission."
-                            />,
-                            {
-                                className: 'devtron-toast unauthorized',
-                            },
-                        )
-                    }
+                     
+                } else if(_edit && unauthorizedApps){
+                    setShowCreateGroup(false)
+                    toast.info(
+                        <ToastBody
+                            title="Cannot edit filter"
+                            subtitle="You can edit a filter with only those applications for which you have admin/manager permission."
+                        />,
+                        {
+                            className: 'devtron-toast unauthorized',
+                        },
+                    )
+                } else if(_delete && unauthorizedApps) {
+                    setShowCreateGroup(false)
+                    setIsPopupBox(false)
+                    toast.info(
+                        <ToastBody
+                            title="Cannot delete filter"
+                            subtitle="You can delete a filter with only those applications for which you have admin/manager permission."
+                        />,
+                        {
+                            className: 'devtron-toast unauthorized',
+                        },
+                    )
+                } else if(_delete && !unauthorizedApps){
+                    setShowCreateGroup(false)
                 } else {
                     setShowCreateGroup(true)
+                    setShowDeleteGroup(false)
                 }
                 showError(err)
             }
@@ -228,12 +245,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             }
         }
         let _permissionData = {
-            id: 1,
+            id: +envId,
             appIds: _appIds,
-            name: "",
-            description: "",
             envId: +envId,
-            active: true,
         }
         if(_edit) {
             getPermissionCheck(_permissionData, _edit)
@@ -253,10 +267,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const openDeleteGroup = (e, groupId: string) => {
         stopPropagation(e)
-        setClickedGroup(groupFilterOptions.find((group) => group.value === groupId))
-        setShowDeleteGroup(true)
+        const selectedGroupId = groupFilterOptions.find((group) => group.value === groupId)
+        setClickedGroup(selectedGroupId)
+        getPermissionCheck({appIds: selectedGroupId.appIds}, false, true)
     }
-
+    
     async function handleDelete() {
         if (deleting) {
             return
@@ -382,28 +397,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     closePopup={closeCreateGroup}
                 />
             )}
-            {showDeleteGroup && (
-                <ConditionalWrap
-                    condition={false}
-                    wrap={() =>
-                        (toast.info(
-                            <ToastBody
-                                title="Cannot delete filter"
-                                subtitle="You can delete a filter with only those applications for which you have admin/manager permission."
-                            />,
-                            {
-                                className: 'devtron-toast unauthorized',
-                            },
-                        ))
-                    }
-                >
-                    <DeleteDialog
-                        title={`Delete filter '${clickedGroup?.label}' ?`}
-                        description="Are you sure you want to delete this filter?"
-                        delete={handleDelete}
-                        closeDelete={closeDeleteGroup}
-                    />
-                </ConditionalWrap>
+            {showDeleteGroup && isPopupBox && (
+                <DeleteDialog
+                    title={`Delete filter '${clickedGroup?.label}' ?`}
+                    description="Are you sure you want to delete this filter?"
+                    delete={handleDelete}
+                    closeDelete={closeDeleteGroup}
+                />
             )}
         </div>
     )
