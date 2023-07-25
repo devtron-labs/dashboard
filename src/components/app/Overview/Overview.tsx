@@ -76,7 +76,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             setCurrentLabelTags(appMetaInfo.labels)
             _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
-            const description = appMetaInfo?.description?.description ? appMetaInfo?.description?.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
+            const description = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? appMetaInfo.description.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
+            _date = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? _date : ''
             setNewUpdatedOn(_date)
             setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
             setNewDescription(description)
