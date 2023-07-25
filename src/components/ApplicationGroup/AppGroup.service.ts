@@ -209,8 +209,8 @@ export const createEnvGroup = (envId: string, data: EnvGroupListType, isEdit: bo
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
 }
 
-export const appGroupPermission = (endId: string, data: CheckPermissionType): Promise<CheckPermissionResponse> => {
-    return post(`${Routes.ENVIRONMENT}/${endId}/${Routes.GROUP}/${Routes.PERMISSION}`, data)
+export const appGroupPermission = (envId: string, data: CheckPermissionType): Promise<CheckPermissionResponse> => {
+    return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${Routes.PERMISSION}`, data)
 }
 
 export const deleteEnvGroup = (envId: string, groupId: string): Promise<EnvGroupResponse> => {
