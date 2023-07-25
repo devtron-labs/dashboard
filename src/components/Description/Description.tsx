@@ -336,7 +336,7 @@ export default function GenericDescription({
                         </div>
                         <ReactMde
                             classes={{
-                                reactMde: 'mark-down-editor-container pb-16 mark-down-editor__no-border',
+                                reactMde: 'mark-down-editor-container pb-16 pt-8 mark-down-editor__no-border',
                                 toolbar: 'mark-down-editor__hidden',
                                 preview: `mark-down-editor-preview dc__bottom-radius-4 ${
                                     !showAllText ? 'mxh-300-imp' : ''
