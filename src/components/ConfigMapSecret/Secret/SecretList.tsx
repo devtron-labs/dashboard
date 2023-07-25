@@ -37,10 +37,11 @@ export default function SecretList({
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
         if (showComments) {
             setSelectedDraft(null)
-        } else {
+            setShowComments(false)
+        } else if(selectedDraft) {
             setSelectedDraft(selectedDraft)
+            setShowComments(true)
         }
-        setShowComments(!showComments)
     }
 
     async function init(isFromInit?: boolean) {
