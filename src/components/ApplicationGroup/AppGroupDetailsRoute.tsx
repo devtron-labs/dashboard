@@ -156,7 +156,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppListLoading(false)
     }
     
-    async function getPermissionCheck(payload: CheckPermissionType) {
+    async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean) {
         setLoading(true)
         try {
             const {result} = await appGroupPermission(envId, payload)
@@ -168,28 +168,39 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 err['errors'].map((errors) => {
                     setUnauthorizedApps([...errors['userMessage']['unauthorizedApps']])
                 })
-                if (unauthorizedApps?.length) {
+                if (unauthorizedApps?.length && (unauthorizedApps.length === selectedAppList.length)) {
                     setShowCreateGroup(false)
-                    toast.info(
-                        <ToastBody
-                            title="Cannot create filter"
-                            subtitle="You can create a filter with only those applications for which you have admin/manager permission."
-                        />,
-                        {
-                            className: 'devtron-toast unauthorized',
-                        },
-                    )
+                    if(!_edit) {
+                        toast.info(
+                            <ToastBody
+                                title="Cannot create filter"
+                                subtitle="You can create a filter with only those applications for which you have admin/manager permission."
+                            />,
+                            {
+                                className: 'devtron-toast unauthorized',
+                            },
+                        )
+                    } else if(_edit) {
+                        toast.info(
+                            <ToastBody
+                                title="Cannot edit filter"
+                                subtitle="You can edit a filter with only those applications for which you have admin/manager permission."
+                            />,
+                            {
+                                className: 'devtron-toast unauthorized',
+                            },
+                        )
+                    }
                 } else {
                     setShowCreateGroup(true)
                 }
                 showError(err)
             }
             setLoading(false)
-        }
-        
+        }   
     }
 
-    const openCreateGroup = (e, groupId?: string) => {
+    const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
@@ -224,7 +235,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             envId: +envId,
             active: true,
         }
-        getPermissionCheck(_permissionData)
+        if(_edit) {
+            getPermissionCheck(_permissionData, _edit)
+        }
+        else {
+            getPermissionCheck(_permissionData)
+        }
     }
 
     const closeCreateGroup = (e, groupId?: number) => {
@@ -235,10 +251,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }
 
-    const openDeleteGroup = (e, groupId: string) => {
+    const openDeleteGroup = (e, groupId: string, _delete?: boolean) => {
         stopPropagation(e)
         setClickedGroup(groupFilterOptions.find((group) => group.value === groupId))
-        setShowDeleteGroup(true)
+        setShowDeleteGroup(_delete)
     }
 
     async function handleDelete() {
@@ -361,7 +377,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             {showCreateGroup && (
                 <CreateAppGroup unauthorizedApps={unauthorizedApps} appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
             )}
-            {isSuperAdmin && showDeleteGroup && (
+            {showDeleteGroup && (
                 <DeleteDialog
                     title={`Delete filter '${clickedGroup?.label}' ?`}
                     description="Are you sure you want to delete this filter?"

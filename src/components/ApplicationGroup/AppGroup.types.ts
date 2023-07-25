@@ -284,8 +284,8 @@ export interface AppGroupAppFilterContextType {
     groupFilterOptions: GroupOptionType[]
     selectedGroupFilter: MultiValue<GroupOptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
-    openCreateGroup: (e, groupId?: string) => void
-    openDeleteGroup: (e, groupId: string) => void
+    openCreateGroup: (e, groupId?: string, _edit?: boolean) => void
+    openDeleteGroup: (e, groupId: string, _delete?: boolean) => void
     isSuperAdmin: boolean
 }
 

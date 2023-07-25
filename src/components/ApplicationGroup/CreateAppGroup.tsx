@@ -11,11 +11,12 @@ import {
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
+import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { CreateGroupType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
 import { Icons, toast } from 'react-toastify'
-import { appGroupPermission, createEnvGroup } from './AppGroup.service'
+import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
@@ -137,15 +138,19 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 condition={findUnauthorizedApp(app.appName)}
                                 wrap={(children) => (
                                     <Tippy
-                                        data-testid="env-tippy"
                                         className="default-tt"
                                         arrow={true}
-                                        placement="top"
+                                        placement="bottom"
                                         content="You don't have admin/manager pemission for this app."
-                                    >
-                                        <div className="dc__bold ml-4">
-                                        You don't have admin/manager pemission for the following Applications
-                                            {children}
+                                    >   
+                                        <div>
+                                            <div className="dc__bold ml-4">
+                                            You don't have admin/manager pemission for the following Applications
+                                            </div>
+                                            <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
+                                                <Abort className="mr-8" {...children}/>
+                                                <span>{app.appName}</span>
+                                            </div>
                                         </div>
                                     </Tippy>
                                 )}
@@ -200,7 +205,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                         arrow={true}
                                         placement="top"
                                         content="You don't have admin/manager pemission for this app."
-                                    >
+                                    >  
                                         <div>{children}</div>
                                     </Tippy>
                                 )}
