@@ -951,7 +951,7 @@ export const ConfigMapSecretForm = React.memo(
 
         return (
             <>
-                <form>
+                <div>
                     {!draftMode &&
                         (state.cmSecretState === CM_SECRET_STATE.INHERITED ||
                             state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) && (
@@ -985,10 +985,10 @@ export const ConfigMapSecretForm = React.memo(
                     {!readonlyView && (
                         <div
                             className={`flex ${
-                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? 'dc__content-space' : 'right'
+                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED  ? 'dc__content-space' : 'right'
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
-                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && (
+                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && (
                                 <button className="cta delete" onClick={openDeleteModal}>
                                     Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
                                 </button>
@@ -1004,7 +1004,7 @@ export const ConfigMapSecretForm = React.memo(
                             </button>
                         </div>
                     )}
-                </form>
+                </div>
 
                 {configMapSecretData?.name && state.showDeleteModal && renderDeleteCMModal()}
                 {state.dialog && renderDeleteOverRideModal()}
