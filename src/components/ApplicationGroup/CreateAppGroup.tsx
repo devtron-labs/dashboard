@@ -325,8 +325,12 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         }
         setLoading(true)
         const _selectedAppIds = []
-        for (const _appId in selectedAppsMap) {
-            _selectedAppIds.push(+_appId)
+        for (const _appId in Object.keys(selectedAppsMap)) {
+            for(const _app in unauthorizedApps) {
+                if(_app !== _appId) {
+                    _selectedAppIds.push(+_appId)
+                }
+            }
         }
 
         const payload = {
