@@ -125,8 +125,6 @@ export default function ClusterForm({
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
-    console.log("proxyUrl, 128", proxyUrl)
-    console.log("toConnectViaProxy, 129", toConnectViaProxy)
     const [toConnectViaProxyTemp,setToConnectViaProxyTemp] = useState(toConnectViaProxy)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
