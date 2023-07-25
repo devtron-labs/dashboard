@@ -89,8 +89,6 @@ export default function ClusterForm({
     defaultClusterComponent,
     proxyUrl,
     toConnectViaProxy,
-    toggleCheckProxyUrlConnection,
-    setProxyUrlConnectionFalse,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -127,6 +125,9 @@ export default function ClusterForm({
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
+    console.log("proxyUrl, 128", proxyUrl)
+    console.log("toConnectViaProxy, 129", toConnectViaProxy)
+    const [toConnectViaProxyTemp,setToConnectViaProxyTemp] = useState(toConnectViaProxy)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -187,7 +188,7 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: id ? toConnectViaProxy : false,
+                required: id ? toConnectViaProxyTemp : false,
                 validator: { error: 'incorrect URL', regex: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             tlsClientKey: {
@@ -395,13 +396,16 @@ export default function ClusterForm({
         } else {
             payload['server_url'] = urlValue
         }
-        const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
-        if (proxyUrlValue.endsWith('/')) {
-            payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        } else {
-            payload['proxyUrl'] = proxyUrlValue
+        if (toConnectViaProxyTemp) {
+            const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
+            if (proxyUrlValue.endsWith('/')) {
+                payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
+            } else {
+                payload['proxyUrl'] = proxyUrlValue
+            }
+        } else{
+            payload['proxyUrl'] = ''
         }
-
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value
@@ -561,10 +565,13 @@ export default function ClusterForm({
         reload()
     }
 
-    const test = () => {
-        toggleCheckProxyUrlConnection()
-        console.log(state)
-        state.proxyUrl = ''
+
+    const toggleCheckProxyUrlConnection = () => {
+        setToConnectViaProxyTemp(!toConnectViaProxyTemp)
+    }
+
+   const setProxyUrlConnectionFalse = () => {
+       setToConnectViaProxyTemp(false)
     }
 
     const renderUrlAndBearerToken = () => {
@@ -632,17 +639,17 @@ export default function ClusterForm({
                         <hr />
                         <div className="dc__position-rel flex left dc__hover mb-20">
                             <Checkbox
-                                isChecked={toConnectViaProxy}
+                                isChecked={toConnectViaProxyTemp}
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
                                 value={'CHECKED'}
-                                onChange={test}
+                                onChange={toggleCheckProxyUrlConnection}
                             >
                                 <div data-testid="to_connect_via_proxy_checkbox" className="mr-4 flex center">
-                                   Connect to this cluster via proxy {toConnectViaProxy}
+                                   Connect to this cluster via proxy
                                 </div>
                             </Checkbox>
                         </div>
-                        {toConnectViaProxy && (
+                        {toConnectViaProxyTemp && (
                             <>
                                 <div className="form__row">
                                     <span
@@ -655,7 +662,7 @@ export default function ClusterForm({
                                         dataTestId="proxy_url_data_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="proxyUrl"
-                                        value={proxyUrl.value}
+                                        value={state.proxyUrl.value}
                                         onChange={handleOnChange}
                                         placeholder={'eg. http://proxy.example.org'}
                                     />
