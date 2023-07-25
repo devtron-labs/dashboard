@@ -57,8 +57,9 @@ export const initState = (
     isOverrideView: boolean,
     componentType: string,
     cmSecretStateLabel: CM_SECRET_STATE,
+    draftMode: boolean
 ): ConfigMapState | ConfigMapSecretState => {
-    const secretInitState = componentType === 'secret' ? getSecretInitState(configMapSecretData, isOverrideView) : {}
+    const secretInitState = componentType === 'secret' ? getSecretInitState(configMapSecretData, draftMode) : {}
     const initialState = {
         loading: false,
         dialog: false,
@@ -92,6 +93,9 @@ export const initState = (
         },
         yamlMode: true,
         cmSecretState: cmSecretStateLabel,
+        showDeleteModal: false,
+        showDraftSaveModal: false,
+        draftPayload: null,
         ...secretInitState,
     }
     return initialState
@@ -99,7 +103,7 @@ export const initState = (
 
 export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapAction) => {
     switch (action.type) {
-        case ConfigMapActionTypes.deleteOverride:
+        case ConfigMapActionTypes.reInit:
             return { ...action.payload }
         case ConfigMapActionTypes.submitLoading:
             return { ...state, submitLoading: true }
@@ -128,6 +132,8 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
             return { ...state, configName: action.payload }
         case ConfigMapActionTypes.toggleYamlMode:
             return { ...state, yamlMode: !state.yamlMode }
+        case ConfigMapActionTypes.setShowDeleteModal:
+            return { ...state, showDeleteModal: !state.showDeleteModal }
 
         case ConfigMapActionTypes.setExternalType:
             return { ...state, externalType: action.payload }
@@ -152,6 +158,10 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
 
         case ConfigMapActionTypes.multipleOptions:
             return { ...state, ...action.payload }
+
+        case ConfigMapActionTypes.toggleDraftSaveModal:
+            return { ...state, showDraftSaveModal: !state.showDraftSaveModal }
+
         default:
             return state
     }

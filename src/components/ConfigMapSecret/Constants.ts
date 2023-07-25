@@ -26,6 +26,7 @@ export enum CM_SECRET_STATE {
     INHERITED = 'Inheriting',
     OVERRIDDEN = 'Overridden',
     ENV = 'Env',
+    UNPUBLISHED = 'UNPUBLISHED',
 }
 
 export const SECRET_TOAST_INFO = {

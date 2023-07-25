@@ -49,13 +49,15 @@ export interface KeyValueValidated {
 export interface ConfigMapListProps {
     isJobView?: boolean
     isOverrideView?: boolean
+    isProtected?: boolean
+    parentName?: string
     parentState?: ComponentStates
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
 }
 
 export interface ConfigMapSecretFormProps {
     appChartRef: { id: number; version: string; name: string }
-    toggleCollapse: React.Dispatch<React.SetStateAction<boolean>>
+    updateCollapsed: (collapse?: boolean)=> void
     configMapSecretData: any
     id
     isOverrideView: boolean
@@ -64,13 +66,25 @@ export interface ConfigMapSecretFormProps {
     index: number
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
+    readonlyView: boolean
+    isProtectedView: boolean
+    draftMode: boolean
+    latestDraftData: any
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
     componentType: string
-    state
-    dispatch
+    state: ConfigMapSecretState
+    dispatch: (action: ConfigMapAction) => void
     tempArr
+    readonlyView: boolean
+    draftMode: boolean
+}
+
+export interface DraftDetailsForCommentDrawerType {
+    draftId: number
+    draftVersionId: number
+    index: number
 }
 
 export interface ConfigMapSecretProps {
@@ -83,6 +97,9 @@ export interface ConfigMapSecretProps {
     id?: number
     isOverrideView?: boolean
     isJobView: boolean
+    isProtected: boolean
+    toggleDraftComments?: (data: DraftDetailsForCommentDrawerType) => void
+    reduceOpacity?: boolean
 }
 
 interface ValueWithError {
@@ -123,11 +140,14 @@ export interface ConfigMapState {
     configName: ValueWithError
     yamlMode: boolean
     cmSecretState: CM_SECRET_STATE
+    showDeleteModal: boolean
+    showDraftSaveModal: boolean
+    draftPayload: any
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
 export enum ConfigMapActionTypes {
-    deleteOverride = 'deleteOverride',
+    reInit = 'reInit',
     submitLoading = 'submitLoading',
     overrideLoading = 'overrideLoading',
     success = 'success',
@@ -153,6 +173,8 @@ export enum ConfigMapActionTypes {
     updateCurrentData = 'updateCurrentData',
     toggleSecretMode = 'toggleSecretMode',
     toggleUnAuthorized = 'toggleUnAuthorized',
+    setShowDeleteModal = 'setShowDeleteModal',
+    toggleDraftSaveModal = 'toggleDraftSaveModal',
 }
 
 export interface ConfigMapAction {

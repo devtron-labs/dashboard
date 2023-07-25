@@ -225,7 +225,10 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
             { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
             { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
         ]
+    const groupList = isJobView ? noGroups : [...noGroups, ...esoGroups, ...ksoGroups]
+    const externalType = groupList.find((x) => x.value === typeValue)
 
+    if (typeValue) return externalType
     if (isJobView) {
         const externalType = [...noGroups].find((x) => x.value === typeValue)
         if (typeValue) return externalType
@@ -236,9 +239,6 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
             },
         ]
     }
-    const externalType = [...noGroups, ...esoGroups, ...ksoGroups].find((x) => x.value === typeValue)
-
-    if (typeValue) return externalType
     return [
         {
             label: '',
@@ -449,7 +449,7 @@ export function handleSecretDataYamlChange(
     } catch (error) {}
 }
 
-export const getSecretInitState = (configMapSecretData, isOverrideView): SecretState => {
+export const getSecretInitState = (configMapSecretData, draftMode: boolean): SecretState => {
     let tempSecretData, jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
         tempSecretData = configMapSecretData.secretData
@@ -497,7 +497,7 @@ export const getSecretInitState = (configMapSecretData, isOverrideView): SecretS
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
         secretMode: configMapSecretData?.secretMode,
-        unAuthorized: configMapSecretData?.unAuthorized ?? !!configMapSecretData?.name,
+        unAuthorized: configMapSecretData?.unAuthorized ?? (!draftMode && !!configMapSecretData?.name),
     }
 }
 

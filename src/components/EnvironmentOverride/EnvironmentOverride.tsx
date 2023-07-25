@@ -3,20 +3,16 @@ import DeploymentTemplateOverride from './DeploymentTemplateOverride'
 import { mapByKey, ErrorBoundary, useAppContext, useAsync } from '../common'
 import { Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, generatePath, useHistory, useLocation } from 'react-router'
-import './environmentOverride.scss'
 import { getAppComposeURL, APP_COMPOSE_STAGE, URLS } from '../../config'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import {
     ComponentStates,
     EnvironmentOverrideComponentProps,
-    SectionHeadingType,
-    SECTION_HEADING_INFO,
 } from './EnvironmentOverrides.type'
-import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
 import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
 import SecretList from '../ConfigMapSecret/Secret/SecretList'
-import InfoIconWithTippy from '../ConfigMapSecret/InfoIconWithTippy'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin } from '../../services/service'
+import './environmentOverride.scss'
 
 export default function EnvironmentOverride({
     appList,
@@ -30,7 +26,7 @@ export default function EnvironmentOverride({
     const { push } = useHistory()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
-    const [headingData, setHeadingData] = useState<SectionHeadingType>()
+    const [isDeploymentOverride, setIsDeploymentOverride] = useState(false)
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
         () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
         [params.appId],
@@ -46,12 +42,8 @@ export default function EnvironmentOverride({
     }, [params.envId])
 
     useEffect(() => {
-        if (location.pathname.includes(URLS.APP_CM_CONFIG)) {
-            setHeadingData(SECTION_HEADING_INFO[URLS.APP_CM_CONFIG])
-        } else if (location.pathname.includes(URLS.APP_CS_CONFIG)) {
-            setHeadingData(SECTION_HEADING_INFO[URLS.APP_CS_CONFIG])
-        } else {
-            setHeadingData(null)
+        if (!location.pathname.includes(URLS.APP_CM_CONFIG) && !location.pathname.includes(URLS.APP_CS_CONFIG)) {
+            setIsDeploymentOverride(true)
         }
     }, [location.pathname])
 
@@ -93,34 +85,20 @@ export default function EnvironmentOverride({
         )
     }
 
-    const formTitle = () => {
-        return appMap.has(+params.appId) || environmentsMap.has(+params.envId) ? (
-            <>
-                {appList ? appMap.get(+params.appId).name : environmentsMap.get(+params.envId).environmentName}
-                <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
-            </>
-        ) : (
-            ''
-        )
+    const getParentName = (): string => {
+        if (appList?.length) {
+            return appMap.get(+params.appId).name
+        } else if (environments?.length) {
+            return environmentsMap.get(+params.envId).environmentName
+        } else {
+            return ''
+        }
     }
 
     return (
         <ErrorBoundary>
-            <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
-                {headingData && (
-                    <h1
-                        className="form__title form__title--artifacts flex left"
-                        data-testid="environment-override-header"
-                    >
-                        {formTitle()}
-                        {headingData.title}
-                        <InfoIconWithTippy
-                            titleText={headingData.title}
-                            infoText={headingData.subtitle}
-                            documentationLink={headingData.learnMoreLink}
-                        />
-                    </h1>
-                )}
+            <div className={isDeploymentOverride ?'deployment-template-override h-100': ''}>
+
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
@@ -137,7 +115,9 @@ export default function EnvironmentOverride({
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
                         <ConfigMapList
                             isOverrideView={true}
+                            isProtected={true}
                             parentState={viewState}
+                            parentName={getParentName()}
                             setParentState={setViewState}
                             isJobView={isJobView}
                         />
@@ -146,6 +126,8 @@ export default function EnvironmentOverride({
                         <SecretList
                             isOverrideView={true}
                             parentState={viewState}
+                            isProtected={true}
+                            parentName={getParentName()}
                             setParentState={setViewState}
                             isJobView={isJobView}
                         />

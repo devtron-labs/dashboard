@@ -2,37 +2,82 @@ import React, { useState, useEffect } from 'react'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
-import { DOCUMENTATION } from '../../../config'
-import '../ConfigMap.scss'
+import { URLS } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
 import InfoIconWithTippy from '../InfoIconWithTippy'
-import { ConfigMapListProps } from '../Types'
+import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { getSecretList } from '../service'
+import { importComponentFromFELibrary } from '../../common'
+import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
+import { SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
+import '../ConfigMapSecret.scss'
 
-export default function SecretList({ isJobView, isOverrideView, parentState, setParentState }: ConfigMapListProps) {
+const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
+const DraftComments = importComponentFromFELibrary('DraftComments')
+
+export default function SecretList({
+    isJobView,
+    isOverrideView,
+    isProtected,
+    parentName,
+    parentState,
+    setParentState,
+}: ConfigMapListProps) {
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [list, setList] = useState(null)
     const [secretLoading, setSecretLoading] = useState(true)
+    const [showComments, setShowComments] = useState(false)
+    const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
 
     useEffect(() => {
         init(true)
     }, [])
-    const { appId, envId } = useParams<{ appId; envId }>()
+
+    const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
+        if (showComments) {
+            setSelectedDraft(null)
+            setShowComments(false)
+        } else if(selectedDraft) {
+            setSelectedDraft(selectedDraft)
+            setShowComments(true)
+        }
+    }
 
     async function init(isFromInit?: boolean) {
         try {
-            const [{ result: appChartRefRes }, { result: secretData }] = await Promise.all([
+            const [{ result: appChartRefRes }, { result: secretData }, { result: draftData }] = await Promise.all([
                 isFromInit ? getAppChartRefForAppAndEnv(appId, envId) : { result: null },
                 getSecretList(appId, envId),
+                isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 2) : { result: null },
             ])
+            const draftDataMap = {},
+                draftDataArr = []
+            let configData = []
+            if (draftData?.length) {
+                for (const data of draftData) {
+                    draftDataMap[data.resourceName] = data
+                }
+            }
             if (Array.isArray(secretData.configData)) {
-                secretData.configData = secretData.configData.map((config) => {
+                configData = secretData.configData.map((config) => {
                     config.secretMode = config.externalType === ''
                     config.unAuthorized = true
+                    if (draftDataMap[config.name]) {
+                        config.draftId = draftDataMap[config.name].draftId
+                        config.draftState = draftDataMap[config.name].draftState
+                    }
+                    delete draftDataMap[config.name]
                     return config
                 })
             }
-            setList(secretData)
+            const remainingDrafts = Object.keys(draftDataMap)
+            if (remainingDrafts.length > 0) {
+                for (const name of remainingDrafts) {
+                    draftDataArr.push({ ...draftDataMap[name], name, isNew: true })
+                }
+            }
+            setList({ ...secretData, configData: [...draftDataArr, ...configData] })
             if (appChartRefRes) {
                 setAppChartRef(appChartRefRes.result)
             }
@@ -87,43 +132,67 @@ export default function SecretList({ isJobView, isOverrideView, parentState, set
 
     if (secretLoading) return <Progressing pageLoader />
     return (
-        <div className={!isOverrideView ? 'form__app-compose' : ''}>
-            {!isOverrideView && (
+        <div
+            className={`form__app-compose p-0-imp cm-secret-main-container ${
+                showComments ? 'with-comment-drawer' : ''
+            }`}
+        >
+            <div>
                 <h1 className="form__title form__title--artifacts flex left">
-                    Secrets
+                    {parentName && (
+                        <>
+                            {parentName}
+                            <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
+                        </>
+                    )}
+                    {SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
                     <InfoIconWithTippy
-                        titleText="Secrets"
-                        infoText="A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys."
-                        documentationLink={DOCUMENTATION.APP_CREATE_SECRET}
+                        titleText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
+                        infoText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].subtitle}
+                        documentationLink={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].learnMoreLink}
                     />
                 </h1>
-            )}
-            <div className="mt-20">
-                <ConfigMapSecretContainer
-                    key="Add Secret"
-                    componentType="secret"
-                    title=""
-                    appChartRef={appChartRef}
-                    id={list?.id ?? 0}
-                    update={update}
-                    isOverrideView={isOverrideView}
-                    isJobView={isJobView}
-                />
-                {list?.configData?.map((cs, idx) => (
+                <div className="mt-20">
                     <ConfigMapSecretContainer
-                        key={cs.name}
+                        key="Add Secret"
                         componentType="secret"
-                        title={cs.name}
-                        data={cs}
+                        title=""
                         appChartRef={appChartRef}
-                        id={list.id}
+                        id={list?.id ?? 0}
                         update={update}
-                        index={idx}
                         isOverrideView={isOverrideView}
                         isJobView={isJobView}
+                        isProtected={isProtected}
                     />
-                ))}
+                    <div>
+                        {list?.configData?.map((cs, idx) => (
+                            <ConfigMapSecretContainer
+                                key={cs.name}
+                                componentType="secret"
+                                title={cs.name}
+                                data={cs}
+                                appChartRef={appChartRef}
+                                id={list.id}
+                                update={update}
+                                index={idx}
+                                isOverrideView={isOverrideView}
+                                isJobView={isJobView}
+                                isProtected={isProtected}
+                                toggleDraftComments={toggleDraftComments}
+                                reduceOpacity={selectedDraft && selectedDraft.index !== idx}
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
+
+            {DraftComments && showComments && selectedDraft && (
+                <DraftComments
+                    draftId={selectedDraft.draftId}
+                    draftVersionId={selectedDraft.draftVersionId}
+                    toggleDraftComments={toggleDraftComments}
+                />
+            )}
         </div>
     )
 }
