@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { getClusterNote, patchApplicationNote, patchClusterNote } from '../ClusterNodes/clusterNodes.service'
+import { patchApplicationNote, patchClusterNote } from '../ClusterNodes/clusterNodes.service'
 import ReactMde from 'react-mde'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import { showError, Progressing, ErrorScreenManager, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterAboutPropType, MDEditorSelectedTabType } from '../ClusterNodes/types'
+import { showError, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
+import { MDEditorSelectedTabType } from '../ClusterNodes/types'
 import { ReactComponent as HeaderIcon } from '../../assets/icons/mdeditor/ic-header.svg'
 import { ReactComponent as BoldIcon } from '../../assets/icons/mdeditor/ic-bold.svg'
 import { ReactComponent as ItalicIcon } from '../../assets/icons/mdeditor/ic-italic.svg'
@@ -15,7 +15,6 @@ import { ReactComponent as ImageIcon } from '../../assets/icons/mdeditor/ic-imag
 import { ReactComponent as OrderedListIcon } from '../../assets/icons/mdeditor/ic-ordered-list.svg'
 import { ReactComponent as UnorderedListIcon } from '../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as CheckedListIcon } from '../../assets/icons/mdeditor/ic-checked-list.svg'
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as DescriptionIcon } from '../../assets/icons/ic-note.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import Tippy from '@tippyjs/react'
@@ -32,12 +31,12 @@ import {
     CLUSTER_DESCRIPTION_UPDATE_MSG,
     MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT,
     MARKDOWN_EDITOR_COMMAND_TITLE,
-    defaultClusterNote,
 } from '../ClusterNodes/constants'
 import './description.scss'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
+import { AppMetaInfo } from '../app/types'
 
-export default function ClusterDescription({
+export default function GenericDescription({
     isClusterTerminal,
     clusterId,
     isSuperAdmin,
@@ -48,6 +47,7 @@ export default function ClusterDescription({
     initialDescriptionUpdatedOn,
     initialEditDescriptionView,
     updateCreateAppFormDescription,
+    appMetaInfo
 } : {
     isClusterTerminal: boolean,
     clusterId?: string,
@@ -59,8 +59,8 @@ export default function ClusterDescription({
     initialDescriptionUpdatedOn: string,
     initialEditDescriptionView: boolean,
     updateCreateAppFormDescription?: (string) => void
+    appMetaInfo?: AppMetaInfo
 }) {
-    const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(initialEditDescriptionView)
     const [descriptionText, setDescriptionText] = useState<string>(initialDescriptionText)
@@ -126,6 +126,7 @@ export default function ClusterDescription({
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updatedOn
                     setDescriptionUpdatedOn(_date)
                     setModifiedDescriptionText(response.result.description)
+                    appMetaInfo.description = response.result
                     toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
                     setEditDescriptionView(true)
                 }

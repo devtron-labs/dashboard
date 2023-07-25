@@ -473,6 +473,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedOn}
                             initialEditDescriptionView={true}
+                            appMetaInfo={appMetaInfo}
                         />
                     }
                     {renderLabelTags()}
@@ -492,6 +493,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             initialDescriptionUpdatedBy={newUpdatedBy}
                             initialDescriptionUpdatedOn={newUpdatedOn}
                             initialEditDescriptionView={true}
+                            appMetaInfo={appMetaInfo}
                         />
                     }
                     {renderLabelTags()}
