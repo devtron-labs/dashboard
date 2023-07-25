@@ -384,7 +384,7 @@ function isReadmeInputCheckbox(text: string) {
     }
     return false;
 }
-export function MarkDown({ markdown = '', className = '', breaks = false, ...props }) {
+export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
 
@@ -397,7 +397,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
         } 
         return `<li>${text}</li>`;     
     };
-    
+
     renderer.image = function (href: string, title: string, text: string) { 
         return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
     }
@@ -414,8 +414,8 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
     }
 
     renderer.heading = function (text, level) {
-        const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-')
-
+        const escapedText = disableEscapedText? "" :text.toLowerCase().replace(/[^\w]+/g, '-')
+          
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
                 <h${level} data-testid="deployment-template-readme-version">
@@ -438,7 +438,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
     return (
         <article
             {...props}
-            className={`deploy-chart__readme-markdown ${className}`}
+            className={`deploy-chart__readme-markdown  ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
             data-testid="article-for-bulk-edit"
         />

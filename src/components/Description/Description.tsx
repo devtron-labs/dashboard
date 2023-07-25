@@ -16,6 +16,7 @@ import { ReactComponent as OrderedListIcon } from '../../assets/icons/mdeditor/i
 import { ReactComponent as UnorderedListIcon } from '../../assets/icons/mdeditor/ic-unordered-list.svg'
 import { ReactComponent as CheckedListIcon } from '../../assets/icons/mdeditor/ic-checked-list.svg'
 import { ReactComponent as DescriptionIcon } from '../../assets/icons/ic-note.svg'
+import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import Tippy from '@tippyjs/react'
 import { deepEqual } from '../common'
@@ -35,6 +36,8 @@ import {
 import './description.scss'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import { AppMetaInfo } from '../app/types'
+import { stripUrlQueryAndFragment } from '@sentry/tracing'
+import { styles } from '../security/security.util'
 
 export default function GenericDescription({
     isClusterTerminal,
@@ -67,6 +70,7 @@ export default function GenericDescription({
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(initialDescriptionUpdatedBy)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>(initialDescriptionUpdatedOn)
     const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>(initialDescriptionText)
+    const [showAllText, setShowAllText] = useState(false)
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
     const toggleDescriptionView = () => {
@@ -96,6 +100,10 @@ export default function GenericDescription({
             isValid = false
         }
         return isValid
+    }
+
+    const toggleShowText = () => {
+        setShowAllText(!showAllText)
     }
 
     const isAuthorized = (): boolean => {
@@ -294,15 +302,20 @@ export default function GenericDescription({
                 )
         }
     }
+    
 
     return (
-        <div className="cluster__body-details">
+        <div
+            className={`cluster__body-details ${
+                initialEditDescriptionView ? 'pl-16 pr-16 pt-16 pb-16 dc__border-bottom-n1' : ''
+            }`}
+        >
             <div
                 data-testid="cluster-note-wrapper"
-                className={`dc__overflow-auto ${initialEditDescriptionView ? 'pl-16 pr-16 pt-16 pb-16 mb-16' : ''}`}
+                className={!isEditDescriptionView ? 'dc__overflow-auto' : 'dc__overflow-hidden'}
             >
                 {isEditDescriptionView ? (
-                    <div className="min-w-500 bcn-0 br-4 dc__border w-100">
+                    <div className="min-w-500 bcn-0 br-4 dc__border-top dc__border-left dc__border-right w-100">
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
                             <div className="flex left fw-6 lh-20 cn-9">
                                 <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
@@ -323,18 +336,29 @@ export default function GenericDescription({
                         </div>
                         <ReactMde
                             classes={{
-                                reactMde: 'mark-down-editor-container mark-down-editor__no-border',
+                                reactMde: 'mark-down-editor-container pb-16 mark-down-editor__no-border',
                                 toolbar: 'mark-down-editor__hidden',
-                                preview: 'mark-down-editor-preview dc__bottom-radius-4',
+                                preview: `mark-down-editor-preview dc__bottom-radius-4 ${
+                                    !showAllText ? 'mxh-300-imp' : ''
+                                }`,
                                 textArea: 'mark-down-editor__hidden',
                             }}
                             value={descriptionText}
                             selectedTab="preview"
                             minPreviewHeight={150}
                             generateMarkdownPreview={(markdown) =>
-                                Promise.resolve(<MarkDown markdown={markdown} breaks />)
+                                Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText/>)
                             }
                         />
+                        <div className="bcn-0 pl-16 pt-8 pb-12 dc__position-rel dc__zi-4 flex left br-4 dc__border-bottom">
+                            <div className="cursor cb-5 fs-13 fw-6 h-20 flex left" onClick={toggleShowText}>
+                                {`${showAllText ? 'Show less' : 'Show more'}`}
+                                <DropDownIcon
+                                    style={{ ['--rotateBy' as any]: `${180 * Number(showAllText)}deg` }}
+                                    className="fcb-5 ml-4 icon-dim-20 rotate pointer"
+                                />
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     <div className="min-w-500">
@@ -406,6 +430,15 @@ export default function GenericDescription({
                     </div>
                 )}
             </div>
+            {/* {isEditDescriptionView && (
+                <>
+                    <div className="min-w-385 pr-20">
+                        <div className="cursor cb-5" onClick={toggleShowText}>{`${
+                            showAllText ? 'Show less' : 'Show more'
+                        }`}</div>
+                    </div>
+                </>
+            )} */}
         </div>
     )
 }

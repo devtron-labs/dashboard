@@ -223,7 +223,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderLabelTags = () => {
         return (
-            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+            <div className="p-16 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
                     <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="overview-tags">
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
@@ -254,7 +254,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     // Update once new API changes are introduced
     const renderAppLevelExternalLinks = () => {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+            <div className="flex column left p-16 dc__border-bottom-n1">
                 <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-external-links">
                     <LinkedIcon className="icon-dim-20 mr-8" />
                     External Links
@@ -348,7 +348,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+            <div className="flex column left p-16">
                 <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-deployment">
                     <RocketIcon className="icon-dim-20 scn-9 mr-8" />
                     Deployments
@@ -462,7 +462,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     function renderOverviewContent(isJobOverview) {
         if (isJobOverview) {
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll">
+                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
                     {
                         <ClusterDescription
                             isClusterTerminal={false}
@@ -482,7 +482,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             )
         } else {
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll">
+                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
                     {
                         <ClusterDescription
                             isClusterTerminal={false}
