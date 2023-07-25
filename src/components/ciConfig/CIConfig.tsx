@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
+import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails } from '../../services/service'
 import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
@@ -35,6 +35,7 @@ export default function CIConfig({
     const { appId } = useParams<{ appId: string }>()
 
     useEffect(() => {
+        
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
             initialise()
         }

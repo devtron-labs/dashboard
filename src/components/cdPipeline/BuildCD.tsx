@@ -131,6 +131,7 @@ export default function BuildCD({
                 _form.deploymentAppType,
                 selection.isVirtualEnvironment,
             )
+            _form.generatedHelmPushAction = selection.isVirtualEnvironment ? GeneratedHelmPush.DO_NOT_PUSH : GeneratedHelmPush.PUSH
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
