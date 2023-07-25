@@ -101,8 +101,12 @@ export default function ConfigMapList({
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     return (
-        <div>
-            <div className={!isOverrideView ? 'form__app-compose p-0-imp' : ''}>
+        <div
+            className={`form__app-compose p-0-imp cm-secret-main-container ${
+                showComments ? 'with-comment-drawer' : ''
+            }`}
+        >
+            <div>
                 <h1 className="form__title form__title--artifacts flex left">
                     {parentName && (
                         <>

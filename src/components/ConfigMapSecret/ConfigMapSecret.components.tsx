@@ -28,6 +28,8 @@ import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
+const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
+
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 const updateDraftState = importComponentFromFELibrary('updateDraftState', null, 'function')
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
@@ -142,8 +144,8 @@ export function ConfigMapSecretContainer({
                 getDraftData()
             } else {
                 toggleCollapse(!collapsed)
-                if(!collapsed){
-                  toggleDraftComments(null)
+                if (!collapsed) {
+                    toggleDraftComments(null)
                 }
             }
         }
@@ -274,7 +276,7 @@ export function ConfigMapSecretContainer({
                         {isProtected && title && (
                             <>
                                 {renderDraftState()}
-                                <ProtectedIcon className="icon-n4 cursor icon-delete" />
+                                <ProtectedIcon />
                             </>
                         )}
                         {title && isLoader ? (
@@ -374,18 +376,6 @@ export function ProtectedConfigMapSecretDetails({
         )
     }
 
-    async function approveDraftData() {
-        try {
-            setLoader(true)
-            await updateDraftState(data.draftId, draftData.draftVersionId, 4)
-            updateCollapsed(true)
-        } catch (error) {
-            showError(error)
-        } finally {
-            setLoader(false)
-        }
-    }
-
     const renderDiffView = (): JSX.Element => {
         return (
             <>
@@ -394,16 +384,18 @@ export function ProtectedConfigMapSecretDetails({
                     baseTemplateConfiguration={getCurrentConfig()}
                     previousConfigAvailable={true}
                 />
-                {draftData.canApprove && (
-                    <div className="dc__align-right pt-16 pr-16 pb-16 pl-16">
-                        <button
-                            data-testid="approve-config-button"
-                            type="button"
-                            className="cta"
-                            onClick={approveDraftData}
+                {draftData.isApprovalPending && draftData.canApprove && ApproveRequestTippy && (
+                    <div className="flex right pr-16 pb-16 pl-16">
+                        <ApproveRequestTippy
+                            draftId={draftData.draftId}
+                            draftVersionId={draftData.draftVersionId}
+                            resourceName={componentType}
+                            reload={update}
                         >
-                            {isLoader ? <Progressing /> : <>Approve changes</>}
-                        </button>
+                            <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
+                                {isLoader ? <Progressing /> : <>Approve changes</>}
+                            </button>
+                        </ApproveRequestTippy>
                     </div>
                 )}
             </>
