@@ -93,6 +93,7 @@ export default function GenericDescription({
         }
     }, [modifiedDescriptionText])
 
+
     const validateDescriptionText = (): boolean => {
         let isValid = true
         if (modifiedDescriptionText.length === 0) {
@@ -318,7 +319,7 @@ export default function GenericDescription({
                     <div className="min-w-500 bcn-0 br-4 dc__border-top dc__border-left dc__border-right w-100">
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
                             <div className="flex left fw-6 lh-20 cn-9">
-                                <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
+                                <DescriptionIcon className="icon-dim-20 mr-8" />
                                 Description
                             </div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
@@ -339,14 +340,14 @@ export default function GenericDescription({
                                 reactMde: 'mark-down-editor-container pb-16 pt-8 mark-down-editor__no-border',
                                 toolbar: 'mark-down-editor__hidden',
                                 preview: `mark-down-editor-preview dc__bottom-radius-4 ${
-                                    !showAllText ? 'mxh-300-imp' : ''
+                                    appId && !showAllText ? 'mxh-300-imp' : ''
                                 }`,
                                 textArea: 'mark-down-editor__hidden',
                             }}
                             value={descriptionText}
                             selectedTab="preview"
                             minPreviewHeight={150}
-                            generateMarkdownPreview={(markdown) =>
+                            generateMarkdownPreview={(markdown) => 
                                 Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText/>)
                             }
                         />
