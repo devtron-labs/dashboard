@@ -17,6 +17,7 @@ import {
     CHECKBOX_VALUE,
     VisibleModal,
     DeploymentAppTypes,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -132,6 +133,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
     const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const { queryParams } = useSearchString()
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -147,10 +149,20 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setSelectedAppList([])
             getWorkflowsData()
         }
+        if(location.search.includes('approval-node')) {
+            setShowApprovalModal(true)
+            // console.log(selectedCDNode, "CDNode")
+
+            onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
+        }
         return () => {
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         }
-    }, [filteredAppIds])
+    }, [filteredAppIds,location.search])
+
+    // useEffect(() => {
+        
+    // }, [location.search])
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -728,6 +740,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
             .then((data) => {
                 let _selectedNode
+                console.log(filteredWorkflows, "node")
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
@@ -738,13 +751,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 node.userApprovalConfig = data.userApprovalConfig
                                 node.requestedUserId = data.requestedUserId
                             }
-
+                            console.log(_selectedNode, "node")
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId
                         }
                         return node
                     })
+                    
                     workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.tagsEditable = data.tagsEditable
                     workflow.nodes = nodes
@@ -756,7 +770,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setWorkflowID(_workflowId)
                 setSelectedAppID(_appID)
                 setFilteredWorkflows(_workflows)
-                setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
+                setSelectedCDNode({ id: +cdNodeId, name: _selectedNode?.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
                 setShowCDModal(!isApprovalNode)
                 setShowApprovalModal(isApprovalNode)
@@ -1198,6 +1212,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const closeApprovalModal = (e): void => {
         preventBodyScroll(false)
         setShowApprovalModal(false)
+        history.push({
+            search: ''
+        })
     }
 
     const hideWebhookModal = (e?) => {
