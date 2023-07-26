@@ -51,15 +51,12 @@ export default function AppComposeRouter({
     getWorkflows,
     isCDPipeline,
     environments,
-    setEnvironments,
     userRole,
     canShowExternalLinks,
     toggleRepoSelectionTippy,
     setRepoState,
     isJobView,
-    envList,
     isBaseConfigProtected,
-    updateProtectionData,
     reloadEnvironments,
     configProtectionData,
 }: AppComposeRouterProps) {
@@ -95,7 +92,7 @@ export default function AppComposeRouter({
                                 respondOnSuccess={respondOnSuccess}
                                 getWorkflows={getWorkflows}
                                 isJobView={isJobView}
-                                envList={envList}
+                                envList={environments}
                             />
                         )}
                     />,
@@ -176,7 +173,7 @@ export default function AppComposeRouter({
                     <Route path={`${path}/${URLS.APP_CONFIG_PROTECTION}`}>
                         <ConfigProtectionView
                             appId={Number(appId)}
-                            envList={envList}
+                            envList={environments}
                             reloadEnvironments={reloadEnvironments}
                             configProtectionData={configProtectionData}
                         />
@@ -205,7 +202,7 @@ export default function AppComposeRouter({
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                         render={(props) => (
-                            <EnvironmentOverride environments={envList} reloadEnvironments={reloadEnvironments} />
+                            <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
                         )}
                     />,
                 ]}

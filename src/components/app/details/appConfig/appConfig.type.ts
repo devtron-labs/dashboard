@@ -85,16 +85,13 @@ export interface AppComposeRouterProps {
     maxAllowedUrl: string
     isCDPipeline: boolean
     environments: AppEnvironment[]
-    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
     workflowsRes: WorkflowResult
     userRole: UserRoleType
     canShowExternalLinks: boolean
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    envList?: any[]
     isBaseConfigProtected?: boolean
-    updateProtectionData: (data)=> void
     reloadEnvironments:()=> void
     configProtectionData: any[]
 }

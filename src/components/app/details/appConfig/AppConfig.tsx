@@ -52,7 +52,6 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
-    const [environments, setEnvironments] = useState([])
     const [userRole, setUserRole] = useState<UserRoleType>()
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
@@ -110,13 +109,13 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
-                const updatedEnvs = envResult.result.map((env) => {
+                const updatedEnvs = envResult.result?.map((env) => {
                     let envData = { ...env, isProtected: false }
                     if (envProtectMap[env.environmentId]) {
                         envData.isProtected = true
                     }
                     return envData
-                })
+                }) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
 
                 setState({
@@ -414,17 +413,14 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                             maxAllowedUrl={state.maximumAllowedUrl}
                             respondOnSuccess={respondOnSuccess}
                             getWorkflows={reloadWorkflows}
-                            environments={environments}
-                            setEnvironments={setEnvironments}
+                            environments={state.environmentList}
                             workflowsRes={state.workflowsRes}
                             userRole={userRole}
                             canShowExternalLinks={_canShowExternalLinks}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepoState={setShowRepoOnDelete}
                             isJobView={isJobView}
-                            envList={state.environmentList}
                             isBaseConfigProtected={state.isBaseConfigProtected}
-                            updateProtectionData={updateProtectionData}
                             reloadEnvironments={reloadEnvironments}
                             configProtectionData={state.configProtectionData}
                         />

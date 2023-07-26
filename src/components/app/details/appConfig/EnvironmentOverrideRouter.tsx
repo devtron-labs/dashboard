@@ -205,10 +205,6 @@ const EnvOverrideRoute = ({
                 </div>
                 <div className="flex">
                     {isEnvProtected && <ProtectedIcon className="icon-dim-20" />}
-                    {/* {!isJobView && <Dropdown
-                    className="icon-dim-24 rotate"
-                    style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
-                />} */}
                     {isJobView && deletePopUpMenu()}
                     {isJobView && showDelete && showDeleteDialog(deletePipeline)}
                 </div>
