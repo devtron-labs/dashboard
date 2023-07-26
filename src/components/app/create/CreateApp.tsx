@@ -363,6 +363,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                     initialDescriptionUpdatedOn={''}
                                     initialEditDescriptionView={false}
                                     updateCreateAppFormDescription={this.updateCreateAppFormDescription}
+                                    tabIndex={2}
                                 />
                             </div>
                         ) : (
@@ -377,9 +378,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                         : 'Write a description for this application'
                                 }
                                 tabIndex={2}
-                                // onChange={this.handleDescription}
-                                onClick={(e) => {
-                                    e.stopPropagation()
+                                onFocus={(e) => {
                                     this.setState({ showClusterDescription: true })
                                 }}
                             />

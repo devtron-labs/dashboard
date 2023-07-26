@@ -48,7 +48,8 @@ export default function GenericDescription({
     initialDescriptionUpdatedOn,
     initialEditDescriptionView,
     updateCreateAppFormDescription,
-    appMetaInfo
+    appMetaInfo, 
+    tabIndex
 } : {
     isClusterTerminal: boolean,
     clusterId?: string,
@@ -61,6 +62,7 @@ export default function GenericDescription({
     initialEditDescriptionView: boolean,
     updateCreateAppFormDescription?: (string) => void
     appMetaInfo?: AppMetaInfo
+    tabIndex?: number
 }) {
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(initialEditDescriptionView)
@@ -408,6 +410,9 @@ export default function GenericDescription({
                                         selectedTab === MD_EDITOR_TAB.PREVIEW && 'cb-5 fw-6 active active-tab'
                                     }`,
                                 },
+                                textArea: {
+                                    tabIndex: tabIndex
+                                }
                             }}
                         />
                         {initialEditDescriptionView && (
