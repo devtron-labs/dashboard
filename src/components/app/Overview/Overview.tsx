@@ -41,7 +41,7 @@ import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import ClusterDescription from '../../common/Description/Description'
+import ClusterDescription from '../../common/Description/GenericDescription'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {

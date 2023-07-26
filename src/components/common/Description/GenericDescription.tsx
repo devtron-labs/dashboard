@@ -63,7 +63,7 @@ export default function GenericDescription({
     updateCreateAppFormDescription?: (string) => void
     appMetaInfo?: AppMetaInfo 
     tabIndex?: number
-}) {
+}) { 
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(initialEditDescriptionView)
     const [descriptionText, setDescriptionText] = useState<string>(initialDescriptionText)
