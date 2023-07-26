@@ -87,6 +87,7 @@ import {
 import Tippy from '@tippyjs/react'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import { getChannelConfigs } from '../../../notifications/notifications.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -135,6 +136,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [fliteredWorkflowDataUpdated, setfliteredWorkflowDataUpdated] = useState<boolean>(false)
     const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
     const { queryParams } = useSearchString()
+    const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -159,8 +161,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if(location.search.includes('approval-node') && filteredWorkflows?.length) {
             setShowApprovalModal(true)
             onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
+            getConfigs()
         }
     }, [location.search, fliteredWorkflowDataUpdated])
+
+    const getConfigs = () => {
+        getChannelConfigs()
+            .then((response) => {
+                let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
+                console.log(isConfigPresent,"hello")
+                setConfigPresent(isConfigPresent)
+            })
+    }
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -1955,6 +1967,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     tagsEditable = {tagsEditableVal}
                     setTagsEditable = {setTagsEditableVal}
                     hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
+                    configs={isConfigPresent}
                 />
             )
         }
