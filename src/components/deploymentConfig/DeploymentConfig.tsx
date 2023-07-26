@@ -93,7 +93,6 @@ export default function DeploymentConfig({
             payload.publishedState = null
             payload.allDrafts = []
             payload.latestDraft = null
-            payload.activityHistory = []
         }
 
         dispatch({
@@ -584,8 +583,9 @@ export default function DeploymentConfig({
         return requestData
     }
 
-    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
     const renderValuesView = () => {
+        const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+
         return (
             <form
                 action=""
@@ -661,8 +661,7 @@ export default function DeploymentConfig({
                         isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
                         isApprovalPending={state.latestDraft?.draftState === 4}
                         approvalUsers={state.latestDraft?.approvers}
-                        activityHistory={state.activityHistory}
-                        reloadDrafts={initialise}
+                        reload={initialise}
                     />
                     {renderValuesView()}
                     {SaveChangesModal && state.showSaveChangsModal && (
@@ -672,9 +671,9 @@ export default function DeploymentConfig({
                             resourceType={3}
                             resourceName="BaseDeploymentTemplate"
                             prepareDataToSave={prepareDataToSave}
-                            toggleSaveChangesModal={toggleSaveChangesModal}
+                            toggleModal={toggleSaveChangesModal}
                             latestDraft={state.latestDraft}
-                            reloadDrafts={initialise}
+                            reload={initialise}
                         />
                     )}
                     {state.showConfirmation && <SaveConfirmationDialog save={save} />}

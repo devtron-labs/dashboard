@@ -105,7 +105,7 @@ export interface DeploymentConfigFormCTAProps {
     disableButton?: boolean
     toggleAppMetrics: () => void
     isDraftMode: boolean
-    reload: () => void,
+    reload: () => void
 }
 
 export interface CompareWithDropdownProps {
@@ -158,7 +158,6 @@ export interface DeploymentTemplateOptionsTabProps {
     basicFieldValuesErrorObj: BasicFieldErrorObj
     changeEditorMode?: () => void
 }
-
 
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     isEnvOverride?: boolean
@@ -314,6 +313,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     latestDraft: any
     activityHistory: any
     showComments: boolean
+    showDeleteOverrideDraftModal: boolean
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -349,6 +349,7 @@ export enum DeploymentConfigStateActionTypes {
     toggleSaveChangesModal = 'toggleSaveChangesModal',
     allDrafts = 'allDrafts',
     toggleDraftComments = 'toggleDraftComments',
+    toggleDeleteOverrideDraftModal = 'toggleDeleteOverrideDraftModal',
     multipleOptions = 'multipleOptions',
 }
 
