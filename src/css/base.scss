@@ -1937,6 +1937,10 @@ button.anchor {
     border-bottom: solid 1px var(--N200);
 }
 
+.dc__border-bottom-imp {
+    border-bottom: solid 1px var(--N200) !important;
+}
+
 .dc__border-bottom-2 {
     border-bottom: 2px solid var(--N200);
 }

@@ -187,6 +187,8 @@ div.override-container {
 }
 
 .deployment-template-override {
+    height: calc(100vh - 102px);
+
     .chart-version.popup-button {
         width: 100%;
     }

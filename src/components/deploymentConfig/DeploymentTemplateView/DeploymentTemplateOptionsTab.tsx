@@ -8,18 +8,20 @@ import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
 interface DeploymentTemplateOptionsTabProps {
+    isEnvOverride?: boolean
     codeEditorValue: string
     disableVersionSelect?: boolean
 }
 
 export default function DeploymentTemplateOptionsTab({
+    isEnvOverride,
     codeEditorValue,
     disableVersionSelect,
 }: DeploymentTemplateOptionsTabProps) {
     const { isUnSet, state, dispatch, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
-        state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+        !isEnvOverride && state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
             ? state.publishedState
             : state
 

@@ -36,6 +36,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     latestDraft: null,
     activityHistory: [],
     showComments: false,
+    showDeleteOverrideDraftModal: false,
 }
 
 export const deploymentConfigReducer = (
@@ -111,6 +112,8 @@ export const deploymentConfigReducer = (
             return { ...state, allDrafts: action.payload }
         case DeploymentConfigStateActionTypes.toggleDraftComments:
             return { ...state, showComments: !state.showComments }
+        case DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal:
+            return { ...state, showDeleteOverrideDraftModal: !state.showDeleteOverrideDraftModal }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
