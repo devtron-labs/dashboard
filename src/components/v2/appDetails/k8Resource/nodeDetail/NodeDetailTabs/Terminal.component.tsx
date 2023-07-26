@@ -47,7 +47,7 @@ function TerminalComponent({
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
-    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
+    const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.DISCONNECTED)
     const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
     const [sessionId, setSessionId] = useState<string>()
     const connectTerminal: boolean =
@@ -204,6 +204,8 @@ function TerminalComponent({
             clusterTimeOut = setTimeout(() => {
                 setSocketConnection(SocketConnectionType.CONNECTING)
             }, 300)
+        } else if (selectedContainerName) {
+            setSocketConnection(SocketConnectionType.CONNECTING)
         }
     }, [selectedTerminalType, selectedContainerName])
 
