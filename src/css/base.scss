@@ -391,9 +391,9 @@ a:focus {
 }
 
 .form__row--two-third {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-column-gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 16px;
 }
 
 // ClassName of text area
@@ -959,18 +959,18 @@ button.anchor {
 
 .dc__configuration-list {
     display: grid;
-    grid-template-columns: 24px 1fr 54px;
+    grid-template-columns: 24px 1fr 200px;
     grid-column-gap: 16px;
-    .tag{
-      border: 1px solid var(--N200);
-      height: 20px;
-      line-height: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--N900);
-      padding: 0 6px;
-      border-radius: 4px;
-      text-transform: uppercase;
+    .tag {
+        border: 1px solid var(--N200);
+        height: 20px;
+        line-height: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--N900);
+        padding: 0 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
     }
 }
 
@@ -1318,7 +1318,7 @@ button.anchor {
             }
         }
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             padding: 4px 8px;
         }
 
@@ -3496,14 +3496,18 @@ textarea::placeholder {
 }
 
 .dc__row-container {
-  display: grid;
-  grid-template-columns: 220px auto;
+    display: grid;
+    grid-template-columns: 220px auto;
 
-  .radio-group {
-      justify-content: flex-start;
-  }
+    .radio-group {
+        justify-content: flex-start;
+    }
 
-  .form__radio-item {
-      min-width: 0px !important;
-  }
+    .form__radio-item {
+        min-width: 0px !important;
+    }
+}
+
+.dc__disable-click {
+    pointer-events: none;
 }
