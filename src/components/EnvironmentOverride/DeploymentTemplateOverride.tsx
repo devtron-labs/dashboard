@@ -758,12 +758,11 @@ function DeploymentTemplateOverrideForm({
                     disableButton={!state.duplicate}
                     disableCheckbox={!state.duplicate}
                     showAppMetricsToggle={
-                        true
-                        // state.charts &&
-                        // state.selectedChart &&
-                        // appMetricsEnvironmentVariableEnabled &&
-                        // isGrafanaModuleInstalled &&
-                        // state.yamlMode
+                        state.charts &&
+                        state.selectedChart &&
+                        appMetricsEnvironmentVariableEnabled &&
+                        isGrafanaModuleInstalled &&
+                        state.yamlMode
                     }
                     isAppMetricsEnabled={
                         !!state.latestDraft && state.selectedTabIndex !== 1
