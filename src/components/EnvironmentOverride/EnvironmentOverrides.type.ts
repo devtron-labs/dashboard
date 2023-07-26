@@ -32,11 +32,9 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
 }
 
 export interface EnvironmentOverrideComponentProps {
-    environments: AppEnvironment[]
     appList?: ConfigAppList[]
-    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
     isJobView?: boolean
-    envList?: any
+    environments?: any
     reloadEnvironments: () => void
 }
 

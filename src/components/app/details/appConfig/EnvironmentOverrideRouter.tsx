@@ -450,16 +450,6 @@ export default function EnvironmentOverrideRouter({
             )}
             <div className="flex column left environment-routes-container top">
                 {renderEnvsNav()}
-                {/* <EnvironmentOverrides
-                    environmentsLoading={environmentsLoading}
-                    environmentResult={environmentResult}
-                    environmentList={allEnvs}
-                    isJobView={isJobView}
-                    ciPipelines={ciPipelines}
-                    reload={reloadEnvironments}
-                    appId={appId}
-                    workflowsRes={workflowsRes}
-                /> */}
             </div>
         </div>
     )

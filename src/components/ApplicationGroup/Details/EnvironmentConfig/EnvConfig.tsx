@@ -57,7 +57,6 @@ export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType)
                 <EnvironmentOverride
                     appList={envAppList}
                     environments={environments}
-                    setEnvironments={setEnvironments}
                     reloadEnvironments={noop}
                 />
             </div>
