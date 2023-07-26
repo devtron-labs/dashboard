@@ -174,7 +174,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setLoading(true)
         try {
             const {result} = await appGroupPermission(envId, payload)
-            if(result === true && !_delete) {
+            if(result && !_delete) {
                 setShowCreateGroup(true)
             } else if(result && _delete) {
                 setIsPopupBox(true)
@@ -188,9 +188,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 })
                 if (arrUnauthorized && arrUnauthorized.length === selectedAppList.length) {
                     handleToast("create")
-                } else if(_edit && arrUnauthorized.length === payload.appIds.length){
+                } else if(_edit && arrUnauthorized.length>0){
                     handleToast("edit")
-                } else if(_delete && arrUnauthorized.length === payload.appIds.length) {
+                } else if(_delete && arrUnauthorized.length>0) {
                     setIsPopupBox(false)
                     handleToast("delete")
                 } else {
