@@ -79,7 +79,6 @@ import ReactSelect, { components } from 'react-select'
 import { groupHeading } from '../../../CIPipelineN/Constants'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
-import { WorkflowResult } from '../triggerView/types'
 import { groupStyle } from '../../../secrets/secret.utils'
 
 
@@ -1196,23 +1195,11 @@ function EnvironmentOverrideRouter({isJobView, workflowsRes, getWorkflows,
     const [ciPipelines, setCIPipelines] = useState([])
 
     const getJobOtherEnvironment = (appId) => {
-        // getEnvironmentListMinPublic()
-        //     .then((response) => {
-        //         let list = []
-        //         response.result?.forEach((env) => {
-        //             if (env.cluster_name !== "default_cluster" && env.isClusterCdActive) {
-        //                 list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
-        //             }
-        //         })
-        //         setEnvironmentList(list)
-        //     }).catch((error) => {
-        //         showError(error)
-        //     })
         let list = []
         allEnvs?.forEach((env) => {
-            //if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
+            if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
                 list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
-            //}
+            }
         })
         setEnvironmentList(list)
         getCIConfig(Number(appId))
