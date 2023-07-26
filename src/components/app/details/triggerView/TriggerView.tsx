@@ -122,7 +122,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflows()
         this.getEnvironments()
         this.getConfigs()
-        console.log("crkejbnkrjgvr")
         if (ApprovalMaterialModal && this.props.location.search.includes("approval-node")) {
             console.log("helloTo")
             this.setState({
@@ -153,11 +152,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getConfigs() {
-        console.log("hello")
         getChannelConfigs()
             .then((response) => {
                 let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
-                console.log(isConfigPresent,"hello")
                 this.setState({configs: isConfigPresent})
             })
     }
