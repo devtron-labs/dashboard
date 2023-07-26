@@ -2,7 +2,7 @@ import React, { Reducer, createContext, useContext, useEffect, useReducer } from
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
-import { getAppOtherEnvironmentMin, getChartReferences } from '../../services/service'
+import { getChartReferences } from '../../services/service'
 import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
 import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import {
@@ -50,7 +50,6 @@ export default function DeploymentConfig({
     navItems,
     isCiPipeline,
     environments,
-    setEnvironments,
     isProtected,
     reloadEnvironments
 }: DeploymentConfigProps) {
