@@ -383,7 +383,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
                             _canShowExternalLinks ? '' : 'hide-external-links'
                         } ${
-                            state.isUnlocked.workflowEditor && ConfigProtectionView ? 'config-protection__side-nav' : ''
+                            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView ? 'config-protection__side-nav' : ''
                         }`}
                     >
                         <Navigation
