@@ -25,7 +25,7 @@ export default function DeploymentConfigFormCTA({
     reload,
 }: DeploymentConfigFormCTAProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-    const _selectedChart = isDraftMode ? state.publishedState?.selectedChart : state.selectedChart
+    const _selectedChart = !isEnvOverride && isDraftMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
@@ -177,7 +177,7 @@ export default function DeploymentConfigFormCTA({
 
     const getHeightClass = () => {
         if (compareTab || state.showReadme) {
-            return 'dc__border-top h-56'
+            return 'h-56'
         } else if (isDraftMode) {
             return 'h-44'
         } else {
@@ -201,7 +201,7 @@ export default function DeploymentConfigFormCTA({
                                 draftId={state.latestDraft.draftId}
                                 draftVersionId={state.latestDraft.draftVersionId}
                                 resourceName="deployment template"
-                                reloadDrafts={reload}
+                                reload={reload}
                             >
                                 {renderButton()}
                             </ApproveRequestTippy>

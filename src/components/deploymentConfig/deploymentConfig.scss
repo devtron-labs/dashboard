@@ -69,7 +69,10 @@
         .white-card__deployment-config {
             height: calc(100% - 37px);
             grid-template-columns: 1fr 1fr;
+        }
 
+        .white-card__deployment-config,
+        .deployment-template-override-form {
             &.comparison-view {
                 grid-template-columns: 1fr;
 
@@ -101,12 +104,16 @@
             grid-template-columns: 1fr 1fr;
 
             &.comparison-view {
-                grid-template-columns: 1fr;
+                height: calc(100% - 40px);
+            }
+
+            &.readme-view {
+                height: calc(100% - 94px);
             }
 
             .dt-readme {
                 .dt-readme-markdown {
-                    height: calc(100vh - 216px);
+                    height: calc(100vh - 230px);
                     overflow: scroll;
                 }
             }
@@ -416,16 +423,18 @@
 }
 
 .deployment-template-override {
+    height: calc(100vh - 102px);
+
     .app-compose__deployment-config {
         min-width: 1024px;
     }
 
     .deployment-template-override-form {
         .form__row--code-editor-container {
-            height: calc(100% - 184px);
+            height: calc(100% - 195px);
 
             &.read-only-mode {
-                height: calc(100% - 152px);
+                height: calc(100% - 162px);
             }
         }
 

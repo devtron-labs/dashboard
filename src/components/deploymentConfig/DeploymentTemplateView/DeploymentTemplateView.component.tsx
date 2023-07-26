@@ -7,7 +7,8 @@ import { ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
-import warningIcon from '../../../assets/icons/ic-info-filled.svg'
+import infoIcon from '../../../assets/icons/ic-info-filled.svg'
+import warningIcon from '../../../assets/img/warning-medium.svg'
 import {
     ChartTypeVersionOptionsProps,
     CompareWithDropdownProps,
@@ -21,6 +22,8 @@ import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import moment from 'moment'
+import { toast } from 'react-toastify'
+import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -168,7 +171,9 @@ export const CompareWithDropdown = ({
 
         // Push all environment & other version options
         _groupOptions.push({
-            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.label,
+            label: isDraftMode
+                ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.publishedLabel
+                : DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.label,
             options: environments.length > 0 ? environments : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.noOptions],
         })
         _groupOptions.push({
@@ -252,12 +257,12 @@ export const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 230px)'
+        return 'calc(100vh - 232px)'
     } else if (isEnvOverride) {
-        return 'calc(100vh - 266px)'
+        return 'calc(100vh - 301px)'
+    } else {
+        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
     }
-
-    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
 }
 
 export const renderEditorHeading = (
@@ -348,7 +353,7 @@ export const SaveConfirmationDialog = ({ save }) => {
 
     return (
         <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={warningIcon} />
+            <ConfirmationDialog.Icon src={infoIcon} />
             <ConfirmationDialog.Body title="Retain overrides and update" />
             <p>Changes will only be applied to environments using default configuration.</p>
             <p>Environments using overriden configurations will not be updated.</p>
@@ -368,6 +373,57 @@ export const SaveConfirmationDialog = ({ save }) => {
                     onClick={save}
                 >
                     {getButtonState()}
+                </button>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>
+    )
+}
+
+export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
+    const { state, dispatch } = useContext(DeploymentConfigContext)
+
+    const closeConfirmationDialog = () => {
+        dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
+    }
+
+    async function handleDelete() {
+        try {
+            await deleteDeploymentTemplate(state.data.environmentConfig.id, Number(appId), Number(envId))
+            toast.success('Restored to global.', { autoClose: null })
+            dispatch({
+                type: DeploymentConfigStateActionTypes.duplicate,
+                payload: null,
+            })
+            initialise(true)
+        } catch (err) {
+        } finally {
+            closeConfirmationDialog()
+        }
+    }
+
+    return (
+        <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warningIcon} />
+            <ConfirmationDialog.Body
+                title="This action will cause permanent removal."
+                subtitle="This action will cause all overrides to erase and app level configuration will be applied"
+            />
+            <ConfirmationDialog.ButtonGroup>
+                <button
+                    data-testid="cancel-changes-button"
+                    type="button"
+                    className="cta cancel"
+                    onClick={closeConfirmationDialog}
+                >
+                    Cancel
+                </button>
+                <button
+                    data-testid="confirm-changes-button"
+                    type="button"
+                    className="cta delete"
+                    onClick={handleDelete}
+                >
+                    Confirm
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>

@@ -41,7 +41,7 @@ export default function DeploymentTemplateEditorView({
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
             let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
-            if (isEnvOverride) {
+            if (isEnvOverride && !state.latestDraft) {
                 _filteredEnvironments = environments.filter((env) => +envId !== env.environmentId)
             }
 
@@ -153,11 +153,7 @@ export default function DeploymentTemplateEditorView({
 
     const renderCodeEditor = (): JSX.Element => {
         return (
-            <div
-                className={`form__row--code-editor-container dc__border-top dc__border-bottom ${
-                    readOnly ? 'read-only-mode' : ''
-                }`}
-            >
+            <div className="form__row--code-editor-container dc__border-top dc__border-bottom-imp">
                 <CodeEditor
                     defaultValue={
                         (selectedOption?.id === -1 ? defaultValue : state.fetchedValues[selectedOption?.id]) || ''
@@ -235,7 +231,7 @@ export default function DeploymentTemplateEditorView({
         if (state.showReadme) {
             return (
                 <>
-                    <div className="dt-readme dc__border-right">
+                    <div className="dt-readme dc__border-right dc__border-bottom-imp">
                         <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
                         {state.chartConfigLoading ? (
                             <Progressing pageLoader />
