@@ -110,6 +110,14 @@ export default function GenericDescription({
         }
     }
 
+    const handleSave = () => {
+        if (isClusterTerminal) {
+            updateClusterAbout()
+        } else {
+            updateApplicationAbout()
+        }
+    }
+
     const toggleShowText = () => {
         setShowAllText(!showAllText)
     }
@@ -430,13 +438,7 @@ export default function GenericDescription({
                                         data-testid="description-edit-save-button"
                                         className="cta flex h-36"
                                         type="submit"
-                                        onClick={() => {
-                                            if (isClusterTerminal) {
-                                                updateClusterAbout()
-                                            } else {
-                                                updateApplicationAbout()
-                                            }
-                                        }}
+                                        onClick={handleSave}
                                     >
                                         Save
                                     </button>
