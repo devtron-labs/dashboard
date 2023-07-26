@@ -388,7 +388,7 @@ export default function GenericDescription({
                                 reactMde: `mark-down-editor-container ${
                                     initialEditDescriptionView ? '' : 'create-app-description'
                                 }`,
-                                toolbar: 'mark-down-editor-toolbar tab-list',
+                                toolbar: 'mark-down-editor-toolbar tab-description',
                                 preview: 'mark-down-editor-preview pt-8',
                                 textArea: `mark-down-editor-textarea-wrapper ${
                                     initialEditDescriptionView ? '' : 'h-200-imp'
