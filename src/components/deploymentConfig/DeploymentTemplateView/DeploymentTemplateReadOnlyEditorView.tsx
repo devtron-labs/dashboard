@@ -12,9 +12,8 @@ import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
 export default function DeploymentTemplateReadOnlyEditorView({
-    readOnly,
     value,
-    defaultValue,
+    isEnvOverride,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const envVariableSectionRef = useRef(null)
     const { isUnSet, state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -41,12 +40,11 @@ export default function DeploymentTemplateReadOnlyEditorView({
         return (
             <div className="form__row--code-editor-container dc__border-top dc__border-bottom read-only-mode">
                 <CodeEditor
-                    defaultValue={defaultValue}
                     value={value}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
                     loading={state.chartConfigLoading || value === undefined || value === null}
-                    height="calc(100vh - 238px)"
+                    height={isEnvOverride ? 'calc(100vh - 268px)' : 'calc(100vh - 238px)'}
                     readOnly={true}
                 />
             </div>
@@ -58,7 +56,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
         <>
             {state.showReadme ? (
                 <>
-                    <div className="dt-readme dc__border-right">
+                    <div className="dt-readme dc__border-right dc__border-bottom-imp">
                         <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
                         {state.chartConfigLoading ? (
                             <Progressing pageLoader />
@@ -83,7 +81,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
             <div
                 className={`form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
                     !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
-                } ${readOnly ? 'read-only-mode' : ''}`}
+                } read-only-mode`}
             >
                 {state.chartConfigLoading || !value ? (
                     <div className="flex h-100">
@@ -101,7 +99,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                     value={state.basicFieldValues?.[BASIC_FIELDS.PORT]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     data-testid="containerport-textbox"
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     autoComplete="off"
                                 />
                                 {state.basicFieldValuesErrorObj?.port && !state.basicFieldValuesErrorObj.port.isValid && (
@@ -125,7 +123,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                             >
                                 <Toggle
                                     selected={state.basicFieldValues?.[BASIC_FIELDS.ENABLED]}
-                                    disabled={readOnly || state.basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
+                                    disabled={true}
                                 />
                             </div>
                         </div>
@@ -139,7 +137,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                         name={BASIC_FIELDS.HOST}
                                         value={state.basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                        readOnly={readOnly}
+                                        readOnly={true}
                                         autoComplete="off"
                                     />
                                 </div>
@@ -165,7 +163,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                                 data-index={index}
                                                 value={path}
                                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                                readOnly={readOnly}
+                                                readOnly={true}
                                                 autoComplete="off"
                                             />
                                         </div>
@@ -187,7 +185,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                         ]
                                     }
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     autoComplete="off"
                                 />
                                 {state.basicFieldValuesErrorObj?.cpu && !state.basicFieldValuesErrorObj.cpu.isValid && (
@@ -211,7 +209,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                         ]
                                     }
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                                    readOnly={readOnly}
+                                    readOnly={true}
                                     autoComplete="off"
                                 />
                                 {state.basicFieldValuesErrorObj?.memory &&
@@ -251,7 +249,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                             value={envVariable[BASIC_FIELDS.NAME]}
                                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-bottom-radius"
                                             placeholder={BASIC_FIELDS.NAME}
-                                            readOnly={readOnly}
+                                            readOnly={true}
                                             autoComplete="off"
                                         />
                                         <textarea
@@ -262,7 +260,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5 dc__no-top-radius dc__no-top-border"
                                             rows={2}
                                             placeholder={BASIC_FIELDS.VALUE}
-                                            readOnly={readOnly}
+                                            readOnly={true}
                                         />
                                     </div>
                                 </div>

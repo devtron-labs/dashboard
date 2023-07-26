@@ -160,12 +160,8 @@ export interface DeploymentTemplateOptionsTabProps {
 }
 
 export interface DeploymentTemplateReadOnlyEditorViewProps {
-    isEnvOverride?: boolean
-    environmentName?: string
     value: string
-    defaultValue?: string
-    readOnly?: boolean
-    globalChartRefId?: number
+    isEnvOverride?: boolean
 }
 
 export interface DeploymentTemplateEditorViewProps {

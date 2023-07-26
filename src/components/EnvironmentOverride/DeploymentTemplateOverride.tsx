@@ -57,8 +57,6 @@ export default function DeploymentTemplateOverride({
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
-    const [loading, setLoading] = useState(false)
-    const [chartRefLoading, setChartRefLoading] = useState(null)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
@@ -67,15 +65,15 @@ export default function DeploymentTemplateOverride({
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
-        setLoading(true)
+        dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
         initialise()
     }, [envId])
 
     useEffect(() => {
-        if (typeof chartRefLoading === 'boolean' && !chartRefLoading && state.selectedChartRefId) {
+        if (!state.chartConfigLoading && state.selectedChartRefId) {
             fetchDeploymentTemplate()
         }
-    }, [chartRefLoading])
+    }, [state.chartConfigLoading])
 
     useEffectAfterMount(() => {
         if (!state.selectedChartRefId) return
@@ -105,7 +103,10 @@ export default function DeploymentTemplateOverride({
         forceReloadEnvironments?: boolean,
         updateChartRefOnly?: boolean,
     ) {
-        setChartRefLoading(true)
+        dispatch({
+            type: DeploymentConfigStateActionTypes.chartConfigLoading,
+            payload: true,
+        })
         Promise.all([
             chartRefAutocomplete(Number(appId), Number(envId)),
             !updateChartRefOnly && typeof getConfigProtections === 'function'
@@ -151,7 +152,10 @@ export default function DeploymentTemplateOverride({
                 showError(e)
             })
             .finally(() => {
-                setChartRefLoading(false)
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.chartConfigLoading,
+                    payload: false,
+                })
             })
     }
 
@@ -192,7 +196,6 @@ export default function DeploymentTemplateOverride({
                 const {
                     envOverrideValues,
                     id,
-                    IsOverride,
                     isAppMetricsEnabled,
                     currentEditorView,
                     isBasicLocked,
@@ -204,7 +207,6 @@ export default function DeploymentTemplateOverride({
                 } = JSON.parse(draftResp.result.data)
 
                 const payload = {
-                    chartConfigLoading: false,
                     duplicate: envOverrideValues,
                     environmentConfig: {
                         id,
@@ -246,10 +248,17 @@ export default function DeploymentTemplateOverride({
     }
 
     async function handleAppMetrics() {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.appMetrics,
-            payload: !state.data.appMetrics,
-        })
+        if (state.latestDraft && state.selectedTabIndex !== 1) {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.isAppMetricsEnabled,
+                payload: !state.isAppMetricsEnabled,
+            })
+        } else {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.appMetrics,
+                payload: !state.data.appMetrics,
+            })
+        }
     }
 
     async function fetchDeploymentTemplate() {
@@ -269,14 +278,18 @@ export default function DeploymentTemplateOverride({
                 )
             }
 
+            const _duplicateFromResp =
+                result.IsOverride || state.duplicate
+                    ? result.environmentConfig.envOverrideValues || result.globalConfig
+                    : null
+
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload: {
                     data: result,
-                    duplicate:
-                        result.IsOverride || state.duplicate
-                            ? result.environmentConfig.envOverrideValues || result.globalConfig
-                            : null,
+                    duplicate: !!state.latestDraft ? state.duplicate : _duplicateFromResp,
+                    readme: result.readme,
+                    schema: result.schema,
                     isBasicLockedInBase:
                         result.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
                         result.environmentConfig.isBasicViewLocked,
@@ -287,7 +300,7 @@ export default function DeploymentTemplateOverride({
             setParentState(ComponentStates.failed)
             showError(err)
         } finally {
-            setLoading(false)
+            dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
         }
     }
 
@@ -407,7 +420,7 @@ export default function DeploymentTemplateOverride({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
     }
 
-    if (loading || state.loading || parentState === ComponentStates.loading) {
+    if (state.loading || parentState === ComponentStates.loading) {
         return <Progressing size={48} fullHeight />
     }
 
@@ -420,7 +433,6 @@ export default function DeploymentTemplateOverride({
             <div className="bcn-0 dc__border br-4 m-12 dc__overflow-hidden" style={{ height: 'calc(100vh - 102px)' }}>
                 {state.data && state.charts && (
                     <DeploymentTemplateOverrideForm
-                        chartRefLoading={chartRefLoading}
                         state={state}
                         environments={environments}
                         environmentName={environmentName}
@@ -453,12 +465,10 @@ function DeploymentTemplateOverrideForm({
     initialise,
     handleAppMetrics,
     toggleDraftComments,
-    chartRefLoading,
     isGrafanaModuleInstalled,
 }) {
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
-    const [loading, setLoading] = useState(false)
     const { appId, envId } = useParams<{ appId; envId }>()
 
     useEffect(() => {
@@ -486,10 +496,10 @@ function DeploymentTemplateOverrideForm({
     const prepareDataToSave = (envOverrideValuesWithBasic) => {
         return {
             environmentId: +envId,
-            envOverrideValues: envOverrideValuesWithBasic || obj,
+            envOverrideValues: envOverrideValuesWithBasic || obj || state.duplicate,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
-            isAppMetricsEnabled: state.data.appMetrics,
+            isAppMetricsEnabled: !!state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
             currentEditorView: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
             isBasicLocked: state.isBasicLocked,
             ...(state.data.environmentConfig.id > 0
@@ -529,7 +539,7 @@ function DeploymentTemplateOverrideForm({
             !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
 
         try {
-            setLoading(not)
+            dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
             await api(+appId, +envId, prepareDataToSave(envOverrideValuesWithBasic))
             if (envOverrideValuesWithBasic) {
                 editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
@@ -553,7 +563,7 @@ function DeploymentTemplateOverrideForm({
         } catch (err) {
             showError(err)
         } finally {
-            setLoading(not)
+            dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
         }
     }
 
@@ -647,7 +657,7 @@ function DeploymentTemplateOverrideForm({
 
     const overridden = !!state.duplicate
     const getOverrideActionState = () => {
-        if (loading) {
+        if (state.loading) {
             return <Progressing />
         } else if (overridden) {
             return 'Delete override'
@@ -687,46 +697,46 @@ function DeploymentTemplateOverrideForm({
         return prepareDataToSave(envOverrideValuesWithBasic)
     }
 
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
+        let codeEditorValue = ''
+        if (readOnlyPublishedMode) {
+            codeEditorValue = YAML.stringify(state.data.globalConfig, { indent: 2 })
+        } else if (tempValue) {
+            codeEditorValue = tempValue
+        } else if (state) {
+            codeEditorValue = state.duplicate
+                ? YAML.stringify(state.duplicate, { indent: 2 })
+                : YAML.stringify(state.data.globalConfig, { indent: 2 })
+        }
+
+        return codeEditorValue
+    }
+
     const renderValuesView = () => {
         const readOnlyPublishedMode =
             state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
 
         return (
             <form
-                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''}`}
+                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
+                    state.showReadme ? 'readme-view' : ''
+                }`}
                 onSubmit={handleSubmit}
             >
                 <DeploymentTemplateOptionsTab
                     isEnvOverride={true}
-                    disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-                    codeEditorValue={
-                        readOnlyPublishedMode
-                            ? YAML.stringify(state.data.globalConfig, { indent: 2 })
-                            : tempValue
-                            ? tempValue
-                            : state
-                            ? state.duplicate
-                                ? YAML.stringify(state.duplicate, { indent: 2 })
-                                : YAML.stringify(state.data.globalConfig, { indent: 2 })
-                            : ''
-                    }
+                    disableVersionSelect={(state.isConfigProtectionEnabled && !!state.latestDraft) || !state.duplicate}
+                    codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
                 />
                 {readOnlyPublishedMode ? (
                     <DeploymentTemplateReadOnlyEditorView
                         value={YAML.stringify(state.data.globalConfig, { indent: 2 })}
+                        isEnvOverride={true}
                     />
                 ) : (
                     <DeploymentTemplateEditorView
                         isEnvOverride={true}
-                        value={
-                            tempValue
-                                ? tempValue
-                                : state
-                                ? state.duplicate
-                                    ? YAML.stringify(state.duplicate, { indent: 2 })
-                                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
+                        value={getCodeEditorValue(false)}
                         defaultValue={
                             state && state.data && state.openComparison
                                 ? YAML.stringify(state.data.globalConfig, { indent: 2 })
@@ -734,30 +744,36 @@ function DeploymentTemplateOverrideForm({
                         }
                         editorOnChange={editorOnChange}
                         environmentName={environmentName}
-                        readOnly={!state.duplicate}
+                        readOnly={
+                            !state.duplicate ||
+                            (state.latestDraft?.draftState === 4 && (state.selectedTabIndex === 2 || state.showReadme))
+                        }
                         globalChartRefId={state.data.globalChartRefId}
                         handleOverride={handleOverride}
                     />
                 )}
-                {!state.openComparison && !state.showReadme && (
-                    <DeploymentConfigFormCTA
-                        loading={loading || chartRefLoading}
-                        isEnvOverride={true}
-                        disableButton={!state.duplicate}
-                        disableCheckbox={!state.duplicate}
-                        showAppMetricsToggle={
-                            state.charts &&
-                            state.selectedChart &&
-                            appMetricsEnvironmentVariableEnabled &&
-                            isGrafanaModuleInstalled &&
-                            state.yamlMode
-                        }
-                        isAppMetricsEnabled={state.data.appMetrics}
-                        toggleAppMetrics={handleAppMetrics}
-                        isDraftMode={readOnlyPublishedMode}
-                        reload={initialise}
-                    />
-                )}
+                <DeploymentConfigFormCTA
+                    loading={state.loading || state.chartConfigLoading}
+                    isEnvOverride={true}
+                    disableButton={!state.duplicate}
+                    disableCheckbox={!state.duplicate}
+                    showAppMetricsToggle={
+                        true
+                        // state.charts &&
+                        // state.selectedChart &&
+                        // appMetricsEnvironmentVariableEnabled &&
+                        // isGrafanaModuleInstalled &&
+                        // state.yamlMode
+                    }
+                    isAppMetricsEnabled={
+                        !!state.latestDraft && state.selectedTabIndex !== 1
+                            ? state.isAppMetricsEnabled
+                            : state.data.appMetrics
+                    }
+                    toggleAppMetrics={handleAppMetrics}
+                    isDraftMode={readOnlyPublishedMode}
+                    reload={initialise}
+                />
             </form>
         )
     }
@@ -765,13 +781,7 @@ function DeploymentTemplateOverrideForm({
     const getValueForContext = () => {
         return {
             isUnSet: false,
-            state: {
-                ...state,
-                isBasicLocked: state.isBasicLocked,
-                chartConfigLoading: chartRefLoading,
-                readme: state.data.readme,
-                schema: state.data.schema,
-            },
+            state,
             dispatch,
             environments: environments || [],
             changeEditorMode: changeEditorMode,

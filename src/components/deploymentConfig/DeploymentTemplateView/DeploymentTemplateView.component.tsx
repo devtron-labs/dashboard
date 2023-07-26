@@ -171,7 +171,9 @@ export const CompareWithDropdown = ({
 
         // Push all environment & other version options
         _groupOptions.push({
-            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.label,
+            label: isDraftMode
+                ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.publishedLabel
+                : DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.label,
             options: environments.length > 0 ? environments : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.noOptions],
         })
         _groupOptions.push({
@@ -255,12 +257,12 @@ export const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return isEnvOverride ? 'calc(100vh - 216px)' : 'calc(100vh - 230px)'
+        return 'calc(100vh - 232px)'
     } else if (isEnvOverride) {
-        return 'calc(100vh - 266px)'
+        return 'calc(100vh - 301px)'
+    } else {
+        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
     }
-
-    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
 }
 
 export const renderEditorHeading = (

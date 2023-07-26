@@ -177,7 +177,7 @@ export default function DeploymentConfigFormCTA({
 
     const getHeightClass = () => {
         if (compareTab || state.showReadme) {
-            return 'dc__border-top h-56'
+            return 'h-56'
         } else if (isDraftMode) {
             return 'h-44'
         } else {

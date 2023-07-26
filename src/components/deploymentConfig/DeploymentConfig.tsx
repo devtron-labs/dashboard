@@ -182,23 +182,17 @@ export default function DeploymentConfig({
                     refChartTemplateVersion,
                     isAppMetricsEnabled,
                     chartRefId,
-                    readme,
-                    schema,
                     isBasicViewLocked,
                     currentViewEditor,
                 } = JSON.parse(draftResp.result.data)
 
                 const payload = {
-                    chartConfigLoading: false,
                     template: valuesOverride,
-                    schema,
-                    readme,
                     chartConfig: {
                         id,
                         refChartTemplate,
                         refChartTemplateVersion,
                         chartRefId,
-                        readme,
                     },
                     isAppMetricsEnabled: isAppMetricsEnabled,
                     tempFormData: YAML.stringify(valuesOverride, null),
@@ -361,10 +355,11 @@ export default function DeploymentConfig({
                     ...state.publishedState,
                     ...templateData,
                 }
-
-                if (state.selectedChart.id !== payload['publishedState'].selectedChart.id) {
-                    payload['readme'] = readme
-                    payload['schema'] = schema
+                payload['readme'] = readme
+                payload['schema'] = schema
+                payload['chartConfig'] = {
+                    ...state.publishedState?.chartConfig,
+                    readme,
                 }
             } else {
                 payload = templateData
@@ -423,7 +418,7 @@ export default function DeploymentConfig({
             payload: true,
         })
         try {
-            const requestBody = prepareDataToSave(true)
+            const requestBody = prepareDataToSave()
             const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
             reloadEnvironments()
@@ -558,7 +553,7 @@ export default function DeploymentConfig({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
     }
 
-    const prepareDataToSave = (skipReadme?: boolean) => {
+    const prepareDataToSave = () => {
         const requestData = {
             ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
             appId: +appId,
@@ -574,17 +569,12 @@ export default function DeploymentConfig({
                 requestData.valuesOverride = patchBasicData(obj, state.basicFieldValues)
             }
         }
-
-        if (!skipReadme) {
-            requestData.readme = state.readme
-            requestData.schema = state.schema
-        }
-
         return requestData
     }
 
     const renderValuesView = () => {
-        const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+        const readOnlyPublishedMode =
+            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
 
         return (
             <form
@@ -596,7 +586,7 @@ export default function DeploymentConfig({
             >
                 <DeploymentTemplateOptionsTab
                     codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
-                    disableVersionSelect={readOnlyPublishedMode}
+                    disableVersionSelect={state.isConfigProtectionEnabled && !!state.latestDraft}
                 />
                 {readOnlyPublishedMode ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
@@ -606,6 +596,9 @@ export default function DeploymentConfig({
                         value={state.tempFormData}
                         globalChartRefId={state.publishedState?.selectedChartRefId}
                         editorOnChange={editorOnChange}
+                        readOnly={
+                            state.latestDraft?.draftState === 4 && (state.selectedTabIndex === 2 || state.showReadme)
+                        }
                     />
                 )}
                 <DeploymentConfigFormCTA
