@@ -33,6 +33,7 @@ export interface AppConfigState {
     canDeleteApp: boolean
     workflowsRes?: WorkflowResult
     environmentList?: any[]
+    isBaseConfigProtected?: boolean
 }
 
 export interface AppStageUnlockedType {
@@ -53,6 +54,7 @@ export interface CustomNavItemsType {
     supportDocumentURL: string
     flowCompletionPercent: number
     currentStep: number
+    isProtectionAllowed?: boolean
 }
 
 export interface AppConfigNavigationProps {
@@ -67,6 +69,8 @@ export interface AppConfigNavigationProps {
     hideConfigHelp: boolean
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
+    environmentList?: any[]
+    isBaseConfigProtected?: boolean
 }
 
 export interface AppComposeRouterProps {
@@ -87,6 +91,7 @@ export interface AppComposeRouterProps {
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
     envList?: any[]
+    isBaseConfigProtected?: boolean
 }
 
 export interface EnvironmentOverridesProps {
@@ -102,12 +107,19 @@ export interface EnvironmentOverridesProps {
 
 export interface EnvironmentOverrideRouteProps {
     envOverride: AppEnvironment
-    environmentList?: any[]
     isJobView?: boolean
     ciPipelines?: any[]
     reload?: () => void
     appId?: string
     workflowsRes?: WorkflowResult
+    isEnvProtected?: boolean
+}
+
+export interface EnvironmentOverrideRouterProps {
+    isJobView?: boolean
+    workflowsRes?: WorkflowResult
+    getWorkflows: () => void
+    allEnvs?: any[]
 }
 
 export interface NextButtonProps {

@@ -51,6 +51,7 @@ export default function DeploymentConfig({
     isCiPipeline,
     environments,
     setEnvironments,
+    isProtected
 }: DeploymentConfigProps) {
     const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
