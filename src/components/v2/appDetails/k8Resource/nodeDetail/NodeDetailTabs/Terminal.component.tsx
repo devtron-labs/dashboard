@@ -204,14 +204,20 @@ function TerminalComponent({
             clusterTimeOut = setTimeout(() => {
                 setSocketConnection(SocketConnectionType.CONNECTING)
             }, 300)
+        } else {
+            checkAndGetNewSession()
         }
     }, [selectedTerminalType, selectedContainerName])
 
     useEffect(() => {
+        checkAndGetNewSession()
+    }, [socketConnection])
+
+    const checkAndGetNewSession = () => {
         if (socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession()
         }
-    }, [socketConnection, selectedContainerName])
+    }
 
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
