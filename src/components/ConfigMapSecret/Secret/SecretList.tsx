@@ -180,6 +180,7 @@ export default function SecretList({
                                 isProtected={isProtected}
                                 toggleDraftComments={toggleDraftComments}
                                 reduceOpacity={selectedDraft && selectedDraft.index !== idx}
+                                parentName={parentName}
                             />
                         ))}
                     </div>

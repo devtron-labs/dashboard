@@ -150,6 +150,7 @@ export default function ConfigMapList({
                                     isProtected={isProtected}
                                     toggleDraftComments={toggleDraftComments}
                                     reduceOpacity={selectedDraft && selectedDraft.index !== idx}
+                                    parentName={parentName}
                                 />
                             )
                         })}
