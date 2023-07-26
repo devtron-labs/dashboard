@@ -211,7 +211,7 @@ function TerminalComponent({
         if (socketConnection === SocketConnectionType.CONNECTING) {
             getNewSession()
         }
-    }, [socketConnection])
+    }, [socketConnection, selectedContainerName])
 
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
