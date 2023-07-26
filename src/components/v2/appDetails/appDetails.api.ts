@@ -32,14 +32,13 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         nodeDetails.group = ''
     }
 
-    const { appName, environmentName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
+    const { appName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
     const { group, version, kind, name } = nodeDetails
-    const applicationObject = deploymentAppType == DeploymentAppTypes.GITOPS ? `${appName}-${environmentName}` : appName
     
     const data = {
         appId : appType == AppType.DEVTRON_APP
         ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-        : getAppId(clusterId, namespace, applicationObject),
+        : getAppId(clusterId, namespace, appName),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
