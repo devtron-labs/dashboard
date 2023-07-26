@@ -59,7 +59,6 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { getChannelConfigs } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
-import { CDNode } from '../../../workflowEditor/nodes/CDNode'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
