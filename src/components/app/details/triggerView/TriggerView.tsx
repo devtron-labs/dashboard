@@ -122,7 +122,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getEnvironments()
         this.getConfigs()
         if (ApprovalMaterialModal && this.props.location.search.includes("approval-node")) {
-            console.log("helloTo")
             this.setState({
                 showApprovalModal: true
             })
