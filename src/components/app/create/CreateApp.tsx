@@ -172,10 +172,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         }
 
         const genericNoteResponseBean = {
-            id: 0,
             description: this.state.form.description,
-            updatedBy: '',
-            updatedOn: null, 
         }
 
         const request = {
