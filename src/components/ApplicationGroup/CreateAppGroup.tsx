@@ -116,6 +116,16 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         setSelectedAppsCount(_selectedAppsCount)
     }
 
+    const findUnauthorizedApp = (appName: String) => {
+        if(unauthorizedApps === undefined) return false
+        for(let app of unauthorizedApps) {
+            if(app === appName) {
+                return true
+            }  
+        }
+        return false
+    }
+
     const renderSelectedApps = (): JSX.Element => {
         return (
             <div>
@@ -133,28 +143,25 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 selectedAppsMap[app.id] &&
                                 (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
-                        .map((app) => (
-                            <ConditionalWrap
-                                condition={findUnauthorizedApp(app.appName)}
-                                wrap={(children) => (
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={true}
-                                        placement="bottom"
-                                        content="You don't have admin/manager pemission for this app."
-                                    >   
-                                        <div>
-                                            <div className="dc__bold ml-4">
+                        .map((app) =>
+                            findUnauthorizedApp(app.appName) ? (
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={true}
+                                    placement="bottom"
+                                    content="You don't have admin/manager pemission for this app."
+                                >
+                                    <div>
+                                        <div className="dc__bold ml-4">
                                             You don't have admin/manager pemission for the following Applications
-                                            </div>
-                                            <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
-                                                <Abort className="mr-8" {...children}/>
-                                                <span>{app.appName}</span>
-                                            </div>
                                         </div>
-                                    </Tippy>
-                                )}
-                            >
+                                        <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
+                                            <Abort className="mr-8" />
+                                            <span>{app.appName}</span>
+                                        </div>
+                                    </div>
+                                </Tippy>
+                            ) : (
                                 <div
                                     key={`selected-app-${app.id}`}
                                     className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
@@ -165,21 +172,11 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                     <Close className="icon-dim-16 cursor delete-icon mr-8" />
                                     <span>{app.appName}</span>
                                 </div>
-                            </ConditionalWrap>
-                        ))}
+                            ),
+                        )}
                 </div>
             </div>
         )
-    }
-
-    const findUnauthorizedApp = (appName: String) => {
-        if(unauthorizedApps === undefined) return false
-        for(let app of unauthorizedApps) {
-            if(app === appName) {
-                return true
-            }  
-        }
-        return false
     }
 
     const renderAllApps = (): JSX.Element => {
@@ -197,7 +194,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
                             <ConditionalWrap
-                                condition={findUnauthorizedApp(app.appName)}
+                                condition={findUnauthorizedApp(app.appName) === true}
                                 wrap={(children) => (
                                     <Tippy
                                         data-testid="env-tippy"
@@ -216,7 +213,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                     isChecked={findUnauthorizedApp(app.appName) ? false : selectedAppsMap[app.id]}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={() => toggleAppSelection(app.id)}
-                                    disabled={findUnauthorizedApp(app.appName)}
+                                    disabled={findUnauthorizedApp(app.appName) ? true : false}
                                 >
                                     {app.appName}
                                 </Checkbox>
