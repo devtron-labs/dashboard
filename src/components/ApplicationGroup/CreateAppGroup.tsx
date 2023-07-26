@@ -116,7 +116,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         setSelectedAppsCount(_selectedAppsCount)
     }
 
-    const findUnauthorizedApp = (appName: String) => {
+    const unauthorizedAppCheck = (appName: String) => {
         if(unauthorizedApps === undefined) return false
         for(let app of unauthorizedApps) {
             if(app === appName) {
@@ -137,6 +137,9 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
+                    <div className="dc__bold ml-4">
+                        You don't have admin/manager pemission for the following Application.
+                    </div>
                     {appList
                         .filter(
                             (app) =>
@@ -144,7 +147,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
                         .map((app) =>
-                            findUnauthorizedApp(app.appName) ? (
+                        unauthorizedAppCheck(app.appName) ? (
                                 <Tippy
                                     className="default-tt"
                                     arrow={true}
@@ -152,9 +155,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                     content="You don't have admin/manager pemission for this app."
                                 >
                                     <div>
-                                        <div className="dc__bold ml-4">
-                                            You don't have admin/manager pemission for the following Applications
-                                        </div>
                                         <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
                                             <Abort className="mr-8" />
                                             <span>{app.appName}</span>
@@ -194,7 +194,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
                             <ConditionalWrap
-                                condition={findUnauthorizedApp(app.appName) === true}
+                                condition={unauthorizedAppCheck(app.appName) === true}
                                 wrap={(children) => (
                                     <Tippy
                                         data-testid="env-tippy"
@@ -210,10 +210,10 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 <Checkbox
                                     key={`app-${app.id}`}
                                     rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
-                                    isChecked={findUnauthorizedApp(app.appName) ? false : selectedAppsMap[app.id]}
+                                    isChecked={unauthorizedAppCheck(app.appName) ? false : selectedAppsMap[app.id]}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={() => toggleAppSelection(app.id)}
-                                    disabled={findUnauthorizedApp(app.appName) ? true : false}
+                                    disabled={unauthorizedAppCheck(app.appName) ? true : false}
                                 >
                                     {app.appName}
                                 </Checkbox>
