@@ -169,7 +169,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         getChannelConfigs()
             .then((response) => {
                 let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
-                console.log(isConfigPresent,"hello")
                 setConfigPresent(isConfigPresent)
             })
     }
