@@ -72,6 +72,7 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     navItems: CustomNavItemsType[]
     isCiPipeline: boolean
     environments: AppEnvironment[]
+    isProtected: boolean
 }
 
 export interface DeploymentChartVersionType {

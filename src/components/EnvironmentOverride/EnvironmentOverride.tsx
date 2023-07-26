@@ -19,6 +19,7 @@ export default function EnvironmentOverride({
     environments,
     setEnvironments,
     isJobView,
+    envList
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -33,7 +34,7 @@ export default function EnvironmentOverride({
         !!params.appId,
     )
 
-    const environmentsMap = mapByKey(environments || [], 'environmentId')
+    const environmentsMap = mapByKey(envList || [], 'id')
     const appMap = mapByKey(appList || [], 'id')
 
     useEffect(() => {
@@ -114,7 +115,7 @@ export default function EnvironmentOverride({
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
                         <ConfigMapList
                             isOverrideView={true}
-                            isProtected={true}
+                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
                             setParentState={setViewState}
@@ -125,7 +126,7 @@ export default function EnvironmentOverride({
                         <SecretList
                             isOverrideView={true}
                             parentState={viewState}
-                            isProtected={true}
+                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
                             parentName={getParentName()}
                             setParentState={setViewState}
                             isJobView={isJobView}
