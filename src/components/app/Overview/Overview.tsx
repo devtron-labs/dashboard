@@ -460,7 +460,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    function renderClusterDescription() {
+    function renderAppDescription() {
         return (
             <GenericDescription
                 isClusterTerminal={false}
@@ -480,7 +480,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         if (isJobOverview) {
             return (
                 <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
-                    {renderClusterDescription()}
+                    {renderAppDescription()}
                     {renderLabelTags()}
                     {renderWorkflowsStatus()}
                 </div>
@@ -488,7 +488,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         } else {
             return (
                 <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
-                    {renderClusterDescription()}
+                    {renderAppDescription()}
                     {renderLabelTags()}
                     {renderAppLevelExternalLinks()}
                     {renderEnvironmentDeploymentsStatus()}
