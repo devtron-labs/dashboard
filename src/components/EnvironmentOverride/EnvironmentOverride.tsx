@@ -93,7 +93,7 @@ export default function EnvironmentOverride({
 
     return (
         <ErrorBoundary>
-            <div className={isDeploymentOverride ? 'deployment-template-override h-100' : ''}>
+            <div className={isDeploymentOverride ? 'deployment-template-override' : ''}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
