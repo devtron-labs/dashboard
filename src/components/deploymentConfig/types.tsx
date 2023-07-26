@@ -73,6 +73,7 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     isCiPipeline: boolean
     environments: AppEnvironment[]
     isProtected: boolean
+    reloadEnvironments: ()=> void
 }
 
 export interface DeploymentChartVersionType {

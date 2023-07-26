@@ -19,7 +19,8 @@ export default function EnvironmentOverride({
     environments,
     setEnvironments,
     isJobView,
-    envList
+    envList,
+    reloadEnvironments
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -28,11 +29,11 @@ export default function EnvironmentOverride({
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
     const [isDeploymentOverride, setIsDeploymentOverride] = useState(false)
-    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
-        [params.appId],
-        !!params.appId,
-    )
+    // const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
+    //     () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
+    //     [params.appId],
+    //     !!params.appId,
+    // )
 
     const environmentsMap = mapByKey(envList || [], 'id')
     const appMap = mapByKey(appList || [], 'id')
@@ -49,7 +50,7 @@ export default function EnvironmentOverride({
     }, [location.pathname])
 
     const envMissingRedirect = () => {
-        if (params.envId || environmentsLoading) return
+        if (params.envId) return
         if (environmentsMap.has(environmentId)) {
             const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
             push(newUrl)
@@ -58,7 +59,7 @@ export default function EnvironmentOverride({
             push(workflowUrl)
         }
     }
-    useEffect(envMissingRedirect, [environmentsLoading])
+    // useEffect(envMissingRedirect, [environmentsLoading])
 
     useEffect(() => {
         if (viewState === ComponentStates.reloading) {
@@ -66,15 +67,15 @@ export default function EnvironmentOverride({
         }
     }, [viewState])
 
-    useEffect(() => {
-        if (!environmentsLoading && environmentResult?.result) {
-            setEnvironments(environmentResult.result)
-        }
-    }, [environmentsLoading, environmentResult])
+    // useEffect(() => {
+    //     if (!environmentsLoading && environmentResult?.result) {
+    //         setEnvironments(environmentResult.result)
+    //     }
+    // }, [environmentsLoading, environmentResult])
 
     if (!params.envId) {
         return null
-    } else if (environmentsLoading && viewState !== ComponentStates.reloading) {
+    } else if (viewState === ComponentStates.loading) {
         return <Progressing pageLoader />
     } else if (viewState === ComponentStates.failed) {
         return (

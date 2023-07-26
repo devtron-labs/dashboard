@@ -51,7 +51,8 @@ export default function DeploymentConfig({
     isCiPipeline,
     environments,
     setEnvironments,
-    isProtected
+    isProtected,
+    reloadEnvironments
 }: DeploymentConfigProps) {
     const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
@@ -61,11 +62,11 @@ export default function DeploymentConfig({
         initDeploymentConfigState,
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
-    const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironmentMin(appId),
-        [appId],
-        !!appId,
-    )
+    // const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
+    //     () => getAppOtherEnvironmentMin(appId),
+    //     [appId],
+    //     !!appId,
+    // )
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
@@ -77,11 +78,11 @@ export default function DeploymentConfig({
         fetchDeploymentTemplate()
     }, [state.selectedChart])
 
-    useEffect(() => {
-        if (!environmentsLoading && environmentResult?.result) {
-            setEnvironments(environmentResult.result)
-        }
-    }, [environmentsLoading, environmentResult])
+    // useEffect(() => {
+    //     if (!environmentsLoading && environmentResult?.result) {
+    //         setEnvironments(environmentResult.result)
+    //     }
+    // }, [environmentsLoading, environmentResult])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
         const payload = {

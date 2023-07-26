@@ -35,8 +35,9 @@ export interface EnvironmentOverrideComponentProps {
     environments: AppEnvironment[]
     appList?: ConfigAppList[]
     setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
-    isJobView?: boolean,
+    isJobView?: boolean
     envList?: any
+    reloadEnvironments: () => void
 }
 
 export interface CommonEnvironmentOverridesProps {

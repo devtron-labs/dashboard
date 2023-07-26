@@ -21,7 +21,7 @@ export interface AppConfigProps {
 }
 export interface AppConfigState {
     view: string
-    stattusCode: number
+    statusCode: number
     stageName: StageNames
     isUnlocked: any
     appName: string
@@ -34,6 +34,7 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     environmentList?: any[]
     isBaseConfigProtected?: boolean
+    configProtectionData?: any[]
 }
 
 export interface AppStageUnlockedType {
@@ -71,6 +72,7 @@ export interface AppConfigNavigationProps {
     getWorkflows: () => void
     environmentList?: any[]
     isBaseConfigProtected?: boolean
+    reloadEnvironments:()=> void
 }
 
 export interface AppComposeRouterProps {
@@ -92,6 +94,9 @@ export interface AppComposeRouterProps {
     isJobView: boolean
     envList?: any[]
     isBaseConfigProtected?: boolean
+    updateProtectionData: (data)=> void
+    reloadEnvironments:()=> void
+    configProtectionData: any[]
 }
 
 export interface EnvironmentOverridesProps {
@@ -120,6 +125,7 @@ export interface EnvironmentOverrideRouterProps {
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
     allEnvs?: any[]
+    reloadEnvironments: ()=> void
 }
 
 export interface NextButtonProps {

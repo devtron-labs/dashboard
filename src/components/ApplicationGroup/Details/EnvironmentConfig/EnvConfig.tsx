@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { useAsync } from '../../../common'
 import EnvironmentOverride from '../../../EnvironmentOverride/EnvironmentOverride'
 import { getConfigAppList } from '../../AppGroup.service'
@@ -58,6 +58,7 @@ export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType)
                     appList={envAppList}
                     environments={environments}
                     setEnvironments={setEnvironments}
+                    reloadEnvironments={noop}
                 />
             </div>
         </div>
