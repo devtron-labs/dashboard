@@ -122,7 +122,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflows()
         this.getEnvironments()
         this.getConfigs()
+        console.log("crkejbnkrjgvr")
         if (ApprovalMaterialModal && this.props.location.search.includes("approval-node")) {
+            console.log("helloTo")
             this.setState({
                 showApprovalModal: true
             })
@@ -148,13 +150,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .catch((error) => {
                 showError(error)
             })
-        this.getConfigs()
     }
 
     getConfigs() {
+        console.log("hello")
         getChannelConfigs()
             .then((response) => {
                 let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
+                console.log(isConfigPresent,"hello")
                 this.setState({configs: isConfigPresent})
             })
     }
@@ -661,7 +664,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     })
                     workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.nodes = nodes
-                    console.log(workflow,"workflow")
                     return workflow
                 })
                 this.setState({
