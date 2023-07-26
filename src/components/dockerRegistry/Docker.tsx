@@ -155,14 +155,12 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
-        ? {
-              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-              CHART: OCIRegistryConfigConstants.PUSH,
-          }
-        : {
-              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-          },
+    ociRegistryConfig = {
+        CONTAINER: '',
+        CHART: '',
+        repositoryList: [],
+        isPublic: false,
+    },
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -246,7 +244,7 @@ function CollapsedList({
                         ipsConfig,
                         clusterOption,
                         setToggleCollapse,
-                        repositoryList
+                        repositoryList,
                     }}
                 />
             )}
@@ -396,7 +394,9 @@ function DockerForm({
         isCustomScript && ipsConfig?.credentialValue ? JSON.parse(ipsConfig.credentialValue) : defaultCustomCredential,
     )
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
-
+    const [showPullHelm, setShowPullHelm] = useState<boolean>(false)
+    const [isOCIRegistryHelmPush, setOCIRegistryHelmPush] = useState<boolean>(false)
+    
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
@@ -546,6 +546,7 @@ function DockerForm({
         if (payload.isOCICompliantRegistry) {
             payload.ociRegistryConfig = OCIRegistryStorageConfig
         }
+        console.log(OCIRegistryStorageConfig)
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
             toggleLoading(true)
@@ -639,10 +640,10 @@ function DockerForm({
                 return
             }
         }
-        if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !IsContainerStore) {
-            setOCIRegisrtyInputError(true)
-            return
-        }
+        // if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !IsContainerStore) {
+        //     setOCIRegisrtyInputError(true)
+        //     return
+        // }
         onSave()
     }
 
@@ -668,20 +669,31 @@ function DockerForm({
     }
     const handleOCIRegistryStorageAction = (e: any): void => {
         if (!IsContainerStore) {
-            if (OCIRegistryUseActionHelmPushMessage) {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                })
-            } else {
-                setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            }
-        } else {
-            setOCIRegistryStorageConfig({})
+            setOCIRegistryStorageConfig({
+                CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+            })
         }
         setContainerStore(!IsContainerStore)
+    }
+
+    const handleOCIRegistryActionPush = (e: any): void => {
+        setOCIRegistryStorageConfig({
+            CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+            // repositoryList: repositoryList,
+            // isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
+            CHART: OCIRegistryConfigConstants.PUSH,
+        })
+        setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
+
+    }
+
+    const handleOCIRegistryActionPull = (e: any): void => {
+            setOCIRegistryStorageConfig({
+                CONTAINER: OCIRegistryConfigConstants.PULL,
+                repositoryList: repositoryList,
+                // isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
+            })
+            setShowPullHelm(!showPullHelm)
     }
 
     const registryOptions = (props) => {
@@ -782,6 +794,7 @@ function DockerForm({
                 </div>
             )
         }
+
         return (
             <ManageRegistry
                 clusterOption={clusterOption}
@@ -807,49 +820,77 @@ function DockerForm({
     }
 
     const renderStoredContainerImage = () => {
-      if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
-          if (registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== 'gcr') {
-              return (
-                  <>
-                      <div className="mb-12">
-                          <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
-                              <span className="flex left w-150">
-                                  <span className="dc__required-field">Use repository to</span>
-                              </span>
-                              {OCIRegisrtyInputError && (
-                                  <span className="form__error">
-                                      <Error className="form__icon form__icon--error" />
-                                      This field is mandatory
-                                  </span>
-                              )}
-                          </span>
-                      </div>
-                      <div className={`flex left ${IsContainerStore ? 'mb-12' : ''}`}>
-                          <Checkbox
-                              rootClassName="docker-default mb-0"
-                              isChecked={IsContainerStore}
-                              value={CHECKBOX_VALUE.CHECKED}
-                              onChange={handleOCIRegistryStorageAction}
-                              dataTestId={`store-${
-                                  OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                              }-checkbox`}
-                          >
-                              Store container images
-                              {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
-                          </Checkbox>
-                      </div>
-                      {IsContainerStore && (
-                          <>
-                              <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
-                              <hr className="mt-0 mb-16" />
-                          </>
-                      )}
-                  </>
-              )
-          } else {
-              renderRegistryCredentialsAutoInjectToClustersComponent()
-          }
-      }
+        if( registryStorageType !== RegistryStorageType.OCI_PUBLIC){
+            return registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                selectedDockerRegistryType.value !== 'gcr' ? (
+                <>
+                    <div className="mb-12">
+                        <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
+                            <span className="flex left w-150">
+                                <span className="dc__required-field">Use repository to</span>
+                            </span>
+                            {OCIRegisrtyInputError && (
+                                <span className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    This field is mandatory
+                                </span>
+                            )}
+                        </span>
+                    </div>
+                    <div className={`flex left ${IsContainerStore ? 'mb-12' : ''}`}>
+                        <Checkbox
+                            rootClassName="docker-default mb-0"
+                            isChecked={IsContainerStore}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={handleOCIRegistryStorageAction}
+                            dataTestId={`store-${
+                                OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                            }-checkbox`}
+                        >
+                            Push container images
+                            {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
+                        </Checkbox>
+                    </div>
+
+                    {IsContainerStore && (
+                        <>
+                            <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                        </>
+                    )}
+                    <Checkbox
+                        rootClassName="docker-default mb-12 mt-12"
+                        id="helm-push"
+                        isChecked={isOCIRegistryHelmPush}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={handleOCIRegistryActionPush}
+                        dataTestId={`store-${
+                            OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                        }-checkbox`}
+                    >
+                        Push helm packages
+                        {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
+                    </Checkbox>
+                    <Checkbox
+                        rootClassName="docker-default mb-16"
+                        id="helm-pull"
+                        isChecked={showPullHelm}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={handleOCIRegistryActionPull}
+                        dataTestId={`store-${
+                            OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                        }-checkbox`}
+                    >
+                        Use as chart repository (Pull helm charts and show in chart store)
+                    </Checkbox>
+                    {showPullHelm && <div className="pl-28">{renderOCIPublic()}</div>}
+                    <hr className="mt-0 mb-16" />
+                </>
+            ) : (
+                renderRegistryCredentialsAutoInjectToClustersComponent()
+            )
+        }
+     
+      
     }
 
     const renderRepositoryList = () => {
@@ -872,11 +913,9 @@ function DockerForm({
           </div>
       )
     }
-    console.log(state.registryType.value)
-
 
     const renderOCIPublic = () => {
-      if (registryStorageType === RegistryStorageType.OCI_PUBLIC && selectedDockerRegistryType.value !== 'gcr') {
+      if (selectedDockerRegistryType.value !== 'gcr') {
           return (
               <>
                   {renderRepositoryList()}
@@ -1241,7 +1280,7 @@ function DockerForm({
                 )}
                 {registryStorageType !== RegistryStorageType.OCI_PUBLIC && <hr className="mt-0 mb-16" />}
                 {renderStoredContainerImage()}
-                {renderOCIPublic()}
+                {registryStorageType === RegistryStorageType.OCI_PUBLIC && renderOCIPublic()}
                 {renderDefaultRegistry()}
             </div>
             <div className="p-20 divider">

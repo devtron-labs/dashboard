@@ -409,7 +409,10 @@ export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
 export type OCIRegistryStorageConfigType = {
     CONTAINER ?: OCIRegistryStorageActionType,
     CHART ?: OCIRegistryStorageActionType,
+    repositoryList?: string[];
+    isPublic?: boolean;
 }
+
 export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
     PULL: "PULL",
     PUSH: "PUSH",
