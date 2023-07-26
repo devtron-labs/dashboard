@@ -72,6 +72,7 @@ export default function GenericDescription({
     const [showAllText, setShowAllText] = useState(false)
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
+    const mdeRef = useRef(null)
     const toggleDescriptionView = () => {
         if (isAuthorized()) {
             let isConfirmed: boolean = true
@@ -92,7 +93,11 @@ export default function GenericDescription({
         }
     }, [modifiedDescriptionText])
 
-    
+    useEffect(() => {
+        if (!isClusterTerminal && appId == 0) {
+            mdeRef.current?.finalRefs?.textarea?.current?.focus()
+        }
+    }, [isEditDescriptionView])
 
     const validateDescriptionText = (): boolean => {
         let isValid = true
@@ -368,6 +373,7 @@ export default function GenericDescription({
                 ) : (
                     <div className="min-w-500">
                         <ReactMde
+                            ref={mdeRef}
                             classes={{
                                 reactMde: `mark-down-editor-container ${
                                     initialEditDescriptionView ? '' : 'create-app-description'

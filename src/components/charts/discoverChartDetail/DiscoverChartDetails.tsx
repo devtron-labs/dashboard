@@ -434,18 +434,16 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
     })
 
     useEffect(() => {
-        getHeight(); 
-    }, [markdown]);
+        getHeight()
+    }, [markdown])
 
     const getHeight = () => {
-        const editorHeight = mdeRef.current?.clientHeight;
-        const minHeight = 320;
-        const showExpandableViewIcon = editorHeight > minHeight;
+        const editorHeight = mdeRef.current?.clientHeight
+        const minHeight = 320
+        const showExpandableViewIcon = editorHeight > minHeight
         if (typeof setExpandableIcon === 'function') {
-            setExpandableIcon(showExpandableViewIcon);
+            setExpandableIcon(showExpandableViewIcon)
         }
-        console.log(mdeRef)
-        console.log(markdown)
     }
 
     function createMarkup() {
