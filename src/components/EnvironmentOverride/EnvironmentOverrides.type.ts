@@ -51,6 +51,7 @@ export interface SecretOverridesProps extends CommonEnvironmentOverridesProps {}
 export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
     environments: AppEnvironment[]
     environmentName: string
+    isProtected: boolean
 }
 export interface ListComponentType {
     name: string

@@ -105,6 +105,7 @@ export default function EnvironmentOverride({
                                     ? environmentsMap.get(+params.envId).environmentName
                                     : ''
                             }
+                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
