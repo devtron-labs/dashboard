@@ -55,13 +55,13 @@ export default function GenericDescription({
     clusterId?: string,
     isSuperAdmin: boolean,
     appId?: number,
-    descriptionId: number,
-    initialDescriptionText: string,
-    initialDescriptionUpdatedBy: string,
-    initialDescriptionUpdatedOn: string,
+    descriptionId?: number,
+    initialDescriptionText?: string,
+    initialDescriptionUpdatedBy?: string,
+    initialDescriptionUpdatedOn?: string,
     initialEditDescriptionView: boolean,
     updateCreateAppFormDescription?: (string) => void
-    appMetaInfo?: AppMetaInfo
+    appMetaInfo?: AppMetaInfo 
     tabIndex?: number
 }) {
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
