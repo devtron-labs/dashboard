@@ -41,7 +41,7 @@ import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import ClusterDescription from '../../common/Description/GenericDescription'
+import GenericDescription from '../../common/Description/GenericDescription'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
@@ -460,23 +460,27 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
+    function renderClusterDescription() {
+        return (
+            <GenericDescription
+                isClusterTerminal={false}
+                isSuperAdmin={true}
+                appId={Number(appId)}
+                descriptionId={descriptionId}
+                initialDescriptionText={newDescription}
+                initialDescriptionUpdatedBy={newUpdatedBy}
+                initialDescriptionUpdatedOn={newUpdatedOn}
+                initialEditDescriptionView={true}
+                appMetaInfo={appMetaInfo}
+            />
+        )
+    }
+
     function renderOverviewContent(isJobOverview) {
         if (isJobOverview) {
             return (
                 <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
-                    {
-                        <ClusterDescription
-                            isClusterTerminal={false}
-                            isSuperAdmin={true}
-                            appId={Number(appId)}
-                            descriptionId={descriptionId}
-                            initialDescriptionText={newDescription}
-                            initialDescriptionUpdatedBy={newUpdatedBy}
-                            initialDescriptionUpdatedOn={newUpdatedOn}
-                            initialEditDescriptionView={true}
-                            appMetaInfo={appMetaInfo}
-                        />
-                    }
+                    {renderClusterDescription()}
                     {renderLabelTags()}
                     {renderWorkflowsStatus()}
                 </div>
@@ -484,19 +488,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         } else {
             return (
                 <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
-                    {
-                        <ClusterDescription
-                            isClusterTerminal={false}
-                            isSuperAdmin={true}
-                            appId={Number(appId)}
-                            descriptionId={descriptionId}
-                            initialDescriptionText={newDescription}
-                            initialDescriptionUpdatedBy={newUpdatedBy}
-                            initialDescriptionUpdatedOn={newUpdatedOn}
-                            initialEditDescriptionView={true}
-                            appMetaInfo={appMetaInfo}
-                        />
-                    }
+                    {renderClusterDescription()}
                     {renderLabelTags()}
                     {renderAppLevelExternalLinks()}
                     {renderEnvironmentDeploymentsStatus()}

@@ -33,7 +33,7 @@ import {
     MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT,
     MARKDOWN_EDITOR_COMMAND_TITLE,
 } from '../../ClusterNodes/constants'
-import './description.scss'
+import './GenericDescription.scss'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { AppMetaInfo } from '../../app/types'
 
@@ -48,23 +48,22 @@ export default function GenericDescription({
     initialDescriptionUpdatedOn,
     initialEditDescriptionView,
     updateCreateAppFormDescription,
-    appMetaInfo, 
-    tabIndex
-} : {
-    isClusterTerminal: boolean,
-    clusterId?: string,
-    isSuperAdmin: boolean,
-    appId?: number,
-    descriptionId?: number,
-    initialDescriptionText?: string,
-    initialDescriptionUpdatedBy?: string,
-    initialDescriptionUpdatedOn?: string,
-    initialEditDescriptionView: boolean,
+    appMetaInfo,
+    tabIndex,
+}: {
+    isClusterTerminal: boolean
+    clusterId?: string
+    isSuperAdmin: boolean
+    appId?: number
+    descriptionId?: number
+    initialDescriptionText?: string
+    initialDescriptionUpdatedBy?: string
+    initialDescriptionUpdatedOn?: string
+    initialEditDescriptionView: boolean
     updateCreateAppFormDescription?: (string) => void
-    appMetaInfo?: AppMetaInfo 
+    appMetaInfo?: AppMetaInfo
     tabIndex?: number
-}) { 
-    const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
+}) {
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(initialEditDescriptionView)
     const [descriptionText, setDescriptionText] = useState<string>(initialDescriptionText)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(initialDescriptionUpdatedBy)
@@ -75,19 +74,6 @@ export default function GenericDescription({
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
     const mdeRef = useRef(null)
-    const toggleDescriptionView = () => {
-        if (isAuthorized()) {
-            let isConfirmed: boolean = true
-            if (isDescriptionModified) {
-                isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
-            }
-            if (isConfirmed) {
-                setModifiedDescriptionText(descriptionText)
-                setEditDescriptionView(!isEditDescriptionView)
-                setSelectedTab(MD_EDITOR_TAB.WRITE)
-            }
-        }
-    }
 
     useEffect(() => {
         if (typeof updateCreateAppFormDescription === 'function') {
@@ -108,6 +94,20 @@ export default function GenericDescription({
             isValid = false
         }
         return isValid
+    }
+
+    const toggleDescriptionView = () => {
+        if (isAuthorized()) {
+            let isConfirmed: boolean = true
+            if (isDescriptionModified) {
+                isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
+            }
+            if (isConfirmed) {
+                setModifiedDescriptionText(descriptionText)
+                setEditDescriptionView(!isEditDescriptionView)
+                setSelectedTab(MD_EDITOR_TAB.WRITE)
+            }
+        }
     }
 
     const toggleShowText = () => {
@@ -132,7 +132,6 @@ export default function GenericDescription({
             identifier: Number(appId),
             description: modifiedDescriptionText,
         }
-        setClusterAboutLoader(true)
         patchApplicationNote(requestPayload)
             .then((response) => {
                 if (response.result) {
@@ -146,11 +145,9 @@ export default function GenericDescription({
                     toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
                     setEditDescriptionView(true)
                 }
-                setClusterAboutLoader(false)
             })
             .catch((error) => {
                 showError(error)
-                setClusterAboutLoader(false)
             })
     }
 
@@ -164,7 +161,6 @@ export default function GenericDescription({
             identifier: Number(clusterId),
             description: modifiedDescriptionText,
         }
-        setClusterAboutLoader(true)
         patchClusterNote(requestPayload)
             .then((response) => {
                 if (response.result) {
@@ -177,11 +173,9 @@ export default function GenericDescription({
                     toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
                     setEditDescriptionView(true)
                 }
-                setClusterAboutLoader(false)
             })
             .catch((error) => {
                 showError(error)
-                setClusterAboutLoader(false)
             })
     }
 
@@ -310,7 +304,6 @@ export default function GenericDescription({
                 )
         }
     }
-    
 
     return (
         <div
@@ -355,7 +348,14 @@ export default function GenericDescription({
                             selectedTab="preview"
                             minPreviewHeight={150}
                             generateMarkdownPreview={(markdown) =>
-                            Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText setExpandableIcon={setExpandableIcon} />)
+                                Promise.resolve(
+                                    <MarkDown
+                                        markdown={markdown}
+                                        breaks
+                                        disableEscapedText
+                                        setExpandableIcon={setExpandableIcon}
+                                    />,
+                                )
                             }
                         />
                         {!isClusterTerminal && (
@@ -381,7 +381,7 @@ export default function GenericDescription({
                                     initialEditDescriptionView ? '' : 'create-app-description'
                                 }`,
                                 toolbar: 'mark-down-editor-toolbar tab-list',
-                                preview: 'mark-down-editor-preview',
+                                preview: 'mark-down-editor-preview pt-8',
                                 textArea: `mark-down-editor-textarea-wrapper ${
                                     initialEditDescriptionView ? '' : 'h-200-imp'
                                 }`,
@@ -411,8 +411,8 @@ export default function GenericDescription({
                                     }`,
                                 },
                                 textArea: {
-                                    tabIndex: tabIndex
-                                }
+                                    tabIndex: tabIndex,
+                                },
                             }}
                         />
                         {initialEditDescriptionView && (

@@ -11,12 +11,12 @@ import {
 import './clusterNodes.scss'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
-import ClusterDescription from '../common/Description/GenericDescription'
+import GenericDescription from '../common/Description/GenericDescription'
 
 export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPropType) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
-    const [descriptionId,setDescriptionId] = useState<number>(0)
+    const [descriptionId, setDescriptionId] = useState<number>(0)
     const [descriptionText, setDescriptionText] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>('')
@@ -114,7 +114,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
             {clusterAboutLoader ? (
                 <Progressing pageLoader />
             ) : (
-                <ClusterDescription
+                <GenericDescription
                     isClusterTerminal={true}
                     clusterId={clusterId}
                     isSuperAdmin={isSuperAdmin}

@@ -31,7 +31,7 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
-import ClusterDescription from '../../common/Description/GenericDescription'
+import GenericDescription from '../../common/Description/GenericDescription'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -353,7 +353,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         <span className="form__label mt-16">Description</span>
                         {this.state.showClusterDescription ? (
                             <div className="h-auto">
-                                <ClusterDescription
+                                <GenericDescription
                                     isClusterTerminal={false}
                                     isSuperAdmin={true}
                                     appId={this.state.form.appId}
