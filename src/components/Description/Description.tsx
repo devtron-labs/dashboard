@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react'
 import { patchApplicationNote, patchClusterNote } from '../ClusterNodes/clusterNodes.service'
 import ReactMde from 'react-mde'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -36,8 +36,6 @@ import {
 import './description.scss'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import { AppMetaInfo } from '../app/types'
-import { stripUrlQueryAndFragment } from '@sentry/tracing'
-import { styles } from '../security/security.util'
 
 export default function GenericDescription({
     isClusterTerminal,
@@ -70,6 +68,7 @@ export default function GenericDescription({
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(initialDescriptionUpdatedBy)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>(initialDescriptionUpdatedOn)
     const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>(initialDescriptionText)
+    const [showExpandableIcon, setExpandableIcon] = useState<boolean>(false)
     const [showAllText, setShowAllText] = useState(false)
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
@@ -93,6 +92,7 @@ export default function GenericDescription({
         }
     }, [modifiedDescriptionText])
 
+    
 
     const validateDescriptionText = (): boolean => {
         let isValid = true
@@ -340,27 +340,29 @@ export default function GenericDescription({
                                 reactMde: 'mark-down-editor-container pb-16 pt-8 mark-down-editor__no-border',
                                 toolbar: 'mark-down-editor__hidden',
                                 preview: `mark-down-editor-preview dc__bottom-radius-4 ${
-                                    appId && !showAllText ? 'mxh-300-imp' : ''
+                                    appId && !showAllText && showExpandableIcon ? 'mxh-300-imp' : ''
                                 }`,
                                 textArea: 'mark-down-editor__hidden',
                             }}
                             value={descriptionText}
                             selectedTab="preview"
                             minPreviewHeight={150}
-                            generateMarkdownPreview={(markdown) => 
-                                Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText/>)
+                            generateMarkdownPreview={(markdown) =>
+                            Promise.resolve(<MarkDown markdown={markdown} breaks disableEscapedText setExpandableIcon={setExpandableIcon} />)
                             }
                         />
                         {!isClusterTerminal && (
                             <div className="bcn-0 pl-16 pt-8 pb-12 dc__position-rel dc__zi-4 flex left br-4 dc__border-bottom">
-                            <div className="cursor cb-5 fs-13 fw-6 h-20 flex left" onClick={toggleShowText}>
-                                {`${showAllText ? 'Show less' : 'Show more'}`}
-                                <DropDownIcon
-                                    style={{ ['--rotateBy' as any]: `${180 * Number(showAllText)}deg` }}
-                                    className="fcb-5 ml-4 icon-dim-20 rotate pointer"
-                                />
+                                {showExpandableIcon && (
+                                    <div className="cursor cb-5 fs-13 fw-6 h-20 flex left" onClick={toggleShowText}>
+                                        {`${showAllText ? 'Show less' : 'Show more'}`}
+                                        <DropDownIcon
+                                            style={{ ['--rotateBy' as any]: `${180 * Number(showAllText)}deg` }}
+                                            className="fcb-5 ml-4 icon-dim-20 rotate pointer"
+                                        />
+                                    </div>
+                                )}
                             </div>
-                        </div>
                         )}
                     </div>
                 ) : (
@@ -433,15 +435,6 @@ export default function GenericDescription({
                     </div>
                 )}
             </div>
-            {/* {isEditDescriptionView && (
-                <>
-                    <div className="min-w-385 pr-20">
-                        <div className="cursor cb-5" onClick={toggleShowText}>{`${
-                            showAllText ? 'Show less' : 'Show more'
-                        }`}</div>
-                    </div>
-                </>
-            )} */}
         </div>
     )
 }

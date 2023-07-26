@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
 import { List } from '../../common'
@@ -384,9 +384,10 @@ function isReadmeInputCheckbox(text: string) {
     }
     return false;
 }
-export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
+export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, setExpandableIcon = undefined, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
+    const mdeRef = useRef(null);
 
     renderer.listitem = function (text: string) {
         if (isReadmeInputCheckbox(text)) {
@@ -432,12 +433,28 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
         ...(breaks && { breaks: true }),
     })
 
+    useEffect(() => {
+        getHeight(); 
+    }, [markdown]);
+
+    const getHeight = () => {
+        const editorHeight = mdeRef.current?.clientHeight;
+        const minHeight = 320;
+        const showExpandableViewIcon = editorHeight > minHeight;
+        if (typeof setExpandableIcon === 'function') {
+            setExpandableIcon(showExpandableViewIcon);
+        }
+        console.log(mdeRef)
+        console.log(markdown)
+    }
+
     function createMarkup() {
         return { __html: DOMPurify.sanitize(marked(markdown), { USE_PROFILES: { html: true } }) }
     }
     return (
         <article
             {...props}
+            ref={mdeRef}
             className={`deploy-chart__readme-markdown  ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
             data-testid="article-for-bulk-edit"
