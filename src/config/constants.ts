@@ -455,6 +455,16 @@ export interface RegistryPayloadType {
     isPublic: boolean
 }
 
+export const RegistryType = {
+   DOCKER_HUB: 'docker-hub',
+   ACR: 'acr',
+   QUAY: 'quay',
+   OTHER: 'other',
+   ECR: 'ecr',
+   ARTIFACT_REGISTRY: 'artifact-registry',
+   GCR: 'gcr'
+}
+
 export const RegistryTypeName = {
     'CONTAINER': 'Container registry',
     'OCI_PRIVATE': 'OCI Registry (Private)',
