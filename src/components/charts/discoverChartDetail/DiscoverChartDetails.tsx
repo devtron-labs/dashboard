@@ -384,7 +384,7 @@ function isReadmeInputCheckbox(text: string) {
     }
     return false;
 }
-export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, setExpandableIcon = undefined, ...props }) {
+export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
     const mdeRef = useRef(null);
@@ -441,8 +441,8 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
         const editorHeight = mdeRef.current?.clientHeight
         const minHeight = 320
         const showExpandableViewIcon = editorHeight > minHeight
-        if (typeof setExpandableIcon === 'function') {
-            setExpandableIcon(showExpandableViewIcon)
+        if (typeof props.setExpandableIcon === 'function') {
+            props.setExpandableIcon(showExpandableViewIcon)
         }
     }
 
