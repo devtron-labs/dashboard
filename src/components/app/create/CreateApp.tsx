@@ -245,7 +245,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    updateCreateAppFormDescription = (description : string) :void => {
+    updateCreateAppFormDescription = (description: string): void => {
         const { form } = { ...this.state }
         form.description = description
         this.setState({ form })
@@ -256,6 +256,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         form.cloneId = value
         isValid.cloneAppId = !!value
         this.setState({ form, isValid })
+    }
+
+    setAppDescription = () => {
+        this.setState({ showClusterDescription: true })
     }
 
     setTags = (tags: TagType[]): void => {
@@ -285,9 +289,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                    Create {this.props.isJobView ? 'job' : 'application'}
-                </h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Create {this.props.isJobView ? 'job' : 'application'}</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -371,9 +373,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                         : 'Write a description for this application'
                                 }
                                 tabIndex={2}
-                                onFocus={(e) => {
-                                    this.setState({ showClusterDescription: true })
-                                }}
+                                onFocus={this.setAppDescription}
                             />
                         )}
                     </>
@@ -494,9 +494,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <ButtonWithLoader
                     rootClassName="flex cta h-36"
                     onClick={this.createApp}
-                    dataTestId={`${
-                        this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
-                    }-${this.props.isJobView ? 'job' : 'app'}-button-on-drawer`}
+                    dataTestId={`${this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'}-${
+                        this.props.isJobView ? 'job' : 'app'
+                    }-button-on-drawer`}
                     disabled={this.state.createAppLoader}
                     isLoading={this.state.createAppLoader}
                     loaderColor="white"
