@@ -155,12 +155,15 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    ociRegistryConfig = {
-        CONTAINER: '',
-        CHART: '',
-        repositoryList: [],
-        isPublic: false,
-    },
+    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
+        ? {
+              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+              CHART: OCIRegistryConfigConstants.PUSH,
+          }
+        : {
+              CONTAINER: '',
+              CHART: '',
+          },
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -170,6 +173,7 @@ function CollapsedList({
     },
     clusterOption,
     repositoryList,
+    isPublic,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -244,7 +248,7 @@ function CollapsedList({
                         ipsConfig,
                         clusterOption,
                         setToggleCollapse,
-                        repositoryList,
+                        repositoryList
                     }}
                 />
             )}
@@ -282,7 +286,7 @@ function DockerForm({
             registryType: { value: registryType || 'ecr', error: '' },
             advanceSelect: { value: connection || CERTTYPE.SECURE, error: '' },
             certInput: { value: cert || '', error: '' },
-            repository: {value: repositoryList || [], error: ''}
+            repositoryList: {value: repositoryList || [], error: ''}
         },
         {
             id: {
@@ -300,7 +304,7 @@ function DockerForm({
             certInput: {
                 required: false,
             },
-            repository: {
+            repositoryList: {
               required: true,
               validator: { error: 'Type is required', regex: /^.*$/ },
           },
@@ -394,14 +398,14 @@ function DockerForm({
         isCustomScript && ipsConfig?.credentialValue ? JSON.parse(ipsConfig.credentialValue) : defaultCustomCredential,
     )
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
-    const [showPullHelm, setShowPullHelm] = useState<boolean>(false)
+    const [showHelmPull, setListRepositories] = useState<boolean>(false)
     const [isOCIRegistryHelmPush, setOCIRegistryHelmPush] = useState<boolean>(false)
-    
+    const [ repositoryLists, setRepositoryList] = useState<string[]>([state.repositoryList.value])
+   
+
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
-
-
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)
@@ -473,6 +477,8 @@ function DockerForm({
             registryType: selectedDockerRegistryType.value,
             isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) ? Isdefault: false,
             isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== 'gcr',
+            isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
+            repositoryList: state.repositoryList.value.split(','),
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
@@ -506,6 +512,7 @@ function DockerForm({
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
                 : {}),
+
             ipsConfig: {
                 id: ipsConfig.id,
                 credentialType: credentialsType,
@@ -520,6 +527,7 @@ function DockerForm({
                         ? '-1'
                         : ignoredClusterIdsCsv,
             },
+            
         }
     }
 
@@ -546,7 +554,7 @@ function DockerForm({
         if (payload.isOCICompliantRegistry) {
             payload.ociRegistryConfig = OCIRegistryStorageConfig
         }
-        console.log(OCIRegistryStorageConfig)
+       
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
             toggleLoading(true)
@@ -668,32 +676,31 @@ function DockerForm({
         setManageModal(false)
     }
     const handleOCIRegistryStorageAction = (e: any): void => {
-        if (!IsContainerStore) {
-            setOCIRegistryStorageConfig({
-                CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-            })
-        }
-        setContainerStore(!IsContainerStore)
-    }
-
-    const handleOCIRegistryActionPush = (e: any): void => {
-        setOCIRegistryStorageConfig({
-            CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-            // repositoryList: repositoryList,
-            // isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
-            CHART: OCIRegistryConfigConstants.PUSH,
-        })
-        setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
-
+            if (OCIRegistryUseActionHelmPushMessage) {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                    CHART: OCIRegistryConfigConstants.PUSH,
+                })
+            } else {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            }
+            setContainerStore(!IsContainerStore)
     }
 
     const handleOCIRegistryActionPull = (e: any): void => {
+        setListRepositories(!showHelmPull)
+        setOCIRegistryStorageConfig({
+            CHART: OCIRegistryConfigConstants.PULL,
+        })
+    }
+
+    const handleOCIRegistryActionPushHelm = (e: any): void => {
             setOCIRegistryStorageConfig({
-                CONTAINER: OCIRegistryConfigConstants.PULL,
-                repositoryList: repositoryList,
-                // isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
+                CHART: OCIRegistryConfigConstants.PUSH,
             })
-            setShowPullHelm(!showPullHelm)
+            setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
     }
 
     const registryOptions = (props) => {
@@ -862,18 +869,18 @@ function DockerForm({
                         id="helm-push"
                         isChecked={isOCIRegistryHelmPush}
                         value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleOCIRegistryActionPush}
+                        onChange={handleOCIRegistryActionPushHelm}
                         dataTestId={`store-${
                             OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
                         }-checkbox`}
                     >
                         Push helm packages
-                        {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
+                        {/* {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''} */}
                     </Checkbox>
                     <Checkbox
-                        rootClassName="docker-default mb-16"
+                        rootClassName="docker-default mb-0"
                         id="helm-pull"
-                        isChecked={showPullHelm}
+                        isChecked={showHelmPull}
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={handleOCIRegistryActionPull}
                         dataTestId={`store-${
@@ -882,8 +889,8 @@ function DockerForm({
                     >
                         Use as chart repository (Pull helm charts and show in chart store)
                     </Checkbox>
-                    {showPullHelm && <div className="pl-28">{renderOCIPublic()}</div>}
-                    <hr className="mt-0 mb-16" />
+                    {showHelmPull && <div className="pl-28">{renderOCIPublic()}</div>}
+                    <hr className="mt-16 mb-16" />
                 </>
             ) : (
                 renderRegistryCredentialsAutoInjectToClustersComponent()
@@ -899,15 +906,14 @@ function DockerForm({
               <CustomInput
                   dataTestid="container-registry-name"
                   labelClassName="dc__required-field"
-                  name="repository"
+                  name="repositoryList"
                   autoFocus={true}
-                  value={state.repository.value}
+                  value={state.repositoryList.value}
                   autoComplete="off"
-                  error={state.repository.error}
+                  error={state.repositoryList.error}
                   tabIndex={3}
                   onChange={handleOnChange}
                   label="List of repositories"
-                  disabled={!!id}
                   placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
               />
           </div>

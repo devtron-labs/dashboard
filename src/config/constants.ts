@@ -409,10 +409,7 @@ export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
 export type OCIRegistryStorageConfigType = {
     CONTAINER ?: OCIRegistryStorageActionType,
     CHART ?: OCIRegistryStorageActionType,
-    repositoryList?: string[];
-    isPublic?: boolean;
 }
-
 export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
     PULL: "PULL",
     PUSH: "PUSH",
@@ -454,6 +451,8 @@ export interface RegistryPayloadType {
         ignoredClusterIdsCsv: string,
     },
     ociRegistryConfig?: OCIRegistryStorageConfigType
+    repositoryList: string[]
+    isPublic: boolean
 }
 
 export const RegistryTypeName = {
