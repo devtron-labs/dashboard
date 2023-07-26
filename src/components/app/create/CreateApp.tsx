@@ -115,11 +115,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid, appNameErrors: true })
     }
 
-    handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-        const { form } = { ...this.state }
-        form.description = event.target.value
-        this.setState({ form })
-    }
 
     handleProject(item: number): void {
         let { form, isValid } = { ...this.state }

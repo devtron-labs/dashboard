@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { getClusterNote, patchClusterNote } from './clusterNodes.service'
+import { getClusterNote } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterAboutPropType, MDEditorSelectedTabType } from './types'
+import { ClusterAboutPropType } from './types'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import {
-    MD_EDITOR_TAB,
     defaultClusterNote,
 } from './constants'
 import './clusterNodes.scss'
@@ -20,7 +19,6 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
     const [descriptionText, setDescriptionText] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>('')
-    const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>('')
     const [clusterCreatedOn, setClusterCreatedOn] = useState<string>('')
     const [clusterCreatedBy, setClusterCreatedBy] = useState<string>('')
     const [clusterDetailsName, setClusterDetailsName] = useState<string>('')
@@ -36,7 +34,6 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     if (response.result.clusterNote) {
                         setDescriptionText(response.result.clusterNote.description)
                         setDescriptionId(response.result.clusterNote.id)
-                        setModifiedDescriptionText(response.result.clusterNote.description)
                         setDescriptionUpdatedBy(response.result.clusterNote.updatedBy)
                         _moment = moment(response.result.clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
                         _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.clusterNote.updatedOn
@@ -44,7 +41,6 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     } else {
                         setDescriptionText(defaultClusterNote)
                         setDescriptionId(0)
-                        setModifiedDescriptionText(defaultClusterNote)
                         setDescriptionUpdatedBy('')
                         setDescriptionUpdatedOn('')
                     }
