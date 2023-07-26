@@ -11,7 +11,7 @@ import {
 import './clusterNodes.scss'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
-import ClusterDescription from '../Description/Description'
+import ClusterDescription from '../common/Description/Description'
 
 export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPropType) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()

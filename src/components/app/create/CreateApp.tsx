@@ -31,7 +31,7 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
-import ClusterDescription from '../../Description/Description'
+import ClusterDescription from '../../common/Description/Description'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
