@@ -185,7 +185,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                             <Tippy
                                 className="default-tt"
                                 arrow={true}
-                                placement="bottom"
+                                placement="bottom-start"
                                 content="You don't have admin/manager pemission for this app."
                             >
                                 <div>
@@ -223,7 +223,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                         data-testid="env-tippy"
                                         className="default-tt"
                                         arrow={true}
-                                        placement="top"
+                                        placement="top-start"
                                         content="You don't have admin/manager pemission for this app."
                                     >  
                                         <div>{children}</div>
@@ -344,12 +344,24 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
+        let unauthorizedAppId = []
+        appList.forEach(element => {
+            if (unAuthorizedApps.includes(element.appName)) {
+                unauthorizedAppId.push(+element.id)
+            }
+        });
+        const payloadAppIds = _selectedAppIds.filter(appId => {
+            if (!unauthorizedAppId.includes(appId)) {
+                return true
+            }
+            return false
+        })
 
         const payload = {
             id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,
             description: appGroupDescription,
-            appIds: _selectedAppIds,
+            appIds: payloadAppIds,
         }
 
         try {

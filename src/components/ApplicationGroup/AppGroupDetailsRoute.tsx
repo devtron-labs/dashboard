@@ -185,7 +185,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 err['errors'].map((errors) => {
                     arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
                 })
-                if (arrUnauthorized && arrUnauthorized.length === selectedAppList.length) {
+                if (arrUnauthorized && arrUnauthorized[0].length === selectedAppList.length) {
                     handleToast("create")
                 } else if(_edit && arrUnauthorized.length>0){
                     handleToast("edit")
