@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
 import { mapByKey, ErrorBoundary, useAppContext } from '../common'
-import { Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
-import { URLS } from '../../config'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '../../config'
+import { Redirect, Route, Switch, generatePath } from 'react-router-dom'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.type'
 import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
 import SecretList from '../ConfigMapSecret/Secret/SecretList'
@@ -23,18 +23,13 @@ export default function EnvironmentOverride({
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
     const [isDeploymentOverride, setIsDeploymentOverride] = useState(false)
-    // const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-    //     () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
-    //     [params.appId],
-    //     !!params.appId,
-    // )
-
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
     const isProtected = environmentsMap.get(+params.envId)?.isProtected ?? appMap.get(+params.appId)?.isProtected ?? false
     useEffect(() => {
-        if (params.envId) setEnvironmentId(+params.envId)
-        setViewState(ComponentStates.loading)
+        if (params.envId) {
+            setEnvironmentId(+params.envId)
+        }
     }, [params.envId])
 
     useEffect(() => {
@@ -43,17 +38,16 @@ export default function EnvironmentOverride({
         }
     }, [location.pathname])
 
-    // const envMissingRedirect = () => { //TODO: talk to Sohel around this
-    //     if (params.envId) return
-    //     if (environmentsMap.has(environmentId)) {
-    //         const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
-    //         push(newUrl)
-    //     } else {
-    //         const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
-    //         push(workflowUrl)
-    //     }
-    // }
-    // useEffect(envMissingRedirect, [environmentsLoading])
+    useEffect(() => {
+        if (params.envId) return
+        if (environmentsMap.has(environmentId)) {
+            const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
+            push(newUrl)
+        } else {
+            const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
+            push(workflowUrl)
+        }
+    }, [])
 
     useEffect(() => {
         if (viewState === ComponentStates.reloading) {
@@ -61,21 +55,13 @@ export default function EnvironmentOverride({
         }
     }, [viewState])
 
-    // useEffect(() => {
-    //     if (!environmentsLoading && environmentResult?.result) {
-    //         setEnvironments(environmentResult.result)
-    //     }
-    // }, [environmentsLoading, environmentResult])
-
     if (!params.envId) {
         return null
-    } else if (viewState === ComponentStates.loading) {
-        return <Progressing pageLoader />
     } else if (viewState === ComponentStates.failed) {
         return (
             <Reload
                 reload={(event) => {
-                    setViewState(ComponentStates.loading)
+                    setViewState(ComponentStates.reloading)
                 }}
             />
         )

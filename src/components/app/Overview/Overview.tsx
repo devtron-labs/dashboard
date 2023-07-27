@@ -14,7 +14,6 @@ import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
-import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -35,14 +34,14 @@ import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants } from '../list-new/Constants'
+import { StatusConstants , DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { createAppLabels } from '../service'
 import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
+import GenericDescription from '../../common/Description/GenericDescription'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
@@ -52,8 +51,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
-    const [editMode, setEditMode] = useState(false)
-    const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
+    const [descriptionId,setDescriptionId] = useState<number>(0)
+    const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
+    const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
+    const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -67,11 +68,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
+    let _moment: moment.Moment
+    let _date: string
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
-            setNewDescription(appMetaInfo?.description)
+            _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
+            _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
+            const description = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? appMetaInfo.description.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
+            _date = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? _date : ''
+            setNewUpdatedOn(_date)
+            setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
+            setNewDescription(description)
+            setDescriptionId(appMetaInfo?.description?.id)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -144,7 +154,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
-                description={appMetaInfo.description}
+                description={appMetaInfo.description.description}
                 isJobOverview={isJobOverview}
             />
         )
@@ -159,25 +169,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 currentLabelTags={currentLabelTags}
-                description={appMetaInfo.description}
+                description={appMetaInfo.description.description}
             />
         )
-    }
-
-    const handleSave = async () => {
-        try {
-            const payload = {
-                id: parseInt(appId),
-                description: newDescription,
-                labels: appMetaInfo.labels,
-            }
-
-            const appLabel = await createAppLabels(payload)
-
-            setNewDescription(appLabel.result.description)
-
-            setEditMode(false)
-        } catch (error) {}
     }
 
     const renderSideInfoColumn = () => {
@@ -230,7 +224,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderLabelTags = () => {
         return (
-            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+            <div className="p-16 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
                     <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="overview-tags">
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
@@ -261,7 +255,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     // Update once new API changes are introduced
     const renderAppLevelExternalLinks = () => {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+            <div className="flex column left p-16 dc__border-bottom-n1">
                 <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-external-links">
                     <LinkedIcon className="icon-dim-20 mr-8" />
                     External Links
@@ -355,7 +349,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+            <div className="flex column left p-16">
                 <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-deployment">
                     <RocketIcon className="icon-dim-20 scn-9 mr-8" />
                     Deployments
@@ -466,87 +460,35 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    const handleDescriptionChange = (e) => {
-        setNewDescription(e.target.value)
-    }
-
-    const handleCancel = () => {
-        setNewDescription(appMetaInfo?.description) // reset to previously saved value
-        setEditMode(false)
-    }
-
-    const switchToEditMode = () => {
-        setEditMode(true)
-    }
-
-    const renderJobDescription = () => {
+    function renderAppDescription() {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-                <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="job-description-header">
-                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
-                        Description
-                    </div>
-                    {editMode ? (
-                        <div className="flex left ml-auto dc__gap-8">
-                            <button
-                                className="btn btn-link p-0 fs-14 fw-6 cn-7"
-                                data-testid="cancel-button"
-                                onClick={handleCancel}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="btn btn-link p-0 fs-14 fw-6 cb-5"
-                                data-testid="job-description-save-button"
-                                type="submit"
-                                onClick={handleSave}
-                            >
-                                Save
-                            </button>
-                        </div>
-                    ) : (
-                        <div
-                            className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto"
-                            data-testid="job-description-edit"
-                            onClick={switchToEditMode}
-                        >
-                            <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                            Edit
-                        </div>
-                    )}
-                </div>
-                {editMode ? (
-                    <div className="flex left flex-wrap dc__gap-8 w-100">
-                        <textarea
-                            data-testid="job-description-textbox"
-                            placeholder="No description"
-                            value={newDescription}
-                            onChange={handleDescriptionChange}
-                            className="flex left flex-wrap dc__gap-8 dc__description-textarea"
-                        />
-                    </div>
-                ) : (
-                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100" data-testid="job-description-text">
-                        {newDescription ? newDescription : <span className="cn-7 fs-13">No description</span>}
-                    </div>
-                )}
-            </div>
+            <GenericDescription
+                isClusterTerminal={false}
+                isSuperAdmin={true}
+                appId={Number(appId)}
+                descriptionId={descriptionId}
+                initialDescriptionText={newDescription}
+                initialDescriptionUpdatedBy={newUpdatedBy}
+                initialDescriptionUpdatedOn={newUpdatedOn}
+                initialEditDescriptionView={true}
+                appMetaInfo={appMetaInfo}
+            />
         )
     }
 
     function renderOverviewContent(isJobOverview) {
         if (isJobOverview) {
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll">
-                    {renderJobDescription()}
+                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
+                    {renderAppDescription()}
                     {renderLabelTags()}
                     {renderWorkflowsStatus()}
                 </div>
             )
         } else {
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll">
+                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
+                    {renderAppDescription()}
                     {renderLabelTags()}
                     {renderAppLevelExternalLinks()}
                     {renderEnvironmentDeploymentsStatus()}
@@ -562,7 +504,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
             {renderSideInfoColumn()}
-            {renderOverviewContent(isJobOverview)}
+            {!isLoading && renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>

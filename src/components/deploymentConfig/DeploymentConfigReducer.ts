@@ -34,7 +34,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     isConfigProtectionEnabled: false,
     allDrafts: [],
     latestDraft: null,
-    activityHistory: [],
+    draftValues: '',
     showComments: false,
     showDeleteOverrideDraftModal: false,
 }

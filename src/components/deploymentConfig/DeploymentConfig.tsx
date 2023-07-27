@@ -39,7 +39,6 @@ const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentCo
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
-const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
@@ -51,7 +50,7 @@ export default function DeploymentConfig({
     isCiPipeline,
     environments,
     isProtected,
-    reloadEnvironments
+    reloadEnvironments,
 }: DeploymentConfigProps) {
     const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
@@ -61,11 +60,6 @@ export default function DeploymentConfig({
         initDeploymentConfigState,
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
-    // const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
-    //     () => getAppOtherEnvironmentMin(appId),
-    //     [appId],
-    //     !!appId,
-    // )
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
@@ -76,12 +70,6 @@ export default function DeploymentConfig({
     useEffectAfterMount(() => {
         fetchDeploymentTemplate()
     }, [state.selectedChart])
-
-    // useEffect(() => {
-    //     if (!environmentsLoading && environmentResult?.result) {
-    //         setEnvironments(environmentResult.result)
-    //     }
-    // }, [environmentsLoading, environmentResult])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
         const payload = {
@@ -107,28 +95,20 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
-        Promise.all([
-            getChartReferences(+appId),
-            typeof getConfigProtections === 'function' ? getConfigProtections(Number(appId)) : { result: null },
-        ])
-            .then(([chartRefResp, configProtectionsResp]) => {
+        getChartReferences(+appId)
+            .then((chartRefResp) => {
                 const { chartRefs, latestAppChartRef, latestChartRef, chartMetadata } = chartRefResp.result
                 const selectedChartId: number = latestAppChartRef || latestChartRef
                 const chart = chartRefs.find((chart) => chart.id === selectedChartId)
-                const isConfigProtectionEnabled =
-                    configProtectionsResp.result?.find(
-                        (config) => config.appId === Number(appId) && config.envId === -1,
-                    )?.state === 1
-
                 const chartRefsData = {
                     charts: chartRefs,
                     chartsMetadata: chartMetadata,
                     selectedChartRefId: selectedChartId,
                     selectedChart: chart,
-                    isConfigProtectionEnabled,
+                    isConfigProtectionEnabled: isProtected,
                 }
 
-                if (isConfigProtectionEnabled && typeof getAllDrafts === 'function') {
+                if (isProtected && typeof getAllDrafts === 'function') {
                     fetchAllDrafts(chartRefsData)
                 } else {
                     updateRefsData(chartRefsData)
@@ -185,6 +165,8 @@ export default function DeploymentConfig({
                     chartRefId,
                     isBasicViewLocked,
                     currentViewEditor,
+                    readme,
+                    schema,
                 } = JSON.parse(draftResp.result.data)
 
                 const payload = {
@@ -194,11 +176,15 @@ export default function DeploymentConfig({
                         refChartTemplate,
                         refChartTemplateVersion,
                         chartRefId,
+                        readme,
                     },
                     isAppMetricsEnabled: isAppMetricsEnabled,
                     tempFormData: YAML.stringify(valuesOverride, null),
+                    draftValues: YAML.stringify(valuesOverride, null),
                     latestDraft: draftResp.result,
                     allDrafts,
+                    readme,
+                    schema,
                     ...{
                         ...chartRefsData,
                         selectedChartRefId: chartRefId,
@@ -217,9 +203,9 @@ export default function DeploymentConfig({
                     payload,
                 })
 
-                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
+                if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
                     updateTemplateFromBasicValue(valuesOverride)
-                    parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload)
+                    parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
                 }
             })
             .catch((e) => {
@@ -239,6 +225,7 @@ export default function DeploymentConfig({
         _currentViewEditor: string,
         template,
         templateData,
+        updatePublishedState: boolean,
     ): Promise<void> => {
         if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
@@ -356,6 +343,7 @@ export default function DeploymentConfig({
                     ...state.publishedState,
                     ...templateData,
                 }
+
                 payload['readme'] = readme
                 payload['schema'] = schema
                 payload['chartConfig'] = {
@@ -373,7 +361,7 @@ export default function DeploymentConfig({
 
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(defaultAppOverride)
-                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride, payload)
+                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride, payload, true)
             }
         } catch (err) {
             showError(err)
@@ -419,7 +407,7 @@ export default function DeploymentConfig({
             payload: true,
         })
         try {
-            const requestBody = prepareDataToSave()
+            const requestBody = prepareDataToSave(true)
             const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
             reloadEnvironments()
@@ -452,7 +440,12 @@ export default function DeploymentConfig({
         })
     }
 
+    const isCompareAndApprovalState =
+        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
+
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
+        if (isCompareAndApprovalState) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.tempFormData,
             payload: str,
@@ -554,7 +547,7 @@ export default function DeploymentConfig({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
     }
 
-    const prepareDataToSave = () => {
+    const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         const requestData = {
             ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
             appId: +appId,
@@ -570,12 +563,18 @@ export default function DeploymentConfig({
                 requestData.valuesOverride = patchBasicData(obj, state.basicFieldValues)
             }
         }
+
+        if (!skipReadmeAndSchema) {
+            requestData['readme'] = state.readme
+            requestData['schema'] = state.schema
+        }
+
         return requestData
     }
 
     const renderValuesView = () => {
         const readOnlyPublishedMode =
-            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
 
         return (
             <form
@@ -587,19 +586,17 @@ export default function DeploymentConfig({
             >
                 <DeploymentTemplateOptionsTab
                     codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
-                    disableVersionSelect={state.isConfigProtectionEnabled && !!state.latestDraft}
+                    disableVersionSelect={readOnlyPublishedMode}
                 />
-                {readOnlyPublishedMode ? (
+                {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : (
                     <DeploymentTemplateEditorView
                         defaultValue={state.publishedState?.tempFormData}
-                        value={state.tempFormData}
-                        globalChartRefId={state.publishedState?.selectedChartRefId}
+                        value={isCompareAndApprovalState ? state.draftValues : state.tempFormData}
+                        globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
-                        readOnly={
-                            state.latestDraft?.draftState === 4 && (state.selectedTabIndex === 2 || state.showReadme)
-                        }
+                        readOnly={isCompareAndApprovalState}
                     />
                 )}
                 <DeploymentConfigFormCTA
