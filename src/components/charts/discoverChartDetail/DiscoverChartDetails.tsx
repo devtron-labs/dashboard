@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
 import { List } from '../../common'
@@ -384,9 +384,10 @@ function isReadmeInputCheckbox(text: string) {
     }
     return false;
 }
-export function MarkDown({ markdown = '', className = '', breaks = false, ...props }) {
+export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
+    const mdeRef = useRef(null);
 
     renderer.listitem = function (text: string) {
         if (isReadmeInputCheckbox(text)) {
@@ -397,7 +398,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
         } 
         return `<li>${text}</li>`;     
     };
-    
+
     renderer.image = function (href: string, title: string, text: string) { 
         return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
     }
@@ -414,8 +415,8 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
     }
 
     renderer.heading = function (text, level) {
-        const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-')
-
+        const escapedText = disableEscapedText? "" :text.toLowerCase().replace(/[^\w]+/g, '-')
+          
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
                 <h${level} data-testid="deployment-template-readme-version">
@@ -432,13 +433,27 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
         ...(breaks && { breaks: true }),
     })
 
+    useEffect(() => {
+        getHeight()
+    }, [markdown])
+
+    const getHeight = () => {
+        const editorHeight = mdeRef.current?.clientHeight
+        const minHeight = 320
+        const showExpandableViewIcon = editorHeight > minHeight
+        if (typeof props.setExpandableIcon === 'function') {
+            props.setExpandableIcon(showExpandableViewIcon)
+        }
+    }
+
     function createMarkup() {
         return { __html: DOMPurify.sanitize(marked(markdown), { USE_PROFILES: { html: true } }) }
     }
     return (
         <article
             {...props}
-            className={`deploy-chart__readme-markdown ${className}`}
+            ref={mdeRef}
+            className={`deploy-chart__readme-markdown  ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
             data-testid="article-for-bulk-edit"
         />
