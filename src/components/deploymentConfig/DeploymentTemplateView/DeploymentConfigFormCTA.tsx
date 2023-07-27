@@ -27,7 +27,7 @@ export default function DeploymentConfigFormCTA({
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const _selectedChart = !isEnvOverride && isDraftMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
-    const compareTab = state.selectedTabIndex === 2
+    const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
     const approveDisabled = isApprovalPending && state.latestDraft && !state.latestDraft.canApprove
 

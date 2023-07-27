@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
 import { URLS } from '../../../../config'
 import { usePrevious, createClusterEnvGroup } from '../../../common'
@@ -250,11 +250,6 @@ export default function EnvironmentOverrideRouter({
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
     const [environmentList, setEnvironmentList] = useState([])
-    // const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-    //     () => (!isJobView ? getAppOtherEnvironmentMin(appId) : getJobOtherEnvironment(appId)),
-    //     [appId],
-    //     !!appId,
-    // )
     const [addEnvironment, setEnvironmentView] = useState(true)
     const [ciPipelines, setCIPipelines] = useState([])
 
@@ -276,24 +271,6 @@ export default function EnvironmentOverrideRouter({
                 })
         }
     }, [allEnvs])
-
-    // const getJobOtherEnvironment = (appId) => {
-    //     let list = []
-    //     allEnvs?.forEach((env) => {
-    //         if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
-    //             list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
-    //         }
-    //     })
-    //     setEnvironmentList(list)
-    //     getCIConfig(Number(appId))
-    //         .then((response) => {
-    //             setCIPipelines(response.result?.ciPipelines)
-    //         })
-    //         .catch((error) => {
-    //             showError(error)
-    //         })
-    //     return getJobOtherEnvironmentMin(appId)
-    // }
 
     const selectEnvironment = (selection) => {
         let requestBody = { envId: selection.id, appId: appId }
@@ -444,9 +421,7 @@ export default function EnvironmentOverrideRouter({
                     </div>
                 </div>
             )}
-            <div className="flex column left environment-routes-container top">
-                {renderEnvsNav()}
-            </div>
+            <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>
         </div>
     )
 }

@@ -21,7 +21,7 @@ export default function DeploymentTemplateOptionsTab({
     const { isUnSet, state, dispatch, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
-        !isEnvOverride && state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+        !isEnvOverride && state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
             ? state.publishedState
             : state
 

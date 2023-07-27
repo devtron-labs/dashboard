@@ -260,13 +260,13 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
-                const updatedEnvs = envResult.result.map((env) => {
+                const updatedEnvs = envResult.result?.map((env) => {
                     let envData = { ...env, isProtected: false }
                     if (envProtectMap[env.environmentId]) {
                         envData.isProtected = true
                     }
                     return envData
-                })
+                }) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
                 setState({
                     ...state,
@@ -279,28 +279,6 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 showError(errors)
                 setState({ ...state, view: ViewType.ERROR, statusCode: errors.code })
             })
-    }
-
-    function updateProtectionData(configProtectionsResult) {
-        const envProtectMap: Record<number, boolean> = {}
-        if (configProtectionsResult) {
-            for (const config of configProtectionsResult) {
-                envProtectMap[config.envId] = config.state === 1
-            }
-        }
-        const updatedEnvs = state.environmentList.map((env) => {
-            let envData = { ...env, isProtected: false }
-            if (envProtectMap[env.id]) {
-                envData.isProtected = true
-            }
-            return envData
-        })
-        const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
-        setState((state) => ({
-            ...state,
-            environmentList: updatedEnvs,
-            isBaseConfigProtected: isBaseConfigProtectionEnabled,
-        }))
     }
 
     function renderDeleteDialog() {
