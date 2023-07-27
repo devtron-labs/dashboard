@@ -412,11 +412,15 @@ export const ConfigMapSecretForm = React.memo(
             try {
                 const payloadData = createPayload(arr)
                 if (isProtectedView) {
+                    const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
+                    if (envId) {
+                        _draftPayload['environmentId'] = +envId
+                    }
                     dispatch({
                         type: ConfigMapActionTypes.multipleOptions,
                         payload: {
                             showDraftSaveModal: true,
-                            draftPayload: { id: id ?? 0, appId: appId, configData: [payloadData] },
+                            draftPayload: _draftPayload,
                         },
                     })
                 } else {
@@ -983,14 +987,18 @@ export const ConfigMapSecretForm = React.memo(
                     {!readonlyView && (
                         <div
                             className={`flex ${
-                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED  ? 'dc__content-space' : 'right'
+                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+                                    ? 'dc__content-space'
+                                    : 'right'
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
-                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && (
-                                <button className="cta delete" onClick={openDeleteModal}>
-                                    Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
-                                </button>
-                            )}
+                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && (
+                                    <button className="cta delete" onClick={openDeleteModal}>
+                                        Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
+                                    </button>
+                                )}
                             <button
                                 disabled={!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
