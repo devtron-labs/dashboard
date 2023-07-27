@@ -4,6 +4,7 @@ import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
+import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -76,7 +77,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'white',
         }
     },
     singleValue: (base, state) => {
@@ -182,6 +183,17 @@ export const CustomValueContainer = (props): JSX.Element => {
                 ))}
             {React.cloneElement(props.children[1])}
         </components.ValueContainer>
+    )
+}
+
+export const menuComponentForImage = (props) => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
+            </div>
+            {props.children}
+        </components.MenuList>
     )
 }
 

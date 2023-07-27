@@ -457,7 +457,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                         <div className="form-row__select-external-type">
                             <Select disabled onChange={(e) => {}}>
                                 <Select.Button>
-                                    {external && !isJobView ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
+                                    {external ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                                 </Select.Button>
                             </Select>
                         </div>

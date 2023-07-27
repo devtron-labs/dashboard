@@ -1,6 +1,9 @@
+import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
+import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { LoadingState } from '../ciConfig/types'
 
 export interface WorkflowEditState {
     view: string
@@ -112,4 +115,79 @@ export interface DeprecatedWarningModalType {
 
 export interface CDNodeState{
   showDeletePipelinePopup: boolean
+}
+
+export interface PipelineBuildStageType {
+    id: number;
+    triggerType?: string
+    steps: StepType[];
+}
+
+export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType> {
+    name: string;
+    triggerType: string;
+    preBuildStage?: PipelineBuildStageType;
+    postBuildStage?: PipelineBuildStageType;
+}
+
+export interface PipelineFormDataErrorType {
+    name: { message?: string, isValid: boolean },
+    envNameError?: { message?: string, isValid: boolean },
+    nameSpaceError?: { message?: string, isValid: boolean },
+    containerRegistryError?: { isValid: boolean, message?: string },
+    repositoryError?: { isValid: boolean, message?: string },
+    preBuildStage: {
+        steps: any[],
+        isValid: boolean,
+    },
+    buildStage: {
+        isValid: boolean,
+    },
+    postBuildStage: {
+        steps: any[],
+        isValid: boolean,
+    },
+}
+
+export interface PipelineContext {
+    formData: PipelineFormType
+    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
+    selectedTaskIndex: number
+    activeStageName: string
+    calculateLastStepDetail: (
+        isFromAddNewTask: boolean,
+        _formData: PipelineFormType,
+        activeStageName: string,
+        startIndex?: number,
+        isFromMoveTask?: boolean
+    ) => {
+        index: number
+        calculatedStageVariables: Map<string, VariableType>[]
+    }
+    formDataErrorObj: PipelineFormDataErrorType
+    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
+    validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
+    configurationType: string
+    setConfigurationType: React.Dispatch<React.SetStateAction<string>>
+    setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
+    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
+    isCdPipeline?: boolean,
+    configMapAndSecrets?: {
+        label: string;
+        options: any;
+    }[],
+    loadingState?: LoadingState
+    setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
+    appId: string
+    inputVariablesListFromPrevStep?: InputVariablesFromInputListType,
+    setInputVariablesListFromPrevStep?: (inputVariables: InputVariablesFromInputListType) => void,
+    addNewTask: () => void,
+    pageState?: string
+    setPageState?: React.Dispatch<React.SetStateAction<string>>
+    handleStrategy?: (value: any) => void
+    getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
+    isVirtualEnvironment?: boolean
+    globalVariables: {
+        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string 
+}[]
 }
