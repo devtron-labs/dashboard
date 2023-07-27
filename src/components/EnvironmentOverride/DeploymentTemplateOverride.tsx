@@ -54,7 +54,7 @@ export default function DeploymentTemplateOverride({
     setParentState,
     environments,
     environmentName,
-    isProtected
+    isProtected,
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -197,6 +197,7 @@ export default function DeploymentTemplateOverride({
                 const {
                     envOverrideValues,
                     id,
+                    globalConfig,
                     isAppMetricsEnabled,
                     currentEditorView,
                     isBasicLocked,
@@ -209,6 +210,7 @@ export default function DeploymentTemplateOverride({
 
                 const payload = {
                     duplicate: envOverrideValues,
+                    draftValues: YAML.stringify(envOverrideValues, null),
                     environmentConfig: {
                         id,
                         status,
@@ -234,13 +236,8 @@ export default function DeploymentTemplateOverride({
                 })
 
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                    // updateTemplateFromBasicValue(envOverrideValues)
-                    // parseDataForView(
-                    //     isBasicLocked,
-                    //     currentEditorView,
-                    //     null,
-                    //     envOverrideValues,
-                    // )
+                    updateTemplateFromBasicValue(envOverrideValues)
+                    parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues)
                 }
             })
             .catch((e) => {
@@ -494,8 +491,8 @@ function DeploymentTemplateOverrideForm({
         })
     }
 
-    const prepareDataToSave = (envOverrideValuesWithBasic) => {
-        return {
+    const prepareDataToSave = (envOverrideValuesWithBasic, includeGlobalConfig?: boolean) => {
+        const payload = {
             environmentId: +envId,
             envOverrideValues: envOverrideValuesWithBasic || obj || state.duplicate,
             chartRefId: state.selectedChartRefId,
@@ -513,6 +510,12 @@ function DeploymentTemplateOverrideForm({
                   }
                 : {}),
         }
+
+        if (includeGlobalConfig) {
+            payload['globalConfig'] = state.data.globalConfig
+        }
+
+        return payload
     }
 
     async function handleSubmit(e) {
@@ -602,7 +605,12 @@ function DeploymentTemplateOverrideForm({
         } catch (err) {}
     }
 
+    const isCompareAndApprovalState =
+        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
+
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
+        if (isCompareAndApprovalState) return
+
         setTempValue(str)
         if (str && state.currentEditorView && !state.isBasicLocked && !fromBasic) {
             try {
@@ -695,13 +703,15 @@ function DeploymentTemplateOverrideForm({
     const prepareDataToSaveDraft = () => {
         const envOverrideValuesWithBasic =
             !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
-        return prepareDataToSave(envOverrideValuesWithBasic)
+        return prepareDataToSave(envOverrideValuesWithBasic, true)
     }
 
     const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = YAML.stringify(state.data.globalConfig, { indent: 2 })
+        } else if (isCompareAndApprovalState) {
+            codeEditorValue = state.draftValues
         } else if (tempValue) {
             codeEditorValue = tempValue
         } else if (state) {
@@ -715,7 +725,7 @@ function DeploymentTemplateOverrideForm({
 
     const renderValuesView = () => {
         const readOnlyPublishedMode =
-            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
 
         return (
             <form
@@ -726,10 +736,10 @@ function DeploymentTemplateOverrideForm({
             >
                 <DeploymentTemplateOptionsTab
                     isEnvOverride={true}
-                    disableVersionSelect={(state.isConfigProtectionEnabled && !!state.latestDraft) || !state.duplicate}
+                    disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                     codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
                 />
-                {readOnlyPublishedMode ? (
+                {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView
                         value={YAML.stringify(state.data.globalConfig, { indent: 2 })}
                         isEnvOverride={true}
@@ -745,10 +755,7 @@ function DeploymentTemplateOverrideForm({
                         }
                         editorOnChange={editorOnChange}
                         environmentName={environmentName}
-                        readOnly={
-                            !state.duplicate ||
-                            (state.latestDraft?.draftState === 4 && (state.selectedTabIndex === 2 || state.showReadme))
-                        }
+                        readOnly={!state.duplicate || isCompareAndApprovalState}
                         globalChartRefId={state.data.globalChartRefId}
                         handleOverride={handleOverride}
                     />

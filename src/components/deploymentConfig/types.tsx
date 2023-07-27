@@ -305,11 +305,11 @@ export interface DeploymentConfigStateType {
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
+    draftValues: string,
     showSaveChangsModal: boolean
     isConfigProtectionEnabled: boolean
     allDrafts: any[]
     latestDraft: any
-    activityHistory: any
     showComments: boolean
     showDeleteOverrideDraftModal: boolean
 }

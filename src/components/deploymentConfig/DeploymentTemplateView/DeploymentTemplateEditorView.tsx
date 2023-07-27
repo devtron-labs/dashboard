@@ -184,7 +184,6 @@ export default function DeploymentTemplateEditorView({
                                     state.selectedChart,
                                     handleOverride,
                                     state.latestDraft,
-                                    state.activityHistory[0]?.activityTime,
                                 )}
                             </div>
                         </CodeEditor.Header>
@@ -216,7 +215,6 @@ export default function DeploymentTemplateEditorView({
                                         state.selectedChart,
                                         handleOverride,
                                         state.latestDraft,
-                                        state.activityHistory[0]?.activityTime,
                                     )}
                                 </div>
                             </>

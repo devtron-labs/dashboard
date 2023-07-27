@@ -51,7 +51,7 @@ export default function DeploymentConfig({
     isCiPipeline,
     environments,
     isProtected,
-    reloadEnvironments
+    reloadEnvironments,
 }: DeploymentConfigProps) {
     const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
@@ -185,6 +185,8 @@ export default function DeploymentConfig({
                     chartRefId,
                     isBasicViewLocked,
                     currentViewEditor,
+                    readme,
+                    schema,
                 } = JSON.parse(draftResp.result.data)
 
                 const payload = {
@@ -194,11 +196,15 @@ export default function DeploymentConfig({
                         refChartTemplate,
                         refChartTemplateVersion,
                         chartRefId,
+                        readme,
                     },
                     isAppMetricsEnabled: isAppMetricsEnabled,
                     tempFormData: YAML.stringify(valuesOverride, null),
+                    draftValues: YAML.stringify(valuesOverride, null),
                     latestDraft: draftResp.result,
                     allDrafts,
+                    readme,
+                    schema,
                     ...{
                         ...chartRefsData,
                         selectedChartRefId: chartRefId,
@@ -217,9 +223,9 @@ export default function DeploymentConfig({
                     payload,
                 })
 
-                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
+                if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
                     updateTemplateFromBasicValue(valuesOverride)
-                    parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload)
+                    parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
                 }
             })
             .catch((e) => {
@@ -239,6 +245,7 @@ export default function DeploymentConfig({
         _currentViewEditor: string,
         template,
         templateData,
+        updatePublishedState: boolean,
     ): Promise<void> => {
         if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
@@ -356,6 +363,7 @@ export default function DeploymentConfig({
                     ...state.publishedState,
                     ...templateData,
                 }
+
                 payload['readme'] = readme
                 payload['schema'] = schema
                 payload['chartConfig'] = {
@@ -373,7 +381,7 @@ export default function DeploymentConfig({
 
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(defaultAppOverride)
-                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride, payload)
+                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride, payload, true)
             }
         } catch (err) {
             showError(err)
@@ -419,7 +427,7 @@ export default function DeploymentConfig({
             payload: true,
         })
         try {
-            const requestBody = prepareDataToSave()
+            const requestBody = prepareDataToSave(true)
             const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             await api(requestBody)
             reloadEnvironments()
@@ -452,7 +460,12 @@ export default function DeploymentConfig({
         })
     }
 
+    const isCompareAndApprovalState =
+        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
+
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
+        if (isCompareAndApprovalState) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.tempFormData,
             payload: str,
@@ -554,7 +567,7 @@ export default function DeploymentConfig({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
     }
 
-    const prepareDataToSave = () => {
+    const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         const requestData = {
             ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
             appId: +appId,
@@ -570,12 +583,18 @@ export default function DeploymentConfig({
                 requestData.valuesOverride = patchBasicData(obj, state.basicFieldValues)
             }
         }
+
+        if (!skipReadmeAndSchema) {
+            requestData['readme'] = state.readme
+            requestData['schema'] = state.schema
+        }
+
         return requestData
     }
 
     const renderValuesView = () => {
         const readOnlyPublishedMode =
-            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && state.latestDraft
+            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
 
         return (
             <form
@@ -587,19 +606,17 @@ export default function DeploymentConfig({
             >
                 <DeploymentTemplateOptionsTab
                     codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
-                    disableVersionSelect={state.isConfigProtectionEnabled && !!state.latestDraft}
+                    disableVersionSelect={readOnlyPublishedMode}
                 />
-                {readOnlyPublishedMode ? (
+                {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : (
                     <DeploymentTemplateEditorView
                         defaultValue={state.publishedState?.tempFormData}
-                        value={state.tempFormData}
-                        globalChartRefId={state.publishedState?.selectedChartRefId}
+                        value={isCompareAndApprovalState ? state.draftValues : state.tempFormData}
+                        globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
-                        readOnly={
-                            state.latestDraft?.draftState === 4 && (state.selectedTabIndex === 2 || state.showReadme)
-                        }
+                        readOnly={isCompareAndApprovalState}
                     />
                 )}
                 <DeploymentConfigFormCTA

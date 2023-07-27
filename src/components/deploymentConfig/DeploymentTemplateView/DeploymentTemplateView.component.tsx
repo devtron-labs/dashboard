@@ -273,19 +273,13 @@ export const renderEditorHeading = (
     selectedChart: DeploymentChartVersionType,
     handleOverride: (e: any) => Promise<void>,
     latestDraft: any,
-    activityTime: any,
 ) => {
     return (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
                 {!readOnly && <Edit className="icon-dim-16 mr-10" />}
                 {!!latestDraft ? (
-                    <>
-                        <span className="fw-6 mr-4">Last saved draft</span>
-                        <span className="fw-4">
-                            {activityTime ? `on ${moment(activityTime).format('ddd, DD MMM YYYY HH:mm A')}` : ''}
-                        </span>
-                    </>
+                    <span className="fw-6 mr-4">Last saved draft</span>
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
                         selectedChart ? `(${selectedChart.version})` : ''
