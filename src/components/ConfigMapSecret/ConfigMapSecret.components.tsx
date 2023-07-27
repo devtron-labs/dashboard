@@ -111,7 +111,7 @@ export function ConfigMapSecretContainer({
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
-    const [selectedTab, setSelectedTab] = useState(draftData?.draftState === 4 ? 2 : 3)
+    const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
 
     async function getDraftData() {
         try {

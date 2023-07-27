@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { deepEqual } from '../common';
 import { showError, Progressing, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { ResizableTextarea } from '../configMaps/ConfigMap';
 import { saveGroup, deleteGroup } from './userGroup.service';
 
 import {
@@ -18,6 +17,7 @@ import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
+import { ResizableTextarea } from '../ConfigMapSecret/ConfigMapSecret.components';
 
 export default function GroupForm({
     id = null,

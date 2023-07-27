@@ -1,6 +1,5 @@
 import React from 'react'
-import { groupStyle } from "../secrets/secret.utils"
-import { GroupHeading } from "../v2/common/ReactSelect.utils"
+import { GroupHeading, groupStyle } from "../v2/common/ReactSelect.utils"
 
 export const groupHeading = (props) => {
     return <GroupHeading {...props} />
@@ -12,7 +11,7 @@ export const buildStageStyles = {
     valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px'}),
     indicatorsContainer: (base) => ({ ...base, height: '28px' }),
     menu :(base) => ({ ...base, width: '240px'})
-    
+
 }
 
 export const triggerStageStyles = {

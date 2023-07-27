@@ -69,6 +69,7 @@ export default function ConfigMapList({
                         config.draftId = draftDataMap[config.name].draftId
                         config.draftState = draftDataMap[config.name].draftState
                     }
+                    delete draftDataMap[config.name]
                     return config
                 })
             }

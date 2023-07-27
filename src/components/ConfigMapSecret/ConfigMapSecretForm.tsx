@@ -42,7 +42,6 @@ import ReactSelect from 'react-select'
 import {
     SecretOptions,
     getTypeGroups,
-    groupStyle,
     GroupHeading,
     ConfigMapOptions,
     hasHashiOrAWS,
@@ -52,7 +51,7 @@ import {
     CODE_EDITOR_RADIO_STATE,
     ExternalSecretHelpNote,
 } from './Secret/secret.utils'
-import { Option } from '../v2/common/ReactSelect.utils'
+import { Option, groupStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoIconOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
@@ -413,12 +412,15 @@ export const ConfigMapSecretForm = React.memo(
             try {
                 const payloadData = createPayload(arr)
                 if (isProtectedView) {
-                    console.log(payloadData)
+                    const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
+                    if (envId) {
+                        _draftPayload['environmentId'] = +envId
+                    }
                     dispatch({
                         type: ConfigMapActionTypes.multipleOptions,
                         payload: {
                             showDraftSaveModal: true,
-                            draftPayload: { id: id ?? 0, appId: appId, configData: [payloadData] },
+                            draftPayload: _draftPayload,
                         },
                     })
                 } else {
@@ -985,14 +987,18 @@ export const ConfigMapSecretForm = React.memo(
                     {!readonlyView && (
                         <div
                             className={`flex ${
-                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED  ? 'dc__content-space' : 'right'
+                                cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+                                    ? 'dc__content-space'
+                                    : 'right'
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
-                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && (
-                                <button className="cta delete" onClick={openDeleteModal}>
-                                    Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
-                                </button>
-                            )}
+                            {cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && (
+                                    <button className="cta delete" onClick={openDeleteModal}>
+                                        Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
+                                    </button>
+                                )}
                             <button
                                 disabled={!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
