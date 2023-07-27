@@ -31,7 +31,7 @@ export default function EnvironmentOverride({
 
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
-
+    const isProtected = environmentsMap.get(+params.envId)?.isProtected ?? appMap.get(+params.appId)?.isProtected ?? false
     useEffect(() => {
         if (params.envId) setEnvironmentId(+params.envId)
         setViewState(ComponentStates.loading)
@@ -105,13 +105,13 @@ export default function EnvironmentOverride({
                                     ? environmentsMap.get(+params.envId).environmentName
                                     : ''
                             }
-                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
+                            isProtected={isProtected}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
                         <ConfigMapList
                             isOverrideView={true}
-                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
+                            isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
                             setParentState={setViewState}
@@ -122,7 +122,7 @@ export default function EnvironmentOverride({
                         <SecretList
                             isOverrideView={true}
                             parentState={viewState}
-                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
+                            isProtected={isProtected}
                             parentName={getParentName()}
                             setParentState={setViewState}
                             isJobView={isJobView}

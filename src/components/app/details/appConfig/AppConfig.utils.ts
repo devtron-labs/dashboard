@@ -149,6 +149,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+                isProtectionAllowed: true
             },
             {
                 title: 'Workflow Editor',

@@ -260,13 +260,13 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
-                const updatedEnvs = envResult.result.map((env) => {
+                const updatedEnvs = envResult.result?.map((env) => {
                     let envData = { ...env, isProtected: false }
                     if (envProtectMap[env.environmentId]) {
                         envData.isProtected = true
                     }
                     return envData
-                })
+                }) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
                 setState({
                     ...state,
