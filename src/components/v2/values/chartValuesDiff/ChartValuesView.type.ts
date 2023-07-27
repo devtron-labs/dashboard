@@ -376,11 +376,11 @@ export interface ActiveReadmeColumnProps {
 }
 
 export interface CompareWithDropdownProps {
-    deployedChartValues: ChartValuesDiffOptionType[]
-    defaultChartValues: ChartValuesDiffOptionType[]
-    presetChartValues: ChartValuesDiffOptionType[]
-    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
-    selectedVersionForDiff: ChartValuesDiffOptionType
+    deployedChartValues?: ChartValuesDiffOptionType[]
+    defaultChartValues?: ChartValuesDiffOptionType[]
+    presetChartValues?: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList?: ChartValuesDiffOptionType[]
+    selectedVersionForDiff?: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
 }
 
@@ -393,7 +393,7 @@ export interface ValuesForDiffStateType {
     selectedVersionForDiff: ChartValuesDiffOptionType
     deployedManifest: string
     valuesForDiff: Map<number, string>
-    selectedValuesForDiff: string
+    selectedValuesForDiff: string 
 }
 
 export interface DeleteChartDialogProps {

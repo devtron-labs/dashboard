@@ -49,68 +49,6 @@ const customValueContainer = (props: any): JSX.Element => {
     )
 }
 
-const CompareWithDropdown = ({
-    deployedChartValues,
-    defaultChartValues,
-    presetChartValues,
-    deploymentHistoryOptionsList,
-    selectedVersionForDiff,
-    handleSelectedVersionForDiff,
-}: CompareWithDropdownProps) => {
-    const [groupedOptions, setGroupedOptions] = useState<ChartGroupOptionType[]>([
-        {
-            label: '',
-            options: [],
-        },
-    ])
-
-    useEffect(() => {
-        const _groupedOptions = []
-        if (deploymentHistoryOptionsList.length > 0) {
-            _groupedOptions.push({
-                label: GROUPED_OPTION_LABELS.PreviousDeployments,
-                options: deploymentHistoryOptionsList,
-            })
-        }
-
-        const noOptions = [{ label: GROUPED_OPTION_LABELS.NoOptions, value: 0, info: '' }]
-        _groupedOptions.push(
-            {
-                label: GROUPED_OPTION_LABELS.OtherApps,
-                options: deployedChartValues.length > 0 ? deployedChartValues : noOptions,
-            },
-            {
-                label: GROUPED_OPTION_LABELS.PresetValues,
-                options: presetChartValues.length > 0 ? presetChartValues : noOptions,
-            },
-            {
-                label: GROUPED_OPTION_LABELS.DefaultValues,
-                options: defaultChartValues.length > 0 ? defaultChartValues : noOptions,
-            },
-        )
-        setGroupedOptions(_groupedOptions)
-    }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
-
-    return (
-        <ReactSelect
-            options={groupedOptions}
-            isMulti={false}
-            isSearchable={false}
-            value={selectedVersionForDiff}
-            classNamePrefix="compare-values-select"
-            isOptionDisabled={(option) => option.value === 0}
-            formatOptionLabel={formatOptionLabel}
-            components={{
-                IndicatorSeparator: null,
-                ValueContainer: customValueContainer,
-                Option,
-            }}
-            styles={getCompareValuesSelectStyles()}
-            onChange={handleSelectedVersionForDiff}
-        />
-    )
-}
-
 export default function ChartValuesEditor({
     loading,
     isExternalApp,
@@ -143,6 +81,70 @@ export default function ChartValuesEditor({
         valuesForDiff: new Map<number, string>(),
         selectedVersionForDiff: null,
     })
+
+    const CompareWithDropdown = ({
+        deployedChartValues,
+        defaultChartValues,
+        presetChartValues,
+        deploymentHistoryOptionsList,
+        selectedVersionForDiff,
+        handleSelectedVersionForDiff,
+    }: CompareWithDropdownProps) => {
+        const [groupedOptions, setGroupedOptions] = useState<ChartGroupOptionType[]>([
+            {
+                label: '',
+                options: [],
+            },
+        ])
+    
+        useEffect(() => {
+            const _groupedOptions = []
+            if (deploymentHistoryOptionsList?.length > 0) {
+                _groupedOptions.push({
+                    label: GROUPED_OPTION_LABELS.PreviousDeployments,
+                    options: deploymentHistoryOptionsList,
+                })
+            }
+
+            if (!manifestView) {
+                const noOptions = [{ label: GROUPED_OPTION_LABELS.NoOptions, value: 0, info: '' }]
+                _groupedOptions.push(
+                    {
+                        label: GROUPED_OPTION_LABELS.OtherApps,
+                        options: deployedChartValues?.length > 0 ? deployedChartValues : noOptions,
+                    },
+                    {
+                        label: GROUPED_OPTION_LABELS.PresetValues,
+                        options: presetChartValues?.length > 0 ? presetChartValues : noOptions,
+                    },
+                    {
+                        label: GROUPED_OPTION_LABELS.DefaultValues,
+                        options: defaultChartValues?.length > 0 ? defaultChartValues : noOptions,
+                    },
+                )
+            }
+            setGroupedOptions(_groupedOptions)
+        }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
+    
+        return (
+            <ReactSelect
+                options={groupedOptions}
+                isMulti={false}
+                isSearchable={false}
+                value={selectedVersionForDiff}
+                classNamePrefix="compare-values-select"
+                isOptionDisabled={(option) => option.value === 0}
+                formatOptionLabel={formatOptionLabel}
+                components={{
+                    IndicatorSeparator: null,
+                    ValueContainer: customValueContainer,
+                    Option,
+                }}
+                styles={getCompareValuesSelectStyles()}
+                onChange={handleSelectedVersionForDiff}
+            />
+        )
+    }
 
     useEffect(() => {
         if (
@@ -205,13 +207,13 @@ export default function ChartValuesEditor({
     }, [chartValuesList, deploymentHistoryList, selectedChartValues])
 
     useEffect(() => {
-        if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
+        if (comparisonView && valuesForDiffState.selectedVersionForDiff) { 
             setValuesForDiffState({
                 ...valuesForDiffState,
                 loadingValuesForDiff: true,
             })
             const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-            const _version = manifestView ? deploymentHistoryList[0].version : selectedVersionForDiff.value
+            const _version = manifestView ? deploymentHistoryList[0]?.version : selectedVersionForDiff.value
             const _currentValues = manifestView
                 ? valuesForDiffState.deployedManifest
                 : valuesForDiffState.valuesForDiff.get(_version)
@@ -343,10 +345,24 @@ export default function ChartValuesEditor({
                 <div className="code-editor__header chart-values-view__diff-view-header">
                     <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
                         {manifestView ? (
-                            <span>Deployed manifest</span>
+                            <>
+                                <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                                    Compare with:{' '}
+                                </span>
+                                <CompareWithDropdown
+                                    deployedChartValues={valuesForDiffState.deployedChartValues}
+                                    defaultChartValues={valuesForDiffState.defaultChartValues}
+                                    presetChartValues={valuesForDiffState.presetChartValues}
+                                    deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                                    selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                                    handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                                /> 
+                            </>
                         ) : (
                             <>
-                                <span style={{ width: '90px' }} data-testid="compare-with-heading">Compare with: </span>
+                                <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                                    Compare with:{' '}
+                                </span>
                                 <CompareWithDropdown
                                     deployedChartValues={valuesForDiffState.deployedChartValues}
                                     defaultChartValues={valuesForDiffState.defaultChartValues}
