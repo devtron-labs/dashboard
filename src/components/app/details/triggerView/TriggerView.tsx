@@ -120,14 +120,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getHostURLConfig()
         this.getWorkflows()
         this.getEnvironments()
-        this.getConfigs()
-        if (ApprovalMaterialModal && this.props.location.search.includes("approval-node")) {
-            this.setState({
-                showApprovalModal: true
-            })
-            const searchParams = new URLSearchParams(this.props.location.search);
-            const nodeId = searchParams.get('approval-node');
-            this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+        if (ApprovalMaterialModal) {
+            this.getConfigs()
+            if (this.props.location.search.includes("approval-node")) {
+                this.setState({
+                    showApprovalModal: true
+                })
+                const searchParams = new URLSearchParams(this.props.location.search);
+                const nodeId = searchParams.get('approval-node');
+                this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+            }
         }
     }
 
@@ -152,7 +154,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getConfigs() {
         getChannelConfigs()
             .then((response) => {
-                let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
+                let isConfigPresent = response.result?.sesConfigs.length > 0 || response.result?.smtpConfigs.length > 0
                 this.setState({configs: isConfigPresent})
             })
     }
@@ -621,7 +623,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag: string = '') {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
@@ -631,7 +633,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
-            imageTag
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {

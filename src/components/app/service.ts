@@ -273,7 +273,6 @@ export function getCDMaterialList(
     stageType: DeploymentNodeType,
     abortSignal: AbortSignal,
     isApprovalNode?: boolean,
-    imageTag?: string
 ): Promise<CDMaterialResponseType> {
     const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
         isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
