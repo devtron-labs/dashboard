@@ -46,7 +46,6 @@ const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
-const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 
 export default function DeploymentTemplateOverride({
@@ -108,23 +107,14 @@ export default function DeploymentTemplateOverride({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
-        Promise.all([
-            chartRefAutocomplete(Number(appId), Number(envId)),
-            !updateChartRefOnly && typeof getConfigProtections === 'function'
-                ? getConfigProtections(Number(appId))
-                : { result: null },
-        ])
-            .then(([chartRefResp, configProtectionsResp]) => {
+        chartRefAutocomplete(Number(appId), Number(envId))
+            .then((chartRefResp) => {
                 // Use other latest ref id instead of selectedChartRefId on delete override action
                 const _selectedChartId =
                     (!isDeleteAction && state.selectedChartRefId) ||
                     chartRefResp.result.latestEnvChartRef ||
                     chartRefResp.result.latestAppChartRef ||
                     chartRefResp.result.latestChartRef
-                const isConfigProtectionEnabled =
-                    configProtectionsResp.result?.find(
-                        (config) => config.appId === Number(appId) && config.envId === Number(envId),
-                    )?.state === 1
 
                 const chartRefsData = {
                     charts: chartRefResp.result.chartRefs,
@@ -135,12 +125,12 @@ export default function DeploymentTemplateOverride({
                 }
 
                 if (!updateChartRefOnly) {
-                    chartRefsData['isConfigProtectionEnabled'] = isConfigProtectionEnabled
+                    chartRefsData['isConfigProtectionEnabled'] = isProtected
                 }
 
-                if (!updateChartRefOnly && isConfigProtectionEnabled && typeof getAllDrafts === 'function') {
+                if (!updateChartRefOnly && isProtected && typeof getAllDrafts === 'function') {
                     fetchAllDrafts(chartRefsData)
-                } else {
+                } else if (!state.selectedChartRefId) {
                     updateRefsData(chartRefsData)
                 }
 

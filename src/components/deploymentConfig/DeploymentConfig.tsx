@@ -39,7 +39,6 @@ const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentCo
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
-const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
@@ -61,11 +60,6 @@ export default function DeploymentConfig({
         initDeploymentConfigState,
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
-    // const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
-    //     () => getAppOtherEnvironmentMin(appId),
-    //     [appId],
-    //     !!appId,
-    // )
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
@@ -76,12 +70,6 @@ export default function DeploymentConfig({
     useEffectAfterMount(() => {
         fetchDeploymentTemplate()
     }, [state.selectedChart])
-
-    // useEffect(() => {
-    //     if (!environmentsLoading && environmentResult?.result) {
-    //         setEnvironments(environmentResult.result)
-    //     }
-    // }, [environmentsLoading, environmentResult])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
         const payload = {
@@ -107,28 +95,20 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
-        Promise.all([
-            getChartReferences(+appId),
-            typeof getConfigProtections === 'function' ? getConfigProtections(Number(appId)) : { result: null },
-        ])
-            .then(([chartRefResp, configProtectionsResp]) => {
+        getChartReferences(+appId)
+            .then((chartRefResp) => {
                 const { chartRefs, latestAppChartRef, latestChartRef, chartMetadata } = chartRefResp.result
                 const selectedChartId: number = latestAppChartRef || latestChartRef
                 const chart = chartRefs.find((chart) => chart.id === selectedChartId)
-                const isConfigProtectionEnabled =
-                    configProtectionsResp.result?.find(
-                        (config) => config.appId === Number(appId) && config.envId === -1,
-                    )?.state === 1
-
                 const chartRefsData = {
                     charts: chartRefs,
                     chartsMetadata: chartMetadata,
                     selectedChartRefId: selectedChartId,
                     selectedChart: chart,
-                    isConfigProtectionEnabled,
+                    isConfigProtectionEnabled: isProtected,
                 }
 
-                if (isConfigProtectionEnabled && typeof getAllDrafts === 'function') {
+                if (isProtected && typeof getAllDrafts === 'function') {
                     fetchAllDrafts(chartRefsData)
                 } else {
                     updateRefsData(chartRefsData)
