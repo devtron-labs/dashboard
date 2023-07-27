@@ -1,5 +1,5 @@
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import React, { CSSProperties } from 'react'
+import React from 'react'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 

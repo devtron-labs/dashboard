@@ -688,15 +688,13 @@ export function ConfigMapForm({
                         }}
                     >
                         <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
-                            {isExternalValues && !isJobView ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
+                            {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            
-                            (!(isJobView && name == "Kubernetes External ConfigMap") && (
-                                <Select.Option dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
-                                    {name}
-                                </Select.Option>
-)                            )))}
+                            <Select.Option dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
+                                {name}
+                            </Select.Option>
+                        ))}
                     </Select>
                 </div>
             </div>

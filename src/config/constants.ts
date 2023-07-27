@@ -29,6 +29,7 @@ export const Routes = {
     CLUSTER_NOTE: 'cluster/description/note',
 
     CD_CONFIG: 'app/cd-pipeline',
+    V2_CD_CONFIG: 'app/v2/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
@@ -257,7 +258,7 @@ export const AppConfigStatus = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '^[a-z][a-z0-9-.]*[a-z0-9]$/*',
+    APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
@@ -477,6 +478,12 @@ export const BuildTabText = {
     preBuildStage: 'Pre-build stage',
     buildStage: 'Build stage',
     postBuildStage: 'Post-build stage',
+}
+
+export const CDDeploymentTabText = {
+    preBuildStage: 'Pre-Deployment stage',
+    buildStage: 'Deployment stage',
+    postBuildStage: 'Post-Deployment stage',
 }
 
 export const JobPipelineTabText = {
