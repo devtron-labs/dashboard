@@ -47,6 +47,8 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const location = useLocation()
+    const deploymentModalShownRef = useRef(null)
+    deploymentModalShownRef.current =location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -80,7 +82,7 @@ const AppDetailsComponent = ({
 
     const getDeploymentDetailStepsData = (): void => {
         // Deployments status details for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, false, '', true).then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current, '', true).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
@@ -88,6 +90,14 @@ const AppDetailsComponent = ({
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
         const processedDeploymentStatusDetailsData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
+        if (
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
+        ) {
+            deploymentModalShownRef.current= false
+        }
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
             deploymentStatusTimer = setTimeout(() => {
