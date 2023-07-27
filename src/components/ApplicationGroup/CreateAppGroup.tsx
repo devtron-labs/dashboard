@@ -183,8 +183,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                     {unauthorzedAppList.map((app) => {
                         return (
                             <Tippy
-                                className="default-tt"
-                                arrow={true}
+                                className="default-tt w-200"
+                                arrow={false}
                                 placement="bottom-start"
                                 content="You don't have admin/manager pemission for this app."
                             >
@@ -221,9 +221,9 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 wrap={(children) => (
                                     <Tippy
                                         data-testid="env-tippy"
-                                        className="default-tt"
-                                        arrow={true}
-                                        placement="top-start"
+                                        className="default-tt w-200"
+                                        arrow={false}
+                                        placement="bottom-start"
                                         content="You don't have admin/manager pemission for this app."
                                     >  
                                         <div>{children}</div>
