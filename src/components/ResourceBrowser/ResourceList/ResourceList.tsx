@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
     handleUTCTime,
     processK8SObjects,
     sortObjectArrayAlphabetically,
 } from '../../common'
-import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -65,6 +65,11 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
+import { ClusterImageList } from '../../ClusterNodes/types'
+import { getHostURLConfiguration } from '../../../services/service'
+import { clusterNamespaceList } from '../../ClusterNodes/clusterNodes.service'
+import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
+import ClusterSelector from './ClusterSelector'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -103,6 +108,9 @@ export default function ResourceList() {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
     const [showSelectClusterState, setShowSelectClusterState] = useState(false)
+    const [imageList, setImageList] = useState<ClusterImageList[]>(null)
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(window._env_.K8S_CLIENT ? true : false)
+    const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const isStaleDataRef = useRef<boolean>(false)
     const resourceListAbortController = new AbortController()
     const sideDataAbortController = useRef<{
@@ -229,23 +237,41 @@ export default function ResourceList() {
     const getClusterData = async () => {
         try {
             setClusterLoader(true)
-            const { result } = await getClusterList()
-            if (result) {
-                const _clusterList = result.filter((resource) => !resource?.isVirtualCluster)
-                const _clusterOptions = convertToOptionsList(
-                    sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
-                    'cluster_name',
-                    'id',
-                    'errorInConnecting',
-                )
-                setClusterOptions(_clusterOptions as ClusterOptionType[])
-                const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
-                if (_selectedCluster) {
-                    onChangeCluster(_selectedCluster, false, true)
-                } else if (_clusterOptions.length === 1) {
-                    onChangeCluster(_clusterOptions[0], true)
+            Promise.all([
+                getClusterList(),
+                getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
+                window._env_.K8S_CLIENT ? null : getUserRole(),
+                clusterNamespaceList(),
+            ]).then(([clusterList, hostUrlConfig, userRole, namespaceList]) => {
+                if (clusterList.result) {
+                    const _clusterList = clusterList.result.filter((resource) => !resource?.isVirtualCluster)
+                    const _clusterOptions = convertToOptionsList(
+                        sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
+                        'cluster_name',
+                        'id',
+                        'errorInConnecting',
+                    )
+                    setClusterOptions(_clusterOptions as ClusterOptionType[])
+                    const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
+                    if (_selectedCluster) {
+                        onChangeCluster(_selectedCluster, false, true)
+                        // Will added this changes if we are not redirecting to cluster page
+                    // } else if (_clusterOptions.length === 1) {
+                    //     onChangeCluster(_clusterOptions[0], true)
+                    }
                 }
-            }
+
+                if (hostUrlConfig.result) {
+                    const imageValue: string = hostUrlConfig.result.value
+                    setImageList(JSON.parse(imageValue))
+                }
+                if (userRole?.result) {
+                    setSuperAdmin(userRole.result?.superAdmin)
+                }
+                if (namespaceList.result) {
+                    setNameSpaceList(namespaceList.result)
+                }
+            })
         } catch (err) {
             if (err['code'] === 403) {
                 setErrorStatusCode(err['code'])
@@ -464,6 +490,26 @@ export default function ResourceList() {
         }
     }
 
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                'resource-browser' : {
+                    component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
+                    linked: true,
+                },
+                ':clusterId?': {
+                    component: <ClusterSelector onChange={onChangeCluster} clusterList={clusterOptions} clusterId={clusterId}  />,
+                    linked: false,
+                },
+                ':namespace?': null,
+                ':nodeType?': null,
+                ':group?':null,
+                ':node?': null
+            },
+        },
+        [clusterId,clusterOptions],
+    )
+
     const refreshData = (): void => {
         setSelectedResource(null)
         getSidebarData(selectedCluster.value)
@@ -653,6 +699,25 @@ export default function ResourceList() {
         )
     }
 
+    const addClusterButton = () => {
+        return (
+            <>
+                <NavLink className="flex cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16" to={URLS.GLOBAL_CONFIG_CLUSTER}>
+                    <Add
+                        data-testid="add_cluster_button"
+                        className="icon-dim-16 mr-4 fcb-5 dc__vertical-align-middle"
+                    />
+                    Add cluster
+                </NavLink>
+                <span className="dc__divider" />
+            </>
+        )
+    }
+
+    const renderBreadcrumbs = () => { 
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
     const renderResourceListBody = () => {
         if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
             return (
@@ -671,7 +736,7 @@ export default function ResourceList() {
                 </div>
             )
         } else if (!showSelectClusterState && !selectedCluster?.value) {
-            return <ClusterSelection clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} />
+            return <ClusterSelectionList clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
         }
 
         return (
@@ -739,7 +804,7 @@ export default function ResourceList() {
     return (
         <ShortcutProvider>
             <div className="resource-browser-container">
-                <PageHeader headerName="Kubernetes Resource Browser" />
+                <PageHeader isBreadcrumbs={!!clusterId} breadCrumbs={renderBreadcrumbs} headerName={!clusterId ? 'Kubernetes Resource Browser' : ''} renderActionButtons={addClusterButton} />
                 {renderResourceListBody()}
                 {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
             </div>
