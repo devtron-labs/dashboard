@@ -60,7 +60,7 @@ export const ValueContainer = (props): JSX.Element => {
 }
 
 export const Option = (props): JSX.Element => {
-    const { isSuperAdmin, selectedFilterTab, openCreateGroup, openDeleteGroup }: AppGroupAppFilterContextType =
+    const { selectedFilterTab, openCreateGroup, openDeleteGroup }: AppGroupAppFilterContextType =
         useAppGroupAppFilterContext()
     const { selectOption, data } = props
 
