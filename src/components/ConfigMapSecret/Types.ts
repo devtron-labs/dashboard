@@ -100,6 +100,7 @@ export interface ConfigMapSecretProps {
     isProtected: boolean
     toggleDraftComments?: (data: DraftDetailsForCommentDrawerType) => void
     reduceOpacity?: boolean
+    parentName?: string
 }
 
 interface ValueWithError {

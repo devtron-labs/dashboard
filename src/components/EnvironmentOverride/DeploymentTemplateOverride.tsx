@@ -54,6 +54,7 @@ export default function DeploymentTemplateOverride({
     setParentState,
     environments,
     environmentName,
+    isProtected
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()

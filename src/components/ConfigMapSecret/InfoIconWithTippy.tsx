@@ -19,7 +19,7 @@ export default function InfoIconWithTippy({titleText, infoText, documentationLin
             documentationLink={documentationLink}
             documentationLinkText="View Documentation"
         >
-            <div className="icon-dim-16 fcn-9 ml-8 cursor">
+            <div className="icon-dim-20 fcn-9 ml-8 cursor">
                 <Question />
             </div>
         </TippyCustomized>

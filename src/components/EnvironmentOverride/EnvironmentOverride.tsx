@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
-import { mapByKey, ErrorBoundary, useAppContext, useAsync } from '../common'
+import { mapByKey, ErrorBoundary, useAppContext } from '../common'
 import { Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, generatePath, useHistory, useLocation } from 'react-router'
-import { getAppComposeURL, APP_COMPOSE_STAGE, URLS } from '../../config'
+import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import { URLS } from '../../config'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import {
-    ComponentStates,
-    EnvironmentOverrideComponentProps,
-} from './EnvironmentOverrides.type'
+import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.type'
 import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
 import SecretList from '../ConfigMapSecret/Secret/SecretList'
-import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin } from '../../services/service'
 import './environmentOverride.scss'
 
 export default function EnvironmentOverride({
     appList,
-    environments,
-    setEnvironments,
     isJobView,
-    envList
+    environments,
+    reloadEnvironments,
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -28,13 +23,13 @@ export default function EnvironmentOverride({
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
     const [isDeploymentOverride, setIsDeploymentOverride] = useState(false)
-    const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
-        [params.appId],
-        !!params.appId,
-    )
+    // const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
+    //     () => (!isJobView ? getAppOtherEnvironmentMin(params.appId) : getJobOtherEnvironmentMin(params.appId)),
+    //     [params.appId],
+    //     !!params.appId,
+    // )
 
-    const environmentsMap = mapByKey(envList || [], 'id')
+    const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
 
     useEffect(() => {
@@ -48,17 +43,17 @@ export default function EnvironmentOverride({
         }
     }, [location.pathname])
 
-    const envMissingRedirect = () => {
-        if (params.envId || environmentsLoading) return
-        if (environmentsMap.has(environmentId)) {
-            const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
-            push(newUrl)
-        } else {
-            const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
-            push(workflowUrl)
-        }
-    }
-    useEffect(envMissingRedirect, [environmentsLoading])
+    // const envMissingRedirect = () => { //TODO: talk to Sohel around this
+    //     if (params.envId) return
+    //     if (environmentsMap.has(environmentId)) {
+    //         const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
+    //         push(newUrl)
+    //     } else {
+    //         const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
+    //         push(workflowUrl)
+    //     }
+    // }
+    // useEffect(envMissingRedirect, [environmentsLoading])
 
     useEffect(() => {
         if (viewState === ComponentStates.reloading) {
@@ -66,15 +61,15 @@ export default function EnvironmentOverride({
         }
     }, [viewState])
 
-    useEffect(() => {
-        if (!environmentsLoading && environmentResult?.result) {
-            setEnvironments(environmentResult.result)
-        }
-    }, [environmentsLoading, environmentResult])
+    // useEffect(() => {
+    //     if (!environmentsLoading && environmentResult?.result) {
+    //         setEnvironments(environmentResult.result)
+    //     }
+    // }, [environmentsLoading, environmentResult])
 
     if (!params.envId) {
         return null
-    } else if (environmentsLoading && viewState !== ComponentStates.reloading) {
+    } else if (viewState === ComponentStates.loading) {
         return <Progressing pageLoader />
     } else if (viewState === ComponentStates.failed) {
         return (
@@ -98,7 +93,7 @@ export default function EnvironmentOverride({
 
     return (
         <ErrorBoundary>
-            <div className={isDeploymentOverride ?'deployment-template-override': ''}>
+            <div className={isDeploymentOverride ? 'deployment-template-override' : ''}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
@@ -110,6 +105,7 @@ export default function EnvironmentOverride({
                                     ? environmentsMap.get(+params.envId).environmentName
                                     : ''
                             }
+                            isProtected={environmentsMap.get(+params.envId)?.isProtected}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>

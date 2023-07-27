@@ -29,9 +29,7 @@ import './ConfigMapSecret.scss'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
-
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
-const updateDraftState = importComponentFromFELibrary('updateDraftState', null, 'function')
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
         keyLabel,
@@ -108,6 +106,7 @@ export function ConfigMapSecretContainer({
     isProtected,
     toggleDraftComments,
     reduceOpacity,
+    parentName,
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
@@ -189,7 +188,7 @@ export function ConfigMapSecretContainer({
                         handleCommentClick={toggleDraftCommentModal}
                         isApprovalPending={draftData?.draftState === 4}
                         approvalUsers={draftData?.approvers}
-                        reloadDrafts={update}
+                        reload={update}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}
@@ -204,6 +203,7 @@ export function ConfigMapSecretContainer({
                         isJobView={isJobView}
                         selectedTab={selectedTab}
                         draftData={draftData}
+                        parentName={parentName}
                     />
                 </>
             )
@@ -307,6 +307,7 @@ export function ProtectedConfigMapSecretDetails({
     isJobView,
     selectedTab,
     draftData,
+    parentName,
 }) {
     const [isLoader, setLoader] = useState(false)
     const getData = () => {
@@ -391,6 +392,7 @@ export function ProtectedConfigMapSecretDetails({
                             draftVersionId={draftData.draftVersionId}
                             resourceName={componentType}
                             reload={update}
+                            envName={parentName}
                         >
                             <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
                                 {isLoader ? <Progressing /> : <>Approve changes</>}

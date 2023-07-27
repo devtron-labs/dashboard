@@ -1015,9 +1015,9 @@ export const ConfigMapSecretForm = React.memo(
                         resourceType={componentType === 'secret' ? 2 : 1}
                         resourceName={state.configName.value}
                         prepareDataToSave={preparePayload}
-                        toggleSaveChangesModal={toggleDraftSaveModal}
+                        toggleModal={toggleDraftSaveModal}
                         latestDraft={latestDraftData}
-                        reloadDrafts={reloadData}
+                        reload={reloadData}
                     />
                 )}
             </>

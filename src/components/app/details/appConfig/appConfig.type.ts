@@ -21,7 +21,7 @@ export interface AppConfigProps {
 }
 export interface AppConfigState {
     view: string
-    stattusCode: number
+    statusCode: number
     stageName: StageNames
     isUnlocked: any
     appName: string
@@ -34,6 +34,7 @@ export interface AppConfigState {
     workflowsRes?: WorkflowResult
     environmentList?: any[]
     isBaseConfigProtected?: boolean
+    configProtectionData?: any[]
 }
 
 export interface AppStageUnlockedType {
@@ -71,6 +72,7 @@ export interface AppConfigNavigationProps {
     getWorkflows: () => void
     environmentList?: any[]
     isBaseConfigProtected?: boolean
+    reloadEnvironments:()=> void
 }
 
 export interface AppComposeRouterProps {
@@ -83,15 +85,15 @@ export interface AppComposeRouterProps {
     maxAllowedUrl: string
     isCDPipeline: boolean
     environments: AppEnvironment[]
-    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
     workflowsRes: WorkflowResult
     userRole: UserRoleType
     canShowExternalLinks: boolean
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    envList?: any[]
     isBaseConfigProtected?: boolean
+    reloadEnvironments:()=> void
+    configProtectionData: any[]
 }
 
 export interface EnvironmentOverridesProps {
@@ -120,6 +122,7 @@ export interface EnvironmentOverrideRouterProps {
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
     allEnvs?: any[]
+    reloadEnvironments: ()=> void
 }
 
 export interface NextButtonProps {

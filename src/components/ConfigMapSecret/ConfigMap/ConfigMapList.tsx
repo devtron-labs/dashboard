@@ -31,8 +31,10 @@ export default function ConfigMapList({
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
 
     useEffect(() => {
+        setConfigMapLoading(true)
+        setConfigMap(null)
         init(true)
-    }, [appId])
+    }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
         if (showComments) {
@@ -101,11 +103,7 @@ export default function ConfigMapList({
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     return (
-        <div
-            className={`form__app-compose p-0-imp cm-secret-main-container ${
-                showComments ? 'with-comment-drawer' : ''
-            }`}
-        >
+        <div className={`form__app-compose cm-secret-main-container ${showComments ? 'with-comment-drawer' : ''}`}>
             <div>
                 <h1 className="form__title form__title--artifacts flex left">
                     {parentName && (
@@ -150,6 +148,7 @@ export default function ConfigMapList({
                                     isProtected={isProtected}
                                     toggleDraftComments={toggleDraftComments}
                                     reduceOpacity={selectedDraft && selectedDraft.index !== idx}
+                                    parentName={parentName}
                                 />
                             )
                         })}

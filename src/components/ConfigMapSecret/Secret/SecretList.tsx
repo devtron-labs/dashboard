@@ -9,7 +9,7 @@ import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { getSecretList } from '../service'
 import { importComponentFromFELibrary } from '../../common'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
-import { SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
+import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
 import '../ConfigMapSecret.scss'
 
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
@@ -31,14 +31,16 @@ export default function SecretList({
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
 
     useEffect(() => {
+        setSecretLoading(true)
+        setList(null)
         init(true)
-    }, [])
+    }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
         if (showComments) {
             setSelectedDraft(null)
             setShowComments(false)
-        } else if(selectedDraft) {
+        } else if (selectedDraft) {
             setSelectedDraft(selectedDraft)
             setShowComments(true)
         }
@@ -81,8 +83,10 @@ export default function SecretList({
             if (appChartRefRes) {
                 setAppChartRef(appChartRefRes.result)
             }
+            setParentState?.(ComponentStates.loaded)
         } catch (err) {
             showError(err)
+            setParentState?.(ComponentStates.failed)
         } finally {
             setSecretLoading(false)
         }
@@ -130,13 +134,10 @@ export default function SecretList({
         } catch (err) {}
     }
 
-    if (secretLoading) return <Progressing pageLoader />
+    if (parentState === ComponentStates.loading || secretLoading)
+        return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     return (
-        <div
-            className={`form__app-compose p-0-imp cm-secret-main-container ${
-                showComments ? 'with-comment-drawer' : ''
-            }`}
-        >
+        <div className={`form__app-compose cm-secret-main-container ${showComments ? 'with-comment-drawer' : ''}`}>
             <div>
                 <h1 className="form__title form__title--artifacts flex left">
                     {parentName && (
@@ -180,6 +181,7 @@ export default function SecretList({
                                 isProtected={isProtected}
                                 toggleDraftComments={toggleDraftComments}
                                 reduceOpacity={selectedDraft && selectedDraft.index !== idx}
+                                parentName={parentName}
                             />
                         ))}
                     </div>
