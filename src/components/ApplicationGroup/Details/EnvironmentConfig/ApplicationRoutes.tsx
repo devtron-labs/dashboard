@@ -36,7 +36,9 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
                         className="icon-dim-24 rotate mr-4"
                         style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
                     />
-                    <div className="dc__truncate-text dc__mxw-155">{envListData.name}</div>
+                    <div className={`dc__truncate-text ${envListData.isProtected ? 'dc__mxw-155' : 'dc__mxw-180'}`}>
+                        {envListData.name}
+                    </div>
                 </div>
                 {envListData.isProtected && <ProtectedIcon className="mw-20 icon-dim-20" />}
             </div>

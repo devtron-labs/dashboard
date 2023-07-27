@@ -42,7 +42,6 @@ import ReactSelect from 'react-select'
 import {
     SecretOptions,
     getTypeGroups,
-    groupStyle,
     GroupHeading,
     ConfigMapOptions,
     hasHashiOrAWS,
@@ -52,7 +51,7 @@ import {
     CODE_EDITOR_RADIO_STATE,
     ExternalSecretHelpNote,
 } from './Secret/secret.utils'
-import { Option } from '../v2/common/ReactSelect.utils'
+import { Option, groupStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoIconOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'

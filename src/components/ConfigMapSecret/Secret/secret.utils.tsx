@@ -2,7 +2,7 @@ import React from 'react'
 import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
-import { OptionType, multiSelectStyles, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
 import YAML from 'yaml'
@@ -279,32 +279,6 @@ export function GroupHeading(props) {
             </div>
         </components.GroupHeading>
     )
-}
-
-export const groupStyle = () => {
-    return {
-        ...multiSelectStyles,
-        menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-        control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
-        group: (base) => ({
-            ...base,
-            paddingTop: 0,
-            paddingBottom: 0,
-        }),
-        groupHeading: (base) => ({
-            ...base,
-            fontWeight: 600,
-            fontSize: '12px',
-            height: '28px',
-            color: 'var(--N900)',
-            backgroundColor: 'var(--N100)',
-            marginBottom: 0,
-        }),
-        indicatorsContainer: (provided, state) => ({
-            ...provided,
-        }),
-        option: getCustomOptionSelectionStyle(),
-    }
 }
 
 export const hasHashiOrAWS = (externalType): boolean => {

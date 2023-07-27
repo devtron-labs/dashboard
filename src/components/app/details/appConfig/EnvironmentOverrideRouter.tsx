@@ -26,7 +26,7 @@ import ReactSelect, { components } from 'react-select'
 import { groupHeading } from '../../../CIPipelineN/Constants'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
-import { groupStyle } from '../../../secrets/secret.utils'
+import { groupStyle } from '../../../v2/common/ReactSelect.utils'
 
 const EnvOverridesHelpNote = () => {
     return (
