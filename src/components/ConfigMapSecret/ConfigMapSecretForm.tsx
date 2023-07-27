@@ -413,7 +413,6 @@ export const ConfigMapSecretForm = React.memo(
             try {
                 const payloadData = createPayload(arr)
                 if (isProtectedView) {
-                    console.log(payloadData)
                     dispatch({
                         type: ConfigMapActionTypes.multipleOptions,
                         payload: {
