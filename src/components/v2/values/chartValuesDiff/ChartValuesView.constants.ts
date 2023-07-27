@@ -48,6 +48,7 @@ export const COMPARISON_OPTION_TIPPY_CONTENT = {
     PreviousDeployments: 'Compare values with previous deployments of this app or other deployments of this chart',
     Fetching: 'Fetching...',
     ReadmeNotAvailable: 'Readme is not available for this chart',
+    DiabledManifest: 'Nothing to compare with You can compare manifest output of deployments once this chart is deployed'
 }
 
 export const UPDATE_APP_BUTTON_TEXTS = {
