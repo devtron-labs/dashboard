@@ -10,7 +10,7 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { getChartRepoList } from '../../../services/service'
+import { getChartProviderList, postChartProviderList, postSyncSpecificChart } from '../charts.service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -84,7 +84,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            const [{ result: chartRepoListResp }] = await Promise.all([getChartRepoList()])
+            const [{ result: chartRepoListResp }] = await Promise.all([getChartProviderList()])
             let chartRepos = chartRepoListResp || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartList(chartRepos)
@@ -112,6 +112,13 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
             })
     }
 
+    async function refetchSpecificChart (id: number, isOCIRegistry: boolean) {
+        let payload ={
+             id: id,
+             isOCIRegistry: isOCIRegistry
+        }
+        await postSyncSpecificChart(payload)
+    }
     const renderInfoText = (isEmptyState?: boolean): JSX.Element => {
         const renderNavigationeToOCIRepository = () => {
             return (
@@ -161,8 +168,16 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
         }
     }
 
-    const onSelectToggle = (active) => {
-        toggleEnabled(active)
+    const onSelectToggle = (repositortList: ChartListType) => {
+        toggleEnabled(repositortList.active)
+        let payload = {
+            id: repositortList.id,                  //eg: OCI registry: “test-registry” ; for chart repo: “1”
+            isOCIRegistry: repositortList.isOCIRegistry,   // for chart-repo: false
+            active: repositortList.active,
+
+        }
+        postChartProviderList(payload)
+
     }
 
     const renderChartList = () => {
@@ -190,7 +205,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                                             rel="noreferrer noopener"
                                             target="_blank"
                                             className={`dc__link ${!fetching ? 'cursor' : ''}`}
-                                            onClick={refetchCharts}
+                                            onClick={() =>refetchSpecificChart(list.id, list.isOCIRegistry)}
                                         >
                                             <span>
                                                 <SyncIcon className="scn-5" />
@@ -210,7 +225,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                                         >
                                             <div>
                                                 <List.Toggle
-                                                    onSelect={() => onSelectToggle(list.active)}
+                                                    onSelect={() => onSelectToggle(list)}
                                                     enabled={list.active ?? enabled}
                                                 />
                                             </div>

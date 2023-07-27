@@ -355,12 +355,9 @@ export interface ChartListPopUpType{
 
 export interface ChartListType {
     active: boolean
-    allow_insecure_connection: boolean
-    authMode: string
-    default: boolean
     id: number
     isEditable: boolean
     name: String
-    url: string
     registryProvider?: string
+    isOCIRegistry?: boolean
 }
