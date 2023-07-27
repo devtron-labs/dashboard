@@ -33,8 +33,9 @@ export default function EnvironmentOverride({
     const appMap = mapByKey(appList || [], 'id')
 
     useEffect(() => {
-        if (params.envId) setEnvironmentId(+params.envId)
-        setViewState(ComponentStates.loading)
+        if (params.envId) {
+            setEnvironmentId(+params.envId)
+        }
     }, [params.envId])
 
     useEffect(() => {
@@ -69,13 +70,11 @@ export default function EnvironmentOverride({
 
     if (!params.envId) {
         return null
-    } else if (viewState === ComponentStates.loading) {
-        return <Progressing pageLoader />
     } else if (viewState === ComponentStates.failed) {
         return (
             <Reload
                 reload={(event) => {
-                    setViewState(ComponentStates.loading)
+                    setViewState(ComponentStates.reloading)
                 }}
             />
         )

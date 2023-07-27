@@ -385,7 +385,7 @@ export function ProtectedConfigMapSecretDetails({
                     baseTemplateConfiguration={getCurrentConfig()}
                     previousConfigAvailable={true}
                 />
-                {draftData.isApprovalPending && draftData.canApprove && ApproveRequestTippy && (
+                {draftData.draftState === 4 && draftData.canApprove && ApproveRequestTippy && (
                     <div className="flex right pr-16 pb-16 pl-16">
                         <ApproveRequestTippy
                             draftId={draftData.draftId}
@@ -395,7 +395,7 @@ export function ProtectedConfigMapSecretDetails({
                             envName={parentName}
                         >
                             <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
-                                {isLoader ? <Progressing /> : <>Approve changes</>}
+                                {isLoader ? <Progressing /> : 'Approve changes'}
                             </button>
                         </ApproveRequestTippy>
                     </div>
