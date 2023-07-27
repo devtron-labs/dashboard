@@ -15,7 +15,7 @@ import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { CreateGroupType, CreateTypeOfAppListType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
-import { Icons, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -122,7 +122,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         setSelectedAppsCount(_selectedAppsCount)
     }
 
-    const unauthorizedAppCheck = (appName: String) => {
+    const unauthorizedAppCheck = (appName: string) => {
         if(unAuthorizedApps === undefined) return false
         for(let app of unAuthorizedApps) {
             if(app === appName) {
