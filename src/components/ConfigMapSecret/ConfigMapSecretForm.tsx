@@ -753,13 +753,13 @@ export const ConfigMapSecretForm = React.memo(
                     >
                         {renderSubPathCheckBoxContent()}
                     </Checkbox>
-                    {state.externalType === 'KubernetesSecret' && state.isSubPathChecked && (
+                    {(state.externalType === 'KubernetesSecret' || (componentType!=='secret' && state.external)) && state.isSubPathChecked && (
                         <div className="mb-16">
                             <CustomInput
                                 value={state.externalSubpathValues.value}
                                 autoComplete="off"
                                 tabIndex={5}
-                                label={''}
+                                label=""
                                 placeholder={'Enter keys (Eg. username,configs.json)'}
                                 error={state.externalSubpathValues.error}
                                 onChange={onExternalSubpathValuesChange}

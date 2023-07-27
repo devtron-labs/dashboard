@@ -255,12 +255,12 @@ export function ConfigMapSecretContainer({
     return (
         <>
             <section
-                className={`pt-20 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
+                className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
                     reduceOpacity ? 'dc__disable-click dc__opacity-0_5' : ''
                 }`}
             >
                 <article
-                    className="dc__configuration-list pointer pr-16 pl-16 mb-20"
+                    className="dc__configuration-list pointer pr-16 pl-16 mb-16"
                     onClick={handleCMSecretClick}
                     data-testid="click-to-add-configmaps-secret"
                 >
