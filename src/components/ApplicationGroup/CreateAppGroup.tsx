@@ -20,7 +20,7 @@ import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
-export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, unauthorizedApps }: CreateGroupType) {
+export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, unAuthorizedApps }: CreateGroupType) {
     const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
@@ -123,8 +123,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     }
 
     const unauthorizedAppCheck = (appName: String) => {
-        if(unauthorizedApps === undefined) return false
-        for(let app of unauthorizedApps) {
+        if(unAuthorizedApps === undefined) return false
+        for(let app of unAuthorizedApps) {
             if(app === appName) {
                 return true
             }  
