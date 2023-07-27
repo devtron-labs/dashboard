@@ -42,7 +42,6 @@ import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 import { toast } from 'react-toastify'
 import CreateAppGroup from './CreateAppGroup'
-import { create } from 'domain'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -73,7 +72,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
     const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
     const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
-    const [unauthorizedApps, setUnauthorizedApps] = useState<String[]>()
+    const [unauthorizedApps, setUnauthorizedApp] = useState<String[]>()
     const [isLoading, setLoading] = useState(true)
     const [isPopupBox, setIsPopupBox] = useState(false)
 
@@ -156,12 +155,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppListLoading(false)
     }
 
-    const handleToast = (field: string) => {
+    const handleToast = (action: string) => {
         return (
             toast.info(
                 <ToastBody
-                    title={`Cannot ${field} filter`}
-                    subtitle={`You can ${field} a filter with only those applications for which you have admin/manager permission.`}
+                    title={`Cannot ${action} filter`}
+                    subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
                 />,
                 {
                     className: 'devtron-toast unauthorized',
@@ -212,13 +211,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setLoading(true)
         try {
             const {result} = await appGroupPermission(envId, payload)
-            if(result === true) {
+            if(result) {
                 setShowCreateGroup(true)
             } 
         } catch(err) {
             if(err['code'] === 403) {
                 err['errors'].map((errors) => {
-                    setUnauthorizedApps([...errors['userMessage']['unauthorizedApps']])
+                    setUnauthorizedApp([...errors['userMessage']['unauthorizedApps']])
                 })
             }
             showError(err)
@@ -403,7 +402,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             {renderRoute()}
             {showCreateGroup && (
                 <CreateAppGroup
-                    unauthorizedApps={unauthorizedApps}
+                    unAuthorizedApps={unauthorizedApps}
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
