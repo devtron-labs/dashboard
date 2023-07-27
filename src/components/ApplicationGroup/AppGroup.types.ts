@@ -295,6 +295,11 @@ export interface CreateGroupAppListType {
     isSelected: boolean
 }
 
+export interface CreateTypeOfAppListType{
+    id: number
+    appName: string
+}
+
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
