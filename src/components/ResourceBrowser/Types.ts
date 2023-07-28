@@ -116,9 +116,7 @@ export interface SidebarType {
 export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
-    clusterOptions: OptionType[]
-    selectedCluster: OptionType
-    onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
+    selectedCluster?: OptionType
     namespaceOptions: OptionType[]
     selectedNamespace: OptionType
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>

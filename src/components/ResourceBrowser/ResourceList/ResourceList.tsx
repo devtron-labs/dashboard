@@ -628,10 +628,8 @@ export default function ResourceList() {
                 sideDataAbortController={sideDataAbortController.current}
                 selectedResource={selectedResource}
                 resourceList={resourceList}
-                clusterOptions={clusterOptions}
                 selectedCluster={selectedCluster}
                 setSelectedCluster={setSelectedCluster}
-                onChangeCluster={onChangeCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}
@@ -659,9 +657,7 @@ export default function ResourceList() {
                     resourceList={resourceList}
                     filteredResourceList={filteredResourceList}
                     noResults={noResults}
-                    clusterOptions={clusterOptions}
                     selectedCluster={selectedCluster}
-                    onChangeCluster={onChangeCluster}
                     namespaceOptions={namespaceOptions}
                     selectedNamespace={selectedNamespace}
                     setSelectedNamespace={setSelectedNamespace}
@@ -698,6 +694,7 @@ export default function ResourceList() {
     }
 
     const addClusterButton = () => {
+        if(clusterId) return
         return (
             <>
                 <NavLink className="flex cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16" to={URLS.GLOBAL_CONFIG_CLUSTER}>
