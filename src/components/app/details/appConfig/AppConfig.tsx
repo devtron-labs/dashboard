@@ -91,7 +91,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
             getAppConfigStatus(+appId, isJobView),
             getWorkflowList(appId),
             getAppOtherEnvironmentMin(appId),
-            typeof getConfigProtections === 'function' ? getConfigProtections(Number(appId)) : { result: null },
+            typeof getConfigProtections === 'function' && !isJobView ? getConfigProtections(Number(appId)) : { result: null },
         ])
             .then(([configStatusRes, workflowRes, envResult, configProtectionsResp]) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
@@ -109,13 +109,14 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
-                const updatedEnvs = envResult.result?.map((env) => {
-                    let envData = { ...env, isProtected: false }
-                    if (envProtectMap[env.environmentId]) {
-                        envData.isProtected = true
-                    }
-                    return envData
-                }) || []
+                const updatedEnvs =
+                    envResult.result?.map((env) => {
+                        let envData = { ...env, isProtected: false }
+                        if (envProtectMap[env.environmentId]) {
+                            envData.isProtected = true
+                        }
+                        return envData
+                    }) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
 
                 setState({
@@ -133,7 +134,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     workflowsRes: workflowRes.result,
                     environmentList: updatedEnvs,
                     isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                    configProtectionData: configProtectionsResp?.result ?? []
+                    configProtectionData: configProtectionsResp?.result ?? [],
                 })
                 if (location.pathname === match.url) {
                     history.replace(redirectUrl)
@@ -251,7 +252,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     function reloadEnvironments() {
         Promise.all([
             getAppOtherEnvironmentMin(appId),
-            typeof getConfigProtections === 'function' ? getConfigProtections(Number(appId)) : { result: null },
+            typeof getConfigProtections === 'function' && !isJobView ? getConfigProtections(Number(appId)) : { result: null },
         ])
             .then(([envResult, configProtectionsResp]) => {
                 const envProtectMap: Record<number, boolean> = {}
@@ -260,13 +261,14 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
-                const updatedEnvs = envResult.result?.map((env) => {
-                    let envData = { ...env, isProtected: false }
-                    if (envProtectMap[env.environmentId]) {
-                        envData.isProtected = true
-                    }
-                    return envData
-                }) || []
+                const updatedEnvs =
+                    envResult.result?.map((env) => {
+                        let envData = { ...env, isProtected: false }
+                        if (envProtectMap[env.environmentId]) {
+                            envData.isProtected = true
+                        }
+                        return envData
+                    }) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
                 setState({
                     ...state,
@@ -361,7 +363,9 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
                             _canShowExternalLinks ? '' : 'hide-external-links'
                         } ${
-                            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView ? 'config-protection__side-nav' : ''
+                            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView
+                                ? 'config-protection__side-nav'
+                                : ''
                         }`}
                     >
                         <Navigation
@@ -505,7 +509,6 @@ function Navigation({
                 } else {
                     return (
                         <EnvironmentOverrideRouter
-                            key={item.title}
                             isJobView={isJobView}
                             workflowsRes={workflowsRes}
                             getWorkflows={getWorkflows}

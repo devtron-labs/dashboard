@@ -164,6 +164,7 @@ export default function SecretList({
                         isOverrideView={isOverrideView}
                         isJobView={isJobView}
                         isProtected={isProtected}
+                        toggleDraftComments={toggleDraftComments}
                     />
                     <div>
                         {list?.configData?.map((cs, idx) => (

@@ -131,6 +131,7 @@ export default function ConfigMapList({
                         isOverrideView={isOverrideView}
                         isJobView={isJobView}
                         isProtected={isProtected}
+                        toggleDraftComments={toggleDraftComments}
                     />
                     <div>
                         {configMap?.configData.map((cm, idx) => {

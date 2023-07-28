@@ -8,8 +8,15 @@ import {
     ConfirmationDialog,
     InfoColourBar,
     PopupMenu,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../services/service'
+import {
+    addJobEnvironment,
+    deleteJobEnvironment,
+    getCIConfig,
+    getEnvironmentListMinPublic,
+    getJobOtherEnvironmentMin,
+} from '../../../../services/service'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
@@ -249,28 +256,49 @@ export default function EnvironmentOverrideRouter({
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
-    const [environmentList, setEnvironmentList] = useState([])
+    const [environmentOptions, setEnvironmentOptions] = useState([])
+    const [jobEnvs, setJobEnvs] = useState([])
     const [addEnvironment, setEnvironmentView] = useState(true)
     const [ciPipelines, setCIPipelines] = useState([])
 
     useEffect(() => {
-        if (allEnvs?.length) {
-            let list = []
-            allEnvs?.forEach((env) => {
-                if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
-                    list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
-                }
-            })
-            setEnvironmentList(list)
-            getCIConfig(Number(appId))
-                .then((response) => {
-                    setCIPipelines(response.result?.ciPipelines)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
+        if (
+            previousPathName &&
+            ((previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) ||
+                (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) ||
+                (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
+        ) {
+            if (isJobView) {
+              getJobOtherEnvironment()
+            } else {
+                reloadEnvironments()
+            }
+            getWorkflows()
         }
-    }, [allEnvs])
+    }, [pathname])
+
+    useEffect(() => {
+        if (isJobView) {
+            getJobOtherEnvironment()
+        }
+    }, [appId])
+
+    const getJobOtherEnvironment = async () => {
+        const [{ result: envListMinRes }, { result: ciConfigRes }, { result: jobEnvRes }] = await Promise.all([
+            getEnvironmentListMinPublic(),
+            getCIConfig(Number(appId)),
+            getJobOtherEnvironmentMin(appId),
+        ])
+        let list = []
+        envListMinRes?.forEach((env) => {
+            if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
+                list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
+            }
+        })
+        setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
+        setCIPipelines(ciConfigRes?.ciPipelines)
+        setJobEnvs(jobEnvRes)
+    }
 
     const selectEnvironment = (selection) => {
         let requestBody = { envId: selection.id, appId: appId }
@@ -284,8 +312,6 @@ export default function EnvironmentOverrideRouter({
                 showError(error)
             })
     }
-
-    const envList = createClusterEnvGroup(environmentList, 'clusterName')
 
     const handleAddEnvironment = () => {
         setEnvironmentView(!addEnvironment)
@@ -307,8 +333,6 @@ export default function EnvironmentOverrideRouter({
         )
     }
 
-    let selectedEnv: Environment = environmentList.find((env) => env.id === -1)
-
     const renderEnvSelector = (): JSX.Element => {
         return (
             <ReactSelect
@@ -319,8 +343,8 @@ export default function EnvironmentOverrideRouter({
                 closeMenuOnScroll={true}
                 placeholder="Select Environment"
                 classNamePrefix="job-pipeline-environment-dropdown"
-                options={envList}
-                value={selectedEnv}
+                options={environmentOptions}
+                value={environmentOptions.find((env) => env.id === -1)}
                 getOptionLabel={(option) => `${option.name}`}
                 getOptionValue={(option) => `${option.id}`}
                 isMulti={false}
@@ -353,10 +377,10 @@ export default function EnvironmentOverrideRouter({
     }
 
     const renderEnvsNav = (): JSX.Element => {
-        if (allEnvs?.length) {
+        if ((isJobView ? jobEnvs : allEnvs).length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {allEnvs.map((env, index) => {
+                    {(isJobView ? jobEnvs : allEnvs).map((env, index) => {
                         return (
                             !env.deploymentAppDeleteRequest && (
                                 <EnvOverrideRoute
@@ -388,18 +412,6 @@ export default function EnvironmentOverrideRouter({
             return null
         }
     }
-
-    useEffect(() => {
-        if (
-            previousPathName &&
-            ((previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) ||
-                (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) ||
-                (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
-        ) {
-            reloadEnvironments()
-            getWorkflows()
-        }
-    }, [pathname])
 
     return (
         <div className="h-100">
