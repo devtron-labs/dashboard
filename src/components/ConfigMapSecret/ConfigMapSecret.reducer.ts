@@ -4,28 +4,6 @@ import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapS
 import YAML from 'yaml'
 import { decode } from '../../util/Util'
 
-const initialDuplicate = (configMapSecretData, isOverrideView, componentType) => {
-    if (isOverrideView && configMapSecretData?.global) {
-        if (configMapSecretData?.data) {
-            return Object.keys(configMapSecretData.data).map((k) => ({
-                k,
-                v:
-                    typeof configMapSecretData.data[k] === 'object'
-                        ? YAML.stringify(configMapSecretData.data[k], { indent: 2 })
-                        : configMapSecretData.data[k],
-                keyError: '',
-                valueError: '',
-            }))
-        } else if (
-            componentType === 'secret' &&
-            (configMapSecretData?.secretData || configMapSecretData?.esoSecretData?.esoData)
-        ) {
-            return configMapSecretData.secretData || configMapSecretData.esoSecretData
-        }
-    }
-    return null
-}
-
 const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data
     return Object.keys(decodedData).map((k) => {
@@ -50,11 +28,11 @@ export const processCurrentData = (configMapSecretData, cmSecretStateLabel, comp
             componentType === 'secret' && configMapSecretData.externalType === '',
         )
     }
+    return [{ k: '', v: '', keyError: '', valueError: '' }]
 }
 
 export const initState = (
     configMapSecretData,
-    isOverrideView: boolean,
     componentType: string,
     cmSecretStateLabel: CM_SECRET_STATE,
     draftMode: boolean
@@ -66,7 +44,6 @@ export const initState = (
         subPath: configMapSecretData?.subPath ?? '',
         filePermission: { value: configMapSecretData?.filePermission ?? '', error: '' },
         currentData: processCurrentData(configMapSecretData, cmSecretStateLabel, componentType),
-        duplicate: initialDuplicate(configMapSecretData, isOverrideView, componentType),
         externalValues: configMapSecretData?.data
             ? Object.keys(configMapSecretData.data).map((k) => ({
                   k,

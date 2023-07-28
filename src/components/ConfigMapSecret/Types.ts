@@ -60,7 +60,6 @@ export interface ConfigMapSecretFormProps {
     updateCollapsed: (collapse?: boolean)=> void
     configMapSecretData: any
     id
-    isOverrideView: boolean
     componentType: string
     update: (...args) => void
     index: number
@@ -129,7 +128,6 @@ export interface ConfigMapState {
     dialog: boolean
     subPath: string
     filePermission: ValueWithError
-    duplicate: any
     currentData: any
     external: boolean
     externalValues: { k: string; v: any; keyError: string; valueError: string }[]

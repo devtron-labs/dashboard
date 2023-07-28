@@ -69,7 +69,6 @@ export const ConfigMapSecretForm = React.memo(
         updateCollapsed,
         configMapSecretData,
         id,
-        isOverrideView,
         componentType,
         update,
         index,
@@ -84,7 +83,7 @@ export const ConfigMapSecretForm = React.memo(
         const tempArr = useRef([])
         const [state, dispatch] = useReducer(
             memoizedReducer,
-            initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel, draftMode),
+            initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
         )
 
         const { appId, envId } = useParams<{ appId; envId }>()
@@ -120,7 +119,7 @@ export const ConfigMapSecretForm = React.memo(
         useEffect(() => {
             dispatch({
                 type: ConfigMapActionTypes.reInit,
-                payload: initState(configMapSecretData, isOverrideView, componentType, cmSecretStateLabel, draftMode),
+                payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
             })
         }, [configMapSecretData])
 
@@ -160,7 +159,6 @@ export const ConfigMapSecretForm = React.memo(
                         type: ConfigMapActionTypes.reInit,
                         payload: initState(
                             configMapSecretData,
-                            isOverrideView,
                             componentType,
                             cmSecretStateLabel,
                             draftMode,

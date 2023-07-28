@@ -203,7 +203,6 @@ export function ConfigMapSecretContainer({
                         updateCollapsed={updateCollapsed}
                         data={data}
                         id={id}
-                        isOverrideView={isOverrideView}
                         componentType={componentType}
                         update={update}
                         index={index}
@@ -222,7 +221,6 @@ export function ConfigMapSecretContainer({
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={data}
                 id={id}
-                isOverrideView={isOverrideView}
                 componentType={componentType}
                 update={update}
                 index={index}
@@ -309,7 +307,6 @@ export function ProtectedConfigMapSecretDetails({
     updateCollapsed,
     data,
     id,
-    isOverrideView,
     componentType,
     update,
     index,
@@ -458,7 +455,6 @@ export function ProtectedConfigMapSecretDetails({
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
                 id={id}
-                isOverrideView={isOverrideView}
                 componentType={componentType}
                 update={update}
                 index={index}
