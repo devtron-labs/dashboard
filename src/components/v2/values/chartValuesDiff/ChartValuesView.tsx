@@ -1088,21 +1088,25 @@ function ChartValuesView({
     }
 
     const getComparisonTippyContent = () => {
-        // if (commonState.activeTab === 'manifest'){
-        //     return COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
-        // }
         if (commonState.isComparisonAvailable) {
+            if (commonState.activeTab === 'manifest'){
+                return COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest
+            }
             return isCreateValueView
                 ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
                 : isDeployChartView
-                ? COMPARISON_OPTION_TIPPY_CONTENT.OtherDeployments 
+                ? COMPARISON_OPTION_TIPPY_CONTENT.OtherDeployments
                 : COMPARISON_OPTION_TIPPY_CONTENT.PreviousDeployments
         }
 
         return (
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.Heading}</h2>
-                <p className="fs-12 fw-4 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.InfoText}</p>
+                <p className="fs-12 fw-4 lh-18 m-0">
+                    {commonState.activeTab === 'manifest'
+                        ? COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+                        : COMPARISON_OPTION_TIPPY_CONTENT.InfoText}
+                </p>
             </>
         )
     }
@@ -1113,7 +1117,12 @@ function ChartValuesView({
                 {renderValuesTabs()}
                 <div className="flex">
                     <ConditionalWrap
-                        condition={commonState.activeTab === 'manifest'}
+                        condition={
+                            !commonState.openReadMe &&
+                            (commonState.fetchingReadMe ||
+                                !commonState.isReadMeAvailable ||
+                                !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0))
+                        }
                         wrap={() => renderComparisonOption(isDeployChartView)}
                     >
                         <Tippy
@@ -1124,7 +1133,7 @@ function ChartValuesView({
                         >
                             {renderComparisonOption(!commonState.isComparisonAvailable)}
                         </Tippy>
-                        {renderReadMeOption()}
+                        {commonState.activeTab !== 'manifest' && renderReadMeOption()}
                     </ConditionalWrap>
                 </div>
             </div>

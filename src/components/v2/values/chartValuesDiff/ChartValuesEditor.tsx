@@ -5,6 +5,7 @@ import { getChartValues } from '../../../charts/charts.service'
 import { showError, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../common/ReactSelect.utils'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
 import {
     ChartGroupOptionType,
     ChartKind,
@@ -349,7 +350,6 @@ export default function ChartValuesEditor({
             {comparisonView && (
                 <div className="code-editor__header chart-values-view__diff-view-header">
                     <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
-
                         <span style={{ width: '90px' }} data-testid="compare-with-heading">
                             Compare with:{' '}
                         </span>
@@ -361,11 +361,13 @@ export default function ChartValuesEditor({
                             selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
                             handleSelectedVersionForDiff={handleSelectedVersionForDiff}
                         />
-
                     </div>
                     <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
                         {manifestView ? (
-                            <span>Manifest output for YAML</span>
+                            <>
+                                <Lock className="icon-dim-16 mr-8" />
+                                <span>Manifest output for current YAML</span>
+                            </>
                         ) : (
                             <>
                                 <Edit className="icon-dim-16 mr-10" />
