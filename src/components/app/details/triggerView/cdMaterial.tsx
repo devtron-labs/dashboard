@@ -1484,7 +1484,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     render() {
         const isApprovalConfigured = this.props.userApprovalConfig?.requiredCount > 0
 
-        if (this.state.materials.length > 0) {
+        if (this.props.material.length > 0) {
             return this.props.isFromBulkCD
                 ? this.renderTriggerBody(isApprovalConfigured)
                 : this.renderCDModal(isApprovalConfigured)
