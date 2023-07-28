@@ -254,7 +254,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 _appIds.push(+app.id)
             }
         }
-        // getAllPermissionCheck({appIds: _allAppLists})
         let _permissionData = {
             id: +envId,
             appIds: _allAppLists,
