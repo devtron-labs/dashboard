@@ -344,6 +344,12 @@
                         height: calc(100vh - 162px) !important;
                     }
                 }
+                .chart-view-code-editor-container.manifest-view {
+                                    .react-monaco-editor-container,
+                                    .details-loader-height {
+                                        height: calc(100vh - 192px) !important;
+                                    }
+                                }
 
                 .empty-state {
                     height: calc(100vh - 130px) !important;

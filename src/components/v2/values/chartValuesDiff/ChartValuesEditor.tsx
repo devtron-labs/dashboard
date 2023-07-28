@@ -335,7 +335,7 @@ export default function ChartValuesEditor({
         if (isDeployChartView && (!showInfoText || showEditorHeader)) {
             return 'calc(100vh - 130px)'
         } else if (isDeployChartView || (!isDeployChartView && (!showInfoText || showEditorHeader))) {
-            return 'calc(100vh - 162px)'
+            return (manifestView && !comparisonView) ? 'calc(100vh - 208px)' : 'calc(100vh - 162px)'
         } else {
             return 'calc(100vh - 196px)'
         }
@@ -343,7 +343,7 @@ export default function ChartValuesEditor({
 
     return (
         <div
-            className={`chart-view-code-editor-container ${
+            className={`chart-view-code-editor-container manifest-view ${
                 showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
             }`}
             data-testid="code-editor-container"
