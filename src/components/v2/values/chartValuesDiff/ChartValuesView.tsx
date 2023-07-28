@@ -1091,7 +1091,7 @@ function ChartValuesView({
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
             if (commonState.activeTab === 'manifest'){
-                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.lenght ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
             }
             return isCreateValueView
                 ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
