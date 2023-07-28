@@ -19,7 +19,7 @@
 
             .chart-values-view__editor {
                 &.chart-values-view__full-mode {
-                    .code-editor-container {
+                    .chart-view-code-editor-container {
                         .react-monaco-editor-container,
                         .details-loader-height {
                             height: calc(100vh - 130px) !important;
@@ -27,7 +27,7 @@
                     }
                 }
 
-                .code-editor-container {
+                .chart-view-code-editor-container {
                     .react-monaco-editor-container,
                     .details-loader-height {
                         height: calc(100vh - 162px) !important;
@@ -261,7 +261,7 @@
         }
 
         .chart-values-view__readme {
-            .code-editor__header {
+            .chart-view-code-editor__header {
                 height: 32px;
                 padding: 0 12px;
                 border-bottom: none;
@@ -338,7 +338,7 @@
 
         .chart-values-view__editor {
             &.chart-values-view__full-mode {
-                .code-editor-container {
+                .chart-view-code-editor-container {
                     .react-monaco-editor-container,
                     .details-loader-height {
                         height: calc(100vh - 162px) !important;
@@ -355,7 +355,7 @@
                 width: 100%;
             }
 
-            .code-editor-container {
+            .chart-view-code-editor-container {
                 border: none;
                 border-bottom: 1px solid var(--N100);
 
@@ -368,11 +368,12 @@
                     }
                 }
 
-                .code-editor__header,
+                .chart-view-code-editor__header,
                 .chart-values-view__diff-view-header {
                     height: 32px;
                     padding: 0 12px;
                     border-bottom: none;
+                    background: var(--N100) !important;
                 }
 
                 .chart-values-view__diff-view-header {
