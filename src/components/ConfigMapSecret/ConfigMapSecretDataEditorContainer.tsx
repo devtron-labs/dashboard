@@ -155,7 +155,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         }
 
         const toggleSecretMode = () => {
-            if (!state.secretMode) {
+            if (!state.secretMode && state.yamlMode) {
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: { secretMode: true, currentData: tempArr.current },
@@ -249,8 +249,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         height={350}
                         onChange={handleOnChange}
                         readOnly={
-                            !draftMode &&
-                            (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView || state.unAuthorized)
+                            (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) || readonlyView || state.unAuthorized || state.secretMode
                         }
                         shebang={sheBangText}
                     >
@@ -324,22 +323,34 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 return null
             }
             return (
-                <div className="flex left mb-16">
-                    <b className="mr-5 dc__bold dc__required-field">Data</b>
-                    {!isESO && (
-                        <RadioGroup
-                            className="gui-yaml-switch"
-                            name="yaml-mode"
-                            initialTab={state.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
-                            disabled={false}
-                            onChange={changeEditorMode}
-                        >
-                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
-                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
-                        </RadioGroup>
+                <>
+                    <div className="flex left mb-16">
+                        <b className="mr-5 dc__bold dc__required-field">Data</b>
+                        {!isESO && (
+                            <RadioGroup
+                                className="gui-yaml-switch"
+                                name="yaml-mode"
+                                initialTab={state.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                                disabled={false}
+                                onChange={changeEditorMode}
+                            >
+                                <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                                <RadioGroup.Radio value={VIEW_MODE.YAML}>
+                                    {VIEW_MODE.YAML.toUpperCase()}
+                                </RadioGroup.Radio>
+                            </RadioGroup>
+                        )}
+                        {renderSecretShowHide()}
+                    </div>
+                    {componentType !== 'secret' && !state.external && state.yamlMode && (
+                        <div className="dc__info-container info__container--configmap mb-16">
+                            <Info />
+                            <div className="flex column left">
+                                <div className="dc__info-subtitle">GUI Recommended for multi-line data.</div>
+                            </div>
+                        </div>
                     )}
-                    {renderSecretShowHide()}
-                </div>
+                </>
             )
         }
 
@@ -356,10 +367,11 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 {externalSecretEditor()}
                 {(state.cmSecretState !== CM_SECRET_STATE.INHERITED || draftMode) &&
                     !state.unAuthorized &&
+                    !state.secretMode &&
                     !state.yamlMode && (
-                        <span className="dc__bold anchor pointer" onClick={handleAddParam}>
+                        <div className="dc__bold anchor pointer pb-10 dc_max-width__max-content" onClick={handleAddParam}>
                             + Add params
-                        </span>
+                        </div>
                     )}
             </>
         )
