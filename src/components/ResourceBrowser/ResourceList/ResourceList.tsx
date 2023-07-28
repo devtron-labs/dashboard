@@ -37,7 +37,6 @@ import {
 import { DOCUMENTATION, URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
-import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'

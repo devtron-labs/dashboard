@@ -190,7 +190,7 @@ export default function ClusterSelectionList({
 
     const selectCluster = (e): void => {
         const data = e.currentTarget.dataset
-        onChangeCluster({ label: data.label, value: data.value }, true)
+        onChangeCluster({ label: data.label, value: +data.value }, true)
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
