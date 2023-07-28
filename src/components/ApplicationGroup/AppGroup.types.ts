@@ -303,7 +303,7 @@ export interface CreateTypeOfAppListType{
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
-    unAuthorizedApps?: String[]
+    unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
 }
 
