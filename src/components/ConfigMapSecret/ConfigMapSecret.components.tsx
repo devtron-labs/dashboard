@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, noop, showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    ToastBody,
+    noop,
+    showError,
+    useThrottledEffect,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -26,6 +32,9 @@ import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistor
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
+import { getSecretKeys, unlockEnvSecret } from './service'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -272,21 +281,23 @@ export function ConfigMapSecretContainer({
                         {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
                         {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                     </div>
-                    <div className="flex right">
-                        {isProtected && title && (
-                            <>
-                                {renderDraftState()}
-                                <ProtectedIcon />
-                            </>
-                        )}
-                        {title && isLoader ? (
-                            <span style={{ width: '20px' }}>
-                                <Progressing />
-                            </span>
-                        ) : (
-                            <img className="configuration-list__arrow pointer h-20" src={arrowTriangle} />
-                        )}
-                    </div>
+                    {title && (
+                        <div className="flex right">
+                            {isProtected && (
+                                <>
+                                    {renderDraftState()}
+                                    <ProtectedIcon />
+                                </>
+                            )}
+                            {isLoader ? (
+                                <span style={{ width: '20px' }}>
+                                    <Progressing />
+                                </span>
+                            ) : (
+                                <Dropdown className={`icon-dim-20 rotate ${collapsed ? '' : 'dc__flip-180'}`} />
+                            )}
+                        </div>
+                    )}
                 </article>
                 {!collapsed && renderDetails()}
             </section>
@@ -309,7 +320,35 @@ export function ProtectedConfigMapSecretDetails({
     draftData,
     parentName,
 }) {
-    const [isLoader, setLoader] = useState(false)
+    const { appId, envId } = useParams<{ appId; envId }>()
+    const [isLoader, setLoader] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (
+            componentType === 'secret' &&
+            selectedTab === 2 &&
+            data?.unAuthorized &&
+            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+        ) {
+            setLoader(true)
+            handleSecretFetch()
+        }
+    }, [selectedTab])
+
+    async function handleSecretFetch() {
+        try {
+            const { result } =
+                cmSecretStateLabel === CM_SECRET_STATE.BASE
+                    ? await getSecretKeys(id, appId, data?.name)
+                    : await unlockEnvSecret(id, appId, +envId, data?.name)
+            update(index, result)
+            setLoader(false)
+        } catch (err) {
+            toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            setLoader(false)
+        }
+    }
+
     const getData = () => {
         try {
             if (selectedTab === 3) {
@@ -376,6 +415,13 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     const renderDiffView = (): JSX.Element => {
+        if (isLoader) {
+            return (
+                <div className="h-300">
+                    <Progressing />
+                </div>
+            )
+        }
         return (
             <>
                 <DeploymentHistoryDiffView
@@ -393,7 +439,7 @@ export function ProtectedConfigMapSecretDetails({
                             envName={parentName}
                         >
                             <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
-                                {isLoader ? <Progressing /> : 'Approve changes'}
+                                Approve changes
                             </button>
                         </ApproveRequestTippy>
                     </div>
@@ -430,7 +476,7 @@ export function ProtectedConfigMapSecretDetails({
         )
     }
 
-    return selectedTab == 2 ? renderDiffView() : renderForm()
+    return selectedTab === 2 ? renderDiffView() : renderForm()
 }
 
 export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({

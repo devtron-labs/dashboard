@@ -102,12 +102,12 @@ export const ConfigMapSecretForm = React.memo(
             if (
                 componentType === 'secret' &&
                 configMapSecretData?.name &&
-                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
-                !draftMode
+                configMapSecretData?.unAuthorized &&
+                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
             ) {
                 handleSecretFetch()
             }
-        }, [])
+        }, [draftMode])
 
         useEffect(() => {
             if (isESO && !state.yamlMode) {
