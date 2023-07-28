@@ -24,6 +24,10 @@ export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promis
     return put(Routes.CLUSTER_NOTE, requestPayload)
 }
 
+export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
+    return put(Routes.APPLICATION_NOTE, requestPayload)
+}
+
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST)
 }
