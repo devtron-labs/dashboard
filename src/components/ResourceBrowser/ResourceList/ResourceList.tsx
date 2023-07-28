@@ -237,41 +237,40 @@ export default function ResourceList() {
     const getClusterData = async () => {
         try {
             setClusterLoader(true)
-            Promise.all([
+            const [clusterList, hostUrlConfig, userRole, namespaceList] = await Promise.all([
                 getClusterList(),
                 getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
                 window._env_.K8S_CLIENT ? null : getUserRole(),
                 clusterNamespaceList(),
-            ]).then(([clusterList, hostUrlConfig, userRole, namespaceList]) => {
-                if (clusterList.result) {
-                    const _clusterList = clusterList.result.filter((resource) => !resource?.isVirtualCluster)
-                    const _clusterOptions = convertToOptionsList(
-                        sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
-                        'cluster_name',
-                        'id',
-                        'errorInConnecting',
-                    )
-                    setClusterOptions(_clusterOptions as ClusterOptionType[])
-                    const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
-                    if (_selectedCluster) {
-                        onChangeCluster(_selectedCluster, false, true)
-                        // Will added this changes if we are not redirecting to cluster page
+            ])
+            if (clusterList.result) {
+                const _clusterList = clusterList.result.filter((resource) => !resource?.isVirtualCluster)
+                const _clusterOptions = convertToOptionsList(
+                    sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
+                    'cluster_name',
+                    'id',
+                    'errorInConnecting',
+                )
+                setClusterOptions(_clusterOptions as ClusterOptionType[])
+                const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
+                if (_selectedCluster) {
+                    onChangeCluster(_selectedCluster, false, true)
+                    // Will added this changes if we are not redirecting to cluster page
                     // } else if (_clusterOptions.length === 1) {
                     //     onChangeCluster(_clusterOptions[0], true)
-                    }
                 }
+            }
 
-                if (hostUrlConfig.result) {
-                    const imageValue: string = hostUrlConfig.result.value
-                    setImageList(JSON.parse(imageValue))
-                }
-                if (userRole?.result) {
-                    setSuperAdmin(userRole.result?.superAdmin)
-                }
-                if (namespaceList.result) {
-                    setNameSpaceList(namespaceList.result)
-                }
-            })
+            if (hostUrlConfig.result) {
+                const imageValue: string = hostUrlConfig.result.value
+                setImageList(JSON.parse(imageValue))
+            }
+            if (userRole?.result) {
+                setSuperAdmin(userRole.result?.superAdmin)
+            }
+            if (namespaceList.result) {
+                setNameSpaceList(namespaceList.result)
+            }
         } catch (err) {
             if (err['code'] === 403) {
                 setErrorStatusCode(err['code'])
