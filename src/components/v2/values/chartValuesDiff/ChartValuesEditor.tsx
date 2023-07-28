@@ -343,13 +343,13 @@ export default function ChartValuesEditor({
 
     return (
         <div
-            className={`code-editor-container ${
+            className={`chart-view-code-editor-container ${
                 showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
             }`}
             data-testid="code-editor-container"
         >
             {comparisonView && (
-                <div className="code-editor__header chart-values-view__diff-view-header">
+                <div className="chart-view-code-editor__header chart-values-view__diff-view-header">
                     <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
                         <span style={{ width: '90px' }} data-testid="compare-with-heading">
                             Compare with:{' '}
@@ -421,7 +421,10 @@ export default function ChartValuesEditor({
                     />
                 )}
                 {manifestView && (
-                    <CodeEditor.Information className="dc__ellipsis-right" text={MANIFEST_OUTPUT_INFO_TEXT}>
+                    <CodeEditor.Information
+                        className={`dc__ellipsis-right ${!showInfoText ? 'dc__border-top' : ''}`}
+                        text={MANIFEST_OUTPUT_INFO_TEXT}
+                    >
                         <Tippy
                             className="default-tt w-250"
                             arrow={false}
