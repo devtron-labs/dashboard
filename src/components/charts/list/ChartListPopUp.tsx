@@ -23,22 +23,17 @@ import { URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import EmptyFolder from '../../../assets/img/Empty-folder.png'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
+import AddChartSource from './AddChartSource'
 
-function ChartListPopUp({ onClose }: ChartListPopUpType) {
+function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setFilteredChartList }: ChartListPopUpType) {
     const [searchApplied, setSearchApplied] = useState<boolean>(false)
     const [searchText, setSearchText] = useState<string>('')
-    const [chartList, setChartList] = useState<ChartListType[]>([])
-    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [fetching, setFetching] = useState<boolean>(false)
-    const [loading, setLoading] = useState(false)
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
     const [enabled, toggleEnabled] = useState<boolean>()
-    const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
+
     const [noResults, setNoResults] = useState(false)
     const isEmpty = chartList.length && !filteredChartList.length
-    useEffect(() => {
-        getChartFilter()
-    }, [])
 
     const setStore = (event): void => {
         setSearchText(event.target.value)
@@ -48,19 +43,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
         setShowAddPopUp(!showAddPopUp)
     }
 
-    const renderAddPopUp = (): JSX.Element => {
-        return (
-            <div className="chart-list__add w-200 en-2 bw-1 br-4 bcn-0 fw-4 fs-13 cn-9 mt-8">
-                <NavLink className="dc__no-decor pl-8 pr-8 flex left cn-9" to={URLS.GLOBAL_CONFIG_CHART}>
-                    Add Chart repositories
-                </NavLink>
 
-                <NavLink className="dc__no-decor pl-8 pr-8 flex left cn-9" to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}>
-                    Add OCI Registries
-                </NavLink>
-            </div>
-        )
-    }
     const renderChartListHeaders = () => {
         return (
             <div className="dc__position-fixed w-400 dc__zi-20 bcn-0 pt-12 pb-12 pl-16 pr-16 flex dc__content-space dc__border-bottom fw-6">
@@ -76,24 +59,9 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
                         <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                     </button>
                 </div>
-                {showAddPopUp && renderAddPopUp()}
+                {showAddPopUp && <AddChartSource />}
             </div>
         )
-    }
-
-    const getChartFilter = async () => {
-        setIsLoading(true)
-        try {
-            const [{ result: chartRepoListResp }] = await Promise.all([getChartProviderList()])
-            let chartRepos = chartRepoListResp || []
-            chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
-            setChartList(chartRepos)
-            setFilteredChartList(chartRepos)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setIsLoading(false)
-        }
     }
 
     async function refetchCharts(e) {
@@ -173,7 +141,7 @@ function ChartListPopUp({ onClose }: ChartListPopUpType) {
         let payload = {
             id: repositortList.id,                  //eg: OCI registry: “test-registry” ; for chart repo: “1”
             isOCIRegistry: repositortList.isOCIRegistry,   // for chart-repo: false
-            active: repositortList.active,
+            active: !repositortList.active,
 
         }
         postChartProviderList(payload)

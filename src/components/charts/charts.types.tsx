@@ -88,6 +88,7 @@ export interface Chart {
     appStoreApplicationVersionId?: number;
     deprecated: boolean;
     description?: string;
+    docker_artifact_store_id?: string
 }
 
 export interface ProjectType {
@@ -351,6 +352,10 @@ export interface HelmProjectUpdatePayload {
 
 export interface ChartListPopUpType{
   onClose:() => void
+  chartList: ChartListType[]
+  filteredChartList: ChartListType[]
+  isLoading: boolean
+  setFilteredChartList: React.Dispatch<React.SetStateAction<ChartListType[]>>
 }
 
 export interface ChartListType {

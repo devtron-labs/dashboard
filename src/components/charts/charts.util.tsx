@@ -93,7 +93,7 @@ export const QueryParams = {
     ChartRepoId: 'chartRepoId',
     IncludeDeprecated: 'includeDeprecated',
     AppStoreName: 'appStoreName',
-
+    RegistryId: 'registryId'
 }
 
 export const PaginationParams = {
