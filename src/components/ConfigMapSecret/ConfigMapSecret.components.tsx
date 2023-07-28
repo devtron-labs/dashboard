@@ -178,6 +178,11 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    const reload = (): void => {
+        updateCollapsed()
+        update()
+    }
+
     const renderDetails = (): JSX.Element => {
         if (title && isProtected && draftData?.draftId) {
             return (
@@ -196,7 +201,7 @@ export function ConfigMapSecretContainer({
                         handleCommentClick={toggleDraftCommentModal}
                         isApprovalPending={draftData.draftState === 4}
                         approvalUsers={draftData.approvers}
-                        reload={update}
+                        reload={reload}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}

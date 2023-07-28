@@ -90,7 +90,7 @@ export interface ConfigMapSecretProps {
     componentType: string
     title: string
     appChartRef: any
-    update: (index, result) => void
+    update: (index?, result?) => void
     data?: any
     index?: number
     id?: number
