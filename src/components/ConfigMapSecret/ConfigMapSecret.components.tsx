@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
-    Progressing,
-    ToastBody,
-    noop,
-    showError,
-    useThrottledEffect,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, ToastBody, noop, showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -125,11 +119,15 @@ export function ConfigMapSecretContainer({
     async function getDraftData() {
         try {
             setLoader(true)
-            const { result: draftData } = await getDraft(data.draftId)
-            setDraftData(draftData)
+            const { result: _draftData } = await getDraft(data.draftId)
+            if (_draftData && (_draftData.draftState === 1 || _draftData.draftState === 4)) {
+                setDraftData(_draftData)
+            } else {
+                setDraftData(null)
+            }
             toggleCollapse(false)
         } catch (error) {
-            setDraftData('')
+            setDraftData(null)
             showError(error)
         } finally {
             setLoader(false)
@@ -154,6 +152,7 @@ export function ConfigMapSecretContainer({
                 toggleCollapse(!collapsed)
                 if (!collapsed) {
                     toggleDraftComments(null)
+                    setDraftData(null)
                 }
             }
         }
@@ -164,7 +163,7 @@ export function ConfigMapSecretContainer({
     }
 
     const toggleDraftCommentModal = () => {
-        toggleDraftComments({ draftId: draftData.draftId, draftVersionId: draftData.draftVersionId, index: index })
+        toggleDraftComments({ draftId: draftData?.draftId, draftVersionId: draftData?.draftVersionId, index: index })
     }
 
     const renderIcon = (): JSX.Element => {
@@ -180,7 +179,7 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
-        if (title && isProtected && data.draftId && (data.draftState === 1 || data.draftState === 4)) {
+        if (title && isProtected && draftData?.draftId) {
             return (
                 <>
                     <ConfigToolbar
@@ -189,14 +188,14 @@ export function ConfigMapSecretContainer({
                         draftVersionId={draftData.draftVersionId}
                         selectedTabIndex={selectedTab}
                         handleTabSelection={handleTabSelection}
-                        isDraftMode={draftData?.draftState === 1 || draftData?.draftState === 4}
+                        isDraftMode={draftData.draftState === 1 || draftData.draftState === 4}
                         noReadme={true}
                         showReadme={false}
                         isReadmeAvailable={false}
                         handleReadMeClick={noop}
                         handleCommentClick={toggleDraftCommentModal}
-                        isApprovalPending={draftData?.draftState === 4}
-                        approvalUsers={draftData?.approvers}
+                        isApprovalPending={draftData.draftState === 4}
+                        approvalUsers={draftData.approvers}
                         reload={update}
                     />
                     <ProtectedConfigMapSecretDetails
@@ -414,6 +413,11 @@ export function ProtectedConfigMapSecretDetails({
         )
     }
 
+    const reload = (): void => {
+        updateCollapsed()
+        update()
+    }
+
     const renderDiffView = (): JSX.Element => {
         if (isLoader) {
             return (
@@ -435,7 +439,7 @@ export function ProtectedConfigMapSecretDetails({
                             draftId={draftData.draftId}
                             draftVersionId={draftData.draftVersionId}
                             resourceName={componentType}
-                            reload={update}
+                            reload={reload}
                             envName={parentName}
                         >
                             <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
