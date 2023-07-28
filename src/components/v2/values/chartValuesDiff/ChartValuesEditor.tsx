@@ -348,38 +348,6 @@ export default function ChartValuesEditor({
             }`}
             data-testid="code-editor-container"
         >
-            {comparisonView && (
-                <div className="chart-view-code-editor__header chart-values-view__diff-view-header">
-                    <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
-                        <span style={{ width: '90px' }} data-testid="compare-with-heading">
-                            Compare with:{' '}
-                        </span>
-                        <CompareWithDropdown
-                            deployedChartValues={valuesForDiffState.deployedChartValues}
-                            defaultChartValues={valuesForDiffState.defaultChartValues}
-                            presetChartValues={valuesForDiffState.presetChartValues}
-                            deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                            selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                            handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                        />
-                    </div>
-                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
-                        {manifestView ? (
-                            <>
-                                <Lock className="icon-dim-16 mr-8" />
-                                <span>Manifest output for current YAML</span>
-                            </>
-                        ) : (
-                            <>
-                                <Edit className="icon-dim-16 mr-10" />
-                                values.yaml&nbsp;
-                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
-                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
             <CodeEditor
                 defaultValue={
                     comparisonView
@@ -422,7 +390,7 @@ export default function ChartValuesEditor({
                 )}
                 {manifestView && (
                     <CodeEditor.Information
-                        className={`dc__ellipsis-right ${!showInfoText ? 'dc__border-top' : ''}`}
+                        className="dc__ellipsis-right"  
                         text={MANIFEST_OUTPUT_INFO_TEXT}
                     >
                         <Tippy
@@ -435,6 +403,38 @@ export default function ChartValuesEditor({
                         </Tippy>
                     </CodeEditor.Information>
                 )}
+                {comparisonView && (
+                <div className="chart-view-code-editor__header chart-values-view__diff-view-header">
+                    <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
+                        <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                            Compare with:{' '}
+                        </span>
+                        <CompareWithDropdown
+                            deployedChartValues={valuesForDiffState.deployedChartValues}
+                            defaultChartValues={valuesForDiffState.defaultChartValues}
+                            presetChartValues={valuesForDiffState.presetChartValues}
+                            deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                            selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                            handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                        />
+                    </div>
+                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
+                        {manifestView ? (
+                            <>
+                                <Lock className="icon-dim-16 mr-8" />
+                                <span>Manifest output for current YAML</span>
+                            </>
+                        ) : (
+                            <>
+                                <Edit className="icon-dim-16 mr-10" />
+                                values.yaml&nbsp;
+                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
+                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
             </CodeEditor>
         </div>
     )
