@@ -127,9 +127,9 @@ export const ConfigMapSecretForm = React.memo(
         async function handleSecretFetch() {
             try {
                 const { result } =
-                    state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN || state.cmSecretState === CM_SECRET_STATE.ENV
-                        ? await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
-                        : await getSecretKeys(id, appId, configMapSecretData?.name)
+                    state.cmSecretState === CM_SECRET_STATE.BASE
+                        ? await getSecretKeys(id, appId, configMapSecretData?.name)
+                        : await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
                 update(index, result)
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,

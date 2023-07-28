@@ -137,9 +137,9 @@ export default function SecretList({
     if (parentState === ComponentStates.loading || secretLoading)
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     return (
-        <div className={`form__app-compose cm-secret-main-container ${showComments ? 'with-comment-drawer' : ''}`}>
-            <div>
-                <h1 className="form__title form__title--artifacts flex left">
+        <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
+            <div className="main-content">
+                <h1 className="form__title flex left">
                     {parentName && (
                         <>
                             {parentName}

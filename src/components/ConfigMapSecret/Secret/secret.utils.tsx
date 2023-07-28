@@ -470,7 +470,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
-        secretMode: configMapSecretData?.secretMode,
+        secretMode: true,
         unAuthorized: configMapSecretData?.unAuthorized ?? (!draftMode && !!configMapSecretData?.name),
     }
 }

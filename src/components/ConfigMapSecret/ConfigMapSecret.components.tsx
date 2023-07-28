@@ -359,7 +359,6 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            true,
         )
     }
 
@@ -373,7 +372,6 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            true,
         )
     }
 
