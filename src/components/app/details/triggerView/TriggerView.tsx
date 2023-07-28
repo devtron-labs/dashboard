@@ -100,6 +100,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             appReleaseTags:[],
             tagsEditable:false,
             configs: false,
+            isDefaultConfigPresent: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -155,7 +156,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         getChannelConfigs()
             .then((response) => {
                 let isConfigPresent = response.result?.sesConfigs.length > 0 || response.result?.smtpConfigs.length > 0
-                this.setState({configs: isConfigPresent})
+                let _isDefaultConfig = false
+                response.result?.sesConfigs.map((config) => {
+                    if(config.default) {
+                        _isDefaultConfig = true
+                    }
+                })
+                response.result?.smtpConfigs.map((config) => {
+                    if(config.default) {
+                        _isDefaultConfig = true
+                    }
+                })
+                this.setState({configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig})
             })
     }
 
@@ -623,7 +635,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag: string = '') {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
@@ -633,6 +645,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
+            imageTag
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -1411,6 +1424,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 setTagsEditable={this.setTagsEditable}
                 hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                 configs={this.state.configs}
+                isDefaultConfigPresent={this.state.isDefaultConfigPresent}
             />
             )
         }

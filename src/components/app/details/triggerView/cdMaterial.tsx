@@ -19,6 +19,9 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
+import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -39,6 +42,7 @@ import {
     ImageTagButton,
     ImageTagsContainer,
     GenericEmptyState,
+    getCDMaterials,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -55,11 +59,12 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
+import { ARTIFACT_STATUS, EMPTY_STATE, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import noapprovedimages from '../../../../assets/img/empty-noresult@2x.png'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -72,6 +77,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     constructor(props: CDMaterialProps) {
         super(props)
         this.state = {
+            materials: this.props.material,
+            consumedImages: [],
+            approvedImages: [],
+            loadingSearchedImage: false,
             isSecurityModuleInstalled: false,
             checkingDiff: false,
             diffFound: false,
@@ -91,6 +100,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
             materialInEditModeMap: new Map<number,boolean>(),
+            searchString: '',
+            searchApplied: false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -106,14 +117,29 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-
+        this.filterConsumedAndApprovedImages()
         if (
             (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
             this.state.selectedMaterial &&
-            this.props.material.length > 0
+            this.state.materials.length > 0
         ) {
             this.getDeploymentConfigDetails()
         }
+    }
+
+    filterConsumedAndApprovedImages() {
+        const consumedImage = []
+        const approvedImages = []
+        this.state.materials.forEach((mat) => {
+            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
+                mat.isSelected = false
+                consumedImage.push(mat)
+            } else {
+                approvedImages.push(mat)
+            }
+        })
+        console.log(consumedImage, approvedImages, "onMount")
+        this.setState({consumedImages: consumedImage, approvedImages: approvedImages})
     }
 
     getWfrId() {
@@ -123,7 +149,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
         return this.state.selectedMaterial
             ? this.state.selectedMaterial.wfrId
-            : this.props.material?.find((_mat) => _mat.isSelected)?.wfrId
+            : this.state.materials?.find((_mat) => _mat.isSelected)?.wfrId
     }
 
     getDeploymentConfigDetails() {
@@ -791,13 +817,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     processConsumedAndApprovedImages = () => {
-        const consumedImage = []
+        const consumedImage = [...this.state.consumedImages]
         const approvedImages = []
-        this.props.material.forEach((mat) => {
-            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
-                mat.isSelected = false
-                consumedImage.push(mat)
-            } else {
+        this.state.materials.forEach((mat) => {
+            if (!(!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
                 approvedImages.push(mat)
             }
         })
@@ -818,8 +841,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         } else {
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages
-                    ? [this.props.material[0]]
-                    : this.props.material
+                    ? [this.state.materials[0]]
+                    : this.state.materials
         }
 
         // reset the selection for some cases
@@ -836,6 +859,49 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
+    onChangeSearchString = (event) => {
+        let str = event.target.value || ''
+        str = str.toLowerCase()
+        this.setState({searchString: str})
+        if(str === ''){
+            this.clearSearch()
+        }
+    }
+
+    searchImageTag = (event) => {
+        const theKeyCode = event.key
+        if (theKeyCode === 'Enter') {
+            this.setState({ searchApplied: true })
+            let abortController = new AbortController()
+            this.setState({loadingSearchedImage: true})
+            getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal,  true, event.target.value)
+                .then((res) => {
+                    this.setState({materials: res.materials})
+                    this.setState({loadingSearchedImage: false})
+                    console.log(res.materials, this.state.consumedImages, this.state.approvedImages)
+                })
+        }
+    }
+
+    clearSearch = () => {
+        this.setState({searchApplied: false})
+        this.setState({materials: this.props.material})
+        this.setState({searchString: ''})
+    }
+
+    refreshData = () => {
+        if(this.state.searchApplied){
+            this.clearSearch()
+        }
+        let abortController = new AbortController()
+        this.setState({loadingSearchedImage: true})
+        getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal, true, '')
+            .then((res) => {
+                this.setState({materials: res.materials})
+                this.setState({loadingSearchedImage: false})
+            })
+    }
+
     renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList } = this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
         const selectImageTitle = this.state.isRollbackTrigger
@@ -846,12 +912,45 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
-                {(!this.props.isFromBulkCD || isApprovalConfigured) && (
-                    <div className="material-list__title pb-16">{titleText}</div>
+                {(!this.props.isFromBulkCD ) && (
+                    <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                        <span className="flex dc__align-start">
+                            {titleText}
+                        </span>
+                        {isApprovalConfigured && <div className="h-32 flex dc__content-end dc__align-center">
+                            <div className=" flex w-250 dc__align-center dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text mr-8">
+                                <Search className="search__icon icon-dim-18" />
+                                <input
+                                    data-testid="Search-by-approver-name"
+                                    type="text"
+                                    name="app_search_input"
+                                    autoComplete="off"
+                                    value={this.state.searchString}
+                                    placeholder="Search image tag"
+                                    className="search__input bcn-1"
+                                    onChange={this.onChangeSearchString}
+                                    onKeyDown={this.searchImageTag}
+                                />
+                                {this.state.searchApplied && (
+                                    <button className="search__clear-button flex" type="button" onClick={this.clearSearch}>
+                                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                                    </button>)}
+                            </div>
+                            <div className="pt-8 dc__content-end dc__align-center">
+                                <RefreshIcon
+                                    className="icon-dim-16 scn-5 cursor"
+                                    onClick={this.refreshData}
+                                />
+                            </div>
+                        </div>}
+                    </div>
                 )}
-                {isApprovalConfigured && materialList.length <= 0
-                    ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
-                    : this.renderMaterial(materialList, false, isApprovalConfigured)}
+                {this.state.loadingSearchedImage ? (
+                    <Progressing />
+                ) :
+                    isApprovalConfigured && materialList.length <= 0
+                        ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
+                        : this.renderMaterial(materialList, false, isApprovalConfigured)}
             </>
         )
     }
@@ -1011,7 +1110,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     isDeployButtonDisabled() {
-        const selectedImage = this.props.material.find((artifact) => artifact.isSelected)
+        const selectedImage = this.state.materials.find((artifact) => artifact.isSelected)
         return (
             !selectedImage ||
             (this.state.isRollbackTrigger && (this.state.checkingDiff || !this.canDeployWithConfig())) ||
@@ -1046,10 +1145,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-        const hideConfigDiffSelector = isApprovalConfigured && this.props.material.length <= 1
+        const hideConfigDiffSelector = isApprovalConfigured && this.state.materials.length <= 1
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
-            (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
+            (this.state.materials.length > 0 && this.isImageApprover(this.state.materials[0]?.userApprovalMetadata))
 
         return (
             <div
@@ -1198,10 +1297,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     loadOlderImages() {
         if (this.props.onClickRollbackMaterial && !this.state.loadingMore) {
-            if (this.props.material.length > 19) {
+            if (this.state.materials.length > 19) {
                 this.props.onClickRollbackMaterial(
                     this.props.pipelineId,
-                    this.props.material.length + 1,
+                    this.state.materials.length + 1,
                     20,
                     this.handleOlderImagesLoading,
                 )
@@ -1239,7 +1338,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
         if (this.state.showConfigDiffView) {
             return 'calc(100vh - 141px)'
-        } else if (isApprovalConfigured && (this.state.isRollbackTrigger || this.props.material.length > 1)) {
+        } else if (isApprovalConfigured && (this.state.isRollbackTrigger || this.state.materials.length > 1)) {
             return 'calc(100vh - 156px)'
         } else {
             return 'calc(100vh - 116px)'
@@ -1272,7 +1371,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {this.renderMaterialList(isApprovalConfigured)}
                         {this.state.isRollbackTrigger &&
                             !this.state.noMoreImages &&
-                            this.props.material.length !== 1 && (
+                            this.state.materials.length !== 1 && (
                                 <button
                                     className="show-older-images-cta cta ghosted flex h-32"
                                     onClick={this.loadOlderImages}
@@ -1321,7 +1420,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 </div>
                 {isApprovalConfigured &&
                     ApprovedImagesMessage &&
-                    (this.state.isRollbackTrigger || this.props.material.length > 1) && (
+                    (this.state.isRollbackTrigger || this.state.materials.length > 1) && (
                         <InfoColourBar
                             message={<ApprovedImagesMessage viewAllImages={this.viewAllImages} />}
                             classname="info_bar dc__no-border-radius dc__no-top-border"
@@ -1335,7 +1434,28 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    renderClearSearchButton = () => {
+        return (
+            <button onClick={this.clearSearch} className="add-link cta flex">
+                Clear search
+            </button>
+        )
+    }
+
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
+        if (this.state.searchApplied) {
+            return (
+                <GenericEmptyState
+                    image={noapprovedimages}
+                    title={EMPTY_STATE.title}
+                    subTitle={EMPTY_STATE.subtitle}
+                    isButtonAvailable={true}
+                    renderButton={this.renderClearSearchButton}
+                    classname='dc__position-rel-imp'
+                />
+            )
+        }
+
         if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
@@ -1350,7 +1470,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         return (
-           <GenericEmptyState
+            <GenericEmptyState
                 image={noartifact}
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
@@ -1364,7 +1484,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     render() {
         const isApprovalConfigured = this.props.userApprovalConfig?.requiredCount > 0
 
-        if (this.props.material.length > 0) {
+        if (this.state.materials.length > 0) {
             return this.props.isFromBulkCD
                 ? this.renderTriggerBody(isApprovalConfigured)
                 : this.renderCDModal(isApprovalConfigured)

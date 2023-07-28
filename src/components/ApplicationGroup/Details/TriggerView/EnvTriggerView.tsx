@@ -137,6 +137,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
     const { queryParams } = useSearchString()
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
+    const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -169,6 +170,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         getChannelConfigs()
             .then((response) => {
                 let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
+                let _isDefaultConfig
+                response.result?.sesConfigs.map((config) => {
+                    if(config.default) {
+                        _isDefaultConfig = true
+                    }
+                })
+                response.result?.smtpConfigs.map((config) => {
+                    if(config.default) {
+                        _isDefaultConfig = true
+                    }
+                })
+                setDefaultConfig(_isDefaultConfig)
                 setConfigPresent(isConfigPresent)
             })
     }
@@ -1967,6 +1980,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     setTagsEditable = {setTagsEditableVal}
                     hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
                     configs={isConfigPresent}
+                    isDefaultConfigPresent={isDefaultConfigPresent}
                 />
             )
         }

@@ -85,6 +85,9 @@ export interface ConfigToDeployOptionType {
 }
 
 export interface CDMaterialState {
+    materials?: any[] 
+    consumedImages?: any[]
+    approvedImages?: any[]
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
     diffFound: boolean
@@ -101,6 +104,9 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
+    searchString?: string
+    searchApplied?: boolean
+    loadingSearchedImage?: boolean
 }
 
 export interface MaterialInfo {
@@ -354,6 +360,7 @@ export interface TriggerViewState {
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
+    isDefaultConfigPresent?: boolean
 }
 
 //-- begining of response type objects for trigger view
