@@ -41,6 +41,7 @@ interface customEnv {
     ENABLE_BUILD_CONTEXT?: boolean
     CLAIR_TOOL_VERSION?: string
     ENABLE_RESTART_WORKLOAD?: boolean
+    ANNOUNCEMENT_BANNER_MSG?: string
 }
 declare global {
     interface Window {
@@ -139,7 +140,8 @@ if (!window || !window._env_) {
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION:'V4',
-        ENABLE_RESTART_WORKLOAD: false
+        ENABLE_RESTART_WORKLOAD: false,
+        ANNOUNCEMENT_BANNER_MSG: 'Avoid deploying non critical changes to production between 1st to 31st August 2023'
     }
 }
 

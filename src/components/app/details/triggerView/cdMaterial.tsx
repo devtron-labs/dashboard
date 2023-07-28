@@ -60,6 +60,7 @@ import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import AnnouncementBanner from '../../../common/AnnouncementBanner'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1239,7 +1240,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
         if (this.state.showConfigDiffView) {
             return 'calc(100vh - 141px)'
-        } else if (isApprovalConfigured && (this.state.isRollbackTrigger || this.props.material.length > 1)) {
+        } else if (isApprovalConfigured && ((this.state.isRollbackTrigger || this.props.material.length > 1) && window?._env_?.ANNOUNCEMENT_BANNER_MSG)) {
             return 'calc(100vh - 156px)'
         } else {
             return 'calc(100vh - 116px)'
@@ -1319,6 +1320,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
+                {!this.state.showConfigDiffView && <AnnouncementBanner parentClassName="cd-trigger-announcement" />}
                 {isApprovalConfigured &&
                     ApprovedImagesMessage &&
                     (this.state.isRollbackTrigger || this.props.material.length > 1) && (

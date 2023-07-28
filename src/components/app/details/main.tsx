@@ -267,6 +267,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
             isBreadcrumbs={true}
             showTabs={true}
             renderHeaderTabs={renderAppDetailsTabs}
+            showAnnouncementHeader={true}
         />
     )
 }

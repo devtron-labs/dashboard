@@ -3442,3 +3442,34 @@ textarea::placeholder {
         }
     }
 }
+
+// Start: accouncement banner
+.announcement-banner-container {
+    &.page-header-banner {
+        width: fit-content;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
+
+    &.cd-trigger-announcement {
+        .info-bar-container {
+            .announcement-bar {
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid var(--Y700);
+            }
+        }
+    }
+}
+.announcement-bar {
+    background-color: var(--Y500);
+    border: 1px solid var(--Y700);
+    border-top: none;
+    padding: 8px 12px !important;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+// End: accouncement banner
