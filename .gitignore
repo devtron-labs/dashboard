@@ -24,7 +24,6 @@ src/setupProxy.js
 npm-debug.log
 npm-error.log
 npm.lock
-yarn.lock
 yarn-debug.log
 yarn-error.log
 /public/env-config.js
