@@ -1044,8 +1044,9 @@ function ChartValuesView({
                 )}
                 {commonState.openComparison
                     ? COMPARISON_OPTION_LABELS.HideComparison
-                    : COMPARISON_OPTION_LABELS.CompareValues
-                    }
+                    : commonState.activeTab === 'yaml'
+                    ? COMPARISON_OPTION_LABELS.CompareValues
+                    : COMPARISON_OPTION_LABELS.CompareManifest}
             </span>
         )
     }

@@ -38,6 +38,7 @@ export const COMPARISON_OPTION_LABELS = {
     CompareDeployed: 'Compare with deployed',
     HideComparison: 'Hide comparison',
     CompareValues: 'Compare values',
+    CompareManifest: 'Compare manifest'
 }
 
 export const COMPARISON_OPTION_TIPPY_CONTENT = {
