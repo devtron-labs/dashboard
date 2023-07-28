@@ -52,6 +52,7 @@ export default function Docker({ ...props }) {
         const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
         const [clusterOption, setClusterOptions] = useState([])
         const [clusterLoader, setClusterLoader] = useState(false)
+        const [registryStorageType, setRegistryStorageType] = useState(RegistryStorageType.OCI_PRIVATE)
 
     const _getInit = async () => {
         setClusterLoader(true)
@@ -97,7 +98,6 @@ useEffect(() => {
     let dockerRegistryList = result?.result || []
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
-
     const additionalRegistryTitleTippyContent = () => {
         return <p className="p-12 fs-13 fw-4 lh-20">{REGISTRY_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
     }
@@ -133,7 +133,21 @@ useEffect(() => {
                     {...docker}
                     clusterOption={clusterOption}
                     key={docker.id || Math.random().toString(36).substr(2, 5)}
-                />
+                    setRegistryStorageType={setRegistryStorageType}
+
+                    registryStorageType  ={registryStorageType}        
+                    ociRegistryConfig = {OCIRegistryUseActionHelmPushMessage
+                    ? {
+                          CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                          CHART: OCIRegistryConfigConstants.PUSH,
+                      }
+                    : registryStorageType === RegistryStorageType.OCI_PUBLIC ? {
+                        CHART: OCIRegistryConfigConstants.PULL,
+                    } : {
+                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                    }
+                }
+                              />
             ))}
         </section>
     )
@@ -155,15 +169,7 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
-        ? {
-              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-              CHART: OCIRegistryConfigConstants.PUSH,
-          }
-        : {
-              CONTAINER: '',
-              CHART: '',
-          },
+    ociRegistryConfig ,
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -172,8 +178,10 @@ function CollapsedList({
         ignoredClusterIdsCsv: '',
     },
     clusterOption,
-    repositoryList,
+    repositoryList= '',
     isPublic,
+    registryStorageType,
+    setRegistryStorageType,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -248,7 +256,10 @@ function CollapsedList({
                         ipsConfig,
                         clusterOption,
                         setToggleCollapse,
-                        repositoryList
+                        repositoryList,
+                        isPublic,
+                        registryStorageType,
+                        setRegistryStorageType,
                     }}
                 />
             )}
@@ -278,15 +289,19 @@ function DockerForm({
     clusterOption,
     setToggleCollapse,
     repositoryList,
+    isPublic,
+    registryStorageType,
+    setRegistryStorageType,
     ...rest
 }) {
+    console.log(isPublic)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             id: { value: id, error: '' },
             registryType: { value: registryType || 'ecr', error: '' },
             advanceSelect: { value: connection || CERTTYPE.SECURE, error: '' },
             certInput: { value: cert || '', error: '' },
-            repositoryList: {value: repositoryList || [], error: ''}
+            repositoryList: {value: repositoryList || '', error: ''}
         },
         {
             id: {
@@ -305,9 +320,8 @@ function DockerForm({
                 required: false,
             },
             repositoryList: {
-              required: true,
-              validator: { error: 'Type is required', regex: /^.*$/ },
-          },
+              required: false,
+            },
         },
         onValidation,
     )
@@ -373,9 +387,6 @@ function DockerForm({
 
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [registryStorageType, setRegisrtyStorageType] = useState(
-        isOCICompliantRegistry ? RegistryStorageType.OCI_PRIVATE : RegistryStorageType.CONTAINER,
-    )
     const [isIAMAuthType, setIAMAuthType] = useState(!awsAccessKeyId && !awsSecretAccessKey)
     const [blackList, setBlackList] = useState(_ignoredClusterIdsCsv)
     const [whiteList, setWhiteList] = useState(_appliedClusterIdsCsv)
@@ -389,9 +400,12 @@ function DockerForm({
     InitialValueOfIsContainerStore = OCIRegistryUseActionHelmPushMessage
         ? InitialValueOfIsContainerStore &&
           (ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
-              ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PUSH)
+              ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PUSH ||
+              ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PULL
+              )
+            
         : InitialValueOfIsContainerStore
-    const [IsContainerStore, setContainerStore] = useState<boolean>(InitialValueOfIsContainerStore)
+    const [isContainerStore, setContainerStore] = useState<boolean>(InitialValueOfIsContainerStore)
     const [OCIRegistryStorageConfig, setOCIRegistryStorageConfig] =
         useState<OCIRegistryStorageConfigType>(ociRegistryConfig)
     const [customCredential, setCustomCredential] = useState<CustomCredential>(
@@ -400,9 +414,7 @@ function DockerForm({
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
     const [showHelmPull, setListRepositories] = useState<boolean>(false)
     const [isOCIRegistryHelmPush, setOCIRegistryHelmPush] = useState<boolean>(false)
-    const [ repositoryLists, setRepositoryList] = useState<string[]>([state.repositoryList.value])
    
-
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
@@ -435,12 +447,10 @@ function DockerForm({
     }
 
     const onRegistryStorageTypeChange = (e) => {
-        if (e.target.value === RegistryStorageType.CONTAINER) {
-            setRegisrtyStorageType(RegistryStorageType.CONTAINER)
-        } else if (e.target.value === RegistryStorageType.OCI_PRIVATE) {
-            setRegisrtyStorageType(RegistryStorageType.OCI_PRIVATE)
+        if (e.target.value === RegistryStorageType.OCI_PRIVATE) {
+            setRegistryStorageType(RegistryStorageType.OCI_PRIVATE)
         }else if (e.target.value === RegistryStorageType.OCI_PUBLIC) {
-          setRegisrtyStorageType(RegistryStorageType.OCI_PUBLIC)
+          setRegistryStorageType(RegistryStorageType.OCI_PUBLIC)
       }
     }
 
@@ -475,10 +485,10 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) ? Isdefault: false,
-            isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== RegistryType.GCR,
+            isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || isContainerStore) ? Isdefault: false,
+            isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
             isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
-            repositoryList: state.repositoryList.value.split(','),
+            repositoryList: state.repositoryList.value.split(',') || [],
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === RegistryType.ECR
                 ? {
@@ -529,6 +539,7 @@ function DockerForm({
             },
             
         }
+        
     }
 
     const handleDefaultChange = (e) => {
@@ -544,7 +555,28 @@ function DockerForm({
             setErrorValidation(true)
             return
         }
-
+        if (registryStorageType === RegistryStorageType.OCI_PUBLIC) {
+            setOCIRegistryStorageConfig({
+                CHART: OCIRegistryConfigConstants.PULL,
+            })
+        } else {
+            if (isContainerStore && isOCIRegistryHelmPush) {
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PUSH,
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            } else if (isOCIRegistryHelmPush && showHelmPull) {
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            } else if (isContainerStore && showHelmPull) {
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PULL,
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            }
+        }
+       
         let awsRegion
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
             awsRegion = fetchAWSRegion()
@@ -552,7 +584,7 @@ function DockerForm({
         }
         let payload = getRegistryPayload(awsRegion)
         if (payload.isOCICompliantRegistry) {
-            payload.ociRegistryConfig = OCIRegistryStorageConfig
+            payload.ociRegistryConfig = isPublic ? {  CHART: OCIRegistryConfigConstants.PULL} : OCIRegistryStorageConfig
         }
        
         const api = id ? updateRegistryConfig : saveRegistryConfig
@@ -590,11 +622,11 @@ function DockerForm({
                 return
             }
         } else if (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB) {
-            if (!customState.username.value || !(customState.password.value || id)) {
+            if (registryStorageType === RegistryStorageType.OCI_PRIVATE && (!customState.username.value || !(customState.password.value || id))) {
                 setCustomState((st) => ({
                     ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: (id || st.password.value)? '' : 'Mandatory' },
+                    username: { ...st.username, error:  st.username.value  ? '' : 'Mandatory' },
+                    password: { ...st.password, error: (id || st.password.value )? '' : 'Mandatory' },
                 }))
                 return
             }
@@ -604,7 +636,7 @@ function DockerForm({
         ) {
             const isValidJsonFile = (isValidJson(customState.password.value) || id)
             const isValidJsonStr = (isValidJsonFile ? '' : 'Invalid JSON')
-            if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
+            if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
@@ -621,7 +653,7 @@ function DockerForm({
             selectedDockerRegistryType.value === RegistryType.OTHER
         ) {
             let error = false
-            if (!customState.username.value || !(customState.password.value || id) || !customState.registryUrl.value) {
+            if (!isPublic && !customState.username.value || !(customState.password.value || id) || !customState.registryUrl.value) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
@@ -648,7 +680,7 @@ function DockerForm({
                 return
             }
         }
-        // if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !IsContainerStore) {
+        // if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !isContainerStore) {
         //     setOCIRegisrtyInputError(true)
         //     return
         // }
@@ -686,7 +718,7 @@ function DockerForm({
                     CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                 })
             }
-            setContainerStore(!IsContainerStore)
+            setContainerStore(!isContainerStore)
     }
 
     const handleOCIRegistryActionPull = (e: any): void => {
@@ -844,10 +876,10 @@ function DockerForm({
                             )}
                         </span>
                     </div>
-                    <div className={`flex left ${IsContainerStore ? 'mb-12' : ''}`}>
+                    <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
                         <Checkbox
                             rootClassName="docker-default mb-0"
-                            isChecked={IsContainerStore}
+                            isChecked={isContainerStore}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={handleOCIRegistryStorageAction}
                             dataTestId={`store-${
@@ -859,7 +891,7 @@ function DockerForm({
                         </Checkbox>
                     </div>
 
-                    {IsContainerStore && (
+                    {isContainerStore && (
                         <>
                             <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
                         </>
@@ -875,7 +907,6 @@ function DockerForm({
                         }-checkbox`}
                     >
                         Push helm packages
-                        {/* {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''} */}
                     </Checkbox>
                     <Checkbox
                         rootClassName="docker-default mb-0"
@@ -908,7 +939,7 @@ function DockerForm({
                   labelClassName="dc__required-field"
                   name="repositoryList"
                   autoFocus={true}
-                  value={state.repositoryList.value}
+                  value={state.repositoryList?.value}
                   autoComplete="off"
                   error={state.repositoryList.error}
                   tabIndex={3}
@@ -941,7 +972,7 @@ function DockerForm({
           registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
           (selectedDockerRegistryType.value === RegistryType.GCR ||
               registryStorageType !== RegistryStorageType.OCI_PRIVATE ||
-              IsContainerStore)
+              isContainerStore)
       ) {
           return (
               <>
@@ -1034,7 +1065,7 @@ function DockerForm({
               )
           } else {
               return (
-                  <>
+                  <div className="form__row--two-third">
                       <div className="form__row">
                           <CustomInput
                               dataTestid="container-registry-username-textbox"
@@ -1047,7 +1078,7 @@ function DockerForm({
                               onChange={customHandleChange}
                               label={selectedDockerRegistryType.id.label}
                               disabled={!!selectedDockerRegistryType.id.defaultValue}
-                              placeholder={selectedDockerRegistryType.id.placeholder}
+                              placeholder={selectedDockerRegistryType.id.placeholder ? selectedDockerRegistryType.id.placeholder : "Enter username"}
                           />
                       </div>
                       <div className="form__row">
@@ -1066,7 +1097,7 @@ function DockerForm({
                                   onBlur={id && handleOnBlur}
                                   onFocus={handleOnFocus}
                                   label={selectedDockerRegistryType.password.label}
-                                  placeholder={selectedDockerRegistryType.password.placeholder}
+                                  placeholder={selectedDockerRegistryType.password.placeholder ? selectedDockerRegistryType.password.placeholder : "Enter password/token"}
                                   autoComplete="off"
                               />
                           )}
@@ -1097,7 +1128,7 @@ function DockerForm({
                               </>
                           )}
                       </div>
-                  </>
+                  </div>
               )
           }
       }
@@ -1159,12 +1190,6 @@ function DockerForm({
                         >
                             <span className="flex left cn-7 w-150 mr-16 fs-13 fw-6 lh-20">Registry type</span>
                             <RadioGroupItem
-                                value={RegistryStorageType.CONTAINER}
-                                dataTestId="container-registry-radio-button"
-                            >
-                                {RegistryTypeName[RegistryStorageType.CONTAINER]}
-                            </RadioGroupItem>
-                            <RadioGroupItem
                                 value={RegistryStorageType.OCI_PRIVATE}
                                 dataTestId="oci-private-registry-radio-button"
                             >
@@ -1180,6 +1205,7 @@ function DockerForm({
                         <hr className="mt-0 mb-0" />
                     </div>
                 )}
+                <div className="form__row--two-third">
                 <div className="form__row">
                     <CustomInput
                         dataTestid="container-registry-name"
@@ -1207,9 +1233,10 @@ function DockerForm({
                         autoComplete="off"
                         error={customState.registryUrl.error}
                         onChange={customHandleChange}
-                        disabled={!!(registryUrl || selectedDockerRegistryType.defaultRegistryURL || registryStorageType !== RegistryStorageType.OCI_PUBLIC  )}
+                        disabled={registryStorageType === RegistryStorageType.OCI_PRIVATE && !!(registryUrl || selectedDockerRegistryType.defaultRegistryURL  )}
                         placeholder={selectedDockerRegistryType.registryURL.placeholder}
                     />
+                </div>
                 </div>
                 {renderAuthentication()}
                 {selectedDockerRegistryType.value === RegistryType.OTHER && (

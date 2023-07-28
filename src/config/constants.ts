@@ -416,7 +416,6 @@ export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionT
     PULL_PUSH: "PULL/PUSH",
 }
 export const RegistryStorageType = {
-    CONTAINER: 'CONTAINER',
     OCI_PRIVATE: 'OCI_PRIVATE',
     OCI_PUBLIC: 'OCI_PUBLIC'
 }
@@ -466,9 +465,8 @@ export const RegistryType = {
 }
 
 export const RegistryTypeName = {
-    'CONTAINER': 'Container registry',
-    'OCI_PRIVATE': 'OCI Registry (Private)',
-    'OCI_PUBLIC': 'OCI Registry (Public)'
+    'OCI_PRIVATE': 'Private Registry',
+    'OCI_PUBLIC': 'Public Registry'
 }
 
 export const AppCreationType = {
