@@ -1091,7 +1091,7 @@ function ChartValuesView({
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
             if (commonState.activeTab === 'manifest'){
-                return COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest
+                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.lenght ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
             }
             return isCreateValueView
                 ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
@@ -1132,7 +1132,7 @@ function ChartValuesView({
                             placement="bottom"
                             content={getComparisonTippyContent()}
                         >
-                            {renderComparisonOption(!commonState.isComparisonAvailable)}
+                            {renderComparisonOption(commonState.activeTab === 'manifest' ? !commonState.isComparisonAvailable ||  !commonState.deploymentHistoryArr || (commonState.deploymentHistoryArr.length === 0): !commonState.isComparisonAvailable)}
                         </Tippy>
                         {commonState.activeTab !== 'manifest' && renderReadMeOption()}
                     </ConditionalWrap>
