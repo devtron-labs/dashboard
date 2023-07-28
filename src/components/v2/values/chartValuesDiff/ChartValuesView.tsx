@@ -360,7 +360,7 @@ function ChartValuesView({
                                 commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
-                            updateGeneratedManifest(
+                            commonState.chartValues.appStoreVersionId && updateGeneratedManifest(
                                 isCreateValueView,
                                 isUnlinkedCLIApp,
                                 isExternalApp,
@@ -368,7 +368,7 @@ function ChartValuesView({
                                 appName,
                                 _valueName,
                                 commonState,
-                                commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                                commonState.chartValues.appStoreVersionId,
                                 appId,
                                 deploymentVersion,
                                 response.result.values,
