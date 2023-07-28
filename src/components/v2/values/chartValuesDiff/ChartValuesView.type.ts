@@ -391,8 +391,11 @@ export interface ValuesForDiffStateType {
     presetChartValues: ChartValuesDiffOptionType[]
     deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
     selectedVersionForDiff: ChartValuesDiffOptionType
+    selectedManifestVersionForDiff: ChartValuesDiffOptionType
     deployedManifest: string
     valuesForDiff: Map<number, string>
+    manifestsForDiff: Map<number, string>
+    selectedManifestForDiff?: string
     selectedValuesForDiff: string 
 }
 

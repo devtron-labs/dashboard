@@ -79,7 +79,9 @@ export default function ChartValuesEditor({
         selectedValuesForDiff: defaultValuesText,
         deployedManifest: '',
         valuesForDiff: new Map<number, string>(),
+        manifestsForDiff: new Map<number, string>(),
         selectedVersionForDiff: null,
+        selectedManifestVersionForDiff: null,
     })
 
     const CompareWithDropdown = ({
@@ -213,9 +215,10 @@ export default function ChartValuesEditor({
                 loadingValuesForDiff: true,
             })
             const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-            const _version = manifestView ? deploymentHistoryList[0]?.version : selectedVersionForDiff.value
+            //get selectedVersionForDiff for manifestView
+            const _version = selectedVersionForDiff.value
             const _currentValues = manifestView
-                ? valuesForDiffState.deployedManifest
+                ? valuesForDiffState.manifestsForDiff.get(_version)
                 : valuesForDiffState.valuesForDiff.get(_version)
             if (!_currentValues) {
                 if (
@@ -246,16 +249,18 @@ export default function ChartValuesEditor({
                     getDeploymentManifestDetails(appId, _version, isExternalApp)
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
+                            const _manifestsForDiff = valuesForDiffState.manifestsForDiff
                             const _selectedValues = isExternalApp
                                 ? YAML.stringify(JSON.parse(res.result.valuesYaml))
                                 : res.result.valuesYaml
                             _valuesForDiff.set(_version, _selectedValues)
-
+                            _manifestsForDiff.set(_version, res.result.manifest)
                             const _valuesForDiffState = {
                                 ...valuesForDiffState,
                                 loadingValuesForDiff: false,
                                 valuesForDiff: _valuesForDiff,
                                 selectedValuesForDiff: _selectedValues,
+                                selectedManifestForDiff: _manifestsForDiff.get(_version),
                             }
 
                             if (_version === deploymentHistoryList[0].version) {
@@ -344,35 +349,19 @@ export default function ChartValuesEditor({
             {comparisonView && (
                 <div className="code-editor__header chart-values-view__diff-view-header">
                     <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
-                        {manifestView ? (
-                            <>
-                                <span style={{ width: '90px' }} data-testid="compare-with-heading">
-                                    Compare with:{' '}
-                                </span>
-                                <CompareWithDropdown
-                                    deployedChartValues={valuesForDiffState.deployedChartValues}
-                                    defaultChartValues={valuesForDiffState.defaultChartValues}
-                                    presetChartValues={valuesForDiffState.presetChartValues}
-                                    deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                                    selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                                    handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                                /> 
-                            </>
-                        ) : (
-                            <>
-                                <span style={{ width: '90px' }} data-testid="compare-with-heading">
-                                    Compare with:{' '}
-                                </span>
-                                <CompareWithDropdown
-                                    deployedChartValues={valuesForDiffState.deployedChartValues}
-                                    defaultChartValues={valuesForDiffState.defaultChartValues}
-                                    presetChartValues={valuesForDiffState.presetChartValues}
-                                    deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                                    selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                                    handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                                />
-                            </>
-                        )}
+
+                        <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                            Compare with:{' '}
+                        </span>
+                        <CompareWithDropdown
+                            deployedChartValues={valuesForDiffState.deployedChartValues}
+                            defaultChartValues={valuesForDiffState.defaultChartValues}
+                            presetChartValues={valuesForDiffState.presetChartValues}
+                            deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                            selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                            handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                        />
+
                     </div>
                     <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
                         {manifestView ? (
@@ -392,7 +381,7 @@ export default function ChartValuesEditor({
                 defaultValue={
                     comparisonView
                         ? manifestView
-                            ? valuesForDiffState.deployedManifest
+                            ? valuesForDiffState.selectedManifestForDiff
                             : valuesForDiffState.selectedValuesForDiff
                         : ''
                 }
