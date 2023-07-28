@@ -10,6 +10,7 @@ import {
     InfoColourBar,
     Toggle,
     GenericEmptyState,
+    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
@@ -19,7 +20,6 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
-import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -48,6 +48,7 @@ import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
+const KubectlProxyCheckBox = importComponentFromFELibrary('KubectlProxyCheckBox')
 
 const PrometheusWarningInfo = () => {
     return (
@@ -186,7 +187,7 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: id ? toConnectViaProxyTemp : false,
+                required: id && KubectlProxyCheckBox ? toConnectViaProxyTemp : false,
                 validator: { error: 'incorrect URL', regex: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             tlsClientKey: {
@@ -632,48 +633,13 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {id !== 1 && (
-                    <>
-                        <hr />
-                        <div className="dc__position-rel flex left dc__hover mb-20">
-                            <Checkbox
-                                isChecked={toConnectViaProxyTemp}
-                                rootClassName="form__checkbox-label--ignore-cache mb-0"
-                                value={'CHECKED'}
-                                onChange={toggleCheckProxyUrlConnection}
-                            >
-                                <div data-testid="to_connect_via_proxy_checkbox" className="mr-4 flex center">
-                                   Connect to this cluster via proxy
-                                </div>
-                            </Checkbox>
-                        </div>
-                        {toConnectViaProxyTemp && (
-                            <>
-                                <div className="form__row">
-                                    <span
-                                        data-testid="proxy_url_data"
-                                        className="form__label dc__required-field"
-                                    >
-                                        Proxy URL
-                                    </span>
-                                    <ResizableTextarea
-                                        dataTestId="proxy_url_data_input"
-                                        className="dc__resizable-textarea__with-max-height w-100"
-                                        name="proxyUrl"
-                                        value={state.proxyUrl.value}
-                                        onChange={handleOnChange}
-                                        placeholder={'eg. http://proxy.example.org'}
-                                    />
-                                    {state.proxyUrl.error && (
-                                        <label htmlFor="" className="form__error">
-                                            <FormError className="form__icon form__icon--error" />
-                                            {state.proxyUrl.error}
-                                        </label>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                    </>
+                {id !== 1 && KubectlProxyCheckBox && (
+                    <KubectlProxyCheckBox
+                        toConnectViaProxyTemp={toConnectViaProxyTemp}
+                        toggleCheckProxyUrlConnection={toggleCheckProxyUrlConnection}
+                        proxyUrl={state.proxyUrl}
+                        handleOnChange={handleOnChange}
+                    />
                 )}
                 {id !== 1 && (
                     <>
