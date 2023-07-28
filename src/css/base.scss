@@ -3252,6 +3252,11 @@ textarea::placeholder {
     opacity: 0.5;
 }
 
+// blur
+.dc__blur-1_5 {
+    filter: blur(1.5px);
+}
+
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);

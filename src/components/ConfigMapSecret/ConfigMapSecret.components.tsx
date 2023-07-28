@@ -256,7 +256,7 @@ export function ConfigMapSecretContainer({
         <>
             <section
                 className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                    reduceOpacity ? 'dc__disable-click dc__opacity-0_5' : ''
+                    reduceOpacity ? 'dc__disable-click dc__blur-1_5' : ''
                 }`}
             >
                 <article

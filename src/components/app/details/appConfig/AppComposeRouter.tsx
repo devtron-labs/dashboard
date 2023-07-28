@@ -176,6 +176,7 @@ export default function AppComposeRouter({
                             envList={environments}
                             reloadEnvironments={reloadEnvironments}
                             configProtectionData={configProtectionData}
+                            isBaseConfigProtected={isBaseConfigProtected}
                         />
                     </Route>
                 )}

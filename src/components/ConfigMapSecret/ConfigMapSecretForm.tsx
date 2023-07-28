@@ -753,22 +753,24 @@ export const ConfigMapSecretForm = React.memo(
                     >
                         {renderSubPathCheckBoxContent()}
                     </Checkbox>
-                    {(state.externalType === 'KubernetesSecret' || (componentType!=='secret' && state.external)) && state.isSubPathChecked && (
-                        <div className="mb-16">
-                            <CustomInput
-                                value={state.externalSubpathValues.value}
-                                autoComplete="off"
-                                tabIndex={5}
-                                label=""
-                                placeholder={'Enter keys (Eg. username,configs.json)'}
-                                error={state.externalSubpathValues.error}
-                                onChange={onExternalSubpathValuesChange}
-                                disabled={
-                                    !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
-                                }
-                            />
-                        </div>
-                    )}
+                    {(state.externalType === 'KubernetesSecret' || (componentType !== 'secret' && state.external)) &&
+                        state.isSubPathChecked && (
+                            <div className="mb-16">
+                                <CustomInput
+                                    value={state.externalSubpathValues.value}
+                                    autoComplete="off"
+                                    tabIndex={5}
+                                    label=""
+                                    placeholder={'Enter keys (Eg. username,configs.json)'}
+                                    error={state.externalSubpathValues.error}
+                                    onChange={onExternalSubpathValuesChange}
+                                    disabled={
+                                        !draftMode &&
+                                        (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
+                                    }
+                                />
+                            </div>
+                        )}
                 </div>
             )
         }
@@ -1017,7 +1019,7 @@ export const ConfigMapSecretForm = React.memo(
                 {state.showDraftSaveModal && (
                     <SaveChangesModal
                         appId={+appId}
-                        envId={+envId}
+                        envId={envId ? +envId : -1}
                         resourceType={componentType === 'secret' ? 2 : 1}
                         resourceName={state.configName.value}
                         prepareDataToSave={preparePayload}
