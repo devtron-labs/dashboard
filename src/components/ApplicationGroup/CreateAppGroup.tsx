@@ -125,13 +125,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     const appFilterList = () => {
         const _authorizedAppList = []
         const _unauthorizedAppList = []
-        appList
-            .filter(
-                (app) =>
-                    selectedAppsMap[app.id] &&
-                    (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
-            )
-            .map((app) =>{
+        appList.map((app) =>{
                 unAuthorizedApps.get(app.appName) ?
                 _unauthorizedAppList.push({id: app.id, appName: app.appName})
              : _authorizedAppList.push({id: app.id, appName: app.appName})
@@ -152,42 +146,54 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {authorzedAppList.map((app) => {
-                        return (
-                            <div
-                                key={`selected-app-${app.id}`}
-                                className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
-                                data-app-id={app.id}
-                                onClick={removeAppSelection}
-                            >
-                                <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
-                                <Close className="icon-dim-16 cursor delete-icon mr-8" />
-                                <span>{app.appName}</span>
-                            </div>
+                    {authorzedAppList
+                        .filter(
+                            (app) =>
+                                selectedAppsMap[app.id] &&
+                                (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
-                    })}
-                    {unauthorzedAppList.length >0 && (
+                        .map((app) => {
+                            return (
+                                <div
+                                    key={`selected-app-${app.id}`}
+                                    className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
+                                    data-app-id={app.id}
+                                    onClick={removeAppSelection}
+                                >
+                                    <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
+                                    <Close className="icon-dim-16 cursor delete-icon mr-8" />
+                                    <span>{app.appName}</span>
+                                </div>
+                            )
+                        })}
+                    {unauthorzedAppList.length > 0 && (
                         <div className="dc__bold ml-4">
                             You don't have admin/manager pemission for the following Application.
                         </div>
                     )}
-                    {unauthorzedAppList.map((app) => {
-                        return (
-                            <Tippy
-                                className="default-tt w-200"
-                                arrow={false}
-                                placement="bottom-start"
-                                content="You don't have admin/manager pemission for this app."
-                            >
-                                <div>
-                                    <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
-                                        <Abort className="mr-8" />
-                                        <span>{app.appName}</span>
-                                    </div>
-                                </div>
-                            </Tippy>
+                    {unauthorzedAppList
+                        .filter(
+                            (app) =>
+                                selectedAppsMap[app.id] &&
+                                (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
-                    })}
+                        .map((app) => {
+                            return (
+                                <Tippy
+                                    className="default-tt w-200"
+                                    arrow={false}
+                                    placement="bottom-start"
+                                    content="You don't have admin/manager pemission for this app."
+                                >
+                                    <div>
+                                        <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
+                                            <Abort className="mr-8" />
+                                            <span>{app.appName}</span>
+                                        </div>
+                                    </div>
+                                </Tippy>
+                            )
+                        })}
                 </div>
             </div>
         )
