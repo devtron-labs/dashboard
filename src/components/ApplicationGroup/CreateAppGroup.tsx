@@ -122,16 +122,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         setSelectedAppsCount(_selectedAppsCount)
     }
 
-    const unauthorizedAppCheck = (appName: string) => {
-        if(unAuthorizedApps === undefined) return false
-        for(let app of unAuthorizedApps) {
-            if(app === appName) {
-                return true
-            }  
-        }
-        return false
-    }
-
     const appFilterList = () => {
         const _authorizedAppList = []
         const _unauthorizedAppList = []
@@ -142,12 +132,13 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                     (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
             )
             .map((app) =>{
-            unauthorizedAppCheck(app.appName) ?
+                unAuthorizedApps.get(app.appName) ?
                 _unauthorizedAppList.push({id: app.id, appName: app.appName})
              : _authorizedAppList.push({id: app.id, appName: app.appName})
             })
         setUnauthorizedAppList(_unauthorizedAppList)
         setAuthorizedAppList(_authorizedAppList)
+
     }
 
     const renderSelectedApps = (): JSX.Element => {
@@ -217,7 +208,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
                             <ConditionalWrap
-                                condition={unauthorizedAppCheck(app.appName) === true}
+                                condition={unAuthorizedApps.get(app.appName) === true}
                                 wrap={(children) => (
                                     <Tippy
                                         data-testid="env-tippy"
@@ -233,10 +224,10 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 <Checkbox
                                     key={`app-${app.id}`}
                                     rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
-                                    isChecked={unauthorizedAppCheck(app.appName) ? false : selectedAppsMap[app.id]}
+                                    isChecked={unAuthorizedApps.get(app.appName) ? false : selectedAppsMap[app.id]}
                                     value={CHECKBOX_VALUE.CHECKED}
                                     onChange={() => toggleAppSelection(app.id)}
-                                    disabled={unauthorizedAppCheck(app.appName) ? true : false}
+                                    disabled={unAuthorizedApps.get(app.appName) ? true : false}
                                 >
                                     {app.appName}
                                 </Checkbox>
@@ -346,7 +337,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         }
         let unauthorizedAppId = []
         appList.forEach(element => {
-            if (unAuthorizedApps.includes(element.appName)) {
+            if (unAuthorizedApps.get(element.appName)) {
                 unauthorizedAppId.push(+element.id)
             }
         });
