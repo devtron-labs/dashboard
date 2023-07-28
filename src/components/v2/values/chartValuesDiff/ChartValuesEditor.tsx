@@ -216,7 +216,6 @@ export default function ChartValuesEditor({
                 loadingValuesForDiff: true,
             })
             const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
-            //get selectedVersionForDiff for manifestView
             const _version = selectedVersionForDiff.value
             const _currentValues = manifestView
                 ? valuesForDiffState.manifestsForDiff.get(_version)
@@ -236,6 +235,7 @@ export default function ChartValuesEditor({
                                 loadingValuesForDiff: false,
                                 valuesForDiff: _valuesForDiff,
                                 selectedValuesForDiff: res.result.values,
+                                selectedManifestForDiff: valuesForDiffState.manifestsForDiff.get(_version),
                             })
                         })
                         .catch((e) => {
@@ -284,6 +284,7 @@ export default function ChartValuesEditor({
                     ...valuesForDiffState,
                     loadingValuesForDiff: false,
                     selectedValuesForDiff: _currentValues,
+                    selectedManifestForDiff: _currentValues,
                 })
             }
         }
