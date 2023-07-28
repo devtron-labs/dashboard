@@ -67,13 +67,15 @@ export const jobListModal = (jobContainers) => {
             return {
                 id: job.jobId || 0,
                 name: job.jobName || 'NA',
-                description: job.description || '',
+                description: job.description.description || '',
                 ciPipelines: pipelineModal(job.ciPipelines),
                 defaultPipeline: getDefaultPipeline(job.ciPipelines),
             }
         }) ?? []
     )
 }
+
+
 
 const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
     return (

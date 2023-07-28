@@ -46,6 +46,7 @@ export interface AddNewAppState {
         cloneAppId: boolean
     }
     createAppLoader: boolean
+    showClusterDescription: boolean
 }
 
 export interface AppDetails {
@@ -78,11 +79,18 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: string
+    description: Description
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
+}
+
+interface Description{
+    id: number
+    description: string
+    updatedBy: string
+    updatedOn: string
 }
 
 export interface AppHeaderType {
