@@ -680,10 +680,7 @@ function DockerForm({
                 return
             }
         }
-        // if (registryStorageType === RegistryStorageType.OCI_PRIVATE && !isContainerStore) {
-        //     setOCIRegisrtyInputError(true)
-        //     return
-        // }
+      
         onSave()
     }
 
