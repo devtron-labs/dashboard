@@ -1112,10 +1112,9 @@ function ChartValuesView({
             <div className="chart-values-view__tabs-container flex dc__content-space">
                 {renderValuesTabs()}
                 <div className="flex">
-                    {/* {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && ( */}
                     <ConditionalWrap
                         condition={commonState.activeTab === 'manifest'}
-                        wrap={() => renderComparisonOption(isDeployChartView && commonState.activeTab === 'manifest')}
+                        wrap={() => renderComparisonOption(isDeployChartView)}
                     >
                         <Tippy
                             className="default-tt w-200"
@@ -1125,34 +1124,8 @@ function ChartValuesView({
                         >
                             {renderComparisonOption(!commonState.isComparisonAvailable)}
                         </Tippy>
-                    </ConditionalWrap>
-                    {/* )} */}
-                    {/* {commonState.activeTab !== 'manifest' && ( */}
-                    <ConditionalWrap
-                        condition={
-                            !commonState.openReadMe &&
-                            (commonState.fetchingReadMe ||
-                                !commonState.isReadMeAvailable ||
-                                !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0))
-                        }
-                        wrap={() => (
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={
-                                    commonState.fetchingReadMe
-                                        ? COMPARISON_OPTION_TIPPY_CONTENT.Fetching
-                                        : COMPARISON_OPTION_TIPPY_CONTENT.ReadmeNotAvailable
-                                }
-                            >
-                                {renderReadMeOption(true)}
-                            </Tippy>
-                        )}
-                    >
                         {renderReadMeOption()}
                     </ConditionalWrap>
-                    {/* )} */}
                 </div>
             </div>
         )
