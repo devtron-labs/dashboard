@@ -420,7 +420,7 @@ export default function ChartValuesEditor({
                         text={`Please ensure that the values are compatible with "${repoChartValue.chartRepoName}/${repoChartValue.chartName}"`}
                     />
                 )}
-                {manifestView && showInfoText && (
+                {manifestView && (
                     <CodeEditor.Information className="dc__ellipsis-right" text={MANIFEST_OUTPUT_INFO_TEXT}>
                         <Tippy
                             className="default-tt w-250"
