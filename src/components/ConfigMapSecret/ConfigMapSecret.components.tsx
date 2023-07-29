@@ -9,6 +9,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as InfoIconOutlined } from '../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as KeyIcon } from '../../assets/icons/ic-key.svg'
 import {
@@ -430,10 +431,21 @@ export function ProtectedConfigMapSecretDetails({
         }
         return (
             <>
+                <div className="en-2 bw-1 mt-16 mr-20 ml-20 bcn-1 dc__top-radius-4 deployment-diff__upper dc__no-bottom-border">
+                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9 dc__border-right">
+                        {cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED
+                            ? 'No published version available'
+                            : 'Published'}
+                    </div>
+                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
+                </div>
                 <DeploymentHistoryDiffView
                     currentConfiguration={getBaseConfig()}
                     baseTemplateConfiguration={getCurrentConfig()}
                     previousConfigAvailable={true}
+                    isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
+                    isDeleteDraft={draftData.action === 3}
+                    rootClassName="dc__no-top-radius mt-0-imp"
                 />
                 {draftData.draftState === 4 && draftData.canApprove && ApproveRequestTippy && (
                     <div className="flex right pr-16 pb-16 pl-16">
@@ -453,7 +465,24 @@ export function ProtectedConfigMapSecretDetails({
             </>
         )
     }
+
+    const renderEmptyMessage = (message: string): JSX.Element => {
+        return (
+            <div className="h-200 flex">
+                <div className="dc__align-center">
+                    <InfoIconOutlined className="icon-dim-20 mb-8" />
+                    <div className="fs-13 fw-4 cn-7">{message}</div>
+                </div>
+            </div>
+        )
+    }
+
     const renderForm = (): JSX.Element => {
+        if (selectedTab === 1 && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
+            return renderEmptyMessage('No published version of this file is available')
+        } else if (selectedTab === 3 && draftData.action === 3) {
+            return renderEmptyMessage('This secret will be deleted on approval')
+        }
         return (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}

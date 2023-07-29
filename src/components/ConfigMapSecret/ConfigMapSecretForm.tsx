@@ -53,7 +53,6 @@ import {
 } from './Secret/secret.utils'
 import { Option, groupStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { ReactComponent as InfoIconOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
@@ -154,21 +153,14 @@ export const ConfigMapSecretForm = React.memo(
                 if (configMapSecretData.data) {
                     dispatch({ type: ConfigMapActionTypes.toggleDialog })
                 } else {
-                    //temporary copy, removecopy
                     dispatch({
                         type: ConfigMapActionTypes.reInit,
-                        payload: initState(
-                            configMapSecretData,
-                            componentType,
-                            cmSecretStateLabel,
-                            draftMode,
-                        ),
+                        payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
                     })
                     update()
                     updateCollapsed()
                 }
             } else {
-                //duplicate
                 if (componentType === 'secret') {
                     prepareSecretOverrideData(configMapSecretData, dispatch)
                 } else {
@@ -553,6 +545,7 @@ export const ConfigMapSecretForm = React.memo(
             if (isProtectedView && DeleteModal) {
                 return (
                     <DeleteModal
+                        id={+id}
                         appId={+appId}
                         envId={envId ? +envId : -1}
                         resourceType={componentType === 'secret' ? 2 : 1}
@@ -590,6 +583,7 @@ export const ConfigMapSecretForm = React.memo(
             if (isProtectedView && DeleteModal) {
                 return (
                     <DeleteModal
+                        id={+id}
                         appId={+appId}
                         envId={envId ? +envId : -1}
                         resourceType={componentType === 'secret' ? 2 : 1}
@@ -935,17 +929,6 @@ export const ConfigMapSecretForm = React.memo(
                                 }
                             />
                         )}
-                    </div>
-                </div>
-            )
-        }
-
-        if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED && !configMapSecretData) {
-            return (
-                <div className="h-200 flex">
-                    <div className="w-200 flex column">
-                        <InfoIconOutlined className="icon-dim-20 fcn-5" />
-                        <div className="dc__text-center">No published version of this file is available</div>
                     </div>
                 </div>
             )
