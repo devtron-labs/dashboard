@@ -269,7 +269,7 @@ export default function EnvironmentOverrideRouter({
                 (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
         ) {
             if (isJobView) {
-              getJobOtherEnvironment()
+                getJobOtherEnvironment()
             } else {
                 reloadEnvironments()
             }
@@ -297,7 +297,7 @@ export default function EnvironmentOverrideRouter({
         })
         setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
         setCIPipelines(ciConfigRes?.ciPipelines)
-        setJobEnvs(jobEnvRes)
+        setJobEnvs(jobEnvRes ?? [])
     }
 
     const selectEnvironment = (selection) => {
