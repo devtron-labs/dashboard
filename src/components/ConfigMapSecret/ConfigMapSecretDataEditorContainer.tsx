@@ -185,6 +185,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA
                         ? '#Check sample for usage.'
                         : dataHeaders[state.externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT],
+                    false,
                 )
             } else {
                 return (
@@ -239,7 +240,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             )
         }
 
-        const renderCodeEditor = (value: string, handleOnChange: (yaml) => void, sheBangText: string): JSX.Element => {
+        const renderCodeEditor = (
+            value: string,
+            handleOnChange: (yaml) => void,
+            sheBangText: string,
+            readOnly: boolean,
+        ): JSX.Element => {
             return (
                 <div className="yaml-container">
                     <CodeEditor
@@ -249,7 +255,9 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         height={350}
                         onChange={handleOnChange}
                         readOnly={
-                            (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) || readonlyView || state.unAuthorized || state.secretMode
+                            (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) ||
+                            readonlyView ||
+                            readOnly
                         }
                         shebang={sheBangText}
                     >
@@ -360,7 +368,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 {!state.external && (
                     <>
                         {state.yamlMode
-                            ? renderCodeEditor(getCodeEditorValue(), handleYamlChange, '#key: value')
+                            ? renderCodeEditor(
+                                  getCodeEditorValue(),
+                                  handleYamlChange,
+                                  '#key: value',
+                                  state.unAuthorized || state.secretMode,
+                              )
                             : renderGUIEditor()}
                     </>
                 )}
@@ -369,7 +382,10 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                     !state.unAuthorized &&
                     !state.secretMode &&
                     !state.yamlMode && (
-                        <div className="dc__bold anchor pointer pb-10 dc_max-width__max-content" onClick={handleAddParam}>
+                        <div
+                            className="dc__bold anchor pointer pb-10 dc_max-width__max-content"
+                            onClick={handleAddParam}
+                        >
                             + Add params
                         </div>
                     )}

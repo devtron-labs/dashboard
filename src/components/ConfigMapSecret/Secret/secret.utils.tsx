@@ -365,7 +365,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             refreshInterval: json.refreshInterval,
         }
         if (Array.isArray(json?.esoData)) {
-            payload['setEsoData'] = json.esoData
+            payload['esoData'] = json.esoData
         }
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,

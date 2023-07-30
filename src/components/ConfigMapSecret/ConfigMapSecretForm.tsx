@@ -287,8 +287,8 @@ export const ConfigMapSecretForm = React.memo(
                     }
                 }
             }
-
-            let dataArray = state.yamlMode && !state.secretMode ? tempArr.current : state.currentData
+            const hasSecretCode =componentType==='secret' && tempArr.current.some((data) => data['v'] === '********')
+            let dataArray = state.yamlMode && !hasSecretCode ? tempArr.current : state.currentData
             const { isValid, arr } = validateKeyValuePair(dataArray)
             if (!isValid) {
                 toast.error(INVALID_YAML_MSG)
