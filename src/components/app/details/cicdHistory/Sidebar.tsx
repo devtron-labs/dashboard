@@ -146,13 +146,15 @@ const HistorySummaryCard = React.memo(
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
         const isCDType: boolean = type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD
-        const targetCardRef = useRef(null);
+        const idName = isCDType ? 'triggerId' : 'buildId'
+
+        const targetCardRef = useRef(null)
 
         const getPath = (): string => {
             const _params = {
                 ...rest,
                 envId,
-                [isCDType ? 'triggerId' : 'buildId']: id,
+                [idName]: id,
             }
             return `${generatePath(path, _params)}/${currentTab}`
         }
@@ -161,10 +163,10 @@ const HistorySummaryCard = React.memo(
             scrollToElement()
         }, [targetCardRef])
 
-        const activeTriggerId = params['triggerId']
+        const activeID = params[idName]
         const scrollToElement = () => {
             if (targetCardRef?.current) {
-                targetCardRef.current.scrollIntoView({ behavior: "smooth" });
+                targetCardRef.current.scrollIntoView({ behavior: 'smooth' })
             }
         }
         return (
@@ -194,11 +196,13 @@ const HistorySummaryCard = React.memo(
                     className="w-100 ci-details__build-card-container"
                     data-testid={dataTestId}
                     activeClassName="active"
-                    ref={+activeTriggerId === +id ? targetCardRef : null}
+                    ref={+activeID === +id && targetCardRef}
                 >
                     <div className="w-100 ci-details__build-card">
                         <div
-                            className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)?.toLocaleLowerCase().replace(/\s+/g, '')}`}
+                            className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)
+                                ?.toLocaleLowerCase()
+                                .replace(/\s+/g, '')}`}
                         />
                         <div className="flex column left dc__ellipsis-right">
                             <div className="cn-9 fs-14">{moment(startedOn).format(Moment12HourFormat)}</div>
