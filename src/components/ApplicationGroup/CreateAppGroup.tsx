@@ -34,8 +34,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
     const [selectedAppsMap, setSelectedAppsMap] = useState<Record<string, boolean>>({})
     const [selectedAppsCount, setSelectedAppsCount] = useState<number>(0)
-    const [unauthorzedAppList, setUnauthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
-    const [authorzedAppList, setAuthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
+    const [unauthorizedAppList, setUnauthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
+    const [authorizedAppList, setAuthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
 
     const outsideClickHandler = (evt): void => {
         if (
@@ -65,13 +65,10 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                 }
             }
             setSelectedAppsMap(_selectedAppsMap)
+            appFilterList()
             setSelectedAppsCount(_selectedAppsCount)
         }
     }, [appList])
-
-    useEffect(()=> {
-        appFilterList()
-    },[selectedAppsMap])
 
     const renderHeaderSection = (): JSX.Element => {
         return (
@@ -104,6 +101,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         if (_selectedAppsMap[e.currentTarget.dataset.appId]) {
             delete _selectedAppsMap[e.currentTarget.dataset.appId]
             setSelectedAppsMap(_selectedAppsMap)
+            appFilterList()
             setSelectedAppsCount(selectedAppsCount - 1)
         }
     }
@@ -119,6 +117,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
             _selectedAppsCount -= 1
         }
         setSelectedAppsMap(_selectedAppsMap)
+        appFilterList()
         setSelectedAppsCount(_selectedAppsCount)
     }
 
@@ -132,7 +131,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
             })
         setUnauthorizedAppList(_unauthorizedAppList)
         setAuthorizedAppList(_authorizedAppList)
-
     }
 
     const renderSelectedApps = (): JSX.Element => {
@@ -146,7 +144,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {authorzedAppList
+                    {authorizedAppList
                         .filter(
                             (app) =>
                                 selectedAppsMap[app.id] &&
@@ -166,12 +164,12 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 </div>
                             )
                         })}
-                    {unauthorzedAppList.length > 0 && (
+                    {unauthorizedAppList.length > 0 && (
                         <div className="dc__bold ml-4">
                             You don't have admin/manager pemission for the following Application.
                         </div>
                     )}
-                    {unauthorzedAppList
+                    {unauthorizedAppList
                         .filter(
                             (app) =>
                                 selectedAppsMap[app.id] &&
@@ -341,19 +339,9 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
-        let unauthorizedAppId = []
-        appList.forEach(element => {
-            if (unAuthorizedApps.get(element.appName)) {
-                unauthorizedAppId.push(+element.id)
-            }
-        });
-        const payloadAppIds = _selectedAppIds.filter(appId => {
-            if (!unauthorizedAppId.includes(appId)) {
-                return true
-            }
-            return false
+        const payloadAppIds = authorizedAppList.map(app => {
+            return +app.id
         })
-
         const payload = {
             id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,

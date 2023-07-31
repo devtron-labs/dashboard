@@ -183,7 +183,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             let _map = new Map<string, boolean>()
             if(err['code'] === 403) {
                 let arrUnauthorized = []
-                let arrayUauthorized = []
+                let unauthorizedCount = 0
                 err['errors'].map((errors) => {
                     arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
                     errors['userMessage']['unauthorizedApps'].forEach(element => {
@@ -192,13 +192,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                         }
                         for(let idx in selectedAppList) {
                             if(element === selectedAppList[idx].label) {
-                                arrayUauthorized.push(element)
+                                unauthorizedCount++
                             }
                         }
                     });
                     setMapUnauthorizedApp(_map)
                 })
-                if (arrayUauthorized && arrayUauthorized.length === selectedAppList.length) {
+                if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
                     handleToast("create")
                 } else if(_edit && arrUnauthorized.length>0){
                     handleToast("edit")
@@ -209,7 +209,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     setShowCreateGroup(true)
                 } 
                 arrUnauthorized = []
-                arrayUauthorized = []
+                unauthorizedCount=0
             } 
             else {
                 setShowCreateGroup(true)
