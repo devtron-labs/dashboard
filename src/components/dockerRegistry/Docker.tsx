@@ -134,20 +134,8 @@ useEffect(() => {
                     clusterOption={clusterOption}
                     key={docker.id || Math.random().toString(36).substr(2, 5)}
                     setRegistryStorageType={setRegistryStorageType}
-
-                    registryStorageType  ={registryStorageType}        
-                    ociRegistryConfig = {OCIRegistryUseActionHelmPushMessage
-                    ? {
-                          CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                          CHART: OCIRegistryConfigConstants.PUSH,
-                      }
-                    : registryStorageType === RegistryStorageType.OCI_PUBLIC ? {
-                        CHART: OCIRegistryConfigConstants.PULL,
-                    } : {
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                    }
-                }
-                              />
+                    registryStorageType={registryStorageType}
+                />
             ))}
         </section>
     )
@@ -169,7 +157,19 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    ociRegistryConfig ,
+    registryStorageType,
+    setRegistryStorageType,
+    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
+        ? {
+              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+              CHART: OCIRegistryConfigConstants.PUSH,
+          }
+        : registryStorageType === RegistryStorageType.OCI_PUBLIC ? {
+            CHART: OCIRegistryConfigConstants.PULL,
+        } : {
+            CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+        }
+    ,
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -180,8 +180,6 @@ function CollapsedList({
     clusterOption,
     repositoryList= '',
     isPublic,
-    registryStorageType,
-    setRegistryStorageType,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -294,7 +292,6 @@ function DockerForm({
     setRegistryStorageType,
     ...rest
 }) {
-    console.log(isPublic)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             id: { value: id, error: '' },
@@ -559,22 +556,6 @@ function DockerForm({
             setOCIRegistryStorageConfig({
                 CHART: OCIRegistryConfigConstants.PULL,
             })
-        } else {
-            if (isContainerStore && isOCIRegistryHelmPush) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PUSH,
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (isOCIRegistryHelmPush && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            } else if (isContainerStore && showHelmPull) {
-                setOCIRegistryStorageConfig({
-                    CHART: OCIRegistryConfigConstants.PULL,
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                })
-            }
         }
        
         let awsRegion
@@ -583,9 +564,7 @@ function DockerForm({
             if (!awsRegion) return
         }
         let payload = getRegistryPayload(awsRegion)
-        if (payload.isOCICompliantRegistry) {
             payload.ociRegistryConfig = isPublic ? {  CHART: OCIRegistryConfigConstants.PULL} : OCIRegistryStorageConfig
-        }
        
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
@@ -704,32 +683,29 @@ function DockerForm({
     const onClickHideManageModal = (): void => {
         setManageModal(false)
     }
-    const handleOCIRegistryStorageAction = (e: any): void => {
-            if (OCIRegistryUseActionHelmPushMessage) {
+
+    const handleOCIRegistryStorageAction = (key) => {
+        if (key === OCIRegistryConfigConstants.PUSH) {
+            setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
+            !isOCIRegistryHelmPush &&
                 setOCIRegistryStorageConfig({
-                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                     CHART: OCIRegistryConfigConstants.PUSH,
                 })
-            } else {
+        }
+        if (key === OCIRegistryConfigConstants.PULL) {
+            setListRepositories(!showHelmPull)
+            !showHelmPull &&
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PULL,
+                })
+        }
+        if (key === OCIRegistryConfigConstants.PULL_PUSH) {
+            setContainerStore(!isContainerStore)
+            !isContainerStore &&
                 setOCIRegistryStorageConfig({
                     CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                 })
-            }
-            setContainerStore(!isContainerStore)
-    }
-
-    const handleOCIRegistryActionPull = (e: any): void => {
-        setListRepositories(!showHelmPull)
-        setOCIRegistryStorageConfig({
-            CHART: OCIRegistryConfigConstants.PULL,
-        })
-    }
-
-    const handleOCIRegistryActionPushHelm = (e: any): void => {
-            setOCIRegistryStorageConfig({
-                CHART: OCIRegistryConfigConstants.PUSH,
-            })
-            setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
+        }
     }
 
     const registryOptions = (props) => {
@@ -878,7 +854,7 @@ function DockerForm({
                             rootClassName="docker-default mb-0"
                             isChecked={isContainerStore}
                             value={CHECKBOX_VALUE.CHECKED}
-                            onChange={handleOCIRegistryStorageAction}
+                            onChange={() => handleOCIRegistryStorageAction(OCIRegistryConfigConstants.PULL_PUSH)}
                             dataTestId={`store-${
                                 OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
                             }-checkbox`}
@@ -898,7 +874,7 @@ function DockerForm({
                         id="helm-push"
                         isChecked={isOCIRegistryHelmPush}
                         value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleOCIRegistryActionPushHelm}
+                        onChange={() => handleOCIRegistryStorageAction(OCIRegistryConfigConstants.PUSH)}
                         dataTestId={`store-${
                             OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
                         }-checkbox`}
@@ -910,7 +886,7 @@ function DockerForm({
                         id="helm-pull"
                         isChecked={showHelmPull}
                         value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleOCIRegistryActionPull}
+                        onChange={() => handleOCIRegistryStorageAction(OCIRegistryConfigConstants.PULL)}
                         dataTestId={`store-${
                             OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
                         }-checkbox`}
