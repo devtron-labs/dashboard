@@ -101,9 +101,19 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         if (_selectedAppsMap[e.currentTarget.dataset.appId]) {
             delete _selectedAppsMap[e.currentTarget.dataset.appId]
             setSelectedAppsMap(_selectedAppsMap)
-            appFilterList()
+            appFilterAuthorizedList()
             setSelectedAppsCount(selectedAppsCount - 1)
         }
+    }
+
+    const appFilterAuthorizedList = () => {
+        let _authorizedApp = []
+        appList.map((app) => {
+            if(!unAuthorizedApps.get(app.appName)) {
+                _authorizedApp.push({id: app.id, appName: app.appName})
+            }
+        })
+        setAuthorizedAppList(_authorizedApp)
     }
 
     const toggleAppSelection = (appId: string): void => {
@@ -117,13 +127,13 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
             _selectedAppsCount -= 1
         }
         setSelectedAppsMap(_selectedAppsMap)
-        appFilterList()
+        appFilterAuthorizedList()
         setSelectedAppsCount(_selectedAppsCount)
     }
 
     const appFilterList = () => {
-        const _authorizedAppList = []
-        const _unauthorizedAppList = []
+        let _authorizedAppList = []
+        let _unauthorizedAppList = []
         appList.map((app) =>{
                 unAuthorizedApps.get(app.appName) ?
                 _unauthorizedAppList.push({id: app.id, appName: app.appName})
@@ -339,9 +349,21 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
-        const payloadAppIds = authorizedAppList.map(app => {
-            return +app.id
+        
+        let appListIds = []
+        appList.forEach(element => {
+            if(!unAuthorizedApps.get(element.appName)) {
+                appListIds.push(+element.id)
+            }
+        });
+        
+        const payloadAppIds = _selectedAppIds.filter(app => {
+            if(appListIds.includes(app)) {
+                return true
+            }
+            return false
         })
+
         const payload = {
             id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,
