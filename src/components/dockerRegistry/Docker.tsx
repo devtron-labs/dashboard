@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useForm, useAsync, CustomInput, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
+import {
+    useForm,
+    useAsync,
+    CustomInput,
+    handleOnBlur,
+    handleOnFocus,
+    parsePassword,
+    importComponentFromFELibrary,
+} from '../common'
 import {
     showError,
     Progressing,
@@ -21,7 +29,15 @@ import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../servi
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, RegistryTypeName, OCIRegistryConfigConstants, OCIRegistryStorageConfigType, RegistryStorageType, RegistryPayloadType, REGISTRY_TITLE_DESCRIPTION_CONTENT } from '../../config'
+import {
+    DOCUMENTATION,
+    RegistryTypeName,
+    OCIRegistryConfigConstants,
+    OCIRegistryStorageConfigType,
+    RegistryStorageType,
+    RegistryPayloadType,
+    REGISTRY_TITLE_DESCRIPTION_CONTENT,
+} from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -37,7 +53,11 @@ import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-const OCIRegistryUseActionHelmPushMessage = importComponentFromFELibrary('OCIRegistryUseActionHelmPushMessage','','function')
+const OCIRegistryUseActionHelmPushMessage = importComponentFromFELibrary(
+    'OCIRegistryUseActionHelmPushMessage',
+    '',
+    'function',
+)
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -46,9 +66,9 @@ enum CERTTYPE {
 }
 
 export default function Docker({ ...props }) {
-        const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
-        const [clusterOption, setClusterOptions] = useState([])
-        const [clusterLoader, setClusterLoader] = useState(false)
+    const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
+    const [clusterOption, setClusterOptions] = useState([])
+    const [clusterLoader, setClusterLoader] = useState(false)
 
     const _getInit = async () => {
         setClusterLoader(true)
@@ -73,11 +93,11 @@ export default function Docker({ ...props }) {
             })
     }
 
-useEffect(() => {
-    if (props.isSuperAdmin) {
-        _getInit()
-    }
-}, [])
+    useEffect(() => {
+        if (props.isSuperAdmin) {
+            _getInit()
+        }
+    }, [])
 
     if (!props.isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
@@ -318,10 +338,7 @@ function DockerForm({
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
-            value:
-                id && !password
-                    ? DEFAULT_SECRET_PLACEHOLDER
-                    : regPass,
+            value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
     })
@@ -352,10 +369,10 @@ function DockerForm({
     const isCustomScript = ipsConfig?.credentialType === CredentialType.CUSTOM_CREDENTIAL
 
     const defaultCustomCredential = {
-      server: '',
-      email: '',
-      username: '',
-      password: ''
+        server: '',
+        email: '',
+        username: '',
+        password: '',
     }
 
     const [deleting, setDeleting] = useState(false)
@@ -389,8 +406,6 @@ function DockerForm({
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
-
-
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)
@@ -458,8 +473,9 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: (registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore) ? Isdefault: false,
-            isOCICompliantRegistry: registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== 'gcr',
+            isDefault: registryStorageType !== RegistryStorageType.OCI_PRIVATE || IsContainerStore ? Isdefault : false,
+            isOCICompliantRegistry:
+                registryStorageType === RegistryStorageType.OCI_PRIVATE && selectedDockerRegistryType.value !== 'gcr',
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
@@ -553,7 +569,8 @@ function DockerForm({
     function onValidation() {
         if (selectedDockerRegistryType.value === 'ecr') {
             if (
-                (!isIAMAuthType && (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
+                (!isIAMAuthType &&
+                    (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
                 !customState.registryUrl.value
             ) {
                 setCustomState((st) => ({
@@ -561,7 +578,7 @@ function DockerForm({
                     awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
                     awsSecretAccessKey: {
                         ...st.awsSecretAccessKey,
-                        error: (id || st.awsSecretAccessKey.value) ? '' : 'Mandatory',
+                        error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
                     },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
@@ -572,7 +589,7 @@ function DockerForm({
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: (id || st.password.value)? '' : 'Mandatory' },
+                    password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
                 }))
                 return
             }
@@ -580,15 +597,15 @@ function DockerForm({
             selectedDockerRegistryType.value === 'artifact-registry' ||
             selectedDockerRegistryType.value === 'gcr'
         ) {
-            const isValidJsonFile = (isValidJson(customState.password.value) || id)
-            const isValidJsonStr = (isValidJsonFile ? '' : 'Invalid JSON')
+            const isValidJsonFile = isValidJson(customState.password.value) || id
+            const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
             if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                     password: {
                         ...st.password,
-                        error: (id || st.password.value) ? isValidJsonStr : 'Mandatory',
+                        error: id || st.password.value ? isValidJsonStr : 'Mandatory',
                     },
                 }))
                 return
@@ -603,7 +620,7 @@ function DockerForm({
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: (id || st.password.value) ? '' : 'Mandatory' },
+                    password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
                     registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                 }))
                 error = true
