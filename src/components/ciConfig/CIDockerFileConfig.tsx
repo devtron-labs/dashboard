@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -31,6 +31,8 @@ import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
+import { FEATURE_DISABLED } from '../../config/constantMessaging'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -131,6 +133,7 @@ export default function CIDockerFileConfig({
         checkoutPathArray.push({ label: buildContextCheckoutPath, value: buildContextCheckoutPath })
     }
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
+    const { isAirgapped } = useContext(mainContext)
 
     useEffect(() => {
         let checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
@@ -246,12 +249,14 @@ export default function CIDockerFileConfig({
         })
     }
 
-    const handleCIBuildTypeOptionSelection = (id: CIBuildType) => {
-        setCIBuildTypeOption(id)
-        setCurrentCIBuildConfig({
-            ...currentCIBuildConfig,
-            ciBuildType: id,
-        })
+    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled:boolean) => {
+        if (!isDisabled) {
+            setCIBuildTypeOption(id)
+            setCurrentCIBuildConfig({
+                ...currentCIBuildConfig,
+                ciBuildType: id,
+            })
+        }  
     }
 
     const canShowTick = (id: CIBuildType) => {
@@ -342,18 +347,16 @@ export default function CIDockerFileConfig({
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
+                    const isDisabled = isAirgapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
+                    const content = !isDisabled ? option.info : FEATURE_DISABLED
+                    const condition = (configOverrideView && allowOverride) || isDisabled
 
                     return (
                         <Fragment key={option.id}>
                             <ConditionalWrap
-                                condition={configOverrideView && allowOverride}
+                                condition={condition}
                                 wrap={(children) => (
-                                    <Tippy
-                                        className="default-tt w-250"
-                                        arrow={false}
-                                        placement="top"
-                                        content={option.info}
-                                    >
+                                    <Tippy className="default-tt w-250" arrow={false} placement="top" content={content}>
                                         <div className="flex top left flex-1">{children}</div>
                                     </Tippy>
                                 )}
@@ -365,9 +368,10 @@ export default function CIDockerFileConfig({
                                         configOverrideView ? 'h-40' : 'h-80'
                                     } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
                                         isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
-                                    }`}
+                                    } 
+                                    ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
                                     onClick={() => {
-                                        handleCIBuildTypeOptionSelection(option.id)
+                                        handleCIBuildTypeOptionSelection(option.id, isDisabled)
                                     }}
                                 >
                                     {showTick && (

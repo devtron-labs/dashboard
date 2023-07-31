@@ -1,19 +1,13 @@
 import React, { useContext } from 'react'
 import {
     ConditionType,
-    FormType,
     RefVariableType,
-    StepType,
-    VariableType,
-    FormErrorObjectType,
-    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
 import { TaskFieldDescription, VariableFieldType, PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
-import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import ReactSelect from 'react-select'
 import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
@@ -22,6 +16,7 @@ import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const {
@@ -32,25 +27,8 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         calculateLastStepDetail,
         formDataErrorObj,
         setFormDataErrorObj,
-        validateTask,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+        validateTask
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
     const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
@@ -111,7 +89,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const handleBlur = () => {
         if (type === PluginVariableType.OUTPUT) {
             const _formData = { ...formData }
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            calculateLastStepDetail(
+                false,
+                _formData,
+                activeStageName,
+                selectedTaskIndex,
+            )
             setFormData(_formData)
         }
     }
@@ -120,7 +103,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            calculateLastStepDetail(
+                false,
+                _formData,
+                activeStageName,
+                selectedTaskIndex,
+            )
         }
         if (
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
@@ -155,7 +143,12 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
             selectedValue.label
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
+            calculateLastStepDetail(
+                false,
+                _formData,
+                activeStageName,
+                selectedTaskIndex,
+            )
         }
         setFormData(_formData)
     }

@@ -8,7 +8,6 @@ export const groupHeading = (props) => {
 
 export const buildStageStyles = {
     ...groupStyle(),
-    container: (base) => ({ ...base, paddingRight: '20px' }),
     control: (base) => ({ ...base, border: '1px solid #d6dbdf', minHeight: '20px', height: '30px', marginTop: '4px' }),
     valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px'}),
     indicatorsContainer: (base) => ({ ...base, height: '28px' }),
