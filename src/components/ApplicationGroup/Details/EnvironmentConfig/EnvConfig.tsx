@@ -27,7 +27,7 @@ export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType)
 
     useEffect(() => {
         if (initDataResults?.[0]?.['value']?.['result']?.length) {
-            const configProtectionMap = initDataResults[1]?.['value']?.['result']
+            const configProtectionMap = initDataResults[1]?.['value']?.['result'] ?? {}
             let appIdExist = false
             const _appList = (initDataResults[0]?.['value']?.['result'] ?? []).map((appData) => {
                 if (appData.id === +appId) {
