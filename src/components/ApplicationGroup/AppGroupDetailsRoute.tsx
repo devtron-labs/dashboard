@@ -72,9 +72,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
     const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
     const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
-    const [isLoading, setLoading] = useState<boolean>(true)
     const [isPopupBox, setIsPopupBox] = useState(false)
-    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map)
+    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
 
     useEffect(() => {
         if (envList?.result) {
@@ -96,7 +95,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setAppListOptions([])
             setAppGroupListData(null)
         }
-    }, [envId])   
+    }, [envId])
 
     const getSavedFilterData = async (groupId?: number): Promise<void> => {
         setSelectedAppList([])
@@ -156,73 +155,66 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     const handleToast = (action: string) => {
-        return (
-            toast.info(
-                <ToastBody
-                    title={`Cannot ${action} filter`}
-                    subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
-                />,
-                {
-                    className: 'devtron-toast unauthorized',
-                },
-            )
+        return toast.info(
+            <ToastBody
+                title={`Cannot ${action} filter`}
+                subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
+            />,
+            {
+                className: 'devtron-toast unauthorized',
+            },
         )
     }
-    
+
     async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {
-        setLoading(true)
         try {
-            const {result} = await appGroupPermission(envId, payload)
-            if(result && !_delete) {
+            const { result } = await appGroupPermission(envId, payload)
+            if (result && !_delete) {
                 setShowCreateGroup(true)
-            } else if(result && _delete) {
+            } else if (result && _delete) {
                 setIsPopupBox(true)
                 setShowDeleteGroup(true)
             }
         } catch (err) {
             let _map = new Map<string, boolean>()
-            if(err['code'] === 403) {
+            if (err['code'] === 403) {
                 let arrUnauthorized = []
                 let unauthorizedCount = 0
                 err['errors'].map((errors) => {
                     arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
-                    errors['userMessage']['unauthorizedApps'].forEach(element => {
-                        if(!_map.get(element)) {
+                    errors['userMessage']['unauthorizedApps'].forEach((element) => {
+                        if (!_map.get(element)) {
                             _map.set(element, true)
                         }
-                        for(let idx in selectedAppList) {
-                            if(element === selectedAppList[idx].label) {
+                        for (let idx in selectedAppList) {
+                            if (element === selectedAppList[idx].label) {
                                 unauthorizedCount++
                             }
                         }
-                    });
+                    })
                     setMapUnauthorizedApp(_map)
                 })
-                if (_edit && arrUnauthorized.length>0) {
-                    handleToast("edit")
-                } else if(_delete && arrUnauthorized.length>0){
-                    handleToast("delete")
-                } else if(unauthorizedCount && unauthorizedCount === selectedAppList.length ) {
+                if (_edit && arrUnauthorized.length > 0) {
+                    handleToast('edit')
+                } else if (_delete && arrUnauthorized.length > 0) {
+                    handleToast('delete')
+                } else if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
                     setIsPopupBox(false)
-                    handleToast("create")
+                    handleToast('create')
                 } else {
                     setShowCreateGroup(true)
-                } 
+                }
                 arrUnauthorized = []
-                unauthorizedCount=0
-            } 
-            else {
+                unauthorizedCount = 0
+            } else {
                 setShowCreateGroup(true)
                 setShowDeleteGroup(false)
-                if(_delete) setIsPopupBox(true)
+                if (_delete) setIsPopupBox(true)
             }
             showError(err)
-        } finally {
-            setLoading(false)
         }
-        
     }
-    
+
     const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
@@ -246,8 +238,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
-        const _allAppLists: number[] = [] 
-        for(let app of _allAppList) {
+        const _allAppLists: number[] = []
+        for (let app of _allAppList) {
             _allAppLists.push(+app.id)
         }
         let _permissionData = {
@@ -255,9 +247,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             appIds: _allAppLists,
             envId: +envId,
         }
-        if(_edit){
-            getPermissionCheck({appIds: _allAppIds}, _edit)
-        } else{
+        if (_edit) {
+            getPermissionCheck({ appIds: _allAppIds }, _edit)
+        } else {
             getPermissionCheck(_permissionData)
         }
     }
@@ -274,9 +266,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         stopPropagation(e)
         const selectedGroupId = groupFilterOptions.find((group) => group.value === groupId)
         setClickedGroup(selectedGroupId)
-        getPermissionCheck({appIds: selectedGroupId.appIds}, false, true)
+        getPermissionCheck({ appIds: selectedGroupId.appIds }, false, true)
     }
-    
+
     async function handleDelete() {
         if (deleting) {
             return
@@ -373,7 +365,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             )
         }
     }
-    
+
     return (
         <div className="env-details-page">
             <EnvHeader
@@ -394,13 +386,14 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 isSuperAdmin={isSuperAdmin}
             />
             {renderRoute()}
-            {showCreateGroup &&
+            {showCreateGroup && (
                 <CreateAppGroup
                     unAuthorizedApps={mapUnauthorizedApp}
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
-                />}
+                />
+            )}
             {showDeleteGroup && isPopupBox && (
                 <DeleteDialog
                     title={`Delete filter '${clickedGroup?.label}' ?`}
