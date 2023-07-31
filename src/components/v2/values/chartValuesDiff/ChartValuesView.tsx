@@ -360,7 +360,7 @@ function ChartValuesView({
                                 commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
-                            updateGeneratedManifest(
+                            commonState.chartValues.appStoreVersionId && updateGeneratedManifest(
                                 isCreateValueView,
                                 isUnlinkedCLIApp,
                                 isExternalApp,
@@ -368,7 +368,7 @@ function ChartValuesView({
                                 appName,
                                 _valueName,
                                 commonState,
-                                commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                                commonState.chartValues.appStoreVersionId,
                                 appId,
                                 deploymentVersion,
                                 response.result.values,
@@ -996,7 +996,7 @@ function ChartValuesView({
     const renderReadMeOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ml-8 ${
                     commonState.openReadMe ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleReadMeOptionClick(disabled)}
@@ -1031,7 +1031,7 @@ function ChartValuesView({
     const renderComparisonOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 mr-8 ${
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
                     commonState.openComparison ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleComparisonOptionClick(disabled)}
@@ -1042,11 +1042,11 @@ function ChartValuesView({
                 ) : (
                     <Arrows className="option-open__icon icon-dim-16 mr-8" />
                 )}
-                {commonState.activeTab === 'manifest'
-                    ? COMPARISON_OPTION_LABELS.CompareDeployed
-                    : commonState.openComparison
+                {commonState.openComparison
                     ? COMPARISON_OPTION_LABELS.HideComparison
-                    : COMPARISON_OPTION_LABELS.CompareValues}
+                    : commonState.activeTab === 'yaml'
+                    ? COMPARISON_OPTION_LABELS.CompareValues
+                    : COMPARISON_OPTION_LABELS.CompareManifest}
             </span>
         )
     }
@@ -1090,6 +1090,9 @@ function ChartValuesView({
 
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
+            if (commonState.activeTab === 'manifest'){
+                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+            }
             return isCreateValueView
                 ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
                 : isDeployChartView
@@ -1100,7 +1103,11 @@ function ChartValuesView({
         return (
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.Heading}</h2>
-                <p className="fs-12 fw-4 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.InfoText}</p>
+                <p className="fs-12 fw-4 lh-18 m-0">
+                    {commonState.activeTab === 'manifest'
+                        ? COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+                        : COMPARISON_OPTION_TIPPY_CONTENT.InfoText}
+                </p>
             </>
         )
     }
@@ -1110,47 +1117,25 @@ function ChartValuesView({
             <div className="chart-values-view__tabs-container flex dc__content-space">
                 {renderValuesTabs()}
                 <div className="flex">
-                    {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && (
-                        <ConditionalWrap
-                            condition={commonState.activeTab === 'manifest'}
-                            wrap={() => renderComparisonOption()}
+                    <ConditionalWrap
+                        condition={
+                            !commonState.openReadMe &&
+                            (commonState.fetchingReadMe ||
+                                !commonState.isReadMeAvailable ||
+                                !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0))
+                        }
+                        wrap={() => renderComparisonOption(isDeployChartView)}
+                    >
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="bottom"
+                            content={getComparisonTippyContent()}
                         >
-                            <Tippy
-                                className="default-tt w-200"
-                                arrow={false}
-                                placement="bottom"
-                                content={getComparisonTippyContent()}
-                            >
-                                {renderComparisonOption(!commonState.isComparisonAvailable)}
-                            </Tippy>
-                        </ConditionalWrap>
-                    )}
-                    {commonState.activeTab !== 'manifest' && (
-                        <ConditionalWrap
-                            condition={
-                                !commonState.openReadMe &&
-                                (commonState.fetchingReadMe ||
-                                    !commonState.isReadMeAvailable ||
-                                    !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0))
-                            }
-                            wrap={() => (
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={
-                                        commonState.fetchingReadMe
-                                            ? COMPARISON_OPTION_TIPPY_CONTENT.Fetching
-                                            : COMPARISON_OPTION_TIPPY_CONTENT.ReadmeNotAvailable
-                                    }
-                                >
-                                    {renderReadMeOption(true)}
-                                </Tippy>
-                            )}
-                        >
-                            {renderReadMeOption()}
-                        </ConditionalWrap>
-                    )}
+                            {renderComparisonOption(commonState.activeTab === 'manifest' ? !commonState.isComparisonAvailable ||  !commonState.deploymentHistoryArr || (commonState.deploymentHistoryArr.length === 0): !commonState.isComparisonAvailable)}
+                        </Tippy>
+                        {commonState.activeTab !== 'manifest' && renderReadMeOption()}
+                    </ConditionalWrap>
                 </div>
             </div>
         )
