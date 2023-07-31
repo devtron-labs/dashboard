@@ -10,7 +10,7 @@ import { useHistory } from 'react-router'
 import { DeploymentStatusCardType, DeploymentStatusDetailsType } from './appDetails.type'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from './appDetails.service'
-import { processDeploymentStatusDetailsData } from './utils'
+import { processDeploymentStatusDetailsData, validateMomentDate } from './utils'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
@@ -22,7 +22,7 @@ function DeploymentStatusCard({
     isVirtualEnvironment,
     appId,
     envId,
-    isHelmApp
+    isHelmApp,
 }: DeploymentStatusCardType) {
     const history = useHistory()
 
@@ -85,9 +85,9 @@ function DeploymentStatusCard({
     }
 
     const onClickLastDeploymentStatus = (e) => {
-        if (!hideDetails){
+        if (!hideDetails) {
             getDeploymentDetailStepsData()
-        } 
+        }
         if (loadingResourceTree) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
@@ -109,12 +109,14 @@ function DeploymentStatusCard({
                 </div>
                 <div className="flexbox" data-testid="last-updated-time">
                     <span className="fs-13 mr-5 fw-6 cn-9">
-                        {moment(
-                            hideDeploymentStatusLeftInfo
-                                ? deploymentTriggerTime
-                                : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
-                            'YYYY-MM-DDTHH:mm:ssZ',
-                        ).fromNow()}
+                        {validateMomentDate(
+                            moment(
+                                hideDeploymentStatusLeftInfo
+                                    ? deploymentTriggerTime
+                                    : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
+                                'YYYY-MM-DDTHH:mm:ssZ',
+                            ).fromNow(),
+                        )}
                     </span>
                     {deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
                         <Timer className="icon-dim-16 mt-4" />
