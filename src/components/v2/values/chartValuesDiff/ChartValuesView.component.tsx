@@ -368,7 +368,7 @@ export const ChartVersionValuesSelector = ({
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
         <div className="chart-values-view__readme">
-            <div className="chart-view-code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">Readme</div>
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">Readme</div>
             {fetchingReadMe ? (
                 <Progressing pageLoader />
             ) : (
