@@ -19,7 +19,7 @@
 
             .chart-values-view__editor {
                 &.chart-values-view__full-mode {
-                    .chart-view-code-editor-container {
+                    .code-editor-container {
                         .react-monaco-editor-container,
                         .details-loader-height {
                             height: calc(100vh - 130px) !important;
@@ -27,7 +27,7 @@
                     }
                 }
 
-                .chart-view-code-editor-container {
+                .code-editor-container {
                     .react-monaco-editor-container,
                     .details-loader-height {
                         height: calc(100vh - 162px) !important;
@@ -261,7 +261,7 @@
         }
 
         .chart-values-view__readme {
-            .chart-view-code-editor__header {
+            .code-editor__header {
                 height: 32px;
                 padding: 0 12px;
                 border-bottom: none;
@@ -338,13 +338,13 @@
 
         .chart-values-view__editor {
             &.chart-values-view__full-mode {
-                .chart-view-code-editor-container {
+                .code-editor-container {
                     .react-monaco-editor-container,
                     .details-loader-height {
                         height: calc(100vh - 162px) !important;
                     }
                 }
-                .chart-view-code-editor-container.manifest-view {
+                .code-editor-container.manifest-view {
                                     .react-monaco-editor-container,
                                     .details-loader-height {
                                         height: calc(100vh - 192px) !important;
@@ -361,10 +361,14 @@
                 width: 100%;
             }
 
-            .chart-view-code-editor-container {
+            .code-editor-container {
                 border: none;
                 border-bottom: 1px solid var(--N100);
-
+                .monaco-editor{
+                    .monaco-editor-background, .margin {
+                      background-color: var(--N000) !important;
+                    }
+                }
                 .code-editor__warning {
                     color: var(--N900);
                     background-color: var(--Y100);
@@ -374,7 +378,7 @@
                     }
                 }
 
-                .chart-view-code-editor__header,
+                .code-editor__header,
                 .chart-values-view__diff-view-header {
                     height: 32px;
                     padding: 0 12px;
