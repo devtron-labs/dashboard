@@ -188,6 +188,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                         .map((app) => {
                             return (
                                 <Tippy
+                                    key={`selected-app-${app.id}`}
                                     className="default-tt w-200"
                                     arrow={false}
                                     placement="bottom-start"
@@ -225,6 +226,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                 condition={unAuthorizedApps.get(app.appName) === true}
                                 wrap={(children) => (
                                     <Tippy
+                                        key={`selected-app-${app.id}`}
                                         data-testid="env-tippy"
                                         className="default-tt w-200"
                                         arrow={false}
