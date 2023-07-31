@@ -1934,6 +1934,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 tagsEditable = {tagsEditableVal}
                                 setTagsEditable = {setTagsEditableVal}
                                 hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
+                                history={history}
+                                location={location}
+                                match={match}
                             />
                         )}
                     </div>

@@ -17,7 +17,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-export interface CDMaterialProps {
+export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
     materialType: string

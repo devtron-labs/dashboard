@@ -65,6 +65,7 @@ import { ModuleNameMap } from '../../../../config'
 import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import noapprovedimages from '../../../../assets/img/empty-noresult@2x.png'
+import { getConfigs } from '../../../notifications/notifications.service'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -815,6 +816,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     viewAllImages = () => {
         this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+        this.props.history.push({
+            search: `approval-node=${this.props.pipelineId}`
+        })
     }
 
     processConsumedAndApprovedImages = () => {
