@@ -47,7 +47,7 @@ export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType)
         }
     }, [initDataResults])
 
-    if (loading) {
+    if (loading || !appId) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />
