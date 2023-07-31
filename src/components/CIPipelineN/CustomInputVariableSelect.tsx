@@ -38,6 +38,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }[]
     >([])
 
+    const [textArea, setTextArea] = useState<boolean>(false)
+
     useEffect(() => {
         const previousStepVariables = []
         if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
@@ -108,6 +110,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: OptionType) => {
+        setTextArea(true)
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -201,11 +204,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
     const ValueContainer = (props) => {
         let value = props.getValue()[0]?.label
+        console.log(props)
         return (
             <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select source or input value</span>)}
+                <>  
+                    {console.log(props)}
+                    {value ? `${value}` :  <span className="cn-5">Select source or input value</span>}
                     {React.cloneElement(props.children[1])}
                 </>
             </components.ValueContainer>
