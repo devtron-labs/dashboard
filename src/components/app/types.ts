@@ -500,3 +500,29 @@ export interface EnvironmentListMinType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
+export interface PayloadParsedFromURL {
+    appNameSearch?: string
+    appStatuses?
+    environments?
+    hOffset?: number
+    namespaces?
+    offset?: number
+    size?: number
+    sortBy?: string
+    sortOrder?: string
+    teams?
+}
+
+export interface ExternalArgoListType{
+    serverMode: string,
+    payloadParsedFromUrl: PayloadParsedFromURL,
+    sortApplicationList,
+    clearAllFilters,
+    fetchingExternalApps,
+    setFetchingExternalAppsState,
+    updateDataSyncing,
+    setShowPulsatingDotState,
+    masterFilters,
+    syncListData,
+    isArgoInstalled: boolean,
+}

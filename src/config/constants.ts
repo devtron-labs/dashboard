@@ -124,6 +124,7 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_SAVE: 'configmap/create/pipelinelevel',
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
+    ARGO_APPS: 'argo-application',
     CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
@@ -372,10 +373,12 @@ export const AppListConstants = {
     AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
         HELM_APPS: 'Helm Apps',
+        ARGO_APPS: 'Argo Apps'
     },
     AppType: {
         DEVTRON_APPS: 'd',
         HELM_APPS: 'h',
+        ARGO_APPS: 'a'
     },
     FilterType: {
         PROJECT: 'team',

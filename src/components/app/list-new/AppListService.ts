@@ -6,6 +6,16 @@ import { APP_STATUS } from '../config';
 import { getProjectList } from '../../project/service';
 import { getClusterList } from '../../cluster/cluster.service';
 
+export interface ArgoAppListResult {
+   appName: string
+   clusterName: string
+   namespace: string
+   appStatus: string
+   syncStatus?: string
+}
+export interface ArgoAppListResponse extends ArgoAppListResult{
+    result?:  ArgoAppListResult
+}
 
 export interface AppListResponse extends ResponseType{
     result?: AppsListResult
@@ -190,6 +200,17 @@ export const getNamespaces = (clusterIdCsv : string, clusterVsNamespaceMap : Map
 
 export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string) : Promise<AppListResponse> => {
     let url = `${Routes.CHART_INSTALLED}`
+    if (clusterIdsCsv) {
+        url = `${url}?clusterIds=${clusterIdsCsv}`
+    }
+    if (appStatuses) {
+        url = `${url}${clusterIdsCsv ? '&' : '?'}appStatuses=${appStatuses}`
+    }
+    return get(url);
+}
+
+export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appStatuses?: string) => {
+    let url = `${Routes.ARGO_APPS}`
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
     }

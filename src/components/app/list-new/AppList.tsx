@@ -31,6 +31,7 @@ import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
+import ExternalArgoList from './ExternalArgoList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -47,6 +48,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
     const [projectMap, setProjectMap] = useState(new Map());
+
+    const isExternalArgo = location.pathname === "/app/list/a"
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
@@ -349,6 +352,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
     }
 
+    const buildArgoAppListUrl = (): string => {
+        return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
+    }
+
     function openDevtronAppCreateModel() {
         const _urlPrefix =
             currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
@@ -579,9 +586,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             return
         }
         let url =
-            appTabType == AppListConstants.AppTabs.DEVTRON_APPS
+            appTabType === AppListConstants.AppTabs.DEVTRON_APPS
                 ? `${buildDevtronAppListUrl()}${location.search}`
-                : `${buildHelmAppListUrl()}${location.search}`
+                : appTabType === AppListConstants.AppTabs.HELM_APPS
+                ? `${buildHelmAppListUrl()}${location.search}`
+                : `${buildArgoAppListUrl()}${location.search}`
         history.push(url)
         setCurrentTab(appTabType)
     }
@@ -712,57 +721,61 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    {isArgoInstalled && (
+                    {!isExternalArgo && (
                         <>
+                            {isArgoInstalled && (
+                                <>
+                                    <Filter
+                                        list={masterFilters.appStatus}
+                                        labelKey="label"
+                                        buttonText={APP_LIST_HEADERS.AppStatus}
+                                        placeholder={APP_LIST_HEADERS.SearchAppStatus}
+                                        isDisabled={dataStateType === AppListViewType.LOADING}
+                                        searchable
+                                        multi
+                                        type={AppListConstants.FilterType.APP_STATUS}
+                                        applyFilter={applyFilter}
+                                        onShowHideFilterContent={onShowHideFilterContent}
+                                        isFirstLetterCapitalize={true}
+                                        dataTestId={'app-status-filter'}
+                                    />
+                                    <span className="filter-divider"></span>
+                                </>
+                            )}
                             <Filter
-                                list={masterFilters.appStatus}
+                                list={masterFilters.projects}
                                 labelKey="label"
-                                buttonText={APP_LIST_HEADERS.AppStatus}
-                                placeholder={APP_LIST_HEADERS.SearchAppStatus}
+                                buttonText="Projects"
+                                placeholder="Search Project"
                                 isDisabled={dataStateType === AppListViewType.LOADING}
                                 searchable
                                 multi
-                                type={AppListConstants.FilterType.APP_STATUS}
+                                type={AppListConstants.FilterType.PROJECT}
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
-                                isFirstLetterCapitalize={true}
-                                dataTestId={'app-status-filter'}
+                                dataTestId={'projects-filter'}
                             />
+                            {serverMode == SERVER_MODE.FULL && (
+                                <>
+                                    <span className="filter-divider"></span>
+                                    <Filter
+                                        list={masterFilters.environments}
+                                        isDisabled={dataStateType === AppListViewType.LOADING}
+                                        labelKey="label"
+                                        buttonText="Environment"
+                                        searchable
+                                        multi
+                                        placeholder="Search Environment"
+                                        type={AppListConstants.FilterType.ENVIRONMENT}
+                                        applyFilter={applyFilter}
+                                        onShowHideFilterContent={onShowHideFilterContent}
+                                        dataTestId={'environment-filter'}
+                                    />
+                                </>
+                            )}
                             <span className="filter-divider"></span>
                         </>
                     )}
-                    <Filter
-                        list={masterFilters.projects}
-                        labelKey="label"
-                        buttonText="Projects"
-                        placeholder="Search Project"
-                        isDisabled={dataStateType === AppListViewType.LOADING}
-                        searchable
-                        multi
-                        type={AppListConstants.FilterType.PROJECT}
-                        applyFilter={applyFilter}
-                        onShowHideFilterContent={onShowHideFilterContent}
-                        dataTestId={'projects-filter'}
-                    />
-                    {serverMode == SERVER_MODE.FULL && (
-                        <>
-                            <span className="filter-divider"></span>
-                            <Filter
-                                list={masterFilters.environments}
-                                isDisabled={dataStateType === AppListViewType.LOADING}
-                                labelKey="label"
-                                buttonText="Environment"
-                                searchable
-                                multi
-                                placeholder="Search Environment"
-                                type={AppListConstants.FilterType.ENVIRONMENT}
-                                applyFilter={applyFilter}
-                                onShowHideFilterContent={onShowHideFilterContent}
-                                dataTestId={'environment-filter'}
-                            />
-                        </>
-                    )}
-                    <span className="filter-divider"></span>
                     <Filter
                         list={masterFilters.clusters}
                         labelKey="label"
@@ -777,28 +790,30 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         showPulsatingDot={showPulsatingDot}
                         dataTestId={'cluster-filter'}
                     />
-                    <Filter
-                        rootClassName="ml-0-imp"
-                        position={showExportCsvButton ? 'left' : 'right'}
-                        list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
-                        labelKey="label"
-                        searchKey="actualName"
-                        buttonText="Namespace"
-                        searchable
-                        multi
-                        placeholder="Search Namespace"
-                        type={AppListConstants.FilterType.NAMESPACE}
-                        applyFilter={applyFilter}
-                        isDisabled={!_isAnyClusterFilterApplied}
-                        disableTooltipMessage={'Select a cluster first'}
-                        isLabelHtml={true}
-                        onShowHideFilterContent={onShowHideFilterContent}
-                        loading={fetchingNamespaces}
-                        errored={fetchingNamespacesErrored}
-                        errorMessage={'Could not load namespaces'}
-                        errorCallbackFunction={_forceFetchAndSetNamespaces}
-                        dataTestId={'namespace-filter'}
-                    />
+                    {!isExternalArgo && (
+                        <Filter
+                            rootClassName="ml-0-imp"
+                            position={showExportCsvButton ? 'left' : 'right'}
+                            list={masterFilters.namespaces.filter((namespace) => namespace.toShow)}
+                            labelKey="label"
+                            searchKey="actualName"
+                            buttonText="Namespace"
+                            searchable
+                            multi
+                            placeholder="Search Namespace"
+                            type={AppListConstants.FilterType.NAMESPACE}
+                            applyFilter={applyFilter}
+                            isDisabled={!_isAnyClusterFilterApplied}
+                            disableTooltipMessage={'Select a cluster first'}
+                            isLabelHtml={true}
+                            onShowHideFilterContent={onShowHideFilterContent}
+                            loading={fetchingNamespaces}
+                            errored={fetchingNamespacesErrored}
+                            errorMessage={'Could not load namespaces'}
+                            errorCallbackFunction={_forceFetchAndSetNamespaces}
+                            dataTestId={'namespace-filter'}
+                        />
+                    )}
                     {showExportCsvButton && (
                         <>
                             <span className="filter-divider"></span>
@@ -903,6 +918,17 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             data-testid="helm-app-list-button"
                         >
                             Helm Apps
+                        </a>
+                    </li>
+                    <li className="tab-list__tab">
+                        <a
+                            className={`tab-list__tab-link ${
+                                currentTab == AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
+                            }`}
+                            onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
+                            data-testid="helm-app-list-button"
+                        >
+                            External Argo Apps
                         </a>
                     </li>
                 </ul>
@@ -1016,6 +1042,28 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             {params.appType === AppListConstants.AppType.HELM_APPS && (
                                 <>
                                     <HelmAppList
+                                        serverMode={serverMode}
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        sortApplicationList={sortApplicationList}
+                                        clearAllFilters={removeAllFilters}
+                                        fetchingExternalApps={fetchingExternalApps}
+                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                        updateDataSyncing={updateDataSyncing}
+                                        setShowPulsatingDotState={setShowPulsatingDotState}
+                                        masterFilters={masterFilters}
+                                        syncListData={syncListData}
+                                        isArgoInstalled={isArgoInstalled}
+                                    />
+                                    {fetchingExternalApps && (
+                                        <div className="mt-16">
+                                            <Progressing size={32} />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                             {params.appType === AppListConstants.AppType.ARGO_APPS && (
+                                <>
+                                    <ExternalArgoList
                                         serverMode={serverMode}
                                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                                         sortApplicationList={sortApplicationList}
