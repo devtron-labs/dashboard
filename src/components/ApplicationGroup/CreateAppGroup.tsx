@@ -108,7 +108,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
 
     const appFilterAuthorizedList = () => {
         let _authorizedApp = []
-        appList.map((app) => {
+        appList.forEach((app) => {
             if(!unAuthorizedApps.get(app.appName)) {
                 _authorizedApp.push({id: app.id, appName: app.appName})
             }
