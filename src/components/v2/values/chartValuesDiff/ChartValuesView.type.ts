@@ -382,6 +382,7 @@ export interface CompareWithDropdownProps {
     deploymentHistoryOptionsList?: ChartValuesDiffOptionType[]
     selectedVersionForDiff?: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
+    manifestView:boolean
 }
 
 export interface ValuesForDiffStateType {

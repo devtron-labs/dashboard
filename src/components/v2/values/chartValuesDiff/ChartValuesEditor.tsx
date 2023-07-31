@@ -50,6 +50,71 @@ const customValueContainer = (props: any): JSX.Element => {
     )
 }
 
+const CompareWithDropdown = ({
+    deployedChartValues,
+    defaultChartValues,
+    presetChartValues,
+    deploymentHistoryOptionsList,
+    selectedVersionForDiff,
+    handleSelectedVersionForDiff,
+    manifestView,
+}: CompareWithDropdownProps) => {
+    const [groupedOptions, setGroupedOptions] = useState<ChartGroupOptionType[]>([
+        {
+            label: '',
+            options: [],
+        },
+    ])
+
+    useEffect(() => {
+        const _groupedOptions = []
+        if (deploymentHistoryOptionsList?.length > 0) {
+            _groupedOptions.push({
+                label: GROUPED_OPTION_LABELS.PreviousDeployments,
+                options: deploymentHistoryOptionsList,
+            })
+        }
+
+        if (!manifestView) {
+            const noOptions = [{ label: GROUPED_OPTION_LABELS.NoOptions, value: 0, info: '' }]
+            _groupedOptions.push(
+                {
+                    label: GROUPED_OPTION_LABELS.OtherApps,
+                    options: deployedChartValues?.length > 0 ? deployedChartValues : noOptions,
+                },
+                {
+                    label: GROUPED_OPTION_LABELS.PresetValues,
+                    options: presetChartValues?.length > 0 ? presetChartValues : noOptions,
+                },
+                {
+                    label: GROUPED_OPTION_LABELS.DefaultValues,
+                    options: defaultChartValues?.length > 0 ? defaultChartValues : noOptions,
+                },
+            )
+        }
+        setGroupedOptions(_groupedOptions)
+    }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
+
+    return (
+        <ReactSelect
+            options={groupedOptions}
+            isMulti={false}
+            isSearchable={false}
+            value={selectedVersionForDiff}
+            classNamePrefix="compare-values-select"
+            isOptionDisabled={(option) => option.value === 0}
+            formatOptionLabel={formatOptionLabel}
+            components={{
+                IndicatorSeparator: null,
+                ValueContainer: customValueContainer,
+                Option,
+            }}
+            styles={getCompareValuesSelectStyles()}
+            onChange={handleSelectedVersionForDiff}
+        />
+    )
+}
+
 export default function ChartValuesEditor({
     loading,
     isExternalApp,
@@ -85,69 +150,6 @@ export default function ChartValuesEditor({
         selectedManifestVersionForDiff: null,
     })
 
-    const CompareWithDropdown = ({
-        deployedChartValues,
-        defaultChartValues,
-        presetChartValues,
-        deploymentHistoryOptionsList,
-        selectedVersionForDiff,
-        handleSelectedVersionForDiff,
-    }: CompareWithDropdownProps) => {
-        const [groupedOptions, setGroupedOptions] = useState<ChartGroupOptionType[]>([
-            {
-                label: '',
-                options: [],
-            },
-        ])
-    
-        useEffect(() => {
-            const _groupedOptions = []
-            if (deploymentHistoryOptionsList?.length > 0) {
-                _groupedOptions.push({
-                    label: GROUPED_OPTION_LABELS.PreviousDeployments,
-                    options: deploymentHistoryOptionsList,
-                })
-            }
-
-            if (!manifestView) {
-                const noOptions = [{ label: GROUPED_OPTION_LABELS.NoOptions, value: 0, info: '' }]
-                _groupedOptions.push(
-                    {
-                        label: GROUPED_OPTION_LABELS.OtherApps,
-                        options: deployedChartValues?.length > 0 ? deployedChartValues : noOptions,
-                    },
-                    {
-                        label: GROUPED_OPTION_LABELS.PresetValues,
-                        options: presetChartValues?.length > 0 ? presetChartValues : noOptions,
-                    },
-                    {
-                        label: GROUPED_OPTION_LABELS.DefaultValues,
-                        options: defaultChartValues?.length > 0 ? defaultChartValues : noOptions,
-                    },
-                )
-            }
-            setGroupedOptions(_groupedOptions)
-        }, [deployedChartValues, defaultChartValues, deploymentHistoryOptionsList])
-    
-        return (
-            <ReactSelect
-                options={groupedOptions}
-                isMulti={false}
-                isSearchable={false}
-                value={selectedVersionForDiff}
-                classNamePrefix="compare-values-select"
-                isOptionDisabled={(option) => option.value === 0}
-                formatOptionLabel={formatOptionLabel}
-                components={{
-                    IndicatorSeparator: null,
-                    ValueContainer: customValueContainer,
-                    Option,
-                }}
-                styles={getCompareValuesSelectStyles()}
-                onChange={handleSelectedVersionForDiff}
-            />
-        )
-    }
 
     useEffect(() => {
         if (
@@ -416,6 +418,7 @@ export default function ChartValuesEditor({
                             deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
                             selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
                             handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                            manifestView={manifestView}
                         />
                     </div>
                     <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
