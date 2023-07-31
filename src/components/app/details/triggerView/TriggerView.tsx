@@ -1390,6 +1390,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 tagsEditable={this.state.tagsEditable}
                                 setTagsEditable={this.setTagsEditable}
                                 hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                                history={this.props.history}
+                                location={this.props.location}
+                                match={this.props.match}
                             />
                         )}
                     </div>
