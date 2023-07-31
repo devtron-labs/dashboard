@@ -102,6 +102,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             materialInEditModeMap: new Map<number,boolean>(),
             searchString: '',
             searchApplied: false,
+            searchExpanded: false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -902,12 +903,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             })
     }
 
+    expandSearch = () => {
+        this.setState({searchExpanded : true})
+    }
+
     renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList } = this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
         const selectImageTitle = this.state.isRollbackTrigger
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
+        console.log(this.state.searchExpanded)
 
         return (
             <>
@@ -918,19 +924,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             {titleText}
                         </span>
                         {isApprovalConfigured && <div className="h-32 flex dc__content-end dc__align-center">
-                            <div className=" flex w-250 dc__align-center dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text mr-8">
-                                <Search className="search__icon icon-dim-18" />
-                                <input
+                            <div className={`flex dc__align-center dc__position-rel margin-right-0 ${this.state.searchExpanded ? "w-250 bw-1 br-4 en-2" : "w-28 mt-4"} h-32 cursor-text mr-8`}>
+                                <span className="cursor" onClick={this.expandSearch}><Search className="search__icon icon-dim-18" /></span>
+                                {this.state.searchExpanded && (<input
                                     data-testid="Search-by-approver-name"
                                     type="text"
                                     name="app_search_input"
                                     autoComplete="off"
                                     value={this.state.searchString}
                                     placeholder="Search image tag"
-                                    className="search__input bcn-1"
+                                    className="search__input bcn-1 fw-4"
                                     onChange={this.onChangeSearchString}
                                     onKeyDown={this.searchImageTag}
-                                />
+                                />)}
                                 {this.state.searchApplied && (
                                     <button className="search__clear-button flex" type="button" onClick={this.clearSearch}>
                                         <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />

@@ -107,6 +107,7 @@ export interface CDMaterialState {
     searchString?: string
     searchApplied?: boolean
     loadingSearchedImage?: boolean
+    searchExpanded?: boolean
 }
 
 export interface MaterialInfo {
