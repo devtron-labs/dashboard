@@ -246,13 +246,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
-        const _appIds : number[] = []
         const _allAppLists: number[] = [] 
         for(let app of _allAppList) {
             _allAppLists.push(+app.id)
-            if(app.isSelected) {
-                _appIds.push(+app.id)
-            }
         }
         let _permissionData = {
             id: +envId,
