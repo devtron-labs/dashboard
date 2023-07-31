@@ -198,13 +198,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     });
                     setMapUnauthorizedApp(_map)
                 })
-                if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
-                    handleToast("create")
-                } else if(_edit && arrUnauthorized.length>0){
+                if (_edit && arrUnauthorized.length>0) {
                     handleToast("edit")
-                } else if(_delete && arrUnauthorized.length>0) {
-                    setIsPopupBox(false)
+                } else if(_delete && arrUnauthorized.length>0){
                     handleToast("delete")
+                } else if(unauthorizedCount && unauthorizedCount === selectedAppList.length ) {
+                    setIsPopupBox(false)
+                    handleToast("create")
                 } else {
                     setShowCreateGroup(true)
                 } 
