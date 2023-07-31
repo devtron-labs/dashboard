@@ -138,6 +138,6 @@
     border-radius: 3px !important;
 }
 
-.max-width-1100 {
-    max-width: 1100px;
+.generic-decription-max-width {
+    max-width: calc(100vw - 306px);
 }
