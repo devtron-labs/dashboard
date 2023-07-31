@@ -352,8 +352,17 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
             _selectedAppIds.push(+_appId)
         }
         
-        const payloadAppIds = authorizedAppList.map(app => {
-                return +app.id
+        let appListIds = []
+        appList.forEach((element) => {
+            if (!unAuthorizedApps.get(element.appName)) {
+                appListIds.push(+element.id)
+            }
+        })
+        const payloadAppIds = _selectedAppIds.filter((app) => {
+            if (appListIds.includes(app)) {
+                return true
+            }
+            return false
         })
 
         const payload = {
