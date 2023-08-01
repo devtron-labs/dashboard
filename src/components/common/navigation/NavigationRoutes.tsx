@@ -31,6 +31,7 @@ import { AppListResponse } from '../../app/list-new/AppListService'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
+const ExternalArgoApps =  lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
@@ -451,6 +452,7 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         )}
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
+                    <Route path={`${path}/${URLS.EXTERNAL_ARGO_APP}/cluster/:clusterId(\\d+)/app/:appName`} render={() => <ExternalArgoApps />} />
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}

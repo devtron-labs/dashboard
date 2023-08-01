@@ -9,9 +9,7 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 
 function EAHeaderComponent() {
     const match = useRouteMatch()
-    const history = useHistory()
     const params = useParams<{ appId: string; appName: string }>()
-    const { path } = useRouteMatch()
 
     const renderBreadcrumbs = () => {
         return (

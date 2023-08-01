@@ -33,13 +33,15 @@ const AppDetailsComponent = ({
     _init,
     loadingDetails,
     loadingResourceTree,
+    appType
 }: {
-    externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
+    externalLinks?: ExternalLink[]
+    monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean
     _init?: () => void
     loadingDetails: boolean
     loadingResourceTree: boolean
+    appType?: string
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
@@ -62,7 +64,7 @@ const AppDetailsComponent = ({
             getSaveTelemetry(params.appId)
         }
     }, [])
-
+console.log(appDetails)
     useEffect(() => {
         // Get deployment status timeline on argocd apps
         if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS || appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
@@ -143,7 +145,7 @@ const AppDetailsComponent = ({
                     loadingResourceTree={loadingResourceTree}
                     isVirtualEnvironment={isVirtualEnv.current}
                 />
-                {!appDetails.deploymentAppDeleteRequest && (
+                {!appDetails.deploymentAppDeleteRequest && appDetails?.appType !== AppType.EXTERNAL_ARGO_APP && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
                         loadingDetails={loadingDetails}
@@ -156,7 +158,7 @@ const AppDetailsComponent = ({
             </div>
 
             <SyncErrorComponent appStreamData={streamData} />
-            {!appDetails.deploymentAppDeleteRequest && (
+            {!appDetails.deploymentAppDeleteRequest && appDetails?.appType !== AppType.EXTERNAL_ARGO_APP && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
                     externalLinks={externalLinks}

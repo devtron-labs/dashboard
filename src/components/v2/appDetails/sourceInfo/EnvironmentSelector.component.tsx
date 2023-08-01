@@ -235,8 +235,10 @@ function EnvironmentSelectorComponent({
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    {appDetails.environmentName || <span>&nbsp;</span>}
+                                    { console.log(appDetails)}
+                                    {appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
                                 </div>
+                               
                             )}
                         </div>
                     </div>

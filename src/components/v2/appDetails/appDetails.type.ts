@@ -23,6 +23,7 @@ export enum AppType {
     DEVTRON_APP = 'devtron_app',
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
+    EXTERNAL_ARGO_APP = 'external_argo_app'
 }
 
 export enum K8sResourcePayloadAppType {
@@ -155,7 +156,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 
 
 export interface AppDetails {
-    appId: number
+    appId?: number
     appName: string
     appStoreAppName?: string
     appStoreAppVersion?: string

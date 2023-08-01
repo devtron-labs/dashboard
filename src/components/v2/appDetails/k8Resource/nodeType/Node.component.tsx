@@ -43,7 +43,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
 
     useEffect(() => {
-        if (externalLinks.length > 0) {
+        if (externalLinks?.length > 0) {
             const _podLevelExternalLinks = []
             const _containerLevelExternalLinks = []
 

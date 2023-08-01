@@ -119,6 +119,11 @@ export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     return get(url);
 }
 
+export const getArgoAppDetail = (appName: string, clusterId: string) => {
+    let url = `${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}`
+    return get(url);
+}
+
 export const deleteApplicationRelease = (appId: string): Promise<UninstallReleaseResponse> => {
     let url = `${Routes.HELM_RELEASE_APP_DELETE_API}?appId=${appId}`
     return trash(url);

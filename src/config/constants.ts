@@ -62,6 +62,7 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
+    ARGO_APPLICATION: 'argo-application/detail',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 

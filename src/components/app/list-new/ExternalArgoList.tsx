@@ -61,19 +61,6 @@ export default function ExternalArgoList({
     syncListData,
     isArgoInstalled,
 }: ExternalArgoListType) {
-    console.log(
-        serverMode,
-    payloadParsedFromUrl,
-    sortApplicationList,
-    clearAllFilters,
-    fetchingExternalApps,
-    setFetchingExternalAppsState,
-    updateDataSyncing,
-    setShowPulsatingDotState,
-    masterFilters,
-    syncListData,
-    isArgoInstalled,
-    )
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [argoAppsList, setArgoAppsList] = useState<ArgoAppListResult[]>([])
@@ -213,7 +200,7 @@ export default function ExternalArgoList({
     }
 
     function _buildAppDetailUrl(app: ArgoAppListResult) {
-        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/cluster=${clusterId}/app=${app.appName}`
+        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/cluster/${clusterId}/app/${app.appName}`
     }
 
     function sortByAppName(e) {
