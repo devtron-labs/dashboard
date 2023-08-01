@@ -374,7 +374,7 @@ export const AppListConstants = {
     AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
         HELM_APPS: 'Helm Apps',
-        ARGO_APPS: 'Argo Apps'
+        ARGO_APPS: 'ArgoCD Apps'
     },
     AppType: {
         DEVTRON_APPS: 'd',

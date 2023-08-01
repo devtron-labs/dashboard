@@ -30,11 +30,13 @@ function EnvironmentSelectorComponent({
     _init,
     loadingResourceTree,
     isVirtualEnvironment,
+    appType
 }: {
     isExternalApp: boolean
     _init?: () => void
     loadingResourceTree: boolean
     isVirtualEnvironment?: boolean
+    appType: string
 }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -235,7 +237,6 @@ function EnvironmentSelectorComponent({
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    { console.log(appDetails)}
                                     {appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
                                 </div>
                                
@@ -265,7 +266,7 @@ function EnvironmentSelectorComponent({
                 </div>
             </div>
 
-            {!loadingResourceTree && (
+            {!loadingResourceTree && appType !== AppType.EXTERNAL_ARGO_APP && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button

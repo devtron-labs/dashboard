@@ -49,7 +49,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [syncListData, setSyncListData] = useState<boolean>()
     const [projectMap, setProjectMap] = useState(new Map());
 
-    const isExternalArgo = location.pathname === "/app/list/a"
+    // Is argoCD external app
+    const isExternalArgo = location.pathname === `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
+
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
@@ -75,6 +77,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         let _currentTab =
             params.appType === AppListConstants.AppType.DEVTRON_APPS
                 ? AppListConstants.AppTabs.DEVTRON_APPS
+                : isExternalArgo
+                ? AppListConstants.AppTabs.ARGO_APPS
                 : AppListConstants.AppTabs.HELM_APPS
         setCurrentTab(_currentTab)
 
@@ -928,7 +932,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
                             data-testid="helm-app-list-button"
                         >
-                            External Argo Apps
+                            {AppListConstants.AppTabs.ARGO_APPS}
                         </a>
                     </li>
                 </ul>

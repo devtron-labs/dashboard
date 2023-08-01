@@ -119,8 +119,8 @@ export const getAppDetail = (appId: string): Promise<HelmAppDetailResponse> => {
     return get(url);
 }
 
-export const getArgoAppDetail = (appName: string, clusterId: string) => {
-    let url = `${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}`
+export const getArgoAppDetail = (appName: string, clusterId: string, namespace: string) => {
+    let url = `${Routes.ARGO_APPLICATION}?name=${appName}&clusterId=${clusterId}&namespace=${namespace}`
     return get(url);
 }
 

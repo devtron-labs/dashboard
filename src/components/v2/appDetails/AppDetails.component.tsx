@@ -64,7 +64,6 @@ const AppDetailsComponent = ({
             getSaveTelemetry(params.appId)
         }
     }, [])
-console.log(appDetails)
     useEffect(() => {
         // Get deployment status timeline on argocd apps
         if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS || appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
@@ -144,6 +143,8 @@ console.log(appDetails)
                     _init={_init}
                     loadingResourceTree={loadingResourceTree}
                     isVirtualEnvironment={isVirtualEnv.current}
+                    appType={appDetails?.appType}
+                    
                 />
                 {!appDetails.deploymentAppDeleteRequest && appDetails?.appType !== AppType.EXTERNAL_ARGO_APP && (
                     <EnvironmentStatusComponent

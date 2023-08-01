@@ -4,52 +4,40 @@ import {
     Progressing,
     ErrorScreenManager,
     ServerErrors,
-    Host,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
 import {
     buildClusterVsNamespace,
-    AppListResponse,
-    HelmApp,
     getArgoInstalledExternalApps,
-    ArgoAppListResponse,
     ArgoAppListResult,
 } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
-import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import { Link } from 'react-router-dom'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
-import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { Empty } from '../list/emptyView/Empty'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
-import ContentCard from '../../common/ContentCard/ContentCard'
-import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import '../list/list.scss'
 import {
     APPLIST_EMPTY_STATE_MESSAGING,
-    EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR,
-    EXTERNAL_HELM_APP_FETCH_ERROR,
     APP_LIST_HEADERS,
-    HELM_PERMISSION_MESSAGE,
     ClearFiltersLabel,
+    ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import AppStatus from '../AppStatus'
 import { clusterId } from '../../ClusterNodes/__mocks__/clusterAbout.mock'
 import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
+import Tippy from '@tippyjs/react'
+import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
 
 export default function ExternalArgoList({
-    serverMode,
     payloadParsedFromUrl,
     sortApplicationList,
     clearAllFilters,
@@ -69,7 +57,6 @@ export default function ExternalArgoList({
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
     const [appStatus, setAppStatus] = useState('')
-    const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
     const location = useLocation()
     const history = useHistory()
     const params = new URLSearchParams(location.search)
@@ -100,13 +87,6 @@ export default function ExternalArgoList({
     useEffect(() => {
         updateDataSyncing(true)
         setDataStateType(AppListViewType.LOADING)
-        if (serverMode == SERVER_MODE.EA_ONLY) {
-            setDataStateType(AppListViewType.LIST)
-            if (clusterIdsCsv) {
-                _getExternalHelmApps()
-                updateDataSyncing(false)
-            }
-        } else {
             getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
                 .then((argoAppsListResponse) => {
                     let res = argoAppsListResponse.result
@@ -122,7 +102,7 @@ export default function ExternalArgoList({
                 .finally(() => {
                     updateDataSyncing(false)
                 })
-        }
+        
     }, [clusterIdsCsv, appStatus, syncListData])
 
     // reset data
@@ -200,7 +180,7 @@ export default function ExternalArgoList({
     }
 
     function _buildAppDetailUrl(app: ArgoAppListResult) {
-        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/cluster/${clusterId}/app/${app.appName}`
+        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/cluster/${clusterId}/app/${app.appName}/namespace/${app.namespace}`
     }
 
     function sortByAppName(e) {
@@ -227,6 +207,17 @@ export default function ExternalArgoList({
                         <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
                     </div>
                 )}
+                 <div className="app-list__cell app-list__cell--env">
+                    <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
+                    <Tippy
+                        className="default-tt"
+                        arrow={true}
+                        placement="top"
+                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
+                    >
+                        <HelpOutlineIcon className="icon-dim-20" />
+                    </Tippy>
+                </div>
 
                 <div className="app-list__cell app-list__cell--cluster">
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
@@ -256,6 +247,14 @@ export default function ExternalArgoList({
                         <AppStatus appStatus={app.appStatus} />
                     </div>
                 )}
+                 <div className="app-list__cell app-list__cell--env">
+                    <p
+                        className="dc__truncate-text  m-0"
+                        data-testid={`${app.clusterName + '__' + app.namespace}-environment`}
+                    >
+                        {app.clusterName + '__' + app.namespace}
+                    </p>
+                </div>
                 <div className="app-list__cell app-list__cell--cluster">
                     <p className="dc__truncate-text  m-0" data-testid={`${app.clusterName}`}>
                         {app.clusterName}
@@ -279,30 +278,6 @@ export default function ExternalArgoList({
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
                     .map((app) => renderHelmAppLink(app))}
 
-                {showGuidedContentCards && (
-                    <div className="helm-app-guided-cards-wrapper">
-                        <ContentCard
-                            redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
-                            direction={CardContentDirection.Horizontal}
-                            imgSrc={HelmCluster}
-                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
-                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.linkText}
-                            LinkIcon={ArrowRight}
-                            linkIconClass="scb-5"
-                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                        />
-                        <ContentCard
-                            redirectTo={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
-                            direction={CardContentDirection.Horizontal}
-                            imgSrc={DeployCICD}
-                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
-                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.installLinkText}
-                            LinkIcon={ArrowRight}
-                            linkIconClass="scb-5"
-                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                        />
-                    </div>
-                )}
             </div>
         )
     }
@@ -386,20 +361,6 @@ export default function ExternalArgoList({
         )
     }
 
-    function renderHelmPermissionMessageStrip() {
-        return (
-            <>
-                <div className="h-8"></div>
-                <div className="helm-permission-message-strip above-header-message flex left">
-                    <span className="mr-8 flex">
-                        <AlertTriangleIcon className="icon-dim-20 icon" />
-                    </span>
-                    <span>{HELM_PERMISSION_MESSAGE}</span>
-                </div>
-            </>
-        )
-    }
-
     function renderNoApplicationState() {
         if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
             return askToClearFiltersWithSelectClusterTip()
@@ -418,7 +379,6 @@ export default function ExternalArgoList({
         if (filteredArgoAppsList.length == 0) {
             return (
                 <>
-                    {serverMode == SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
                     {renderNoApplicationState()}
                 </>
             )
@@ -440,7 +400,7 @@ export default function ExternalArgoList({
 
         params.set('hOffset', newOffset.toString())
 
-        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`)
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}?${params.toString()}`)
     }
 
     function renderPagination(): JSX.Element {

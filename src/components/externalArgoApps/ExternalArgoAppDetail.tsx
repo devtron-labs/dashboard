@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useLocation, useHistory } from 'react-router'
 import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
-import { ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import AppDetailsComponent from '../v2/appDetails/AppDetails.component'
 import { AppDetails, AppType } from '../v2/appDetails/appDetails.type'
 import IndexStore from '../v2/appDetails/index.store'
+import { ExternalArgoAppDetailType } from './externalArgoApp.type'
 
-function ExternalArgoAppDetail({ appName, clusterId, isExternalApp }) {
+function ExternalArgoAppDetail({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) {
     const location = useLocation()
     const history = useHistory()
     const [isLoading, setIsLoading] = useState(true)
@@ -48,7 +48,7 @@ function ExternalArgoAppDetail({ appName, clusterId, isExternalApp }) {
 
     const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
-        getArgoAppDetail(appName, clusterId)
+        getArgoAppDetail(appName, clusterId, namespace)
             .then((appDetailResponse) => {
                 IndexStore.publishAppDetails(
                     appDetailResponse.result,

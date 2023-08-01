@@ -514,7 +514,7 @@ export interface PayloadParsedFromURL {
 }
 
 export interface ExternalArgoListType{
-    serverMode: string,
+    serverMode?: string,
     payloadParsedFromUrl: PayloadParsedFromURL,
     sortApplicationList,
     clearAllFilters,
