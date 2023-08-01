@@ -404,12 +404,16 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     const getBaseConfig = (): DeploymentHistoryDetail => {
+        const _data = { ...data }
+        if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !_data.mountPath) {
+            _data.mountPath = _data.defaultMountPath
+        }
         const codeEditorValue = {
             displayName: 'data',
-            value: JSON.stringify(getCodeEditorData(data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
+            value: JSON.stringify(getCodeEditorData(_data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
         }
         return prepareHistoryData(
-            { ...data, codeEditorValue },
+            { ..._data, codeEditorValue },
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
@@ -667,7 +671,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
     return { yaml, handleYamlChange, error }
 }
 
-export function Override({ overridden, onClick, loading = false, type, readonlyView }) {
+export function Override({ overridden, onClick, loading = false, type, readonlyView, isProtectedView }) {
     const renderButtonContent = (): JSX.Element => {
         if (loading) {
             return <Progressing />
@@ -675,7 +679,7 @@ export function Override({ overridden, onClick, loading = false, type, readonlyV
             return (
                 <>
                     <DeleteIcon className="icon-dim-16 mr-8" />
-                    <span>Delete override</span>
+                    <span>Delete override{isProtectedView ? '...' : ''}</span>
                 </>
             )
         } else {
@@ -700,7 +704,9 @@ export function Override({ overridden, onClick, loading = false, type, readonlyV
             {!readonlyView && (
                 <button
                     data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    className={`cta override-button h-32 lh-20-imp p-6-12-imp ${
+                        overridden ? 'delete scr-5' : 'ghosted'
+                    }`}
                     onClick={onClick}
                 >
                     {renderButtonContent()}

@@ -53,6 +53,7 @@ import {
 } from './Secret/secret.utils'
 import { Option, groupStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
@@ -133,6 +134,7 @@ export const ConfigMapSecretForm = React.memo(
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: {
                         unAuthorized: false,
+                        secretMode: false,
                         currentData: processCurrentData(result.configData[0], cmSecretStateLabel, componentType),
                     },
                 })
@@ -287,7 +289,7 @@ export const ConfigMapSecretForm = React.memo(
                     }
                 }
             }
-            const hasSecretCode =componentType==='secret' && tempArr.current.some((data) => data['v'] === '********')
+            const hasSecretCode = componentType === 'secret' && tempArr.current.some((data) => data['v'] === '********')
             let dataArray = state.yamlMode && !hasSecretCode ? tempArr.current : state.currentData
             const { isValid, arr } = validateKeyValuePair(dataArray)
             if (!isValid) {
@@ -521,7 +523,7 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const submitButtonText = (): string => {
-            return `Save ${configMapSecretData?.name ? ' changes' : ''}`
+            return `Save ${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
         }
 
         const closeDeleteModal = (): void => {
@@ -566,12 +568,12 @@ export const ConfigMapSecretForm = React.memo(
                     <ConfirmationDialog.ButtonGroup>
                         <button
                             type="button"
-                            className="cta cancel"
+                            className="cta cancel h-32 lh-20-imp p-6-12-imp"
                             onClick={(e) => dispatch({ type: ConfigMapActionTypes.toggleDialog })}
                         >
                             Cancel
                         </button>
-                        <button type="button" className="cta delete" onClick={handleDelete}>
+                        <button type="button" className="cta delete h-32 lh-20-imp p-6-12-imp" onClick={handleDelete}>
                             Confirm
                         </button>
                     </ConfirmationDialog.ButtonGroup>
@@ -955,6 +957,7 @@ export const ConfigMapSecretForm = React.memo(
                                 loading={state.overrideLoading}
                                 type={componentType}
                                 readonlyView={readonlyView}
+                                isProtectedView={isProtectedView}
                             />
                         )}
                     <div className="pr-16 pl-16 dc__border-bottom mt-20">
@@ -983,15 +986,16 @@ export const ConfigMapSecretForm = React.memo(
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
                             {isShowDeleteButton() && (
-                                <button className="cta delete" onClick={openDeleteModal}>
-                                    Delete {componentType === 'secret' ? 'Secret' : 'ConfigMap'}
+                                <button className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp" onClick={openDeleteModal}>
+                                    <Trash className="icon-dim-16 mr-4" />
+                                    Delete{isProtectedView ? '...' : ''}
                                 </button>
                             )}
                             <button
                                 disabled={!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED}
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
-                                className="cta"
+                                className="cta h-32 lh-20-imp p-6-12-imp"
                                 onClick={handleSubmit}
                             >
                                 {state.submitLoading ? <Progressing /> : submitButtonText()}

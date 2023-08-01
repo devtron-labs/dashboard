@@ -2958,6 +2958,10 @@ textarea,
     line-height: 20px;
 }
 
+.lh-20-imp {
+    line-height: 20px !important;
+}
+
 .lh-22 {
     line-height: 22px;
 }
@@ -3051,6 +3055,10 @@ textarea,
 
 .pl-8-imp {
     padding-left: 8px !important;
+}
+
+.p-6-12-imp {
+    padding: 6px 12px !important;
 }
 
 // Margin in pixels

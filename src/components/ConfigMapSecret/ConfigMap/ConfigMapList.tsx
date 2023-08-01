@@ -110,7 +110,7 @@ export default function ConfigMapList({
                     {parentName && (
                         <>
                             {parentName}
-                            <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
+                            <Arrow className="icon-dim-20 fcn-6 dc__flip mr-4 ml-4" />
                         </>
                     )}
                     {SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}

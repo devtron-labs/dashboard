@@ -79,8 +79,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         if (envList?.result) {
             const environment = envList.result.envList?.find((env) => env.id === +envId)
             setIsVirtualEnv(environment?.isVirtualEnvironment)
-            setEnvName(environment.environment_name)
-            setShowEmpty(!environment.appCount)
+            setEnvName(environment?.environment_name)
+            setShowEmpty(!environment?.appCount)
         }
     }, [envList, envId])
 
