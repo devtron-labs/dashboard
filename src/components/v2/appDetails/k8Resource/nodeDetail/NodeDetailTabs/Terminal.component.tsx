@@ -145,7 +145,7 @@ function TerminalComponent({
                       appDetails.appName,
                   )
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
-        const selectedNamespace = appDetails.resourceTree.nodes.find((nd) => nd.name === params.podName).namespace
+        const selectedNamespace = appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName)?.namespace
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
