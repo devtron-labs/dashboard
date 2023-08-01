@@ -159,6 +159,7 @@ export const getLogsURL = (
     Host: string,
     container: string,
     prevContainerLogs: boolean,
+    podName?: string,
     isResourceBrowserView?: boolean,
     clusterId?: number,
     namespace?: string,
@@ -170,11 +171,11 @@ export const getLogsURL = (
             : getAppId(ad.clusterId, ad.namespace, applicationObject)
 
     let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
-
+    const selectedNamespace = ad.resourceTree.nodes.find((nd) => nd.name === podName).namespace
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else if (ad.appType === AppType.EXTERNAL_ARGO_APP) {
-        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${ad.namespace}`
+        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}`
     } else {
         const appType =
             ad.appType == AppType.DEVTRON_APP

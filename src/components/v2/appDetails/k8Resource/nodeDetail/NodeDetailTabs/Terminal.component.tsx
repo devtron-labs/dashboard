@@ -144,16 +144,18 @@ function TerminalComponent({
                       appDetails.namespace,
                       appDetails.appName,
                   )
-
+        const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
+        const selectedNamespace = appDetails.resourceTree.nodes.find((nd) => nd.name === params.podName).namespace
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else if(appDetails.appType === AppType.EXTERNAL_ARGO_APP){
+        } else if(isExternalArgoApp){
             url += `${appDetails.clusterId}` 
         }else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
+
+        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {

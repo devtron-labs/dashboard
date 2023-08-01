@@ -50,6 +50,7 @@ const AppDetailsComponent = ({
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const location = useLocation()
     const deploymentModalShownRef = useRef(null)
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
     deploymentModalShownRef.current =location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
@@ -146,7 +147,7 @@ const AppDetailsComponent = ({
                     appType={appDetails?.appType}
                     
                 />
-                {!appDetails.deploymentAppDeleteRequest &&  (
+                {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
                         loadingDetails={loadingDetails}
@@ -159,7 +160,7 @@ const AppDetailsComponent = ({
             </div>
 
             <SyncErrorComponent appStreamData={streamData} />
-            {!appDetails.deploymentAppDeleteRequest && appDetails?.appType !== AppType.EXTERNAL_ARGO_APP && (
+            {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
                     externalLinks={externalLinks}

@@ -201,7 +201,6 @@ function LogsComponent({
         if (isResourceBrowserView) {
             const nodeName = podContainerOptions.podOptions[0].name
             pods.push(nodeName)
-
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
                     urls.push(
@@ -211,6 +210,7 @@ function LogsComponent({
                             Host,
                             _co.name,
                             prevContainer,
+                            params.podName,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -230,7 +230,7 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 pods.push(_pwc[0])
-                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer))
+                urls.push(getLogsURL(appDetails,_pwc[0], Host, _pwc[1], prevContainer, params.podName))
             }
 
             if (urls.length == 0) {

@@ -3,7 +3,7 @@ import K8ResourceComponent from './k8Resource/K8Resource.component';
 import './appDetails.scss';
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component';
 import { Route, Switch, useLocation } from 'react-router-dom';
-import { useRouteMatch, Redirect, useParams, useHistory } from 'react-router';
+import { useRouteMatch, Redirect, useParams } from 'react-router';
 import { URLS } from '../../../config';
 import AppDetailsStore from './appDetails.store';
 import { NodeType, NodeTreeDetailTabProps } from './appDetails.type';
@@ -18,7 +18,6 @@ function NodeTreeDetailTab({
     isDevtronApp = false,
 }: NodeTreeDetailTabProps) {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const location = useLocation()
     const { path, url } = useRouteMatch()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const tabRef = useRef<HTMLDivElement>(null)

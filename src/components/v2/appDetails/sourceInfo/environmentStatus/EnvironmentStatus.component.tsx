@@ -17,7 +17,6 @@ import { importComponentFromFELibrary, useAsync } from '../../../../common'
 import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { EnvironmentStatusComponentType } from '../environment.type'
-import CurrentSyncStatus from './CurrentSyncStatus'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
