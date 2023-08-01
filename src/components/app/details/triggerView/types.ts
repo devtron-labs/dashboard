@@ -70,6 +70,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
+    getSearchedItem?: (searchedItems?: any[]) => void
 }
 
 export enum DeploymentWithConfigType {
@@ -85,9 +86,6 @@ export interface ConfigToDeployOptionType {
 }
 
 export interface CDMaterialState {
-    materials?: any[] 
-    consumedImages?: any[]
-    approvedImages?: any[]
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
     diffFound: boolean
@@ -362,6 +360,7 @@ export interface TriggerViewState {
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
     isDefaultConfigPresent?: boolean
+    filterMaterials?: any[]
 }
 
 //-- begining of response type objects for trigger view

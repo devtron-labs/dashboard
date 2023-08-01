@@ -78,9 +78,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     constructor(props: CDMaterialProps) {
         super(props)
         this.state = {
-            materials: this.props.material,
-            consumedImages: [],
-            approvedImages: [],
             loadingSearchedImage: false,
             isSecurityModuleInstalled: false,
             checkingDiff: false,
@@ -119,29 +116,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        this.filterConsumedAndApprovedImages()
         if (
             (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
             this.state.selectedMaterial &&
-            this.state.materials.length > 0
+            this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
         }
-    }
-
-    filterConsumedAndApprovedImages() {
-        const consumedImage = []
-        const approvedImages = []
-        this.state.materials.forEach((mat) => {
-            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
-                mat.isSelected = false
-                consumedImage.push(mat)
-            } else {
-                approvedImages.push(mat)
-            }
-        })
-        console.log(consumedImage, approvedImages, "onMount")
-        this.setState({consumedImages: consumedImage, approvedImages: approvedImages})
     }
 
     getWfrId() {
@@ -151,7 +132,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
         return this.state.selectedMaterial
             ? this.state.selectedMaterial.wfrId
-            : this.state.materials?.find((_mat) => _mat.isSelected)?.wfrId
+            : this.props.material?.find((_mat) => _mat.isSelected)?.wfrId
     }
 
     getDeploymentConfigDetails() {
@@ -822,14 +803,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     processConsumedAndApprovedImages = () => {
-        const consumedImage = [...this.state.consumedImages]
+        const consumedImage = []
         const approvedImages = []
-        this.state.materials.forEach((mat) => {
-            if (!(!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
+        this.props.material.forEach((mat) => {
+            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
+                mat.isSelected = false
+                consumedImage.push(mat)
+            } else {
                 approvedImages.push(mat)
             }
         })
-
         return { consumedImage, approvedImages }
     }
 
@@ -846,8 +829,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         } else {
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages
-                    ? [this.state.materials[0]]
-                    : this.state.materials
+                    ? [this.props.material[0]]
+                    : this.props.material
         }
 
         // reset the selection for some cases
@@ -881,17 +864,22 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.setState({loadingSearchedImage: true})
             getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal,  true, event.target.value)
                 .then((res) => {
-                    this.setState({materials: res.materials})
                     this.setState({loadingSearchedImage: false})
-                    console.log(res.materials, this.state.consumedImages, this.state.approvedImages)
+                    this.props.getSearchedItem(res.materials)
                 })
         }
     }
 
     clearSearch = () => {
-        this.setState({searchApplied: false})
-        this.setState({materials: this.props.material})
-        this.setState({searchString: ''})
+        this.setState({ searchApplied: false })
+        this.setState({ searchString: '' })
+        let abortController = new AbortController()
+        this.setState({loadingSearchedImage: true})
+        getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal, true, '')
+            .then((res) => {
+                this.setState({ loadingSearchedImage: false })
+                this.props.getSearchedItem(res.materials)
+            })
     }
 
     refreshData = () => {
@@ -902,8 +890,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.setState({loadingSearchedImage: true})
         getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal, true, '')
             .then((res) => {
-                this.setState({materials: res.materials})
                 this.setState({loadingSearchedImage: false})
+                this.props.getSearchedItem(res.materials)
             })
     }
 
@@ -1120,7 +1108,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     isDeployButtonDisabled() {
-        const selectedImage = this.state.materials.find((artifact) => artifact.isSelected)
+        const selectedImage = this.props.material.find((artifact) => artifact.isSelected)
         return (
             !selectedImage ||
             (this.state.isRollbackTrigger && (this.state.checkingDiff || !this.canDeployWithConfig())) ||
@@ -1155,10 +1143,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-        const hideConfigDiffSelector = isApprovalConfigured && this.state.materials.length <= 1
+        const hideConfigDiffSelector = isApprovalConfigured && this.props.material.length <= 1
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
-            (this.state.materials.length > 0 && this.isImageApprover(this.state.materials[0]?.userApprovalMetadata))
+            (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
 
         return (
             <div
@@ -1307,10 +1295,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     loadOlderImages() {
         if (this.props.onClickRollbackMaterial && !this.state.loadingMore) {
-            if (this.state.materials.length > 19) {
+            if (this.props.material.length > 19) {
                 this.props.onClickRollbackMaterial(
                     this.props.pipelineId,
-                    this.state.materials.length + 1,
+                    this.props.material.length + 1,
                     20,
                     this.handleOlderImagesLoading,
                 )
@@ -1348,7 +1336,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     getTriggerBodyHeight = (isApprovalConfigured: boolean) => {
         if (this.state.showConfigDiffView) {
             return 'calc(100vh - 141px)'
-        } else if (isApprovalConfigured && (this.state.isRollbackTrigger || this.state.materials.length > 1)) {
+        } else if (isApprovalConfigured && (this.state.isRollbackTrigger || this.props.material.length > 1)) {
             return 'calc(100vh - 156px)'
         } else {
             return 'calc(100vh - 116px)'
@@ -1381,7 +1369,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {this.renderMaterialList(isApprovalConfigured)}
                         {this.state.isRollbackTrigger &&
                             !this.state.noMoreImages &&
-                            this.state.materials.length !== 1 && (
+                            this.props.material.length !== 1 && (
                                 <button
                                     className="show-older-images-cta cta ghosted flex h-32"
                                     onClick={this.loadOlderImages}
@@ -1430,7 +1418,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 </div>
                 {isApprovalConfigured &&
                     ApprovedImagesMessage &&
-                    (this.state.isRollbackTrigger || this.state.materials.length > 1) && (
+                    (this.state.isRollbackTrigger || this.props.material.length > 1) && (
                         <InfoColourBar
                             message={<ApprovedImagesMessage viewAllImages={this.viewAllImages} />}
                             classname="info_bar dc__no-border-radius dc__no-top-border"

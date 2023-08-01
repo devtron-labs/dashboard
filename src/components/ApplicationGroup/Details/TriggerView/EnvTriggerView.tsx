@@ -87,7 +87,7 @@ import {
 import Tippy from '@tippyjs/react'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import { getChannelConfigs } from '../../../notifications/notifications.service'
+import { getDefaultConfig } from '../../../notifications/notifications.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -138,6 +138,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const { queryParams } = useSearchString()
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
+    const [filterMaterials, setFilterMaterials] = useState<any[]>([])
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -167,20 +168,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }, [location.search, fliteredWorkflowDataUpdated])
 
     const getConfigs = () => {
-        getChannelConfigs()
+        getDefaultConfig()
             .then((response) => {
-                let isConfigPresent = response?.result.sesConfigs.length > 0 || response?.result.smtpConfigs.length > 0
-                let _isDefaultConfig
-                response.result?.sesConfigs.map((config) => {
-                    if(config.default) {
-                        _isDefaultConfig = true
-                    }
-                })
-                response.result?.smtpConfigs.map((config) => {
-                    if(config.default) {
-                        _isDefaultConfig = true
-                    }
-                })
+                let isConfigPresent = response.result.isConfigured
+                let _isDefaultConfig = response.result.is_default_configured
                 setDefaultConfig(_isDefaultConfig)
                 setConfigPresent(isConfigPresent)
             })
@@ -1073,12 +1064,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
                     (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
                 ) {
-                    const artifacts = node[materialType].map((artifact, i) => {
+                    let materials = filterMaterials.length > 0 ? filterMaterials : node[materialType]
+                    const artifacts = materials.map((artifact, i) => {
                         return {
                             ...artifact,
                             isSelected: i === index,
                         }
                     })
+                    setFilterMaterials(artifacts)
                     node[materialType] = artifacts
                 }
                 return node
@@ -1872,6 +1865,35 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const getSearchedItem = (searchedItems?: any[])  => {
+        let node: NodeAttr, _appID
+            if (selectedCDNode?.id) {
+                for (const _wf of filteredWorkflows) {
+                    node = _wf.nodes.find((el) => {
+                        return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
+                    })
+                    if (node) {
+                        _appID = _wf.appId
+                        break
+                    }
+                }
+            }
+        const material = node?.[materialType] || []
+        let resultMaterials = []
+        material.forEach((mat) => {
+            if (((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
+                mat.isSelected = false
+                resultMaterials.push(mat)
+            }
+        })
+        searchedItems.forEach((mat) => {
+            if (!((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
+                resultMaterials.push(mat)
+            }
+        })
+        setFilterMaterials(resultMaterials)
+    }
+
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal) {
             let node: NodeAttr, _appID
@@ -1886,7 +1908,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     }
                 }
             }
-            const material = node?.[materialType] || []
+            const material = ( filterMaterials.length > 0 ? filterMaterials : node?.[materialType] ) || []
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
                     <div
@@ -1937,6 +1959,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 history={history}
                                 location={location}
                                 match={match}
+                                getSearchedItem={getSearchedItem}
                             />
                         )}
                     </div>
