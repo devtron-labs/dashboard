@@ -452,7 +452,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return <Progressing pageLoader />
         } else if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="global-configuration__component flex">
+                <div className="global-configuration__component flex dc__align-reload-center">
                     <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
                 </div>
             )
