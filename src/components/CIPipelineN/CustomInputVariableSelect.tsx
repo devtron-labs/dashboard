@@ -38,8 +38,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }[]
     >([])
 
-    const [textArea, setTextArea] = useState<boolean>(false)
-
     useEffect(() => {
         const previousStepVariables = []
         if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
@@ -110,7 +108,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: OptionType) => {
-        setTextArea(true)
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
