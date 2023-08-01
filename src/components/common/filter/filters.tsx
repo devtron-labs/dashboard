@@ -5,8 +5,7 @@ import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic
 import './filter.css';
 import Tippy from '@tippyjs/react';
 import { replaceLastOddBackslash } from '../../../util/Util';
-import { BUTTON_TEXT } from '../../../config/constantMessaging';
-import { AppType } from '../../v2/appDetails/appDetails.type';
+import { AppListConstants } from '../../../config';
 
 export class Filter extends Component<FilterProps, FilterState>{
     node;
@@ -102,14 +101,14 @@ export class Filter extends Component<FilterProps, FilterState>{
             this.props.onShowHideFilterContent(show);
         }
     }
-
+    
     _getSearchKey = () : string => {
         let _searchKey = this.props.searchKey || this.props.labelKey;
         return _searchKey;
     }
-
+   
     render() {
-        let classNames = `filter__menu ${this.props.appType !== AppType.EXTERNAL_ARGO_APP ? `filter__menu-${this.props.position === 'right' ? 'right' : 'left' }`: "" } ${
+        let classNames = `filter__menu ${this.props.appType !== AppListConstants.AppType.ARGO_APPS ? `filter__menu-${this.props.position === 'right' ? 'right' : 'left' }`: "dc__right-0" } ${
             this.state.show ? 'filter__menu--show' : ''
         }`
         let faIcon = this.state.show ? "fa fa-caret-up" : "fa fa-caret-down";
