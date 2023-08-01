@@ -120,6 +120,11 @@ export function getChannelConfigs(): Promise<ResponseType> {
     return get(URL)
 }
 
+export function getDefaultConfig(): Promise<ResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel/config`
+    return get(URL)
+}
+
 export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
     return get(`${Routes.NOTIFIER}/variables`)
 }
