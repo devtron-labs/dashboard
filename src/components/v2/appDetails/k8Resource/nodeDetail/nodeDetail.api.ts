@@ -84,8 +84,9 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
             : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
 
-    const requestBody = {
-        appId: appId,
+    let requestBody = {
+        appId: '',
+        clusterId: 0,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -97,8 +98,27 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-        appType: appDetails.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP,
-        deploymentType: appDetails.deploymentAppType == DeploymentAppTypes.HELM ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        appType:
+            appDetails.appType == AppType.DEVTRON_APP
+                ? K8sResourcePayloadAppType.DEVTRON_APP
+                : appDetails.appType === AppType.EXTERNAL_ARGO_APP
+                ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
+                : K8sResourcePayloadAppType.HELM_APP,
+        deploymentType:
+            appDetails.deploymentAppType == DeploymentAppTypes.HELM
+                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED,
+    }
+    if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
+        requestBody = {
+            ...requestBody,
+            clusterId: appDetails.clusterId,
+        }
+    } else {
+        requestBody = {
+            ...requestBody,
+            appId: appId,
+        }
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -153,10 +173,18 @@ export const getLogsURL = (
 
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
+    } else if (ad.appType === AppType.EXTERNAL_ARGO_APP) {
+        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${ad.namespace}`
     } else {
-        const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
-        const deploymentType = ad.deploymentAppType == DeploymentAppTypes.HELM ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
-        if (appType  === 0){
+        const appType =
+            ad.appType == AppType.DEVTRON_APP
+                ? K8sResourcePayloadAppType.DEVTRON_APP
+                : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType =
+            ad.deploymentAppType == DeploymentAppTypes.HELM
+                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        if (appType === 0) {
             logsURL += `&namespace=${ad.namespace}`
         }
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
@@ -192,10 +220,12 @@ export const generateEphemeralUrl = (
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
-    let url: string = 'k8s/resources/ephemeralContainers'
+    let url: string = Routes.EPHEMERAL_CONTAINERS
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
-    } else {
+    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
+        url += `?clusterId=${params.clusterId}&appType=2`
+    }else {
         url += `?identifier=${appIds}&appType=${appType === AppType.DEVTRON_APP ? '0' : '1'}`
     }
 
@@ -218,10 +248,12 @@ export const deleteEphemeralUrl = (
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
             : getAppId(clusterId, namespace, appName)
 
-    let url: string = 'k8s/resources/ephemeralContainers'
-    const appTypes = appType === AppType.DEVTRON_APP ? '0' : '1'
+    let url: string = Routes.EPHEMERAL_CONTAINERS
+    const appTypes = appType === AppType.DEVTRON_APP ? '0' : appType === AppType.EXTERNAL_ARGO_APP ? '2' : '1'
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
+    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
+        url += `?clusterId=${params.clusterId}`
     } else {
         url += `?identifier=${appIds}&appType=${appTypes}`
     }

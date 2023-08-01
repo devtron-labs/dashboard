@@ -11,7 +11,7 @@ import {
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import {AppType, TerminalComponentProps, Options} from '../../../appDetails.type'
+import {AppType, TerminalComponentProps, Options, K8sResourcePayloadAppType} from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import {TerminalSelectionListDataType} from './terminal/terminal.type'
@@ -148,14 +148,16 @@ function TerminalComponent({
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else {
+        } else if(appDetails.appType === AppType.EXTERNAL_ARGO_APP){
+            url += `${appDetails.clusterId}` 
+        }else {
             url += `${appId}`
         }
         url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
+            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ?  K8sResourcePayloadAppType.DEVTRON_APP : appDetails.appType === AppType.EXTERNAL_ARGO_APP ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP : K8sResourcePayloadAppType.HELM_APP}`
         }
         return url
     }

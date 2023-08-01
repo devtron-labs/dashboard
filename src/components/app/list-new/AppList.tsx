@@ -793,6 +793,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         onShowHideFilterContent={onShowHideFilterContent}
                         showPulsatingDot={showPulsatingDot}
                         dataTestId={'cluster-filter'}
+                        appType={params.appType}
                     />
                     {!isExternalArgo && (
                         <Filter

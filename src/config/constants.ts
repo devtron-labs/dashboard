@@ -63,7 +63,7 @@ export const Routes = {
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
     ARGO_APPLICATION: 'argo-application/detail',
-
+    EPHEMERAL_CONTAINERS: ' k8s/resources/ephemeralContainers',
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',

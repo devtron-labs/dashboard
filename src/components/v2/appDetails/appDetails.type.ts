@@ -29,6 +29,7 @@ export enum AppType {
 export enum K8sResourcePayloadAppType {
     DEVTRON_APP = 0,
     HELM_APP = 1,
+    EXTERNAL_ARGO_APP = 2
 }
 
 export enum K8sResourcePayloadDeploymentType {

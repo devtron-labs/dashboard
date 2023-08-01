@@ -6,6 +6,7 @@ import './filter.css';
 import Tippy from '@tippyjs/react';
 import { replaceLastOddBackslash } from '../../../util/Util';
 import { BUTTON_TEXT } from '../../../config/constantMessaging';
+import { AppType } from '../../v2/appDetails/appDetails.type';
 
 export class Filter extends Component<FilterProps, FilterState>{
     node;
@@ -108,7 +109,7 @@ export class Filter extends Component<FilterProps, FilterState>{
     }
 
     render() {
-        let classNames = `filter__menu filter__menu-${this.props.position === 'right' ? 'right' : 'left'} ${
+        let classNames = `filter__menu ${this.props.appType !== AppType.EXTERNAL_ARGO_APP ? `filter__menu-${this.props.position === 'right' ? 'right' : 'left' }`: "" } ${
             this.state.show ? 'filter__menu--show' : ''
         }`
         let faIcon = this.state.show ? "fa fa-caret-up" : "fa fa-caret-down";
