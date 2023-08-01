@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
-import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import { ReactComponent as Question } from '../../../../../assets/icons/ic-question.svg'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
@@ -17,6 +17,7 @@ import { importComponentFromFELibrary, useAsync } from '../../../../common'
 import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { EnvironmentStatusComponentType } from '../environment.type'
+import CurrentSyncStatus from './CurrentSyncStatus'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -252,6 +253,7 @@ function EnvironmentStatusComponent({
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
                     {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
+                    {/* {<CurrentSyncStatus status={status} loadingResourceTree={loadingResourceTree} />} */}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
