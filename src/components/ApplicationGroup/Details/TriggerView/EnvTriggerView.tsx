@@ -161,6 +161,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     useEffect(() => {
         if(location.search.includes('approval-node') && filteredWorkflows?.length) {
+            setShowBulkCDModal(false)
             setShowApprovalModal(true)
             onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
             getConfigs()

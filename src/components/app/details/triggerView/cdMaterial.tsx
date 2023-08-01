@@ -795,8 +795,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         })
     }
 
-    viewAllImages = () => {
-        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+    viewAllImages = (e) => {
+        e.stopPropagation()
         this.props.history.push({
             search: `approval-node=${this.props.pipelineId}`
         })
