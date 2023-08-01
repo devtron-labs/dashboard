@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
 import { useSharedState } from '../../utils/useSharedState'
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
-import { ApplicationObject, NodeTreeTabListProps, NodeType } from '../appDetails.type'
+import { AppType, ApplicationObject, NodeTreeTabListProps, NodeType } from '../appDetails.type'
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
@@ -10,13 +10,14 @@ import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '../../../common'
 import './NodeTreeTabList.scss'
 
-export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
+export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef, appType }: NodeTreeTabListProps) {
     const { nodeType } = useParams<{ nodeType: string }>()
     const { push } = useHistory()
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
+    const isExternalArgoApp = appType === AppType.EXTERNAL_ARGO_APP
 
     const clearLogSearchTerm = (tabIdentifier: string): void => {
         if (logSearchTerms) {
@@ -95,7 +96,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         >
             <ul className="tab-list">
                 {applicationObjectTabs.map((tab: ApplicationObject, index: number) => {
-                    return (
+                    return (                       
                         <li key={index + 'tab'} id={`${nodeType}_${tab.name}`} className="flex left dc__ellipsis-right">
                             <ConditionalWrap
                                 condition={
@@ -109,7 +110,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                         </Tippy>
                                     )
                                 }}
-                            >
+                            > 
                                 <div className="flex">
                                     <div
                                         className={`${

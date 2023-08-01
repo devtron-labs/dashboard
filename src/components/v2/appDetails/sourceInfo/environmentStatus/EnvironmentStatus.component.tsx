@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
-import { ReactComponent as Question } from '../../../../../assets/icons/ic-question.svg'
+import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
@@ -31,7 +31,7 @@ function EnvironmentStatusComponent({
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
-    const status = appDetails.resourceTree?.status || ''
+    const status = appDetails.resourceTree?.status || appDetails?.appStatus || ''
     const showHibernationStatusMessage =
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { url } = useRouteMatch()
@@ -39,7 +39,6 @@ function EnvironmentStatusComponent({
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const hideDeploymentStatusLeftInfo = appDetails?.deploymentAppType === DeploymentAppTypes.HELM // Todo test for helm/gitops app details
-
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)

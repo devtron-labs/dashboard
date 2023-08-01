@@ -52,7 +52,7 @@ function EnvironmentSelectorComponent({
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
@@ -243,7 +243,7 @@ function EnvironmentSelectorComponent({
                             )}
                         </div>
                     </div>
-                    {appDetails?.deploymentAppType && (
+                    {(appDetails?.deploymentAppType || isExternalArgoApp) && (
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -253,7 +253,7 @@ function EnvironmentSelectorComponent({
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} isExternalArgoApp={isExternalArgoApp}/>
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (

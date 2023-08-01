@@ -195,6 +195,7 @@ export interface AppDetails {
     isVirtualEnvironment?: boolean
     imageTag?: string
     helmPackageName?: string
+    appStatus?: string
 }
 
 interface MaterialInfo {
@@ -425,6 +426,7 @@ export interface TerminalComponentProps {
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
+    appType?: string
 }
 
 export interface OptionsBase {

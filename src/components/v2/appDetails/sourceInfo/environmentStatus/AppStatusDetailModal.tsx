@@ -49,14 +49,13 @@ function AppStatusDetailModal({
             close()
         }
     }
-    const [nodeStatusMap, setNodeStatusMap] = useState<Map<string, NodeStreamMap>>()
     const [showSeeMore, setShowSeeMore] = useState(true)
 
     let message = ''
     const conditions = _appDetails.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
     if (
-        ['progressing', 'degraded'].includes(_appDetails.resourceTree?.status.toLowerCase()) &&
+        ['progressing', 'degraded'].includes((_appDetails?.resourceTree?.status?.toLowerCase() || _appDetails?.appStatus?.toLowerCase())) &&
         Array.isArray(conditions) &&
         conditions.length > 0 &&
         conditions[0].message
@@ -115,10 +114,10 @@ function AppStatusDetailModal({
                         <div
                             data-testid="app-status-details-subtitle"
                             className={`subtitle app-summary__status-name fw-6 fs-13 f-${
-                                appStatus ? appStatus : _appDetails.resourceTree?.status.toLowerCase()
+                                appStatus ? appStatus : _appDetails.resourceTree?.status?.toLowerCase()
                             } mr-16`}
                         >
-                            {appStatusText ? appStatusText : _appDetails.resourceTree?.status.toUpperCase()}
+                            {appStatusText ? appStatusText : _appDetails.resourceTree?.status?.toUpperCase()}
                         </div>
                     </div>
                     <span className="cursor" onClick={close} data-testid="app-status-details-cross">

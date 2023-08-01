@@ -43,6 +43,7 @@ function NodeTreeDetailTab({
                         logSearchTerms={logSearchTerms}
                         setLogSearchTerms={setLogSearchTerms}
                         tabRef={tabRef}
+                        appType={appDetails.appType}
                     />
                     <Switch>
                         <Route

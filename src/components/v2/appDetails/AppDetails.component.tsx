@@ -147,7 +147,7 @@ const AppDetailsComponent = ({
                     appType={appDetails?.appType}
                     
                 />
-                {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
+                {!appDetails.deploymentAppDeleteRequest  && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
                         loadingDetails={loadingDetails}
