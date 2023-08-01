@@ -12,6 +12,7 @@ export interface ArgoAppListResult {
    namespace: string
    appStatus: string
    syncStatus?: string
+   clusterId?: string
 }
 export interface ArgoAppListResponse extends ArgoAppListResult{
     result?:  ArgoAppListResult

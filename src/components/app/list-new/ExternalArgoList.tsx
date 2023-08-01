@@ -180,7 +180,7 @@ export default function ExternalArgoList({
     }
 
     function _buildAppDetailUrl(app: ArgoAppListResult) {
-        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/cluster/${clusterId}/app/${app.appName}/namespace/${app.namespace}`
+        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/cluster/${app.clusterId}/app/${app.appName}/namespace/${app.namespace}`
     }
 
     function sortByAppName(e) {
