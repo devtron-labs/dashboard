@@ -517,20 +517,31 @@ export default function DeploymentConfig({
     const handleTabSelection = (index: number) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
-            payload: index,
+            payload:
+                ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) &&
+                state.basicFieldValuesErrorObj &&
+                !state.basicFieldValuesErrorObj.isValid
+                    ? state.selectedTabIndex
+                    : index,
         })
 
         switch (index) {
             case 1:
             case 3:
-                if (state.selectedTabIndex == 2) {
+                if (state.selectedTabIndex === 2) {
                     toggleYamlMode(state.isBasicLocked)
                     handleComparisonClick()
                 }
                 break
             case 2:
                 if (!state.openComparison) {
-                    toggleYamlMode(true)
+                    if (!state.yamlMode) {
+                        if ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) {
+                            changeEditorMode()
+                        } else {
+                            toggleYamlMode(true)
+                        }
+                    }
                     handleComparisonClick()
                 }
                 break
@@ -637,7 +648,7 @@ export default function DeploymentConfig({
                     state.openComparison || state.showReadme ? 'full-view' : ''
                 } ${state.showComments ? 'comments-view' : ''}`}
             >
-                <div className="dc__border br-4 m-12 dc__overflow-hidden" style={{ height: 'calc(100vh - 102px)' }}>
+                <div className="dc__border br-4 m-8 dc__overflow-hidden" style={{ height: 'calc(100vh - 92px)' }}>
                     <ConfigToolbar
                         loading={state.loading || state.chartConfigLoading}
                         draftId={state.latestDraft?.draftId}
@@ -649,6 +660,7 @@ export default function DeploymentConfig({
                         isReadmeAvailable={!!state.readme}
                         handleReadMeClick={handleReadMeClick}
                         handleCommentClick={toggleDraftComments}
+                        commentsPresent={state.latestDraft?.commentsCount > 0}
                         isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
                         isApprovalPending={state.latestDraft?.draftState === 4}
                         approvalUsers={state.latestDraft?.approvers}

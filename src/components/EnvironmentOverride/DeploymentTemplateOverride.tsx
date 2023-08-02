@@ -1,19 +1,11 @@
-import React, { useState, useEffect, useReducer, useContext, Reducer } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer } from 'react'
 import { useParams } from 'react-router'
-import {
-    getDeploymentTemplate,
-    createDeploymentTemplate,
-    updateDeploymentTemplate,
-    chartRefAutocomplete,
-} from './service'
-import { getDeploymentTemplate as getBaseDeploymentTemplate } from '../deploymentConfig/service'
-import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
-import { showError, Progressing, not, useEffectAfterMount, noop } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
-import '../deploymentConfig/deploymentConfig.scss'
-import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import YAML from 'yaml'
+import { showError, Progressing, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
+import { getDeploymentTemplate, chartRefAutocomplete } from './service'
+import { getDeploymentTemplate as getBaseDeploymentTemplate } from '../deploymentConfig/service'
+import { useAsync, importComponentFromFELibrary } from '../common'
+import '../deploymentConfig/deploymentConfig.scss'
 import {
     DeploymentConfigStateAction,
     DeploymentConfigStateActionTypes,
@@ -26,24 +18,14 @@ import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/Devtro
 import {
     getBasicFieldValue,
     isBasicValueChanged,
-    patchBasicData,
     updateTemplateFromBasicValue,
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
-import DeploymentTemplateOptionsTab from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateOptionsTab'
-import DeploymentTemplateEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateEditorView'
-import DeploymentConfigFormCTA from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigFormCTA'
-import { DeploymentConfigContext } from '../deploymentConfig/DeploymentConfig'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
-import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
-import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
-import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
+import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
 
-const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
-const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
-const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
@@ -296,7 +278,7 @@ export default function DeploymentTemplateOverride({
         e.preventDefault()
         if (state.duplicate) {
             //permanent delete
-            if (state.isConfigProtectionEnabled && state.latestDraft) {
+            if (state.isConfigProtectionEnabled) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
             } else if (state.data.IsOverride) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
@@ -418,7 +400,7 @@ export default function DeploymentTemplateOverride({
                 state.openComparison || state.showReadme ? 'full-view' : ''
             } ${state.showComments ? 'comments-view' : ''}`}
         >
-            <div className="bcn-0 dc__border br-4 m-12 dc__overflow-hidden" style={{ height: 'calc(100vh - 102px)' }}>
+            <div className="bcn-0 dc__border br-4 m-8 dc__overflow-hidden" style={{ height: 'calc(100vh - 92px)' }}>
                 {state.data && state.charts && (
                     <DeploymentTemplateOverrideForm
                         state={state}
@@ -441,396 +423,5 @@ export default function DeploymentTemplateOverride({
                 />
             )}
         </div>
-    )
-}
-
-function DeploymentTemplateOverrideForm({
-    state,
-    environments,
-    environmentName,
-    handleOverride,
-    dispatch,
-    initialise,
-    handleAppMetrics,
-    toggleDraftComments,
-    isGrafanaModuleInstalled,
-}) {
-    const [tempValue, setTempValue] = useState('')
-    const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
-    const { appId, envId } = useParams<{ appId; envId }>()
-
-    useEffect(() => {
-        // Reset editor value on delete override action
-        if (!state.duplicate && tempValue) {
-            editorOnChange('')
-        }
-    }, [state.duplicate])
-
-    const toggleSaveChangesModal = () => {
-        dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
-    }
-
-    const toggleDeleteOverrideDraftModal = () => {
-        dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
-    }
-
-    const toggleYamlMode = (yamlMode: boolean) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.yamlMode,
-            payload: yamlMode,
-        })
-    }
-
-    const prepareDataToSave = (envOverrideValuesWithBasic, includeGlobalConfig?: boolean) => {
-        const payload = {
-            environmentId: +envId,
-            envOverrideValues: envOverrideValuesWithBasic || obj || state.duplicate,
-            chartRefId: state.selectedChartRefId,
-            IsOverride: true,
-            isAppMetricsEnabled: !!state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
-            currentEditorView: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
-            isBasicLocked: state.isBasicLocked,
-            ...(state.data.environmentConfig.id > 0
-                ? {
-                      id: state.data.environmentConfig.id,
-                      status: state.data.environmentConfig.status,
-                      manualReviewed: true,
-                      active: state.data.environmentConfig.active,
-                      namespace: state.data.environmentConfig.namespace,
-                  }
-                : {}),
-        }
-
-        if (includeGlobalConfig) {
-            payload['globalConfig'] = state.data.globalConfig
-        }
-
-        return payload
-    }
-
-    async function handleSubmit(e) {
-        e.preventDefault()
-        if (!obj && state.yamlMode) {
-            toast.error(error)
-            return
-        } else if (
-            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
-            !state.yamlMode &&
-            !state.basicFieldValuesErrorObj.isValid
-        ) {
-            toast.error('Some required fields are missing')
-            return
-        } else if (state.isConfigProtectionEnabled) {
-            toggleSaveChangesModal()
-            return
-        }
-
-        const api =
-            state.data.environmentConfig && state.data.environmentConfig.id > 0
-                ? updateDeploymentTemplate
-                : createDeploymentTemplate
-        const envOverrideValuesWithBasic =
-            !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
-
-        try {
-            dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
-            await api(+appId, +envId, prepareDataToSave(envOverrideValuesWithBasic))
-            if (envOverrideValuesWithBasic) {
-                editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
-            }
-            toast.success(
-                <div className="toast">
-                    <div className="toast__title">
-                        {state.data.environmentConfig && state.data.environmentConfig.id > 0
-                            ? 'Updated override'
-                            : 'Overridden'}
-                    </div>
-                    <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
-                </div>,
-                { autoClose: null },
-            )
-            dispatch({
-                type: DeploymentConfigStateActionTypes.fetchedValues,
-                payload: {},
-            })
-            initialise(false, true)
-        } catch (err) {
-            showError(err)
-        } finally {
-            dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
-        }
-    }
-
-    const changeEditorMode = (): void => {
-        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
-            toast.error('Some required fields are missing')
-            return
-        }
-        if (state.isBasicLocked) {
-            return
-        }
-        try {
-            const parsedCodeEditorValue =
-                tempValue && tempValue !== '' ? YAML.parse(tempValue) : state.duplicate || state.data.globalConfig
-            if (state.yamlMode) {
-                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload: {
-                        basicFieldValues: _basicFieldValues,
-                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                        yamlMode: false,
-                    },
-                })
-                return
-            } else {
-                const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
-                updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
-            }
-            dispatch({
-                type: DeploymentConfigStateActionTypes.yamlMode,
-                payload: true,
-            })
-        } catch (err) {}
-    }
-
-    const isCompareAndApprovalState =
-        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
-
-    const editorOnChange = (str: string, fromBasic?: boolean): void => {
-        if (isCompareAndApprovalState) return
-
-        setTempValue(str)
-        if (str && state.currentEditorView && !state.isBasicLocked && !fromBasic) {
-            try {
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.isBasicLocked,
-                    payload: isBasicValueChanged(YAML.parse(str)),
-                })
-            } catch (error) {}
-        }
-    }
-
-    const handleReadMeClick = () => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.multipleOptions,
-            payload: {
-                showReadme: !state.showReadme,
-                openComparison: state.showReadme && state.selectedTabIndex === 2,
-            },
-        })
-    }
-
-    const handleComparisonClick = () => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.multipleOptions,
-            payload: { openComparison: !state.openComparison, showReadme: false },
-        })
-    }
-
-    const handleTabSelection = (index: number) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.selectedTabIndex,
-            payload: index,
-        })
-
-        switch (index) {
-            case 1:
-            case 3:
-                if (state.selectedTabIndex == 2) {
-                    toggleYamlMode(state.isBasicLocked)
-                    handleComparisonClick()
-                }
-                break
-            case 2:
-                if (!state.openComparison) {
-                    toggleYamlMode(true)
-                    handleComparisonClick()
-                }
-                break
-            default:
-                break
-        }
-    }
-
-    const overridden = !!state.duplicate
-    const getOverrideActionState = () => {
-        if (state.loading) {
-            return <Progressing />
-        } else if (overridden) {
-            return 'Delete override'
-        } else {
-            return 'Allow override'
-        }
-    }
-    const renderOverrideInfoStrip = () => {
-        return (
-            <div
-                className={`flex dc__content-space fs-12 fw-6 lh-20 h-32 pl-16 pr-16 dc__border-bottom ${
-                    overridden ? 'bcy-1' : 'bcb-1'
-                }`}
-            >
-                <div className="flex left dc__gap-8">
-                    {overridden ? <WarningIcon className="icon-dim-16" /> : <InfoIcon className="icon-dim-16" />}
-                    <span data-testid="env-override-title">
-                        {overridden
-                            ? 'Base configurations are overridden for this file'
-                            : 'This file is inheriting base configurations'}
-                    </span>
-                </div>
-                <span
-                    data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
-                    onClick={handleOverride}
-                >
-                    {getOverrideActionState()}
-                </span>
-            </div>
-        )
-    }
-
-    const prepareDataToSaveDraft = () => {
-        const envOverrideValuesWithBasic =
-            !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
-        return prepareDataToSave(envOverrideValuesWithBasic, true)
-    }
-
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
-        let codeEditorValue = ''
-        if (readOnlyPublishedMode) {
-            codeEditorValue = YAML.stringify(state.data.globalConfig, { indent: 2 })
-        } else if (isCompareAndApprovalState) {
-            codeEditorValue = state.draftValues
-        } else if (tempValue) {
-            codeEditorValue = tempValue
-        } else if (state) {
-            codeEditorValue = state.duplicate
-                ? YAML.stringify(state.duplicate, { indent: 2 })
-                : YAML.stringify(state.data.globalConfig, { indent: 2 })
-        }
-
-        return codeEditorValue
-    }
-
-    const renderValuesView = () => {
-        const readOnlyPublishedMode =
-            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
-
-        return (
-            <form
-                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
-                    state.showReadme ? 'readme-view' : ''
-                }`}
-                onSubmit={handleSubmit}
-            >
-                <DeploymentTemplateOptionsTab
-                    isEnvOverride={true}
-                    disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-                    codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
-                />
-                {readOnlyPublishedMode && !state.showReadme ? (
-                    <DeploymentTemplateReadOnlyEditorView
-                        value={YAML.stringify(state.data.globalConfig, { indent: 2 })}
-                        isEnvOverride={true}
-                    />
-                ) : (
-                    <DeploymentTemplateEditorView
-                        isEnvOverride={true}
-                        value={getCodeEditorValue(false)}
-                        defaultValue={
-                            state && state.data && state.openComparison
-                                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
-                        editorOnChange={editorOnChange}
-                        environmentName={environmentName}
-                        readOnly={!state.duplicate || isCompareAndApprovalState}
-                        globalChartRefId={state.data.globalChartRefId}
-                        handleOverride={handleOverride}
-                    />
-                )}
-                <DeploymentConfigFormCTA
-                    loading={state.loading || state.chartConfigLoading}
-                    isEnvOverride={true}
-                    disableButton={!state.duplicate}
-                    disableCheckbox={!state.duplicate}
-                    showAppMetricsToggle={
-                        state.charts &&
-                        state.selectedChart &&
-                        appMetricsEnvironmentVariableEnabled &&
-                        isGrafanaModuleInstalled &&
-                        state.yamlMode
-                    }
-                    isAppMetricsEnabled={
-                        !!state.latestDraft && state.selectedTabIndex !== 1
-                            ? state.isAppMetricsEnabled
-                            : state.data.appMetrics
-                    }
-                    toggleAppMetrics={handleAppMetrics}
-                    isDraftMode={readOnlyPublishedMode}
-                    reload={initialise}
-                />
-            </form>
-        )
-    }
-
-    const getValueForContext = () => {
-        return {
-            isUnSet: false,
-            state,
-            dispatch,
-            environments: environments || [],
-            changeEditorMode: changeEditorMode,
-        }
-    }
-
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
-    return (
-        <DeploymentConfigContext.Provider value={getValueForContext()}>
-            <ConfigToolbar
-                loading={state.loading || state.chartConfigLoading}
-                draftId={state.latestDraft?.draftId}
-                draftVersionId={state.latestDraft?.draftVersionId}
-                selectedTabIndex={state.selectedTabIndex}
-                handleTabSelection={handleTabSelection}
-                noReadme={!state.yamlMode}
-                showReadme={state.showReadme}
-                isReadmeAvailable={!!state.data.readme}
-                handleReadMeClick={handleReadMeClick}
-                handleCommentClick={toggleDraftComments}
-                isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
-                isApprovalPending={state.latestDraft?.draftState === 4}
-                approvalUsers={state.latestDraft?.approvers}
-                reload={initialise}
-            />
-            {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
-            {renderValuesView()}
-            {state.dialog && <DeleteOverrideDialog appId={appId} envId={envId} initialise={initialise} />}
-            {SaveChangesModal && state.showSaveChangsModal && (
-                <SaveChangesModal
-                    appId={Number(appId)}
-                    envId={Number(envId)}
-                    resourceType={3}
-                    resourceName={`${environmentName}-DeploymentTemplateOverride`}
-                    prepareDataToSave={prepareDataToSaveDraft}
-                    toggleModal={toggleSaveChangesModal}
-                    latestDraft={state.latestDraft}
-                    reload={initialise}
-                />
-            )}
-            {DeleteOverrideDraftModal && state.showDeleteOverrideDraftModal && (
-                <DeleteOverrideDraftModal
-                    appId={Number(appId)}
-                    envId={Number(envId)}
-                    resourceType={3}
-                    resourceName={`${environmentName}-DeploymentTemplateOverride`}
-                    prepareDataToSave={prepareDataToSaveDraft}
-                    toggleModal={toggleDeleteOverrideDraftModal}
-                    latestDraft={state.latestDraft}
-                    reload={initialise}
-                />
-            )}
-        </DeploymentConfigContext.Provider>
     )
 }

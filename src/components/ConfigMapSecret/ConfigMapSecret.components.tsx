@@ -201,6 +201,7 @@ export function ConfigMapSecretContainer({
                         isReadmeAvailable={false}
                         handleReadMeClick={noop}
                         handleCommentClick={toggleDraftCommentModal}
+                        commentsPresent={draftData.commentsCount > 0}
                         isApprovalPending={draftData.draftState === 4}
                         approvalUsers={draftData.approvers}
                         reload={reload}
