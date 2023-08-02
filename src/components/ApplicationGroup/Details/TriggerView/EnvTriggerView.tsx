@@ -1961,6 +1961,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 location={location}
                                 match={match}
                                 getSearchedItem={getSearchedItem}
+                                isApplicationGroupTrigger={true}
                             />
                         )}
                     </div>
