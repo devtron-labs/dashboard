@@ -396,6 +396,7 @@ export default function BulkCDTrigger({
                             history={history}
                             location={location}
                             match={match}
+                            isApplicationGroupTrigger={true}
                         />
                     )}
                 </div>
