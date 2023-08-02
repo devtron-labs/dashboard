@@ -43,14 +43,16 @@ function ChartHeaderFilter({
         const app = searchParams.get(QueryParams.AppStoreName)
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
+        const registryIds = searchParams.get(QueryParams.RegistryId)
 
         if (key == 'chart-repo') {
             let chartRepoId = selected
-                ?.map((e) => {
-                    return e.value
+                ?.map((selectedRepo) => {
+                    return selectedRepo.value
                 })
                 .join(',')
             let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             history.push(`${url}?${qs}`)
@@ -60,6 +62,7 @@ function ChartHeaderFilter({
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
             history.push(`${url}?${qs}`)
         }
 
@@ -68,6 +71,7 @@ function ChartHeaderFilter({
             let qs = `${QueryParams.AppStoreName}=${appStoreName}`
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
             history.push(`${url}?${qs}`)
         }
 
@@ -75,6 +79,7 @@ function ChartHeaderFilter({
             let qs: string = ''
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
             history.push(`${url}?${qs}`)
         }
     }
@@ -164,7 +169,7 @@ function ChartHeaderFilter({
                 </Checkbox>
                 <hr className="mt-8 mb-8" />
                 <Accordian
-                    header={'REPOSITORY'}
+                    header={'CHART SOURCE'}
                     options={chartRepoList}
                     value={selectedChartRepo}
                     onChange={handleSelection}

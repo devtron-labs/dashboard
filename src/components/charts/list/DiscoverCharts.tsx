@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react'
 import {
     Select,
     mapByKey,
+    sortOptionsByLabel,
 } from '../../common'
 import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
@@ -14,8 +15,8 @@ import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
 import MultiChartSummary from '../MultiChartSummary'
 import AdvancedConfig from '../AdvancedConfig'
 import useChartGroup from '../useChartGroup'
-import { DeployableCharts, deployChartGroup } from '../charts.service'
-import { ChartGroupEntry, Chart, EmptyCharts } from '../charts.types'
+import { DeployableCharts, deployChartGroup, getChartProviderList } from '../charts.service'
+import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
 import { toast } from 'react-toastify'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
@@ -37,6 +38,8 @@ import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
+import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
+import ChartListPopUp from './ChartListPopUp'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -101,22 +104,44 @@ function DiscoverChartList() {
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
 
+    const [showSourcePopoUp, setShowSourcePopoUp] = useState<boolean>(false)
+    const [chartLists, setChartLists] = useState<ChartListType[]>([])
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
     const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
-
+    useEffect(() => {
+        getChartFilter()
+    }, [showSourcePopoUp])
 
     useEffect(() => {
         if (!state.loading) {
             resetPaginationOffset()
-            initialiseFromQueryParams(state.chartRepos);
+            initialiseFromQueryParams(chartRepos);
             callApplyFilterOnCharts(true);
             getGitOpsModuleInstalledAndConfigured()
 
         }
     }, [location.search, state.loading])
+
+
+    const getChartFilter = async () => {
+        setIsLoading(true)
+        try {
+            const [{ result: chartRepoListResp }] = await Promise.all([getChartProviderList()])
+            let chartRepos = chartRepoListResp || []
+            chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
+            setChartLists(chartRepos)
+            setFilteredChartList(chartRepos)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     async function getGitOpsModuleInstalledAndConfigured(){
         await isGitOpsModuleInstalledAndConfigured().then((response) => {
@@ -207,7 +232,7 @@ function DiscoverChartList() {
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
         let selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList.find((item) => item.value === chartRepoIdArray[i])
+            let chartRepo = chartRepoList.find((item) => +item.value === chartRepoIdArray[i])
             if (chartRepo) selectedRepos.push(chartRepo)
         }
         if (selectedRepos) setSelectedChartRepo(selectedRepos)
@@ -267,20 +292,45 @@ function DiscoverChartList() {
                 </span>
             )
         }
+
+    const onChangeShowSourcePopup = () => {
+        setShowSourcePopoUp(true)
+    }
+
+    const toggleChartListPopUp = (): void => {
+        setShowSourcePopoUp(!setShowSourcePopoUp)
+    }
+
         return (
-            <div className="m-0 flex left ">
-                {state.charts.length > 0 && (
-                    <>
-                        <NavLink to={match.url} className="dc__devtron-breadcrumb__item">
-                            <span className="cb-5 fs-16 cursor">Discover </span>
-                        </NavLink>
-                        <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
-                    </>
-                )}
-                <span className="fs-16 cn-9">
-                    {state.charts.length === 0 ? 'Chart Store' : 'Deploy multiple charts'}
-                </span>
-            </div>
+            <>
+                <div className="m-0 flex left ">
+                    {state.charts.length > 0 && (
+                        <>
+                            <NavLink to={match.url} className="dc__devtron-breadcrumb__item">
+                                <span className="cb-5 fs-16 cursor">Discover </span>
+                            </NavLink>
+                            <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
+                        </>
+                    )}
+                    <span className="fs-16 cn-9">
+                        {state.charts.length === 0 ? (
+                            <>
+                                Chart Store
+                                <button
+                                    className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16"
+                                    onClick={onChangeShowSourcePopup}
+                                >
+                                    <SourceIcon className="mr-4" />
+                                    <span className="fs-12">Source</span>
+                                </button>
+                            </>
+                        ) : (
+                            'Deploy multiple charts'
+                        )}
+                    </span>
+                </div>
+                <div>{showSourcePopoUp && <ChartListPopUp onClose={toggleChartListPopUp} chartList={chartLists} filteredChartList={filteredChartList} setFilteredChartList={setFilteredChartList} isLoading={isLoading} />}</div>
+            </>
         )
     }
 
@@ -291,6 +341,17 @@ function DiscoverChartList() {
     const clearSearch = (): void => {
         history.push(url)
     }
+
+    const chartRepos = chartLists
+        .filter((chartRepo) => chartRepo.active)
+        .map((chartRepo) => {
+            return {
+                value: chartRepo.id,
+                label: chartRepo.name,
+                isOCIRegistry: chartRepo.isOCIRegistry,
+            }
+        })
+        .sort(sortOptionsByLabel)
 
     return (
         <>
@@ -307,7 +368,7 @@ function DiscoverChartList() {
                     <div className="discover-charts__body">
                         {typeof state.configureChartIndex != 'number' && noChartAvailable && (
                             <ChartHeaderFilter
-                                chartRepoList={state.chartRepos}
+                                chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
                                 searchApplied={searchApplied}
                                 appStoreName={appStoreName}
