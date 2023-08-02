@@ -98,7 +98,11 @@ export default function GitProvider({ ...props }) {
         }
     }, [])
     if (!props.isSuperAdmin) {
-        return <ErrorScreenNotAuthorized />
+        return (
+            <div className="dc__align-reload-center">
+                <ErrorScreenNotAuthorized />
+            </div>
+        )
     }
     if (isPageLoading) {
         return <Progressing pageLoader />;
