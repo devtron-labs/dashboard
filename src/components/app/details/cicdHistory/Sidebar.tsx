@@ -107,9 +107,9 @@ const Sidebar = React.memo(
                     />
                 </div>
 
-                {singleView && <ViewAllCardsTile />}
-
                 <div className="flex column top left" style={{ overflowY: 'auto' }}>
+                    {singleView && <ViewAllCardsTile />}
+
                     {Array.from(triggerHistory)
                         .sort(([a], [b]) => b - a)
                         .map(([triggerId, triggerDetails], index) => (
