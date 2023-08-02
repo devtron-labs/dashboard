@@ -16,6 +16,8 @@ import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-co
 import {
     AppGroupList,
     CIConfigListType,
+    CheckPermissionResponse,
+    CheckPermissionType,
     ConfigAppListType,
     EnvAppType,
     EnvDeploymentStatusType,
@@ -205,6 +207,10 @@ export const createEnvGroup = (envId: string, data: EnvGroupListType, isEdit: bo
         return put(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
     }
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
+}
+
+export const appGroupPermission = (envId: string, data: CheckPermissionType): Promise<CheckPermissionResponse> => {
+    return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${Routes.PERMISSION}`, data)
 }
 
 export const deleteEnvGroup = (envId: string, groupId: string): Promise<EnvGroupResponse> => {

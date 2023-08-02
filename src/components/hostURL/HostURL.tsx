@@ -147,7 +147,11 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
 
     render() {
         if (!this.props.isSuperAdmin) {
-            return <ErrorScreenNotAuthorized />
+            return (
+                <div className="dc__align-reload-center">
+                    <ErrorScreenNotAuthorized />
+                </div>
+            )
         }
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
