@@ -306,7 +306,9 @@ export default function CIPipeline({
                 setGlobalVariables(_globalVariableOptions || [])
             })
             .catch((error: ServerErrors) => {
-                showError(error)
+                if (error.code !== 403) {
+                    showError(error)
+                }
             })
     }
 
