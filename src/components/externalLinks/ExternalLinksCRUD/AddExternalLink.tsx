@@ -461,7 +461,7 @@ export default function AddExternalLink({
                 </div>
                 <hr className="modal__divider mt-0 mb-0" />
                 <div className="modal__buttons">
-                    <button className="cta" onClick={saveLinks} disabled={savingLinks} data-testid="save-link-button">
+                    <button className="cta lh-36 h-36" onClick={saveLinks} disabled={savingLinks} data-testid="save-link-button">
                         {savingLinks ? <Progressing /> : 'Save'}
                     </button>
                 </div>

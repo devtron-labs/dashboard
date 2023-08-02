@@ -6,7 +6,7 @@
         height: 100%;
         border-radius: 0;
         margin-top: 0;
-        padding: 16px 0;
+        padding: 0;
 
         .modal__divider {
             border: 0;
@@ -24,7 +24,8 @@
         }
 
         .modal__header {
-            padding: 0 20px 16px;
+            height: 49px;
+            padding: 12px 20px;
             margin: 0;
 
             h1 {
@@ -35,7 +36,7 @@
         .modal__content {
             display: grid;
             grid-template-columns: 1fr 279px;
-            height: calc(100% - 112px);
+            height: calc(100% - 110px);
 
             .configure-link-action-container,
             .configure-link-info-container {
@@ -237,7 +238,7 @@
         .modal__buttons {
             display: flex;
             justify-content: flex-end;
-            padding: 16px 20px;
+            padding: 12px 20px;
         }
     }
 
