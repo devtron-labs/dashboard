@@ -101,6 +101,9 @@ const Sidebar = React.memo(
                         menuPortalTarget={document.body}
                     />
                 </div>
+
+                <ViewAllCardsTile />
+
                 <div className="flex column top left" style={{ overflowY: 'auto' }}>
                     {Array.from(triggerHistory)
                         .sort(([a], [b]) => b - a)
@@ -303,3 +306,60 @@ const SummaryTooltipCard = React.memo(
         )
     },
 )
+
+const ViewAllCardsTile = (): JSX.Element => {
+    return (
+        <div
+            style={{
+                display: 'flex',
+                padding: '12px 16px',
+                alignItems: 'center',
+                gap: '12px',
+                alignSelf: 'stretch',
+                background: 'var(--n-0, #FFF)',
+            }}
+        >
+            <button
+                style={{
+                    cursor: 'pointer',
+                    padding: '0',
+                    border: 'none',
+                    background: 'none',
+                    height: '16px',
+                    width: '16px',
+                }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                        d="M13.5 8H2.5M2.5 8L7 3.5M2.5 8L7 12.5"
+                        stroke="#596168"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                </svg>
+            </button>
+
+            <div
+                style={{
+                    flex: '1 0 0',
+                }}
+            >
+                <p
+                    style={{
+                        color: 'var(--n-900, #000A14)',
+                        fontFamily: 'Open Sans',
+                        fontSize: '13px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '20px',
+                        display: 'table-cell',
+                        verticalAlign: 'middle',
+                    }}
+                >
+                    View all items in history
+                </p>
+            </div>
+        </div>
+    )
+}
