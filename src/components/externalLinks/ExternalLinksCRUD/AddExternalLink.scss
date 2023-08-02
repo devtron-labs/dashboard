@@ -84,7 +84,7 @@
 
                 .configure-link-action-wrapper {
                     display: grid;
-                    grid-template-columns: 40px auto 16px;
+                    grid-template-columns: 40px 604px 16px;
                     column-gap: 12px;
 
                     .error-label {
@@ -104,6 +104,7 @@
                             flex-direction: column;
 
                             input {
+                                width: 604px;
                                 height: 36px;
                                 padding: 10px 6px;
                                 background-color: var(--N50);
@@ -138,6 +139,7 @@
                     flex-direction: column;
 
                     textarea {
+                        width: 604px;
                         min-height: 36px;
                         resize: vertical;
                         padding: 6px 8px;
