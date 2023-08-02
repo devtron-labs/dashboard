@@ -1407,6 +1407,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 location={this.props.location}
                                 match={this.props.match}
                                 getSearchedItem={this.getSearchedItem}
+                                isApplicationGroupTrigger={false}
                             />
                         )}
                     </div>

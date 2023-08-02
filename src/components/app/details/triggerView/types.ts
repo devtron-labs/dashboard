@@ -71,6 +71,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     getSearchedItem?: (searchedItems?: any[]) => void
+    isApplicationGroupTrigger?: boolean
 }
 
 export enum DeploymentWithConfigType {
