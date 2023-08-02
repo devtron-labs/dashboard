@@ -39,7 +39,7 @@
         padding: 16px 0 0 0;
         border-right: 1px solid var(--N200);
         display: grid;
-        grid-template-rows: 80px 1fr;
+        grid-template-rows: 80px 44px 1fr;
         overflow: hidden;
         flex-basis: 280px;
         transition: flex-basis 0.3s;
@@ -409,13 +409,13 @@
     padding: 4px 8px;
     width: fit-content;
     height: 24px;
-    border: 1px dashed #B1B7BC;
+    border: 1px dashed #b1b7bc;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.image-tags-container{
-    .image-tags-container-edit__icon{
+.image-tags-container {
+    .image-tags-container-edit__icon {
         display: none;
     }
 
@@ -426,7 +426,7 @@
 
 .image-tag-parent-card {
     &:hover {
-        .image-tags-container{
+        .image-tags-container {
             background-color: var(--N50);
         }
         .image-tags-container-edit__icon {
