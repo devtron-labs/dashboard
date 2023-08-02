@@ -30,6 +30,7 @@ import './ConfigMapSecret.scss'
 import { getSecretKeys, unlockEnvSecret } from './service'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -425,6 +426,49 @@ export function ProtectedConfigMapSecretDetails({
         update()
     }
 
+    const renderApproveButton = (): JSX.Element => {
+        if (draftData.draftState !== 4 || !ApproveRequestTippy) {
+            return null
+        } else {
+            return (
+                <div className="flex right pr-16 pb-16 pl-16">
+                    {draftData.canApprove ? (
+                        <ApproveRequestTippy
+                            draftId={draftData.draftId}
+                            draftVersionId={draftData.draftVersionId}
+                            resourceName={componentType}
+                            reload={reload}
+                            envName={parentName}
+                        >
+                            <button
+                                data-testid="approve-config-button"
+                                type="button"
+                                className="cta dc__bg-g5 m-0-imp h-32 lh-20-imp p-6-12-imp"
+                            >
+                                Approve changes
+                            </button>
+                        </ApproveRequestTippy>
+                    ) : (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top-end"
+                            content="You have made changes to this file. Users who have edited cannot approve the changes."
+                        >
+                            <button
+                                data-testid="approve-config-button"
+                                type="button"
+                                className="cta dc__bg-g5 approval-config-disabled m-0-imp h-32 lh-20-imp p-6-12-imp"
+                            >
+                                Approve changes
+                            </button>
+                        </Tippy>
+                    )}
+                </div>
+            )
+        }
+    }
+
     const renderDiffView = (): JSX.Element => {
         if (isLoader) {
             return (
@@ -451,21 +495,7 @@ export function ProtectedConfigMapSecretDetails({
                     isDeleteDraft={draftData.action === 3}
                     rootClassName="dc__no-top-radius mt-0-imp"
                 />
-                {draftData.draftState === 4 && draftData.canApprove && ApproveRequestTippy && (
-                    <div className="flex right pr-16 pb-16 pl-16">
-                        <ApproveRequestTippy
-                            draftId={draftData.draftId}
-                            draftVersionId={draftData.draftVersionId}
-                            resourceName={componentType}
-                            reload={reload}
-                            envName={parentName}
-                        >
-                            <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
-                                Approve changes
-                            </button>
-                        </ApproveRequestTippy>
-                    </div>
-                )}
+                {renderApproveButton()}
             </>
         )
     }
