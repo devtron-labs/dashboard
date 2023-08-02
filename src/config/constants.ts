@@ -235,6 +235,7 @@ export const Routes = {
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
+    PERMISSION: 'permission/check',
 }
 
 export const ViewType = {
