@@ -20,7 +20,7 @@ import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg';
+import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -37,6 +37,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
+    const [fetchBuildIdData, setFetchBuildIdData] = useState<boolean>(null)
+
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
@@ -51,12 +53,20 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         [pipelineId, pagination],
         !!pipelineId,
     )
+
     const { path } = useRouteMatch()
     const { push, replace } = useHistory()
-    useInterval(pollHistory, 30000)
+    const stopPolling = !pipelineId || fetchBuildIdData || fetchBuildIdData === null
+
+    useInterval(() => {
+        pollHistory(stopPolling)
+    }, 30000)
 
     useEffect(() => {
         if (!triggerHistoryResult?.result?.ciWorkflows) {
+            return
+        }
+        if (fetchBuildIdData) {
             return
         }
         if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
@@ -70,6 +80,12 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+
+        if (buildId && !newTriggerHistory.has(+buildId)) {
+            setFetchBuildIdData(true)
+            newTriggerHistory.clear()
+        }
+
         setTriggerHistory(new Map(newTriggerHistory))
     }, [triggerHistoryResult])
 
@@ -89,8 +105,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         }
     }
 
-    async function pollHistory() {
-        if (!pipelineId) return
+    async function pollHistory(stopPolling: boolean) {
+        if (stopPolling) return
+
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -139,6 +156,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
+                            singleView={fetchBuildIdData}
                         />
                     </div>
                 )}
@@ -154,7 +172,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                     ) : (
                         pipeline && (
                             <>
-                                {triggerHistory.size > 0 ? (
+                                {triggerHistory.size > 0 || fetchBuildIdData ? (
                                     <Route
                                         path={`${path
                                             .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
@@ -172,9 +190,11 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
                                             isJobView={isJobView}
-                                            tagsEditable = {triggerHistoryResult?.result?.tagsEditable}
-                                            appReleaseTags = {triggerHistoryResult?.result?.appReleaseTagNames}
-                                            hideImageTaggingHardDelete = {triggerHistoryResult?.result?.hideImageTaggingHardDelete}
+                                            tagsEditable={triggerHistoryResult?.result?.tagsEditable}
+                                            appReleaseTags={triggerHistoryResult?.result?.appReleaseTagNames}
+                                            hideImageTaggingHardDelete={
+                                                triggerHistoryResult?.result?.hideImageTaggingHardDelete
+                                            }
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -236,8 +256,8 @@ export const Details = ({
         if (triggerDetailsLoading || triggerDetailsError) return
         const triggerHistoryWithTags = {
             ...triggerDetailsResult?.result,
-            imageComment: triggerDetails.imageComment,
-            imageReleaseTags: triggerDetails.imageReleaseTags,
+            imageComment: triggerDetailsResult?.result.imageComment,
+            imageReleaseTags: triggerDetailsResult?.result.imageReleaseTags,
         }
         if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerHistoryWithTags)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
@@ -340,7 +360,7 @@ export const Details = ({
                 isBlobStorageConfigured={isBlobStorageConfigured}
                 isJobView={isJobView}
                 appIdFromParent={appIdFromParent}
-                appReleaseTags = {appReleaseTags}
+                appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
             />
@@ -348,7 +368,15 @@ export const Details = ({
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent, appReleaseTags, tagsEditable, hideImageTaggingHardDelete}: HistoryLogsType) => {
+const HistoryLogs = ({
+    triggerDetails,
+    isBlobStorageConfigured,
+    isJobView,
+    appIdFromParent,
+    appReleaseTags,
+    tagsEditable,
+    hideImageTaggingHardDelete,
+}: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -386,7 +414,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
                         imageComment={triggerDetails.imageComment}
-                        imageReleaseTags ={triggerDetails.imageReleaseTags}
+                        imageReleaseTags={triggerDetails.imageReleaseTags}
                         ciPipelineId={triggerDetails.ciPipelineId}
                         artifactId={triggerDetails.artifactId}
                         tagsEditable={tagsEditable}
@@ -416,7 +444,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
         </div>
     )
 }
-export function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
+export function NoVulnerabilityViewWithTool({ scanToolId }: { scanToolId: number }) {
     return (
         <div className="flex h-100 dc__position-rel">
             <GenericEmptyState
@@ -516,9 +544,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
             return <ImageNotScannedView />
         }
     } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId}/>
+        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId} />
     }
-    const scanToolId= securityData.ScanToolId
+    const scanToolId = securityData.ScanToolId
 
     return (
         <>
@@ -543,7 +571,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                         <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type flex">
-                        <ScannedByToolModal scanToolId={scanToolId}/>
+                        <ScannedByToolModal scanToolId={scanToolId} />
                     </div>
                 </div>
                 {isCollapsed ? (

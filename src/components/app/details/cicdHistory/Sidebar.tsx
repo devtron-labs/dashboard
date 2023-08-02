@@ -23,107 +23,109 @@ import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
 
-const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
-    const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
-    const { push } = useHistory()
-    const { path } = useRouteMatch()
+const Sidebar = React.memo(
+    ({ type, filterOptions, triggerHistory, hasMore, setPagination, singleView }: SidebarType) => {
+        const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
+        const { push } = useHistory()
+        const { path } = useRouteMatch()
 
-    const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
-        if (type === HistoryComponentType.CI) {
-            setPagination({ offset: 0, size: 20 })
-            push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
-        } else if (type === HistoryComponentType.GROUP_CI) {
-            setPagination({ offset: 0, size: 20 })
-            push(generatePath(path, { envId, pipelineId: selectedFilter.pipelineId }))
-        } else if (type === HistoryComponentType.GROUP_CD) {
-            setPagination({ offset: 0, size: 20 })
-            push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
-        } else {
-            setPagination({ offset: 0, size: 20 })
-            push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
+        const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
+            if (type === HistoryComponentType.CI) {
+                setPagination({ offset: 0, size: 20 })
+                push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
+            } else if (type === HistoryComponentType.GROUP_CI) {
+                setPagination({ offset: 0, size: 20 })
+                push(generatePath(path, { envId, pipelineId: selectedFilter.pipelineId }))
+            } else if (type === HistoryComponentType.GROUP_CD) {
+                setPagination({ offset: 0, size: 20 })
+                push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
+            } else {
+                setPagination({ offset: 0, size: 20 })
+                push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
+            }
         }
-    }
-    function reloadNextAfterBottom() {
-        ReactGA.event({
-            category: 'pagination',
-            action: 'scroll',
-            label: `${type.toLowerCase()}-history`,
-            value: triggerHistory.size,
-        })
-        setPagination({ offset: triggerHistory.size, size: 20 })
-    }
-
-    const filterOptionType = () => {
-        if (type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) {
-            return pipelineId
-        } else if (type === HistoryComponentType.GROUP_CD) {
-            return appId
-        } else {
-            return envId
+        function reloadNextAfterBottom() {
+            ReactGA.event({
+                category: 'pagination',
+                action: 'scroll',
+                label: `${type.toLowerCase()}-history`,
+                value: triggerHistory.size,
+            })
+            setPagination({ offset: triggerHistory.size, size: 20 })
         }
-    }
 
-    const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType()) ?? null
-    filterOptions?.sort((a, b) => (a.label > b.label ? 1 : -1))
-    const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest)
-
-    const selectLabel = () => {
-        if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD) {
-            return HISTORY_LABEL.APPLICATION
-        } else if (type === HistoryComponentType.CI) {
-            return HISTORY_LABEL.PIPELINE
-        } else {
-            return HISTORY_LABEL.ENVIRONMENT
+        const filterOptionType = () => {
+            if (type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) {
+                return pipelineId
+            } else if (type === HistoryComponentType.GROUP_CD) {
+                return appId
+            } else {
+                return envId
+            }
         }
-    }
-    return (
-        <>
-            <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
-                <label className="form__label" data-testid="select-history-heading">
-                    Select {selectLabel()}
-                </label>
-                <ReactSelect
-                    classNamePrefix="history-pipeline-dropdown"
-                    value={selectedFilter}
-                    options={
-                        type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
-                            ? filterOptions
-                            : _filterOptions
-                    }
-                    onChange={handleFilterChange}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    styles={FILTER_STYLE}
-                    menuPortalTarget={document.body}
-                />
-            </div>
-            <div className="flex column top left" style={{ overflowY: 'auto' }}>
-                {Array.from(triggerHistory)
-                    .sort(([a], [b]) => b - a)
-                    .map(([triggerId, triggerDetails], index) => (
-                        <HistorySummaryCard
-                            dataTestId={`deployment-history-${index}`}
-                            key={triggerId}
-                            id={triggerId}
-                            status={triggerDetails.status}
-                            startedOn={triggerDetails.startedOn}
-                            triggeredBy={triggerDetails.triggeredBy}
-                            triggeredByEmail={triggerDetails.triggeredByEmail}
-                            ciMaterials={triggerDetails.ciMaterials}
-                            gitTriggers={triggerDetails.gitTriggers}
-                            artifact={triggerDetails.artifact}
-                            stage={triggerDetails.stage}
-                            type={type}
-                        />
-                    ))}
-                {hasMore && <DetectBottom callback={reloadNextAfterBottom} />}
-            </div>
-        </>
-    )
-})
+
+        const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType()) ?? null
+        filterOptions?.sort((a, b) => (a.label > b.label ? 1 : -1))
+        const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest)
+
+        const selectLabel = () => {
+            if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD) {
+                return HISTORY_LABEL.APPLICATION
+            } else if (type === HistoryComponentType.CI) {
+                return HISTORY_LABEL.PIPELINE
+            } else {
+                return HISTORY_LABEL.ENVIRONMENT
+            }
+        }
+        return (
+            <>
+                <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
+                    <label className="form__label" data-testid="select-history-heading">
+                        Select {selectLabel()}
+                    </label>
+                    <ReactSelect
+                        classNamePrefix="history-pipeline-dropdown"
+                        value={selectedFilter}
+                        options={
+                            type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
+                                ? filterOptions
+                                : _filterOptions
+                        }
+                        onChange={handleFilterChange}
+                        components={{
+                            IndicatorSeparator: null,
+                            DropdownIndicator,
+                            Option,
+                        }}
+                        styles={FILTER_STYLE}
+                        menuPortalTarget={document.body}
+                    />
+                </div>
+                <div className="flex column top left" style={{ overflowY: 'auto' }}>
+                    {Array.from(triggerHistory)
+                        .sort(([a], [b]) => b - a)
+                        .map(([triggerId, triggerDetails], index) => (
+                            <HistorySummaryCard
+                                dataTestId={`deployment-history-${index}`}
+                                key={triggerId}
+                                id={triggerId}
+                                status={triggerDetails.status}
+                                startedOn={triggerDetails.startedOn}
+                                triggeredBy={triggerDetails.triggeredBy}
+                                triggeredByEmail={triggerDetails.triggeredByEmail}
+                                ciMaterials={triggerDetails.ciMaterials}
+                                gitTriggers={triggerDetails.gitTriggers}
+                                artifact={triggerDetails.artifact}
+                                stage={triggerDetails.stage}
+                                type={type}
+                            />
+                        ))}
+                    {hasMore && !singleView && <DetectBottom callback={reloadNextAfterBottom} />}
+                </div>
+            </>
+        )
+    },
+)
 
 export default Sidebar
 
