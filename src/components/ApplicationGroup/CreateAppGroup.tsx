@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import {
     Checkbox,
     CHECKBOX_VALUE,
+    ConditionalWrap,
     Drawer,
     Progressing,
     showError,
@@ -10,14 +11,16 @@ import {
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
-import { CreateGroupType } from './AppGroup.types'
+import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
+import { CreateGroupType, CreateTypeOfAppListType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
 import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 
-export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }: CreateGroupType) {
+export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, unAuthorizedApps }: CreateGroupType) {
     const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
@@ -31,6 +34,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
     const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
     const [selectedAppsMap, setSelectedAppsMap] = useState<Record<string, boolean>>({})
     const [selectedAppsCount, setSelectedAppsCount] = useState<number>(0)
+    const [unauthorizedAppList, setUnauthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
+    const [authorizedAppList, setAuthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
 
     const outsideClickHandler = (evt): void => {
         if (
@@ -60,6 +65,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                 }
             }
             setSelectedAppsMap(_selectedAppsMap)
+            appFilterList()
             setSelectedAppsCount(_selectedAppsCount)
         }
     }, [appList])
@@ -95,8 +101,19 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         if (_selectedAppsMap[e.currentTarget.dataset.appId]) {
             delete _selectedAppsMap[e.currentTarget.dataset.appId]
             setSelectedAppsMap(_selectedAppsMap)
+            appFilterAuthorizedList()
             setSelectedAppsCount(selectedAppsCount - 1)
         }
+    }
+
+    const appFilterAuthorizedList = () => {
+        let _authorizedApp = []
+        appList.forEach((app) => {
+            if(!unAuthorizedApps.get(app.appName)) {
+                _authorizedApp.push({id: app.id, appName: app.appName})
+            }
+        })
+        setAuthorizedAppList(_authorizedApp)
     }
 
     const toggleAppSelection = (appId: string): void => {
@@ -110,7 +127,20 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
             _selectedAppsCount -= 1
         }
         setSelectedAppsMap(_selectedAppsMap)
+        appFilterAuthorizedList()
         setSelectedAppsCount(_selectedAppsCount)
+    }
+
+    const appFilterList = () => {
+        let _authorizedAppList = []
+        let _unauthorizedAppList = []
+        appList.forEach((app) =>{
+                unAuthorizedApps.get(app.appName) ?
+                _unauthorizedAppList.push({id: app.id, appName: app.appName})
+             : _authorizedAppList.push({id: app.id, appName: app.appName})
+            })
+        setUnauthorizedAppList(_unauthorizedAppList)
+        setAuthorizedAppList(_authorizedAppList)
     }
 
     const renderSelectedApps = (): JSX.Element => {
@@ -124,24 +154,55 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {appList
+                    {authorizedAppList
                         .filter(
                             (app) =>
                                 selectedAppsMap[app.id] &&
                                 (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
-                        .map((app) => (
-                            <div
-                                key={`selected-app-${app.id}`}
-                                className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
-                                data-app-id={app.id}
-                                onClick={removeAppSelection}
-                            >
-                                <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
-                                <Close className="icon-dim-16 cursor delete-icon mr-8" />
-                                <span>{app.appName}</span>
-                            </div>
-                        ))}
+                        .map((app) => {
+                            return (
+                                <div
+                                    key={`selected-app-${app.id}`}
+                                    className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
+                                    data-app-id={app.id}
+                                    onClick={removeAppSelection}
+                                >
+                                    <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
+                                    <Close className="icon-dim-16 cursor delete-icon mr-8" />
+                                    <span>{app.appName}</span>
+                                </div>
+                            )
+                        })}
+                    {unauthorizedAppList.length > 0 && (
+                        <div className="dc__bold ml-4">
+                            You don't have admin/manager pemission for the following Application.
+                        </div>
+                    )}
+                    {unauthorizedAppList
+                        .filter(
+                            (app) =>
+                                selectedAppsMap[app.id] &&
+                                (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
+                        )
+                        .map((app) => {
+                            return (
+                                <Tippy
+                                    key={`selected-app-${app.id}`}
+                                    className="default-tt w-200"
+                                    arrow={false}
+                                    placement="bottom-start"
+                                    content="You don't have admin/manager pemission for this app."
+                                >
+                                    <div>
+                                        <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
+                                            <Abort className="mr-8" />
+                                            <span>{app.appName}</span>
+                                        </div>
+                                    </div>
+                                </Tippy>
+                            )
+                        })}
                 </div>
             </div>
         )
@@ -161,15 +222,32 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                     {appList
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
-                            <Checkbox
-                                key={`app-${app.id}`}
-                                rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
-                                isChecked={selectedAppsMap[app.id]}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={() => toggleAppSelection(app.id)}
+                            <ConditionalWrap
+                                condition={unAuthorizedApps.get(app.appName) === true}
+                                wrap={(children) => (
+                                    <Tippy
+                                        key={`selected-app-${app.id}`}
+                                        data-testid="env-tippy"
+                                        className="default-tt w-200"
+                                        arrow={false}
+                                        placement="bottom-start"
+                                        content="You don't have admin/manager pemission for this app."
+                                    >  
+                                        <div>{children}</div>
+                                    </Tippy>
+                                )}
                             >
-                                {app.appName}
-                            </Checkbox>
+                                <Checkbox
+                                    key={`app-${app.id}`}
+                                    rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
+                                    isChecked={unAuthorizedApps.get(app.appName) ? false : selectedAppsMap[app.id]}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    onChange={() => toggleAppSelection(app.id)}
+                                    disabled={unAuthorizedApps.get(app.appName) ? true : false}
+                                >
+                                    {app.appName}
+                                </Checkbox>
+                            </ConditionalWrap>
                         ))}
                 </div>
             </div>
@@ -259,7 +337,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         )
     }
 
-    const handleSave = async (e): Promise<void> => {
+    const handleSave = async (e): Promise<void> => { 
         e.preventDefault()
         if (!appGroupName || appGroupDescription?.length > 50) {
             return
@@ -273,12 +351,25 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
+        
+        let appListIds = []
+        appList.forEach((element) => {
+            if (!unAuthorizedApps.get(element.appName)) {
+                appListIds.push(+element.id)
+            }
+        })
+        const payloadAppIds = _selectedAppIds.filter((app) => {
+            if (appListIds.includes(app)) {
+                return true
+            }
+            return false
+        })
 
         const payload = {
             id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,
             description: appGroupDescription,
-            appIds: _selectedAppIds,
+            appIds: payloadAppIds,
         }
 
         try {
