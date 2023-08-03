@@ -132,6 +132,7 @@ export default function ConfigMapList({
                         isJobView={isJobView}
                         isProtected={isProtected}
                         toggleDraftComments={toggleDraftComments}
+                        reduceOpacity={!!selectedDraft}
                     />
                     <div>
                         {configMap?.configData.map((cm, idx) => {

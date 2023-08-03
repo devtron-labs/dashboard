@@ -165,6 +165,7 @@ export default function SecretList({
                         isJobView={isJobView}
                         isProtected={isProtected}
                         toggleDraftComments={toggleDraftComments}
+                        reduceOpacity={!!selectedDraft}
                     />
                     <div>
                         {list?.configData?.map((cs, idx) => (
