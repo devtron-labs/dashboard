@@ -155,8 +155,9 @@ export interface SidebarType {
     triggerHistory: Map<number, History>
     hasMore: boolean
     setPagination: React.Dispatch<React.SetStateAction<{ offset: number; size: number }>>
-    fetchingIdData?: FetchIdDataStatus
+    fetchIdData?: FetchIdDataStatus
     setFetchIdData?: React.Dispatch<React.SetStateAction<FetchIdDataStatus>>
+    handleViewAllHistory?: () => void
 }
 
 export interface HistorySummaryCardType {

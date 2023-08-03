@@ -25,7 +25,16 @@ import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
 
 const Sidebar = React.memo(
-    ({ type, filterOptions, triggerHistory, hasMore, setPagination, fetchingIdData, setFetchIdData }: SidebarType) => {
+    ({
+        type,
+        filterOptions,
+        triggerHistory,
+        hasMore,
+        setPagination,
+        fetchIdData,
+        setFetchIdData,
+        handleViewAllHistory,
+    }: SidebarType) => {
         const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
         const { push } = useHistory()
         const { path } = useRouteMatch()
@@ -44,6 +53,7 @@ const Sidebar = React.memo(
                 setPagination({ offset: 0, size: 20 })
                 push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
             }
+            setFetchIdData(null)
         }
         function reloadNextAfterBottom() {
             ReactGA.event({
@@ -109,8 +119,8 @@ const Sidebar = React.memo(
                 </div>
 
                 <div className="flex column top left" style={{ overflowY: 'auto' }}>
-                    {fetchingIdData === FetchIdDataStatus.SUCCESS && (
-                        <ViewAllCardsTile setFetchIdData={setFetchIdData} />
+                    {fetchIdData === FetchIdDataStatus.SUCCESS && (
+                        <ViewAllCardsTile handleViewAllHistory={handleViewAllHistory} />
                     )}
 
                     {Array.from(triggerHistory)
@@ -131,7 +141,7 @@ const Sidebar = React.memo(
                                 type={type}
                             />
                         ))}
-                    {hasMore && (fetchingIdData === FetchIdDataStatus.SUSPEND || !fetchingIdData) && (
+                    {hasMore && (fetchIdData === FetchIdDataStatus.SUSPEND || !fetchIdData) && (
                         <DetectBottom callback={reloadNextAfterBottom} />
                     )}
                 </div>
@@ -317,20 +327,7 @@ const SummaryTooltipCard = React.memo(
     },
 )
 
-const ViewAllCardsTile = ({
-    setFetchIdData,
-}: {
-    setFetchIdData: React.Dispatch<React.SetStateAction<FetchIdDataStatus>>
-}): JSX.Element => {
-    const { push } = useHistory()
-    const location = useLocation()
-
-    const handleViewAllHistory = () => {
-        setFetchIdData(FetchIdDataStatus.SUSPEND)
-        const path = location.pathname.split('/').slice(0, 4).join('/')
-        push(path)
-    }
-
+const ViewAllCardsTile = ({ handleViewAllHistory }: { handleViewAllHistory: () => void }): JSX.Element => {
     return (
         <div
             style={{

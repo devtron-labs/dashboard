@@ -129,6 +129,14 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         setTriggerHistory(mapByKey(result?.result?.ciWorkflows || [], 'id'))
     }
 
+    const handleViewAllHistory = () => {
+        if (triggerHistoryResult?.result?.ciWorkflows) {
+            setTriggerHistory(new Map(mapByKey(triggerHistoryResult.result.ciWorkflows, 'id')))
+        }
+        setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+        replace(generatePath(path, { appId, pipelineId }))
+    }
+
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
     } else if (!buildId && triggerHistory.size > 0) {
@@ -167,8 +175,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
-                            fetchingIdData={fetchBuildIdData}
+                            fetchIdData={fetchBuildIdData}
                             setFetchIdData={setFetchBuildIdData}
+                            handleViewAllHistory={handleViewAllHistory}
                         />
                     </div>
                 )}
