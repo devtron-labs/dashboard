@@ -387,6 +387,10 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
         }
         return [...agg, { k, v, keyError, valueError }]
     }, [])
+     arr =arr.map(obj=>{
+        const val =obj.v.replace(/\n/g, '');
+        return {...obj, v: val};
+    })
     return { isValid, arr }
 }
 
