@@ -114,6 +114,8 @@ export const deploymentConfigReducer = (
             return { ...state, showComments: !state.showComments }
         case DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal:
             return { ...state, showDeleteOverrideDraftModal: !state.showDeleteOverrideDraftModal }
+        case DeploymentConfigStateActionTypes.publishedState:
+            return { ...state, publishedState: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

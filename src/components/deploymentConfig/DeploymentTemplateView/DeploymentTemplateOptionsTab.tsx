@@ -37,6 +37,14 @@ export default function DeploymentTemplateOptionsTab({
         })
     }
 
+    const onChangeEditorMode = (e) => {
+        if ((e.target.value === 'yaml' && state.yamlMode) || (e.target.value === 'gui' && !state.yamlMode)) {
+            return
+        } else {
+            changeEditorMode()
+        }
+    }
+
     return (
         <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16">
             <div className="flex">
@@ -54,17 +62,15 @@ export default function DeploymentTemplateOptionsTab({
                     <RadioGroup
                         className="gui-yaml-switch pl-16"
                         name="yaml-mode"
-                        initialTab={currentStateValues.yamlMode ? 'yaml' : 'gui'}
+                        initialTab={state.yamlMode ? 'yaml' : 'gui'}
                         disabled={currentStateValues.isBasicLocked}
-                        onChange={changeEditorMode}
+                        onChange={onChangeEditorMode}
                     >
                         <RadioGroup.Radio
                             dataTestid="base-deployment-template-basic-button"
                             value="gui"
                             canSelect={
-                                !currentStateValues.chartConfigLoading &&
-                                !currentStateValues.isBasicLocked &&
-                                codeEditorValue
+                                !state.chartConfigLoading && !currentStateValues.isBasicLocked && codeEditorValue
                             }
                             isDisabled={currentStateValues.isBasicLocked}
                             showTippy={currentStateValues.isBasicLocked}
@@ -87,7 +93,7 @@ export default function DeploymentTemplateOptionsTab({
                             value="yaml"
                             canSelect={
                                 disableVersionSelect &&
-                                currentStateValues.chartConfigLoading &&
+                                state.chartConfigLoading &&
                                 codeEditorValue &&
                                 currentStateValues.basicFieldValuesErrorObj?.isValid
                             }

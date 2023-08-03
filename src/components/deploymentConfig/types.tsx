@@ -346,6 +346,7 @@ export enum DeploymentConfigStateActionTypes {
     reset = 'reset',
     toggleSaveChangesModal = 'toggleSaveChangesModal',
     allDrafts = 'allDrafts',
+    publishedState = 'publishedState',
     toggleDraftComments = 'toggleDraftComments',
     toggleDeleteOverrideDraftModal = 'toggleDeleteOverrideDraftModal',
     multipleOptions = 'multipleOptions',

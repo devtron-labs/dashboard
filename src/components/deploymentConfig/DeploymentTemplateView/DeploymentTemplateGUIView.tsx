@@ -12,7 +12,7 @@ import { DeploymentConfigContext } from '../DeploymentConfig'
 import Tippy from '@tippyjs/react'
 
 interface DeploymentTemplateGUIViewProps {
-    fetchingValues: boolean
+    fetchingValues?: boolean
     value: string
     readOnly: boolean
 }
@@ -21,9 +21,16 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
     const envVariableSectionRef = useRef(null)
     const { isUnSet, state, dispatch, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
+    const currentBasicFieldValues = readOnlyPublishedMode
+        ? state.publishedState.basicFieldValues
+        : state.basicFieldValues
+    const currentBasicFieldValuesErrorObj = readOnlyPublishedMode
+        ? state.publishedState.basicFieldValuesErrorObj
+        : state.basicFieldValuesErrorObj
 
     const handleIngressEnabledToggle = (): void => {
-        const _basicFieldValues = { ...state.basicFieldValues }
+        const _basicFieldValues = { ...currentBasicFieldValues }
         _basicFieldValues[BASIC_FIELDS.ENABLED] = !_basicFieldValues[BASIC_FIELDS.ENABLED]
         setBasicFieldValues(_basicFieldValues)
     }
@@ -59,7 +66,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
     }
 
     const handleInputChange = (e) => {
-        const _basicFieldValues = { ...state.basicFieldValues }
+        const _basicFieldValues = { ...currentBasicFieldValues }
         if (e.target.name === BASIC_FIELDS.PORT) {
             e.target.value = e.target.value.replace(/\D/g, '')
             _basicFieldValues[BASIC_FIELDS.PORT] = e.target.value && Number(e.target.value)
@@ -86,7 +93,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
 
     const addRow = (e): void => {
         if (readOnly) return
-        const _basicFieldValues = { ...state.basicFieldValues }
+        const _basicFieldValues = { ...currentBasicFieldValues }
         if (e.currentTarget.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
         } else {
@@ -94,7 +101,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
         }
         setBasicFieldValues(_basicFieldValues)
         if (e.currentTarget.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
-            const _basicFieldValuesErrorObj = { ...state.basicFieldValuesErrorObj }
+            const _basicFieldValuesErrorObj = { ...currentBasicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
             if (_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].length <= 2) {
@@ -107,7 +114,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
 
     const removeRow = (name: string, index: number): void => {
         if (readOnly) return
-        const _basicFieldValues = { ...state.basicFieldValues }
+        const _basicFieldValues = { ...currentBasicFieldValues }
         const _currentValue =
             name === BASIC_FIELDS.ENV_VARIABLES
                 ? _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES]
@@ -168,24 +175,25 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                 <input
                                     type="text"
                                     name={BASIC_FIELDS.PORT}
-                                    value={state.basicFieldValues?.[BASIC_FIELDS.PORT]}
+                                    value={currentBasicFieldValues?.[BASIC_FIELDS.PORT]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                     data-testid="containerport-textbox"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
                                     autoComplete="off"
                                 />
-                                {state.basicFieldValuesErrorObj?.port && !state.basicFieldValuesErrorObj.port.isValid && (
-                                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                                        <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{state.basicFieldValuesErrorObj.port.message}</span>
-                                    </span>
-                                )}
+                                {currentBasicFieldValuesErrorObj?.port &&
+                                    !currentBasicFieldValuesErrorObj.port.isValid && (
+                                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
+                                            <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
+                                            <span>{currentBasicFieldValuesErrorObj.port.message}</span>
+                                        </span>
+                                    )}
                             </div>
                         </div>
                         <div
                             className={`row-container ${
-                                state.basicFieldValues?.[BASIC_FIELDS.ENABLED] ? ' mb-8' : ' mb-16'
+                                currentBasicFieldValues?.[BASIC_FIELDS.ENABLED] ? ' mb-8' : ' mb-16'
                             }`}
                         >
                             <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
@@ -195,13 +203,13 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                 style={{ width: '32px', height: '20px' }}
                             >
                                 <Toggle
-                                    selected={state.basicFieldValues?.[BASIC_FIELDS.ENABLED]}
+                                    selected={currentBasicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleIngressEnabledToggle}
-                                    disabled={readOnly || state.basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
+                                    disabled={readOnly || currentBasicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
                                 />
                             </div>
                         </div>
-                        {state.basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
+                        {currentBasicFieldValues?.[BASIC_FIELDS.ENABLED] && (
                             <div className="mb-12">
                                 <div className="row-container mb-12">
                                     {renderLabel('Host', 'Host name')}
@@ -209,7 +217,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                         type="text"
                                         data-testid="httprequests-routes-host-textbox"
                                         name={BASIC_FIELDS.HOST}
-                                        value={state.basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
+                                        value={currentBasicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                         onChange={handleInputChange}
                                         readOnly={readOnly}
@@ -228,7 +236,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                         Add path
                                     </div>
                                 </div>
-                                {state.basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0]?.[BASIC_FIELDS.PATHS]?.map(
+                                {currentBasicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0]?.[BASIC_FIELDS.PATHS]?.map(
                                     (path: string, index: number) => (
                                         <div className="row-container mb-4" key={`${BASIC_FIELDS.PATH}-${index}`}>
                                             <div />
@@ -261,7 +269,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     data-testid="resources-cpu-textbox"
                                     name={BASIC_FIELDS.RESOURCES_CPU}
                                     value={
-                                        state.basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
+                                        currentBasicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
                                             BASIC_FIELDS.CPU
                                         ]
                                     }
@@ -270,10 +278,10 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     readOnly={readOnly}
                                     autoComplete="off"
                                 />
-                                {state.basicFieldValuesErrorObj?.cpu && !state.basicFieldValuesErrorObj.cpu.isValid && (
+                                {currentBasicFieldValuesErrorObj?.cpu && !currentBasicFieldValuesErrorObj.cpu.isValid && (
                                     <span className="flexbox cr-5 fw-5 fs-11 flexbox">
                                         <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                        <span>{state.basicFieldValuesErrorObj.cpu.message}</span>
+                                        <span>{currentBasicFieldValuesErrorObj.cpu.message}</span>
                                     </span>
                                 )}
                             </div>
@@ -286,7 +294,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     type="text"
                                     name={BASIC_FIELDS.RESOURCES_MEMORY}
                                     value={
-                                        state.basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
+                                        currentBasicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
                                             BASIC_FIELDS.MEMORY
                                         ]
                                     }
@@ -295,11 +303,11 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                     readOnly={readOnly}
                                     autoComplete="off"
                                 />
-                                {state.basicFieldValuesErrorObj?.memory &&
-                                    !state.basicFieldValuesErrorObj.memory.isValid && (
+                                {currentBasicFieldValuesErrorObj?.memory &&
+                                    !currentBasicFieldValuesErrorObj.memory.isValid && (
                                         <span className="flexbox cr-5 fw-5 fs-11 flexbox">
                                             <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
-                                            <span>{state.basicFieldValuesErrorObj.memory.message}</span>
+                                            <span>{currentBasicFieldValuesErrorObj.memory.message}</span>
                                         </span>
                                     )}
                             </div>
@@ -320,7 +328,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                 Add variable
                             </div>
                         </div>
-                        {state.basicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map(
+                        {currentBasicFieldValues?.[BASIC_FIELDS.ENV_VARIABLES]?.map(
                             (envVariable: string, index: number) => (
                                 <div className="row-container mb-4" key={`${BASIC_FIELDS.ENV_VARIABLES}-${index}`}>
                                     <div />
@@ -349,12 +357,12 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                                             readOnly={readOnly}
                                         ></textarea>
 
-                                        {state.basicFieldValuesErrorObj?.envVariables[index] &&
-                                            !state.basicFieldValuesErrorObj.envVariables[index].isValid && (
+                                        {currentBasicFieldValuesErrorObj?.envVariables[index] &&
+                                            !currentBasicFieldValuesErrorObj.envVariables[index].isValid && (
                                                 <span className="flexbox cr-5 fw-5 fs-11 flexbox">
                                                     <AlertTriangle className="icon-dim-14 mr-5 mt-2" />
                                                     <span>
-                                                        {state.basicFieldValuesErrorObj.envVariables[index].message}
+                                                        {currentBasicFieldValuesErrorObj.envVariables[index].message}
                                                     </span>
                                                 </span>
                                             )}
