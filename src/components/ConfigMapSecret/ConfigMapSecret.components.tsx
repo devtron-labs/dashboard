@@ -432,7 +432,7 @@ export function ProtectedConfigMapSecretDetails({
             return null
         } else {
             return (
-                <div className="flex right pr-16 pb-16 pl-16">
+                <div className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${draftData.canApprove? 'tippy-over':''}`}>
                     {draftData.canApprove ? (
                         <ApproveRequestTippy
                             draftId={draftData.draftId}

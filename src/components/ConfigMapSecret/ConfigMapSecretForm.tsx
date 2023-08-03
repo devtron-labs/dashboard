@@ -557,8 +557,8 @@ export const ConfigMapSecretForm = React.memo(
                         resourceType={componentType === 'secret' ? 2 : 1}
                         resourceName={state.configName.value}
                         latestDraft={latestDraftData}
-                        toggleDeleteModal={closeDeleteModal}
-                        reloadDrafts={reloadData}
+                        toggleModal={closeDeleteModal}
+                        reload={reloadData}
                     />
                 )
             }
@@ -595,8 +595,8 @@ export const ConfigMapSecretForm = React.memo(
                         resourceType={componentType === 'secret' ? 2 : 1}
                         resourceName={state.configName.value}
                         latestDraft={latestDraftData}
-                        toggleDeleteModal={closeDeleteModal}
-                        reloadDrafts={reloadData}
+                        toggleModal={closeDeleteModal}
+                        reload={reloadData}
                     />
                 )
             }
