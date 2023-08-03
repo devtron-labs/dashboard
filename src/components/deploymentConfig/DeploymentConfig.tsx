@@ -181,7 +181,7 @@ export default function DeploymentConfig({
                     tempFormData: YAML.stringify(valuesOverride, null),
                     draftValues: YAML.stringify(valuesOverride, null),
                     latestDraft: draftResp.result,
-                    selectedTabIndex: draftResp.result?.draftState === 4 ? 2 : 3,
+                    // selectedTabIndex: draftResp.result?.draftState === 4 ? 2 : 3,
                     allDrafts,
                     readme,
                     schema,

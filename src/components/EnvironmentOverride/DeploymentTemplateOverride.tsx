@@ -192,7 +192,7 @@ export default function DeploymentTemplateOverride({
                     },
                     isAppMetricsEnabled,
                     latestDraft: draftResp.result,
-                    selectedTabIndex: draftResp.result?.draftState === 4 ? 2 : 3,
+                    // selectedTabIndex: draftResp.result?.draftState === 4 ? 2 : 3,
                     allDrafts,
                     currentEditorView,
                     isBasicLocked,
