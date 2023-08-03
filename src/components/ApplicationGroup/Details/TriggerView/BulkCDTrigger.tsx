@@ -28,6 +28,7 @@ import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import ReactSelect, { components } from 'react-select'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 export default function BulkCDTrigger({
     stage,
@@ -55,6 +56,9 @@ export default function BulkCDTrigger({
     const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
     const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const location = useLocation()
+    const history = useHistory()
+    const match = useRouteMatch()
     const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
         setCurrentAppReleaseTags(appReleaseTags)
     }
@@ -389,6 +393,10 @@ export default function BulkCDTrigger({
                             ciPipelineId={_currentApp.ciPipelineId}
                             updateCurrentAppMaterial={updateCurrentAppMaterial}
                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                            history={history}
+                            location={location}
+                            match={match}
+                            isApplicationGroupTrigger={true}
                         />
                     )}
                 </div>
