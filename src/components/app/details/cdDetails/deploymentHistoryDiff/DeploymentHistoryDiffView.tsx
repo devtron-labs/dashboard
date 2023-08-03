@@ -40,12 +40,15 @@ export default function DeploymentHistoryDiffView({
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             <CodeEditor
-                value={isDeleteDraft ? '' : YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))}
-                defaultValue={
-                    isUnpublished
+                value={
+                    !baseTemplateConfiguration?.codeEditorValue?.value || isDeleteDraft
                         ? ''
-                        : currentConfiguration?.codeEditorValue?.value &&
-                          YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
+                        : YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))
+                }
+                defaultValue={
+                    !currentConfiguration?.codeEditorValue?.value || isUnpublished
+                        ? ''
+                        : YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
                 }
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}
@@ -128,16 +131,17 @@ export default function DeploymentHistoryDiffView({
                     )}
             </div>
 
-            <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
-                <div
-                    className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom-n1"
-                    data-testid="configuration-link-comparison-body-heading"
-                >
-                    {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
+            {(currentConfiguration?.codeEditorValue?.value || baseTemplateConfiguration?.codeEditorValue?.value) && (
+                <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
+                    <div
+                        className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom-n1"
+                        data-testid="configuration-link-comparison-body-heading"
+                    >
+                        {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
+                    </div>
+                    {renderDeploymentDiffViaCodeEditor()}
                 </div>
-                {(baseTemplateConfiguration?.codeEditorValue?.value || isDeleteDraft) &&
-                    renderDeploymentDiffViaCodeEditor()}
-            </div>
+            )}
         </div>
     )
 }

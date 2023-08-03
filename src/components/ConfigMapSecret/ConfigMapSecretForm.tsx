@@ -339,6 +339,12 @@ export const ConfigMapSecretForm = React.memo(
                 external: state.external,
                 data: data, //dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
             }
+            if (
+                (componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                (componentType !== 'secret' && state.external)
+            ) {
+                delete payload[CODE_EDITOR_RADIO_STATE.DATA]
+            }
             if (componentType === 'secret') {
                 payload['roleARN'] = ''
                 payload['externalType'] = state.externalType
@@ -353,7 +359,6 @@ export const ConfigMapSecretForm = React.memo(
                     })
                     payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
                     payload['roleARN'] = state.roleARN.value
-                    delete payload[CODE_EDITOR_RADIO_STATE.DATA]
                 } else if (isESO) {
                     payload['esoSecretData'] = {
                         secretStore: state.secretStore,
@@ -362,7 +367,6 @@ export const ConfigMapSecretForm = React.memo(
                         refreshInterval: state.refreshInterval,
                     }
                     payload['roleARN'] = state.roleARN.value
-                    delete payload[CODE_EDITOR_RADIO_STATE.DATA]
                 }
             }
             if (state.selectedType === 'volume') {
@@ -986,7 +990,10 @@ export const ConfigMapSecretForm = React.memo(
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
                             {isShowDeleteButton() && (
-                                <button className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp" onClick={openDeleteModal}>
+                                <button
+                                    className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
+                                    onClick={openDeleteModal}
+                                >
                                     <Trash className="icon-dim-16 mr-4" />
                                     Delete{isProtectedView ? '...' : ''}
                                 </button>

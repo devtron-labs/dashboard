@@ -516,7 +516,7 @@ export function ProtectedConfigMapSecretDetails({
         if (selectedTab === 1 && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
             return renderEmptyMessage('No published version of this file is available')
         } else if (selectedTab === 3 && draftData.action === 3) {
-            return renderEmptyMessage('This secret will be deleted on approval')
+            return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
             <ConfigMapSecretForm

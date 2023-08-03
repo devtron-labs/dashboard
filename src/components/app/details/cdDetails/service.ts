@@ -123,13 +123,13 @@ export const prepareConfigMapAndSecretData = (
             if (rawData['externalType']) {
                 secretValues['external'] = {
                     displayName: 'Data type',
-                    value: EXTERNAL_TYPES[rawData['externalType']],
+                    value: EXTERNAL_TYPES[type][rawData['externalType']],
                 }
             } else {
-                secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES['KubernetesSecret'] }
+                secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type]['KubernetesSecret'] }
             }
         } else {
-            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
+            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
             if (type === 'Secret' && historyData.codeEditorValue.value) {
                 const secretData = JSON.parse(historyData.codeEditorValue.value)
                 const decodeNotRequired =
