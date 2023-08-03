@@ -17,7 +17,7 @@ import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
+import { CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
@@ -37,7 +37,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [fetchBuildIdData, setFetchBuildIdData] = useState<boolean>(null)
+    const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
 
     const [initDataLoading, initDataResults] = useAsync(
         () =>
@@ -56,17 +56,13 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
 
     const { path } = useRouteMatch()
     const { push, replace } = useHistory()
-    const stopPolling = !pipelineId || fetchBuildIdData || fetchBuildIdData === null
-
-    useInterval(() => {
-        pollHistory(stopPolling)
-    }, 30000)
+    useInterval(pollHistory, 30000)
 
     useEffect(() => {
         if (!triggerHistoryResult?.result?.ciWorkflows) {
             return
         }
-        if (fetchBuildIdData) {
+        if (fetchBuildIdData === FetchIdDataStatus.FETCHING || fetchBuildIdData === FetchIdDataStatus.SUCCESS) {
             return
         }
         if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
@@ -82,7 +78,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         }, triggerHistory)
 
         if (buildId && !newTriggerHistory.has(+buildId)) {
-            setFetchBuildIdData(true)
+            setFetchBuildIdData(FetchIdDataStatus.FETCHING)
             newTriggerHistory.clear()
         }
 
@@ -96,17 +92,45 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         }
     }, [pipelineId])
 
-    function synchroniseState(triggerId: number, triggerDetails: History) {
-        if (triggerId === triggerDetails.id) {
+    function synchroniseState(triggerId: number, triggerDetails: History, triggerDetailsError: any) {
+        if (triggerDetailsError) {
+            if (triggerHistoryResult?.result?.ciWorkflows) {
+                if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
+                    setHasMore(false)
+                } else {
+                    setHasMore(true)
+                    setHasMoreLoading(true)
+                }
+                const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
+                    agg.set(curr.id, curr)
+                    return agg
+                }, triggerHistory)
+
+                setTriggerHistory(new Map(newTriggerHistory))
+                setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+            }
+            return
+        }
+
+        if (triggerId === triggerDetails?.id) {
             setTriggerHistory((triggerHistory) => {
                 triggerHistory.set(triggerId, triggerDetails)
                 return new Map(triggerHistory)
             })
+            if (fetchBuildIdData === FetchIdDataStatus.FETCHING) {
+                setFetchBuildIdData(FetchIdDataStatus.SUCCESS)
+            }
         }
     }
 
-    async function pollHistory(stopPolling: boolean) {
-        if (stopPolling) return
+    async function pollHistory() {
+        if (
+            !pipelineId ||
+            fetchBuildIdData === FetchIdDataStatus.FETCHING ||
+            fetchBuildIdData === FetchIdDataStatus.SUCCESS ||
+            fetchBuildIdData === null
+        )
+            return
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -156,7 +180,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
-                            singleView={fetchBuildIdData}
+                            fetchingIdData={fetchBuildIdData}
+                            setFetchIdData={setFetchBuildIdData}
                         />
                     </div>
                 )}
@@ -252,14 +277,10 @@ export const Details = ({
         [pipelineId, buildId, appId ?? appIdFromParent],
         !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
+
     useEffect(() => {
-        if (triggerDetailsLoading || triggerDetailsError) return
-        const triggerHistoryWithTags = {
-            ...triggerDetailsResult?.result,
-            imageComment: triggerDetailsResult?.result.imageComment,
-            imageReleaseTags: triggerDetailsResult?.result.imageReleaseTags,
-        }
-        if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerHistoryWithTags)
+        if (triggerDetailsLoading) return
+        synchroniseState(+buildId, triggerDetailsResult?.result, triggerDetailsError)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
@@ -280,7 +301,9 @@ export const Details = ({
     useInterval(reloadTriggerDetails, timeout)
 
     if ((triggerDetailsLoading && !triggerDetails) || !buildId) return <Progressing pageLoader />
-    if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+    if (!triggerDetailsLoading && !triggerDetails) {
+        return <Reload />
+    }
     if (triggerDetails.id !== +buildId) return null
     return (
         <>

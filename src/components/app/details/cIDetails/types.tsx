@@ -10,12 +10,12 @@ export interface CIPipeline {
 export interface BuildDetails {
     triggerHistory: Map<number, History>
     fullScreenView: boolean
-    synchroniseState: (triggerId: number, triggerDetails: History) => void
+    synchroniseState: (triggerId: number, triggerDetails: History, triggerDetailsError: any) => void
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
     isJobView?: boolean
     appIdFromParent?: string
-    appReleaseTags?:[]
+    appReleaseTags?: []
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
 }

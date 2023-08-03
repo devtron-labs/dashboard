@@ -13,6 +13,7 @@ import {
     HistorySummaryCardType,
     SidebarType,
     SummaryTooltipCardType,
+    FetchIdDataStatus,
 } from './types'
 import TippyHeadless from '@tippyjs/react/headless'
 import { NavLink } from 'react-router-dom'
@@ -24,7 +25,7 @@ import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
 
 const Sidebar = React.memo(
-    ({ type, filterOptions, triggerHistory, hasMore, setPagination, singleView }: SidebarType) => {
+    ({ type, filterOptions, triggerHistory, hasMore, setPagination, fetchingIdData, setFetchIdData }: SidebarType) => {
         const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
         const { push } = useHistory()
         const { path } = useRouteMatch()
@@ -108,7 +109,9 @@ const Sidebar = React.memo(
                 </div>
 
                 <div className="flex column top left" style={{ overflowY: 'auto' }}>
-                    {singleView && <ViewAllCardsTile />}
+                    {fetchingIdData === FetchIdDataStatus.SUCCESS && (
+                        <ViewAllCardsTile setFetchIdData={setFetchIdData} />
+                    )}
 
                     {Array.from(triggerHistory)
                         .sort(([a], [b]) => b - a)
@@ -128,7 +131,9 @@ const Sidebar = React.memo(
                                 type={type}
                             />
                         ))}
-                    {hasMore && !singleView && <DetectBottom callback={reloadNextAfterBottom} />}
+                    {hasMore && fetchingIdData === FetchIdDataStatus.SUSPEND && (
+                        <DetectBottom callback={reloadNextAfterBottom} />
+                    )}
                 </div>
             </>
         )
@@ -312,7 +317,20 @@ const SummaryTooltipCard = React.memo(
     },
 )
 
-const ViewAllCardsTile = (): JSX.Element => {
+const ViewAllCardsTile = ({
+    setFetchIdData,
+}: {
+    setFetchIdData: React.Dispatch<React.SetStateAction<FetchIdDataStatus>>
+}): JSX.Element => {
+    const { push } = useHistory()
+    const location = useLocation()
+
+    const handleViewAllHistory = () => {
+        setFetchIdData(FetchIdDataStatus.SUSPEND)
+        const path = location.pathname.split('/').slice(0, 4).join('/')
+        push(path)
+    }
+
     return (
         <div
             style={{
@@ -333,6 +351,7 @@ const ViewAllCardsTile = (): JSX.Element => {
                     height: '16px',
                     width: '16px',
                 }}
+                onClick={handleViewAllHistory}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
