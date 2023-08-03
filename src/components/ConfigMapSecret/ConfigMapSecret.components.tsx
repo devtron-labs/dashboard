@@ -432,7 +432,11 @@ export function ProtectedConfigMapSecretDetails({
             return null
         } else {
             return (
-                <div className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${draftData.canApprove? 'tippy-over':''}`}>
+                <div
+                    className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
+                        draftData.canApprove ? 'tippy-over' : ''
+                    }`}
+                >
                     {draftData.canApprove ? (
                         <ApproveRequestTippy
                             draftId={draftData.draftId}
@@ -635,7 +639,8 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
             keyError = `Key '${k}' must consist of alphanumeric characters, '.', '-' and '_'`
             isValid = false
         }
-        return [...agg, { k, v, keyError, valueError }]
+        const val = v.replace(/\n/g, '')
+        return [...agg, { k, v: val, keyError, valueError }]
     }, [])
     return { isValid, arr }
 }
