@@ -77,9 +77,11 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             return agg
         }, triggerHistory)
 
-        if (buildId && !newTriggerHistory.has(+buildId)) {
+        if (buildId && !newTriggerHistory.has(+buildId) && fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
             setFetchBuildIdData(FetchIdDataStatus.FETCHING)
             newTriggerHistory.clear()
+        } else {
+            setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
         }
 
         setTriggerHistory(new Map(newTriggerHistory))
@@ -95,20 +97,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     function synchroniseState(triggerId: number, triggerDetails: History, triggerDetailsError: any) {
         if (triggerDetailsError) {
             if (triggerHistoryResult?.result?.ciWorkflows) {
-                if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
-                    setHasMore(false)
-                } else {
-                    setHasMore(true)
-                    setHasMoreLoading(true)
-                }
-                const newTriggerHistory = (triggerHistoryResult.result.ciWorkflows || []).reduce((agg, curr) => {
-                    agg.set(curr.id, curr)
-                    return agg
-                }, triggerHistory)
-
-                setTriggerHistory(new Map(newTriggerHistory))
-                setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+                setTriggerHistory(new Map(mapByKey(triggerHistoryResult.result.ciWorkflows, 'id')))
             }
+            setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
             return
         }
 
@@ -119,18 +110,14 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             })
             if (fetchBuildIdData === FetchIdDataStatus.FETCHING) {
                 setFetchBuildIdData(FetchIdDataStatus.SUCCESS)
+            } else {
+                setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
             }
         }
     }
 
     async function pollHistory() {
-        if (
-            !pipelineId ||
-            fetchBuildIdData === FetchIdDataStatus.FETCHING ||
-            fetchBuildIdData === FetchIdDataStatus.SUCCESS ||
-            fetchBuildIdData === null
-        )
-            return
+        if (!pipelineId || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -301,6 +288,14 @@ export const Details = ({
     useInterval(reloadTriggerDetails, timeout)
 
     if ((triggerDetailsLoading && !triggerDetails) || !buildId) return <Progressing pageLoader />
+    if (triggerDetailsError?.code === 404) {
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.BUILD_NOT_FOUND.TITLE}
+                subTitle={EMPTY_STATE_STATUS.BUILD_NOT_FOUND.SUBTITLE}
+            />
+        )
+    }
     if (!triggerDetailsLoading && !triggerDetails) {
         return <Reload />
     }

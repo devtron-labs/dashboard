@@ -131,7 +131,7 @@ const Sidebar = React.memo(
                                 type={type}
                             />
                         ))}
-                    {hasMore && fetchingIdData === FetchIdDataStatus.SUSPEND && (
+                    {hasMore && (fetchingIdData === FetchIdDataStatus.SUSPEND || !fetchingIdData) && (
                         <DetectBottom callback={reloadNextAfterBottom} />
                     )}
                 </div>

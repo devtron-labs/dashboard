@@ -63,7 +63,7 @@ export const PROJECT_EXIST_MSG = 'This Project already exists.'
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
     "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."
 
-export const TOAST_BUTTON_TEXT_VIEW_DETAILS = "VIEW DETAILS"
+export const TOAST_BUTTON_TEXT_VIEW_DETAILS = 'VIEW DETAILS'
 export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     title: 'No users Added',
     subTitle: 'Add users and assign group or direct permissions',
@@ -375,16 +375,22 @@ export const EMPTY_STATE_STATUS = {
     CD_MATERIAL: {
         TITLE: 'No Image Available',
     },
+    BUILD_NOT_FOUND: {
+        TITLE: 'Build not found',
+        SUBTITLE: 'The build you are looking for does not exist',
+    },
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
 
 export const EPHEMERAL_CONTAINER = {
-  TITLE: 'Ephemeral Container',
-  SUBTITLE: 'An Ephemeral Container is a temporary container that you may add to an existing Pod for user-initiated activities such as debugging.',
-  CONTAINER_NAME: 'This prefix will be used to generate a unique name for the ephemeral container',
-  IMAGE: 'Container image name',
-  TARGET_CONTAINER_NAME: 'Name of the container from PodSpec that this ephemeral container targets. The ephemeral container will be run in the namespaces (IPC, PID, etc) of this container.'
+    TITLE: 'Ephemeral Container',
+    SUBTITLE:
+        'An Ephemeral Container is a temporary container that you may add to an existing Pod for user-initiated activities such as debugging.',
+    CONTAINER_NAME: 'This prefix will be used to generate a unique name for the ephemeral container',
+    IMAGE: 'Container image name',
+    TARGET_CONTAINER_NAME:
+        'Name of the container from PodSpec that this ephemeral container targets. The ephemeral container will be run in the namespaces (IPC, PID, etc) of this container.',
 }
 export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pipeline'
 
