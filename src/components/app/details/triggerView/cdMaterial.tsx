@@ -861,7 +861,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     searchImageTag = (event) => {
         const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
+        if (theKeyCode === 'Enter' && event.target.value !== "") {
             this.setState({ searchApplied: true })
             let abortController = new AbortController()
             this.setState({loadingSearchedImage: true})
@@ -918,10 +918,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="flex dc__align-start">
                             {titleText}
                         </span>
-                        {isApprovalConfigured && <div className="h-32 flex dc__content-end dc__align-center">
+                        {isApprovalConfigured && <div className="h-32 flex dc__content-end dc__align-center dc__column-gap-8">
                             <div className={`flex dc__align-center dc__position-rel margin-right-0 ${this.state.searchExpanded ? "w-250 bw-1 br-4 en-2" : "w-28 mt-4"} h-32 cursor-text mr-8`}>
-                                <span className="cursor" onClick={this.expandSearch}><Search className="search__icon icon-dim-18" /></span>
+                                <span className="cursor" onClick={this.expandSearch}><Search className={`search__icon icon-dim-18 ${!this.state.searchExpanded ? "icon-color-n6" : ""}`} /></span>
                                 {this.state.searchExpanded && (<input
+                                    autoFocus
                                     data-testid="Search-by-approver-name"
                                     type="text"
                                     name="app_search_input"
@@ -939,7 +940,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             </div>
                             <div className="pt-8 dc__content-end dc__align-center">
                                 <RefreshIcon
-                                    className="icon-dim-16 scn-5 cursor"
+                                    className="icon-dim-16 scn-6 cursor"
                                     onClick={this.refreshData}
                                 />
                             </div>
