@@ -308,17 +308,19 @@ export default function EnvironmentOverrideRouter({
         }
     }
 
-    const selectEnvironment = (selection) => {
-        let requestBody = { envId: selection.id, appId: appId }
-        addJobEnvironment(requestBody)
-            .then((response) => {
-                toast.success('Saved Successfully')
-                getJobOtherEnvironment()
-                setEnvironmentView(!addEnvironment)
-            })
-            .catch((error) => {
-                showError(error)
-            })
+    const selectEnvironment = async (selection) => {
+        try {
+            setIsEnvLoading(true)
+            setEnvironmentView(!addEnvironment)
+            let requestBody = { envId: selection.id, appId: appId }
+            await addJobEnvironment(requestBody)
+            toast.success('Saved Successfully')
+            getJobOtherEnvironment()
+        } catch (error) {
+            showError(error)
+        } finally {
+            setIsEnvLoading(false)
+        }
     }
 
     const handleAddEnvironment = () => {
@@ -449,7 +451,11 @@ export default function EnvironmentOverrideRouter({
                     </div>
                 </div>
             )}
-            {isEnvLoading ?<Progressing styles={{height: '80px'}}/>: <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>}
+            {isEnvLoading ? (
+                <Progressing styles={{ height: '80px' }} />
+            ) : (
+                <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>
+            )}
         </div>
     )
 }
