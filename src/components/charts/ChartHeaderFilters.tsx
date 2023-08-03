@@ -29,9 +29,11 @@ function ChartHeaderFilter({
     const handleSelection = (event): void => {
         const chartRepoList = selectedChartRepo.filter((e) => e != event)
         setSelectedChartRepo(chartRepoList)
-        selectedChartRepo.length === chartRepoList.length
-            ? handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
-            : handleFilterChanges(chartRepoList, 'chart-repo')
+        if (selectedChartRepo.length === chartRepoList.length) {
+            handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
+        } else {
+            handleFilterChanges(chartRepoList, 'chart-repo')
+        } 
     }
 
     const handleViewAllCharts = (): void => {
@@ -43,26 +45,45 @@ function ChartHeaderFilter({
         const app = searchParams.get(QueryParams.AppStoreName)
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
-        const registryIds = searchParams.get(QueryParams.RegistryId)
+        const registryId = searchParams.get(QueryParams.RegistryId)
+        console.log(selected)
 
+        let isOCIRegistry
         if (key == 'chart-repo') {
             let chartRepoId = selected
+                .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     return selectedRepo.value
                 })
                 .join(',')
-            let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
-            if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
-            if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            history.push(`${url}?${qs}`)
+
+            let registryId = selected
+                .filter((selectedRepo) => selectedRepo.isOCIRegistry)
+                ?.map((selectedRepo) => {
+                    isOCIRegistry = true
+                    return selectedRepo.value
+                })
+                .join(',')
+            if (isOCIRegistry) {
+                let qsr = `${QueryParams.RegistryId}=${registryId}`
+                if (chartRepoId) qsr = `${qsr}&${QueryParams.ChartRepoId}=${chartRepoId}`
+                if (app) qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
+                if (deprecate) qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                history.push(`${url}?${qsr}`)
+            } else {
+                let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`
+                if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+                if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+                if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+                history.push(`${url}?${qs}`)
+            }
         }
 
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
+            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             history.push(`${url}?${qs}`)
         }
 
@@ -71,7 +92,7 @@ function ChartHeaderFilter({
             let qs = `${QueryParams.AppStoreName}=${appStoreName}`
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
+            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             history.push(`${url}?${qs}`)
         }
 
@@ -79,7 +100,7 @@ function ChartHeaderFilter({
             let qs: string = ''
             if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
             if (chartRepoId) qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${chartRepoId}`
+            if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             history.push(`${url}?${qs}`)
         }
     }
