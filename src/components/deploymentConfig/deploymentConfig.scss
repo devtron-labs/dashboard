@@ -80,6 +80,11 @@
                     .form-app-metrics-cta {
                         width: 38%;
                     }
+                    &.tippy-over {
+                        .tippy-box {
+                            top: 50px;
+                        }
+                    }
                 }
             }
 

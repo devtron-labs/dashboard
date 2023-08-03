@@ -190,7 +190,7 @@ export default function DeploymentConfigFormCTA({
             <div
                 className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
                     showAppMetricsToggle ? 'dc__content-space' : 'right'
-                } ${getHeightClass()}`}
+                } ${getHeightClass()} ${state.latestDraft?.canApprove ? 'tippy-over ' : ''}`}
             >
                 {compareTab && !state.showReadme && <div className="w-50" />}
                 {renderApplicationMetrics()}
