@@ -192,6 +192,7 @@ export default function DeploymentTemplateOverride({
                     },
                     isAppMetricsEnabled,
                     latestDraft: draftResp.result,
+                    selectedTabIndex: draftResp.result?.draftState === 4 ? 2 : 3,
                     allDrafts,
                     currentEditorView,
                     isBasicLocked,
@@ -412,6 +413,9 @@ export default function DeploymentTemplateOverride({
                         handleAppMetrics={handleAppMetrics}
                         toggleDraftComments={toggleDraftComments}
                         isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                        isEnterpriseInstallation={
+                            currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+                        }
                     />
                 )}
             </div>

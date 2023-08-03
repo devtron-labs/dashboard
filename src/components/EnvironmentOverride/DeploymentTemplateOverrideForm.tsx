@@ -39,6 +39,7 @@ export default function DeploymentTemplateOverrideForm({
     handleAppMetrics,
     toggleDraftComments,
     isGrafanaModuleInstalled,
+    isEnterpriseInstallation,
 }) {
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
@@ -217,20 +218,35 @@ export default function DeploymentTemplateOverrideForm({
     const handleTabSelection = (index: number) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
-            payload: index,
+            payload:
+                ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) &&
+                state.basicFieldValuesErrorObj &&
+                !state.basicFieldValuesErrorObj.isValid
+                    ? state.selectedTabIndex
+                    : index,
         })
 
         switch (index) {
             case 1:
             case 3:
                 if (state.selectedTabIndex == 2) {
-                    toggleYamlMode(state.isBasicLocked)
+                    const _isBasicLocked =
+                        state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
+                    const defaultYamlMode =
+                        state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
+                    toggleYamlMode(defaultYamlMode || _isBasicLocked || isEnterpriseInstallation)
                     handleComparisonClick()
                 }
                 break
             case 2:
                 if (!state.openComparison) {
-                    toggleYamlMode(true)
+                    if (!state.yamlMode) {
+                        if ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) {
+                            changeEditorMode()
+                        } else {
+                            toggleYamlMode(true)
+                        }
+                    }
                     handleComparisonClick()
                 }
                 break
@@ -343,7 +359,7 @@ export default function DeploymentTemplateOverrideForm({
                     showAppMetricsToggle={
                         state.charts &&
                         state.selectedChart &&
-                        appMetricsEnvironmentVariableEnabled &&
+                        window._env_?.APPLICATION_METRICS_ENABLED &&
                         isGrafanaModuleInstalled &&
                         state.yamlMode
                     }
@@ -370,7 +386,6 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
     return (
         <DeploymentConfigContext.Provider value={getValueForContext()}>
             <ConfigToolbar
