@@ -93,7 +93,7 @@ export default function SecretList({
     }
 
     function update(index, result) {
-        if (!index && !result) {
+        if ((index === undefined || index === null) && !result) {
             init()
             return
         }
@@ -118,7 +118,7 @@ export default function SecretList({
                     const selectedConfigData = list.configData[index]
                     if (selectedConfigData.global) {
                         if (selectedConfigData.data) {
-                            configData.data = updatedData
+                            selectedConfigData.data = updatedData
                         } else {
                             selectedConfigData.defaultData = updatedData
                         }
