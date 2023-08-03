@@ -44,6 +44,8 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                             className="dc__position-rel flex left cursor dc__hover-n50"
                             data-testid={`${option.label}-chart-repo`}
                         >
+                           { console.log(value.filter((event) =>  event ))}
+                        {   console.log('option', option)}
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
                                 isChecked={value.filter((event) => event === option).length}
