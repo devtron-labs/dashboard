@@ -61,7 +61,6 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
 
     useEffect(() => {
         initialise()
@@ -182,6 +181,7 @@ export default function DeploymentConfig({
                     tempFormData: YAML.stringify(valuesOverride, null),
                     draftValues: YAML.stringify(valuesOverride, null),
                     latestDraft: draftResp.result,
+                    selectedTabIndex: state.latestDraft?.draftState === 4 ? 2 : 3,
                     allDrafts,
                     readme,
                     schema,
@@ -243,7 +243,7 @@ export default function DeploymentConfig({
             const payload = {
                 isBasicLocked: _isBasicViewLocked,
                 currentEditorView: _currentViewEditor,
-                yamlMode: _currentViewEditor === EDITOR_VIEW.ADVANCED,
+                yamlMode: _currentViewEditor !== EDITOR_VIEW.BASIC,
             }
 
             if (templateData['publishedState']) {
@@ -529,7 +529,15 @@ export default function DeploymentConfig({
             case 1:
             case 3:
                 if (state.selectedTabIndex === 2) {
-                    toggleYamlMode(state.isBasicLocked)
+                    const _isBasicLocked =
+                        state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
+                    const defaultYamlMode =
+                        state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
+                    toggleYamlMode(
+                        defaultYamlMode ||
+                            _isBasicLocked ||
+                            currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
+                    )
                     handleComparisonClick()
                 }
                 break
@@ -615,7 +623,7 @@ export default function DeploymentConfig({
                     showAppMetricsToggle={
                         state.charts &&
                         state.selectedChart &&
-                        appMetricsEnvironmentVariableEnabled &&
+                        window._env_?.APPLICATION_METRICS_ENABLED &&
                         grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
                         state.yamlMode
                     }

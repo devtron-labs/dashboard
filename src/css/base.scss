@@ -1257,8 +1257,8 @@ button.anchor {
             }
 
             &:first-child input + .radio__item-label {
-                border-top-left-radius: 4px;
-                border-bottom-left-radius: 4px;
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
             }
 
             &:last-child input + .radio__item-label {

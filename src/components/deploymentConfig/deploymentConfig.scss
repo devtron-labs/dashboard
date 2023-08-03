@@ -68,7 +68,7 @@
 
         .white-card__deployment-config {
             height: calc(100% - 37px);
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 50% 50%;
         }
 
         .white-card__deployment-config,
@@ -187,7 +187,7 @@
         }
 
         .dt-readme-markdown {
-            height: calc(100vh - 232px);
+            height: calc(100vh - 220px);
             overflow: scroll;
         }
     }
@@ -264,7 +264,7 @@
 
 .form__row--gui-container {
     &.gui {
-        height: calc(100% - 160px);
+        height: calc(100% - 140px);
 
         &.read-only-mode {
             height: calc(100% - 128px);
@@ -295,7 +295,7 @@
 }
 
 .form__row--code-editor-container {
-    height: calc(100% - 124px);
+    height: calc(100% - 104px);
     display: grid;
     grid-template-rows: 32px 1fr;
     overflow: hidden;

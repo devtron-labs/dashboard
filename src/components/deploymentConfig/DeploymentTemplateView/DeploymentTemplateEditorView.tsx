@@ -73,7 +73,7 @@ export default function DeploymentTemplateEditorView({
             setFilteredCharts(
                 _filteredCharts.map((chart) => ({
                     id: `${DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version}-${chart.version}`,
-                    label: `${chart.version} (Default)`,
+                    label: `v${chart.version} (Default)`,
                     value: chart.id,
                     kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key,
                 })) as DeploymentChartOptionType[],
@@ -86,7 +86,9 @@ export default function DeploymentTemplateEditorView({
             state.selectedChart &&
             selectedOption &&
             selectedOption.id !== -1 &&
-            !state.fetchedValues[selectedOption.id]
+            !state.fetchedValues[selectedOption.id] &&
+            !state.chartConfigLoading &&
+            !fetchingValues
         ) {
             setFetchingValues(true)
             const isEnvOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
@@ -115,7 +117,7 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
         }
-    }, [selectedOption])
+    }, [selectedOption, state.chartConfigLoading])
 
     useEffect(() => {
         return (): void => {
@@ -230,7 +232,9 @@ export default function DeploymentTemplateEditorView({
             return (
                 <>
                     <div className="dt-readme dc__border-right dc__border-bottom-imp">
-                        <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
+                        <div className="code-editor__header flex left fs-12 fw-6 cn-9">{`Readme ${
+                            state.selectedChart ? `(v${state.selectedChart.version})` : ''
+                        }`}</div>
                         {state.chartConfigLoading ? (
                             <Progressing pageLoader />
                         ) : (

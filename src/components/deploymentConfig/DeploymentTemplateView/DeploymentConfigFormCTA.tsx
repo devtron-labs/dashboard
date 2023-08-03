@@ -131,8 +131,8 @@ export default function DeploymentConfigFormCTA({
                                 disabled={disableCheckbox || !_selectedChart.isAppMetricsSupported}
                             />
                             <div className="flex column left">
-                                <div className="flex left fs-13 mb-4">
-                                    <b className="fw-6 cn-9 mr-8">
+                                <div className="flex left fs-13">
+                                    <b className="fw-6 lh-18 cn-9 mr-8">
                                         {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
                                     </b>
                                     {compareTab || state.showReadme ? (
@@ -160,7 +160,7 @@ export default function DeploymentConfigFormCTA({
                                 {!compareTab && !state.showReadme && (
                                     <div
                                         data-testid="app-metrics-info-text"
-                                        className={`fs-13 fw-4 ${
+                                        className={`fs-13 fw-4 lh-18 ${
                                             !_selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'
                                         }`}
                                     >

@@ -103,7 +103,7 @@ const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
     return (
         <div className="flex left column">
             <span className="w-100 dc__ellipsis-right">
-                {option.label}&nbsp;{option.version && `(${option.version})`}
+                {option.label}&nbsp;{option.version && `(v${option.version})`}
             </span>
         </div>
     )
@@ -113,7 +113,7 @@ const customValueContainer = (props): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
             {props.selectProps.value?.label}&nbsp;
-            {props.selectProps.value?.version && `(${props.selectProps.value.version})`}
+            {props.selectProps.value?.version && `(v${props.selectProps.value.version})`}
             {React.cloneElement(props.children[1], {
                 style: { position: 'absolute' },
             })}
@@ -257,11 +257,11 @@ export const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return 'calc(100vh - 232px)'
+        return 'calc(100vh - 220px)'
     } else if (isEnvOverride) {
         return 'calc(100vh - 301px)'
     } else {
-        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
+        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
     }
 }
 
@@ -282,7 +282,7 @@ export const renderEditorHeading = (
                     <span className="fw-6 mr-4">Last saved draft</span>
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
-                        selectedChart ? `(${selectedChart.version})` : ''
+                        selectedChart ? `(v${selectedChart.version})` : ''
                     }`
                 )}
                 {isEnvOverride && readOnly && (
