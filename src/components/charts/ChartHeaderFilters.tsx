@@ -45,6 +45,8 @@ function ChartHeaderFilter({
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         const registryId = searchParams.get(QueryParams.RegistryId)
+        console.log(selected)
+
         let isOCIRegistry
         if (key == 'chart-repo') {
             let chartRepoId = selected
@@ -75,7 +77,6 @@ function ChartHeaderFilter({
                 history.push(`${url}?${qs}`)
             }
         }
-
 
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
