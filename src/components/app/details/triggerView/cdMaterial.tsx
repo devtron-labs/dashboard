@@ -1150,7 +1150,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
             (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
-        let hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
+        const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
             <div
