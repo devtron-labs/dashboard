@@ -162,6 +162,27 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
     });
 
+    monaco.editor.defineTheme('delete-draft', {
+        base: 'vs',
+        inherit: true,
+        rules: [],
+        colors: {
+            'diffEditor.insertedTextBackground': '#ffd4d1',
+            'diffEditor.removedTextBackground': '#ffffff33',
+        },
+    })
+
+    monaco.editor.defineTheme('unpublished', {
+        base: 'vs',
+        inherit: true,
+        rules: [],
+        colors: {
+            'diffEditor.insertedTextBackground': '#eaf1dd',
+            'diffEditor.removedTextBackground': '#ffffff33',
+        },
+    })
+
+
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&

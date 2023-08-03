@@ -2466,6 +2466,10 @@ textarea,
     min-width: 24px !important;
 }
 
+.mw-36 {
+    min-width: 36px !important;
+}
+
 .mw-48 {
     min-width: 48px;
 }
@@ -2488,6 +2492,10 @@ textarea,
 
 .w-36 {
     width: 36px !important;
+}
+
+.w-40 {
+    width: 40px !important;
 }
 
 .min-w-800 {
@@ -2803,6 +2811,10 @@ textarea,
     height: 60px !important;
 }
 
+.h-64 {
+    height: 64px !important;
+}
+
 .h-66 {
     height: 66px !important;
 }
@@ -2958,6 +2970,10 @@ textarea,
     line-height: 20px;
 }
 
+.lh-20-imp {
+    line-height: 20px !important;
+}
+
 .lh-22 {
     line-height: 22px;
 }
@@ -3051,6 +3067,10 @@ textarea,
 
 .pl-8-imp {
     padding-left: 8px !important;
+}
+
+.p-6-12-imp {
+    padding: 6px 12px !important;
 }
 
 // Margin in pixels
@@ -3250,6 +3270,11 @@ textarea::placeholder {
 // opacity
 .dc__opacity-0_5 {
     opacity: 0.5;
+}
+
+// blur
+.dc__blur-1_5 {
+    filter: blur(1.5px);
 }
 
 .dc__hover-n50:hover,

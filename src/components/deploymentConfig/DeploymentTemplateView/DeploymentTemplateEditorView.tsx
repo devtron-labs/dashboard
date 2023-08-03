@@ -73,7 +73,7 @@ export default function DeploymentTemplateEditorView({
             setFilteredCharts(
                 _filteredCharts.map((chart) => ({
                     id: `${DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.version}-${chart.version}`,
-                    label: chart.version,
+                    label: `${chart.version} (Default)`,
                     value: chart.id,
                     kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key,
                 })) as DeploymentChartOptionType[],

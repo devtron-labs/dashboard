@@ -77,7 +77,7 @@ export default function DeploymentConfigFormCTA({
                                     <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
                                 </>
                             ) : (
-                                'Save changes'
+                                `Save changes${isDraftMode || isApprovalPending ? '...' : ''}`
                             )}
                         </>
                     )}
@@ -181,14 +181,14 @@ export default function DeploymentConfigFormCTA({
         } else if (isDraftMode) {
             return 'h-44'
         } else {
-            return 'h-76'
+            return 'h-64'
         }
     }
 
     return (
         _selectedChart && (
             <div
-                className={`form-cta-section flex pr-20 pl-20 ${
+                className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
                     showAppMetricsToggle ? 'dc__content-space' : 'right'
                 } ${getHeightClass()}`}
             >

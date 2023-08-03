@@ -365,7 +365,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             refreshInterval: json.refreshInterval,
         }
         if (Array.isArray(json?.esoData)) {
-            payload['setEsoData'] = json.esoData
+            payload['esoData'] = json.esoData
         }
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
@@ -470,7 +470,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
-        secretMode: configMapSecretData?.secretMode,
+        secretMode: false,
         unAuthorized: configMapSecretData?.unAuthorized ?? (!draftMode && !!configMapSecretData?.name),
     }
 }

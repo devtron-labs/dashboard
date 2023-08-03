@@ -40,7 +40,7 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
                         {envListData.name}
                     </div>
                 </div>
-                {envListData.isProtected && <ProtectedIcon className="mw-20 icon-dim-20" />}
+                {envListData.isProtected && <ProtectedIcon className="mw-16 icon-dim-16" />}
             </div>
             {!collapsed && (
                 <div className="environment-routes pl-28 w-100">

@@ -104,13 +104,13 @@ export default function ConfigMapList({
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
 
     return (
-        <div className={`form__app-compose cm-secret-main-container ${showComments ? 'with-comment-drawer' : ''}`}>
-            <div>
-                <h1 className="form__title form__title--artifacts flex left">
+        <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
+            <div className="main-content">
+                <h1 className="form__title flex left">
                     {parentName && (
                         <>
                             {parentName}
-                            <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
+                            <Arrow className="icon-dim-20 fcn-6 dc__flip mr-4 ml-4" />
                         </>
                     )}
                     {SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}

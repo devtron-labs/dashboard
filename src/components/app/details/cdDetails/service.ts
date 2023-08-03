@@ -118,23 +118,26 @@ export const prepareConfigMapAndSecretData = (
 ): Record<string, DeploymentHistorySingleValue> => {
     const secretValues = {}
 
-    if (rawData['external']) {
-        if (rawData['externalType']) {
-            secretValues['external'] = {
-                displayName: 'Data type',
-                value: EXTERNAL_TYPES[rawData['externalType']],
+    if (rawData['external'] !== undefined) {
+        if (rawData['external']) {
+            if (rawData['externalType']) {
+                secretValues['external'] = {
+                    displayName: 'Data type',
+                    value: EXTERNAL_TYPES[rawData['externalType']],
+                }
+            } else {
+                secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES['KubernetesSecret'] }
             }
         } else {
-            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES['KubernetesSecret'] }
-        }
-    } else {
-        secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
-        if (type === 'Secret' && historyData.codeEditorValue.value) {
-            const secretData = JSON.parse(historyData.codeEditorValue.value)
-            const decodeNotRequired = skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
-            historyData.codeEditorValue.value = decodeNotRequired
-                ? historyData.codeEditorValue.value
-                : JSON.stringify(decode(secretData))
+            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
+            if (type === 'Secret' && historyData.codeEditorValue.value) {
+                const secretData = JSON.parse(historyData.codeEditorValue.value)
+                const decodeNotRequired =
+                    skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+                historyData.codeEditorValue.value = decodeNotRequired
+                    ? historyData.codeEditorValue.value
+                    : JSON.stringify(decode(secretData))
+            }
         }
     }
     if (rawData['type']) {

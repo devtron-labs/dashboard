@@ -193,7 +193,7 @@
     }
 
     .dt-options-tab-container {
-        height: 48px;
+        height: 40px;
 
         .dt-view-option {
             padding: 4px 8px;
@@ -272,7 +272,7 @@
     }
 
     &.gui-with-warning {
-        height: calc(100% - 192px);
+        height: calc(100% - 172px);
 
         &.read-only-mode {
             height: calc(100% - 160px);

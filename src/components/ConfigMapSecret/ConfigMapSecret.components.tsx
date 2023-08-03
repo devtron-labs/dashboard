@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, noop, showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, ToastBody, noop, showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as InfoIconOutlined } from '../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as KeyIcon } from '../../assets/icons/ic-key.svg'
 import {
@@ -26,6 +27,10 @@ import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistor
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
+import { getSecretKeys, unlockEnvSecret } from './service'
+import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -116,11 +121,15 @@ export function ConfigMapSecretContainer({
     async function getDraftData() {
         try {
             setLoader(true)
-            const { result: draftData } = await getDraft(data.draftId)
-            setDraftData(draftData)
+            const { result: _draftData } = await getDraft(data.draftId)
+            if (_draftData && (_draftData.draftState === 1 || _draftData.draftState === 4)) {
+                setDraftData(_draftData)
+            } else {
+                setDraftData(null)
+            }
             toggleCollapse(false)
         } catch (error) {
-            setDraftData('')
+            setDraftData(null)
             showError(error)
         } finally {
             setLoader(false)
@@ -145,6 +154,7 @@ export function ConfigMapSecretContainer({
                 toggleCollapse(!collapsed)
                 if (!collapsed) {
                     toggleDraftComments(null)
+                    setDraftData(null)
                 }
             }
         }
@@ -155,7 +165,7 @@ export function ConfigMapSecretContainer({
     }
 
     const toggleDraftCommentModal = () => {
-        toggleDraftComments({ draftId: draftData.draftId, draftVersionId: draftData.draftVersionId, index: index })
+        toggleDraftComments({ draftId: draftData?.draftId, draftVersionId: draftData?.draftVersionId, index: index })
     }
 
     const renderIcon = (): JSX.Element => {
@@ -170,8 +180,13 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    const reload = (): void => {
+        updateCollapsed()
+        update()
+    }
+
     const renderDetails = (): JSX.Element => {
-        if (title && isProtected && data.draftId && (data.draftState === 1 || data.draftState === 4)) {
+        if (title && isProtected && draftData?.draftId) {
             return (
                 <>
                     <ConfigToolbar
@@ -180,22 +195,22 @@ export function ConfigMapSecretContainer({
                         draftVersionId={draftData.draftVersionId}
                         selectedTabIndex={selectedTab}
                         handleTabSelection={handleTabSelection}
-                        isDraftMode={draftData?.draftState === 1 || draftData?.draftState === 4}
+                        isDraftMode={draftData.draftState === 1 || draftData.draftState === 4}
                         noReadme={true}
                         showReadme={false}
                         isReadmeAvailable={false}
                         handleReadMeClick={noop}
                         handleCommentClick={toggleDraftCommentModal}
-                        isApprovalPending={draftData?.draftState === 4}
-                        approvalUsers={draftData?.approvers}
-                        reload={update}
+                        commentsPresent={draftData.commentsCount > 0}
+                        isApprovalPending={draftData.draftState === 4}
+                        approvalUsers={draftData.approvers}
+                        reload={reload}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}
                         updateCollapsed={updateCollapsed}
                         data={data}
                         id={id}
-                        isOverrideView={isOverrideView}
                         componentType={componentType}
                         update={update}
                         index={index}
@@ -214,7 +229,6 @@ export function ConfigMapSecretContainer({
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={data}
                 id={id}
-                isOverrideView={isOverrideView}
                 componentType={componentType}
                 update={update}
                 index={index}
@@ -256,7 +270,7 @@ export function ConfigMapSecretContainer({
         <>
             <section
                 className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                    reduceOpacity ? 'dc__disable-click dc__opacity-0_5' : ''
+                    reduceOpacity ? 'dc__disable-click dc__blur-1_5' : ''
                 }`}
             >
                 <article
@@ -272,21 +286,23 @@ export function ConfigMapSecretContainer({
                         {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
                         {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                     </div>
-                    <div className="flex right">
-                        {isProtected && title && (
-                            <>
-                                {renderDraftState()}
-                                <ProtectedIcon />
-                            </>
-                        )}
-                        {title && isLoader ? (
-                            <span style={{ width: '20px' }}>
-                                <Progressing />
-                            </span>
-                        ) : (
-                            <img className="configuration-list__arrow pointer h-20" src={arrowTriangle} />
-                        )}
-                    </div>
+                    {title && (
+                        <div className="flex right">
+                            {isProtected && (
+                                <>
+                                    {renderDraftState()}
+                                    <ProtectedIcon />
+                                </>
+                            )}
+                            {isLoader ? (
+                                <span style={{ width: '20px' }}>
+                                    <Progressing />
+                                </span>
+                            ) : (
+                                <Dropdown className={`icon-dim-20 rotate ${collapsed ? '' : 'dc__flip-180'}`} />
+                            )}
+                        </div>
+                    )}
                 </article>
                 {!collapsed && renderDetails()}
             </section>
@@ -299,7 +315,6 @@ export function ProtectedConfigMapSecretDetails({
     updateCollapsed,
     data,
     id,
-    isOverrideView,
     componentType,
     update,
     index,
@@ -309,7 +324,35 @@ export function ProtectedConfigMapSecretDetails({
     draftData,
     parentName,
 }) {
-    const [isLoader, setLoader] = useState(false)
+    const { appId, envId } = useParams<{ appId; envId }>()
+    const [isLoader, setLoader] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (
+            componentType === 'secret' &&
+            selectedTab === 2 &&
+            data?.unAuthorized &&
+            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+        ) {
+            setLoader(true)
+            handleSecretFetch()
+        }
+    }, [selectedTab])
+
+    async function handleSecretFetch() {
+        try {
+            const { result } =
+                cmSecretStateLabel === CM_SECRET_STATE.BASE
+                    ? await getSecretKeys(id, appId, data?.name)
+                    : await unlockEnvSecret(id, appId, +envId, data?.name)
+            update(index, result)
+            setLoader(false)
+        } catch (err) {
+            toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            setLoader(false)
+        }
+    }
+
     const getData = () => {
         try {
             if (selectedTab === 3) {
@@ -359,58 +402,128 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            true,
         )
     }
 
     const getBaseConfig = (): DeploymentHistoryDetail => {
+        const _data = { ...data }
+        if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && !_data.mountPath) {
+            _data.mountPath = _data.defaultMountPath
+        }
         const codeEditorValue = {
             displayName: 'data',
-            value: JSON.stringify(getCodeEditorData(data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
+            value: JSON.stringify(getCodeEditorData(_data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
         }
         return prepareHistoryData(
-            { ...data, codeEditorValue },
+            { ..._data, codeEditorValue },
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            true,
         )
     }
 
-    const renderDiffView = (): JSX.Element => {
-        return (
-            <>
-                <DeploymentHistoryDiffView
-                    currentConfiguration={getBaseConfig()}
-                    baseTemplateConfiguration={getCurrentConfig()}
-                    previousConfigAvailable={true}
-                />
-                {draftData.draftState === 4 && draftData.canApprove && ApproveRequestTippy && (
-                    <div className="flex right pr-16 pb-16 pl-16">
+    const reload = (): void => {
+        updateCollapsed()
+        update()
+    }
+
+    const renderApproveButton = (): JSX.Element => {
+        if (draftData.draftState !== 4 || !ApproveRequestTippy) {
+            return null
+        } else {
+            return (
+                <div className="flex right pr-16 pb-16 pl-16">
+                    {draftData.canApprove ? (
                         <ApproveRequestTippy
                             draftId={draftData.draftId}
                             draftVersionId={draftData.draftVersionId}
                             resourceName={componentType}
-                            reload={update}
+                            reload={reload}
                             envName={parentName}
                         >
-                            <button data-testid="approve-config-button" type="button" className="cta dc__bg-g5">
-                                {isLoader ? <Progressing /> : 'Approve changes'}
+                            <button
+                                data-testid="approve-config-button"
+                                type="button"
+                                className="cta dc__bg-g5 m-0-imp h-32 lh-20-imp p-6-12-imp"
+                            >
+                                Approve changes
                             </button>
                         </ApproveRequestTippy>
+                    ) : (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top-end"
+                            content="You have made changes to this file. Users who have edited cannot approve the changes."
+                        >
+                            <button
+                                data-testid="approve-config-button"
+                                type="button"
+                                className="cta dc__bg-g5 approval-config-disabled m-0-imp h-32 lh-20-imp p-6-12-imp"
+                            >
+                                Approve changes
+                            </button>
+                        </Tippy>
+                    )}
+                </div>
+            )
+        }
+    }
+
+    const renderDiffView = (): JSX.Element => {
+        if (isLoader) {
+            return (
+                <div className="h-300">
+                    <Progressing />
+                </div>
+            )
+        }
+        return (
+            <>
+                <div className="en-2 bw-1 mt-16 mr-20 ml-20 bcn-1 dc__top-radius-4 deployment-diff__upper dc__no-bottom-border">
+                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9 dc__border-right">
+                        {cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED
+                            ? 'No published version available'
+                            : 'Published'}
                     </div>
-                )}
+                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
+                </div>
+                <DeploymentHistoryDiffView
+                    currentConfiguration={getBaseConfig()}
+                    baseTemplateConfiguration={getCurrentConfig()}
+                    previousConfigAvailable={true}
+                    isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
+                    isDeleteDraft={draftData.action === 3}
+                    rootClassName="dc__no-top-radius mt-0-imp"
+                />
+                {renderApproveButton()}
             </>
         )
     }
+
+    const renderEmptyMessage = (message: string): JSX.Element => {
+        return (
+            <div className="h-200 flex">
+                <div className="dc__align-center">
+                    <InfoIconOutlined className="icon-dim-20 mb-8" />
+                    <div className="fs-13 fw-4 cn-7">{message}</div>
+                </div>
+            </div>
+        )
+    }
+
     const renderForm = (): JSX.Element => {
+        if (selectedTab === 1 && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
+            return renderEmptyMessage('No published version of this file is available')
+        } else if (selectedTab === 3 && draftData.action === 3) {
+            return renderEmptyMessage('This secret will be deleted on approval')
+        }
         return (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}
                 updateCollapsed={updateCollapsed}
                 configMapSecretData={getData()}
                 id={id}
-                isOverrideView={isOverrideView}
                 componentType={componentType}
                 update={update}
                 index={index}
@@ -432,7 +545,7 @@ export function ProtectedConfigMapSecretDetails({
         )
     }
 
-    return selectedTab == 2 ? renderDiffView() : renderForm()
+    return selectedTab === 2 ? renderDiffView() : renderForm()
 }
 
 export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
@@ -589,7 +702,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
     return { yaml, handleYamlChange, error }
 }
 
-export function Override({ overridden, onClick, loading = false, type, readonlyView }) {
+export function Override({ overridden, onClick, loading = false, type, readonlyView, isProtectedView }) {
     const renderButtonContent = (): JSX.Element => {
         if (loading) {
             return <Progressing />
@@ -597,7 +710,7 @@ export function Override({ overridden, onClick, loading = false, type, readonlyV
             return (
                 <>
                     <DeleteIcon className="icon-dim-16 mr-8" />
-                    <span>Delete override</span>
+                    <span>Delete override{isProtectedView ? '...' : ''}</span>
                 </>
             )
         } else {
@@ -622,7 +735,9 @@ export function Override({ overridden, onClick, loading = false, type, readonlyV
             {!readonlyView && (
                 <button
                     data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    className={`cta override-button h-32 lh-20-imp p-6-12-imp ${
+                        overridden ? 'delete scr-5' : 'ghosted'
+                    }`}
                     onClick={onClick}
                 >
                     {renderButtonContent()}

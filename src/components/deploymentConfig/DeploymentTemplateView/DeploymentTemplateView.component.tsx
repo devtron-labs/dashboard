@@ -48,7 +48,7 @@ export const ChartTypeVersionOptions = ({
 
     return (
         <div
-            className={`chart-type-version-options pr-16 pt-8 pb-8 ${
+            className={`chart-type-version-options pr-16 pt-4 pb-4 ${
                 disableVersionSelect ||
                 (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT)
                     ? ''
