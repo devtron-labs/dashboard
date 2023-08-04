@@ -215,7 +215,7 @@ function CollapsedList({
                 url,
                 authMode,
                 active: enabled,
-                gitHostId: (Number)(gitHostId),
+                gitHostId: +gitHostId,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
                 ...(authMode === 'SSH' ? { sshPrivateKey: sshPrivateKey } : {}),
@@ -241,10 +241,6 @@ function CollapsedList({
     const closeDropdown = (e) => {
         e.stopPropagation()
         toggleCollapse((t) => !t)
-    }
-
-    const setToggleEnabled = (e) => {
-        toggleEnabled(e)
     }
 
     return (
@@ -292,7 +288,7 @@ function CollapsedList({
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                    <List.Toggle onSelect={(en) => setToggleEnabled(en)} enabled={enabled} />
+                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
                                 )}
                             </span>
                         </Tippy>
