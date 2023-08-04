@@ -192,7 +192,8 @@ export default function DeploymentTemplateOverride({
                     },
                     isAppMetricsEnabled,
                     latestDraft: draftResp.result,
-                    // selectedTabIndex: draftResp.result?.draftState === 4 ? 2 : 3,
+                    selectedTabIndex: 3,
+                    openComparison: false,
                     allDrafts,
                     currentEditorView,
                     isBasicLocked,
@@ -210,7 +211,7 @@ export default function DeploymentTemplateOverride({
 
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                     updateTemplateFromBasicValue(envOverrideValues)
-                    parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues)
+                    parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, false)
                 }
             })
             .catch((e) => {
@@ -246,6 +247,7 @@ export default function DeploymentTemplateOverride({
                     result.environmentConfig.currentViewEditor,
                     result.globalConfig,
                     result.environmentConfig.envOverrideValues,
+                    true,
                 )
             }
 
@@ -279,7 +281,7 @@ export default function DeploymentTemplateOverride({
         e.preventDefault()
         if (state.duplicate) {
             //permanent delete
-            if (state.isConfigProtectionEnabled) {
+            if (state.isConfigProtectionEnabled && (state.data.IsOverride || !!state.latestDraft)) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
             } else if (state.data.IsOverride) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
@@ -311,7 +313,7 @@ export default function DeploymentTemplateOverride({
                             type: DeploymentConfigStateActionTypes.duplicate,
                             payload: null,
                         })
-                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null)
+                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null, false)
                     }
                 }
             }
@@ -332,6 +334,7 @@ export default function DeploymentTemplateOverride({
         _currentViewEditor: string,
         baseTemplate,
         envOverrideValues,
+        updatePublishedState,
     ): Promise<void> => {
         if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             if (!envOverrideValues) {
@@ -379,7 +382,12 @@ export default function DeploymentTemplateOverride({
             }
         }
 
-        if (Object.keys(statesToUpdate).length > 0) {
+        if (updatePublishedState && state.isConfigProtectionEnabled && state.latestDraft) {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.publishedState,
+                payload: statesToUpdate,
+            })
+        } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload: statesToUpdate,

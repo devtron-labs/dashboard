@@ -236,18 +236,19 @@ export default function DeploymentConfig({
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
 
-        let payload = {}
+        const statesToUpdate = {}
         if (!state.currentEditorView || !_currentViewEditor) {
             _currentViewEditor =
-                _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+                _isBasicViewLocked ||
+                currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE ||
+                state.selectedTabIndex === 2 ||
+                state.showReadme
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
 
-            payload = {
-                isBasicLocked: _isBasicViewLocked,
-                currentEditorView: _currentViewEditor,
-                yamlMode: _currentViewEditor !== EDITOR_VIEW.BASIC,
-            }
+            statesToUpdate['isBasicLocked'] = _isBasicViewLocked
+            statesToUpdate['currentEditorView'] = _currentViewEditor
+            statesToUpdate['yamlMode'] = _currentViewEditor !== EDITOR_VIEW.BASIC
         }
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
@@ -257,26 +258,12 @@ export default function DeploymentConfig({
                 !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
                 !_basicFieldValues[BASIC_FIELDS.RESOURCES]
             ) {
-                payload = {
-                    isBasicLocked: true,
-                    currentEditorView: EDITOR_VIEW.ADVANCED,
-                    yamlMode: true,
-                }
+                statesToUpdate['isBasicLocked'] = true
+                statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
+                statesToUpdate['yamlMode'] = true
             } else {
-                _currentViewEditor =
-                    _isBasicViewLocked ||
-                    currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE ||
-                    state.selectedTabIndex === 2 ||
-                    state.showReadme
-                        ? EDITOR_VIEW.ADVANCED
-                        : EDITOR_VIEW.BASIC
-                payload = {
-                    isBasicLocked: _isBasicViewLocked,
-                    currentEditorView: _currentViewEditor,
-                    yamlMode: _currentViewEditor !== EDITOR_VIEW.BASIC,
-                    basicFieldValues: _basicFieldValues,
-                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                }
+                statesToUpdate['basicFieldValues'] = _basicFieldValues
+                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
             }
         }
 
@@ -285,13 +272,13 @@ export default function DeploymentConfig({
                 type: DeploymentConfigStateActionTypes.publishedState,
                 payload: {
                     ...templateData['publishedState'],
-                    ...payload,
+                    ...statesToUpdate,
                 },
             })
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
-                payload,
+                payload: statesToUpdate,
             })
         }
     }

@@ -44,6 +44,7 @@ export default function DeploymentTemplateOverrideForm({
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -148,13 +149,18 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const changeEditorMode = (): void => {
-        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
+        if (readOnlyPublishedMode) {
+            if (state.publishedState && !state.publishedState.isBasicLocked) {
+                toggleYamlMode(!state.yamlMode)
+            }
+            return
+        } else if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             return
-        }
-        if (state.isBasicLocked) {
+        } else if (state.isBasicLocked) {
             return
         }
+
         try {
             const parsedCodeEditorValue =
                 tempValue && tempValue !== '' ? YAML.parse(tempValue) : state.duplicate || state.data.globalConfig
@@ -229,12 +235,12 @@ export default function DeploymentTemplateOverrideForm({
         switch (index) {
             case 1:
             case 3:
-                if (state.selectedTabIndex == 2) {
-                    const _isBasicLocked =
-                        state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
-                    const defaultYamlMode =
-                        state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
-                    toggleYamlMode(defaultYamlMode || _isBasicLocked || isEnterpriseInstallation)
+                const _isBasicLocked =
+                    state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
+                const defaultYamlMode =
+                    state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
+                toggleYamlMode(defaultYamlMode || _isBasicLocked || isEnterpriseInstallation)
+                if (state.selectedTabIndex === 2) {
                     handleComparisonClick()
                 }
                 break
@@ -315,9 +321,6 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const renderValuesView = () => {
-        const readOnlyPublishedMode =
-            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
-
         return (
             <form
                 className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${

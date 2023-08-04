@@ -259,7 +259,7 @@ export const getCodeEditorHeight = (
     if (openComparison || showReadme) {
         return 'calc(100vh - 220px)'
     } else if (isEnvOverride) {
-        return 'calc(100vh - 301px)'
+        return 'calc(100vh - 272px)'
     } else {
         return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
     }
