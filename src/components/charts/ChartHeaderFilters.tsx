@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'

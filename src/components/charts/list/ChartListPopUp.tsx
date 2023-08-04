@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ChartListPopUpType, ChartListType } from '../charts.types'
 import {
     showError,
@@ -10,7 +10,7 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { getChartProviderList, postChartProviderList, postSyncSpecificChart } from '../charts.service'
+import { postChartProviderList, postSyncSpecificChart } from '../charts.service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -31,8 +31,6 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
     const [fetching, setFetching] = useState<boolean>(false)
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
     const [enabled, toggleEnabled] = useState<boolean>()
-
-    const [noResults, setNoResults] = useState(false)
     const isEmpty = chartList.length && !filteredChartList.length
 
     const setStore = (event): void => {
@@ -155,10 +153,10 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         return (
             <div className="dc__overflow-scroll h-100 mxh-390-imp">
                 {filteredChartList.length > 0 &&
-                    filteredChartList.map((list) => {
+                    filteredChartList.map((list, index) => {
                         return (
                             <div className="chart-list__row">
-                                <List>
+                                <List key={`chart-row-${index}`}>
                                     <List.Logo>
                                         <div className={'dc__registry-icon ' + list.registryProvider}></div>
                                     </List.Logo>
@@ -216,7 +214,6 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = chartList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredChartList(_filteredData)
-        setNoResults(_filteredData.length === 0)
     }
 
     const clearSearch = (): void => {

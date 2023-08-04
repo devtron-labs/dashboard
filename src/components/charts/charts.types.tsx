@@ -362,7 +362,7 @@ export interface ChartListType {
     active: boolean
     id: number
     isEditable: boolean
-    name: String
+    name: string
     registryProvider?: string
     isOCIRegistry?: boolean
 }
