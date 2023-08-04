@@ -19,6 +19,7 @@ import TippyHeadless from '@tippyjs/react/headless'
 import { NavLink } from 'react-router-dom'
 import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
+import { ReactComponent as ICArrowBackward } from '../../../../assets/icons/ic-arrow-backward.svg'
 import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
@@ -327,57 +328,13 @@ const SummaryTooltipCard = React.memo(
 
 const ViewAllCardsTile = React.memo(({ handleViewAllHistory }: { handleViewAllHistory: () => void }): JSX.Element => {
     return (
-        <div
-            style={{
-                display: 'flex',
-                padding: '12px 16px',
-                alignItems: 'center',
-                gap: '16px',
-                alignSelf: 'stretch',
-                background: 'var(--n-0, #FFF)',
-            }}
-        >
-            <button
-                style={{
-                    cursor: 'pointer',
-                    padding: '0',
-                    border: 'none',
-                    background: 'none',
-                    height: '16px',
-                    width: '16px',
-                }}
-                onClick={handleViewAllHistory}
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path
-                        d="M13.5 8H2.5M2.5 8L7 3.5M2.5 8L7 12.5"
-                        stroke="#596168"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
+        <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-16 dc__align-self-stretch">
+            <button className="p-0 dc__no-background dc__no-border h-16" onClick={handleViewAllHistory}>
+                <ICArrowBackward width={16} height={16} />
             </button>
 
-            <div
-                style={{
-                    flex: '1 0 0',
-                }}
-            >
-                <p
-                    style={{
-                        color: 'var(--n-900, #000A14)',
-                        fontFamily: 'Open Sans',
-                        fontSize: '13px',
-                        fontStyle: 'normal',
-                        fontWeight: '600',
-                        lineHeight: '20px',
-                        display: 'table-cell',
-                        verticalAlign: 'middle',
-                    }}
-                >
-                    View all items in history
-                </p>
+            <div style={{ flex: '1 0 0' }}>
+                <p className="ci-cd-details__sidebar-typography">View all items in history</p>
             </div>
         </div>
     )
