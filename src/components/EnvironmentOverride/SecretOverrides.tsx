@@ -26,6 +26,7 @@ import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { dataHeaders, getTypeGroups, sampleJSONs, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast, handleSecretDataYamlChange } from '../secrets/secret.utils'
 import { ComponentStates, SecretOverridesProps } from './EnvironmentOverrides.type'
 import './environmentOverride.scss'
+import { replaceEscapeChar } from '../../util/Util'
 
 const SecretContext = React.createContext(null)
 function useSecretContext() {
@@ -399,6 +400,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse, isJobVie
                 toast.error('Secret configuration without any data is not allowed.')
                 return
             }
+            dataArray=replaceEscapeChar(dataArray)
             if (isHashiOrAWS || isESO) {
                 let isValid = true
                 if (isESO) {

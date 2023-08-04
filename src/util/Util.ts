@@ -38,6 +38,13 @@ export const decode = (data) => {
             return agg
         }, {})
 }
+export const replaceEscapeChar=(arr:any[]):any[]=>{
+    arr =arr.map(obj=>{
+        const val =obj.v.replace(/\n/g, '');
+        return {...obj, v: val};
+    })
+    return arr
+}
 
 export const replaceLastOddBackslash = (str: string): string=>{
   let countBackSlash = 0

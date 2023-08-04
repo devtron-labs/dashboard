@@ -27,6 +27,7 @@ import YAML from 'yaml'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import './environmentOverride.scss'
 import { ComponentStates, ConfigMapOverridesProps, ListComponentType } from './EnvironmentOverrides.type'
+import { replaceEscapeChar } from '../../util/Util'
 
 const ConfigMapContext = React.createContext(null)
 
@@ -389,6 +390,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
             toast.error('Configmaps without any data are not allowed.')
             return
         }
+        dataArray=replaceEscapeChar(dataArray)
         try {
             let payload = {
                 name: name,
