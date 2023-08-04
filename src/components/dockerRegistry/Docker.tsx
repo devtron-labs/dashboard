@@ -24,9 +24,10 @@ import {
     Checkbox,
     REGISTRY_TYPE_MAP,
     InfoColourBar,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
+import { getClusterListMinWithoutAuth, getDockerRegistryList, validateContainerConfiguration } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
@@ -56,6 +57,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 
 const OCIRegistryUseActionHelmPushMessage = importComponentFromFELibrary(
     'OCIRegistryUseActionHelmPushMessage',
@@ -73,7 +75,7 @@ export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
     const [clusterOption, setClusterOptions] = useState([])
     const [clusterLoader, setClusterLoader] = useState(false)
-    const [registryStorageType, setRegistryStorageType] = useState(RegistryStorageType.OCI_PRIVATE)
+    const [registryStorageType, setRegistryStorageType] = useState()
 
     const _getInit = async () => {
         setClusterLoader(true)
@@ -156,6 +158,7 @@ export default function Docker({ ...props }) {
                     key={docker.id || Math.random().toString(36).substr(2, 5)}
                     setRegistryStorageType={setRegistryStorageType}
                     registryStorageType={registryStorageType}
+                    isPublic={docker.isPublic}
                 />
             ))}
         </section>
@@ -178,7 +181,8 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    registryStorageType,
+    isPublic,
+    registryStorageType= isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
     setRegistryStorageType,
     ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
         ? {
@@ -201,7 +205,7 @@ function CollapsedList({
     },
     clusterOption,
     repositoryList = '',
-    isPublic,
+    disabledFields= [],
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -280,6 +284,7 @@ function CollapsedList({
                         isPublic,
                         registryStorageType,
                         setRegistryStorageType,
+                        disabledFields
                     }}
                 />
             )}
@@ -312,6 +317,7 @@ function DockerForm({
     isPublic,
     registryStorageType,
     setRegistryStorageType,
+    disabledFields,
     ...rest
 }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -428,6 +434,10 @@ function DockerForm({
     const [errorValidation, setErrorValidation] = useState<boolean>(false)
     const [showHelmPull, setListRepositories] = useState<boolean>(false)
     const [isOCIRegistryHelmPush, setOCIRegistryHelmPush] = useState<boolean>(false)
+    const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
+    const [validationStatus, setValidationStatus] = useState(
+        VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
+    )
 
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
@@ -560,6 +570,36 @@ function DockerForm({
             return
         }
         toggleDefault(not)
+    }
+
+    async function onClickValidate() {
+        setValidationStatus(VALIDATION_STATUS.LOADER)
+        // let isInvalid = isFormInvalid();
+        // if (!isInvalid) {
+        //     toast.error("Some Required Fields are missing");
+        //     return
+        // }
+        let payload = getRegistryPayload(awsRegion)
+        payload.ociRegistryConfig = isPublic ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
+
+        let promise = validateContainerConfiguration(payload)
+        await promise.then((response) => {
+            if (response.code === 200) {
+                setValidationStatus(VALIDATION_STATUS.SUCCESS)
+                toast.success("Configuration validated");
+            }
+        }).catch((error) => {
+            const code = error["code"]
+            const message = error["errors"][0].userMessage
+            if (code === 400) {
+                setValidationStatus(VALIDATION_STATUS.FAILURE)
+                toast.error('Configuration validation failed')
+                setValidationError({ errtitle: message, errMessage: message })
+            }else{
+                showError(error)
+                setValidationStatus(VALIDATION_STATUS.DRY_RUN)
+            }    
+        })
     }
 
     async function onSave() {
@@ -712,21 +752,21 @@ function DockerForm({
     }
 
     const handleOCIRegistryStorageAction = (key) => {
-        if (key === OCIRegistryConfigConstants.PUSH) {
+        if (key === 'helm-push') {
             setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
             !isOCIRegistryHelmPush &&
                 setOCIRegistryStorageConfig({
                     CHART: OCIRegistryConfigConstants.PUSH,
                 })
         }
-        if (key === OCIRegistryConfigConstants.PULL) {
+        if (key === 'helm-pull') {
             setListRepositories(!showHelmPull)
             !showHelmPull &&
                 setOCIRegistryStorageConfig({
                     CHART: OCIRegistryConfigConstants.PULL,
                 })
         }
-        if (key === OCIRegistryConfigConstants.PULL_PUSH) {
+        if (key === 'container-image') {
             setContainerStore(!isContainerStore)
             !isContainerStore &&
                 setOCIRegistryStorageConfig({
@@ -876,50 +916,84 @@ function DockerForm({
                             )}
                         </span>
                     </div>
-                    <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
-                        <Checkbox
-                            rootClassName="docker-default mb-0"
-                            isChecked={isContainerStore}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={() => handleOCIRegistryStorageAction(OCIRegistryConfigConstants.PULL_PUSH)}
-                            dataTestId={`store-${
-                                OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                            }-checkbox`}
-                        >
-                            Push container images
-                            {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
-                        </Checkbox>
-                    </div>
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-200 dc__zi-4 mt-0-imp"
+                        placement="left"
+                        infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                    >
+                        <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
+                            <Checkbox
+                                rootClassName={`${
+                                    disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
+                                } docker-default mb-0`}
+                                isChecked={isContainerStore}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={() => handleOCIRegistryStorageAction('container-image')}
+                                dataTestId={`store-${
+                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                                }-checkbox`}
+                                disabled={disabledFields.some((test) => test === 'CONTAINER')}
+                            >
+                                Push container images
+                                {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
+                            </Checkbox>
+                        </div>
+                    </TippyCustomized>
 
                     {isContainerStore && (
                         <>
                             <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
                         </>
                     )}
-                    <Checkbox
-                        rootClassName="docker-default mb-12 mt-12"
-                        id="helm-push"
-                        isChecked={isOCIRegistryHelmPush}
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={() => handleOCIRegistryStorageAction(OCIRegistryConfigConstants.PUSH)}
-                        dataTestId={`store-${
-                            OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                        }-checkbox`}
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-200 dc__zi-4 pt-0"
+                        placement="left"
+                        infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
                     >
-                        Push helm packages
-                    </Checkbox>
-                    <Checkbox
-                        rootClassName="docker-default mb-0"
-                        id="helm-pull"
-                        isChecked={showHelmPull}
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={() => handleOCIRegistryStorageAction(OCIRegistryConfigConstants.PULL)}
-                        dataTestId={`store-${
-                            OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                        }-checkbox`}
+                        <>
+                            <Checkbox
+                                rootClassName={`${
+                                    disabledFields.some((test) => test === 'CHART_PUSH') ? 'dc__opacity-0_5' : ''
+                                } docker-default mb-12 mt-12`}
+                                id="helm-push"
+                                isChecked={isOCIRegistryHelmPush}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={() => handleOCIRegistryStorageAction('helm-push')}
+                                dataTestId={`store-${
+                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                                }-checkbox`}
+                                disabled={disabledFields.some((test) => test === 'CHART_PUSH')}
+                            >
+                                Push helm packages
+                            </Checkbox>
+                        </>
+                    </TippyCustomized>
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-200 dc__zi-4 pt-0 mt-0"
+                        placement="left"
+                        infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
                     >
-                        Use as chart repository (Pull helm charts and show in chart store)
-                    </Checkbox>
+                        <div>
+                            <Checkbox
+                                rootClassName={`${
+                                    disabledFields.some((test) => test === 'CHART_PULL') ? 'dc__opacity-0_5' : ''
+                                } docker-default mb-0`}
+                                id="helm-pull"
+                                isChecked={showHelmPull}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={() => handleOCIRegistryStorageAction('helm-pull')}
+                                dataTestId={`store-${
+                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
+                                }-checkbox`}
+                                disabled={disabledFields.some((test) => test === 'CHART_PULL')}
+                            >
+                                Use as chart repository (Pull helm charts and show in chart store)
+                            </Checkbox>
+                        </div>
+                    </TippyCustomized>
                     {showHelmPull && <div className="pl-28">{renderOCIPublic()}</div>}
                     <hr className="mt-16 mb-16" />
                 </>
@@ -1215,6 +1289,14 @@ function DockerForm({
                         <hr className="mt-0 mb-0" />
                     </div>
                 )}
+                <ValidateForm
+                    id={id}
+                    onClickValidate={onClickValidate}
+                    validationError={validationError}
+                    isChartRepo={true}
+                    validationStatus={validationStatus}
+                    configName="registry"
+                />
                 <div className="form__row--two-third">
                     <div className="form__row">
                         <CustomInput
@@ -1350,7 +1432,7 @@ function DockerForm({
                         disabled={loading}
                         data-testid="container-registry-save-button"
                     >
-                        {loading ? <Progressing /> : 'Save'}
+                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>
 
