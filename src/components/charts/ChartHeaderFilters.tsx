@@ -76,6 +76,7 @@ function ChartHeaderFilter({
             }
         }
 
+
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
             if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
