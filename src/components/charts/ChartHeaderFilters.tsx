@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -11,7 +11,6 @@ import { URLS } from '../../config'
 
 function ChartHeaderFilter({
     selectedChartRepo,
-    handleCloseFilter,
     includeDeprecated,
     chartRepoList,
     setSelectedChartRepo,
@@ -25,7 +24,7 @@ function ChartHeaderFilter({
     const history = useHistory()
     const location = useLocation()
     const { url } = match
-
+  
     const handleSelection = (event): void => {
         const chartRepoList = selectedChartRepo.filter((e) => e != event)
         setSelectedChartRepo(chartRepoList)
@@ -46,8 +45,6 @@ function ChartHeaderFilter({
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         const registryId = searchParams.get(QueryParams.RegistryId)
-        console.log(selected)
-
         let isOCIRegistry
         if (key == 'chart-repo') {
             let chartRepoId = selected
@@ -78,6 +75,7 @@ function ChartHeaderFilter({
                 history.push(`${url}?${qs}`)
             }
         }
+
 
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
