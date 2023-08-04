@@ -512,8 +512,3 @@ export function updateLoginCount(payload): Promise<LoginCountType> {
 export function updatePostHogEvent(payload): Promise<ResponseType> {
     return post(Routes.TELEMETRY_EVENT, payload)
 }
-
-export const validateContainerConfiguration = (request: any):Promise<any> => {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/validate`;
-    return post(URL, request);
-}
