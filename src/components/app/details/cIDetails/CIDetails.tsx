@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
+import { showError, Progressing, Reload, GenericEmptyState, TagDetails } from '@devtron-labs/devtron-fe-common-lib'
+import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails } from '../../service'
 import { useScrollable, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -118,7 +118,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     }
 
     async function pollHistory() {
-        if (!pipelineId || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || (fetchBuildIdData && fetchBuildIdData !== FetchIdDataStatus.SUSPEND)) return
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -216,6 +216,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                             hideImageTaggingHardDelete={
                                                 triggerHistoryResult?.result?.hideImageTaggingHardDelete
                                             }
+                                            fetchIdData={fetchBuildIdData}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -258,6 +259,7 @@ export const Details = ({
     tagsEditable,
     appReleaseTags,
     hideImageTaggingHardDelete,
+    fetchIdData,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -274,10 +276,46 @@ export const Details = ({
         !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
 
+    const areTagDetailsRequired = !!fetchIdData && fetchIdData !== FetchIdDataStatus.SUSPEND
+    const [
+        tagDetailsLoading,
+        tagDetailsResult,
+        tagDetailsError,
+        reloadTagDetails,
+        setTagDetails,
+        tagDetailsDependency,
+    ] = useAsync(
+        () => getTagDetails({ pipelineId, artifactId: triggerDetailsResult?.result?.artifactId }),
+        [pipelineId, buildId],
+        areTagDetailsRequired && !!pipelineId && !!triggerDetailsResult?.result?.artifactId,
+    )
+    // TODO: Ask if Polling has to be done here
+
     useEffect(() => {
         if (triggerDetailsLoading) return
-        synchroniseState(+buildId, triggerDetailsResult?.result, triggerDetailsError)
+        let triggerDetailsWithTags = {
+            ...triggerDetailsResult?.result,
+            imageReleaseTags: triggerDetails?.imageReleaseTags,
+            imageComment: triggerDetails?.imageComment,
+        }
+        if (areTagDetailsRequired) {
+            triggerDetailsWithTags = null
+        }
+        synchroniseState(+buildId, triggerDetailsWithTags, triggerDetailsError)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
+    useEffect(() => {
+        if (tagDetailsLoading || !triggerDetailsResult) return
+        let triggerDetailsWithTags = {
+            ...triggerDetailsResult?.result,
+            imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
+            imageComment: tagDetailsResult?.result?.imageComment,
+        }
+        if (!areTagDetailsRequired) {
+            triggerDetailsWithTags = null
+        }
+        synchroniseState(+buildId, triggerDetailsWithTags, tagDetailsError)
+    }, [tagDetailsLoading, tagDetailsResult, tagDetailsError])
 
     const timeout = useMemo(() => {
         if (
@@ -296,7 +334,8 @@ export const Details = ({
     }, [triggerDetails])
     useInterval(reloadTriggerDetails, timeout)
 
-    if ((triggerDetailsLoading && !triggerDetails) || !buildId) return <Progressing pageLoader />
+    if ((triggerDetailsLoading && !triggerDetails) || !buildId || (areTagDetailsRequired && tagDetailsLoading))
+        return <Progressing pageLoader />
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState
@@ -308,6 +347,8 @@ export const Details = ({
     if (!triggerDetailsLoading && !triggerDetails) {
         return <Reload />
     }
+    if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
+
     if (triggerDetails.id !== +buildId) return null
     return (
         <>

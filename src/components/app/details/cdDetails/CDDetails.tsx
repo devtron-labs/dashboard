@@ -21,6 +21,7 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
+import { getTagDetails } from '../../service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
@@ -186,7 +187,7 @@ export default function CDDetails() {
     }, [result])
 
     async function pollHistory() {
-        if (!pipelineId || !envId || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !envId || (fetchTriggerIdData && fetchTriggerIdData !== FetchIdDataStatus.SUSPEND)) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -290,6 +291,7 @@ export default function CDDetails() {
                                 appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
                                 tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
                                 hideImageTaggingHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
+                                fetchIdData={fetchTriggerIdData}
                             />
                         </Route>
                     ) : !envId ? (
@@ -323,6 +325,7 @@ export const TriggerOutput: React.FC<{
     appReleaseTags: string[]
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
+    fetchIdData: FetchIdDataStatus
 }> = ({
     fullScreenView,
     syncState,
@@ -336,6 +339,7 @@ export const TriggerOutput: React.FC<{
     appReleaseTags,
     tagsEditable,
     hideImageTaggingHardDelete,
+    fetchIdData,
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -349,10 +353,53 @@ export const TriggerOutput: React.FC<{
         [triggerId, appId, envId],
         !!triggerId && !!pipelineId,
     )
+
+    const areTagDetailsRequired = !!fetchIdData && fetchIdData !== FetchIdDataStatus.SUSPEND
+    const [
+        tagDetailsLoading,
+        tagDetailsResult,
+        tagDetailsError,
+        reloadTagDetails,
+        setTagDetails,
+        tagDetailsDependency,
+    ] = useAsync(
+        () => getTagDetails({ pipelineId, artifactId: triggerDetailsResult?.result?.artifactId }),
+        [pipelineId, triggerId],
+        areTagDetailsRequired && !!pipelineId && !!triggerDetailsResult?.result?.artifactId,
+    )
+    // TODO: Maybe POLLING
+
+    // useEffect(() => {
+    //     if (triggerDetailsLoading) return
+    //     syncState(+triggerId, triggerDetailsResult?.result, triggerDetailsError)
+    // }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
     useEffect(() => {
         if (triggerDetailsLoading) return
-        syncState(+triggerId, triggerDetailsResult?.result, triggerDetailsError)
+        let triggerDetailsWithTags = {
+            ...triggerDetailsResult?.result,
+            imageComment: triggerDetails?.imageComment,
+            imageReleaseTags: triggerDetails?.imageReleaseTags,
+        }
+
+        if (areTagDetailsRequired) {
+            triggerDetailsWithTags = null
+        }
+        syncState(+triggerId, triggerDetailsWithTags, triggerDetailsError)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
+    useEffect(() => {
+        if (tagDetailsLoading || !triggerDetailsResult) return
+        let triggerDetailsWithTags = {
+            ...triggerDetailsResult?.result,
+            imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
+            imageComment: tagDetailsResult?.result?.imageComment,
+        }
+        if (!areTagDetailsRequired) {
+            triggerDetailsWithTags = null
+        }
+        syncState(+triggerId, triggerDetailsWithTags, tagDetailsError)
+    }, [tagDetailsLoading, tagDetailsResult, tagDetailsError])
 
     const timeout = useMemo(() => {
         if (
@@ -369,13 +416,15 @@ export const TriggerOutput: React.FC<{
 
     useInterval(reloadTriggerDetails, timeout)
 
-    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
+    if ((triggerDetailsLoading && !triggerDetails) || !triggerId || (areTagDetailsRequired && tagDetailsLoading))
+        return <Progressing pageLoader />
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState title="Trigger Not Found" subTitle="The trigger you are looking for does not exist." />
         )
     }
     if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+    if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
     if (triggerDetails?.id !== +triggerId) {
         return null
     }
@@ -465,7 +514,7 @@ export const TriggerOutput: React.FC<{
             <HistoryLogs
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
-                loading={triggerDetailsLoading && !triggerDetailsResult}
+                loading={triggerDetailsLoading || !triggerDetails || (areTagDetailsRequired && !tagDetailsResult)}
                 userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
                 triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}
@@ -586,14 +635,8 @@ const HistoryLogs: React.FC<{
                                 triggeredByEmail={triggeredByEmail}
                                 artifactId={artifactId}
                                 ciPipelineId={ciPipelineId}
-                                imageComment={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        ?.imageComment
-                                }
-                                imageReleaseTags={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
-                                        ?.imageReleaseTags
-                                }
+                                imageComment={triggerDetails?.imageComment}
+                                imageReleaseTags={triggerDetails?.imageReleaseTags}
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
@@ -634,16 +677,8 @@ const HistoryLogs: React.FC<{
                                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                         ciPipelineId={triggerDetails.ciPipelineId}
                                         artifactId={triggerDetails.artifactId}
-                                        imageComment={
-                                            deploymentHistoryResult?.[
-                                                artifactTodeploymentHistoryIndexMap.get(artifactId)
-                                            ]?.imageComment
-                                        }
-                                        imageReleaseTags={
-                                            deploymentHistoryResult?.[
-                                                artifactTodeploymentHistoryIndexMap.get(artifactId)
-                                            ]?.imageReleaseTags
-                                        }
+                                        imageComment={triggerDetails?.imageComment}
+                                        imageReleaseTags={triggerDetails?.imageReleaseTags}
                                         tagsEditable={tagsEditable}
                                         appReleaseTagNames={appReleaseTags}
                                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}

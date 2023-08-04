@@ -1,4 +1,4 @@
-import { History } from '../cicdHistory/types'
+import { FetchIdDataStatus, History } from '../cicdHistory/types'
 
 export interface CIPipeline {
     name: string
@@ -18,6 +18,7 @@ export interface BuildDetails {
     appReleaseTags?: []
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
+    fetchIdData: FetchIdDataStatus
 }
 
 export interface HistoryLogsType {

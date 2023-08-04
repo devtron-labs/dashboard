@@ -106,7 +106,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     async function pollHistory() {
         // polling
-        if (!pipelineId || !appId || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !appId || (fetchTriggerIdData && fetchTriggerIdData !== FetchIdDataStatus.SUSPEND)) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -211,6 +211,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
                         tagsEditable={deploymentHistoryResult.result?.tagsEditable}
                         hideImageTaggingHardDelete={deploymentHistoryResult.result?.hideImageTaggingHardDelete}
+                        fetchIdData={fetchTriggerIdData}
                     />
                 </Route>
             )
