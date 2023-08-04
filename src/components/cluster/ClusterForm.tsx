@@ -188,7 +188,7 @@ export default function ClusterForm({
             },
             proxyUrl: {
                 required: id && KubectlProxyCheckBox ? toConnectViaProxyTemp : false,
-                validator: { error: 'incorrect URL', regex: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
+                validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
@@ -659,7 +659,7 @@ export default function ClusterForm({
                         {!isTlsConnection && <hr />}
                         {isTlsConnection && (
                             <>
-                                <div className="form__row">
+                                <div className="form__row ml-24">
                                     <span
                                         data-testid="certificate_authority_data"
                                         className="form__label dc__required-field"
@@ -687,7 +687,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div className="form__row">
+                                <div className="form__row ml-24">
                                     <span data-testid="tls_client_key" className="form__label dc__required-field">
                                         TLS Key
                                     </span>
@@ -712,7 +712,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div className="form__row">
+                                <div className="form__row ml-24">
                                     <span data-testid="tls_certificate" className="form__label dc__required-field">
                                         TLS Certificate
                                     </span>
