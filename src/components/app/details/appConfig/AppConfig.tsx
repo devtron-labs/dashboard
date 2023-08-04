@@ -439,7 +439,7 @@ function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean
                 <Lock className="app-compose__nav-icon icon-dim-20" data-testid={`${linkDataTestName}-lockicon`} />
             )}
             {!item.isLocked && isBaseConfigProtected && item.isProtectionAllowed && (
-                <ProtectedIcon className="icon-dim-16" />
+                <ProtectedIcon className="icon-dim-20 fcv-5" />
             )}
         </NavLink>
     )

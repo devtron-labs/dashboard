@@ -212,7 +212,7 @@ const EnvOverrideRoute = ({
                     {envOverride.environmentName}
                 </div>
                 <div className="flex">
-                    {isEnvProtected && <ProtectedIcon className="icon-dim-16" />}
+                    {isEnvProtected && <ProtectedIcon className="icon-dim-20 fcv-5" />}
                     {isJobView && deletePopUpMenu()}
                     {isJobView && showDelete && showDeleteDialog(deletePipeline)}
                 </div>

@@ -915,7 +915,7 @@ export const ConfigMapSecretForm = React.memo(
             return (
                 <div className="form__row">
                     <label className="form__label">Data type</label>
-                    <div className="form-row__select-external-type">
+                    <div className="form-row__select-external-type dc_max-width__max-content">
                         {componentType === 'secret' ? (
                             secretDataTypeSelectWithInfo()
                         ) : (

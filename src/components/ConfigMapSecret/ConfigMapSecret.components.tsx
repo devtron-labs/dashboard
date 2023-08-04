@@ -294,7 +294,7 @@ export function ConfigMapSecretContainer({
                             {isProtected && (
                                 <>
                                     {renderDraftState()}
-                                    <ProtectedIcon />
+                                    <ProtectedIcon className="icon-dim-20 mr-8 fcv-5" />
                                 </>
                             )}
                             {isLoader ? (
