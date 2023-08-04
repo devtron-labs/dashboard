@@ -964,7 +964,7 @@ button.anchor {
 .dc__configuration-list {
     display: grid;
     grid-template-columns: 24px 1fr 200px;
-    grid-column-gap: 16px;
+    grid-column-gap: 10px;
     .tag {
         border: 1px solid var(--N200);
         height: 20px;

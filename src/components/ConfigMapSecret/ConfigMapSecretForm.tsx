@@ -564,7 +564,7 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const submitButtonText = (): string => {
-            return `Save ${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
+            return `Save${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
         }
 
         const closeProtectedDeleteModal = (): void => {
