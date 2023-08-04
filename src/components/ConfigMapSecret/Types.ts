@@ -160,6 +160,7 @@ export interface ConfigMapState {
     cmSecretState: CM_SECRET_STATE
     showDeleteModal: boolean
     showDraftSaveModal: boolean
+    showProtectedDeleteModal: boolean,
     draftPayload: any
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
@@ -170,7 +171,6 @@ export enum ConfigMapActionTypes {
     overrideLoading = 'overrideLoading',
     success = 'success',
     error = 'error',
-    toggleDialog = 'toggleDialog',
     setExternal = 'setExternal',
     setSelectedType = 'setSelectedType',
     setVolumeMountPath = 'setVolumeMountPath',
@@ -191,7 +191,9 @@ export enum ConfigMapActionTypes {
     updateCurrentData = 'updateCurrentData',
     toggleSecretMode = 'toggleSecretMode',
     toggleUnAuthorized = 'toggleUnAuthorized',
-    setShowDeleteModal = 'setShowDeleteModal',
+    toggleDialog = 'toggleDialog',
+    toggleDeleteModal = 'toggleDeleteModal',
+    toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
 }
 

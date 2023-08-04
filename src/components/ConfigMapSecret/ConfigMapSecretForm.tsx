@@ -155,7 +155,11 @@ export const ConfigMapSecretForm = React.memo(
             e.preventDefault()
             if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) {
                 if (configMapSecretData.data) {
-                    dispatch({ type: ConfigMapActionTypes.toggleDialog })
+                    if (isProtectedView) {
+                        dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+                    } else {
+                        dispatch({ type: ConfigMapActionTypes.toggleDialog })
+                    }
                 } else {
                     dispatch({
                         type: ConfigMapActionTypes.reInit,
@@ -401,21 +405,25 @@ export const ConfigMapSecretForm = React.memo(
             return state.draftPayload
         }
 
-        const handleError = (err, payloadData): void => {
+        const handleError = (actionType, err, payloadData?): void => {
             if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                 for (const error of err.errors) {
-                    if (error.code === 403) {
-                        const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
-                        if (envId) {
-                            _draftPayload['environmentId'] = +envId
+                    if (error.code === 423) {
+                        if (actionType === 3) {
+                            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+                        } else {
+                            const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
+                            if (envId) {
+                                _draftPayload['environmentId'] = +envId
+                            }
+                            dispatch({
+                                type: ConfigMapActionTypes.multipleOptions,
+                                payload: {
+                                    showDraftSaveModal: true,
+                                    draftPayload: _draftPayload,
+                                },
+                            })
                         }
-                        dispatch({
-                            type: ConfigMapActionTypes.multipleOptions,
-                            payload: {
-                                showDraftSaveModal: true,
-                                draftPayload: _draftPayload,
-                            },
-                        })
                         reloadEnvironments()
                         return
                     }
@@ -470,7 +478,7 @@ export const ConfigMapSecretForm = React.memo(
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
-                handleError(err, payloadData)
+                handleError(2, err, payloadData)
             }
         }
 
@@ -494,14 +502,18 @@ export const ConfigMapSecretForm = React.memo(
                 update()
                 updateCollapsed(false)
                 dispatch({ type: ConfigMapActionTypes.success })
-            } catch (err) {
-                showError(err)
-                dispatch({ type: ConfigMapActionTypes.error })
-            } finally {
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
-                    payload: { dialog: false, showDeleteModal: false },
+                    payload: {
+                        dialog: false,
+                        showDeleteModal: false,
+                        showProtectedDeleteModal: false,
+                        submitLoading: false,
+                        overrideLoading: false,
+                    },
                 })
+            } catch (err) {
+                handleError(3, err)
             }
         }
 
@@ -555,12 +567,20 @@ export const ConfigMapSecretForm = React.memo(
             return `Save ${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
         }
 
+        const closeProtectedDeleteModal = (): void => {
+            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+        }
+
         const closeDeleteModal = (): void => {
-            dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: false })
+            dispatch({ type: ConfigMapActionTypes.toggleDeleteModal })
         }
 
         const openDeleteModal = (e): void => {
-            dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: true })
+            if (isProtectedView) {
+                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+            } else {
+                dispatch({ type: ConfigMapActionTypes.toggleDeleteModal })
+            }
         }
 
         const toggleDraftSaveModal = (reload?: boolean): void => {
@@ -573,20 +593,6 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const renderDeleteOverRideModal = (): JSX.Element => {
-            if (isProtectedView && DeleteModal) {
-                return (
-                    <DeleteModal
-                        id={+id}
-                        appId={+appId}
-                        envId={envId ? +envId : -1}
-                        resourceType={componentType === 'secret' ? 2 : 1}
-                        resourceName={state.configName.value}
-                        latestDraft={latestDraftData}
-                        toggleModal={closeDeleteModal}
-                        reload={reloadData}
-                    />
-                )
-            }
             return (
                 <ConfirmationDialog className="confirmation-dialog__body--w-400">
                     <ConfirmationDialog.Icon src={warningIcon} />
@@ -610,21 +616,7 @@ export const ConfigMapSecretForm = React.memo(
             )
         }
 
-        const renderDeleteCMModal = (): JSX.Element => {
-            if (isProtectedView && DeleteModal) {
-                return (
-                    <DeleteModal
-                        id={+id}
-                        appId={+appId}
-                        envId={envId ? +envId : -1}
-                        resourceType={componentType === 'secret' ? 2 : 1}
-                        resourceName={state.configName.value}
-                        latestDraft={latestDraftData}
-                        toggleModal={closeDeleteModal}
-                        reload={reloadData}
-                    />
-                )
-            }
+        const renderDeleteModal = (): JSX.Element => {
             return (
                 <DeleteDialog
                     title={`Delete ${componentType === 'secret' ? 'Secret' : 'ConfigMap'} '${
@@ -635,6 +627,24 @@ export const ConfigMapSecretForm = React.memo(
                     delete={handleDelete}
                 />
             )
+        }
+
+        const renderProtectedDeleteModal = (): JSX.Element => {
+            if (DeleteModal) {
+                return (
+                    <DeleteModal
+                        id={+id}
+                        appId={+appId}
+                        envId={envId ? +envId : -1}
+                        resourceType={componentType === 'secret' ? 2 : 1}
+                        resourceName={state.configName.value}
+                        latestDraft={latestDraftData}
+                        toggleModal={closeProtectedDeleteModal}
+                        reload={reloadData}
+                    />
+                )
+            }
+            return null
         }
 
         const renderRollARN = (): JSX.Element => {
@@ -1036,8 +1046,9 @@ export const ConfigMapSecretForm = React.memo(
                     )}
                 </div>
 
-                {configMapSecretData?.name && state.showDeleteModal && renderDeleteCMModal()}
+                {configMapSecretData?.name && state.showDeleteModal && renderDeleteModal()}
                 {state.dialog && renderDeleteOverRideModal()}
+                {state.showProtectedDeleteModal && renderProtectedDeleteModal()}
                 {state.showDraftSaveModal && (
                     <SaveChangesModal
                         appId={+appId}

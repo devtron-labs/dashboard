@@ -35,7 +35,7 @@ export const initState = (
     configMapSecretData,
     componentType: string,
     cmSecretStateLabel: CM_SECRET_STATE,
-    draftMode: boolean
+    draftMode: boolean,
 ): ConfigMapState | ConfigMapSecretState => {
     const secretInitState = componentType === 'secret' ? getSecretInitState(configMapSecretData, draftMode) : {}
     const initialState = {
@@ -71,6 +71,7 @@ export const initState = (
         yamlMode: true,
         cmSecretState: cmSecretStateLabel,
         showDeleteModal: false,
+        showProtectedDeleteModal: false,
         showDraftSaveModal: false,
         draftPayload: null,
         ...secretInitState,
@@ -89,8 +90,6 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
         case ConfigMapActionTypes.success:
         case ConfigMapActionTypes.error:
             return { ...state, submitLoading: false, overrideLoading: false }
-        case ConfigMapActionTypes.toggleDialog:
-            return { ...state, dialog: !state.dialog }
         case ConfigMapActionTypes.setExternal:
             return { ...state, external: action.payload }
         case ConfigMapActionTypes.setSelectedType:
@@ -109,8 +108,12 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
             return { ...state, configName: action.payload }
         case ConfigMapActionTypes.toggleYamlMode:
             return { ...state, yamlMode: !state.yamlMode }
-        case ConfigMapActionTypes.setShowDeleteModal:
+        case ConfigMapActionTypes.toggleDialog:
+            return { ...state, dialog: !state.dialog }
+        case ConfigMapActionTypes.toggleDeleteModal:
             return { ...state, showDeleteModal: !state.showDeleteModal }
+        case ConfigMapActionTypes.toggleProtectedDeleteModal:
+            return { ...state, showProtectedDeleteModal: !state.showProtectedDeleteModal }
 
         case ConfigMapActionTypes.setExternalType:
             return { ...state, externalType: action.payload }

@@ -439,7 +439,7 @@ export function ProtectedConfigMapSecretDetails({
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
         } else {
-            const hasAccess = hasApproverAccess([] || draftData.approvers)
+            const hasAccess = hasApproverAccess(draftData.approvers)
             return (
                 <div
                     className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
