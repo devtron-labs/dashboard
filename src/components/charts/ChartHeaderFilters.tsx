@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -45,8 +45,6 @@ function ChartHeaderFilter({
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         const registryId = searchParams.get(QueryParams.RegistryId)
-        console.log(selected)
-
         let isOCIRegistry
         if (key == 'chart-repo') {
             let chartRepoId = selected
@@ -77,6 +75,7 @@ function ChartHeaderFilter({
                 history.push(`${url}?${qs}`)
             }
         }
+
 
         if (key == 'deprecated') {
             let qs = `${QueryParams.IncludeDeprecated}=${selected}`
