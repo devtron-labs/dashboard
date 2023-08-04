@@ -107,11 +107,11 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
             {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
             {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
                 <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />}
-            {validationStatus === VALIDATION_STATUS.LOADER &&
+            { validationStatus == VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
-            {validationStatus === VALIDATION_STATUS.FAILURE &&
+            {validationStatus == VALIDATION_STATUS.FAILURE &&
                 <ValidateFailure validationError={validationError} onClickValidate={onClickValidate} formId={id} isChartRepo={isChartRepo} warning={warning} />}
-            {validationStatus === VALIDATION_STATUS.SUCCESS &&
+            {validationStatus == VALIDATION_STATUS.SUCCESS &&
                 <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />}
         </div>
     )
