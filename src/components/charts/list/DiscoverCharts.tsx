@@ -92,7 +92,6 @@ function DiscoverChartList() {
     const [showDeployModal, toggleDeployModal] = useState(false)
     const [chartListLoading, setChartListloading] = useState(true)
     const [selectedChartRepo, setSelectedChartRepo] = useState([])
-    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([])
     const [appStoreName, setAppStoreName] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [includeDeprecated, setIncludeDeprecated] = useState(0)
@@ -225,15 +224,24 @@ function DiscoverChartList() {
     function initialiseFromQueryParams(chartRepoList): void {
         let searchParams = new URLSearchParams(location.search)
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
+        let allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
         let appStoreName: string = searchParams.get(QueryParams.AppStoreName)
         let chartRepoIdArray = []
+        let ociRegistryArray = []
         if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(',')
+        if (allRegistryIds) ociRegistryArray = allRegistryIds.split(',')
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
+        ociRegistryArray = ociRegistryArray.map((ociRegistryId) => ociRegistryId)
+
         let selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
             let chartRepo = chartRepoList.find((item) => +item.value === chartRepoIdArray[i])
             if (chartRepo) selectedRepos.push(chartRepo)
+        }
+        for (let i = 0; i < ociRegistryArray.length; i++) {
+            let registry = chartRepoList.find((item) => item.value === ociRegistryArray[i])
+            if (registry) selectedRepos.push(registry)
         }
         if (selectedRepos) setSelectedChartRepo(selectedRepos)
         if (deprecated) setIncludeDeprecated(parseInt(deprecated))
@@ -244,7 +252,6 @@ function DiscoverChartList() {
             setSearchApplied(false)
             setAppStoreName('')
         }
-        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
     async function callApplyFilterOnCharts(resetPage?: boolean) {
@@ -259,10 +266,6 @@ function DiscoverChartList() {
 
     function handleViewAllCharts(): void {
         history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
-    }
-
-    function handleCloseFilter(): void {
-        setSelectedChartRepo(appliedChartRepoFilter)
     }
 
     function renderCreateGroupButton() {
@@ -375,7 +378,6 @@ function DiscoverChartList() {
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
                                 setAppStoreName={setAppStoreName}
-                                handleCloseFilter={handleCloseFilter}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />
