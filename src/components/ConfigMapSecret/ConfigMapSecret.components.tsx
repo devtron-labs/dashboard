@@ -113,7 +113,7 @@ export function ConfigMapSecretContainer({
     toggleDraftComments,
     reduceOpacity,
     parentName,
-    reloadEnvironments
+    reloadEnvironments,
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
@@ -330,7 +330,7 @@ export function ProtectedConfigMapSecretDetails({
     selectedTab,
     draftData,
     parentName,
-    reloadEnvironments
+    reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
@@ -636,6 +636,13 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
     )
 }
 
+export const convertToValidValue = (k: any): string => {
+    if (!isNaN(Number(k))) {
+        return Number(k).toString()
+    }
+    return k
+}
+
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     let isValid = true
     arr = arr.reduce((agg, { k, v }) => {
@@ -653,8 +660,7 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
             keyError = `Key '${k}' must consist of alphanumeric characters, '.', '-' and '_'`
             isValid = false
         }
-        const val = v.replace(/\n/g, '')
-        return [...agg, { k, v: val, keyError, valueError }]
+        return [...agg, { k, v, keyError, valueError }]
     }, [])
     return { isValid, arr }
 }
@@ -693,9 +699,9 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             let tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) return agg
                 let v =
-                    obj[k] && ['object', 'number'].includes(typeof obj[k])
+                    obj[k] && typeof obj[k] === 'object'
                         ? YAML.stringify(obj[k], { indent: 2 })
-                        : obj[k]
+                        : convertToValidValue(obj[k])
                 let keyErr: string
                 if (k && keyPattern.test(k)) {
                     keyErr = ''
