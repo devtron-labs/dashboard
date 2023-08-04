@@ -19,10 +19,11 @@ import {
     KeyValueValidated,
     ResizableTextareaProps,
     KeyValueYaml,
+    ProtectedConfigMapSecretDetailsProps,
 } from './Types'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { CM_SECRET_STATE } from './Constants'
-import { importComponentFromFELibrary } from '../common'
+import { hasApproverAccess, importComponentFromFELibrary } from '../common'
 import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistoryDiff/DeploymentHistoryDiffView'
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
@@ -112,6 +113,7 @@ export function ConfigMapSecretContainer({
     toggleDraftComments,
     reduceOpacity,
     parentName,
+    reloadEnvironments
 }: ConfigMapSecretProps) {
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
@@ -219,6 +221,7 @@ export function ConfigMapSecretContainer({
                         selectedTab={selectedTab}
                         draftData={draftData}
                         parentName={parentName}
+                        reloadEnvironments={reloadEnvironments}
                     />
                 </>
             )
@@ -246,6 +249,7 @@ export function ConfigMapSecretContainer({
                           }
                         : null
                 }
+                reloadEnvironments={reloadEnvironments}
             />
         )
     }
@@ -326,7 +330,8 @@ export function ProtectedConfigMapSecretDetails({
     selectedTab,
     draftData,
     parentName,
-}) {
+    reloadEnvironments
+}: ProtectedConfigMapSecretDetailsProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
 
@@ -434,13 +439,14 @@ export function ProtectedConfigMapSecretDetails({
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
         } else {
+            const hasAccess = hasApproverAccess([] || draftData.approvers)
             return (
                 <div
                     className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
-                        draftData.canApprove ? 'tippy-over' : ''
+                        hasAccess && draftData.canApprove ? 'tippy-over' : ''
                     }`}
                 >
-                    {draftData.canApprove ? (
+                    {hasAccess && draftData.canApprove ? (
                         <ApproveRequestTippy
                             draftId={draftData.draftId}
                             draftVersionId={draftData.draftVersionId}
@@ -461,7 +467,11 @@ export function ProtectedConfigMapSecretDetails({
                             className="default-tt w-200"
                             arrow={false}
                             placement="top-end"
-                            content="You have made changes to this file. Users who have edited cannot approve the changes."
+                            content={
+                                hasAccess
+                                    ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
+                                    : `You don't have approver access`
+                            }
                         >
                             <button
                                 data-testid="approve-config-button"
@@ -548,6 +558,7 @@ export function ProtectedConfigMapSecretDetails({
                           }
                         : null
                 }
+                reloadEnvironments={reloadEnvironments}
             />
         )
     }

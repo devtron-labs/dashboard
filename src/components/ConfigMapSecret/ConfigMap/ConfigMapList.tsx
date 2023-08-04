@@ -22,6 +22,7 @@ export default function ConfigMapList({
     parentName,
     parentState,
     setParentState,
+    reloadEnvironments,
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [configMap, setConfigMap] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -133,6 +134,7 @@ export default function ConfigMapList({
                         isProtected={isProtected}
                         toggleDraftComments={toggleDraftComments}
                         reduceOpacity={!!selectedDraft}
+                        reloadEnvironments={reloadEnvironments}
                     />
                     <div>
                         {configMap?.configData.map((cm, idx) => {
@@ -152,6 +154,7 @@ export default function ConfigMapList({
                                     toggleDraftComments={toggleDraftComments}
                                     reduceOpacity={selectedDraft && selectedDraft.index !== idx}
                                     parentName={parentName}
+                                    reloadEnvironments={reloadEnvironments}
                                 />
                             )
                         })}

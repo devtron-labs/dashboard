@@ -194,10 +194,10 @@ export default function AppComposeRouter({
                         )}
                     />,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
-                        <ConfigMapList isProtected={isBaseConfigProtected} />
+                        <ConfigMapList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
-                        <SecretList isProtected={isBaseConfigProtected} />
+                        <SecretList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}

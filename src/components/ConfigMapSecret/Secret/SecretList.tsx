@@ -22,6 +22,7 @@ export default function SecretList({
     parentName,
     parentState,
     setParentState,
+    reloadEnvironments
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -166,6 +167,7 @@ export default function SecretList({
                         isProtected={isProtected}
                         toggleDraftComments={toggleDraftComments}
                         reduceOpacity={!!selectedDraft}
+                        reloadEnvironments={reloadEnvironments}
                     />
                     <div>
                         {list?.configData?.map((cs, idx) => (
@@ -184,6 +186,7 @@ export default function SecretList({
                                 toggleDraftComments={toggleDraftComments}
                                 reduceOpacity={selectedDraft && selectedDraft.index !== idx}
                                 parentName={parentName}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         ))}
                     </div>

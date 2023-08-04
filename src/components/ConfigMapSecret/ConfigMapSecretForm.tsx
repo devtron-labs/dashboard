@@ -31,6 +31,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     DeleteDialog,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
@@ -78,6 +79,7 @@ export const ConfigMapSecretForm = React.memo(
         isProtectedView,
         draftMode,
         latestDraftData,
+        reloadEnvironments,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
@@ -399,14 +401,38 @@ export const ConfigMapSecretForm = React.memo(
             return state.draftPayload
         }
 
+        const handleError = (err, payloadData): void => {
+            if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                for (const error of err.errors) {
+                    if (error.code === 403) {
+                        const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
+                        if (envId) {
+                            _draftPayload['environmentId'] = +envId
+                        }
+                        dispatch({
+                            type: ConfigMapActionTypes.multipleOptions,
+                            payload: {
+                                showDraftSaveModal: true,
+                                draftPayload: _draftPayload,
+                            },
+                        })
+                        reloadEnvironments()
+                        return
+                    }
+                }
+            }
+            showError(err)
+            dispatch({ type: ConfigMapActionTypes.error })
+        }
+
         async function handleSubmit(e) {
             e.preventDefault()
             const { isValid, arr } = validateForm()
             if (!isValid) {
                 return
             }
+            const payloadData = createPayload(arr)
             try {
-                const payloadData = createPayload(arr)
                 if (isProtectedView) {
                     const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
                     if (envId) {
@@ -444,8 +470,7 @@ export const ConfigMapSecretForm = React.memo(
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
-                showError(err)
-                dispatch({ type: ConfigMapActionTypes.error })
+                handleError(err, payloadData)
             }
         }
 
