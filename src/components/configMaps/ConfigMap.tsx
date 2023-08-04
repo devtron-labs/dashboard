@@ -957,6 +957,17 @@ export function ConfigMapForm({
         </div>
     )
 }
+export const convertToValidValue=(k:any): string=>{
+    if ((typeof k=='number')){
+        return k.toString();
+    }
+    if(typeof k=='string' && !isNaN(parseInt(k))){
+        let p=Number(k)
+        return Number.isNaN(p)?k:p.toString()
+    }
+    return k
+    
+}
 
 export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, keyError): keyValueYaml {
     //input containing array of [{k, v, keyError, valueError}]
@@ -992,9 +1003,9 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             let tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) return agg
                 let v =
-                    obj[k] && ['object', 'number'].includes(typeof obj[k])
+                    obj[k] && ['object'].includes(typeof obj[k])
                         ? YAML.stringify(obj[k], { indent: 2 })
-                        : obj[k]
+                        : convertToValidValue(obj[k])
                 let keyErr: string
                 if (k && keyPattern.test(k)) {
                     keyErr = ''
