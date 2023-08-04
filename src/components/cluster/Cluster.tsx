@@ -79,7 +79,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
-             window._env_.K8S_CLIENT
+            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
                 ? { result: undefined }
                 : getEnvironmentList(),
         ])
@@ -636,7 +636,7 @@ function Cluster({
                             }}
                         />
                     )}
-                    {
+                    {serverMode !== SERVER_MODE.EA_ONLY &&
                     !window._env_.K8S_CLIENT &&
                     Array.isArray(newEnvs) &&
                     newEnvs.length > 1 ? (
