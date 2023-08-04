@@ -9,7 +9,12 @@ import { getAppsCDConfigMin } from '../../AppGroup.service'
 import Sidebar from '../../../app/details/cicdHistory/Sidebar'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
 import { getTriggerHistory } from '../../../app/details/cdDetails/service'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../../../app/details/cicdHistory/types'
+import {
+    CICDSidebarFilterOptionType,
+    History,
+    HistoryComponentType,
+    FetchIdDataStatus,
+} from '../../../app/details/cicdHistory/types'
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { Route } from 'react-router-dom'
@@ -31,6 +36,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [pipelineList, setPipelineList] = useState([])
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
+    const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
@@ -79,6 +85,14 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+
+        if (triggerId && !newTriggerHistory.has(+triggerId)) {
+            setFetchTriggerIdData(FetchIdDataStatus.FETCHING)
+            newTriggerHistory.clear()
+        } else {
+            setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+        }
+
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
@@ -86,12 +100,13 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setFetchTriggerIdData(null)
         }
     }, [appId])
 
     async function pollHistory() {
         // polling
-        if (!pipelineId || !appId) return
+        if (!pipelineId || !appId || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -109,13 +124,40 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         setTriggerHistory(newTriggerHistory)
     }
 
-    function syncState(triggerId: number, triggerDetail: History) {
-        if (triggerId === triggerDetail.id) {
+    function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
+        if (triggerDetailsError) {
+            if (deploymentHistoryResult.result?.cdWorkflows?.length) {
+                setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+            }
+            setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+            return
+        }
+        if (triggerId === triggerDetail?.id) {
             setTriggerHistory((triggerHistory) => {
                 triggerHistory.set(triggerId, triggerDetail)
                 return new Map(triggerHistory)
             })
+            if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
+                setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
+            } else {
+                setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+            }
         }
+    }
+
+    const handleViewAllHistory = () => {
+        if (deploymentHistoryResult.result?.cdWorkflows?.length) {
+            setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+        }
+        setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+        replace(
+            generatePath(path, {
+                appId,
+                envId,
+                pipelineId,
+                triggerId: deploymentHistoryResult.result?.cdWorkflows?.[0]?.id,
+            }),
+        )
     }
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
@@ -146,7 +188,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     })
 
     const renderDetail = (): JSX.Element => {
-        if (triggerHistory.size > 0) {
+        if (triggerHistory.size > 0 || fetchTriggerIdData) {
             const deploymentAppType = pipelineList.find(
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
@@ -165,7 +207,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
-                        deploymentHistoryResult = {deploymentHistoryResult.result?.cdWorkflows}
+                        deploymentHistoryResult={deploymentHistoryResult.result?.cdWorkflows}
                         appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
                         tagsEditable={deploymentHistoryResult.result?.tagsEditable}
                         hideImageTaggingHardDelete={deploymentHistoryResult.result?.hideImageTaggingHardDelete}
@@ -201,6 +243,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
+                            fetchIdData={fetchTriggerIdData}
+                            handleViewAllHistory={handleViewAllHistory}
                         />
                     </div>
                 )}

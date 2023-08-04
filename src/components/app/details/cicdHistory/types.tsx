@@ -156,7 +156,6 @@ export interface SidebarType {
     hasMore: boolean
     setPagination: React.Dispatch<React.SetStateAction<{ offset: number; size: number }>>
     fetchIdData?: FetchIdDataStatus
-    setFetchIdData?: React.Dispatch<React.SetStateAction<FetchIdDataStatus>>
     handleViewAllHistory?: () => void
 }
 

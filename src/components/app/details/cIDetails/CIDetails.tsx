@@ -91,6 +91,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setFetchBuildIdData(null)
         }
     }, [pipelineId])
 
@@ -111,7 +112,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             if (fetchBuildIdData === FetchIdDataStatus.FETCHING) {
                 setFetchBuildIdData(FetchIdDataStatus.SUCCESS)
             } else {
-                setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+                setFetchBuildIdData(FetchIdDataStatus.SUSPEND) // TODO: TESTME
             }
         }
     }
@@ -176,7 +177,6 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
                             fetchIdData={fetchBuildIdData}
-                            setFetchIdData={setFetchBuildIdData}
                             handleViewAllHistory={handleViewAllHistory}
                         />
                     </div>

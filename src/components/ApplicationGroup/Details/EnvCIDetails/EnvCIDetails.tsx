@@ -5,7 +5,12 @@ import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
 import Sidebar from '../../../app/details/cicdHistory/Sidebar'
-import { HistoryComponentType, History, CICDSidebarFilterOptionType } from '../../../app/details/cicdHistory/types'
+import {
+    HistoryComponentType,
+    History,
+    CICDSidebarFilterOptionType,
+    FetchIdDataStatus,
+} from '../../../app/details/cicdHistory/types'
 import { Details } from '../../../app/details/cIDetails/CIDetails'
 import { CiPipeline } from '../../../app/details/triggerView/types'
 import { getTriggerHistory } from '../../../app/service'
@@ -28,9 +33,10 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
     const [securityModuleInstalled, setSecurityModuleInstalled] = useState(false)
     const [blobStorageConfigured, setBlobStorageConfigured] = useState(false)
-    const [appReleaseTags,setAppReleaseTags] = useState<[]>([])
-    const [tagsEditable,setTagsEditable] = useState<boolean>(false)
+    const [appReleaseTags, setAppReleaseTags] = useState<[]>([])
+    const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
 
     useEffect(() => {
         try {
@@ -57,11 +63,13 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setPipelineList(null)
             showError(error)
             setHasMoreLoading(false)
+            setFetchBuildIdData(null)
         }
         return () => {
             setPipelineList(null)
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setFetchBuildIdData(null)
         }
     }, [filteredAppIds])
 
@@ -93,6 +101,14 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+
+        if (buildId && !newTriggerHistory.has(+buildId) && fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
+            setFetchBuildIdData(FetchIdDataStatus.FETCHING)
+            newTriggerHistory.clear()
+        } else {
+            setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+        }
+
         setTriggerHistory(new Map(newTriggerHistory))
     }, [triggerHistoryResult])
 
@@ -102,20 +118,35 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setHasMoreLoading(false)
             setAppReleaseTags([])
             setTagsEditable(false)
+            setFetchBuildIdData(null)
         }
     }, [pipelineId])
 
-    function synchroniseState(triggerId: number, triggerDetails: History) {
-        if (triggerId === triggerDetails.id) {
+    function synchroniseState(triggerId: number, triggerDetails: History, triggerDetailsError: any) {
+        if (triggerDetailsError) {
+            if (triggerHistoryResult?.result?.ciWorkflows) {
+                setTriggerHistory(new Map(mapByKey(triggerHistoryResult.result.ciWorkflows, 'id')))
+            }
+            setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+            return
+        }
+
+        if (triggerId === triggerDetails?.id) {
             setTriggerHistory((triggerHistory) => {
                 triggerHistory.set(triggerId, triggerDetails)
                 return new Map(triggerHistory)
             })
+            if (fetchBuildIdData === FetchIdDataStatus.FETCHING) {
+                setFetchBuildIdData(FetchIdDataStatus.SUCCESS)
+            } else {
+                setFetchBuildIdData(FetchIdDataStatus.SUSPEND) // TODO: TESTME
+            }
         }
     }
 
     async function pollHistory() {
-        if (!pipelineId) return
+        if (!pipelineId || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
+
         const [error, result] = await asyncWrap(
             getTriggerHistory(pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -127,6 +158,14 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         setTagsEditable(result?.result.tagsEditable)
         setHideImageTaggingHardDelete(result?.result.hideImageTaggingHardDelete)
         setTriggerHistory(mapByKey(result?.result.ciWorkflows || [], 'id'))
+    }
+
+    const handleViewAllHistory = () => {
+        if (triggerHistoryResult?.result?.ciWorkflows) {
+            setTriggerHistory(new Map(mapByKey(triggerHistoryResult.result.ciWorkflows, 'id')))
+        }
+        setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
+        replace(generatePath(path, { envId, pipelineId }))
     }
 
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
@@ -141,7 +180,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const pipeline = pipelinesMap.get(+pipelineId)
 
     const renderPipelineDetails = (): JSX.Element | null => {
-        if (triggerHistory.size > 0) {
+        if (triggerHistory.size > 0 || fetchBuildIdData) {
             return (
                 <Route
                     path={`${path
@@ -194,6 +233,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
+                            fetchIdData={fetchBuildIdData}
+                            handleViewAllHistory={handleViewAllHistory}
                         />
                     </div>
                 )}

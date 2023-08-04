@@ -8,7 +8,14 @@ import {
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
-import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
+import {
+    useAsync,
+    useInterval,
+    useScrollable,
+    mapByKey,
+    asyncWrap,
+    importComponentFromFELibrary,
+} from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
@@ -24,7 +31,13 @@ import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, DeploymentStageType, History, HistoryComponentType } from '../cicdHistory/types'
+import {
+    CICDSidebarFilterOptionType,
+    DeploymentStageType,
+    History,
+    HistoryComponentType,
+    FetchIdDataStatus,
+} from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -68,6 +81,7 @@ export default function CDDetails() {
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
+    const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
 
     useEffect(() => {
         // check for more
@@ -82,11 +96,12 @@ export default function CDDetails() {
         let queryString = new URLSearchParams(location.search)
         let queryParam = queryString.get('type')
         if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
-            let deploymentStageType = queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+            let deploymentStageType =
+                queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
             const requiredResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
-                return obj.stage === deploymentStageType;
-            });
-            if(requiredResult?.[0]) {
+                return obj.stage === deploymentStageType
+            })
+            if (requiredResult?.[0]) {
                 _triggerId = requiredResult[0].id
             }
         }
@@ -103,6 +118,13 @@ export default function CDDetails() {
                     triggerId: _triggerId,
                 }),
             )
+        }
+
+        if (triggerId && !newTriggerHistory.has(+triggerId)) {
+            setFetchTriggerIdData(FetchIdDataStatus.FETCHING)
+            newTriggerHistory.clear()
+        } else {
+            setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
         }
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
@@ -126,6 +148,7 @@ export default function CDDetails() {
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setFetchTriggerIdData(null)
         }
     }, [envId])
 
@@ -163,8 +186,7 @@ export default function CDDetails() {
     }, [result])
 
     async function pollHistory() {
-        // polling
-        if (!pipelineId || !envId) return
+        if (!pipelineId || !envId || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -182,13 +204,40 @@ export default function CDDetails() {
         setTriggerHistory(newTriggerHistory)
     }
 
-    function syncState(triggerId: number, triggerDetail: History) {
-        if (triggerId === triggerDetail.id) {
+    function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
+        if (triggerDetailsError) {
+            if (deploymentHistoryResult.result?.cdWorkflows?.length) {
+                setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+            }
+            setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+            return
+        }
+        if (triggerId === triggerDetail?.id) {
             setTriggerHistory((triggerHistory) => {
                 triggerHistory.set(triggerId, triggerDetail)
                 return new Map(triggerHistory)
             })
+            if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
+                setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
+            } else {
+                setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+            }
         }
+    }
+
+    const handleViewAllHistory = () => {
+        if (deploymentHistoryResult.result?.cdWorkflows?.length) {
+            setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+        }
+        setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
+        replace(
+            generatePath(path, {
+                appId,
+                envId,
+                pipelineId,
+                triggerId: deploymentHistoryResult.result?.cdWorkflows?.[0]?.id,
+            }),
+        )
     }
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
@@ -212,11 +261,13 @@ export default function CDDetails() {
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
+                            fetchIdData={fetchTriggerIdData}
+                            handleViewAllHistory={handleViewAllHistory}
                         />
                     </div>
                 )}
                 <div className="ci-details__body">
-                    {triggerHistory.size > 0 ? (
+                    {triggerHistory.size > 0 || fetchTriggerIdData ? (
                         <Route
                             path={`${path
                                 .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
@@ -231,7 +282,11 @@ export default function CDDetails() {
                                 deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
-                                deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows ? deploymentHistoryResult.result?.cdWorkflows:[]}
+                                deploymentHistoryResult={
+                                    deploymentHistoryResult?.result?.cdWorkflows
+                                        ? deploymentHistoryResult.result?.cdWorkflows
+                                        : []
+                                }
                                 appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
                                 tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
                                 hideImageTaggingHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
@@ -257,7 +312,7 @@ export default function CDDetails() {
 
 export const TriggerOutput: React.FC<{
     fullScreenView: boolean
-    syncState: (triggerId: number, triggerDetails: History) => void
+    syncState: (triggerId: number, triggerDetails: History, triggerDetailsError: any) => void
     triggerHistory: Map<number, History>
     setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
     deploymentHistoryList: DeploymentTemplateList[]
@@ -282,44 +337,48 @@ export const TriggerOutput: React.FC<{
     tagsEditable,
     hideImageTaggingHardDelete,
 }) => {
-        const { appId, triggerId, envId, pipelineId } = useParams<{
-            appId: string
-            triggerId: string
-            envId: string
-            pipelineId: string
-        }>()
-        const triggerDetails = triggerHistory.get(+triggerId)
-        const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-            () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
-            [triggerId, appId, envId],
-            !!triggerId && !!pipelineId,
+    const { appId, triggerId, envId, pipelineId } = useParams<{
+        appId: string
+        triggerId: string
+        envId: string
+        pipelineId: string
+    }>()
+    const triggerDetails = triggerHistory.get(+triggerId)
+    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
+        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
+        [triggerId, appId, envId],
+        !!triggerId && !!pipelineId,
+    )
+    useEffect(() => {
+        if (triggerDetailsLoading) return
+        syncState(+triggerId, triggerDetailsResult?.result, triggerDetailsError)
+    }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
+    const timeout = useMemo(() => {
+        if (
+            !triggerDetails ||
+            terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
         )
-        useEffect(() => {
-            if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
-            if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
-        }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
-
-
-        const timeout = useMemo(() => {
-            if (
-                !triggerDetails ||
-                terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
-            )
-                return null // no interval
-            if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
-                // 10s because progressing
-                return 10000
-            }
-            return 30000 // 30s for normal
-        }, [triggerDetails])
-
-        useInterval(reloadTriggerDetails, timeout)
-
-        if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
-        if (!triggerDetailsLoading && !triggerDetails) return <Reload />
-        if (triggerDetails?.id !== +triggerId) {
-            return null
+            return null // no interval
+        if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
+            // 10s because progressing
+            return 10000
         }
+        return 30000 // 30s for normal
+    }, [triggerDetails])
+
+    useInterval(reloadTriggerDetails, timeout)
+
+    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
+    if (triggerDetailsError?.code === 404) {
+        return (
+            <GenericEmptyState title="Trigger Not Found" subTitle="The trigger you are looking for does not exist." />
+        )
+    }
+    if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+    if (triggerDetails?.id !== +triggerId) {
+        return null
+    }
 
     return (
         <>
@@ -414,9 +473,9 @@ export const TriggerOutput: React.FC<{
                 deploymentHistoryList={deploymentHistoryList}
                 deploymentAppType={deploymentAppType}
                 isBlobStorageConfigured={isBlobStorageConfigured}
-                deploymentHistoryResult = {deploymentHistoryResult}
-                artifactId = {triggerDetailsResult?.result?.artifactId}
-                ciPipelineId = {triggerDetailsResult?.result?.ciPipelineId}
+                deploymentHistoryResult={deploymentHistoryResult}
+                artifactId={triggerDetailsResult?.result?.artifactId}
+                ciPipelineId={triggerDetailsResult?.result?.ciPipelineId}
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
@@ -459,15 +518,15 @@ const HistoryLogs: React.FC<{
     tagsEditable,
     hideImageTaggingHardDelete,
 }) => {
-        let { path } = useRouteMatch()
-        const { appId, pipelineId, triggerId, envId } = useParams<{
-            appId: string
-            pipelineId: string
-            triggerId: string
-            envId: string
-        }>()
+    let { path } = useRouteMatch()
+    const { appId, pipelineId, triggerId, envId } = useParams<{
+        appId: string
+        pipelineId: string
+        triggerId: string
+        envId: string
+    }>()
 
-        const paramsData = {
+    const paramsData = {
         appId,
         envId,
         appName: `${triggerDetails.helmPackageName}.tgz`,
@@ -478,11 +537,10 @@ const HistoryLogs: React.FC<{
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
 
-    let artifactTodeploymentHistoryIndexMap = new Map<number,number>()
-    deploymentHistoryResult.forEach((val,i)=>{
-        artifactTodeploymentHistoryIndexMap.set(val['ci_artifact_id'],i)
+    let artifactTodeploymentHistoryIndexMap = new Map<number, number>()
+    deploymentHistoryResult.forEach((val, i) => {
+        artifactTodeploymentHistoryIndexMap.set(val['ci_artifact_id'], i)
     })
-
 
     return (
         <>
@@ -529,10 +587,12 @@ const HistoryLogs: React.FC<{
                                 artifactId={artifactId}
                                 ciPipelineId={ciPipelineId}
                                 imageComment={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageComment
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        ?.imageComment
                                 }
                                 imageReleaseTags={
-                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageReleaseTags
+                                    deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]
+                                        ?.imageReleaseTags
                                 }
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
@@ -575,10 +635,14 @@ const HistoryLogs: React.FC<{
                                         ciPipelineId={triggerDetails.ciPipelineId}
                                         artifactId={triggerDetails.artifactId}
                                         imageComment={
-                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageComment
+                                            deploymentHistoryResult?.[
+                                                artifactTodeploymentHistoryIndexMap.get(artifactId)
+                                            ]?.imageComment
                                         }
                                         imageReleaseTags={
-                                            deploymentHistoryResult?.[artifactTodeploymentHistoryIndexMap.get(artifactId)]?.imageReleaseTags
+                                            deploymentHistoryResult?.[
+                                                artifactTodeploymentHistoryIndexMap.get(artifactId)
+                                            ]?.imageReleaseTags
                                         }
                                         tagsEditable={tagsEditable}
                                         appReleaseTagNames={appReleaseTags}

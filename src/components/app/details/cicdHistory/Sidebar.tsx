@@ -32,7 +32,6 @@ const Sidebar = React.memo(
         hasMore,
         setPagination,
         fetchIdData,
-        setFetchIdData,
         handleViewAllHistory,
     }: SidebarType) => {
         const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
@@ -53,7 +52,6 @@ const Sidebar = React.memo(
                 setPagination({ offset: 0, size: 20 })
                 push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
             }
-            setFetchIdData(null)
         }
         function reloadNextAfterBottom() {
             ReactGA.event({
@@ -327,7 +325,7 @@ const SummaryTooltipCard = React.memo(
     },
 )
 
-const ViewAllCardsTile = ({ handleViewAllHistory }: { handleViewAllHistory: () => void }): JSX.Element => {
+const ViewAllCardsTile = React.memo(({ handleViewAllHistory }: { handleViewAllHistory: () => void }): JSX.Element => {
     return (
         <div
             style={{
@@ -383,4 +381,4 @@ const ViewAllCardsTile = ({ handleViewAllHistory }: { handleViewAllHistory: () =
             </div>
         </div>
     )
-}
+})
