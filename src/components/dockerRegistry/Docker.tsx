@@ -494,7 +494,6 @@ function DockerForm({
         let appliedClusterIdsCsv = whiteList?.map((cluster) => cluster?.value)?.join(',')
         let ignoredClusterIdsCsv = blackList?.map((cluster) => cluster?.value)?.join(',')
         const trimmedUsername = customState.username.value.replace(/\s/g, '')
-
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -502,7 +501,7 @@ function DockerForm({
             isDefault: registryStorageType !== RegistryStorageType.OCI_PRIVATE || isContainerStore ? Isdefault : false,
             isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
             isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
-            repositoryList: state.repositoryList.value.split(',') || [],
+            repositoryList: state.repositoryList && state.repositoryList?.value?.split(',') || [],
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === RegistryType.ECR
                 ? {
