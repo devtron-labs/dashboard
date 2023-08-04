@@ -126,7 +126,13 @@ export const prepareConfigMapAndSecretData = (
                     value: EXTERNAL_TYPES[type][rawData['externalType']],
                 }
             } else {
-                secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type]['KubernetesSecret'] }
+                secretValues['external'] = {
+                    displayName: 'Data type',
+                    value:
+                        type === 'Secret'
+                            ? EXTERNAL_TYPES[type]['KubernetesSecret']
+                            : EXTERNAL_TYPES[type]['KubernetesConfigMap'],
+                }
             }
         } else {
             secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
