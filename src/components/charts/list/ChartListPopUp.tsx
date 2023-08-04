@@ -46,7 +46,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
 
     const renderChartListHeaders = () => {
         return (
-            <div className="dc__position-fixed w-400 dc__zi-20 bcn-0 pt-12 pb-12 pl-16 pr-16 flex dc__content-space dc__border-bottom fw-6">
+            <div className="pt-12 pb-12 pl-16 flex dc__content-space dc__border-bottom fw-6">
                 <span>Helm chart sources</span>
                 <div className="flex">
                     <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
@@ -153,11 +153,11 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
             return renderEmptyState(true)
         }
         return (
-            <div>
+            <div className="dc__overflow-scroll h-100 mxh-390-imp">
                 {filteredChartList.length > 0 &&
                     filteredChartList.map((list) => {
                         return (
-                            <div className="chart-list__row mb-12">
+                            <div className="chart-list__row">
                                 <List>
                                     <List.Logo>
                                         <div className={'dc__registry-icon ' + list.registryProvider}></div>
@@ -205,7 +205,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
                     })}
                 <InfoColourBar
                     message={renderInfoText()}
-                    classname="question-bar mb-16 ml-16 mr-16"
+                    classname="question-bar m-16"
                     Icon={Help}
                     iconClass="icon-dim-20 fcv-5"
                 />
@@ -283,16 +283,16 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
             return renderEmptyState()
         }
         return (
-            <div className="chart-list__body h-100">
+            <>
                 {renderChartListSearch()}
                 {renderChartList()}
-            </div>
+            </>
         )
     }
 
     return (
         <div className="dc__transparent-div bcn-0">
-            <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13">
+            <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden">
                 {renderChartListHeaders()}
                 {renderChartListBody()}
             </div>

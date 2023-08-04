@@ -599,13 +599,20 @@
         }
     }
 
-    .chart-list__row:hover,
-    .list:hover {
-        background-color: var(--N50);
+    .chart-list__row .list{
+        height: 36px;
     }
+}
 
-    .chart-list__body {
-        padding-top: 56px;
-        overflow: scroll
-    }
+.chart-list__add {
+    position: absolute;
+    left: 200px;
+    display: grid;
+    grid-template-rows: 36px 36px;
+    z-index: 2;
+}
+
+.add-repo-row:hover,
+.list:hover {
+    background-color: var(--N50);
 }
