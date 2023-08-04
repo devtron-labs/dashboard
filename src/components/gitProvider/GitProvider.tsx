@@ -208,7 +208,6 @@ function CollapsedList({
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
 
     useEffectAfterMount(() => {
-        if (!collapsed) return
         async function update() {
             let payload = {
                 id: id || 0,
