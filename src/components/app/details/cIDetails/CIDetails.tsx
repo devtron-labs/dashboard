@@ -285,9 +285,17 @@ export const Details = ({
         setTagDetails,
         tagDetailsDependency,
     ] = useAsync(
-        () => getTagDetails({ pipelineId, artifactId: triggerDetailsResult?.result?.artifactId }),
+        () =>
+            getTagDetails({
+                pipelineId,
+                artifactId: !!triggerDetailsResult?.result?.artifactId
+                    ? triggerDetailsResult?.result?.artifactId
+                    : triggerDetails?.artifactId,
+            }),
         [pipelineId, buildId],
-        areTagDetailsRequired && !!pipelineId && !!triggerDetailsResult?.result?.artifactId,
+        areTagDetailsRequired &&
+            !!pipelineId &&
+            (!!triggerDetailsResult?.result?.artifactId || !!triggerDetails?.artifactId),
     )
     // TODO: Ask if Polling has to be done here
 
@@ -344,11 +352,11 @@ export const Details = ({
             />
         )
     }
+
     if (!triggerDetailsLoading && !triggerDetails) {
         return <Reload />
     }
     if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
-
     if (triggerDetails.id !== +buildId) return null
     return (
         <>
