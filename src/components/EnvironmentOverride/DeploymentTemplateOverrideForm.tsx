@@ -286,13 +286,15 @@ export default function DeploymentTemplateOverrideForm({
                             : 'This file is inheriting base configurations'}
                     </span>
                 </div>
-                <span
-                    data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
-                    onClick={handleOverride}
-                >
-                    {getOverrideActionState()}
-                </span>
+                {(!state.latestDraft || state.selectedTabIndex !== 1) && (
+                    <span
+                        data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
+                        className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
+                        onClick={handleOverride}
+                    >
+                        {getOverrideActionState()}
+                    </span>
+                )}
             </div>
         )
     }
