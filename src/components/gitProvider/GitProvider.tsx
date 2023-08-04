@@ -288,7 +288,7 @@ function CollapsedList({
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
+                                    <List.Toggle onSelect={toggleEnabled} enabled={enabled} />
                                 )}
                             </span>
                         </Tippy>
