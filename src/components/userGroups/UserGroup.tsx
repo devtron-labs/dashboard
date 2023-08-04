@@ -1634,7 +1634,10 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
     switch (entity) {
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
+                return dataList.filter(
+                    (role) =>
+                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                )
             } else {
                 return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
             }
