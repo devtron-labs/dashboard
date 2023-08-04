@@ -637,10 +637,10 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 }
 
 export const convertToValidValue = (k: any): string => {
-    if (!isNaN(Number(k))) {
+    if (k !== false && k !== true && !isNaN(Number(k))) {
         return Number(k).toString()
     }
-    return k
+    return k.toString()
 }
 
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
