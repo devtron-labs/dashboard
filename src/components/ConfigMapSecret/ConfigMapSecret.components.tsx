@@ -263,6 +263,9 @@ export function ConfigMapSecretContainer({
     }
 
     const handleCMSecretClick = () => {
+        if (title && isProtected && draftData?.draftId) {
+            setSelectedTab(draftData.draftState === 4 ? 2 : 3)
+        }
         updateCollapsed()
     }
 
