@@ -188,7 +188,7 @@ function ChartHeaderFilter({
                 </Checkbox>
                 <hr className="mt-8 mb-8" />
                 <Accordian
-                    header={'CHART SOURCE'}
+                    header="CHART SOURCE"
                     options={chartRepoList}
                     value={selectedChartRepo}
                     onChange={handleSelection}
