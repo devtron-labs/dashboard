@@ -155,8 +155,13 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
                 {filteredChartList.length > 0 &&
                     filteredChartList.map((list, index) => {
                         return (
+<<<<<<< HEAD
                             <div className="chart-list__row mb-12">
                                 <List>
+=======
+                            <div className="chart-list__row">
+                                <List key={`chart-row-${index}`}>
+>>>>>>> ac59f315f (code smell fix)
                                     <List.Logo>
                                         <div className={'dc__registry-icon ' + list.registryProvider}></div>
                                     </List.Logo>
