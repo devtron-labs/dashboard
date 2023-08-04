@@ -957,16 +957,15 @@ export function ConfigMapForm({
         </div>
     )
 }
-export const convertToValidValue=(k:any): string=>{
-    if ((typeof k=='number')){
-        return k.toString();
+export const convertToValidValue = (k: any): string => {
+    if (typeof k === 'number') {
+        return k.toString()
     }
-    if(typeof k=='string' && !isNaN(parseInt(k))){
-        let p=Number(k)
-        return Number.isNaN(p)?k:p.toString()
+    if (typeof k === 'string' && !isNaN(parseInt(k))) {
+        let p = Number(k)
+        return Number.isNaN(p) ? k : p.toString()
     }
     return k
-    
 }
 
 export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, keyError): keyValueYaml {
