@@ -470,7 +470,7 @@ export function ProtectedConfigMapSecretDetails({
                             content={
                                 hasAccess
                                     ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                                    : `You don't have approver access`
+                                    : 'You do not have permission to approve configuration changes for this application - environment combination.'
                             }
                         >
                             <button
