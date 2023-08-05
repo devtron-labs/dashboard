@@ -137,7 +137,7 @@ export function ConfigMapSecretContainer({
             setLoader(false)
         }
     }
-    let cmSecretStateLabel = CM_SECRET_STATE.BASE
+    let cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.BASE : CM_SECRET_STATE.UNPUBLISHED
     if (isOverrideView) {
         if (data?.global) {
             cmSecretStateLabel = data.overridden ? CM_SECRET_STATE.OVERRIDDEN : CM_SECRET_STATE.INHERITED
