@@ -186,6 +186,7 @@ export default function DeploymentTemplateEditorView({
                                     state.selectedChart,
                                     handleOverride,
                                     state.latestDraft,
+                                    state.publishedState?.isOverride
                                 )}
                             </div>
                         </CodeEditor.Header>
@@ -217,6 +218,7 @@ export default function DeploymentTemplateEditorView({
                                         state.selectedChart,
                                         handleOverride,
                                         state.latestDraft,
+                                        state.publishedState?.isOverride
                                     )}
                                 </div>
                             </>

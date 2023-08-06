@@ -68,7 +68,7 @@ export default function DeploymentTemplateOverrideForm({
         })
     }
 
-    const prepareDataToSave = (envOverrideValuesWithBasic, includeGlobalConfig?: boolean) => {
+    const prepareDataToSave = (envOverrideValuesWithBasic, includeInDraft?: boolean) => {
         const payload = {
             environmentId: +envId,
             envOverrideValues: envOverrideValuesWithBasic || obj || state.duplicate,
@@ -88,9 +88,15 @@ export default function DeploymentTemplateOverrideForm({
                 : {}),
         }
 
-        if (includeGlobalConfig) {
+        if (includeInDraft) {
             payload['globalConfig'] = state.data.globalConfig
+            payload['isDraftOverriden'] = state.isDraftOverriden
         }
+
+        // if (!skipReadmeAndSchema) {
+        //     payload['readme'] = state.readme
+        //     payload['schema'] = state.schema
+        // }
 
         return payload
     }
@@ -140,7 +146,7 @@ export default function DeploymentTemplateOverrideForm({
                 type: DeploymentConfigStateActionTypes.fetchedValues,
                 payload: {},
             })
-            initialise(false, true)
+            initialise(true, false, true)
         } catch (err) {
             showError(err)
         } finally {
@@ -261,7 +267,12 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
-    const overridden = !!state.duplicate
+    const isPublishedOverridden = readOnlyPublishedMode
+        ? state.publishedState.isOverride
+        : state.latestDraft.action === 3
+        ? state.isDraftOverriden
+        : !!state.duplicate
+    const overridden = state.publishedState ? isPublishedOverridden : !!state.duplicate
     const getOverrideActionState = () => {
         if (state.loading) {
             return <Progressing />
@@ -271,6 +282,7 @@ export default function DeploymentTemplateOverrideForm({
             return 'Allow override'
         }
     }
+
     const renderOverrideInfoStrip = () => {
         return (
             <div
@@ -286,7 +298,8 @@ export default function DeploymentTemplateOverrideForm({
                             : 'This file is inheriting base configurations'}
                     </span>
                 </div>
-                {(!state.latestDraft || state.selectedTabIndex !== 1) && (
+                {(!state.publishedState ||
+                    (state.selectedTabIndex !== 1 && !!state.latestDraft && state.publishedState.isOverride)) && (
                     <span
                         data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
                         className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
@@ -308,18 +321,32 @@ export default function DeploymentTemplateOverrideForm({
     const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
-            codeEditorValue = YAML.stringify(state.data.globalConfig, { indent: 2 })
+            codeEditorValue = YAML.stringify(
+                state.publishedState.isOverride
+                    ? state.publishedState.environmentConfig.envOverrideValues
+                    : state.publishedState.globalConfig,
+                { indent: 2 },
+            )
         } else if (isCompareAndApprovalState) {
             codeEditorValue = state.draftValues
         } else if (tempValue) {
             codeEditorValue = tempValue
-        } else if (state) {
-            codeEditorValue = state.duplicate
+        } else {
+            const isOverridden = state.latestDraft.action === 3 ? state.isDraftOverriden : state.duplicate
+            codeEditorValue = isOverridden
                 ? YAML.stringify(state.duplicate, { indent: 2 })
                 : YAML.stringify(state.data.globalConfig, { indent: 2 })
         }
 
         return codeEditorValue
+    }
+
+    const reload = () => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.loading,
+            payload: true,
+        })
+        initialise(true, false, true)
     }
 
     const renderValuesView = () => {
@@ -336,17 +363,16 @@ export default function DeploymentTemplateOverrideForm({
                     codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
-                    <DeploymentTemplateReadOnlyEditorView
-                        value={YAML.stringify(state.data.globalConfig, { indent: 2 })}
-                        isEnvOverride={true}
-                    />
+                    <DeploymentTemplateReadOnlyEditorView value={getCodeEditorValue(true)} isEnvOverride={true} />
                 ) : (
                     <DeploymentTemplateEditorView
                         isEnvOverride={true}
                         value={getCodeEditorValue(false)}
                         defaultValue={
-                            state && state.data && state.openComparison
-                                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                            state.data && state.openComparison
+                                ? state.publishedState
+                                    ? getCodeEditorValue(true)
+                                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
                                 : ''
                         }
                         editorOnChange={editorOnChange}
@@ -374,8 +400,8 @@ export default function DeploymentTemplateOverrideForm({
                             : state.data.appMetrics
                     }
                     toggleAppMetrics={handleAppMetrics}
-                    isDraftMode={readOnlyPublishedMode}
-                    reload={initialise}
+                    isPublishedMode={readOnlyPublishedMode}
+                    reload={reload}
                 />
             </form>
         )
@@ -408,7 +434,7 @@ export default function DeploymentTemplateOverrideForm({
                 isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
                 isApprovalPending={state.latestDraft?.draftState === 4}
                 approvalUsers={state.latestDraft?.approvers}
-                reload={initialise}
+                reload={reload}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}
@@ -422,7 +448,7 @@ export default function DeploymentTemplateOverrideForm({
                     prepareDataToSave={prepareDataToSaveDraft}
                     toggleModal={toggleSaveChangesModal}
                     latestDraft={state.latestDraft}
-                    reload={initialise}
+                    reload={reload}
                 />
             )}
             {DeleteOverrideDraftModal && state.showDeleteOverrideDraftModal && (
@@ -434,7 +460,7 @@ export default function DeploymentTemplateOverrideForm({
                     prepareDataToSave={prepareDataToSaveDraft}
                     toggleModal={toggleDeleteOverrideDraftModal}
                     latestDraft={state.latestDraft}
-                    reload={initialise}
+                    reload={reload}
                 />
             )}
         </DeploymentConfigContext.Provider>

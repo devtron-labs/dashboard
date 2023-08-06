@@ -273,6 +273,7 @@ export const renderEditorHeading = (
     selectedChart: DeploymentChartVersionType,
     handleOverride: (e: any) => Promise<void>,
     latestDraft: any,
+    isPublishedOverriden: boolean,
 ) => {
     return (
         <div className="flex dc__content-space w-100">
@@ -296,7 +297,7 @@ export const renderEditorHeading = (
                     </Tippy>
                 )}
             </div>
-            {isEnvOverride && (
+            {isEnvOverride && (!latestDraft || isPublishedOverriden) && (
                 <span
                     data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
                     className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
@@ -375,6 +376,7 @@ export const SaveConfirmationDialog = ({ save }) => {
 
 export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
     const { state, dispatch } = useContext(DeploymentConfigContext)
+    const [apiInProgress, setApiInProgress] = useState(false)
 
     const closeConfirmationDialog = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
@@ -382,15 +384,17 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
 
     async function handleDelete() {
         try {
+            setApiInProgress(true)
             await deleteDeploymentTemplate(state.data.environmentConfig.id, Number(appId), Number(envId))
             toast.success('Restored to global.', { autoClose: null })
             dispatch({
                 type: DeploymentConfigStateActionTypes.duplicate,
                 payload: null,
             })
-            initialise(true)
+            initialise(true, true)
         } catch (err) {
         } finally {
+            setApiInProgress(false)
             closeConfirmationDialog()
         }
     }
@@ -408,6 +412,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
                     type="button"
                     className="cta cancel"
                     onClick={closeConfirmationDialog}
+                    disabled={apiInProgress}
                 >
                     Cancel
                 </button>
@@ -416,8 +421,9 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
                     type="button"
                     className="cta delete"
                     onClick={handleDelete}
+                    disabled={apiInProgress}
                 >
-                    Confirm
+                    {apiInProgress ? <Progressing size={16} /> : 'Confirm'}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>

@@ -106,7 +106,7 @@ export interface DeploymentConfigFormCTAProps {
     disableCheckbox?: boolean
     disableButton?: boolean
     toggleAppMetrics: () => void
-    isDraftMode: boolean
+    isPublishedMode: boolean
     reload: () => void
 }
 
@@ -301,6 +301,7 @@ export interface DeploymentConfigStateType {
     dialog: boolean
     latestAppChartRef: any
     latestChartRef: any
+    isOverride: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
@@ -312,6 +313,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     latestDraft: any
     showComments: boolean
     showDeleteOverrideDraftModal: boolean
+    isDraftOverriden: boolean
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -349,6 +351,7 @@ export enum DeploymentConfigStateActionTypes {
     publishedState = 'publishedState',
     toggleDraftComments = 'toggleDraftComments',
     toggleDeleteOverrideDraftModal = 'toggleDeleteOverrideDraftModal',
+    isDraftOverriden = 'isDraftOverriden',
     multipleOptions = 'multipleOptions',
 }
 

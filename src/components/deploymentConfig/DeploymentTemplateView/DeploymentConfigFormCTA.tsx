@@ -21,11 +21,11 @@ export default function DeploymentConfigFormCTA({
     disableCheckbox,
     disableButton,
     toggleAppMetrics,
-    isDraftMode,
+    isPublishedMode,
     reload,
 }: DeploymentConfigFormCTAProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-    const _selectedChart = !isEnvOverride && isDraftMode ? state.publishedState?.selectedChart : state.selectedChart
+    const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
@@ -77,7 +77,7 @@ export default function DeploymentConfigFormCTA({
                                     <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
                                 </>
                             ) : (
-                                `Save changes${isDraftMode || isApprovalPending ? '...' : ''}`
+                                `Save changes${state.isConfigProtectionEnabled ? '...' : ''}`
                             )}
                         </>
                     )}
@@ -96,7 +96,7 @@ export default function DeploymentConfigFormCTA({
     const renderApplicationMetrics = () => {
         if (!showAppMetricsToggle) {
             return null
-        } else if (isDraftMode || isApprovalPending) {
+        } else if (isPublishedMode || isApprovalPending) {
             return (
                 <div className="form-app-metrics-cta flex left fs-13 fw-4 lh-20 cn-9">
                     <InfoIcon className="icon-dim-16 mr-8" />
@@ -178,7 +178,7 @@ export default function DeploymentConfigFormCTA({
     const getHeightClass = () => {
         if (compareTab || state.showReadme) {
             return 'h-56'
-        } else if (isDraftMode) {
+        } else if (isPublishedMode) {
             return 'h-44'
         } else {
             return 'h-64'
@@ -194,7 +194,7 @@ export default function DeploymentConfigFormCTA({
             >
                 {compareTab && !state.showReadme && <div className="w-50" />}
                 {renderApplicationMetrics()}
-                {!isDraftMode && (
+                {!isPublishedMode && (
                     <>
                         {isApprovalPending && state.latestDraft?.canApprove && ApproveRequestTippy ? (
                             <ApproveRequestTippy

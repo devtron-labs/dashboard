@@ -68,7 +68,9 @@ export default function DeploymentConfig({
     }, [])
 
     useEffectAfterMount(() => {
-        fetchDeploymentTemplate()
+        if (state.selectedChart) {
+            fetchDeploymentTemplate()
+        }
     }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
@@ -611,7 +613,7 @@ export default function DeploymentConfig({
                     }
                     isCiPipeline={isCiPipeline}
                     toggleAppMetrics={toggleAppMetrics}
-                    isDraftMode={readOnlyPublishedMode}
+                    isPublishedMode={readOnlyPublishedMode}
                     reload={initialise}
                 />
             </form>
