@@ -24,9 +24,7 @@ export function K8SResourceList({
     resourceList,
     filteredResourceList,
     noResults,
-    clusterOptions,
     selectedCluster,
-    onChangeCluster,
     namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
@@ -321,9 +319,7 @@ export function K8SResourceList({
         >
             <ResourceFilterOptions
                 selectedResource={selectedResource}
-                clusterOptions={clusterOptions}
                 selectedCluster={selectedCluster}
-                onChangeCluster={onChangeCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}

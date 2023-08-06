@@ -19,9 +19,6 @@ import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 function ResourceFilterOptions({
     selectedResource,
     resourceList,
-    clusterOptions,
-    selectedCluster,
-    onChangeCluster,
     namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
@@ -73,10 +70,6 @@ function ResourceFilterOptions({
 
     const handleOnChangeSearchText = (event): void => {
         setSearchText(event.target.value)
-    }
-
-    const handleClusterChange = (selected: OptionType): void => {
-        onChangeCluster(selected)
     }
 
     const handleNamespaceChange = (selected: OptionType): void => {
@@ -140,21 +133,6 @@ function ResourceFilterOptions({
                 </div>
             )}
             <div className="resource-filter-options-wrapper flex">
-                <ReactSelect
-                    className="w-220"
-                    classNamePrefix="resource-filter-select"
-                    placeholder="Select Cluster"
-                    options={clusterOptions}
-                    value={selectedCluster}
-                    onChange={handleClusterChange}
-                    blurInputOnSelect={true}
-                    styles={FILTER_SELECT_COMMON_STYLES}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: ClusterOptionWithIcon,
-                        ValueContainer: ResourceValueContainerWithIcon,
-                    }}
-                />
                 <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
                     <ReactSelect
                         placeholder="Select Namespace"

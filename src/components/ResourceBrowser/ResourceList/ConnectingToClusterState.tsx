@@ -16,12 +16,10 @@ export default function ConnectingToClusterState({
     sideDataAbortController,
     selectedResource,
     resourceList,
-    clusterOptions,
     selectedCluster,
     setSelectedCluster,
     showSelectClusterState,
     setShowSelectClusterState,
-    onChangeCluster,
     namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
@@ -164,9 +162,6 @@ export default function ConnectingToClusterState({
         >
             <ResourceFilterOptions
                 selectedResource={selectedResource}
-                clusterOptions={clusterOptions}
-                selectedCluster={selectedCluster}
-                onChangeCluster={onChangeCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}

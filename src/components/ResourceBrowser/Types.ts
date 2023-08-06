@@ -2,6 +2,7 @@ import React from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
+import { ClusterImageList } from '../ClusterNodes/types'
 
 export interface ResourceDetailType {
     headers: string[]
@@ -92,7 +93,10 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 
 export interface ClusterSelectionType {
     clusterOptions: ClusterOptionType[]
-    onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
+    onChangeCluster: (selectedCluster: any, fromClusterSelect?: boolean) => void
+    imageList: ClusterImageList[]
+    isSuperAdmin: boolean
+    namespaceList: string[]
 }
 
 export interface CreateResourceType {
@@ -112,9 +116,7 @@ export interface SidebarType {
 export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
-    clusterOptions: OptionType[]
-    selectedCluster: OptionType
-    onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
+    selectedCluster?: OptionType
     namespaceOptions: OptionType[]
     selectedNamespace: OptionType
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
