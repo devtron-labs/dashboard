@@ -941,30 +941,6 @@ console.log(state.repositoryList?.value)
                             </Checkbox>
                         </div>
                     </TippyCustomized>
-                    <TippyCustomized
-                        theme={TippyTheme.black}
-                        className="w-200 dc__zi-4 mt-0-imp"
-                        placement="left"
-                        infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
-                    >
-                        <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
-                            <Checkbox
-                                rootClassName={`${
-                                    disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
-                                } docker-default mb-0`}
-                                isChecked={isContainerStore}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={() => handleOCIRegistryStorageAction('container-image')}
-                                dataTestId={`store-${
-                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                                }-checkbox`}
-                                disabled={disabledFields.some((test) => test === 'CONTAINER')}
-                            >
-                                Push container images
-                                {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
-                            </Checkbox>
-                        </div>
-                    </TippyCustomized>
 
                     {isContainerStore && (
                         <>
