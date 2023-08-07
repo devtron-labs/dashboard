@@ -318,6 +318,10 @@ export default function DeploymentTemplateOverrideForm({
         return prepareDataToSave(envOverrideValuesWithBasic, true)
     }
 
+    const prepareDataToDeleteOverrideDraft = () => {
+        return prepareDataToSave(state.data.globalConfig, true)
+    }
+
     const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
@@ -328,7 +332,10 @@ export default function DeploymentTemplateOverrideForm({
                 { indent: 2 },
             )
         } else if (isCompareAndApprovalState) {
-            codeEditorValue = state.draftValues
+            codeEditorValue =
+                state.latestDraft?.action !== 3 || state.showDraftOverriden
+                    ? state.draftValues
+                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
         } else if (tempValue) {
             codeEditorValue = tempValue
         } else {
@@ -457,7 +464,7 @@ export default function DeploymentTemplateOverrideForm({
                     envId={Number(envId)}
                     resourceType={3}
                     resourceName={`${environmentName}-DeploymentTemplateOverride`}
-                    prepareDataToSave={prepareDataToSaveDraft}
+                    prepareDataToSave={prepareDataToDeleteOverrideDraft}
                     toggleModal={toggleDeleteOverrideDraftModal}
                     latestDraft={state.latestDraft}
                     reload={reload}

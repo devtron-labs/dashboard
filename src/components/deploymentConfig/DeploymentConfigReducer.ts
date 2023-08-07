@@ -38,6 +38,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     showComments: false,
     showDeleteOverrideDraftModal: false,
     isOverride: false,
+    showDraftOverriden: false,
     isDraftOverriden: false,
 }
 

@@ -372,6 +372,12 @@ export default function AppPermissions({
         } else if (name === CONFIG_APPROVER_ACTION.label) {
             tempPermissions[index]['action'].configApprover = !tempPermissions[index]['action'].configApprover
         } else {
+            if (
+                tempPermissions[index][name].configApprover ||
+                tempPermissions[index][name].value.includes(CONFIG_APPROVER_ACTION.value)
+            ) {
+                selectedValue.configApprover = true
+            }
             tempPermissions[index][name] = selectedValue
         }
         setDirectPermission(tempPermissions)

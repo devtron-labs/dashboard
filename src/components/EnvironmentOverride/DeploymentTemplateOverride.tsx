@@ -195,7 +195,7 @@ export default function DeploymentTemplateOverride({
                     allDrafts,
                     currentEditorView,
                     isBasicLocked,
-                    isDraftOverriden,
+                    showDraftOverriden: isDraftOverriden,
                     ...{
                         ...chartRefsData,
                         selectedChartRefId: chartRefId,

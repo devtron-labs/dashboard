@@ -314,6 +314,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     latestDraft: any
     showComments: boolean
     showDeleteOverrideDraftModal: boolean
+    showDraftOverriden: boolean
     isDraftOverriden: boolean
 }
 
