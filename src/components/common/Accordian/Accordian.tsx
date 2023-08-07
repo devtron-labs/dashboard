@@ -1,14 +1,23 @@
 import React, { useState } from 'react'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
-import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
+import AddChartSource from '../../charts/list/AddChartSource'
 
 export function Accordian({ header, options, value, onChange, onClickViewChartButton,dataTestId }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
-
+    const [showAddSource, toggleAddSource] = useState<boolean>(false)
     const toggleDropdown = (): void => {
         setCollapse(!collapsed)
     }
+
+    const handleTogleAddSource = () => {
+        toggleAddSource(!showAddSource)
+    }
+
+    const getChecked = (option): boolean => {
+        return value.filter((selectedVal) => selectedVal.value === option.value).length
+    } 
 
     return (
         <div>
@@ -23,16 +32,18 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                     style={{ ['--rotateBy' as any]: collapsed ? '180deg' : '0deg' }}
                 />
             </div>
+
             {collapsed && (
                 <div>
                     <button
                         type="button"
                         className="dc__transparent dc__hover-n50 cursor flex left cb-5 fs-13 fw-6 lh-20 h-32 pl-10 w-100"
-                        onClick={onClickViewChartButton}
+                        onClick={handleTogleAddSource}
                     >
                         <AddIcon className="icon-dim-16 fcb-5 mr-8" />
-                        Add chart repository
+                        Add chart source
                     </button>
+                    {showAddSource && <AddChartSource />}
                     {options.map((option) => (
                         <div
                             className="dc__position-rel flex left cursor dc__hover-n50"
@@ -40,8 +51,8 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         >
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
-                                isChecked={value.filter((event) => event === option).length}
-                                value={'CHECKED'}
+                                isChecked={getChecked(option)}
+                                value={CHECKBOX_VALUE.CHECKED}
                                 onChange={() => onChange(option)}
                             >
                                 <div className="ml-5">{option.label}</div>

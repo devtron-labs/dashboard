@@ -47,7 +47,6 @@ export default function ChartGroupUpdate({}) {
     } = useChartGroup(Number(groupId))
     const isLeavingPageNotAllowed = useRef(false)
     const [selectedChartRepo, setSelectedChartRepo] = useState([])
-    const [appliedChartRepoFilter, setAppliedChartRepoFilter] = useState([])
     const [appStoreName, setAppStoreName] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [includeDeprecated, setIncludeDeprecated] = useState(0)
@@ -138,10 +137,6 @@ export default function ChartGroupUpdate({}) {
         setChartDetailsUpdate(false)
     }
 
-    function handleCloseFilter(): void {
-        setSelectedChartRepo(appliedChartRepoFilter)
-    }
-
     function initialiseFromQueryParams(chartRepoList): void {
         let searchParams = new URLSearchParams(location.search)
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
@@ -164,7 +159,6 @@ export default function ChartGroupUpdate({}) {
             setSearchApplied(false)
             setAppStoreName('')
         }
-        if (selectedRepos) setAppliedChartRepoFilter(selectedRepos)
     }
 
     async function callApplyFilterOnCharts(resetPage?: boolean) {
@@ -234,7 +228,6 @@ export default function ChartGroupUpdate({}) {
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
                                 setAppStoreName={setAppStoreName}
-                                handleCloseFilter={handleCloseFilter}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />
