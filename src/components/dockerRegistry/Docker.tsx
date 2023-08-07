@@ -1095,7 +1095,6 @@ function DockerForm({
                     onChange={handleOnChange}
                     label="List of repositories"
                     placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
-                    disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
                 />
             </div>
         )
