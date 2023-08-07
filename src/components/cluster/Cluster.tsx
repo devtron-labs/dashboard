@@ -334,7 +334,7 @@ function Cluster({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: {value: proxyUrl, error: '' },
-            isConnectedViaProxy: proxyUrl.length != 0,
+            isConnectedViaProxy: proxyUrl?.length ? true : false,
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
