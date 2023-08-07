@@ -441,6 +441,7 @@ export default function DeploymentTemplateOverrideForm({
                 isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
                 isApprovalPending={state.latestDraft?.draftState === 4}
                 approvalUsers={state.latestDraft?.approvers}
+                showValuesPostfix={true}
                 reload={reload}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}

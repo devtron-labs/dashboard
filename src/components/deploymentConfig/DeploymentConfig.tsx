@@ -654,6 +654,7 @@ export default function DeploymentConfig({
                         isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
                         isApprovalPending={state.latestDraft?.draftState === 4}
                         approvalUsers={state.latestDraft?.approvers}
+                        showValuesPostfix={true}
                         reload={initialise}
                     />
                     {renderValuesView()}
