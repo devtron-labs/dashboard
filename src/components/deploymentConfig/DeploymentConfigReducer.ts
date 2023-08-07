@@ -122,6 +122,8 @@ export const deploymentConfigReducer = (
             return { ...state, publishedState: action.payload }
         case DeploymentConfigStateActionTypes.isDraftOverriden:
             return { ...state, isDraftOverriden: action.payload }
+        case DeploymentConfigStateActionTypes.unableToParseYaml:
+            return { ...state, unableToParseYaml: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

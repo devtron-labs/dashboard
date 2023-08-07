@@ -181,7 +181,7 @@ export default function DeploymentTemplateOverride({
 
                 const payload = {
                     duplicate: envOverrideValues,
-                    draftValues: YAML.stringify(envOverrideValues, null),
+                    draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
                     environmentConfig: {
                         id,
                         status,
@@ -301,7 +301,10 @@ export default function DeploymentTemplateOverride({
 
     async function handleOverride(e) {
         e.preventDefault()
-        if (state.duplicate) {
+
+        if (state.unableToParseYaml) {
+            return
+        } else if (state.duplicate) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
             //permanent delete
             if (state.isConfigProtectionEnabled && showDeleteModal) {

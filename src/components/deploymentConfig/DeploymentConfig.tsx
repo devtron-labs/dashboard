@@ -183,8 +183,8 @@ export default function DeploymentConfig({
                         readme,
                     },
                     isAppMetricsEnabled: isAppMetricsEnabled,
-                    tempFormData: YAML.stringify(valuesOverride, null),
-                    draftValues: YAML.stringify(valuesOverride, null),
+                    tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
+                    draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
                     latestDraft: draftResp.result,
                     selectedTabIndex: 3,
                     openComparison: false,
@@ -316,7 +316,7 @@ export default function DeploymentConfig({
                 readme,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
-                tempFormData: YAML.stringify(defaultAppOverride, null),
+                tempFormData: YAML.stringify(defaultAppOverride, { indent: 2 }),
             }
 
             let payload = {}
@@ -427,29 +427,43 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-
         dispatch({
             type: DeploymentConfigStateActionTypes.tempFormData,
             payload: str,
         })
-        if (
-            state.selectedChart &&
-            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
-            str &&
-            state.currentEditorView &&
-            !state.isBasicLocked &&
-            !fromBasic
-        ) {
-            try {
+        try {
+            const parsedValues = YAML.parse(str)
+
+            // Unset unableToParseYaml flag when yaml is successfully parsed
+            dispatch({
+                type: DeploymentConfigStateActionTypes.unableToParseYaml,
+                payload: false,
+            })
+            if (
+                state.selectedChart &&
+                (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
+                str &&
+                state.currentEditorView &&
+                !state.isBasicLocked &&
+                !fromBasic
+            ) {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.isBasicLocked,
-                    payload: isBasicValueChanged(YAML.parse(str)),
+                    payload: isBasicValueChanged(parsedValues),
                 })
-            } catch (error) {}
+            }
+        } catch (error) {
+            // Set unableToParseYaml flag when yaml is malformed
+            dispatch({
+                type: DeploymentConfigStateActionTypes.unableToParseYaml,
+                payload: true,
+            })
         }
     }
 
     const handleReadMeClick = () => {
+        if (!state.showReadme && state.unableToParseYaml) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
             payload: {
@@ -501,6 +515,8 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
+        if (state.unableToParseYaml) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
             payload:

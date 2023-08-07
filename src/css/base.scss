@@ -3185,6 +3185,12 @@ textarea,
     }
 }
 
+.dc__no-svg-stroke {
+    path {
+        stroke: none !important;
+    }
+}
+
 .dc__column-gap-8{
     column-gap: 8px;
 }

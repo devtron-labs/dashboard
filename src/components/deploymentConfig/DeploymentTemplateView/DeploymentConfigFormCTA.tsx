@@ -65,6 +65,7 @@ export default function DeploymentConfigFormCTA({
                             ? 'base-deployment-template-save-and-next-button'
                             : 'base-deployment-template-save-changes-button'
                     }`}
+                    disabled={state.unableToParseYaml}
                 >
                     {loading ? (
                         <Progressing />

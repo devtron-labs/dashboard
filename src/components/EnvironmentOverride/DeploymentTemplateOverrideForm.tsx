@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary, useJsonYaml } from '../common'
 import { DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
@@ -199,17 +199,32 @@ export default function DeploymentTemplateOverrideForm({
         if (isCompareAndApprovalState) return
 
         setTempValue(str)
-        if (str && state.currentEditorView && !state.isBasicLocked && !fromBasic) {
-            try {
+        try {
+            const parsedValues = YAML.parse(str)
+            // Unset unableToParseYaml flag when yaml is successfully parsed
+            dispatch({
+                type: DeploymentConfigStateActionTypes.unableToParseYaml,
+                payload: false,
+            })
+
+            if (str && state.currentEditorView && !state.isBasicLocked && !fromBasic) {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.isBasicLocked,
-                    payload: isBasicValueChanged(YAML.parse(str)),
+                    payload: isBasicValueChanged(parsedValues),
                 })
-            } catch (error) {}
+            }
+        } catch (error) {
+            // Set unableToParseYaml flag when yaml is malformed
+            dispatch({
+                type: DeploymentConfigStateActionTypes.unableToParseYaml,
+                payload: true,
+            })
         }
     }
 
     const handleReadMeClick = () => {
+        if (!state.showReadme && state.unableToParseYaml) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
             payload: {
@@ -227,6 +242,8 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const handleTabSelection = (index: number) => {
+        if (state.unableToParseYaml) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
             payload:
@@ -367,6 +384,7 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride={true}
                     disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                     codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
+                    setTempValue={setTempValue}
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={getCodeEditorValue(true)} isEnvOverride={true} />
