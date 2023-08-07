@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, useContext, useMemo } from 'react'
 import {
     Select,
     mapByKey,
@@ -235,11 +235,11 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
 
         let selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList.find((item) => +item.value === chartRepoIdArray[i])
+            let chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
             if (chartRepo) selectedRepos.push(chartRepo)
         }
         for (let i = 0; i < ociRegistryArray.length; i++) {
-            let registry = chartRepoList.find((item) => item.value === ociRegistryArray[i])
+            let registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
             if (registry) selectedRepos.push(registry)
         }
         if (selectedRepos) setSelectedChartRepo(selectedRepos)
@@ -356,16 +356,20 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         history.push(url)
     }
 
-    const chartRepos = chartLists
-        .filter((chartRepo) => chartRepo.active)
-        .map((chartRepo) => {
-            return {
-                value: chartRepo.id,
-                label: chartRepo.name,
-                isOCIRegistry: chartRepo.isOCIRegistry,
-            }
-        })
-        .sort(sortOptionsByLabel)
+    const chartRepos = useMemo(
+        () =>
+            chartLists
+                .filter((chartRepo) => chartRepo.active)
+                .map((chartRepo) => {
+                    return {
+                        value: chartRepo.id,
+                        label: chartRepo.name,
+                        isOCIRegistry: chartRepo.isOCIRegistry,
+                    }
+                })
+                .sort(sortOptionsByLabel),
+        [chartLists]
+    )
 
     return (
         <>
