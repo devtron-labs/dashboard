@@ -120,9 +120,7 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
         case ConfigMapActionTypes.setSecretDataYaml:
             return { ...state, secretDataYaml: action.payload }
         case ConfigMapActionTypes.setEsoYaml:
-            return { ...state, esoYaml: action.payload }
-        case ConfigMapActionTypes.setEsoData:
-            return { ...state, esoData: action.payload }
+            return { ...state, esoSecretYaml: action.payload }
         case ConfigMapActionTypes.setSecretData:
             return { ...state, secretData: action.payload }
         case ConfigMapActionTypes.setRoleARN:

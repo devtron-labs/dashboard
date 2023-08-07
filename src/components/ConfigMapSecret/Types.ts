@@ -184,7 +184,6 @@ export enum ConfigMapActionTypes {
     setExternalType = 'setExternalType',
     setSecretDataYaml = 'setSecretDataYaml',
     setEsoYaml = 'setEsoYaml',
-    setEsoData = 'setEsoData',
     setSecretData = 'setSecretData',
     setRoleARN = 'setRoleARN',
     setCodeEditorRadio = 'setCodeEditorRadio',

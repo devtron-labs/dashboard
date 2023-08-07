@@ -348,7 +348,7 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
                     secretStore: configMapSecretData.esoSecretData.secretStore,
                     secretStoreRef: configMapSecretData.esoSecretData.secretStoreRef,
                     refreshInterval: configMapSecretData.esoSecretData.refreshInterval,
-                    esoYaml: YAML.stringify(configMapSecretData.esoSecretData),
+                    esoSecretYaml: YAML.stringify(configMapSecretData.esoSecretData),
                 },
             })
         }
