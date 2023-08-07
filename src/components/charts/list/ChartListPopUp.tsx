@@ -41,7 +41,6 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         setShowAddPopUp(!showAddPopUp)
     }
 
-
     const renderChartListHeaders = () => {
         return (
             <div className="pt-12 pb-12 pl-16 flex dc__content-space dc__border-bottom fw-6">
@@ -51,7 +50,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
                         <Add className="icon-dim-20 fcb-5 mr-8" />
                         Add
                     </div>
-                    {rendeRefetch()}
+                    {renderRefetch()}
                     <div className="dc__divider ml-12 mr-4" />
                     <button className="dc__transparent flex mr-8" onClick={onClose}>
                         <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
@@ -113,22 +112,18 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         )
     }
 
-    const rendeRefetch = () => {
-        if (isEmpty) {
+    const renderRefetch = () => {
+        if (!isEmpty) {
             return (
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
-                    <div className="chartRepo_form__subtitle dc__float-right">
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
+                            className={`chartRepo_form__subtitle dc__float-right dc__link flex ${!fetching ? 'cursor' : ''}`}
                             onClick={refetchCharts}
                         >
-                            <span>
-                                <SyncIcon />
-                            </span>
+                            <SyncIcon />
                         </a>
-                    </div>
                 </Tippy>
             )
         }
@@ -152,8 +147,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         }
         return (
             <div className="dc__overflow-scroll h-100 mxh-390-imp">
-                {filteredChartList.length > 0 &&
-                    filteredChartList.map((list, index) => {
+                { filteredChartList?.map((list, index) => {
                         return (
                             <div className="chart-list__row">
                                 <List key={`chart-row-${index}`}>

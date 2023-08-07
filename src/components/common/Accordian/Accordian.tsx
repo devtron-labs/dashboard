@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
-import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import AddChartSource from '../../charts/list/AddChartSource'
 
@@ -16,7 +16,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
     }
 
     const getChecked = (option): boolean => {
-        return value.filter((selectedVal) => selectedVal.label === option.label).length
+        return value.filter((selectedVal) => selectedVal.value === option.value).length
     } 
 
     return (
@@ -52,7 +52,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
                                 isChecked={getChecked(option)}
-                                value={'CHECKED'}
+                                value={CHECKBOX_VALUE.CHECKED}
                                 onChange={() => onChange(option)}
                             >
                                 <div className="ml-5">{option.label}</div>
