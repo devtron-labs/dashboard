@@ -578,24 +578,26 @@ function DockerForm({
         let payload = getRegistryPayload(awsRegion)
         payload.ociRegistryConfig = isPublic ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
 
-        let promise = await validateContainerConfiguration(payload)
-         promise.then((response) => {
-            if (response.code === 200) {
-                setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success("Configuration validated");
-            }
-        }).catch((error) => {
-            const code = error["code"]
-            const message = error["errors"][0].userMessage
-            if (code === 400) {
-                setValidationStatus(VALIDATION_STATUS.FAILURE)
-                toast.error('Configuration validation failed')
-                setValidationError({ errTitle: message, errMessage: message })
-            }else{
-                showError(error)
-                setValidationStatus(VALIDATION_STATUS.DRY_RUN)
-            }    
-        })
+        let promise = validateContainerConfiguration(payload)
+        await promise
+            .then((response) => {
+                if (response.code === 200) {
+                    setValidationStatus(VALIDATION_STATUS.SUCCESS)
+                    toast.success('Configuration validated')
+                }
+            })
+            .catch((error) => {
+                const code = error['code']
+                const message = error['errors'][0].userMessage
+                if (code === 400) {
+                    setValidationStatus(VALIDATION_STATUS.FAILURE)
+                    toast.error('Configuration validation failed')
+                    setValidationError({ errTitle: message, errMessage: message })
+                } else {
+                    showError(error)
+                    setValidationStatus(VALIDATION_STATUS.DRY_RUN)
+                }
+            })
     }
 
     async function onSave() {
