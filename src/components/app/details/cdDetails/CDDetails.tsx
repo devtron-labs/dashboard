@@ -61,6 +61,9 @@ export default function CDDetails() {
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
+    const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
+    const [tagsEditable, setTagsEditable] = useState<boolean>(false)
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [loading, result, error] = useAsync(
         () =>
             Promise.allSettled([
@@ -110,6 +113,11 @@ export default function CDDetails() {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+
+        setAppReleaseTags(deploymentHistoryResult?.result?.appReleaseTagNames || [])
+        setTagsEditable(deploymentHistoryResult?.result?.tagsEditable || false)
+        setHideImageTaggingHardDelete(deploymentHistoryResult?.result?.hideImageTaggingHardDelete || false)
+
         if (!triggerId && envId && pipelineId && deploymentHistoryResult.result?.cdWorkflows?.length) {
             replace(
                 generatePath(path, {
@@ -281,14 +289,10 @@ export default function CDDetails() {
                                 deploymentHistoryList={deploymentHistoryList}
                                 deploymentAppType={deploymentAppType}
                                 isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
-                                deploymentHistoryResult={
-                                    deploymentHistoryResult?.result?.cdWorkflows
-                                        ? deploymentHistoryResult.result?.cdWorkflows
-                                        : []
-                                }
-                                appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
-                                tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
-                                hideImageTaggingHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
+                                deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows || []}
+                                appReleaseTags={appReleaseTags}
+                                tagsEditable={tagsEditable}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                 fetchIdData={fetchTriggerIdData}
                             />
                         </Route>

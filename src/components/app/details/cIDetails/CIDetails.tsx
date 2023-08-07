@@ -37,6 +37,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
+    const [appReleaseTags, setAppReleaseTags] = useState<[]>([])
+    const [tagsEditable, setTagsEditable] = useState<boolean>(false)
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
 
     const [initDataLoading, initDataResults] = useAsync(
@@ -76,6 +79,10 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+
+        setAppReleaseTags(triggerHistoryResult?.result?.appReleaseTagNames || [])
+        setTagsEditable(triggerHistoryResult?.result?.tagsEditable || false)
+        setHideImageTaggingHardDelete(triggerHistoryResult?.result?.hideImageTaggingHardDelete || false)
 
         if (buildId && !newTriggerHistory.has(+buildId) && fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
             setFetchBuildIdData(FetchIdDataStatus.FETCHING)
@@ -209,11 +216,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
                                             isJobView={isJobView}
-                                            tagsEditable={triggerHistoryResult?.result?.tagsEditable}
-                                            appReleaseTags={triggerHistoryResult?.result?.appReleaseTagNames}
-                                            hideImageTaggingHardDelete={
-                                                triggerHistoryResult?.result?.hideImageTaggingHardDelete
-                                            }
+                                            tagsEditable={tagsEditable}
+                                            appReleaseTags={appReleaseTags}
+                                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                             fetchIdData={fetchBuildIdData}
                                         />
                                     </Route>

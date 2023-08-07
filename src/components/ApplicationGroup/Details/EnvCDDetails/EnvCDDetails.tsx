@@ -89,9 +89,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return agg
         }, triggerHistory)
 
-        setHideImageTaggingHardDelete(deploymentHistoryResult?.result?.hideImageTaggingHardDelete)
-        setTagsEditable(deploymentHistoryResult?.result?.tagsEditable)
-        setAppReleaseTags(deploymentHistoryResult?.result?.appReleaseTagNames)
+        setHideImageTaggingHardDelete(deploymentHistoryResult?.result?.hideImageTaggingHardDelete || false)
+        setTagsEditable(deploymentHistoryResult?.result?.tagsEditable || false)
+        setAppReleaseTags(deploymentHistoryResult?.result?.appReleaseTagNames || [])
 
         if (triggerId && !newTriggerHistory.has(+triggerId)) {
             setFetchTriggerIdData(FetchIdDataStatus.FETCHING)
