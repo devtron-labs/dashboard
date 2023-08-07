@@ -381,8 +381,7 @@ export function addChartNameExtensionToBaseURL(
             } else url += `cpu/cpu-usage`
             break
         case 'status':
-            if (statusCode.includes('xx')) url += ``
-            else url += ``
+            url += ``
             break
         default:
             return ''
