@@ -120,19 +120,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     componentDidMount() {
         this.getHostURLConfig()
-        this.getWorkflows()
+        this.getWorkflows(true)
         this.getEnvironments()
-        if (ApprovalMaterialModal) {
-            this.getConfigs()
-            if (this.props.location.search.includes("approval-node")) {
-                this.setState({
-                    showApprovalModal: true
-                })
-                const searchParams = new URLSearchParams(this.props.location.search);
-                const nodeId = searchParams.get('approval-node');
-                this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-            }
-        }
+        
     }
 
     getEnvironments = () => {
@@ -170,7 +160,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ tagsEditable: tagsEditable })
     }
 
-    getWorkflows = () => {
+    getWorkflows = (isFromOnMount?: boolean) => {
         getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
@@ -192,6 +182,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 }
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
+                    if (isFromOnMount && ApprovalMaterialModal) {
+                        this.getConfigs()
+                        if (this.props.location.search.includes("approval-node")) {
+                            this.setState({
+                                showApprovalModal: true
+                            })
+                            const searchParams = new URLSearchParams(this.props.location.search);
+                            const nodeId = searchParams.get('approval-node');
+                            this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+                        }
+                    }
                     this.timerRef && clearInterval(this.timerRef)
                     this.timerRef = setInterval(() => {
                         this.getWorkflowStatus()
