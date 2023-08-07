@@ -36,6 +36,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [pipelineList, setPipelineList] = useState([])
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
+    const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
+    const [tagsEditable, setTagsEditable] = useState<boolean>(false)
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
     const [loading, result] = useAsync(
         () =>
@@ -85,6 +88,10 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
+
+        setHideImageTaggingHardDelete(deploymentHistoryResult?.result?.hideImageTaggingHardDelete)
+        setTagsEditable(deploymentHistoryResult?.result?.tagsEditable)
+        setAppReleaseTags(deploymentHistoryResult?.result?.appReleaseTagNames)
 
         if (triggerId && !newTriggerHistory.has(+triggerId)) {
             setFetchTriggerIdData(FetchIdDataStatus.FETCHING)
@@ -184,11 +191,10 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
     })
 
-    console.log(triggerHistory, 'History')
-    console.log(deploymentHistoryResult, 'deploymentHistoryResult')
+    const triggerHistoryArray = Array.from(triggerHistory.values())
 
     const renderDetail = (): JSX.Element => {
-        if (triggerHistory.size > 0) {
+        if (triggerHistory.size > 0 || fetchTriggerIdData) {
             const deploymentAppType = pipelineList.find(
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
@@ -207,10 +213,12 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
-                        deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows || []}
-                        appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
-                        tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
-                        hideImageTaggingHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
+                        deploymentHistoryResult={
+                            deploymentHistoryResult?.result?.cdWorkflows || triggerHistoryArray || []
+                        }
+                        appReleaseTags={appReleaseTags}
+                        tagsEditable={tagsEditable}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchTriggerIdData}
                     />
                 </Route>
