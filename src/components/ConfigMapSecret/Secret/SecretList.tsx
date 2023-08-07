@@ -35,6 +35,7 @@ export default function SecretList({
         setSecretLoading(true)
         setList(null)
         init(true)
+        reloadEnvironments()
     }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {

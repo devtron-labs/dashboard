@@ -35,6 +35,7 @@ export default function ConfigMapList({
         setConfigMapLoading(true)
         setConfigMap(null)
         init(true)
+        reloadEnvironments()
     }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
