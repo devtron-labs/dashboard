@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef, useContext, useMemo } from 'react'
 import {
     Select,
     mapByKey,
     sortOptionsByLabel,
 } from '../../common'
-import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap, InfoColourBar, getUserRole } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -58,7 +58,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
         })
 }
 
-function DiscoverChartList() {
+function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const { serverMode } = useContext(mainContext)
     const location = useLocation()
     const history = useHistory()
@@ -112,6 +112,7 @@ function DiscoverChartList() {
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
+
     useEffect(() => {
         getChartFilter()
     }, [showSourcePopoUp])
@@ -126,12 +127,10 @@ function DiscoverChartList() {
         }
     }, [location.search, state.loading])
 
-
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            const [{ result: chartRepoListResp }] = await Promise.all([getChartProviderList()])
-            let chartRepos = chartRepoListResp || []
+            let chartRepos = (await getChartProviderList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
@@ -236,11 +235,11 @@ function DiscoverChartList() {
 
         let selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList.find((item) => +item.value === chartRepoIdArray[i])
+            let chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
             if (chartRepo) selectedRepos.push(chartRepo)
         }
         for (let i = 0; i < ociRegistryArray.length; i++) {
-            let registry = chartRepoList.find((item) => item.value === ociRegistryArray[i])
+            let registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
             if (registry) selectedRepos.push(registry)
         }
         if (selectedRepos) setSelectedChartRepo(selectedRepos)
@@ -319,20 +318,32 @@ function DiscoverChartList() {
                         {state.charts.length === 0 ? (
                             <>
                                 Chart Store
-                                <button
-                                    className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16"
-                                    onClick={onChangeShowSourcePopup}
-                                >
-                                    <SourceIcon className="mr-4" />
-                                    <span className="fs-12">Source</span>
-                                </button>
+                                {isSuperAdmin && (
+                                    <button
+                                        className="en-2 bw-1 br-4 cb-5 fw-6 bcn-0 ml-16"
+                                        onClick={onChangeShowSourcePopup}
+                                    >
+                                        <SourceIcon className="mr-4" />
+                                        <span className="fs-12">Source</span>
+                                    </button>
+                                )}
                             </>
                         ) : (
                             'Deploy multiple charts'
                         )}
                     </span>
                 </div>
-                <div>{showSourcePopoUp && <ChartListPopUp onClose={toggleChartListPopUp} chartList={chartLists} filteredChartList={filteredChartList} setFilteredChartList={setFilteredChartList} isLoading={isLoading} />}</div>
+                <div>
+                    {showSourcePopoUp && (
+                        <ChartListPopUp
+                            onClose={toggleChartListPopUp}
+                            chartList={chartLists}
+                            filteredChartList={filteredChartList}
+                            setFilteredChartList={setFilteredChartList}
+                            isLoading={isLoading}
+                        />
+                    )}
+                </div>
             </>
         )
     }
@@ -345,16 +356,20 @@ function DiscoverChartList() {
         history.push(url)
     }
 
-    const chartRepos = chartLists
-        .filter((chartRepo) => chartRepo.active)
-        .map((chartRepo) => {
-            return {
-                value: chartRepo.id,
-                label: chartRepo.name,
-                isOCIRegistry: chartRepo.isOCIRegistry,
-            }
-        })
-        .sort(sortOptionsByLabel)
+    const chartRepos = useMemo(
+        () =>
+            chartLists
+                .filter((chartRepo) => chartRepo.active)
+                .map((chartRepo) => {
+                    return {
+                        value: chartRepo.id,
+                        label: chartRepo.name,
+                        isOCIRegistry: chartRepo.isOCIRegistry,
+                    }
+                })
+                .sort(sortOptionsByLabel),
+        [chartLists]
+    )
 
     return (
         <>
@@ -642,7 +657,7 @@ function DiscoverChartList() {
     )
 }
 
-export default function DiscoverCharts() {
+export default function DiscoverCharts({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const match = useRouteMatch()
     const { path } = match
 
@@ -657,7 +672,7 @@ export default function DiscoverCharts() {
             </Route>
             <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />
             <Route>
-                <DiscoverChartList />
+                <DiscoverChartList isSuperAdmin={isSuperAdmin} />
             </Route>
         </Switch>
     )

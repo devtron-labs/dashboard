@@ -26,7 +26,7 @@ function ChartHeaderFilter({
     const { url } = match
   
     const handleSelection = (event): void => {
-        const chartRepoList = selectedChartRepo.filter((e) => e.label != event.label)
+        const chartRepoList = selectedChartRepo.filter((e) => e.value != event.value)
         setSelectedChartRepo(chartRepoList)
         if (selectedChartRepo.length === chartRepoList.length) {
             handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
@@ -47,14 +47,14 @@ function ChartHeaderFilter({
         const registryId = searchParams.get(QueryParams.RegistryId)
         let isOCIRegistry
         if (key == 'chart-repo') {
-            let chartRepoId = selected
+            let paramsChartRepoIds = selected
                 .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     return selectedRepo.value
                 })
                 .join(',')
 
-            let registryId = selected
+            let paramsRegistryIds = selected
                 .filter((selectedRepo) => selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     isOCIRegistry = true
@@ -62,14 +62,14 @@ function ChartHeaderFilter({
                 })
                 .join(',')
             if (isOCIRegistry) {
-                let qsr = `${QueryParams.RegistryId}=${registryId}`
-                if (chartRepoId) qsr = `${qsr}&${QueryParams.ChartRepoId}=${chartRepoId}`
+                let qsr = `${QueryParams.RegistryId}=${paramsRegistryIds}`
+                if (paramsChartRepoIds) qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
                 if (app) qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
                 if (deprecate) qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
                 history.push(`${url}?${qsr}`)
             } else {
-                let qs = `${QueryParams.ChartRepoId}=${chartRepoId}`
-                if (registryId) qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+                let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
+                if (paramsRegistryIds) qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
                 if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
                 if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
                 history.push(`${url}?${qs}`)
