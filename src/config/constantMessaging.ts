@@ -379,6 +379,10 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'Build not found',
         SUBTITLE: 'The build you are looking for does not exist',
     },
+    TRIGGER_NOT_FOUND: {
+        TITLE: 'Trigger not found',
+        SUBTITLE: 'The trigger you are looking for does not exist',
+    },
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'

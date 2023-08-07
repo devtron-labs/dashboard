@@ -138,14 +138,12 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             })
             if (fetchBuildIdData === FetchIdDataStatus.FETCHING) {
                 setFetchBuildIdData(FetchIdDataStatus.SUCCESS)
-            } else {
-                setFetchBuildIdData(FetchIdDataStatus.SUSPEND) // TODO: TESTME
             }
         }
     }
 
     async function pollHistory() {
-        if (!pipelineId || (fetchBuildIdData && fetchBuildIdData !== FetchIdDataStatus.SUSPEND)) return
+        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(pipelineId, { offset: 0, size: pagination.offset + pagination.size }),

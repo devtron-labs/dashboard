@@ -111,14 +111,12 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             })
             if (fetchBuildIdData === FetchIdDataStatus.FETCHING) {
                 setFetchBuildIdData(FetchIdDataStatus.SUCCESS)
-            } else {
-                setFetchBuildIdData(FetchIdDataStatus.SUSPEND) // TODO: TESTME
             }
         }
     }
 
     async function pollHistory() {
-        if (!pipelineId || (fetchBuildIdData && fetchBuildIdData !== FetchIdDataStatus.SUSPEND)) return
+        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -288,16 +286,13 @@ export const Details = ({
         () =>
             getTagDetails({
                 pipelineId,
-                artifactId: !!triggerDetailsResult?.result?.artifactId
-                    ? triggerDetailsResult?.result?.artifactId
-                    : triggerDetails?.artifactId,
+                artifactId: triggerDetailsResult?.result?.artifactId || triggerDetails?.artifactId,
             }),
         [pipelineId, buildId],
         areTagDetailsRequired &&
             !!pipelineId &&
             (!!triggerDetailsResult?.result?.artifactId || !!triggerDetails?.artifactId),
     )
-    // TODO: Ask if Polling has to be done here
 
     useEffect(() => {
         if (triggerDetailsLoading) return
@@ -313,14 +308,11 @@ export const Details = ({
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
-        if (tagDetailsLoading || !triggerDetailsResult) return
-        let triggerDetailsWithTags = {
+        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) return
+        const triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
             imageComment: tagDetailsResult?.result?.imageComment,
-        }
-        if (!areTagDetailsRequired) {
-            triggerDetailsWithTags = null
         }
         synchroniseState(+buildId, triggerDetailsWithTags, tagDetailsError)
     }, [tagDetailsLoading, tagDetailsResult, tagDetailsError])

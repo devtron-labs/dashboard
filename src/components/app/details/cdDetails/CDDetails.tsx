@@ -187,7 +187,7 @@ export default function CDDetails() {
     }, [result])
 
     async function pollHistory() {
-        if (!pipelineId || !envId || (fetchTriggerIdData && fetchTriggerIdData !== FetchIdDataStatus.SUSPEND)) return
+        if (!pipelineId || !envId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -220,8 +220,6 @@ export default function CDDetails() {
             })
             if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
                 setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
-            } else {
-                setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
             }
         }
     }
@@ -363,16 +361,16 @@ export const TriggerOutput: React.FC<{
         setTagDetails,
         tagDetailsDependency,
     ] = useAsync(
-        () => getTagDetails({ pipelineId, artifactId: triggerDetailsResult?.result?.artifactId }),
+        () =>
+            getTagDetails({
+                pipelineId,
+                artifactId: triggerDetailsResult?.result?.artifactId || triggerDetails?.artifactId,
+            }),
         [pipelineId, triggerId],
-        areTagDetailsRequired && !!pipelineId && !!triggerDetailsResult?.result?.artifactId,
+        areTagDetailsRequired &&
+            !!pipelineId &&
+            (!!triggerDetailsResult?.result?.artifactId || !!triggerDetails?.artifactId),
     )
-    // TODO: Maybe POLLING
-
-    // useEffect(() => {
-    //     if (triggerDetailsLoading) return
-    //     syncState(+triggerId, triggerDetailsResult?.result, triggerDetailsError)
-    // }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
         if (triggerDetailsLoading) return
@@ -389,14 +387,11 @@ export const TriggerOutput: React.FC<{
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
-        if (tagDetailsLoading || !triggerDetailsResult) return
-        let triggerDetailsWithTags = {
+        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) return
+        const triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
             imageComment: tagDetailsResult?.result?.imageComment,
-        }
-        if (!areTagDetailsRequired) {
-            triggerDetailsWithTags = null
         }
         syncState(+triggerId, triggerDetailsWithTags, tagDetailsError)
     }, [tagDetailsLoading, tagDetailsResult, tagDetailsError])
@@ -420,14 +415,15 @@ export const TriggerOutput: React.FC<{
         return <Progressing pageLoader />
     if (triggerDetailsError?.code === 404) {
         return (
-            <GenericEmptyState title="Trigger Not Found" subTitle="The trigger you are looking for does not exist." />
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.TRIGGER_NOT_FOUND.TITLE}
+                subTitle={EMPTY_STATE_STATUS.TRIGGER_NOT_FOUND.SUBTITLE}
+            />
         )
     }
     if (!triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
-    if (triggerDetails?.id !== +triggerId) {
-        return null
-    }
+    if (triggerDetails?.id !== +triggerId) return null
 
     return (
         <>

@@ -92,7 +92,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         } else {
             setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
         }
-
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
@@ -106,7 +105,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     async function pollHistory() {
         // polling
-        if (!pipelineId || !appId || (fetchTriggerIdData && fetchTriggerIdData !== FetchIdDataStatus.SUSPEND)) return
+        if (!pipelineId || !appId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -139,8 +138,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             })
             if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
                 setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
-            } else {
-                setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
             }
         }
     }
@@ -187,8 +184,11 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
     })
 
+    console.log(triggerHistory, 'History')
+    console.log(deploymentHistoryResult, 'deploymentHistoryResult')
+
     const renderDetail = (): JSX.Element => {
-        if (triggerHistory.size > 0 || fetchTriggerIdData) {
+        if (triggerHistory.size > 0) {
             const deploymentAppType = pipelineList.find(
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
@@ -207,10 +207,10 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
-                        deploymentHistoryResult={deploymentHistoryResult.result?.cdWorkflows}
-                        appReleaseTags={deploymentHistoryResult.result?.appReleaseTagNames}
-                        tagsEditable={deploymentHistoryResult.result?.tagsEditable}
-                        hideImageTaggingHardDelete={deploymentHistoryResult.result?.hideImageTaggingHardDelete}
+                        deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows || []}
+                        appReleaseTags={deploymentHistoryResult?.result?.appReleaseTagNames}
+                        tagsEditable={deploymentHistoryResult?.result?.tagsEditable}
+                        hideImageTaggingHardDelete={deploymentHistoryResult?.result?.hideImageTaggingHardDelete}
                         fetchIdData={fetchTriggerIdData}
                     />
                 </Route>
