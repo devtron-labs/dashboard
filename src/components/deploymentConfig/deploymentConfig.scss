@@ -80,6 +80,7 @@
                     .form-app-metrics-cta {
                         width: 38%;
                     }
+
                     &.tippy-over {
                         .tippy-box {
                             top: 42px;
@@ -110,6 +111,13 @@
 
             &.comparison-view {
                 height: calc(100% - 40px);
+
+                &.delete-override-state {
+                    .react-monaco-editor-container {
+                        height: calc(100vh - 275px) !important;
+                        margin-top: 52px;
+                    }
+                }
             }
 
             &.readme-view {

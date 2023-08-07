@@ -142,8 +142,8 @@ export default function DeploymentTemplateEditorView({
         })
     }
 
-    const getOverrideClass = () => {
-        if (isEnvOverride) {
+    const getOverrideClass = (isDeleteState?: boolean) => {
+        if (isEnvOverride && !isDeleteState) {
             if (!!state.duplicate) {
                 return 'bcy-1'
             }
@@ -186,42 +186,57 @@ export default function DeploymentTemplateEditorView({
                                     state.selectedChart,
                                     handleOverride,
                                     state.latestDraft,
-                                    state.publishedState?.isOverride
+                                    state.publishedState?.isOverride,
                                 )}
                             </div>
                         </CodeEditor.Header>
                     )}
                     {state.openComparison && (
-                        <CodeEditor.Header
-                            className="code-editor__header flex left p-0-imp"
-                            hideDefaultSplitHeader={true}
-                        >
-                            <>
-                                <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
-                                    <span style={{ width: '85px' }}>Compare with: </span>
-                                    <CompareWithDropdown
-                                        isEnvOverride={isEnvOverride}
-                                        environments={filteredEnvironments}
-                                        charts={filteredCharts}
-                                        selectedOption={selectedOption}
-                                        setSelectedOption={setSelectedOption}
-                                        globalChartRef={globalChartRef}
-                                        isDraftMode={!!state.latestDraft}
-                                    />
+                        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+                            <div className="flex column">
+                                <div className="code-editor__header flex left w-100 p-0-imp">
+                                    <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
+                                        <span style={{ width: '85px' }}>Compare with: </span>
+                                        <CompareWithDropdown
+                                            isEnvOverride={isEnvOverride}
+                                            environments={filteredEnvironments}
+                                            charts={filteredCharts}
+                                            selectedOption={selectedOption}
+                                            setSelectedOption={setSelectedOption}
+                                            globalChartRef={globalChartRef}
+                                            isDraftMode={!!state.latestDraft}
+                                        />
+                                    </div>
+                                    <div
+                                        className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass(
+                                            state.latestDraft?.action === 3,
+                                        )}`}
+                                    >
+                                        {renderEditorHeading(
+                                            isEnvOverride,
+                                            !!state.duplicate,
+                                            readOnly,
+                                            environmentName,
+                                            state.selectedChart,
+                                            handleOverride,
+                                            state.latestDraft,
+                                            state.publishedState?.isOverride,
+                                        )}
+                                    </div>
                                 </div>
-                                <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
-                                    {renderEditorHeading(
-                                        isEnvOverride,
-                                        !!state.duplicate,
-                                        readOnly,
-                                        environmentName,
-                                        state.selectedChart,
-                                        handleOverride,
-                                        state.latestDraft,
-                                        state.publishedState?.isOverride
-                                    )}
-                                </div>
-                            </>
+                                {state.latestDraft?.action === 3 && (
+                                    <div className="code-editor__header flex left w-100 p-0-imp">
+                                        <div className="bcr-1 pt-8 pb-8 pl-16 pr-16">
+                                            <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
+                                            <div className="fs-13 fw-4 cn-9 lh-20">Override base</div>
+                                        </div>
+                                        <div className="bcg-1 pt-8 pb-8 pl-16 pr-16">
+                                            <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
+                                            <div className="fs-13 fw-4 cn-9 lh-20">Inherit from base</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </CodeEditor.Header>
                     )}
                 </CodeEditor>

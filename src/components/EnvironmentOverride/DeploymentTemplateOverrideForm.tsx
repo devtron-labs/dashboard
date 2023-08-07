@@ -269,7 +269,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const isPublishedOverridden = readOnlyPublishedMode
         ? state.publishedState.isOverride
-        : state.latestDraft.action === 3
+        : state.latestDraft?.action === 3
         ? state.isDraftOverriden
         : !!state.duplicate
     const overridden = state.publishedState ? isPublishedOverridden : !!state.duplicate
@@ -332,7 +332,7 @@ export default function DeploymentTemplateOverrideForm({
         } else if (tempValue) {
             codeEditorValue = tempValue
         } else {
-            const isOverridden = state.latestDraft.action === 3 ? state.isDraftOverriden : state.duplicate
+            const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : state.duplicate
             codeEditorValue = isOverridden
                 ? YAML.stringify(state.duplicate, { indent: 2 })
                 : YAML.stringify(state.data.globalConfig, { indent: 2 })
@@ -352,9 +352,11 @@ export default function DeploymentTemplateOverrideForm({
     const renderValuesView = () => {
         return (
             <form
-                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
-                    state.showReadme ? 'readme-view' : ''
-                }`}
+                className={`deployment-template-override-form h-100 ${
+                    state.openComparison
+                        ? `comparison-view ${state.latestDraft?.action === 3 ? 'delete-override-state' : ''}`
+                        : ''
+                } ${state.showReadme ? 'readme-view' : ''}`}
                 onSubmit={handleSubmit}
             >
                 <DeploymentTemplateOptionsTab

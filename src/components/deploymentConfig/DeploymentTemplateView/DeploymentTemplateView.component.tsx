@@ -21,7 +21,6 @@ import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles } from '../const
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import moment from 'moment'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 
@@ -297,7 +296,7 @@ export const renderEditorHeading = (
                     </Tippy>
                 )}
             </div>
-            {isEnvOverride && (!latestDraft || isPublishedOverriden) && (
+            {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (
                 <span
                     data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
                     className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
