@@ -147,7 +147,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         }
         return (
             <div className="dc__overflow-scroll h-100 mxh-390-imp">
-                { filteredChartList?.map((list, index) => {
+                { filteredChartList.map((list, index) => {
                         return (
                             <div className="chart-list__row">
                                 <List key={`chart-row-${index}`}>

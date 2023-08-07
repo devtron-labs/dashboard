@@ -58,7 +58,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
         })
 }
 
-function DiscoverChartList() {
+function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const { serverMode } = useContext(mainContext)
     const location = useLocation()
     const history = useHistory()
@@ -112,7 +112,6 @@ function DiscoverChartList() {
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
-    const [isSuperAdmin, setSuperAdmin] = useState(false)
 
     useEffect(() => {
         getChartFilter()
@@ -131,13 +130,7 @@ function DiscoverChartList() {
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            const [{ result: chartRepoListResp }, { result: userRole }] = await Promise.all([
-                getChartProviderList(),
-                getUserRole(),
-            ])
-            let chartRepos = chartRepoListResp || []
-            const superAdmin = userRole?.roles?.includes('role:super-admin___')
-            setSuperAdmin(superAdmin)
+            let chartRepos = (await getChartProviderList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
@@ -660,7 +653,7 @@ function DiscoverChartList() {
     )
 }
 
-export default function DiscoverCharts() {
+export default function DiscoverCharts({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const match = useRouteMatch()
     const { path } = match
 
@@ -675,7 +668,7 @@ export default function DiscoverCharts() {
             </Route>
             <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />
             <Route>
-                <DiscoverChartList />
+                <DiscoverChartList isSuperAdmin={isSuperAdmin} />
             </Route>
         </Switch>
     )

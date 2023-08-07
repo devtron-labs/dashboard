@@ -47,14 +47,14 @@ function ChartHeaderFilter({
         const registryId = searchParams.get(QueryParams.RegistryId)
         let isOCIRegistry
         if (key == 'chart-repo') {
-            let chartRepoIds = selected
+            let paramsChartRepoIds = selected
                 .filter((selectedRepo) => !selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     return selectedRepo.value
                 })
                 .join(',')
 
-            let registryIds = selected
+            let paramsRegistryIds = selected
                 .filter((selectedRepo) => selectedRepo.isOCIRegistry)
                 ?.map((selectedRepo) => {
                     isOCIRegistry = true
@@ -62,14 +62,14 @@ function ChartHeaderFilter({
                 })
                 .join(',')
             if (isOCIRegistry) {
-                let qsr = `${QueryParams.RegistryId}=${registryIds}`
-                if (chartRepoIds) qsr = `${qsr}&${QueryParams.ChartRepoId}=${chartRepoIds}`
+                let qsr = `${QueryParams.RegistryId}=${paramsRegistryIds}`
+                if (paramsChartRepoIds) qsr = `${qsr}&${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
                 if (app) qsr = `${qsr}&${QueryParams.AppStoreName}=${app}`
                 if (deprecate) qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
                 history.push(`${url}?${qsr}`)
             } else {
-                let qs = `${QueryParams.ChartRepoId}=${chartRepoIds}`
-                if (registryIds) qs = `${qs}&${QueryParams.RegistryId}=${registryIds}`
+                let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
+                if (paramsRegistryIds) qs = `${qs}&${QueryParams.RegistryId}=${paramsRegistryIds}`
                 if (app) qs = `${qs}&${QueryParams.AppStoreName}=${app}`
                 if (deprecate) qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
                 history.push(`${url}?${qs}`)
