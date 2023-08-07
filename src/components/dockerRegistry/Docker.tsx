@@ -24,6 +24,7 @@ import {
     Checkbox,
     REGISTRY_TYPE_MAP,
     InfoColourBar,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList, validateContainerConfiguration } from '../../services/service'
@@ -577,24 +578,26 @@ function DockerForm({
         let payload = getRegistryPayload(awsRegion)
         payload.ociRegistryConfig = isPublic ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
 
-        let promise = await validateContainerConfiguration(payload)
-         promise.then((response) => {
-            if (response.code === 200) {
-                setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                toast.success("Configuration validated");
-            }
-        }).catch((error) => {
-            const code = error["code"]
-            const message = error["errors"][0].userMessage
-            if (code === 400) {
-                setValidationStatus(VALIDATION_STATUS.FAILURE)
-                toast.error('Configuration validation failed')
-                setValidationError({ errTitle: message, errMessage: message })
-            }else{
-                showError(error)
-                setValidationStatus(VALIDATION_STATUS.DRY_RUN)
-            }    
-        })
+        let promise = validateContainerConfiguration(payload)
+        await promise
+            .then((response) => {
+                if (response.code === 200) {
+                    setValidationStatus(VALIDATION_STATUS.SUCCESS)
+                    toast.success('Configuration validated')
+                }
+            })
+            .catch((error) => {
+                const code = error['code']
+                const message = error['errors'][0].userMessage
+                if (code === 400) {
+                    setValidationStatus(VALIDATION_STATUS.FAILURE)
+                    toast.error('Configuration validation failed')
+                    setValidationError({ errTitle: message, errMessage: message })
+                } else {
+                    showError(error)
+                    setValidationStatus(VALIDATION_STATUS.DRY_RUN)
+                }
+            })
     }
 
     async function onSave() {
@@ -967,13 +970,18 @@ function DockerForm({
                             </span>
                         </span>
                     </div>
-                    <Tippy
-                        theme={TippyTheme.black}
-                        className="w-200 dc__zi-4 mt-0-imp"
-                        placement="left"
-                        content="Cannot be disabled as some build pipelines are using this registry to push container images."
-                        // showOnCreate={disabledFields.some((test) => test === 'CONTAINER')}
-                        disabled={disabledFields.some((test) => test !== RepositoryAction.CONTAINER)}
+                    <ConditionalWrap
+                        condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
+                        wrap={(children) => (
+                            <TippyCustomized
+                                theme={TippyTheme.black}
+                                className="w-200 dc__zi-4 mt-0-imp"
+                                placement="left"
+                                infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                            >
+                                <div>{children}</div>
+                            </TippyCustomized>
+                        )}
                     >
                         <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
                             <Checkbox
@@ -992,16 +1000,22 @@ function DockerForm({
                                 {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
                             </Checkbox>
                         </div>
-                    </Tippy>
-
+                    </ConditionalWrap>
                     {isContainerStore && (
                         <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
                     )}
-                    <TippyCustomized
-                        theme={TippyTheme.black}
-                        className="w-200 dc__zi-4 pt-0"
-                        placement="left"
-                        infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
+                    <ConditionalWrap
+                        condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
+                        wrap={(children) => (
+                            <TippyCustomized
+                                theme={TippyTheme.black}
+                                className="w-200 dc__zi-4 pt-0-imp"
+                                placement="left"
+                                infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
+                            >
+                                <div>{children}</div>
+                            </TippyCustomized>
+                        )}
                     >
                         <div>
                             <Checkbox
@@ -1022,12 +1036,19 @@ function DockerForm({
                                 Push helm packages
                             </Checkbox>
                         </div>
-                    </TippyCustomized>
-                    <TippyCustomized
-                        theme={TippyTheme.black}
-                        className="w-200 dc__zi-4 pt-0 mt-0"
-                        placement="left"
-                        infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
+                    </ConditionalWrap>
+                    <ConditionalWrap
+                        condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
+                        wrap={(children) => (
+                            <TippyCustomized
+                                theme={TippyTheme.black}
+                                className="w-200 dc__zi-4 pt-0 mt-0"
+                                placement="left"
+                                infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
+                            >
+                                <div>{children}</div>
+                            </TippyCustomized>
+                        )}
                     >
                         <div>
                             <Checkbox
@@ -1048,8 +1069,9 @@ function DockerForm({
                                 Use as chart repository (Pull helm charts and show in chart store)
                             </Checkbox>
                         </div>
-                    </TippyCustomized>
+                    </ConditionalWrap>
                     {showHelmPull && <div className="pl-28">{renderOCIPublic()}</div>}
+
                     <hr className="mt-16 mb-16" />
                 </>
             ) : (
@@ -1073,6 +1095,7 @@ function DockerForm({
                     onChange={handleOnChange}
                     label="List of repositories"
                     placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
+                    disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
                 />
             </div>
         )
