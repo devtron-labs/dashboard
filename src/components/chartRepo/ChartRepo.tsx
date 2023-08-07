@@ -47,13 +47,13 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
         return Math.floor(num * range) + min
     }
 
-    async function refetchCharts(e) {
+    function refetchCharts(e) {
         if (fetching) {
             return
         }
         setFetching(true)
         toast.success(TOAST_INFO.RE_SYNC)
-        await reSyncChartRepo()
+         reSyncChartRepo()
             .then((response) => {
                 setFetching(false)
             })
