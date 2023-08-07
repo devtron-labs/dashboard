@@ -36,7 +36,7 @@ const EXTERNAL_TYPES = {
     KubernetesConfigMap: 'Kubernetes External ConfigMap',
 }
 
-const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void, isJobView?: boolean } ) => {
+const ConfigMap = ({ respondOnSuccess, isJobView }: { respondOnSuccess: () => void; isJobView?: boolean }) => {
     const { appId } = useParams<{ appId }>()
     const [configmap, setConfigmap] = useState<{ id: number; configData: any[]; appId: number }>()
     const [configmapLoading, setConfigmapLoading] = useState(true)
@@ -77,9 +77,13 @@ const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void
     }
 
     let configData = [{ id: null, name: null }].concat(configmap?.configData)
+    console.log('configData', configData)
+
     return (
         <div className="form__app-compose">
-            <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">ConfigMaps</h1>
+            <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">
+                ConfigMaps
+            </h1>
             <p className="form__subtitle form__subtitle--artifacts">
                 ConfigMap is used to store common configuration variables, allowing users to unify environment variables
                 for different modules in a distributed system into one object.&nbsp;
@@ -96,7 +100,7 @@ const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void
                 return (
                     <CollapsedConfigMapForm
                         key={cm?.name || Math.random().toString(36).substr(2, 5)}
-                        {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
+                        {...{ ...cm, title: cm?.name ? '' : 'Add ConfigMap' }}
                         appChartRef={appChartRef}
                         appId={appId}
                         id={configmap?.id}
@@ -242,7 +246,12 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div data-testid={`configmap-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
+            <div
+                data-testid={`configmap-${title.toLowerCase().split(' ').join('-')}-radio-button`}
+                className="tab__title"
+            >
+                {title}
+            </div>
         </nav>
     )
 }
@@ -687,11 +696,18 @@ export function ConfigMapForm({
                             toggleExternalValues(e.target.value !== '')
                         }}
                     >
-                        <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
+                        <Select.Button
+                            dataTestIdDropdown="select-configmap-datatype-dropdown"
+                            dataTestId="data-type-select-control"
+                        >
                             {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
+                            <Select.Option
+                                dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`}
+                                key={value}
+                                value={value}
+                            >
                                 {name}
                             </Select.Option>
                         ))}
@@ -856,7 +872,7 @@ export function ConfigMapForm({
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
-                        dataTestid = "configmap-file-permission-textbox"
+                        dataTestid="configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}
@@ -876,8 +892,12 @@ export function ConfigMapForm({
                         disabled={false}
                         onChange={changeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui" dataTestId="GUI">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml" dataTestId="YAML">YAML</RadioGroup.Radio>
+                        <RadioGroup.Radio value="gui" dataTestId="GUI">
+                            GUI
+                        </RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml" dataTestId="YAML">
+                            YAML
+                        </RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             )}
@@ -894,7 +914,7 @@ export function ConfigMapForm({
                 <>
                     {yamlMode ? (
                         <div className="yaml-container">
-                        <CodeEditor
+                            <CodeEditor
                                 value={yaml}
                                 mode="yaml"
                                 inline
@@ -949,7 +969,12 @@ export function ConfigMapForm({
                 </>
             )}
             <div className="form__buttons">
-                <button data-testid={`configmap-save-button-${name}`} type="button" className="cta" onClick={handleSubmit}>
+                <button
+                    data-testid={`configmap-save-button-${name}`}
+                    type="button"
+                    className="cta"
+                    onClick={handleSubmit}
+                >
                     {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
                 </button>
             </div>
@@ -998,7 +1023,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             let tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) return agg
                 let v =
-                    obj[k] && (typeof obj[k]=='object')
+                    obj[k] && typeof obj[k] == 'object'
                         ? YAML.stringify(obj[k], { indent: 2 })
                         : convertToValidValue(obj[k])
                 let keyErr: string
