@@ -110,7 +110,7 @@
             grid-template-columns: 50% 50%;
 
             &.comparison-view {
-                height: calc(100% - 40px);
+                height: calc(100% - 38px);
 
                 .delete-override-state {
                     .react-monaco-editor-container {
@@ -381,7 +381,7 @@
     }
 
     .readme {
-        height: calc(100% - 40px);
+        height: calc(100% - 38px);
         overflow-y: scroll;
         min-height: 0;
     }

@@ -36,6 +36,7 @@ export default function DeploymentTemplateOverride({
     environments,
     environmentName,
     isProtected,
+    reloadEnvironments
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -48,6 +49,7 @@ export default function DeploymentTemplateOverride({
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
         dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
+        reloadEnvironments()
         initialise()
     }, [envId])
 

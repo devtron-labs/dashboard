@@ -92,6 +92,7 @@ export default function EnvironmentOverride({
                                     : ''
                             }
                             isProtected={isProtected}
+                            reloadEnvironments={reloadEnvironments}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>

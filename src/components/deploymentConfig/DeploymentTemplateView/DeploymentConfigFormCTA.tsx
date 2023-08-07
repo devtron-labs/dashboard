@@ -7,7 +7,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help-outline.svg'
-import { importComponentFromFELibrary } from '../../common'
+import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -29,7 +29,8 @@ export default function DeploymentConfigFormCTA({
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
-    const approveDisabled = isApprovalPending && state.latestDraft && !state.latestDraft.canApprove
+    const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
+    const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
 
     const renderWrappedChildren = (children) => {
         return (

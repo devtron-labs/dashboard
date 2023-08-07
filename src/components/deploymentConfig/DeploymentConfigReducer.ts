@@ -40,6 +40,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     isOverride: false,
     showDraftOverriden: false,
     isDraftOverriden: false,
+    unableToParseYaml: false,
 }
 
 export const deploymentConfigReducer = (

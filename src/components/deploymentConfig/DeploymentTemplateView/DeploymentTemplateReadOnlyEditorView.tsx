@@ -21,7 +21,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
                     loading={state.chartConfigLoading || value === undefined || value === null}
-                    height={isEnvOverride ? 'calc(100vh - 268px)' : 'calc(100vh - 238px)'}
+                    height={isEnvOverride ? 'calc(100vh - 251px)' : 'calc(100vh - 238px)'}
                     readOnly={true}
                 />
             </div>

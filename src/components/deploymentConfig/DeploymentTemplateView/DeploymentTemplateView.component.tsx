@@ -46,14 +46,7 @@ export const ChartTypeVersionOptions = ({
     }
 
     return (
-        <div
-            className={`chart-type-version-options pr-16 pt-4 pb-4 ${
-                disableVersionSelect ||
-                (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT)
-                    ? ''
-                    : 'dc__border-right'
-            }`}
-        >
+        <div className="chart-type-version-options pr-16 pt-4 pb-4">
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 <ChartSelectorDropdown
@@ -150,7 +143,8 @@ export const CompareWithDropdown = ({
 
     const getSelectedOption = () => {
         if (isEnvOverride) {
-            if (isDraftMode) {
+            const currentEnv = environments.find((env) => +envId === env.id)
+            if (isDraftMode && currentEnv?.value) {
                 return environments.find((env) => +envId === env.id)
             }
             return baseTemplateOption as DeploymentChartOptionType
@@ -277,6 +271,7 @@ export const renderEditorHeading = (
     handleOverride: (e: any) => Promise<void>,
     latestDraft: any,
     isPublishedOverriden: boolean,
+    isDeleteDraftState: boolean,
 ) => {
     return (
         <div className="flex dc__content-space w-100">
@@ -301,7 +296,7 @@ export const renderEditorHeading = (
                 )}
             </div>
             <div className="flex right dc__gap-8">
-                {isEnvOverride && (
+                {!isDeleteDraftState && isEnvOverride && (
                     <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
                         {overridden ? 'Overriden' : 'Inheriting from base'}
                     </span>

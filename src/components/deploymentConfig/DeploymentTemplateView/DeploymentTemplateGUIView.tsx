@@ -159,7 +159,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
             )}
             <div
                 className={`form__row--gui-container pt-20 pr-20 pl-20 scrollable mb-0-imp ${
-                    !isUnSet ? ' gui dc__border-top' : ' gui-with-warning'
+                    !isUnSet ? ' gui dc__border-top-n1' : ' gui-with-warning'
                 }`}
             >
                 {state.chartConfigLoading || !value || fetchingValues ? (

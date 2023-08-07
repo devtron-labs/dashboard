@@ -52,6 +52,7 @@ export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverri
     environments: AppEnvironment[]
     environmentName: string
     isProtected: boolean
+    reloadEnvironments: () => void
 }
 export interface ListComponentType {
     name: string

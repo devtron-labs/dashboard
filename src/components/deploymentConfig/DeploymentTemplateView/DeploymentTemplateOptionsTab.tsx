@@ -60,7 +60,7 @@ export default function DeploymentTemplateOptionsTab({
                 {(currentStateValues.selectedChart?.name === ROLLOUT_DEPLOYMENT ||
                     currentStateValues.selectedChart?.name === DEPLOYMENT) && (
                     <RadioGroup
-                        className="gui-yaml-switch pl-16"
+                        className="gui-yaml-switch"
                         name="yaml-mode"
                         initialTab={state.yamlMode ? 'yaml' : 'gui'}
                         disabled={currentStateValues.isBasicLocked}

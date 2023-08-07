@@ -64,6 +64,7 @@ export default function DeploymentConfig({
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
 
     useEffect(() => {
+        reloadEnvironments()
         initialise()
     }, [])
 

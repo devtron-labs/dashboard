@@ -42,11 +42,9 @@ export default function DeploymentTemplateEditorView({
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
-            let _filteredEnvironments = environments.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
-            if (isEnvOverride && !state.latestDraft) {
-                _filteredEnvironments = environments.filter((env) => +envId !== env.environmentId)
-            }
-
+            const _filteredEnvironments = environments.sort((a, b) =>
+                a.environmentName.localeCompare(b.environmentName),
+            )
             setFilteredEnvironments(
                 _filteredEnvironments.map((env) => ({
                     id: env.environmentId,
@@ -197,6 +195,7 @@ export default function DeploymentTemplateEditorView({
                                     handleOverride,
                                     state.latestDraft,
                                     state.publishedState?.isOverride,
+                                    isDeleteDraftState,
                                 )}
                             </div>
                         </CodeEditor.Header>
@@ -217,7 +216,8 @@ export default function DeploymentTemplateEditorView({
                                             globalChartRef={globalChartRef}
                                             isDraftMode={!!state.latestDraft}
                                         />
-                                        {isEnvOverride &&
+                                        {!isDeleteDraftState &&
+                                            isEnvOverride &&
                                             selectedOption?.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key &&
                                             typeof optionOveriddeStatus?.[selectedOption.id] !== 'undefined' && (
                                                 <span className="flex right flex-grow-1 fs-12 fw-4 lh-20 dc__italic-font-style w-44">
@@ -237,6 +237,7 @@ export default function DeploymentTemplateEditorView({
                                             handleOverride,
                                             state.latestDraft,
                                             state.publishedState?.isOverride,
+                                            isDeleteDraftState,
                                         )}
                                     </div>
                                 </div>

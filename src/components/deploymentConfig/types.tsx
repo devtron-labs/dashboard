@@ -316,6 +316,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     showDeleteOverrideDraftModal: boolean
     showDraftOverriden: boolean
     isDraftOverriden: boolean
+    unableToParseYaml: boolean
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -354,6 +355,7 @@ export enum DeploymentConfigStateActionTypes {
     toggleDraftComments = 'toggleDraftComments',
     toggleDeleteOverrideDraftModal = 'toggleDeleteOverrideDraftModal',
     isDraftOverriden = 'isDraftOverriden',
+    unableToParseYaml = 'unableToParseYaml',
     multipleOptions = 'multipleOptions',
 }
 

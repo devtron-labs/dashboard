@@ -112,13 +112,15 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     }
                 }
                 const updatedEnvs =
-                    envResult.result?.map((env) => {
-                        let envData = { ...env, isProtected: false }
-                        if (envProtectMap[env.environmentId]) {
-                            envData.isProtected = true
-                        }
-                        return envData
-                    }) || []
+                    envResult.result
+                        ?.map((env) => {
+                            let envData = { ...env, isProtected: false }
+                            if (envProtectMap[env.environmentId]) {
+                                envData.isProtected = true
+                            }
+                            return envData
+                        })
+                        ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
 
                 setState({
@@ -268,13 +270,15 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     }
                 }
                 const updatedEnvs =
-                    envResult.result?.map((env) => {
-                        let envData = { ...env, isProtected: false }
-                        if (envProtectMap[env.environmentId]) {
-                            envData.isProtected = true
-                        }
-                        return envData
-                    }) || []
+                    envResult.result
+                        ?.map((env) => {
+                            let envData = { ...env, isProtected: false }
+                            if (envProtectMap[env.environmentId]) {
+                                envData.isProtected = true
+                            }
+                            return envData
+                        })
+                        ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
                 setState((prevState) => {
                     return {
