@@ -15,6 +15,10 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
         toggleAddSource(!showAddSource)
     }
 
+    const getChecked = (option): boolean => {
+        return value.filter((selectedVal) => selectedVal.label === option.label).length
+    } 
+
     return (
         <div>
             <div
@@ -28,6 +32,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                     style={{ ['--rotateBy' as any]: collapsed ? '180deg' : '0deg' }}
                 />
             </div>
+
             {collapsed && (
                 <div>
                     <button
@@ -46,7 +51,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         >
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
-                                isChecked={value.filter((event) => event === option).length}
+                                isChecked={getChecked(option)}
                                 value={'CHECKED'}
                                 onChange={() => onChange(option)}
                             >
