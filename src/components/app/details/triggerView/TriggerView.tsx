@@ -57,6 +57,7 @@ import {
 } from '../../../ApplicationGroup/AppGroup.utils'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { getDefaultConfig } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -98,6 +99,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             environmentLists: [],
             appReleaseTags:[],
             tagsEditable:false,
+            configs: false,
+            isDefaultConfigPresent: false,
+            filterMaterials: []
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -106,6 +110,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
         this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
+        this.getConfigs = this.getConfigs.bind(this)
     }
 
     componentWillUnmount() {
@@ -117,6 +122,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getHostURLConfig()
         this.getWorkflows()
         this.getEnvironments()
+        if (ApprovalMaterialModal) {
+            this.getConfigs()
+            if (this.props.location.search.includes("approval-node")) {
+                this.setState({
+                    showApprovalModal: true
+                })
+                const searchParams = new URLSearchParams(this.props.location.search);
+                const nodeId = searchParams.get('approval-node');
+                this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+            }
+        }
     }
 
     getEnvironments = () => {
@@ -134,6 +150,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((error) => {
                 showError(error)
+            })
+    }
+
+    getConfigs() {
+        getDefaultConfig()
+            .then((response) => {
+                let isConfigPresent = response.result.isConfigured
+                let _isDefaultConfig = response.result.is_default_configured
+                this.setState({configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig})
             })
     }
 
@@ -601,7 +626,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag: string = '') {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
@@ -611,6 +636,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
+            imageTag
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -1004,12 +1030,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (this.state.cdNodeId == +node.id && node.type === this.state.nodeType) {
-                    const artifacts = node[materialType].map((artifact, i) => {
+                    let materials = this.state.filterMaterials.length > 0 ? this.state.filterMaterials : node[materialType]
+                    const artifacts = materials.map((artifact, i) => {
                         return {
                             ...artifact,
                             isSelected: i === index,
                         }
                     })
+                    this.setState({filterMaterials: artifacts})
                     node[materialType] = artifacts
                 }
                 return node
@@ -1138,6 +1166,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     closeApprovalModal = (e): void => {
         preventBodyScroll(false)
         this.setState({ showApprovalModal: false })
+        this.props.history.push({
+            search: ''
+        })
     }
 
     hideWebhookModal = () => {
@@ -1300,10 +1331,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as NodeAttr)
     }
 
+    getSearchedItem = (searchedItems?: any[])  => {
+        const node: NodeAttr = this.getCDNode()
+        const material = node[this.state.materialType] || []
+        let resultMaterials = []
+        material.forEach((mat) => {
+            if (((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
+                mat.isSelected = false
+                resultMaterials.push(mat)
+            }
+        })
+        searchedItems.forEach((mat) => {
+            if (!((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
+                resultMaterials.push(mat)
+            }
+        })
+        this.setState({
+            filterMaterials: resultMaterials
+        })
+    }
+
     renderCDMaterial() {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
-            const material = node[this.state.materialType] || []
+            const material = ( this.state.filterMaterials.length > 0 ? this.state.filterMaterials : node[this.state.materialType] ) || [] 
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
@@ -1352,6 +1403,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 tagsEditable={this.state.tagsEditable}
                                 setTagsEditable={this.setTagsEditable}
                                 hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                                history={this.props.history}
+                                location={this.props.location}
+                                match={this.props.match}
+                                getSearchedItem={this.getSearchedItem}
+                                isApplicationGroupTrigger={false}
                             />
                         )}
                     </div>
@@ -1365,28 +1421,29 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderApprovalMaterial() {
         if (ApprovalMaterialModal && this.state.showApprovalModal) {
             const node: NodeAttr = this.getCDNode()
-
             return (
                 <ApprovalMaterialModal
-                    appId={Number(this.props.match.params.appId)}
-                    pipelineId={this.state.cdNodeId}
-                    stageType={DeploymentNodeType[this.state.nodeType]}
-                    node={node}
-                    materialType={this.state.materialType}
-                    isLoading={this.state.isLoading}
-                    changeTab={this.changeTab}
-                    closeApprovalModal={this.closeApprovalModal}
-                    toggleSourceInfo={this.toggleSourceInfo}
-                    onClickCDMaterial={this.onClickCDMaterial}
-                    getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
-                    ciPipelineId={node.connectingCiPipelineId}
-                    appReleaseTagNames={this.state.appReleaseTags}
-                    setAppReleaseTagNames={this.setAppReleaseTags}
-                    tagsEditable={this.state.tagsEditable}
-                    setTagsEditable={this.setTagsEditable}
-                    hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
-                />
+                appId={Number(this.props.match.params.appId)}
+                pipelineId={this.state.cdNodeId}
+                stageType={DeploymentNodeType[this.state.nodeType]}
+                node={node}
+                materialType={this.state.materialType}
+                isLoading={this.state.isLoading}
+                changeTab={this.changeTab}
+                closeApprovalModal={this.closeApprovalModal}
+                toggleSourceInfo={this.toggleSourceInfo}
+                onClickCDMaterial={this.onClickCDMaterial}
+                getModuleInfo={getModuleInfo}
+                GitCommitInfoGeneric={GitCommitInfoGeneric}
+                ciPipelineId={node.connectingCiPipelineId}
+                appReleaseTagNames={this.state.appReleaseTags}
+                setAppReleaseTagNames={this.setAppReleaseTags}
+                tagsEditable={this.state.tagsEditable}
+                setTagsEditable={this.setTagsEditable}
+                hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                configs={this.state.configs}
+                isDefaultConfigPresent={this.state.isDefaultConfigPresent}
+            />
             )
         }
 
