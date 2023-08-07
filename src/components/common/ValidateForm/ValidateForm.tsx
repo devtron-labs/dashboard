@@ -105,7 +105,7 @@ export function ValidateForm({ id, onClickValidate, validationError, isChartRepo
     return (
         <div className="mt-16">
             {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
-            {id && validationStatus == VALIDATION_STATUS.DRY_RUN &&
+            {id && validationStatus === VALIDATION_STATUS.DRY_RUN &&
                 <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />}
             {validationStatus === VALIDATION_STATUS.LOADER &&
                 <ValidateLoading message="Validating repo configuration. Please wait… " />}
