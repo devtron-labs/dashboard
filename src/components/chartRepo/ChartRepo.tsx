@@ -98,21 +98,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 <div className="chartRepo_form__subtitle dc__float-left dc__bold">
                     Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
                 </div>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
-                    <div className="chartRepo_form__subtitle dc__float-right">
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
-                            onClick={refetchCharts}
-                        >
-                            <span>
-                                <SyncIcon />
-                            </span>
-                            <span>Refetch Charts</span>
-                        </a>
-                    </div>
-                </Tippy>
                 {[]
                     .concat(result && Array.isArray(result.result) ? result.result : [])
                     .sort((a, b) => a.name.localeCompare(b.name))
@@ -193,22 +178,6 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                         title={id && !collapsed ? 'Edit repository' : name || 'Add repository'}
                         subtitle={collapsed ? url : null}
                     />
-                    {id && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
-                        >
-                            <span data-testid={`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
-                                {loading ? (
-                                    <Progressing />
-                                ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                )}
-                            </span>
-                        </Tippy>
-                    )}
                 </div>
                 {id && (
                     <List.DropDown
