@@ -95,3 +95,8 @@ export const IMAGE_SCAN_TOOL = {
 }
 
 export const DEFAULT_ENV = "devtron-ci"
+
+export const EMPTY_STATE = {
+    title: 'No matching results',
+    subtitle: 'We couldn’t find any matching images'
+}
