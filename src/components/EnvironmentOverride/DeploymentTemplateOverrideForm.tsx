@@ -352,11 +352,9 @@ export default function DeploymentTemplateOverrideForm({
     const renderValuesView = () => {
         return (
             <form
-                className={`deployment-template-override-form h-100 ${
-                    state.openComparison
-                        ? `comparison-view ${state.latestDraft?.action === 3 ? 'delete-override-state' : ''}`
-                        : ''
-                } ${state.showReadme ? 'readme-view' : ''}`}
+                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
+                    state.showReadme ? 'readme-view' : ''
+                }`}
                 onSubmit={handleSubmit}
             >
                 <DeploymentTemplateOptionsTab

@@ -37,6 +37,7 @@ export default function DeploymentTemplateEditorView({
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
+    const isDeleteDraftState = state.latestDraft?.action === 3 && selectedOption?.id === +envId
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -142,8 +143,8 @@ export default function DeploymentTemplateEditorView({
         })
     }
 
-    const getOverrideClass = (isDeleteState?: boolean) => {
-        if (isEnvOverride && !isDeleteState) {
+    const getOverrideClass = () => {
+        if (isEnvOverride && state.latestDraft?.action !== 3) {
             if (!!state.duplicate) {
                 return 'bcy-1'
             }
@@ -155,7 +156,11 @@ export default function DeploymentTemplateEditorView({
 
     const renderCodeEditor = (): JSX.Element => {
         return (
-            <div className="form__row--code-editor-container dc__border-top dc__border-bottom-imp">
+            <div
+                className={`form__row--code-editor-container dc__border-top dc__border-bottom-imp ${
+                    isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
+                }`}
+            >
                 <CodeEditor
                     defaultValue={
                         (selectedOption?.id === -1 ? defaultValue : state.fetchedValues[selectedOption?.id]) || ''
@@ -198,6 +203,7 @@ export default function DeploymentTemplateEditorView({
                                     <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
                                         <span style={{ width: '85px' }}>Compare with: </span>
                                         <CompareWithDropdown
+                                            envId={envId}
                                             isEnvOverride={isEnvOverride}
                                             environments={filteredEnvironments}
                                             charts={filteredCharts}
@@ -207,11 +213,7 @@ export default function DeploymentTemplateEditorView({
                                             isDraftMode={!!state.latestDraft}
                                         />
                                     </div>
-                                    <div
-                                        className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass(
-                                            state.latestDraft?.action === 3,
-                                        )}`}
-                                    >
+                                    <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
                                         {renderEditorHeading(
                                             isEnvOverride,
                                             !!state.duplicate,
@@ -224,7 +226,7 @@ export default function DeploymentTemplateEditorView({
                                         )}
                                     </div>
                                 </div>
-                                {state.latestDraft?.action === 3 && (
+                                {isDeleteDraftState && (
                                     <div className="code-editor__header flex left w-100 p-0-imp">
                                         <div className="bcr-1 pt-8 pb-8 pl-16 pr-16">
                                             <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>

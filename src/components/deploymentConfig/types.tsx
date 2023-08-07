@@ -111,6 +111,7 @@ export interface DeploymentConfigFormCTAProps {
 }
 
 export interface CompareWithDropdownProps {
+    envId: string
     isEnvOverride: boolean
     environments: DeploymentChartOptionType[]
     charts: DeploymentChartOptionType[]

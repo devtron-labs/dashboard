@@ -121,6 +121,7 @@ const customValueContainer = (props): JSX.Element => {
 }
 
 export const CompareWithDropdown = ({
+    envId,
     isEnvOverride,
     environments,
     charts,
@@ -148,7 +149,10 @@ export const CompareWithDropdown = ({
     }, [environments, charts])
 
     const getSelectedOption = () => {
-        if (isEnvOverride || isDraftMode) {
+        if (isEnvOverride) {
+            if (isDraftMode) {
+                return environments.find((env) => +envId === env.id)
+            }
             return baseTemplateOption as DeploymentChartOptionType
         } else if (environments.length > 0) {
             return environments[0]
