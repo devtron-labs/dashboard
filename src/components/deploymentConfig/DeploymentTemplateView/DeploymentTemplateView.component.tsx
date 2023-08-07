@@ -23,6 +23,7 @@ import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
+import { handleConfigProtectionError } from '../DeploymentConfig.utils'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -380,7 +381,7 @@ export const SaveConfirmationDialog = ({ save }) => {
 }
 
 export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
-    const { state, dispatch } = useContext(DeploymentConfigContext)
+    const { state, dispatch, reloadEnvironments } = useContext(DeploymentConfigContext)
     const [apiInProgress, setApiInProgress] = useState(false)
 
     const closeConfirmationDialog = () => {
@@ -398,6 +399,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
             })
             initialise(true, true)
         } catch (err) {
+            handleConfigProtectionError(3, err, dispatch, reloadEnvironments)
         } finally {
             setApiInProgress(false)
             closeConfirmationDialog()

@@ -19,6 +19,7 @@ import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/Deployment
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import {
     getBasicFieldValue,
+    handleConfigProtectionError,
     isBasicValueChanged,
     patchBasicData,
     updateTemplateFromBasicValue,
@@ -33,6 +34,7 @@ export default function DeploymentTemplateOverrideForm({
     state,
     environments,
     environmentName,
+    reloadEnvironments,
     handleOverride,
     dispatch,
     initialise,
@@ -91,12 +93,9 @@ export default function DeploymentTemplateOverrideForm({
         if (includeInDraft) {
             payload['globalConfig'] = state.data.globalConfig
             payload['isDraftOverriden'] = state.isDraftOverriden
+            payload['readme'] = state.readme
+            payload['schema'] = state.schema
         }
-
-        // if (!skipReadmeAndSchema) {
-        //     payload['readme'] = state.readme
-        //     payload['schema'] = state.schema
-        // }
 
         return payload
     }
@@ -148,7 +147,7 @@ export default function DeploymentTemplateOverrideForm({
             })
             initialise(true, false, true)
         } catch (err) {
-            showError(err)
+            handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
             dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: false })
         }
@@ -421,6 +420,7 @@ export default function DeploymentTemplateOverrideForm({
             dispatch,
             environments: environments || [],
             changeEditorMode: changeEditorMode,
+            reloadEnvironments: reloadEnvironments,
         }
     }
 

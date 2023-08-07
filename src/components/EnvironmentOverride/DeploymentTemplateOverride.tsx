@@ -36,7 +36,7 @@ export default function DeploymentTemplateOverride({
     environments,
     environmentName,
     isProtected,
-    reloadEnvironments
+    reloadEnvironments,
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -79,7 +79,6 @@ export default function DeploymentTemplateOverride({
     }
 
     async function initialise(
-        forceReload?: boolean,
         isDeleteAction?: boolean,
         forceReloadEnvironments?: boolean,
         updateChartRefOnly?: boolean,
@@ -111,7 +110,7 @@ export default function DeploymentTemplateOverride({
 
                 if (!updateChartRefOnly && isProtected && typeof getAllDrafts === 'function') {
                     fetchAllDrafts(chartRefsData)
-                } else if (!state.selectedChartRefId) {
+                } else {
                     updateRefsData(chartRefsData)
                 }
 
@@ -445,6 +444,7 @@ export default function DeploymentTemplateOverride({
                         state={state}
                         environments={environments}
                         environmentName={environmentName}
+                        reloadEnvironments={reloadEnvironments}
                         handleOverride={handleOverride}
                         dispatch={dispatch}
                         initialise={initialise}

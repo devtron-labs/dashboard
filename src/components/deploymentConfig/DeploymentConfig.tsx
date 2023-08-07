@@ -21,6 +21,7 @@ import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/Devtro
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
+    handleConfigProtectionError,
     isBasicValueChanged,
     patchBasicData,
     updateTemplateFromBasicValue,
@@ -405,7 +406,7 @@ export default function DeploymentConfig({
                 history.push(navItems[stageIndex + 1].href)
             }
         } catch (err) {
-            showError(err)
+            handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
@@ -629,6 +630,7 @@ export default function DeploymentConfig({
             dispatch,
             environments: environments || [],
             changeEditorMode: changeEditorMode,
+            reloadEnvironments: reloadEnvironments,
         }
     }
 

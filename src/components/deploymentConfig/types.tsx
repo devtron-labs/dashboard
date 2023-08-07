@@ -183,6 +183,7 @@ export interface DeploymentConfigContextType {
     state: DeploymentConfigStateWithDraft
     dispatch: React.Dispatch<DeploymentConfigStateAction>
     environments: AppEnvironment[]
+    reloadEnvironments: () => void
     changeEditorMode: () => void
 }
 
