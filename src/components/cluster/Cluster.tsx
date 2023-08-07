@@ -52,7 +52,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             browseFile: false,
             isClusterDetails: false,
             showEditCluster: false,
-            toConnectViaProxy: false,
+            isConnectedViaProxy: false,
         }
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
@@ -265,7 +265,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 isTlsConnection={this.state.isTlsConnection}
                                 isClusterDetails={this.state.isClusterDetails}
                                 proxyUrl={this.state.proxyUrl}
-                                toConnectViaProxy={this.state.toConnectViaProxy}
+                                isConnectedViaProxy={this.state.isConnectedViaProxy}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 setTlsConnectionFalse={this.setTlsConnectionFalse}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
@@ -334,7 +334,7 @@ function Cluster({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: {value: proxyUrl, error: '' },
-            toConnectViaProxy: {value: proxyUrl ? proxyUrl!='' : false,error:''},
+            isConnectedViaProxy: {value: proxyUrl ? proxyUrl!='' : false,error:''},
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
@@ -360,7 +360,7 @@ function Cluster({
                 required: false,
                 validator: { error: 'Incorrect Url', regex: /^.*$/ },
             },
-            toConnectViaProxy: {
+            isConnectedViaProxy: {
                 required: false,
             },
             authType: {
@@ -510,7 +510,7 @@ function Cluster({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
-            proxyUrl: state.toConnectViaProxy.value ? state.proxyUrl?.value : '',
+            proxyUrl: state.isConnectedViaProxy.value ? state.proxyUrl?.value : '',
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
@@ -782,7 +782,7 @@ function Cluster({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={state.proxyUrl}
-                                toConnectViaProxy={state.toConnectViaProxy.value}
+                                isConnectedViaProxy={state.isConnectedViaProxy.value}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
                                 toggleShowAddCluster={toggleShowAddCluster}

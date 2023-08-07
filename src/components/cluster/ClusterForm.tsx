@@ -32,6 +32,7 @@ import {
     DataListType,
     UserDetails,
     SaveClusterPayloadType,
+    DEFAULT_CLUSTER_ID,
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
@@ -89,7 +90,7 @@ export default function ClusterForm({
     prometheusAuth,
     defaultClusterComponent,
     proxyUrl,
-    toConnectViaProxy,
+    isConnectedViaProxy,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -126,7 +127,7 @@ export default function ClusterForm({
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
-    const [toConnectViaProxyTemp,setToConnectViaProxyTemp] = useState(toConnectViaProxy)
+    const [isConnectedViaProxyTemp, setisConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -187,7 +188,7 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: id && KubectlProxyCheckBox ? toConnectViaProxyTemp : false,
+                required: (id && KubectlProxyCheckBox) && isConnectedViaProxyTemp,
                 validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             tlsClientKey: {
@@ -395,7 +396,7 @@ export default function ClusterForm({
         } else {
             payload['server_url'] = urlValue
         }
-        if (toConnectViaProxyTemp) {
+        if (isConnectedViaProxyTemp) {
             const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
             if (proxyUrlValue.endsWith('/')) {
                 payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
@@ -566,11 +567,11 @@ export default function ClusterForm({
 
 
     const toggleCheckProxyUrlConnection = () => {
-        setToConnectViaProxyTemp(!toConnectViaProxyTemp)
+        setisConnectedViaProxyTemp(!isConnectedViaProxyTemp)
     }
 
    const setProxyUrlConnectionFalse = () => {
-       setToConnectViaProxyTemp(false)
+       setisConnectedViaProxyTemp(false)
     }
 
     const renderUrlAndBearerToken = () => {
@@ -604,7 +605,7 @@ export default function ClusterForm({
                     />
                 </div>
                 <div className="form__row form__row--bearer-token flex column left top">
-                    {id !== 1 && (
+                    {id !== DEFAULT_CLUSTER_ID && (
                         <div className="bearer-token">
                             <ResizableTextarea
                                 className="dc__resizable-textarea__with-max-height dc__required-field"
@@ -633,15 +634,15 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {id !== 1 && KubectlProxyCheckBox && (
+                {id !== DEFAULT_CLUSTER_ID && KubectlProxyCheckBox && (
                     <KubectlProxyCheckBox
-                        toConnectViaProxyTemp={toConnectViaProxyTemp}
+                        isConnectedViaProxyTemp={isConnectedViaProxyTemp}
                         toggleCheckProxyUrlConnection={toggleCheckProxyUrlConnection}
                         proxyUrl={state.proxyUrl}
                         handleOnChange={handleOnChange}
                     />
                 )}
-                {id !== 1 && (
+                {id !== DEFAULT_CLUSTER_ID && (
                     <>
                         <hr />
                         <div className="dc__position-rel flex left dc__hover mb-20">

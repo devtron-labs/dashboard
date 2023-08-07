@@ -4,6 +4,8 @@ import { OptionType } from '../app/types'
 
 export const POLLING_INTERVAL = 30000
 
+export const DEFAULT_CLUSTER_ID = 1
+
 export const AuthenticationType = {
     BASIC: 'BASIC',
     ANONYMOUS: 'ANONYMOUS',
