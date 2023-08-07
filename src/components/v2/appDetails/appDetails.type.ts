@@ -248,6 +248,7 @@ export interface Node {
     group: string
     isSelected: boolean
     info: Info[]
+    port: number
     canBeHibernated: boolean
     isHibernated: boolean
 }
