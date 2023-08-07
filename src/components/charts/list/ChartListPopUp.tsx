@@ -114,7 +114,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
     }
 
     const rendeRefetch = () => {
-        if (isEmpty) {
+        if (!isEmpty) {
             return (
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                     <div className="chartRepo_form__subtitle dc__float-right">
