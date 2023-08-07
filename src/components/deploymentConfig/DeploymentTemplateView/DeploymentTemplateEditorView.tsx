@@ -34,6 +34,7 @@ export default function DeploymentTemplateEditorView({
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
     const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
+    const [optionOveriddeStatus, setOptionOveriddeStatus] = useState<Record<number, boolean>>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
@@ -130,6 +131,10 @@ export default function DeploymentTemplateEditorView({
         if (isChartVersionOption) {
             return result.defaultAppOverride
         } else if (_isEnvOption) {
+            setOptionOveriddeStatus((prevStatus) => ({
+                ...prevStatus,
+                [selectedOption.id]: result.IsOverride,
+            }))
             return result.environmentConfig?.envOverrideValues || result?.globalConfig
         } else {
             return result.globalConfig.defaultAppOverride
@@ -212,6 +217,15 @@ export default function DeploymentTemplateEditorView({
                                             globalChartRef={globalChartRef}
                                             isDraftMode={!!state.latestDraft}
                                         />
+                                        {isEnvOverride &&
+                                            selectedOption?.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key &&
+                                            typeof optionOveriddeStatus?.[selectedOption.id] !== 'undefined' && (
+                                                <span className="flex right flex-grow-1 fs-12 fw-4 lh-20 dc__italic-font-style w-44">
+                                                    {optionOveriddeStatus[selectedOption.id]
+                                                        ? 'Overriden'
+                                                        : 'Inheriting from base'}
+                                                </span>
+                                            )}
                                     </div>
                                     <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
                                         {renderEditorHeading(

@@ -300,15 +300,22 @@ export const renderEditorHeading = (
                     </Tippy>
                 )}
             </div>
-            {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (
-                <span
-                    data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
-                    onClick={handleOverride}
-                >
-                    {overridden ? 'Delete override' : 'Allow override'}
-                </span>
-            )}
+            <div className="flex right dc__gap-8">
+                {isEnvOverride && (
+                    <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
+                        {overridden ? 'Overriden' : 'Inheriting from base'}
+                    </span>
+                )}
+                {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (
+                    <span
+                        data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
+                        className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
+                        onClick={handleOverride}
+                    >
+                        {overridden ? 'Delete override' : 'Allow override'}
+                    </span>
+                )}
+            </div>
         </div>
     )
 }

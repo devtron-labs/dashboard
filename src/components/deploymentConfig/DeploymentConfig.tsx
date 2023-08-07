@@ -568,6 +568,7 @@ export default function DeploymentConfig({
         }
 
         if (!skipReadmeAndSchema) {
+            requestData['id'] = state.chartConfig.id
             requestData['readme'] = state.readme
             requestData['schema'] = state.schema
         }
