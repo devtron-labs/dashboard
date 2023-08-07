@@ -636,7 +636,7 @@ export default function ClusterForm({
                 </div>
                 {id !== DEFAULT_CLUSTER_ID && KubectlProxyCheckBox && (
                     <KubectlProxyCheckBox
-                        isConnectedViaProxyTemp={isConnectedViaProxyTemp}
+                        toConnectViaProxyTemp={isConnectedViaProxyTemp}
                         toggleCheckProxyUrlConnection={toggleCheckProxyUrlConnection}
                         proxyUrl={state.proxyUrl}
                         handleOnChange={handleOnChange}
