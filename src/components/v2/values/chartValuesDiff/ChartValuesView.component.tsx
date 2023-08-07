@@ -48,6 +48,7 @@ import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION } from '../../../../config'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -62,7 +63,8 @@ export const ChartEnvironmentSelector = ({
     environments,
     invalidaEnvironment,
     isVirtualEnvironmentOnSelector,
-    isVirtualEnvironment
+    isVirtualEnvironment,
+    isOCICompliantChart
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
@@ -72,6 +74,15 @@ export const ChartEnvironmentSelector = ({
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
             return <VirtualEnvSelectionInfoText />
         }
+    }
+
+    const renderOCIContainerRegistryText = () => {
+       if (isOCICompliantChart){
+        return <div className="cn-7 fs-12 pt-16">
+             <InfoIcon className="icon-dim-16 fcn-9"/>
+           <span>Charts from container registries can be deployed via helm only.</span> 
+        </div>
+       }
     }
 
     const renderVirtualTippy = (): JSX.Element => {
@@ -128,6 +139,7 @@ export const ChartEnvironmentSelector = ({
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
             {renderVirtualEnvironmentInfoText()}
+            {renderOCIContainerRegistryText()}
         </div>
     )
 }
