@@ -26,7 +26,7 @@ function ChartHeaderFilter({
     const { url } = match
   
     const handleSelection = (event): void => {
-        const chartRepoList = selectedChartRepo.filter((e) => e != event)
+        const chartRepoList = selectedChartRepo.filter((e) => e.label != event.label)
         setSelectedChartRepo(chartRepoList)
         if (selectedChartRepo.length === chartRepoList.length) {
             handleFilterChanges([event, ...selectedChartRepo], 'chart-repo')
