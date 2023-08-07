@@ -368,7 +368,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                     }
                 })
                 .sort(sortOptionsByLabel),
-        [selectedChartRepo]
+        [chartLists]
     )
 
     return (
