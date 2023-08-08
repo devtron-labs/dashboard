@@ -205,7 +205,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         return (
             <components.ValueContainer {...props}>
                 <>
-                    {value ? `${value}` : flag && (
+                    {value ? value : flag && (
                         <span>Select source or input value</span>
                     )}
                     {React.cloneElement(props.children[1])}
