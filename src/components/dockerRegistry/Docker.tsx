@@ -59,12 +59,12 @@ import { CredentialType, CustomCredential } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
-
 const OCIRegistryUseActionHelmPushMessage = importComponentFromFELibrary(
     'OCIRegistryUseActionHelmPushMessage',
     '',
     'function',
 )
+const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -1018,23 +1018,12 @@ function DockerForm({
                         )}
                     >
                         <div>
-                            <Checkbox
-                                rootClassName={`${
-                                    disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)
-                                        ? 'dc__opacity-0_5'
-                                        : ''
-                                } docker-default mb-12 mt-12`}
-                                id={RepositoryAction.CHART_PUSH}
-                                isChecked={isOCIRegistryHelmPush}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PUSH)}
-                                dataTestId={`store-${
-                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                                }-checkbox`}
-                                disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
-                            >
-                                Push helm packages
-                            </Checkbox>
+                            {RegistryHelmPushCheckbox &&
+                                <RegistryHelmPushCheckbox
+                                    handleOCIRegistryStorageAction={handleOCIRegistryStorageAction}
+                                    disabledFields={disabledFields}
+                                    isOCIRegistryHelmPush={isOCIRegistryHelmPush}
+                                />}
                         </div>
                     </ConditionalWrap>
                     <ConditionalWrap
