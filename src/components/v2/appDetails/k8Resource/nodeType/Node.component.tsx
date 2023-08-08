@@ -221,7 +221,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             )
         }
         return nodes.map((node, index) => {
-            const nodeName = `${node.name}.${node.namespace} : ${ node.port>0 ? node.port : "Port number missing" }`
+            const nodeName = `${node.name}.${node.namespace} : ${ node.port ? node.port : "Port number missing" }`
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
