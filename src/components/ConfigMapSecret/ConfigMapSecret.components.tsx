@@ -148,8 +148,8 @@ export function ConfigMapSecretContainer({
             } else {
                 setDraftData(null)
             }
-            if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) {
-                if (_cmSecretData?.status === 'fulfilled' && _cmSecretData.value?.result?.configData?.length) {
+            if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && _cmSecretData?.status === 'fulfilled') {
+                if (_cmSecretData.value?.result?.configData?.length) {
                     update(index, _cmSecretData.value.result)
                 } else {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
