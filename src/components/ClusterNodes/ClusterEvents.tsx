@@ -13,7 +13,7 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
 
-    useEffect(() => {
+    const fetchEvents = () => {
         if (terminalAccessId) {
             getClusterEvents(terminalAccessId)
                 .then((response) => {
@@ -31,7 +31,19 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
             setResourceMissing(true)
             setLoading(false)
         }
-    }, [])
+    }
+
+    useEffect(() => {
+        fetchEvents() 
+
+        const interval = setInterval(() => {
+            fetchEvents() 
+        }, 2000)
+
+        return () => {
+            clearInterval(interval) 
+        }
+    }, [terminalAccessId])
 
     return isResourceMissing ? (
         <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
