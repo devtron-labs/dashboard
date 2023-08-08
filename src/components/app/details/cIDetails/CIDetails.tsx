@@ -266,12 +266,7 @@ export const Details = ({
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
-    const [
-        triggerDetailsLoading,
-        triggerDetailsResult,
-        triggerDetailsError,
-        reloadTriggerDetails,
-    ] = useAsync(
+    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
         () => getCIHistoricalStatus({ appId: appId ?? appIdFromParent, pipelineId, buildId }),
         [pipelineId, buildId, appId ?? appIdFromParent],
         !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
@@ -282,11 +277,7 @@ export const Details = ({
         areTagDetailsRequired = false
     }
 
-    const [
-        tagDetailsLoading,
-        tagDetailsResult,
-        tagDetailsError,
-    ] = useAsync(
+    const [tagDetailsLoading, tagDetailsResult, tagDetailsError] = useAsync(
         () =>
             getTagDetails({
                 pipelineId,
@@ -338,7 +329,11 @@ export const Details = ({
     }, [triggerDetails])
     useInterval(reloadTriggerDetails, timeout)
 
-    if ((triggerDetailsLoading && !triggerDetails) || !buildId || (areTagDetailsRequired && tagDetailsLoading))
+    if (
+        (!areTagDetailsRequired && triggerDetailsLoading && !triggerDetails) ||
+        !buildId ||
+        (areTagDetailsRequired && (tagDetailsLoading || triggerDetailsLoading) && !triggerDetails)
+    )
         return <Progressing pageLoader />
     if (triggerDetailsError?.code === 404) {
         return (
@@ -350,7 +345,7 @@ export const Details = ({
     }
 
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
+    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
     if (triggerDetails.id !== +buildId) return null
     return (
         <>

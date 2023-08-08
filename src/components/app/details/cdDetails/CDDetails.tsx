@@ -416,7 +416,11 @@ export const TriggerOutput: React.FC<{
 
     useInterval(reloadTriggerDetails, timeout)
 
-    if ((triggerDetailsLoading && !triggerDetails) || !triggerId || (areTagDetailsRequired && tagDetailsLoading))
+    if (
+        (!areTagDetailsRequired && triggerDetailsLoading && !triggerDetails) ||
+        !triggerId ||
+        (areTagDetailsRequired && (tagDetailsLoading || triggerDetailsLoading) && !triggerDetails)
+    )
         return <Progressing pageLoader />
     if (triggerDetailsError?.code === 404) {
         return (
@@ -427,7 +431,7 @@ export const TriggerOutput: React.FC<{
         )
     }
     if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
+    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
     if (triggerDetails?.id !== +triggerId) return null
 
     return (
