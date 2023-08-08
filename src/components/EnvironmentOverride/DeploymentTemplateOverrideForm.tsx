@@ -369,7 +369,7 @@ export default function DeploymentTemplateOverrideForm({
             type: DeploymentConfigStateActionTypes.loading,
             payload: true,
         })
-        initialise(true, false, true)
+        initialise(false, true, false)
     }
 
     const renderValuesView = () => {
