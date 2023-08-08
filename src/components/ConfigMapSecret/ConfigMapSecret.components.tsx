@@ -28,14 +28,14 @@ import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistor
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
-import { getSecretKeys, unlockEnvSecret } from './service'
+import { getCMSecret } from './service'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
-const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
+const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
         keyLabel,
@@ -115,28 +115,12 @@ export function ConfigMapSecretContainer({
     parentName,
     reloadEnvironments,
 }: ConfigMapSecretProps) {
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
     const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
 
-    async function getDraftData() {
-        try {
-            setLoader(true)
-            const { result: _draftData } = await getDraft(data.draftId)
-            if (_draftData && (_draftData.draftState === 1 || _draftData.draftState === 4)) {
-                setDraftData(_draftData)
-            } else {
-                setDraftData(null)
-            }
-            toggleCollapse(false)
-        } catch (error) {
-            setDraftData(null)
-            showError(error)
-        } finally {
-            setLoader(false)
-        }
-    }
     let cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.BASE : CM_SECRET_STATE.UNPUBLISHED
     if (isOverrideView) {
         if (data?.global) {
@@ -146,12 +130,48 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    const getData = async () => {
+        try {
+            setLoader(true)
+            const [_draftData, _cmSecretData] = await Promise.allSettled([
+                isProtected && getDraftByResourceName
+                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name)
+                    : null,
+                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId) : null,
+            ])
+            if (
+                _draftData?.status === 'fulfilled' &&
+                _draftData.value?.result &&
+                (_draftData.value.result.draftState === 1 || _draftData.value.result.draftState === 4)
+            ) {
+                setDraftData(_draftData.value.result)
+            } else {
+                setDraftData(null)
+            }
+            if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) {
+                if (_cmSecretData?.status === 'fulfilled' && _cmSecretData.value?.result?.configData?.length) {
+                    update(index, _cmSecretData.value.result)
+                } else {
+                    toast.error(`The ${componentType} '${data?.name}' has been deleted`)
+                    update(index, null)
+                }
+            }
+            toggleCollapse(false)
+        } catch (error) {
+            toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            setDraftData(null)
+            showError(error)
+        } finally {
+            setLoader(false)
+        }
+    }
+
     const updateCollapsed = (_collapsed?: boolean): void => {
         if (_collapsed !== undefined) {
             toggleCollapse(_collapsed)
         } else {
-            if (collapsed && getDraft && isProtected && data?.draftId) {
-                getDraftData()
+            if (collapsed && data?.name) {
+                getData()
             } else {
                 toggleCollapse(!collapsed)
                 if (!collapsed) {
@@ -335,31 +355,31 @@ export function ProtectedConfigMapSecretDetails({
     const { appId, envId } = useParams<{ appId; envId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
 
-    useEffect(() => {
-        if (
-            componentType === 'secret' &&
-            selectedTab === 2 &&
-            data?.unAuthorized &&
-            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-        ) {
-            setLoader(true)
-            handleSecretFetch()
-        }
-    }, [selectedTab])
+    // useEffect(() => {
+    //     if (
+    //         componentType === 'secret' &&
+    //         selectedTab === 2 &&
+    //         data?.unAuthorized &&
+    //         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+    //     ) {
+    //         setLoader(true)
+    //         handleSecretFetch()
+    //     }
+    // }, [selectedTab])
 
-    async function handleSecretFetch() {
-        try {
-            const { result } =
-                cmSecretStateLabel === CM_SECRET_STATE.BASE
-                    ? await getSecretKeys(id, appId, data?.name)
-                    : await unlockEnvSecret(id, appId, +envId, data?.name)
-            update(index, result)
-            setLoader(false)
-        } catch (err) {
-            toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
-            setLoader(false)
-        }
-    }
+    // async function handleSecretFetch() {
+    //     try {
+    //         const { result } =
+    //             cmSecretStateLabel === CM_SECRET_STATE.BASE
+    //                 ? await getSecretKeys(id, appId, data?.name)
+    //                 : await unlockEnvSecret(id, appId, +envId, data?.name)
+    //         update(index, result)
+    //         setLoader(false)
+    //     } catch (err) {
+    //         toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+    //         setLoader(false)
+    //     }
+    // }
 
     const getData = () => {
         try {

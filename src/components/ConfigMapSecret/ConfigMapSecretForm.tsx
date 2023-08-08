@@ -1,15 +1,14 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import {
     overRideConfigMap,
-    unlockEnvSecret,
     overRideSecret,
     updateConfig,
     deleteEnvSecret,
     deleteEnvConfigMap,
-    getSecretKeys,
     updateSecret,
     deleteSecret,
     deleteConfig,
+    //getSecret,
 } from './service'
 import { useParams } from 'react-router'
 import {
@@ -24,7 +23,7 @@ import {
     ConfirmationDialog,
     Checkbox,
     CHECKBOX_VALUE,
-    not,
+    //not,
     stopPropagation,
     InfoColourBar,
     ToastBody,
@@ -99,16 +98,16 @@ export const ConfigMapSecretForm = React.memo(
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
 
-        useEffect(() => {
-            if (
-                componentType === 'secret' &&
-                configMapSecretData?.name &&
-                configMapSecretData?.unAuthorized &&
-                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-            ) {
-                handleSecretFetch()
-            }
-        }, [draftMode])
+        // useEffect(() => {
+        //     if (
+        //         componentType === 'secret' &&
+        //         configMapSecretData?.name &&
+        //         configMapSecretData?.unAuthorized &&
+        //         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+        //     ) {
+        //         handleSecretFetch()
+        //     }
+        // }, [draftMode])
 
         useEffect(() => {
             if (isESO && !state.yamlMode) {
@@ -125,36 +124,36 @@ export const ConfigMapSecretForm = React.memo(
             })
         }, [configMapSecretData])
 
-        async function handleSecretFetch() {
-            try {
-                const { result } =
-                    state.cmSecretState === CM_SECRET_STATE.BASE
-                        ? await getSecretKeys(id, appId, configMapSecretData?.name)
-                        : await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
-                update(index, result)
-                dispatch({
-                    type: ConfigMapActionTypes.multipleOptions,
-                    payload: {
-                        unAuthorized: false,
-                        secretMode: false,
-                        currentData: processCurrentData(result.configData[0], cmSecretStateLabel, componentType),
-                    },
-                })
-            } catch (err) {
-                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
-                dispatch({
-                    type: ConfigMapActionTypes.toggleUnAuthorized,
-                    payload: {
-                        unAuthorized: true,
-                    },
-                })
-            }
-        }
+        // async function handleSecretFetch() {
+        //     try {
+        //         const { result } = await getSecret(id, appId, configMapSecretData?.name, envId)
+        //         // state.cmSecretState === CM_SECRET_STATE.BASE
+        //         //     ? await getSecretKeys(id, appId, configMapSecretData?.name)
+        //         //     : await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
+        //         update(index, result)
+        //         dispatch({
+        //             type: ConfigMapActionTypes.multipleOptions,
+        //             payload: {
+        //                 unAuthorized: false,
+        //                 secretMode: false,
+        //                 currentData: processCurrentData(result.configData[0], cmSecretStateLabel, componentType),
+        //             },
+        //         })
+        //     } catch (err) {
+        //         toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+        //         dispatch({
+        //             type: ConfigMapActionTypes.toggleUnAuthorized,
+        //             payload: {
+        //                 unAuthorized: true,
+        //             },
+        //         })
+        //     }
+        // }
 
         async function handleOverride(e) {
             e.preventDefault()
             if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) {
-                if (configMapSecretData.data) {
+                if (configMapSecretData.overridden) {
                     if (isProtectedView) {
                         dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
                     } else {
@@ -500,8 +499,7 @@ export const ConfigMapSecretForm = React.memo(
 
                 toast.success(configMapSecretData.overridden ? 'Restored to global.' : 'Successfully deleted')
                 update()
-                updateCollapsed(false)
-                dispatch({ type: ConfigMapActionTypes.success })
+                updateCollapsed()
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: {

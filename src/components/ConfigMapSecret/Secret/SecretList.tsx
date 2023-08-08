@@ -22,7 +22,7 @@ export default function SecretList({
     parentName,
     parentState,
     setParentState,
-    reloadEnvironments
+    reloadEnvironments,
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -35,7 +35,9 @@ export default function SecretList({
         setSecretLoading(true)
         setList(null)
         init(true)
-        reloadEnvironments()
+        if (!isJobView) {
+            reloadEnvironments()
+        }
     }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
@@ -116,20 +118,13 @@ export default function SecretList({
                     list.configData = [...configData]
                     return { ...list }
                 } else {
-                    const updatedData = result.configData[0].data
-                    const selectedConfigData = list.configData[index]
-                    if (selectedConfigData.global) {
-                        if (selectedConfigData.data) {
-                            selectedConfigData.data = updatedData
-                        } else {
-                            selectedConfigData.defaultData = updatedData
-                        }
-                    } else {
-                        selectedConfigData.data = updatedData
-                    }
-                    selectedConfigData.secretMode = false
-                    selectedConfigData.unAuthorized = false
-                    list.configData[index] = selectedConfigData
+                    const updatedConfigData = result.configData[0]
+                    updatedConfigData.global = list.configData[index].global
+                    updatedConfigData.overridden = list.configData[index].overridden
+                    updatedConfigData.secretMode = false
+                    updatedConfigData.unAuthorized = false
+                    delete updatedConfigData.isNew
+                    list.configData[index] = updatedConfigData
                     return { ...list }
                 }
             })
