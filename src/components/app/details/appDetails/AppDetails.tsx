@@ -10,6 +10,7 @@ import {
     useEffectAfterMount,
     Drawer,
     DeploymentAppTypes,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -28,7 +29,6 @@ import {
     useAppContext,
     useEventSource,
     FragmentHOC,
-    useSearchString,
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
