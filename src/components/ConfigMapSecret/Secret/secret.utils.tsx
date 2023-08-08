@@ -455,6 +455,15 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
             : configMapSecretData?.esoSecretData
     const isEsoSecretData: boolean =
         (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
+    let draftUnAuthorized = draftMode
+    if(draftMode && configMapSecretData?.data){
+      for (const key in configMapSecretData.data) {
+        if(configMapSecretData.data[key]!==""){
+          draftUnAuthorized=false
+          break
+        }
+      }
+    }
     return {
         externalType: configMapSecretData?.externalType ?? '',
         roleARN: {
@@ -470,8 +479,8 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
-        secretMode: false,
-        unAuthorized: configMapSecretData?.unAuthorized ?? (!draftMode && !!configMapSecretData?.name),
+        secretMode: draftUnAuthorized ?? false,
+        unAuthorized: configMapSecretData?.unAuthorized ?? draftUnAuthorized ?? (!!configMapSecretData?.name),
     }
 }
 
