@@ -32,17 +32,25 @@ export default function DeploymentConfigFormCTA({
     const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
 
+    const getCTATippyContent = () => {
+        if (isApprovalPending) {
+            if (!hasAccess) {
+                return 'You do not have permission to approve configuration changes for this application - environment combination.'
+            } else if (approveDisabled) {
+                return 'You have made changes to this file. Users who have edited cannot approve the changes.'
+            }
+        }
+
+        return DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText
+    }
+
     const renderWrappedChildren = (children) => {
         return (
             <Tippy
                 className="default-tt w-200"
                 arrow={false}
                 placement="top-end"
-                content={
-                    approveDisabled
-                        ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                        : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText
-                }
+                content={getCTATippyContent()}
             >
                 {children}
             </Tippy>
