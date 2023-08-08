@@ -279,7 +279,9 @@ export const renderEditorHeading = (
             <div className="flex left">
                 {!readOnly && <Edit className="icon-dim-16 mr-10" />}
                 {!!latestDraft ? (
-                    <span className="fw-6 mr-4">Last saved draft</span>
+                    <span className="fw-6 mr-4">
+                        Last saved draft{selectedChart ? ` (v${selectedChart.version})` : ''}
+                    </span>
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
                         selectedChart ? `(v${selectedChart.version})` : ''
