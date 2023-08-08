@@ -277,7 +277,11 @@ export const Details = ({
         !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
 
-    const areTagDetailsRequired = !!fetchIdData && fetchIdData !== FetchIdDataStatus.SUSPEND
+    let areTagDetailsRequired = !!fetchIdData && fetchIdData !== FetchIdDataStatus.SUSPEND
+    if (triggerDetailsResult?.result?.artifactId === 0 || triggerDetails?.artifactId === 0) {
+        areTagDetailsRequired = false
+    }
+
     const [
         tagDetailsLoading,
         tagDetailsResult,
@@ -345,9 +349,7 @@ export const Details = ({
         )
     }
 
-    if (!triggerDetailsLoading && !triggerDetails) {
-        return <Reload />
-    }
+    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
     if (areTagDetailsRequired && !tagDetailsLoading && !tagDetailsResult) return <Reload />
     if (triggerDetails.id !== +buildId) return null
     return (
