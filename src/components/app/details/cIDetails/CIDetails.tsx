@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState, TagDetails } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails } from '../../service'
 import { useScrollable, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
@@ -271,8 +271,6 @@ export const Details = ({
         triggerDetailsResult,
         triggerDetailsError,
         reloadTriggerDetails,
-        setTriggerDetails,
-        dependency,
     ] = useAsync(
         () => getCIHistoricalStatus({ appId: appId ?? appIdFromParent, pipelineId, buildId }),
         [pipelineId, buildId, appId ?? appIdFromParent],
@@ -284,9 +282,6 @@ export const Details = ({
         tagDetailsLoading,
         tagDetailsResult,
         tagDetailsError,
-        reloadTagDetails,
-        setTagDetails,
-        tagDetailsDependency,
     ] = useAsync(
         () =>
             getTagDetails({

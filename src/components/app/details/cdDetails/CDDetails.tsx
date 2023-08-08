@@ -361,9 +361,6 @@ export const TriggerOutput: React.FC<{
         tagDetailsLoading,
         tagDetailsResult,
         tagDetailsError,
-        reloadTagDetails,
-        setTagDetails,
-        tagDetailsDependency,
     ] = useAsync(
         () =>
             getTagDetails({
@@ -584,11 +581,6 @@ const HistoryLogs: React.FC<{
 
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-    })
-
-    let artifactTodeploymentHistoryIndexMap = new Map<number, number>()
-    deploymentHistoryResult.forEach((val, i) => {
-        artifactTodeploymentHistoryIndexMap.set(val['ci_artifact_id'], i)
     })
 
     return (
