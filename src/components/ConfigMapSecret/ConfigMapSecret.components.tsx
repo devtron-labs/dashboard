@@ -157,6 +157,12 @@ export function ConfigMapSecretContainer({
                 }
             }
             toggleCollapse(false)
+            if (
+                (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
+                (_draftData?.status === 'rejected' && _draftData?.reason?.code === 403)
+            ) {
+                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            }
         } catch (error) {
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             setDraftData(null)
