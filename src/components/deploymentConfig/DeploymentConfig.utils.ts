@@ -110,7 +110,6 @@ export const handleConfigProtectionError = (
                 return
             }
         }
-    } else {
-        showError(err)
     }
+    showError(err)
 }
