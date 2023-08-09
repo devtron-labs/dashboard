@@ -14,35 +14,26 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
     const [isResourceMissing, setResourceMissing] = useState(false)
 
     const fetchEvents = async () => {
-        setLoading(true)
-
-        if (terminalAccessId) {
-            try {
-                const response = await getClusterEvents(terminalAccessId)
-                setErrorValue(response.result)
-                return response.result?.eventsResponse?.events.items || []
-            } catch (error) {
-                showError(error)
-                return []
-            } finally {
-                setLoading(false)
-            }
-        } else {
-            setResourceMissing(true)
+        try {
+            const response = await getClusterEvents(terminalAccessId)
+            setErrorValue(response.result)
+            setEvents(response.result?.eventsResponse?.events.items || [])
+        } catch (error) {
+            showError(error)
+            setEvents([])
+        } finally {
             setLoading(false)
-            return []
+            setTimeout(fetchEvents, 5000)
         }
     }
 
-    const pollForEvents = async () => {
-        const newEvents = await fetchEvents()
-        setEvents(newEvents)
-            setTimeout(pollForEvents, 5000)
-    } 
-
     useEffect(() => {
-        if (!isResourceMissing) {
-            pollForEvents()
+        if (!isResourceMissing && terminalAccessId) {
+            setLoading(true)
+            fetchEvents()
+        } else {
+            setResourceMissing(true)
+            setLoading(false)
         }
     }, [isResourceMissing])
 
