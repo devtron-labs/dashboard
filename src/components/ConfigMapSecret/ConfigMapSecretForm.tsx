@@ -8,7 +8,6 @@ import {
     updateSecret,
     deleteSecret,
     deleteConfig,
-    //getSecret,
 } from './service'
 import { useParams } from 'react-router'
 import {
@@ -23,7 +22,6 @@ import {
     ConfirmationDialog,
     Checkbox,
     CHECKBOX_VALUE,
-    //not,
     stopPropagation,
     InfoColourBar,
     ToastBody,
@@ -37,7 +35,7 @@ import warningIcon from '../../assets/img/warning-medium.svg'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import { Override, validateKeyValuePair } from './ConfigMapSecret.components'
 import { ConfigMapActionTypes, ConfigMapSecretFormProps, KeyValueValidated } from './Types'
-import { ConfigMapReducer, initState, processCurrentData } from './ConfigMapSecret.reducer'
+import { ConfigMapReducer, initState } from './ConfigMapSecret.reducer'
 import ReactSelect from 'react-select'
 import {
     SecretOptions,
@@ -71,7 +69,6 @@ export const ConfigMapSecretForm = React.memo(
         id,
         componentType,
         update,
-        index,
         cmSecretStateLabel,
         isJobView,
         readonlyView,
@@ -98,17 +95,6 @@ export const ConfigMapSecretForm = React.memo(
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
 
-        // useEffect(() => {
-        //     if (
-        //         componentType === 'secret' &&
-        //         configMapSecretData?.name &&
-        //         configMapSecretData?.unAuthorized &&
-        //         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-        //     ) {
-        //         handleSecretFetch()
-        //     }
-        // }, [draftMode])
-
         useEffect(() => {
             if (isESO && !state.yamlMode) {
                 dispatch({
@@ -123,32 +109,6 @@ export const ConfigMapSecretForm = React.memo(
                 payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
             })
         }, [configMapSecretData])
-
-        // async function handleSecretFetch() {
-        //     try {
-        //         const { result } = await getSecret(id, appId, configMapSecretData?.name, envId)
-        //         // state.cmSecretState === CM_SECRET_STATE.BASE
-        //         //     ? await getSecretKeys(id, appId, configMapSecretData?.name)
-        //         //     : await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
-        //         update(index, result)
-        //         dispatch({
-        //             type: ConfigMapActionTypes.multipleOptions,
-        //             payload: {
-        //                 unAuthorized: false,
-        //                 secretMode: false,
-        //                 currentData: processCurrentData(result.configData[0], cmSecretStateLabel, componentType),
-        //             },
-        //         })
-        //     } catch (err) {
-        //         toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
-        //         dispatch({
-        //             type: ConfigMapActionTypes.toggleUnAuthorized,
-        //             payload: {
-        //                 unAuthorized: true,
-        //             },
-        //         })
-        //     }
-        // }
 
         async function handleOverride(e) {
             e.preventDefault()

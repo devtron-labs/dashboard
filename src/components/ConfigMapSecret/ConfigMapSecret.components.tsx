@@ -139,18 +139,26 @@ export function ConfigMapSecretContainer({
                     : null,
                 !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId) : null,
             ])
+            let draftId, draftState
             if (
                 _draftData?.status === 'fulfilled' &&
                 _draftData.value?.result &&
                 (_draftData.value.result.draftState === 1 || _draftData.value.result.draftState === 4)
             ) {
                 setDraftData(_draftData.value.result)
+                draftId = _draftData.value.result.draftId
+                draftState = _draftData.value.result.draftState
             } else {
                 setDraftData(null)
             }
             if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && _cmSecretData?.status === 'fulfilled') {
                 if (_cmSecretData.value?.result?.configData?.length) {
-                    update(index, _cmSecretData.value.result)
+                    const _result = _cmSecretData.value.result
+                    if (draftId || draftState) {
+                        _result.configData[0].draftId = draftId
+                        _result.configData[0].draftState = draftState
+                    }
+                    update(index, _result)
                 } else {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
@@ -358,35 +366,6 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
-    const [isLoader, setLoader] = useState<boolean>(false)
-
-    // useEffect(() => {
-    //     if (
-    //         componentType === 'secret' &&
-    //         selectedTab === 2 &&
-    //         data?.unAuthorized &&
-    //         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-    //     ) {
-    //         setLoader(true)
-    //         handleSecretFetch()
-    //     }
-    // }, [selectedTab])
-
-    // async function handleSecretFetch() {
-    //     try {
-    //         const { result } =
-    //             cmSecretStateLabel === CM_SECRET_STATE.BASE
-    //                 ? await getSecretKeys(id, appId, data?.name)
-    //                 : await unlockEnvSecret(id, appId, +envId, data?.name)
-    //         update(index, result)
-    //         setLoader(false)
-    //     } catch (err) {
-    //         toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
-    //         setLoader(false)
-    //     }
-    // }
-
     const getData = () => {
         try {
             if (selectedTab === 3) {
@@ -514,13 +493,6 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     const renderDiffView = (): JSX.Element => {
-        if (isLoader) {
-            return (
-                <div className="h-300">
-                    <Progressing />
-                </div>
-            )
-        }
         return (
             <>
                 <div className="en-2 bw-1 mt-16 mr-20 ml-20 bcn-1 dc__top-radius-4 deployment-diff__upper dc__no-bottom-border">
