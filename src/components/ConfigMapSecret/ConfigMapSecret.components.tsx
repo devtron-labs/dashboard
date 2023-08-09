@@ -380,10 +380,19 @@ export function ProtectedConfigMapSecretDetails({
         }
     }
 
+    const getObfuscatedData = (codeEditorData) => {
+        if (componentType === 'secret' && data.unAuthorized && codeEditorData) {
+            for (const key in codeEditorData) {
+                codeEditorData[key] = Array(8).fill('*').join('')
+            }
+        }
+        return codeEditorData
+    }
+
     const getCodeEditorData = (cmSecretData, isOverridden) => {
         if (isOverridden) {
             if (Object.keys(cmSecretData.defaultData ?? {}).length > 0) {
-                return cmSecretData.defaultData
+                return getObfuscatedData(cmSecretData.defaultData)
             } else if (componentType === 'secret') {
                 if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
                     return cmSecretData.defaultSecretData
@@ -393,7 +402,7 @@ export function ProtectedConfigMapSecretDetails({
             }
         }
         if (Object.keys(cmSecretData.data ?? {}).length > 0) {
-            return cmSecretData.data
+            return getObfuscatedData(cmSecretData.data)
         } else if (componentType === 'secret') {
             if (Object.keys(cmSecretData.secretData ?? {}).length > 0) {
                 return cmSecretData.secretData
@@ -415,6 +424,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            componentType === 'secret' && data.unAuthorized,
         )
     }
 
@@ -432,6 +442,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            componentType === 'secret' && data.unAuthorized,
         )
     }
 
