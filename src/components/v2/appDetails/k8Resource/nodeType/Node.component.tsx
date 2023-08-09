@@ -20,6 +20,7 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
+import { TippyCustomized, TippyTheme, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -193,6 +194,59 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     }
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
+        const additionalTippyContent = (node) => {
+            return (
+                <ol>
+                    {node?.port.map((val) => {
+                        return (
+                            <div className="flex row dc__content-space">
+                                <li key={node.name}>
+                                    {node.name}:{val}
+                                </li>
+                                <span>
+                                <Clipboard
+                                    onClick={(event) => {
+                                        toggleClipBoard(event, node.name)
+                                    }}
+                                />
+                                </span>
+                            </div>
+                        )
+                    })}
+                </ol>
+            )
+        }
+
+        const portNumberPlaceHolder = (node) => {
+            if (node.port?.length > 1) {
+                return (
+                    <TippyCustomized
+                        theme={TippyTheme.white}
+                        className="dc__mxw-none w-250"
+                        arrow={false}
+                        placement="bottom"
+                        trigger="click"
+                        additionalContent={additionalTippyContent(node)}
+                    >
+                        <div onClick={(e)=>stopPropagation(e)}>
+                            <span>
+                                {node.name}.{node.namespace}:
+                            </span>
+                            <span
+                                className="cell__link resource-action-tabs__clipboard fs-13 dc__truncate-text mw-18 cursor"
+                            >
+                                +{node.port.length} more
+                            </span>
+                        </div>
+                    </TippyCustomized>
+                )
+            } else if(node.port?.length ===  1){
+                return `${node.name}.${node.namespace} : ${node.port}`
+            } else {
+                return "Port Number is missing"
+            }
+        }
+
         let _currentNodeHeader = ''
         const renderClipboardInteraction = (nodeName: string): JSX.Element => {
             return copiedNodeName === nodeName ? (
@@ -220,8 +274,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                 </span>
             )
         }
+
         return nodes.map((node, index) => {
-            const nodeName = `${node.name}.${node.namespace} : ${ node.port ? node.port : "Port number missing" }`
+            const nodeName = `${node.name}.${node.namespace} : ${node.port}`
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
@@ -362,10 +417,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-
-                        {params.nodeType === NodeType.Service.toLowerCase() && (
+                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
-                                {nodeName}
+                                {portNumberPlaceHolder(node)}
                                 {renderClipboardInteraction(nodeName)}
                             </div>
                         )}
@@ -409,7 +463,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 )}
                             </div>
                         )}
-                        {node?.kind !== NodeType.Containers && (
+                        {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
                             <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                 <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                             </div>
