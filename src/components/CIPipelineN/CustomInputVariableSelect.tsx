@@ -12,6 +12,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
 import { OptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { excludeVariables } from './Constants'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -93,8 +94,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
             ])
         } else {
-            const excludeVariables = ["DOCKER_IMAGE_TAG", "DOCKER_IMAGE"]
-            let _globalVariables = []
+            const _globalVariables = []
             globalVariables.forEach((val) => {
                 if(!excludeVariables.includes(val.value)){
                     _globalVariables.push(val)
