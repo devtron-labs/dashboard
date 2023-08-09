@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { deepEqual } from '../common';
-import { showError, Progressing, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { ResizableTextarea } from '../configMaps/ConfigMap';
+import { showError, Progressing, DeleteDialog, ResizableTextarea } from '@devtron-labs/devtron-fe-common-lib'
 import { saveGroup, deleteGroup } from './userGroup.service';
 
 import {
