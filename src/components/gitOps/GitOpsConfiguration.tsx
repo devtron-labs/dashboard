@@ -288,7 +288,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         for (const shortGitHost of ShortGitHosts) {
             if (url.hostname.includes(shortGitHost)) {
-                return url.pathname.length === 1 && url.protocol === 'https:'
+                // Skipping the pathname length validation for Azure as there can be custom pathname of length 1 to n
+                return (shortGitHost === 'dev.azure.com' || url.pathname.length === 1) && url.protocol === 'https:'
             }
         }
 
