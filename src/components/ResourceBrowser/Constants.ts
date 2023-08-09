@@ -170,6 +170,11 @@ export const SIDEBAR_KEYS = {
         Version: '',
         Kind: 'Namespace',
     },
+    nodeGVK: {
+        Group: '',
+        Version: '',
+        Kind: 'Node',
+    },
 }
 
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13

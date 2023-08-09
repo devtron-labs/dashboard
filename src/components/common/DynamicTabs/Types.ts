@@ -9,6 +9,8 @@ interface CommonTabArgsType {
     isDeleted?: boolean
     positionFixed: boolean
     iconPath?: string
+    dynamicTitle?: string
+    showNameOnSelect?: boolean
 }
 
 export interface InitTabType extends CommonTabArgsType {

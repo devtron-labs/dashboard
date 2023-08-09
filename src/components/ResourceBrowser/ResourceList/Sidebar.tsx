@@ -16,6 +16,7 @@ import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/sr
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 
 function Sidebar({
     k8SObjectMap,
@@ -25,6 +26,7 @@ function Sidebar({
     updateResourceSelectionData,
     shortcut,
     isCreateModalOpen,
+    isClusterError
 }: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -261,7 +263,7 @@ function Sidebar({
                 },
             },
             option.groupName,
-            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes),
+            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes) && option.label !== (SIDEBAR_KEYS.nodes as Nodes) && option.label !== (SIDEBAR_KEYS.overview as Nodes),
         )
     }
 
@@ -332,22 +334,26 @@ function Sidebar({
                         onClick={selectNode}
                         data-kind={SIDEBAR_KEYS.overview}
                         data-group={''}
-                        className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                        data-namespaced={false}
+                        className={`fs-13 pointer flexbox flex-justify dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                             nodeType === SIDEBAR_KEYS.overview.toLowerCase()
                                 ? 'bcb-1 cb-5'
                                 : 'cn-7 resource-tree-object'
                         }`}
                     >
                         {SIDEBAR_KEYS.overview}
+                        {isClusterError && <Error className="mt-2 mb-2 icon-dim-16" />}
                     </div>
                     <div 
-                        key={SIDEBAR_KEYS.nodes}
+                        key={SIDEBAR_KEYS.nodeGVK.Kind}
                         ref={updateRef}
                         onClick={selectNode}
-                        data-kind={SIDEBAR_KEYS.nodes}
-                        data-group={''}
+                        data-namespaced={false}
+                        data-kind={SIDEBAR_KEYS.nodeGVK.Kind}
+                        data-group={SIDEBAR_KEYS.nodeGVK.Group}
+                        data-version={SIDEBAR_KEYS.nodeGVK.Version}
                         className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                            nodeType === SIDEBAR_KEYS.nodes.toLowerCase()
+                            nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
                                 ? 'bcb-1 cb-5'
                                 : 'cn-7 resource-tree-object'
                         }`}

@@ -12,6 +12,8 @@ export function useTabs(persistanceKey: string) {
         title: string,
         positionFixed: boolean,
         iconPath: string,
+        dynamicTitle: string,
+        showNameOnSelect: boolean
     ) => {
         return {
             id,
@@ -22,6 +24,8 @@ export function useTabs(persistanceKey: string) {
             isDeleted: false,
             positionFixed,
             iconPath,
+            dynamicTitle,
+            showNameOnSelect
         } as DynamicTabType
     }
 
@@ -48,7 +52,7 @@ export function useTabs(persistanceKey: string) {
         const url = `${_initTab.url}${_initTab.url.endsWith('/') ? '' : '/'}`
         const title = _initTab.kind ? `${_initTab.kind}/${_initTab.name}` : _initTab.name
         const _id = `${_initTab.idPrefix}-${title}`
-        return populateTabData(_id, title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath)
+        return populateTabData(_id, title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath, _initTab.dynamicTitle, _initTab.showNameOnSelect)
     }
 
     const initTabs = (initTabsData: InitTabType[]) => {
@@ -86,6 +90,8 @@ export function useTabs(persistanceKey: string) {
         url: string,
         positionFixed?: boolean,
         iconPath?: string,
+        dynamicTitle?: string,
+        showNameOnSelect?: boolean
     ): boolean => {
         if (!name || !url || !kind) return
 
@@ -103,7 +109,7 @@ export function useTabs(persistanceKey: string) {
         })
 
         if (!alreadyAdded) {
-            _tabs.push(populateTabData(_id, title, url, true, title, positionFixed, iconPath))
+            _tabs.push(populateTabData(_id, title, url, true, title, positionFixed, iconPath, dynamicTitle, showNameOnSelect))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -174,10 +180,11 @@ export function useTabs(persistanceKey: string) {
         setTabs(_tabs)
     }
 
-    const updateTabUrl = (id: string, url: string) => {
+    const updateTabUrl = (id: string, url: string, dynamicTitle?: string) => {
         const _tabs = tabs.map((tab) => {
             if (tab.id === id) {
                 tab.url = url
+                tab.dynamicTitle = dynamicTitle || ''
             }
             return tab
         })

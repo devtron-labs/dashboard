@@ -3,12 +3,13 @@ import { ERROR_TYPE } from "./types";
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { getClusterNote } from './clusterNodes.service';
-import { useParams } from 'react-router-dom';
+import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom';
 import GenericDescription from '../common/Description/GenericDescription';
 import { defaultClusterNote } from './constants';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../config';
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib';
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants';
 
 interface DescriptionDataType {
     descriptionId: number,
@@ -19,10 +20,10 @@ interface DescriptionDataType {
 
 
 export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clusterErrorList, clusterErrorTitle }) {
-    const { clusterId } = useParams<{
+    const { clusterId, namespace } = useParams<{
         clusterId: string
+        namespace: string
     }>()
-    const [collapsedErrorSection, setCollapsedErrorSection] = useState<boolean>(true)
     const [descriptionData, setDiscriptionData] = useState<DescriptionDataType>({
         descriptionId: 0,
         descriptionText: defaultClusterNote,
@@ -30,12 +31,14 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
         descriptionUpdatedOn: ''
     })
     const [isLoading, setIsLoading] = useState(true)
+    const history = useHistory()
+    const { path } = useRouteMatch();
 
     useEffect(() => {
         setIsLoading(true)
-        Promise.all([getClusterNote(clusterId)]).then(([clusterNoteData]) => {
-            if (clusterNoteData.result) {
-                const _clusterNote = clusterNoteData.result.clusterNote
+        getClusterNote(clusterId).then((response) => {
+            if (response.result) {
+                const _clusterNote = response.result.clusterNote
                 let _moment: moment.Moment
                 let _date: string
                 const data = { ...descriptionData }
@@ -61,10 +64,10 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
         })
     }, [])
 
-    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
+    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {    
         if (errorType === ERROR_TYPE.VERSION_ERROR) {
-            const selectedVersion = `K8s version: ${filterText}`
-            // setSelectedVersion({ label: selectedVersion, value: selectedVersion })
+            const newUrl = generatePath(path, { clusterId, namespace, nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(), group: K8S_EMPTY_GROUP }) + '?' + `k8sversion=${filterText}`
+            history.push(newUrl)
         } else {
             const _searchedTextMap = new Map()
             const searchedLabelArr = filterText.split(',')
@@ -80,35 +83,18 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
-        return (
+        return <div className='m-16 dc__border br-4 pt-12 pb-12'>
             <div
-                className={`pl-20 pr-20 pt-12 bcr-1 dc__border-top dc__border-bottom ${
-                    collapsedErrorSection ? ' pb-12 ' : ' pb-8'
-                }`}
+                className="flexbox pointer mb-12 pl-16 pr-16"
             >
-                <div className={`flexbox dc__content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
-                    <span
-                        className="flexbox pointer"
-                        onClick={(event) => {
-                            setCollapsedErrorSection(!collapsedErrorSection)
-                        }}
-                    >
-                        <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                        <span className="fw-6 fs-13 cn-9 mr-16">
-                            {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
-                        </span>
-                        {collapsedErrorSection && <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>}
-                    </span>
-                    <Dropdown
-                        className="pointer"
-                        style={{ transform: collapsedErrorSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                        onClick={(event) => {
-                            setCollapsedErrorSection(!collapsedErrorSection)
-                        }}
-                    />
-                </div>
-                {!collapsedErrorSection && (
-                    <>
+                <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
+                <span className="fw-6 fs-13 cn-9 mr-16">
+                    {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
+                </span>
+                <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>
+            </div>
+            <div className="fw-6 pt-6 pb-6 pl-16 pr-16 dc__border-bottom">Message</div>
+            <div className='pl-16 pr-16 pt-8'>
                         {clusterErrorList.map((error, index) => (
                             <div key={`error-${index}`} className="fw-4 fs-13 cn-9 mb-8">
                                 {error.errorText}
@@ -139,10 +125,8 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                                 )}
                             </div>
                         ))}
-                    </>
-                )}
-            </div>
-        )
+                    </div>
+        </div>
     }
 
     const renderCardDetails = () => {

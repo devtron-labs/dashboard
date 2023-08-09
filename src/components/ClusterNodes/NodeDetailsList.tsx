@@ -28,6 +28,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     const location = useLocation()
     const history = useHistory()
     const urlParams = new URLSearchParams(location.search)
+    const k8sVersion = urlParams.get('k8sversion')
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState('')
@@ -36,7 +37,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(new Map())
-    const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
+    const [selectedVersion, setSelectedVersion] = useState<OptionType>(k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion)
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
@@ -65,12 +66,6 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
         }
     }, [appliedColumns])
   
-    useEffect(() => {
-        const qs=queryString.parse(location.search)
-        const offset=Number(qs["offset"])
-        setNodeListOffset(offset||0)
-    }, [location.search])
-
     useEffect(() => {
         const qs=queryString.parse(location.search)
         const offset=Number(qs["offset"])
@@ -270,7 +265,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
 
     useEffect(() => {
         handleFilterChanges()
-    }, [searchedTextMap, searchText, flattenNodeList, sortByColumn, sortOrder])
+    }, [searchedTextMap, searchText, flattenNodeList, sortByColumn, sortOrder, selectedVersion])
 
     const handleSortClick = (column: ColumnMetadataType): void => {
         if (sortByColumn.label === column.label) {
@@ -278,23 +273,6 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
         } else {
             setSortByColumn(column)
             setSortOrder(OrderBy.ASC)
-        }
-    }
-
-    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
-        if (errorType === ERROR_TYPE.VERSION_ERROR) {
-            const selectedVersion = `K8s version: ${filterText}`
-            setSelectedVersion({ label: selectedVersion, value: selectedVersion })
-        } else {
-            const _searchedTextMap = new Map()
-            const searchedLabelArr = filterText.split(',')
-            for (const selectedVersion of searchedLabelArr) {
-                const currentItem = selectedVersion.trim()
-                _searchedTextMap.set(currentItem, true)
-            }
-            setSelectedSearchTextType('name')
-            setSearchedTextMap(_searchedTextMap)
-            setSearchText(filterText)
         }
     }
 

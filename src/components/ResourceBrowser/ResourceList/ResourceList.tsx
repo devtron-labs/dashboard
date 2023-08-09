@@ -137,6 +137,7 @@ export default function ResourceList() {
     const isOverview = nodeType === SIDEBAR_KEYS.overview.toLowerCase()
     const isNodes = nodeType === SIDEBAR_KEYS.nodes.toLowerCase()
     const searchWorkerRef = useRef(null)
+
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -160,6 +161,7 @@ export default function ResourceList() {
                 isSelected: false,
                 positionFixed: true,
                 iconPath: TerminalIcon,
+                showNameOnSelect: true
             }
         ])
 
@@ -291,14 +293,15 @@ export default function ResourceList() {
                 id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
                 url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
                     }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-                    }`
+                    }`,
+                dynamicTitle: selectedResource.gvk.Kind
             }, {
                 id: `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
                 url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                    }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`
-
+                    }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                dynamicTitle: ''
             }]
-            updateData.forEach((data) => updateTabUrl(data.id, data.url))
+            updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
         }
     }, [selectedCluster, selectedNamespace, selectedResource])
 
@@ -442,7 +445,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${SIDEBAR_KEYS.overview.toLowerCase()}/${childNode.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP}`,
+                            }/${SIDEBAR_KEYS.overview.toLowerCase()}/${K8S_EMPTY_GROUP}`,
                     })
                 }
 
@@ -721,7 +724,7 @@ export default function ResourceList() {
     const renderListBar = () => {
         if (isOverview) {
             return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} />
-        } else if (nodeType === SIDEBAR_KEYS.nodes.toLowerCase()) {
+        } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
             return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} />
         } else {
             return <K8SResourceList
@@ -749,7 +752,7 @@ export default function ResourceList() {
     }
 
     const renderResourceBrowser = (): JSX.Element => {
-        if (nodeType === SIDEBAR_KEYS.nodes.toLowerCase() && node) {
+        if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() && node) {
             return <NodeDetails
                 isSuperAdmin={isSuperAdmin}
                 markTabActiveByIdentifier={markTabActiveByIdentifier}
@@ -814,6 +817,7 @@ export default function ResourceList() {
                     setSelectedResource={setSelectedResource}
                     updateResourceSelectionData={updateResourceSelectionData}
                     isCreateModalOpen={showCreateResourceModal}
+                    isClusterError={!!clusterErrorTitle}
                 />
                 {renderListBar()}
             </div>
@@ -889,7 +893,7 @@ export default function ResourceList() {
         return (
             <div>
                 <div
-                    className="h-36 flexbox dc__content-space pr-20"
+                    className="h-36 flexbox dc__content-space"
                     style={{
                         boxShadow: 'inset 0 -1px 0 0 var(--N200)',
                     }}
@@ -897,7 +901,7 @@ export default function ResourceList() {
                     <div className="resource-browser-tab flex left w-100">
                         <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} />
                     </div>
-                    <div className="fs-13 flex pt-12 pb-12">
+                    {/* <div className="fs-13 flex pt-12 pb-12">
                         {!loader && !showErrorState && (
                             <>
                                 {!node && lastDataSyncTimeString && (
@@ -927,7 +931,7 @@ export default function ResourceList() {
                                 )}
                             </>
                         )}
-                    </div>
+                    </div> */}
                 </div>
                 {renderResourceBrowser()}
             </div>

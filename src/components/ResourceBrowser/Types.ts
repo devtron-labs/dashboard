@@ -111,6 +111,7 @@ export interface SidebarType {
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
     isCreateModalOpen: boolean
+    isClusterError?: boolean
 }
 
 export interface ResourceFilterOptionsProps {
@@ -130,6 +131,7 @@ export interface ResourceFilterOptionsProps {
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
     isCreateModalOpen?: boolean
+    renderCallBackSync?: () => JSX.Element
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {

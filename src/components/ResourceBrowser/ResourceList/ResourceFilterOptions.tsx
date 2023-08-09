@@ -33,6 +33,7 @@ function ResourceFilterOptions({
     isSearchInputDisabled,
     shortcut,
     isCreateModalOpen,
+    renderCallBackSync
 }: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
     const location = useLocation()
@@ -102,6 +103,7 @@ function ResourceFilterOptions({
                 hideSearchInput ? 'dc__content-end' : 'dc__content-space'
             } pt-16 pr-20 pb-12 pl-20 w-100`}
         >
+            {typeof renderCallBackSync === 'function' && renderCallBackSync()}
             {!hideSearchInput && (
                 <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
                     <Search className="search__icon icon-dim-16" onClick={handleInputShortcut} />

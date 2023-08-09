@@ -50,10 +50,6 @@ export default function NodeListSearchFliter({
         }
     }, [searchText, searchedTextMap])
 
-    const onVersionChange = (selectedValue: OptionType): void => {
-        setSelectedVersion(selectedValue)
-    }
-
     const clearTextFilter = (): void => {
         setSearchInputText('')
         setSearchText('')
@@ -195,7 +191,7 @@ export default function NodeListSearchFliter({
                         value: version,
                     })) || []),
                 ]}
-                onChange={onVersionChange}
+                onChange={setSelectedVersion}
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,

@@ -52,6 +52,7 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
 import { useRouteMatch } from 'react-router-dom'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
 
 export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, addTab }: ClusterListType) {
@@ -585,7 +586,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeDetail.name)
         const url = location.pathname
-        push(`${url.split('/').slice(0, -3).join('/')}/terminal?${queryParams.toString()}`)
+        push(`${url.split('/').slice(0, -3).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`)
     }
 
     const handleSortClick = (columnName: string, sortType: string): void => {

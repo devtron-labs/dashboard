@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { NavLink, useHistory } from 'react-router-dom'
+import { NavLink, useHistory, useParams } from 'react-router-dom'
 import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
@@ -47,8 +47,10 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     }
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
-        const { name, url, isDeleted, isSelected, iconPath } = tab
-        const showTerminal = !(!isSelected && AppDetailsTabs.terminal === name)
+        const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
+        const _showNameOnSelect = !(!isSelected && showNameOnSelect)
+        let tabName = dynamicTitle || name
+        
         return (
             <NavLink
                 to={url}
@@ -62,8 +64,8 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
-                    {showTerminal && <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
-                        {name}
+                    {_showNameOnSelect && <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
+                        {tabName}
                     </span>}
                 </div>
             </NavLink>
