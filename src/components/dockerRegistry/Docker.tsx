@@ -438,7 +438,10 @@ function DockerForm({
     const [validationStatus, setValidationStatus] = useState(
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
-    const isGCROrGCP = (selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY) || (selectedDockerRegistryType.value === RegistryType.GCR)
+    const isGCROrGCP =
+        selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY ||
+        selectedDockerRegistryType.value === RegistryType.GCR
+        
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
