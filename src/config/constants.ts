@@ -420,12 +420,6 @@ export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionT
     PULL_PUSH: "PULL/PUSH",
 }
 
-export const RepositoryAction = {
-    CONTAINER: "CONTAINER",
-    CHART_PULL: "CHART_PULL",
-    CHART_PUSH: "CHART_PUSH"
-}
-
 export const RegistryStorageType = {
     OCI_PRIVATE: 'OCI_PRIVATE',
     OCI_PUBLIC: 'OCI_PUBLIC'

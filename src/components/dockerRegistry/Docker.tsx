@@ -25,6 +25,7 @@ import {
     REGISTRY_TYPE_MAP,
     InfoColourBar,
     ConditionalWrap,
+    RepositoryAction,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList, validateContainerConfiguration } from '../../services/service'
@@ -40,7 +41,6 @@ import {
     RegistryPayloadType,
     REGISTRY_TITLE_DESCRIPTION_CONTENT,
     RegistryType,
-    RepositoryAction,
 } from '../../config'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
