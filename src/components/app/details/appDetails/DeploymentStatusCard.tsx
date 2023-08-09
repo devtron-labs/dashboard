@@ -1,6 +1,5 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import moment from 'moment'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
@@ -110,12 +109,10 @@ function DeploymentStatusCard({
                 <div className="flexbox" data-testid="last-updated-time">
                     <span className="fs-13 mr-5 fw-6 cn-9">
                         {validateMomentDate(
-                            moment(
-                                hideDeploymentStatusLeftInfo
-                                    ? deploymentTriggerTime
-                                    : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
-                                'YYYY-MM-DDTHH:mm:ssZ',
-                            ).fromNow(),
+                            hideDeploymentStatusLeftInfo
+                                ? deploymentTriggerTime
+                                : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
+                            'YYYY-MM-DDTHH:mm:ssZ',
                         )}
                     </span>
                     {deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
