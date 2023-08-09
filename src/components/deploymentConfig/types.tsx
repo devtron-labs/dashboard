@@ -182,6 +182,7 @@ export interface DeploymentConfigContextType {
     isUnSet: boolean
     state: DeploymentConfigStateWithDraft
     dispatch: React.Dispatch<DeploymentConfigStateAction>
+    isConfigProtectionEnabled: boolean
     environments: AppEnvironment[]
     reloadEnvironments: () => void
     changeEditorMode: () => void
@@ -310,7 +311,6 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     publishedState: DeploymentConfigStateType
     draftValues: string,
     showSaveChangsModal: boolean
-    isConfigProtectionEnabled: boolean
     allDrafts: any[]
     latestDraft: any
     showComments: boolean

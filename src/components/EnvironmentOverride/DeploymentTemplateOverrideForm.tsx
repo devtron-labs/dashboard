@@ -32,6 +32,7 @@ const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDra
 
 export default function DeploymentTemplateOverrideForm({
     state,
+    isConfigProtectionEnabled,
     environments,
     environmentName,
     reloadEnvironments,
@@ -46,7 +47,7 @@ export default function DeploymentTemplateOverrideForm({
     const [tempValue, setTempValue] = useState('')
     const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
-    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -112,7 +113,7 @@ export default function DeploymentTemplateOverrideForm({
         ) {
             toast.error('Some required fields are missing')
             return
-        } else if (state.isConfigProtectionEnabled) {
+        } else if (isConfigProtectionEnabled) {
             toggleSaveChangesModal()
             return
         }
@@ -436,6 +437,7 @@ export default function DeploymentTemplateOverrideForm({
             isUnSet: false,
             state,
             dispatch,
+            isConfigProtectionEnabled,
             environments: environments || [],
             changeEditorMode: changeEditorMode,
             reloadEnvironments: reloadEnvironments,
@@ -456,7 +458,7 @@ export default function DeploymentTemplateOverrideForm({
                 handleReadMeClick={handleReadMeClick}
                 handleCommentClick={toggleDraftComments}
                 commentsPresent={state.latestDraft?.commentsCount > 0}
-                isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
+                isDraftMode={isConfigProtectionEnabled && !!state.latestDraft}
                 isApprovalPending={state.latestDraft?.draftState === 4}
                 approvalUsers={state.latestDraft?.approvers}
                 showValuesPostfix={true}

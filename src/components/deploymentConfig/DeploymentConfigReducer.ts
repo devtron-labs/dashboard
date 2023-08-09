@@ -31,7 +31,6 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     latestAppChartRef: null,
     latestChartRef: null,
     showSaveChangsModal: false,
-    isConfigProtectionEnabled: false,
     allDrafts: [],
     latestDraft: null,
     draftValues: '',

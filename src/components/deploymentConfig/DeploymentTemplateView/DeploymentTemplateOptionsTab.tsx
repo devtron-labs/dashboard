@@ -24,12 +24,10 @@ export default function DeploymentTemplateOptionsTab({
     disableVersionSelect,
     setTempValue,
 }: DeploymentTemplateOptionsTabProps) {
-    const { isUnSet, state, dispatch, changeEditorMode } =
+    const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
-        state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
-            ? state.publishedState
-            : state
+        state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
 
     if (state.openComparison || state.showReadme) return null
 

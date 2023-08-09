@@ -180,9 +180,7 @@ export const CompareWithDropdown = ({
         })
 
         setGroupedOptions(_groupOptions)
-        if (!selectedOption) {
-            setSelectedOption(getSelectedOption())
-        }
+        setSelectedOption(getSelectedOption())
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {

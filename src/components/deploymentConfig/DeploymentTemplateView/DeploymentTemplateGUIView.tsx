@@ -19,9 +19,9 @@ interface DeploymentTemplateGUIViewProps {
 
 export default function DeploymentTemplateGUIView({ fetchingValues, value, readOnly }: DeploymentTemplateGUIViewProps) {
     const envVariableSectionRef = useRef(null)
-    const { isUnSet, state, dispatch, changeEditorMode } =
+    const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
     const currentBasicFieldValues = readOnlyPublishedMode
         ? state.publishedState.basicFieldValues
         : state.basicFieldValues

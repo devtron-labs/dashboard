@@ -67,7 +67,9 @@ export default function DeploymentTemplateOverride({
 
         if (clearPublishedState) {
             payload.publishedState = null
-            payload.selectedTabIndex = state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex
+            payload.selectedTabIndex = 1
+            payload.openComparison = false
+            payload.showReadme = false
             payload.allDrafts = []
             payload.latestDraft = null
         }
@@ -102,10 +104,6 @@ export default function DeploymentTemplateOverride({
                     selectedChartRefId: _selectedChartId,
                     latestAppChartRef: chartRefResp.result.latestAppChartRef,
                     latestChartRef: chartRefResp.result.latestChartRef,
-                }
-
-                if (!updateChartRefOnly) {
-                    chartRefsData['isConfigProtectionEnabled'] = isProtected
                 }
 
                 if (!updateChartRefOnly && isProtected && typeof getAllDrafts === 'function') {
@@ -179,6 +177,7 @@ export default function DeploymentTemplateOverride({
                     namespace,
                 } = JSON.parse(draftResp.result.data)
 
+                const isApprovalPending = draftResp.result.draftState === 4
                 const payload = {
                     duplicate: envOverrideValues,
                     draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
@@ -191,8 +190,9 @@ export default function DeploymentTemplateOverride({
                     },
                     isAppMetricsEnabled,
                     latestDraft: draftResp.result,
-                    selectedTabIndex: 3,
-                    openComparison: false,
+                    selectedTabIndex: isApprovalPending ? 2 : 3,
+                    openComparison: isApprovalPending,
+                    showReadme: false,
                     allDrafts,
                     currentEditorView,
                     isBasicLocked,
@@ -264,7 +264,7 @@ export default function DeploymentTemplateOverride({
                     result.environmentConfig.isBasicViewLocked,
             }
 
-            if (state.isConfigProtectionEnabled && state.latestDraft) {
+            if (isProtected && state.latestDraft) {
                 payload['publishedState'] = {
                     ...state.publishedState,
                     ...result,
@@ -307,7 +307,7 @@ export default function DeploymentTemplateOverride({
         } else if (state.duplicate) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
             //permanent delete
-            if (state.isConfigProtectionEnabled && showDeleteModal) {
+            if (isProtected && showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
             } else if (showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
@@ -411,6 +411,12 @@ export default function DeploymentTemplateOverride({
             }
         }
 
+        // Override yamlMode state to advanced when draft state is 4 (approval pending)
+        if (templateData.latestDraft?.draftState === 4) {
+            statesToUpdate['yamlMode'] = true
+            statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
+        }
+
         if (updatePublishedState && templateData['publishedState']) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.publishedState,
@@ -445,6 +451,7 @@ export default function DeploymentTemplateOverride({
                 {state.data && state.charts && (
                     <DeploymentTemplateOverrideForm
                         state={state}
+                        isConfigProtectionEnabled={isProtected}
                         environments={environments}
                         environmentName={environmentName}
                         reloadEnvironments={reloadEnvironments}

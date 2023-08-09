@@ -62,7 +62,7 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const readOnlyPublishedMode = state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
 
     useEffect(() => {
         reloadEnvironments()
@@ -109,7 +109,6 @@ export default function DeploymentConfig({
                     chartsMetadata: chartMetadata,
                     selectedChartRefId: selectedChartId,
                     selectedChart: chart,
-                    isConfigProtectionEnabled: isProtected,
                 }
 
                 if (isProtected && typeof getAllDrafts === 'function') {
@@ -367,7 +366,7 @@ export default function DeploymentConfig({
         ) {
             toast.error('Some required fields are missing')
             return
-        } else if (state.isConfigProtectionEnabled) {
+        } else if (isProtected) {
             toggleSaveChangesModal()
             return
         }
@@ -644,6 +643,7 @@ export default function DeploymentConfig({
             isUnSet: readOnlyPublishedMode ? false : isUnSet,
             state,
             dispatch,
+            isConfigProtectionEnabled: isProtected,
             environments: environments || [],
             changeEditorMode: changeEditorMode,
             reloadEnvironments: reloadEnvironments,
@@ -670,7 +670,7 @@ export default function DeploymentConfig({
                         handleReadMeClick={handleReadMeClick}
                         handleCommentClick={toggleDraftComments}
                         commentsPresent={state.latestDraft?.commentsCount > 0}
-                        isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
+                        isDraftMode={isProtected && !!state.latestDraft}
                         isApprovalPending={state.latestDraft?.draftState === 4}
                         approvalUsers={state.latestDraft?.approvers}
                         showValuesPostfix={true}

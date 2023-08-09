@@ -24,7 +24,7 @@ export default function DeploymentConfigFormCTA({
     isPublishedMode,
     reload,
 }: DeploymentConfigFormCTAProps) {
-    const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
@@ -46,12 +46,7 @@ export default function DeploymentConfigFormCTA({
 
     const renderWrappedChildren = (children) => {
         return (
-            <Tippy
-                className="default-tt w-200"
-                arrow={false}
-                placement="top-end"
-                content={getCTATippyContent()}
-            >
+            <Tippy className="default-tt w-200" arrow={false} placement="top-end" content={getCTATippyContent()}>
                 {children}
             </Tippy>
         )
@@ -87,7 +82,7 @@ export default function DeploymentConfigFormCTA({
                                     <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
                                 </>
                             ) : (
-                                `Save changes${state.isConfigProtectionEnabled ? '...' : ''}`
+                                `Save changes${isConfigProtectionEnabled ? '...' : ''}`
                             )}
                         </>
                     )}
