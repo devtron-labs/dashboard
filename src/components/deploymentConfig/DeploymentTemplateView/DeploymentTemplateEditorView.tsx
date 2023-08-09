@@ -49,8 +49,9 @@ export default function DeploymentTemplateEditorView({
                 _filteredEnvironments.map((env) => ({
                     id: env.environmentId,
                     label: env.environmentName,
-                    value: env.chartRefId,
-                    version: state.charts.find((chart) => chart.id === env.chartRefId)?.version || '',
+                    value: env.chartRefId || globalChartRefId,
+                    version:
+                        state.charts.find((chart) => chart.id === (env.chartRefId || globalChartRefId))?.version || '',
                     kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key,
                 })) as DeploymentChartOptionType[],
             )

@@ -44,15 +44,14 @@ export default function DeploymentTemplateOverrideForm({
     isGrafanaModuleInstalled,
     isEnterpriseInstallation,
 }) {
-    const [tempValue, setTempValue] = useState('')
-    const [obj, json, yaml, error] = useJsonYaml(tempValue, 4, 'yaml', true)
+    const [obj, json, yaml, error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
 
     useEffect(() => {
         // Reset editor value on delete override action
-        if (!state.duplicate && tempValue) {
-                editorOnChange('')
+        if (!state.duplicate && state.tempFormData) {
+            editorOnChange('')
         }
     }, [state.duplicate])
 
@@ -170,7 +169,9 @@ export default function DeploymentTemplateOverrideForm({
 
         try {
             const parsedCodeEditorValue =
-                tempValue && tempValue !== '' ? YAML.parse(tempValue) : state.duplicate || state.data.globalConfig
+                state.tempFormData && state.tempFormData !== ''
+                    ? YAML.parse(state.tempFormData)
+                    : state.duplicate || state.data.globalConfig
             if (state.yamlMode) {
                 const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
                 dispatch({
@@ -200,7 +201,10 @@ export default function DeploymentTemplateOverrideForm({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        setTempValue(str)
+        dispatch({
+            type: DeploymentConfigStateActionTypes.tempFormData,
+            payload: str,
+        })
         try {
             const parsedValues = YAML.parse(str)
             // Unset unableToParseYaml flag when yaml is successfully parsed
@@ -340,7 +344,7 @@ export default function DeploymentTemplateOverrideForm({
         return prepareDataToSave(state.data.globalConfig, true)
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean, updateTempValue?: boolean) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = YAML.stringify(
@@ -354,8 +358,8 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
-        } else if (tempValue && !updateTempValue) {
-            codeEditorValue = tempValue
+        } else if (state.tempFormData) {
+            codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
@@ -386,7 +390,6 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride={true}
                     disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                     codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
-                    setTempValue={setTempValue}
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={getCodeEditorValue(true)} isEnvOverride={true} />
@@ -403,7 +406,7 @@ export default function DeploymentTemplateOverrideForm({
                         }
                         editorOnChange={editorOnChange}
                         environmentName={environmentName}
-                        readOnly={!state.duplicate || isCompareAndApprovalState}
+                        readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
                         globalChartRefId={state.data.globalChartRefId}
                         handleOverride={handleOverride}
                     />

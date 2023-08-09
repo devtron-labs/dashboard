@@ -15,14 +15,12 @@ interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
     codeEditorValue: string
     disableVersionSelect?: boolean
-    setTempValue?: React.Dispatch<React.SetStateAction<string>>
 }
 
 export default function DeploymentTemplateOptionsTab({
     isEnvOverride,
     codeEditorValue,
     disableVersionSelect,
-    setTempValue,
 }: DeploymentTemplateOptionsTabProps) {
     const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -58,7 +56,10 @@ export default function DeploymentTemplateOptionsTab({
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
-            setTempValue(_envValues)
+            dispatch({
+                type: DeploymentConfigStateActionTypes.tempFormData,
+                payload: _envValues,
+            })
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,

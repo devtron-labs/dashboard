@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, Reducer } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer, useState } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
@@ -48,7 +48,6 @@ export default function DeploymentTemplateOverride({
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
-        dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
         reloadEnvironments()
         initialise()
     }, [envId])
@@ -86,8 +85,11 @@ export default function DeploymentTemplateOverride({
         updateChartRefOnly?: boolean,
     ) {
         dispatch({
-            type: DeploymentConfigStateActionTypes.chartConfigLoading,
-            payload: true,
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload: {
+                chartConfigLoading: true,
+                loading: true,
+            },
         })
         chartRefAutocomplete(Number(appId), Number(envId))
             .then((chartRefResp) => {
@@ -298,10 +300,9 @@ export default function DeploymentTemplateOverride({
 
     async function handleOverride(e) {
         e.preventDefault()
-
         if (state.unableToParseYaml) {
             return
-        } else if (state.duplicate) {
+        } else if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
             //permanent delete
             if (isProtected && showDeleteModal) {
