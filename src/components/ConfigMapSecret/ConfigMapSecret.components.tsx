@@ -381,12 +381,13 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     const getObfuscatedData = (codeEditorData) => {
-        if (componentType === 'secret' && data.unAuthorized && codeEditorData) {
-            for (const key in codeEditorData) {
-                codeEditorData[key] = Array(8).fill('*').join('')
+        const _codeEditorData = { ...codeEditorData }
+        if (componentType === 'secret' && data.unAuthorized && _codeEditorData) {
+            for (const key in _codeEditorData) {
+                _codeEditorData[key] = Array(8).fill('*').join('')
             }
         }
-        return codeEditorData
+        return _codeEditorData
     }
 
     const getCodeEditorData = (cmSecretData, isOverridden) => {
