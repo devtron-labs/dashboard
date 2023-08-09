@@ -18,7 +18,7 @@ import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
 import { createTaintsList } from '../cluster/cluster.util'
 
-export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: ClusterListType) {
+export default function ClusterList({ imageList, isSuperAdmin, namespaceList}) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()

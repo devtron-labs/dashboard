@@ -156,6 +156,8 @@ export const DELETE_MODAL_MESSAGING = {
 }
 
 export const SIDEBAR_KEYS = {
+    overview: 'Cluster Overview',
+    nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
     eventGVK: {

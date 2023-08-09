@@ -12,6 +12,7 @@ import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
 import Select from 'react-select/dist/declarations/src/Select'
 import './DynamicTabs.scss'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -60,9 +61,9 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
-                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
+                    {AppDetailsTabs.terminal != name && <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                         {name}
-                    </span>
+                    </span>}
                 </div>
             </NavLink>
         )

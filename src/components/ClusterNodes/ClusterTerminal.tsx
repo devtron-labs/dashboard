@@ -125,7 +125,7 @@ export default function ClusterTerminal({
     }
 
     useEffect(() => {
-        if (update && !isNodeDetailsPage) {
+        if (update) {
             updateSelectedContainerName()
         }
     }, [clusterId, node])
@@ -475,7 +475,7 @@ export default function ClusterTerminal({
 
     function closeTerminalModal(e: any, skipRedirection?: boolean): void {
         try {
-            if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
+            if (typeof closeTerminal === 'function') {
                 closeTerminal(skipRedirection)
             }
             setConnectTerminal(false)
@@ -546,16 +546,10 @@ export default function ClusterTerminal({
         queryParams.set('image', selectedImage.value)
         queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
-        if (isNodeDetailsPage) {
-            const url =
-                generatePath(path, { clusterId, nodeName: selectedNodeName.value }) + '?' + queryParams.toString()
-            history.replace(url)
-        } else {
-            queryParams.set('node', selectedNodeName.value)
-            history.replace({
-                search: queryParams.toString(),
-            })
-        }
+        queryParams.set('node', selectedNodeName.value)
+        history.replace({
+            search: queryParams.toString(),
+        })
     }
 
     const reconnectTerminal = (): void => {
@@ -855,7 +849,6 @@ export default function ClusterTerminal({
             {
                 type: TerminalWrapperType.REACT_SELECT,
                 classNamePrefix: 'cluster-terminal-node',
-                hideTerminalStripComponent: isNodeDetailsPage,
                 title: SELECT_TITLE.NODE,
                 placeholder: 'Select node',
                 options: nodeGroups,
@@ -985,7 +978,7 @@ export default function ClusterTerminal({
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
-                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper}`}
+                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${isNodeDetailsPage ? '' : 'dc__border-top'}`}
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu

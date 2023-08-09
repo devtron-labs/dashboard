@@ -152,10 +152,11 @@
         }
         .pod-container {
             .pod-container-header {
-                top: 76px;
+                top: 0px;
                 z-index: 1;
-                padding-top: 12px;
-                background: var(--window-bg);
+                padding-top: 10px;
+                background-color: var(--N0);
+                
             }
             .pods-grid {
                 display: grid;
@@ -169,7 +170,7 @@
                     display: grid;
                     grid-template-columns: minmax(150px, 300px) minmax(100px, auto) repeat(4, 100px) 75px;
                     position: sticky;
-                    top: 124px;
+                    top: 46px;
                     z-index: 1;
                 }
                 main {
@@ -202,8 +203,8 @@
     .top-3 {
         top: 3px;
     }
-    .top-88 {
-        top: 88px;
+    .top-10 {
+        top: 10px;
     }
 
     .hover-class {
@@ -282,7 +283,7 @@
     height: calc(100% - 60px);
 
     &.full-screen-terminal {
-        height: calc(100vh - 108px);
+        height: calc(100vh - 109px);
     }
 
     &.cluster-details-full-screen {
@@ -296,7 +297,7 @@
     }
 
     &.node-details-full-screen {
-        height: calc(100vh - 137px);
+        height: calc(100vh - 144px);
     }
 }
 
@@ -461,4 +462,14 @@
 .cluster-manifest-header {
     display: grid;
     grid-template-columns: 1fr 1fr 30px;
+}
+
+.node-data-container {
+    height: calc(100vh - 84px);
+    overflow: hidden;
+
+    .node-data-wrapper {
+        height: calc(100vh - 118px);
+        overflow: auto;
+    }
 }

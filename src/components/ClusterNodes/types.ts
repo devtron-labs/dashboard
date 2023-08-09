@@ -170,13 +170,15 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType {
-    imageList: ClusterImageList[]
     isSuperAdmin: boolean
-    namespaceList: string[]
+    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
     clusterId: string
+    namespaceList: string[]
+    imageList: ClusterImageList[]
 }
 
 export interface ClusterAboutPropType {

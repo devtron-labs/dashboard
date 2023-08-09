@@ -148,7 +148,7 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
         for (const _parentNode of _k8SObjectList) {
             for (const _childNode of _parentNode.child) {
                 if (
-                    _childNode.gvk.Kind.toLowerCase() === nodeType &&
+                    (_childNode.gvk.Kind.toLowerCase() === nodeType || SIDEBAR_KEYS.nodes.toLowerCase() === nodeType || 'terminal' === nodeType) ||
                     (_childNode.gvk.Group.toLowerCase() === group ||
                         SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
                         K8S_EMPTY_GROUP === group)

@@ -13,7 +13,7 @@ import './clusterNodes.scss'
 import ClusterDetails from './ClusterDetails'
 import ClusterAbout from './ClusterAbout'
 
-export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
+export default function NodeList({ imageList, isSuperAdmin, namespaceList }) {
     const match = useRouteMatch()
     const history = useHistory()
     const [lastDataSync, setLastDataSync] = useState(false)

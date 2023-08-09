@@ -46,7 +46,7 @@ import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
@@ -56,12 +56,11 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { createTaintsList } from '../cluster/cluster.util'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
+import { useRouteMatch } from 'react-router-dom'
 
 
-export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
-    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
-    const selectedNodeName: SelectGroupType = { label: '', options: [{ label: nodeName, value: nodeName }] }
-    const nodeListRef = useRef([selectedNodeName])
+export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, addTab }: ClusterListType) {
+    const { clusterId, nodeName, nodeType, node } = useParams<{ clusterId: string; nodeName: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -79,7 +78,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
-    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const toastId = useRef(null)
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
@@ -88,20 +86,20 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
-    const isNodeAuto: boolean = nodeName === AUTO_SELECT.value
     const location = useLocation()
+    const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
-        getNodeCapacity(clusterId, nodeName)
+        getNodeCapacity(clusterId, node)
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
-                    for (let index = 0; index < resourceList.length; ) {
+                    for (let index = 0; index < resourceList.length;) {
                         if (resourceList[index].name === 'cpu') {
                             setCpuData(resourceList[index])
                             resourceList.splice(index, 1)
@@ -130,18 +128,39 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             })
     }
 
-    useEffect(() => {
-        nodeListRef.current = [selectedNodeName]
-        if (nodeName !== AUTO_SELECT.value) {
-            getData(patchData)
+    const handleSelectedTab = (_tabName: string) => {
+        const isTabFound = markTabActiveByIdentifier(
+            K8S_EMPTY_GROUP,
+            node,
+            nodeType,
+            url,
+        )
+
+        if (!isTabFound) {
+            let _urlToCreate = url + '?' + _tabName.toLowerCase()
+
+            const query = new URLSearchParams(window.location.search)
+
+            if (query.get('container')) {
+                _urlToCreate = _urlToCreate + '?container=' + query.get('container')
+            }
+
+            addTab(
+                K8S_EMPTY_GROUP,
+                nodeType,
+                node,
+                _urlToCreate,
+            )
         }
-    }, [nodeName])
+    }
 
     useEffect(() => {
-        if (imageList?.length && nodeDetail?.k8sVersion) {
-            setNodeImageList(filterImageList(imageList, nodeDetail.k8sVersion))
-        }
-    }, [imageList, nodeDetail?.k8sVersion])
+        handleSelectedTab(node)
+    }, [])
+
+    useEffect(() => {
+        getData(patchData)
+    }, [node])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -163,8 +182,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 setSelectedTabIndex(1)
             } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
                 setSelectedTabIndex(2)
-            } else if (tab === NODE_DETAILS_TABS.debug.toLowerCase()) {
-                setSelectedTabIndex(3)
             }
         }
     }, [location.search])
@@ -179,8 +196,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
             } else if (_tabIndex === 2) {
                 _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
-            } else if (_tabIndex === 3) {
-                _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
             }
             push({
                 pathname: location.pathname,
@@ -190,71 +205,34 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const cursorValue = isNodeAuto ? 'cursor-not-allowed' : 'cursor'
+        const cursorValue = 'cursor'
         return (
-            <ul role="tablist" className="tab-list">
-                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                        {NODE_DETAILS_TABS.summary}
-                    </div>
-                    {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
-                </li>
-                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
-                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
-                        <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
-                        {NODE_DETAILS_TABS.yaml}
-                    </div>
-                    {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                </li>
-                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                        {NODE_DETAILS_TABS.nodeConditions}
-                    </div>
-                    {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                </li>
-                {isSuperAdmin && (
-                    <li className="tab-list__tab cursor" data-tab-index="3" onClick={changeNodeTab}>
-                        <div
-                            className={`mb-6 flexbox fs-13 tab-hover${
-                                selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
-                            }`}
-                            data-testid="node-details-terminal-tab"
-                        >
-                            <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
-                            {NODE_DETAILS_TABS.debug}
+            <div className='ml-12 flex dc__border-bottom'>
+                <div className='flex left w-100'>
+                <ul role="tablist" className="tab-list pt-6">
+                    <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
+                        <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
+                            {NODE_DETAILS_TABS.summary}
                         </div>
-                        {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
+                        {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
-                )}
-            </ul>
-        )
-    }
-
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                clusters: {
-                    component: 'Clusters',
-                    linked: true,
-                },
-                ':clusterId': {
-                    component: nodeDetail?.clusterName,
-                    linked: true,
-                },
-                ':nodeName': {
-                    component: isNodeAuto ? 'Selecting node' : nodeName,
-                    linked: false,
-                },
-            },
-        },
-        [clusterId, nodeName, nodeDetail],
-    )
-
-    const renderBreadcrumbs = (): JSX.Element => {
-        return (
-            <span className={isNodeAuto ? 'dc__loading-dots' : ''}>
-                <BreadCrumb breadcrumbs={breadcrumbs} />
-            </span>
+                    <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
+                        <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
+                            <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
+                            {NODE_DETAILS_TABS.yaml}
+                        </div>
+                        {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                    </li>
+                    <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
+                        <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
+                            {NODE_DETAILS_TABS.nodeConditions}
+                        </div>
+                        {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                    </li>
+                </ul>
+                {nodeControls()}
+                </div>
+            </div>
         )
     }
 
@@ -271,9 +249,8 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         return (
             <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div
-                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
-                        !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
-                    }`}
+                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${!value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
+                        }`}
                 >
                     {key}
                 </div>
@@ -517,7 +494,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-88">
+            <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-10">
                 <div className="flexbox pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
@@ -525,6 +502,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     <div>
                         <div className="fw-6 fs-13 cn-7">Name</div>
                         <p className="fw-4 fs-13 cn-9 mb-12">{nodeDetail.name}</p>
+                    </div>
+                    <div>
+                        <div className="fw-6 fs-13 cn-7">Status</div>
+                        <p className={`fw-4 fs-13 cn-9 mb-12 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>{nodeDetail.status}</p>
                     </div>
                     <div>
                         <div className="fw-6 fs-13 cn-7">Role</div>
@@ -604,6 +585,13 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         )
     }
 
+    const openDebugTerminal = () => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('node', nodeDetail.name)
+        const url = location.pathname
+        push(`${url.split('/').slice(0, -3).join('/')}/terminal?${queryParams.toString()}`)
+    }
+
     const handleSortClick = (columnName: string, sortType: string): void => {
         let _sortOrder = OrderBy.ASC
         if (sortByColumnName === columnName) {
@@ -615,30 +603,30 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         const comparatorMethod =
             sortType === 'number'
                 ? (a, b) => {
-                      const sortByColumnArr = columnName.split('.')
-                      let firstValue = 0,
-                          secondValue = 0
-                      if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
-                          firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
-                      }
-                      if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
-                          secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
-                      }
-                      return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
-                  }
+                    const sortByColumnArr = columnName.split('.')
+                    let firstValue = 0,
+                        secondValue = 0
+                    if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                        firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                    }
+                    if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                        secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                    }
+                    return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
+                }
                 : (a, b) => {
-                      return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
-                          (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
-                          ? a[columnName].localeCompare(b[columnName])
-                          : b[columnName].localeCompare(a[columnName])
-                  }
+                    return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
+                        (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
+                        ? a[columnName].localeCompare(b[columnName])
+                        : b[columnName].localeCompare(a[columnName])
+                }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
-    const handleResourceClick=(e)=>{
-        const {name,namespace}=e.currentTarget.dataset
-        const beginpart=window.location.href.split('/clusters')[0]
-        const _url=`${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
-        window.open(_url,'_blank')
+    const handleResourceClick = (e) => {
+        const { name, namespace } = e.currentTarget.dataset
+        const beginpart = window.location.href.split('/clusters')[0]
+        const _url = `${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
+        window.open(_url, '_blank')
     }
     const renderPodHeaderCell = (
         columnName: string,
@@ -648,9 +636,8 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${
-                    sortByColumnName === sortingFieldName ? 'sort-by' : ''
-                } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${sortByColumnName === sortingFieldName ? 'sort-by' : ''
+                    } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
                 onClick={() => {
                     handleSortClick(sortingFieldName, columnType)
                 }}
@@ -664,7 +651,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     </span>
                 </Tippy>
                 {sortByColumnName === sortingFieldName ? (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
                 ) : (
                     <span className="sort-column dc__opacity-0_5 ml-4"></span>)}
             </div>
@@ -762,59 +749,48 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         )
     }
 
+    const nodeControls = () => {
+        return <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
+            <div className="flex left">
+                <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={openDebugTerminal}>
+                <TerminalLineIcon className="icon-dim-16 mr-5" />
+                    {NODE_DETAILS_TABS.debug}
+                </span>
+                <span className="cn-2 mr-16 ml-16">|</span>
+                <span className="flex left fw-6 cb-5 fs-13 cursor" onClick={showCordonNodeModal}>
+                    {nodeDetail.unschedulable ? (
+                        <>
+                            <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                        </>
+                    ) : (
+                        <>
+                            <CordonIcon className="icon-dim-16 mr-5 scb-5" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                        </>
+                    )}
+                </span>
+                <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showDrainNodeModal}>
+                    <DrainIcon className="icon-dim-16 mr-5 scb-5" />
+                    {CLUSTER_NODE_ACTIONS_LABELS.drain}
+                </span>
+                <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showEditTaintsModal}>
+                    <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
+                    {CLUSTER_NODE_ACTIONS_LABELS.taints}
+                </span>
+            </div>
+            <span className="flex left fw-6 cr-5 ml-16 fs-13 cursor" onClick={showDeleteNodeModal}>
+                    <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                    {CLUSTER_NODE_ACTIONS_LABELS.delete}
+            </span>
+        </div>
+    }
+    
+
     const renderSummary = (): JSX.Element | null => {
         if (!nodeDetail) return null
         return (
-            <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
-                    <div className="fw-6">
-                        <div className="fs-16 cn-9">{nodeDetail.name}</div>
-                        <div className="flex left mt-4">
-                            <span className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
-                                {nodeDetail.status}
-                            </span>
-                            <span className="cn-2 mr-16 ml-16">|</span>
-                            <span className="flex left fw-6 cb-5 fs-13 cursor" onClick={showCordonNodeModal}>
-                                {nodeDetail.unschedulable ? (
-                                    <>
-                                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
-                                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
-                                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                                    </>
-                                )}
-                            </span>
-                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showDrainNodeModal}>
-                                <DrainIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                            </span>
-                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showEditTaintsModal}>
-                                <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                            </span>
-                            <span className="flex left fw-6 cr-5 ml-16 fs-13 cursor" onClick={showDeleteNodeModal}>
-                                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="fs-13">
-                        {lastDataSyncTimeString && (
-                            <span>
-                                {lastDataSyncTimeString}
-                                <button
-                                    className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                    onClick={() => getData(patchData)}
-                                >
-                                    Refresh
-                                </button>
-                            </span>
-                        )}
-                    </div>
-                </div>
+            <div className="node-details-container node-data-wrapper">
                 <div className="ml-20 mr-20 mt-12 node-details-grid">
                     <div className="fw-6 fs-16 cn-9">
                         {renderErrorOverviewCard()}
@@ -977,29 +953,12 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         )
     }
 
-    const renderTerminal = () => {
-        return (
-            <ClusterTerminal
-                clusterId={Number(clusterId)}
-                nodeGroups={nodeListRef.current}
-                clusterImageList={nodeImageList}
-                isNodeDetailsPage={true}
-                namespaceList={namespaceList[nodeDetail.clusterName]}
-                taints={createTaintsList(
-                    [{ nodeName: nodeName, nodeGroup: '', taints: nodeDetail.taints }],
-                    'nodeName',
-                )}
-            />
-        )
-    }
 
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
         } else if (selectedTabIndex === 2) {
             return renderConditions()
-        } else if (selectedTabIndex === 3) {
-            return renderTerminal()
         } else {
             return renderSummary()
         }
@@ -1065,20 +1024,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
-    if (loader) {
-        return <Progressing pageLoader />
-    }
-
     return (
-        <div>
-            <PageHeader
-                breadCrumbs={renderBreadcrumbs}
-                isBreadcrumbs={true}
-                showTabs={true}
-                renderHeaderTabs={renderNodeDetailsTabs}
-            />
+        <div className='bcn-0 node-data-container'>
+            {loader ? <Progressing pageLoader /> : <>
+            {renderNodeDetailsTabs()}
             {renderTabs()}
-
             {showCordonNodeDialog && (
                 <CordonNodeModal
                     name={nodeName}
@@ -1112,7 +1062,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     taints={nodeDetail.taints}
                     closePopup={hideEditTaintsModal}
                 />
-            )}
+            )}</>}
         </div>
     )
 }
