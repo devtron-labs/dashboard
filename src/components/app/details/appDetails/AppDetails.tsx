@@ -10,6 +10,7 @@ import {
     useEffectAfterMount,
     Drawer,
     DeploymentAppTypes,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -28,7 +29,6 @@ import {
     useAppContext,
     useEventSource,
     FragmentHOC,
-    useSearchString,
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
@@ -118,7 +118,7 @@ export default function AppDetail() {
     useEffect(() => {
         if (otherEnvsLoading) return
         // If there is only one environment, redirect to that environment
-        if (!params.envId && otherEnvsResult?.result?.length === 1) { 
+        if (!params.envId && otherEnvsResult?.result?.length === 1) {
             const newUrl = getAppDetailsURL(params.appId, otherEnvsResult?.result[0].environmentId)
             push(newUrl)
         }
@@ -163,7 +163,7 @@ export default function AppDetail() {
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
-                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment}/>
+                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
                 </div>
             )}
             {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
@@ -225,11 +225,13 @@ export const Details: React.FC<DetailsType> = ({
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
+    const deploymentModalShownRef = useRef(null)
+    deploymentModalShownRef.current =location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
     const { envId } = useParams<{ appId: string; envId?: string }>()
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...((isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData)
+            ...(isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
@@ -255,19 +257,28 @@ export const Details: React.FC<DetailsType> = ({
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || [])
     }, [appDetails])
 
-    const getDeploymentDetailStepsData = (): void => {
+const getDeploymentDetailStepsData = (): void => {
         // Deployments status details for Devtron apps
-        getDeploymentStatusDetail(params.appId, params.envId, false).then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = (isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData)
-            ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-            : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData =
+            isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
+                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
-        if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+        if (
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
+        ) {
+            deploymentModalShownRef.current= false
+        }
+        if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
             deploymentStatusTimer = setTimeout(() => {
                 getDeploymentDetailStepsData()
             }, 10000)
@@ -326,7 +337,12 @@ export const Details: React.FC<DetailsType> = ({
             })
         fetchResourceTreeInTime(params.appId, params.envId, 25000)
             .then((response) => {
-                if (response.errors && response.errors.length === 1 && response.errors[0].code === '7000' && appDetailsRequestRef.current) {
+                if (
+                    response.errors &&
+                    response.errors.length === 1 &&
+                    response.errors[0].code === '7000' &&
+                    appDetailsRequestRef.current
+                ) {
                     if (setIsAppDeleted) {
                         setIsAppDeleted(true)
                     }
@@ -348,7 +364,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
-        getDeploymentStatusDetail(params.appId, params.envId, false)
+        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     if (deploymentAppType === DeploymentAppTypes.HELM) {
@@ -680,12 +696,9 @@ export const Details: React.FC<DetailsType> = ({
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
-                    {rotateModal && (
-                        <RotatePodsModal
-                            onClose={() => setRotateModal(false)}
-                            callAppDetailsAPI={callAppDetailsAPI}
-                        />
-                    )}
+            {rotateModal && (
+                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} />
+            )}
         </React.Fragment>
     )
 }
