@@ -438,7 +438,7 @@ function DockerForm({
     const [validationStatus, setValidationStatus] = useState(
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
-
+    const isGCROrGCP = (selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY) || (selectedDockerRegistryType.value === RegistryType.GCR)
     function customHandleChange(e) {
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
@@ -508,7 +508,7 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: registryStorageType === RegistryStorageType.OCI_PUBLIC  ? Isdefault : false,
+            isDefault: registryStorageType === RegistryStorageType.OCI_PRIVATE  ? Isdefault : false,
             isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
             isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
             repositoryList: state.repositoryList?.value.split(',') || [],
@@ -1142,11 +1142,12 @@ function DockerForm({
         }
     }
 
-    const isGCROrGCP = selectedDockerRegistryType.value === RegistryType.ARTIFACT_REGISTRY || selectedDockerRegistryType.value === RegistryType.GCR
 
     const renderAuthentication = () => {
-        if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
-            if (selectedDockerRegistryType.value === RegistryType.ECR) {
+            if (
+                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                selectedDockerRegistryType.value === RegistryType.ECR
+            ) {
                 return (
                     <>
                         <div className="form__row mb-0-imp">
@@ -1206,7 +1207,7 @@ function DockerForm({
             } else {
                 return (
                     <>
-                        <div className={`${isGCROrGCP ? "" : "form__row--two-third"}`}>
+                        <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
                             <div className="form__row">
                                 <CustomInput
                                     dataTestid="container-registry-username-textbox"
@@ -1252,37 +1253,34 @@ function DockerForm({
                                 )}
                             </div>
                         </div>
-                        <div className="form__row">
-                            {isGCROrGCP && (
-                                <>
-                                    <label htmlFor="" className="form__label w-100 dc__required-field">
-                                        {selectedDockerRegistryType.password.label}
-                                    </label>
-                                    <textarea
-                                        name="password"
-                                        tabIndex={6}
-                                        data-testid="artifact-service-account-textbox"
-                                        value={customState.password.value}
-                                        className="w-100 p-10"
-                                        rows={3}
-                                        onBlur={id && handleOnBlur}
-                                        onFocus={handleOnFocus}
-                                        onChange={customHandleChange}
-                                        placeholder={selectedDockerRegistryType.password.placeholder}
-                                    />
-                                    {customState.password?.error && (
-                                        <div className="form__error">
-                                            <Error className="form__icon form__icon--error" />
-                                            {customState.password?.error}
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </div>
+                        {isGCROrGCP && (
+                            <div className="form__row">
+                                <label htmlFor="" className="form__label w-100 dc__required-field">
+                                    {selectedDockerRegistryType.password.label}
+                                </label>
+                                <textarea
+                                    name="password"
+                                    tabIndex={6}
+                                    data-testid="artifact-service-account-textbox"
+                                    value={customState.password.value}
+                                    className="w-100 p-10"
+                                    rows={3}
+                                    onBlur={id && handleOnBlur}
+                                    onFocus={handleOnFocus}
+                                    onChange={customHandleChange}
+                                    placeholder={selectedDockerRegistryType.password.placeholder}
+                                />
+                                {customState.password?.error && (
+                                    <div className="form__error">
+                                        <Error className="form__icon form__icon--error" />
+                                        {customState.password?.error}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </>
                 )
             }
-        }
     }
 
     return (
