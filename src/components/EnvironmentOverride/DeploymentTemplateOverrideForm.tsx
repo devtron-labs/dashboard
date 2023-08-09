@@ -80,7 +80,6 @@ export default function DeploymentTemplateOverrideForm({
             isAppMetricsEnabled: !!state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
             currentEditorView: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
             isBasicLocked: state.isBasicLocked,
-            id: state.data.environmentConfig.id,
             ...(state.data.environmentConfig.id > 0
                 ? {
                       status: state.data.environmentConfig.status,
@@ -92,6 +91,7 @@ export default function DeploymentTemplateOverrideForm({
         }
 
         if (includeInDraft) {
+            payload['id'] = state.data.environmentConfig.id
             payload['globalConfig'] = state.data.globalConfig
             payload['isDraftOverriden'] = state.isDraftOverriden
             payload['readme'] = state.readme
