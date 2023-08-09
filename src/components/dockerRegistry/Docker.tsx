@@ -1125,10 +1125,58 @@ function DockerForm({
         }
     }
 
+    const renderUserNamePassword = () => {
+       return <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
+        <div className="form__row">
+            <CustomInput
+                dataTestid="container-registry-username-textbox"
+                name="username"
+                labelClassName="dc__required-field"
+                tabIndex={5}
+                value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
+                autoComplete="off"
+                error={customState.username.error}
+                onChange={customHandleChange}
+                label={selectedDockerRegistryType.id.label}
+                disabled={!!selectedDockerRegistryType.id.defaultValue}
+                placeholder={
+                    selectedDockerRegistryType.id.placeholder
+                        ? selectedDockerRegistryType.id.placeholder
+                        : 'Enter username'
+                }
+            />
+        </div>
+        <div className="form__row">
+            {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
+                selectedDockerRegistryType.value === RegistryType.ACR ||
+                selectedDockerRegistryType.value === RegistryType.QUAY ||
+                selectedDockerRegistryType.value === RegistryType.OTHER) && (
+                <CustomInput
+                    dataTestid="container-registry-password-textbox"
+                    name="password"
+                    labelClassName="dc__required-field"
+                    tabIndex={6}
+                    value={customState.password.value}
+                    error={customState.password.error}
+                    onChange={customHandleChange}
+                    onBlur={id && handleOnBlur}
+                    onFocus={handleOnFocus}
+                    label={selectedDockerRegistryType.password.label}
+                    placeholder={
+                        selectedDockerRegistryType.password.placeholder
+                            ? selectedDockerRegistryType.password.placeholder
+                            : 'Enter password/token'
+                    }
+                    autoComplete="off"
+                />
+            )}
+        </div>
+    </div>
+    }
 
     const renderAuthentication = () => {
+        if( registryStorageType === RegistryStorageType.OCI_PRIVATE){
             if (
-                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                 selectedDockerRegistryType.value === RegistryType.ECR
             ) {
                 return (
@@ -1187,83 +1235,9 @@ function DockerForm({
                         )}
                     </>
                 )
-            } else {
-                return (
-                    <>
-                        <div className={`${isGCROrGCP ? '' : 'form__row--two-third'}`}>
-                            <div className="form__row">
-                                <CustomInput
-                                    dataTestid="container-registry-username-textbox"
-                                    name="username"
-                                    labelClassName="dc__required-field"
-                                    tabIndex={5}
-                                    value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                                    autoComplete="off"
-                                    error={customState.username.error}
-                                    onChange={customHandleChange}
-                                    label={selectedDockerRegistryType.id.label}
-                                    disabled={!!selectedDockerRegistryType.id.defaultValue}
-                                    placeholder={
-                                        selectedDockerRegistryType.id.placeholder
-                                            ? selectedDockerRegistryType.id.placeholder
-                                            : 'Enter username'
-                                    }
-                                />
-                            </div>
-                            <div className="form__row">
-                                {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
-                                    selectedDockerRegistryType.value === RegistryType.ACR ||
-                                    selectedDockerRegistryType.value === RegistryType.QUAY ||
-                                    selectedDockerRegistryType.value === RegistryType.OTHER) && (
-                                    <CustomInput
-                                        dataTestid="container-registry-password-textbox"
-                                        name="password"
-                                        labelClassName="dc__required-field"
-                                        tabIndex={6}
-                                        value={customState.password.value}
-                                        error={customState.password.error}
-                                        onChange={customHandleChange}
-                                        onBlur={id && handleOnBlur}
-                                        onFocus={handleOnFocus}
-                                        label={selectedDockerRegistryType.password.label}
-                                        placeholder={
-                                            selectedDockerRegistryType.password.placeholder
-                                                ? selectedDockerRegistryType.password.placeholder
-                                                : 'Enter password/token'
-                                        }
-                                        autoComplete="off"
-                                    />
-                                )}
-                            </div>
-                        </div>
-                        {isGCROrGCP && (
-                            <div className="form__row">
-                                <label htmlFor="" className="form__label w-100 dc__required-field">
-                                    {selectedDockerRegistryType.password.label}
-                                </label>
-                                <textarea
-                                    name="password"
-                                    tabIndex={6}
-                                    data-testid="artifact-service-account-textbox"
-                                    value={customState.password.value}
-                                    className="w-100 p-10"
-                                    rows={3}
-                                    onBlur={id && handleOnBlur}
-                                    onFocus={handleOnFocus}
-                                    onChange={customHandleChange}
-                                    placeholder={selectedDockerRegistryType.password.placeholder}
-                                />
-                                {customState.password?.error && (
-                                    <div className="form__error">
-                                        <Error className="form__icon form__icon--error" />
-                                        {customState.password?.error}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </>
-                )
             }
+        }
+          
     }
 
     return (
@@ -1386,6 +1360,34 @@ function DockerForm({
                     </div>
                 </div>
                 {renderAuthentication()}
+                {(isGCROrGCP || registryStorageType === RegistryStorageType.OCI_PRIVATE)  && (
+                    <>
+                        {renderUserNamePassword()}
+                        <div className="form__row">
+                            <label htmlFor="" className="form__label w-100 dc__required-field">
+                                {selectedDockerRegistryType.password.label}
+                            </label>
+                            <textarea
+                                name="password"
+                                tabIndex={6}
+                                data-testid="artifact-service-account-textbox"
+                                value={customState.password.value}
+                                className="w-100 p-10"
+                                rows={3}
+                                onBlur={id && handleOnBlur}
+                                onFocus={handleOnFocus}
+                                onChange={customHandleChange}
+                                placeholder={selectedDockerRegistryType.password.placeholder}
+                            />
+                            {customState.password?.error && (
+                                <div className="form__error">
+                                    <Error className="form__icon form__icon--error" />
+                                    {customState.password?.error}
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
                 {selectedDockerRegistryType.value === RegistryType.OTHER && (
                     <>
                         <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-16'}`}>

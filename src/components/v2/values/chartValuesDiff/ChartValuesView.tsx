@@ -1480,6 +1480,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
+                                isOCICompliantChart={commonState.installedConfig.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
