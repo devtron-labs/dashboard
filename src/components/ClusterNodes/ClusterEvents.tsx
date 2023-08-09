@@ -12,7 +12,7 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
     const [errorValue, setErrorValue] = useState<PodEventsType>()
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
-    let timeoutId: NodeJS.Timeout
+    let timeoutId
 
     const fetchEvents = async () => {
         try {
@@ -39,7 +39,9 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
             setLoading(false)
         }
         return () => {
-            clearTimeout(timeoutId)
+            if (timeoutId) {
+                clearTimeout(timeoutId)
+            }
         }
     }, [isResourceMissing, terminalAccessId])
 
