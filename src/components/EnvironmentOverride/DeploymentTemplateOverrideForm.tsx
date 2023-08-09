@@ -82,6 +82,7 @@ export default function DeploymentTemplateOverrideForm({
             isBasicLocked: state.isBasicLocked,
             ...(state.data.environmentConfig.id > 0
                 ? {
+                      id: state.data.environmentConfig.id,
                       status: state.data.environmentConfig.status,
                       manualReviewed: true,
                       active: state.data.environmentConfig.active,
