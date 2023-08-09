@@ -93,6 +93,13 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
             ])
         } else {
+            const excludeVariables = ["DOCKER_IMAGE_TAG", "DOCKER_IMAGE"]
+            let _globalVariables = []
+            globalVariables.forEach((val) => {
+                if(!excludeVariables.includes(val.value)){
+                    _globalVariables.push(val)
+                }
+            })
             setInputVariableOptions([
                 {
                     label: 'From Previous Steps',
@@ -100,7 +107,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: isCdPipeline ? globalVariables.filter((variable) => variable.stageType !== 'post-cd') : globalVariables ,
+                    options: isCdPipeline ? _globalVariables.filter((variable) => variable.stageType !== 'post-cd') : _globalVariables ,
                 },
             ])
         }
