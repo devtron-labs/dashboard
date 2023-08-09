@@ -52,7 +52,7 @@ export default function DeploymentTemplateOverrideForm({
     useEffect(() => {
         // Reset editor value on delete override action
         if (!state.duplicate && tempValue) {
-            editorOnChange('')
+                editorOnChange('')
         }
     }, [state.duplicate])
 
@@ -78,7 +78,7 @@ export default function DeploymentTemplateOverrideForm({
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
             isAppMetricsEnabled: !!state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
-            currentEditorView: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
+            currentViewEditor: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
             isBasicLocked: state.isBasicLocked,
             ...(state.data.environmentConfig.id > 0
                 ? {
@@ -340,7 +340,7 @@ export default function DeploymentTemplateOverrideForm({
         return prepareDataToSave(state.data.globalConfig, true)
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean, updateTempValue?: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = YAML.stringify(
@@ -354,10 +354,10 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
-        } else if (tempValue) {
+        } else if (tempValue && !updateTempValue) {
             codeEditorValue = tempValue
         } else {
-            const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : state.duplicate
+            const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
                 ? YAML.stringify(state.duplicate, { indent: 2 })
                 : YAML.stringify(state.data.globalConfig, { indent: 2 })

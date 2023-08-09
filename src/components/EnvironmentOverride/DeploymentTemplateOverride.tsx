@@ -129,10 +129,6 @@ export default function DeploymentTemplateOverride({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.chartConfigLoading,
-            payload: true,
-        })
         getAllDrafts(Number(appId), Number(envId), 3)
             .then((allDraftsResp) => {
                 if (allDraftsResp.result) {
@@ -179,6 +175,7 @@ export default function DeploymentTemplateOverride({
 
                 const isApprovalPending = draftResp.result.draftState === 4
                 const payload = {
+                    chartConfigLoading: false,
                     duplicate: envOverrideValues,
                     draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
                     environmentConfig: {
@@ -390,7 +387,7 @@ export default function DeploymentTemplateOverride({
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
             statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.ADVANCED
-            statesToUpdate['currentViewEditor'] = _currentViewEditor
+            statesToUpdate['currentEditorView'] = _currentViewEditor
             statesToUpdate['isBasicLocked'] = _isBasicLocked
         }
 

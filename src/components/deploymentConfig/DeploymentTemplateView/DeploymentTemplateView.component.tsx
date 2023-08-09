@@ -136,7 +136,7 @@ export const CompareWithDropdown = ({
         label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
         version: globalChartRef?.version || '',
         kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.key,
-    }
+    } as DeploymentChartOptionType
 
     useEffect(() => {
         _initOptions()
@@ -146,11 +146,13 @@ export const CompareWithDropdown = ({
         if (isEnvOverride) {
             const currentEnv = environments.find((env) => +envId === env.id)
             if (isDraftMode && currentEnv?.value) {
-                return environments.find((env) => +envId === env.id)
+                return currentEnv
             }
-            return baseTemplateOption as DeploymentChartOptionType
+            return baseTemplateOption
+        } else if (isDraftMode) {
+            return baseTemplateOption
         } else if (environments.length > 0) {
-            return environments[0]
+            return environments.filter((env) => env.value)[0] ?? baseTemplateOption
         } else {
             return charts[0]
         }
