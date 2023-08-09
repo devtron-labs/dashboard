@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { ButtonWithLoader, copyToClipboard, handleUTCTime, ToastBodyWithButton, filterImageList } from '../common'
+import { copyToClipboard, handleUTCTime, ToastBodyWithButton } from '../common'
 import {
     showError,
     Progressing,
-    BreadCrumb,
-    useBreadcrumb,
     toastAccessDenied,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -22,7 +20,8 @@ import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.s
 import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import PageHeader from '../common/header/PageHeader'
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
+import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
 import { useParams, useLocation, useHistory } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
@@ -31,12 +30,10 @@ import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
-    ImageList,
     NodeDetail,
     NodeDetailResponse,
     PodType,
     ResourceDetail,
-    SelectGroupType,
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
@@ -47,13 +44,11 @@ import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
-import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
-import { createTaintsList } from '../cluster/cluster.util'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import { URLS } from '../../config'
 import { useRouteMatch } from 'react-router-dom'
@@ -86,6 +81,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
+    const [isEdit, setIsEdit] = useState(false)
     const location = useLocation()
     const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
@@ -207,30 +203,30 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const renderNodeDetailsTabs = (): JSX.Element => {
         const cursorValue = 'cursor'
         return (
-            <div className='ml-12 flex dc__border-bottom'>
+            <div className='pl-20 flex dc__border-bottom'>
                 <div className='flex left w-100'>
-                <ul role="tablist" className="tab-list pt-6">
-                    <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
-                        <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                            {NODE_DETAILS_TABS.summary}
-                        </div>
-                        {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
-                        <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
-                            <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
-                            {NODE_DETAILS_TABS.yaml}
-                        </div>
-                        {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
-                        <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                            {NODE_DETAILS_TABS.nodeConditions}
-                        </div>
-                        {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
-                </ul>
-                {nodeControls()}
+                    <ul role="tablist" className="tab-list pt-6">
+                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
+                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
+                                {NODE_DETAILS_TABS.summary}
+                            </div>
+                            {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
+                            <div className={`mb-6 flexbox fs-12 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
+                                <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
+                                {NODE_DETAILS_TABS.yaml}
+                            </div>
+                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
+                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
+                                {NODE_DETAILS_TABS.nodeConditions}
+                            </div>
+                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                        </li>
+                    </ul>
+                    {nodeControls()}
                 </div>
             </div>
         )
@@ -749,43 +745,65 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         )
     }
 
-    const nodeControls = () => {
-        return <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
-            <div className="flex left">
-                <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={openDebugTerminal}>
-                <TerminalLineIcon className="icon-dim-16 mr-5" />
-                    {NODE_DETAILS_TABS.debug}
-                </span>
-                <span className="cn-2 mr-16 ml-16">|</span>
-                <span className="flex left fw-6 cb-5 fs-13 cursor" onClick={showCordonNodeModal}>
-                    {nodeDetail.unschedulable ? (
-                        <>
-                            <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
-                            {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                        </>
-                    ) : (
-                        <>
-                            <CordonIcon className="icon-dim-16 mr-5 scb-5" />
-                            {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                        </>
-                    )}
-                </span>
-                <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showDrainNodeModal}>
+    const setYAMLEdit = () => {
+        setIsEdit(true)
+    }
+
+    const renderTabControls = () => {
+        if (selectedTabIndex == 0) {
+            return <><span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
+                {nodeDetail.unschedulable ? (
+                    <>
+                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                    </>
+                ) : (
+                    <>
+                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                    </>
+                )}
+            </span>
+                <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showDrainNodeModal}>
                     <DrainIcon className="icon-dim-16 mr-5 scb-5" />
                     {CLUSTER_NODE_ACTIONS_LABELS.drain}
                 </span>
-                <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showEditTaintsModal}>
+                <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showEditTaintsModal}>
                     <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
                     {CLUSTER_NODE_ACTIONS_LABELS.taints}
+                </span></>
+        } else if (selectedTabIndex == 1) {
+            if (!isEdit) {
+                return <span className='cb-5 fs-12 scb-5 fw-6 cursor flex' onClick={setYAMLEdit}><Edit className="icon-dim-16 mr-6" /> Edit YAML</span>
+            }
+            return <>
+                {apiInProgress ? <Progressing /> : <span className="flex scb-5 cb-5 left fw-6 fs-12 cursor" onClick={saveYAML}>{isReviewState ?
+                    <><Check className="icon-dim-16 mr-6" /> Apply changes</> :
+                    <><Review className="icon-dim-16 mr-6" /> Review & Save changes</>}</span>}
+                <span className="flex left fw-6 fs-12 cn-6 cursor ml-12" onClick={cancelYAMLEdit}>
+                    Cancel
                 </span>
+            </>
+        }
+    }
+
+    const nodeControls = () => {
+        return <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
+            <div className="flex left">
+                <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
+                    <TerminalLineIcon className="icon-dim-16 mr-5" />
+                    {NODE_DETAILS_TABS.debug}
+                </span>
+                <span className="cn-2 mr-16 ml-16">|</span>
+                {renderTabControls()}
             </div>
-            <span className="flex left fw-6 cr-5 ml-16 fs-13 cursor" onClick={showDeleteNodeModal}>
-                    <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                    {CLUSTER_NODE_ACTIONS_LABELS.delete}
+            <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={showDeleteNodeModal}>
+                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                {CLUSTER_NODE_ACTIONS_LABELS.delete}
             </span>
         </div>
     }
-    
+
 
     const renderSummary = (): JSX.Element | null => {
         if (!nodeDetail) return null
@@ -809,6 +827,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
 
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
+        setIsEdit(false)
         setModifiedManifest(YAML.stringify(nodeDetail.manifest))
     }
 
@@ -840,6 +859,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                     if (response.result) {
                         toast.success('Node updated')
                         setIsReviewStates(false)
+                        setIsEdit(false)
                         setIsShowWarning(false)
                         getData([])
                     }
@@ -881,8 +901,9 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                     value={modifiedManifest}
                     defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
                     height={
-                        isReviewState ? `calc( 100vh - ${isShowWarning ? '203px' : '170px'})` : 'calc( 100vh - 137px)'
+                        isReviewState ? `calc( 100vh - ${isShowWarning ? '180px' : '156px'})` : 'calc( 100vh - 120px)'
                     }
+                    readOnly={!isEdit}
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     mode={MODES.YAML}
@@ -906,21 +927,6 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                         </CodeEditor.Header>
                     )}
                 </CodeEditor>
-                <div className="bcn-0 dc__border-top p-12 text-right" style={{ height: '60px' }}>
-                    {isReviewState && (
-                        <button type="button" className="cta cta--workflow cancel mr-12" onClick={cancelYAMLEdit}>
-                            Cancel
-                        </button>
-                    )}
-                    <ButtonWithLoader
-                        rootClassName="cta cta--workflow"
-                        onClick={saveYAML}
-                        isLoading={apiInProgress}
-                        loaderColor="white"
-                    >
-                        {isReviewState ? 'Update node' : 'Review changes'}
-                    </ButtonWithLoader>
-                </div>
             </div>
         )
     }
@@ -1027,42 +1033,42 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     return (
         <div className='bcn-0 node-data-container'>
             {loader ? <Progressing pageLoader /> : <>
-            {renderNodeDetailsTabs()}
-            {renderTabs()}
-            {showCordonNodeDialog && (
-                <CordonNodeModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    unschedulable={nodeDetail.unschedulable}
-                    closePopup={hideCordonNodeModal}
-                />
-            )}
-            {showDrainNodeDialog && (
-                <DrainNodeModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    closePopup={hideDrainNodeModal}
-                />
-            )}
-            {showDeleteNodeDialog && (
-                <DeleteNodeModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    closePopup={hideDeleteNodeModal}
-                />
-            )}
-            {showEditTaints && (
-                <EditTaintsModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    taints={nodeDetail.taints}
-                    closePopup={hideEditTaintsModal}
-                />
-            )}</>}
+                {renderNodeDetailsTabs()}
+                {renderTabs()}
+                {showCordonNodeDialog && (
+                    <CordonNodeModal
+                        name={nodeName}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        unschedulable={nodeDetail.unschedulable}
+                        closePopup={hideCordonNodeModal}
+                    />
+                )}
+                {showDrainNodeDialog && (
+                    <DrainNodeModal
+                        name={nodeName}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        closePopup={hideDrainNodeModal}
+                    />
+                )}
+                {showDeleteNodeDialog && (
+                    <DeleteNodeModal
+                        name={nodeName}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        closePopup={hideDeleteNodeModal}
+                    />
+                )}
+                {showEditTaints && (
+                    <EditTaintsModal
+                        name={nodeName}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        taints={nodeDetail.taints}
+                        closePopup={hideEditTaintsModal}
+                    />
+                )}</>}
         </div>
     )
 }

@@ -48,6 +48,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
         const { name, url, isDeleted, isSelected, iconPath } = tab
+        const showTerminal = !(!isSelected && AppDetailsTabs.terminal === name)
         return (
             <NavLink
                 to={url}
@@ -61,7 +62,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
-                    {AppDetailsTabs.terminal != name && <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
+                    {showTerminal && <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                         {name}
                     </span>}
                 </div>

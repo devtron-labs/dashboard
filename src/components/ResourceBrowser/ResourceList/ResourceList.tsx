@@ -156,7 +156,7 @@ export default function ResourceList() {
             }, {
                 idPrefix: AppDetailsTabsIdPrefix.terminal,
                 name: AppDetailsTabs.terminal,
-                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/terminal/${K8S_EMPTY_GROUP}`,
+                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                 isSelected: false,
                 positionFixed: true,
                 iconPath: TerminalIcon,
@@ -195,7 +195,7 @@ export default function ResourceList() {
 
     // Mark tab active on path change
     useEffect(() => {
-        if (nodeType === 'terminal') {
+        if (nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         } else if (selectedResource && !node) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
@@ -295,7 +295,7 @@ export default function ResourceList() {
             }, {
                 id: `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
                 url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                    }/terminal/${K8S_EMPTY_GROUP}`
+                    }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`
 
             }]
             updateData.forEach((data) => updateTabUrl(data.id, data.url))
