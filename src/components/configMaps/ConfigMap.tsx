@@ -77,8 +77,7 @@ const ConfigMap = ({ respondOnSuccess, isJobView }: { respondOnSuccess: () => vo
     }
 
     let configData = [{ id: null, name: null }].concat(configmap?.configData)
-    console.log('configData', configData)
-
+    
     return (
         <div className="form__app-compose">
             <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">
