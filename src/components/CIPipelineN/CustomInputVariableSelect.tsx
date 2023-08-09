@@ -94,12 +94,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
             ])
         } else {
-            const _globalVariables = []
-            globalVariables.forEach((val) => {
-                if(!excludeVariables.includes(val.value)){
-                    _globalVariables.push(val)
-                }
-            })
             setInputVariableOptions([
                 {
                     label: 'From Previous Steps',
@@ -107,7 +101,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: isCdPipeline ? _globalVariables.filter((variable) => variable.stageType !== 'post-cd') : _globalVariables ,
+                    options: globalVariables.filter((variable) => (isCdPipeline && variable.stageType !== 'post-cd') || (!excludeVariables.includes(variable.value))),
+                    
                 },
             ])
         }
