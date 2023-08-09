@@ -43,10 +43,6 @@ export function updateSecret(id, appId, configData) {
     })
 }
 
-// export function getSecretKeys(id, appId, name) {
-//     return get(`${Routes.APP_CREATE_SECRET}/edit/${appId}/${id}?name=${name}`)
-// }
-
 export function deleteSecret(id, appId, name) {
     return trash(`${Routes.APP_CREATE_SECRET}/${appId}/${id}?name=${name}`)
 }
@@ -55,11 +51,7 @@ export function deleteEnvSecret(id, appId, envId, name) {
     return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
 }
 
-// export function unlockEnvSecret(id, appId, envId, name) {
-//     return get(`${Routes.APP_CREATE_ENV_SECRET}/edit/${appId}/${envId}/${id}?name=${name}`)
-// }
-
-export function getCMSecret(componentType, id, appId, name, envId) {
+export function getCMSecret(componentType, id, appId, name, envId?) {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${

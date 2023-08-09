@@ -227,7 +227,10 @@ export const ConfigMapSecretForm = React.memo(
                     isFormValid = false
                 }
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
-                    isFormValid = validateFilePermission()
+                    const isFilePermissionValid = validateFilePermission()
+                    if (!isFilePermissionValid) {
+                        isFormValid = isFilePermissionValid
+                    }
                 }
                 if (
                     state.isSubPathChecked &&
