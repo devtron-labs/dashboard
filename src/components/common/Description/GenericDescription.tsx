@@ -316,7 +316,9 @@ export default function GenericDescription({
     return (
         <div
             className={`cluster__body-details ${
-                initialEditDescriptionView ? 'pl-16 pr-16 pt-16 pb-16 dc__border-bottom-n1 generic-decription-max-width' : ''
+                initialEditDescriptionView
+                    ? 'pl-16 pr-16 pt-16 pb-16 dc__border-bottom-n1 generic-decription-max-width dc__overflow-scroll'
+                    : ''
             }`}
         >
             <div
