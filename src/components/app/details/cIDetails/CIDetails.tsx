@@ -77,6 +77,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setHasMore(false)
         }
     }, [pipelineId])
 
