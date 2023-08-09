@@ -11,10 +11,10 @@ import {
     showError,
     Progressing,
     DeleteDialog,
-    useThrottledEffect,
     Checkbox,
     CHECKBOX_VALUE,
     not,
+    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
@@ -256,91 +256,6 @@ export function Tab({ title, active, onClick }) {
     )
 }
 
-interface ResizableTextareaProps {
-    minHeight?: number
-    maxHeight?: number
-    value?: string
-    onChange?: (e) => void
-    onBlur?: (e) => void
-    onFocus?: (e) => void
-    className?: string
-    placeholder?: string
-    lineHeight?: number
-    padding?: number
-    disabled?: boolean
-    name?: string
-    dataTestId?: string
-}
-
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-    minHeight,
-    maxHeight,
-    value,
-    onChange = null,
-    onBlur = null,
-    onFocus = null,
-    className = '',
-    placeholder = 'Enter your text here..',
-    lineHeight = 14,
-    padding = 12,
-    disabled = false,
-    dataTestId,
-    ...props
-}) => {
-    const [text, setText] = useState('')
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist()
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
-    }
-
-    function handleBlur(e) {
-        if (typeof onBlur === 'function') onBlur(e)
-    }
-
-    function handleFocus(e) {
-        if (typeof onFocus === 'function') onFocus(e)
-    }
-
-    useThrottledEffect(
-        () => {
-            _textRef.current.style.height = 'auto'
-            let nextHeight = _textRef.current.scrollHeight
-            if (minHeight && nextHeight < minHeight) {
-                nextHeight = minHeight
-            }
-            if (maxHeight && nextHeight > maxHeight) {
-                nextHeight = maxHeight
-            }
-            _textRef.current.style.height = nextHeight + 2 + 'px'
-        },
-        500,
-        [text],
-    )
-
-    return (
-        <textarea
-            data-testid={dataTestId}
-            ref={(el) => (_textRef.current = el)}
-            value={text}
-            placeholder={placeholder}
-            className={`dc__resizable-textarea ${className}`}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
-    )
-}
 
 export function ListComponent({ title, name = '', subtitle = '', onClick, className = '', collapsible = false }) {
     return (

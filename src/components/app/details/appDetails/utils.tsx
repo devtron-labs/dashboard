@@ -731,6 +731,6 @@ export const ValueContainerImage = (props) => {
 }
 
 export const validateMomentDate = (date: string, format: string): string => {
-    if(!date || date.length === 0 || date === ZERO_TIME_STRING) return '--'
-    return moment(date, format).fromNow()   
+    if (!date || date === ZERO_TIME_STRING) return '--'
+    return moment(date, format).fromNow()
 }
