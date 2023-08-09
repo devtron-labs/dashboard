@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { Nodes, NodeType, AggregationKeys, AggregatedNodes, PodMetadatum } from '../../types'
 import { getVersionArr, handleUTCTime, isVersionLessThanOrEqualToTarget, mapByKey } from '../../../common'
 import React, { Component } from 'react'
@@ -15,7 +16,7 @@ import {
 } from './appDetails.type'
 import CreatableSelect from 'react-select/creatable'
 import { DayPickerRangeControllerPresets } from '../../../common'
-import { DEPLOYMENT_STATUS, TIMELINE_STATUS, MomentInvalidDate } from '../../../../config'
+import { DEPLOYMENT_STATUS, TIMELINE_STATUS, ZERO_TIME_STRING } from '../../../../config'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {
@@ -729,9 +730,7 @@ export const ValueContainerImage = (props) => {
     )
 }
 
-export const validateMomentDate = (date: string): string => {
-    if (date === MomentInvalidDate) {
-        return '--'
-    }
-    return date
+export const validateMomentDate = (date: string, format: string): string => {
+    if(!date || date.length === 0 || date === ZERO_TIME_STRING) return '--'
+    return moment(date, format).fromNow()   
 }
