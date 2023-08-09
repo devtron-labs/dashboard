@@ -59,11 +59,7 @@ import { CredentialType, CustomCredential } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
-const OCIRegistryUseActionHelmPushMessage = importComponentFromFELibrary(
-    'OCIRegistryUseActionHelmPushMessage',
-    '',
-    'function',
-)
+
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 
 enum CERTTYPE {
@@ -183,14 +179,9 @@ function CollapsedList({
     cert = '',
     isOCICompliantRegistry = false,
     isPublic,
-    registryStorageType= isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
+    registryStorageType = isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
     setRegistryStorageType,
-    ociRegistryConfig = OCIRegistryUseActionHelmPushMessage
-        ? {
-              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-              CHART: OCIRegistryConfigConstants.PUSH,
-          }
-        : registryStorageType === RegistryStorageType.OCI_PUBLIC
+    ociRegistryConfig = registryStorageType === RegistryStorageType.OCI_PUBLIC
         ? {
               CHART: OCIRegistryConfigConstants.PULL,
           }
@@ -206,7 +197,7 @@ function CollapsedList({
     },
     clusterOption,
     repositoryList = [],
-    disabledFields= [],
+    disabledFields = [],
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -285,7 +276,7 @@ function CollapsedList({
                         isPublic,
                         registryStorageType,
                         setRegistryStorageType,
-                        disabledFields
+                        disabledFields,
                     }}
                 />
             )}
@@ -419,12 +410,6 @@ function DockerForm({
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     let InitialValueOfIsContainerStore: boolean = ociRegistryConfig?.CONTAINER === OCIRegistryConfigConstants.PULL_PUSH
-    InitialValueOfIsContainerStore = OCIRegistryUseActionHelmPushMessage
-        ? InitialValueOfIsContainerStore &&
-          (ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
-              ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PUSH ||
-              ociRegistryConfig?.CHART === OCIRegistryConfigConstants.PULL)
-        : InitialValueOfIsContainerStore
     const [isContainerStore, setContainerStore] = useState<boolean>(InitialValueOfIsContainerStore)
     const [OCIRegistryStorageConfig, setOCIRegistryStorageConfig] =
         useState<OCIRegistryStorageConfigType>(ociRegistryConfig)
@@ -994,13 +979,10 @@ function DockerForm({
                                 isChecked={isContainerStore}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CONTAINER)}
-                                dataTestId={`store-${
-                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                                }-checkbox`}
+                                dataTestId="store-checkbox"
                                 disabled={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
                             >
                                 Push container images
-                                {OCIRegistryUseActionHelmPushMessage ? ` & ${OCIRegistryUseActionHelmPushMessage}` : ''}
                             </Checkbox>
                         </div>
                     </ConditionalWrap>
@@ -1053,9 +1035,7 @@ function DockerForm({
                                 isChecked={showHelmPull}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PULL)}
-                                dataTestId={`store-${
-                                    OCIRegistryUseActionHelmPushMessage ? 'container-and-chart' : 'container'
-                                }-checkbox`}
+                                dataTestId="store-checkbox"
                                 disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
                             >
                                 Use as chart repository (Pull helm charts and show in chart store)
