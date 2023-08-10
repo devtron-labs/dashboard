@@ -29,6 +29,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
     const [copiedNodeName, setCopiedNodeName] = useState<string>('')
+    const [copiedPortName, setCopiedPortName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
@@ -138,6 +139,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
     }
 
+    const toggleClipBoardPort = (event: React.MouseEvent, port: string) => {
+        event.stopPropagation()
+        copyToClipboard(port, () => setCopiedPortName(port))
+    }
+
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
         if (node.info) {
@@ -205,7 +211,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 <Clipboard
                                     className="ml-5 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoard(event, node.name)
+                                        toggleClipBoardPort(event, val)
                                     }}
                                 />
                                 </li>
@@ -228,14 +234,21 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         additionalContent={additionalTippyContent(node)}
                         interactive={true}
                     >
-                        <div onClick={(e)=>stopPropagation(e)}>
+                        <div onClick={(e) => stopPropagation(e)}>
                             <span>
                                 {node.name}.{node.namespace}:
                             </span>
-                            <span
-                                className="cell__link resource-action-tabs__clipboard fs-13 dc__truncate-text mw-18 cursor"
-                            >
-                                +{node.port.length} more
+                            <span className="fs-13 dc__truncate-text mw-18 cursor">
+                            {node.port[0]}  
+                                <span>
+                                    <Clipboard
+                                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-4 mr-4"
+                                        onClick={(event) => {
+                                            toggleClipBoard(event, node.name)
+                                        }}
+                                    />
+                                </span>
+                                +{node.port.length - 1} more
                             </span>
                         </div>
                     </TippyCustomized>
@@ -263,15 +276,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
                     </span>
                 </Tippy>
-            ) : (
-                <span>
-                    <Clipboard
-                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                        onClick={(event) => {
-                            toggleClipBoard(event, nodeName)
-                        }}
-                    />
-                </span>
+            ) : ( null
+
             )
         }
 
