@@ -26,3 +26,5 @@ export const triggerStageStyles = {
         color: '#0066cc',
     }),
 }
+
+export const excludeVariables = ["DOCKER_IMAGE_TAG", "DOCKER_IMAGE"]
