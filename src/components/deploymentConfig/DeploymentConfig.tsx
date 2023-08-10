@@ -39,8 +39,8 @@ import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/Deplo
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
-const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
+const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
@@ -84,7 +84,8 @@ export default function DeploymentConfig({
         if (clearPublishedState) {
             payload.selectedTabIndex = state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex
             payload.publishedState = null
-            payload.allDrafts = []
+            //payload.allDrafts = [],
+            payload.showComments = false
             payload.latestDraft = null
         }
 
@@ -111,7 +112,7 @@ export default function DeploymentConfig({
                     selectedChart: chart,
                 }
 
-                if (isProtected && typeof getAllDrafts === 'function') {
+                if (isProtected && typeof getDraftByResourceName === 'function') {
                     fetchAllDrafts(chartRefsData)
                 } else {
                     updateRefsData(chartRefsData)
@@ -131,22 +132,15 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
-        getAllDrafts(Number(appId), -1, 3)
-            .then((allDraftsResp) => {
-                if (allDraftsResp.result) {
-                    const allDrafts = allDraftsResp.result
-                        .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
-                        .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
-                    const latestDraft = allDrafts[0]
-                    if (
-                        typeof getDraft === 'function' &&
-                        latestDraft &&
-                        (latestDraft.draftState === 1 || latestDraft.draftState === 4)
-                    ) {
-                        getDraftAndActivity(allDrafts, latestDraft, chartRefsData)
-                    } else {
-                        updateRefsData(chartRefsData)
-                    }
+        getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
+            //getAllDrafts(Number(appId), -1, 3)
+            .then((draftsResp) => {
+                if ((draftsResp.result && draftsResp.result.draftState === 1) || draftsResp.result.draftState === 4) {
+                    // const allDrafts = allDraftsResp.result
+                    //     .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
+                    //     .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
+                    // const latestDraft = allDrafts[0]
+                    processDraftData(draftsResp.result, chartRefsData)
                 } else {
                     updateRefsData(chartRefsData, !!state.publishedState)
                 }
@@ -156,9 +150,9 @@ export default function DeploymentConfig({
             })
     }
 
-    const getDraftAndActivity = (allDrafts, latestDraft, chartRefsData) => {
-        getDraft(latestDraft.draftId)
-            .then((draftResp) => {
+    const processDraftData = (latestDraft, chartRefsData) => {
+        // getDraft(latestDraft.draftId)
+        //     .then((draftResp) => {
                 const {
                     valuesOverride,
                     id,
@@ -170,7 +164,7 @@ export default function DeploymentConfig({
                     currentViewEditor,
                     readme,
                     schema,
-                } = JSON.parse(draftResp.result.data)
+                } = JSON.parse(latestDraft.data)
 
                 const payload = {
                     template: valuesOverride,
@@ -184,18 +178,18 @@ export default function DeploymentConfig({
                     isAppMetricsEnabled: isAppMetricsEnabled,
                     tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
                     draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
-                    latestDraft: draftResp.result,
+                    latestDraft: latestDraft,
                     selectedTabIndex: 3,
                     openComparison: false,
                     currentEditorView: currentViewEditor,
-                    allDrafts,
+                    //allDrafts,
                     readme,
                     schema,
                     ...{
                         ...chartRefsData,
                         selectedChartRefId: chartRefId,
                         selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
-                    },
+                    }
                 }
 
                 if (chartRefsData) {
@@ -213,10 +207,10 @@ export default function DeploymentConfig({
                     updateTemplateFromBasicValue(valuesOverride)
                     parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
                 }
-            })
-            .catch((e) => {
-                updateRefsData(chartRefsData)
-            })
+            // })
+            // .catch((e) => {
+            //     updateRefsData(chartRefsData)
+            // })
     }
 
     const toggleYamlMode = (yamlMode: boolean) => {

@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer, useContext, Reducer, useState } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
-import { showError, Progressing, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getDeploymentTemplate as getBaseDeploymentTemplate } from '../deploymentConfig/service'
 import { useAsync, importComponentFromFELibrary } from '../common'
@@ -69,7 +69,7 @@ export default function DeploymentTemplateOverride({
             payload.selectedTabIndex = 1
             payload.openComparison = false
             payload.showReadme = false
-            payload.allDrafts = []
+            //payload.allDrafts = []
             payload.latestDraft = null
         }
 
