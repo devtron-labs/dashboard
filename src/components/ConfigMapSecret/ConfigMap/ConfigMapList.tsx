@@ -123,8 +123,6 @@ export default function ConfigMapList({
                     return { ...cmList }
                 } else {
                     const updatedConfigData = result.configData[0]
-                    updatedConfigData.global = cmList.configData[index].global
-                    updatedConfigData.overridden = cmList.configData[index].overridden
                     updatedConfigData.secretMode = false
                     updatedConfigData.unAuthorized = false
                     delete updatedConfigData.isNew

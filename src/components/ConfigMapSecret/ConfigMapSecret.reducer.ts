@@ -72,6 +72,7 @@ export const initState = (
         cmSecretState: cmSecretStateLabel,
         showDeleteModal: false,
         showProtectedDeleteModal: false,
+        showProtectedDeleteOverrideModal: false,
         showDraftSaveModal: false,
         draftPayload: null,
         ...secretInitState,
@@ -114,6 +115,8 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
             return { ...state, showDeleteModal: !state.showDeleteModal }
         case ConfigMapActionTypes.toggleProtectedDeleteModal:
             return { ...state, showProtectedDeleteModal: !state.showProtectedDeleteModal }
+        case ConfigMapActionTypes.toggleProtectedDeleteOverrideModal:
+            return { ...state, showProtectedDeleteOverrideModal: !state.showProtectedDeleteOverrideModal }
 
         case ConfigMapActionTypes.setExternalType:
             return { ...state, externalType: action.payload }

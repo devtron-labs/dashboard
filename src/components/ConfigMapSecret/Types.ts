@@ -160,7 +160,8 @@ export interface ConfigMapState {
     cmSecretState: CM_SECRET_STATE
     showDeleteModal: boolean
     showDraftSaveModal: boolean
-    showProtectedDeleteModal: boolean,
+    showProtectedDeleteModal: boolean
+    showProtectedDeleteOverrideModal: boolean
     draftPayload: any
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
@@ -193,6 +194,7 @@ export enum ConfigMapActionTypes {
     toggleDialog = 'toggleDialog',
     toggleDeleteModal = 'toggleDeleteModal',
     toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
+    toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
 }
 

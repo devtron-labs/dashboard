@@ -27,7 +27,7 @@ import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistor
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
-import { getCMSecret, getSecretList } from './service'
+import { getCMSecret, getConfigMapList, getSecretList } from './service'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -365,24 +365,25 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
-    const { appId } = useParams<{ appId }>()
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
 
     const getBaseData = async () => {
         try {
             setLoader(true)
-            if (data.unAuthorized && componentType === 'secret') {
-                const { result } = await getSecretList(appId)
-                if (result?.configData?.length) {
-                    setBaseData(result.configData.find((config) => config.name === data.name))
-                }
-            } else {
-                const { result } = await getCMSecret(componentType, id, appId, data?.name)
-                if (result?.configData?.length) {
-                    setBaseData(result.configData[0])
+            const { result } = await (componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
+            let _baseData
+            if (result?.configData?.length) {
+                _baseData = result.configData.find((config) => config.name === data.name)
+                if (componentType === 'secret' && !data.unAuthorized) {
+                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
+                    if (secretResult?.configData?.length) {
+                        _baseData = secretResult.configData[0]
+                    }
                 }
             }
+            setBaseData(_baseData)
         } catch (error) {
         } finally {
             setLoader(false)

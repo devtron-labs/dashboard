@@ -129,7 +129,7 @@ export default function DeploymentTemplateOptionsTab({
                                     !state.chartConfigLoading && !currentStateValues.isBasicLocked && codeEditorValue
                                 }
                                 isDisabled={currentStateValues.isBasicLocked}
-                                showTippy={currentStateValues.isBasicLocked}
+                                showTippy={!_unableToParseYaml && currentStateValues.isBasicLocked}
                                 tippyClass="default-white no-content-padding tippy-shadow"
                                 dataTestId="base-deployment-template-basic-button"
                                 tippyContent={
