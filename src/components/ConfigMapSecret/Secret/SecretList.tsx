@@ -122,7 +122,7 @@ export default function SecretList({
                     updatedConfigData.global = list.configData[index].global
                     updatedConfigData.overridden = list.configData[index].overridden
                     updatedConfigData.secretMode = false
-                    updatedConfigData.unAuthorized = false
+                    updatedConfigData.unAuthorized = result.configData[0].unAuthorized ?? false
                     delete updatedConfigData.isNew
                     list.configData[index] = updatedConfigData
                     return { ...list }

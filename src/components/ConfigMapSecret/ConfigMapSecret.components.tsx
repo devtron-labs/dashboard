@@ -168,7 +168,17 @@ export function ConfigMapSecretContainer({
                 _draftData.value.result
             ) {
                 if (_draftData.value.result.draftState === 3) {
-                    update(index, JSON.parse(_draftData.value.result.data))
+                    const dataFromDraft = JSON.parse(_draftData.value.result.data)
+                    let unAuthorized = false
+                    if (componentType === 'secret' && dataFromDraft.externalType === '') {
+                        for (const key in dataFromDraft.data) {
+                            if (dataFromDraft.data[key] === '') {
+                                unAuthorized = true
+                                break
+                            }
+                        }
+                    }
+                    update(index, { ...dataFromDraft, unAuthorized: unAuthorized })
                 } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
