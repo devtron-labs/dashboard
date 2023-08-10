@@ -169,10 +169,11 @@ export function ConfigMapSecretContainer({
             ) {
                 if (_draftData.value.result.draftState === 3) {
                     const dataFromDraft = JSON.parse(_draftData.value.result.data)
+                    const configData = dataFromDraft.configData[0]
                     let unAuthorized = false
-                    if (componentType === 'secret' && dataFromDraft.externalType === '') {
-                        for (const key in dataFromDraft.data) {
-                            if (dataFromDraft.data[key] === '') {
+                    if (componentType === 'secret' && configData.externalType === '') {
+                        for (const key in configData.data) {
+                            if (configData.data[key] === '') {
                                 unAuthorized = true
                                 break
                             }
