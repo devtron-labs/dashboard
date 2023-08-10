@@ -33,12 +33,11 @@ export default function DeploymentTemplateEditorView({
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
-    const [selectedOption, setSelectedOption] = useState<DeploymentChartOptionType>()
     const [optionOveriddeStatus, setOptionOveriddeStatus] = useState<Record<number, boolean>>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
-    const isDeleteDraftState = state.latestDraft?.action === 3 && selectedOption?.id === +envId
+    const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -85,27 +84,33 @@ export default function DeploymentTemplateEditorView({
     useEffect(() => {
         if (
             state.selectedChart &&
-            selectedOption &&
-            selectedOption.id !== -1 &&
-            !state.fetchedValues[selectedOption.id] &&
+            state.selectedCompareOption &&
+            state.selectedCompareOption.id !== -1 &&
+            state.selectedCompareOption?.id !== Number(envId) &&
+            !state.fetchedValues[state.selectedCompareOption.id] &&
             !state.chartConfigLoading &&
             !fetchingValues
         ) {
             setFetchingValues(true)
-            const isEnvOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
-            const isChartVersionOption = selectedOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
+            const isEnvOption = state.selectedCompareOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
+            const isChartVersionOption =
+                state.selectedCompareOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
             const _getDeploymentTemplate = isChartVersionOption
-                ? getDefaultDeploymentTemplate(appId, selectedOption.value)
+                ? getDefaultDeploymentTemplate(appId, state.selectedCompareOption.value)
                 : isEnvOverride || isEnvOption
-                ? getEnvDeploymentTemplate(appId, isEnvOption ? selectedOption.id : envId, selectedOption.value)
-                : getDeploymentTemplate(+appId, +selectedOption.value)
+                ? getEnvDeploymentTemplate(
+                      appId,
+                      isEnvOption ? state.selectedCompareOption.id : envId,
+                      state.selectedCompareOption.value,
+                  )
+                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
                     if (result) {
                         const _fetchedValues = {
                             ...state.fetchedValues,
-                            [selectedOption.id]: YAML.stringify(
+                            [state.selectedCompareOption.id]: YAML.stringify(
                                 processFetchedValues(result, isChartVersionOption, isEnvOverride || isEnvOption),
                             ),
                         }
@@ -118,7 +123,7 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
         }
-    }, [selectedOption, state.chartConfigLoading])
+    }, [state.selectedCompareOption, state.chartConfigLoading])
 
     useEffect(() => {
         return (): void => {
@@ -126,13 +131,20 @@ export default function DeploymentTemplateEditorView({
         }
     }, [state.openComparison])
 
+    const setSelectedOption = (selectedOption: DeploymentChartOptionType) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.selectedCompareOption,
+            payload: selectedOption,
+        })
+    }
+
     const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
         if (isChartVersionOption) {
             return result.defaultAppOverride
         } else if (_isEnvOption) {
             setOptionOveriddeStatus((prevStatus) => ({
                 ...prevStatus,
-                [selectedOption.id]: result.IsOverride,
+                [state.selectedCompareOption.id]: result.IsOverride,
             }))
             return result.environmentConfig?.envOverrideValues || result?.globalConfig
         } else {
@@ -167,7 +179,9 @@ export default function DeploymentTemplateEditorView({
             >
                 <CodeEditor
                     defaultValue={
-                        (selectedOption?.id === -1 ? defaultValue : state.fetchedValues[selectedOption?.id]) || ''
+                        (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
+                            ? defaultValue
+                            : state.fetchedValues[state.selectedCompareOption?.id]) || ''
                     }
                     value={value}
                     onChange={editorOnChange}
@@ -212,17 +226,19 @@ export default function DeploymentTemplateEditorView({
                                             isEnvOverride={isEnvOverride}
                                             environments={filteredEnvironments}
                                             charts={filteredCharts}
-                                            selectedOption={selectedOption}
+                                            selectedOption={state.selectedCompareOption}
                                             setSelectedOption={setSelectedOption}
                                             globalChartRef={globalChartRef}
                                             isDraftMode={!!state.latestDraft}
                                         />
                                         {!isDeleteDraftState &&
                                             isEnvOverride &&
-                                            selectedOption?.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key &&
-                                            typeof optionOveriddeStatus?.[selectedOption.id] !== 'undefined' && (
+                                            state.selectedCompareOption?.kind ===
+                                                DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key &&
+                                            typeof optionOveriddeStatus?.[state.selectedCompareOption.id] !==
+                                                'undefined' && (
                                                 <span className="flex right flex-grow-1 fs-12 fw-4 lh-20 dc__italic-font-style w-44">
-                                                    {optionOveriddeStatus[selectedOption.id]
+                                                    {optionOveriddeStatus[state.selectedCompareOption.id]
                                                         ? 'Overriden'
                                                         : 'Inheriting from base'}
                                                 </span>

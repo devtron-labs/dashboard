@@ -117,7 +117,7 @@ export interface CompareWithDropdownProps {
     charts: DeploymentChartOptionType[]
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
-    setSelectedOption: React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
     isDraftMode: boolean
 }
 
@@ -318,6 +318,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     showDraftOverriden: boolean
     isDraftOverriden: boolean
     unableToParseYaml: boolean
+    selectedCompareOption: DeploymentChartOptionType
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -357,6 +358,7 @@ export enum DeploymentConfigStateActionTypes {
     toggleDeleteOverrideDraftModal = 'toggleDeleteOverrideDraftModal',
     isDraftOverriden = 'isDraftOverriden',
     unableToParseYaml = 'unableToParseYaml',
+    selectedCompareOption = 'selectedCompareOption',
     multipleOptions = 'multipleOptions',
 }
 

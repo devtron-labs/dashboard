@@ -344,15 +344,26 @@ export default function DeploymentTemplateOverrideForm({
         return prepareDataToSave(state.data.globalConfig, true)
     }
 
+    const getCodeEditorValueForReadOnly = () => {
+        if (state.publishedState) {
+            if (
+                state.selectedCompareOption &&
+                state.selectedCompareOption?.id !== -1 &&
+                state.publishedState.isOverride
+            ) {
+                return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2 })
+            }
+        } else if (state.selectedCompareOption?.id === Number(envId)) {
+            return YAML.stringify(state.data.environmentConfig.envOverrideValues, { indent: 2 })
+        }
+
+        return YAML.stringify(state.data.globalConfig, { indent: 2 })
+    }
+
     const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
-            codeEditorValue = YAML.stringify(
-                state.publishedState.isOverride
-                    ? state.publishedState.environmentConfig.envOverrideValues
-                    : state.publishedState.globalConfig,
-                { indent: 2 },
-            )
+            codeEditorValue = getCodeEditorValueForReadOnly()
         } else if (isCompareAndApprovalState) {
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
@@ -397,13 +408,7 @@ export default function DeploymentTemplateOverrideForm({
                     <DeploymentTemplateEditorView
                         isEnvOverride={true}
                         value={getCodeEditorValue(false)}
-                        defaultValue={
-                            state.data && state.openComparison
-                                ? state.publishedState
-                                    ? getCodeEditorValue(true)
-                                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
-                                : ''
-                        }
+                        defaultValue={state.data && state.openComparison ? getCodeEditorValue(true) : ''}
                         editorOnChange={editorOnChange}
                         environmentName={environmentName}
                         readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
