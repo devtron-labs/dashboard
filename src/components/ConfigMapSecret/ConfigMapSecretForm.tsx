@@ -378,7 +378,11 @@ export const ConfigMapSecretForm = React.memo(
                 for (const error of err.errors) {
                     if (error.code === 423) {
                         if (actionType === 3) {
+                          if(state.dialog){
+                            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
+                          } else{
                             dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+                          }
                         } else {
                             const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
                             if (envId) {

@@ -162,6 +162,8 @@ export function ConfigMapSecretContainer({
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
                 }
+            } else if(cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED && !draftState){
+              update()
             }
             toggleCollapse(false)
             if (
