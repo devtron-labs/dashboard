@@ -348,6 +348,7 @@ export enum Nodes {
     VolumeSnapshotClass = 'VolumeSnapshotClass',
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
+    ClusterOverview = 'ClusterOverview'
 }
 export type NodeType = keyof typeof Nodes
 

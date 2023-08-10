@@ -39,6 +39,7 @@ export function K8SResourceList({
     clearSearch,
     isCreateModalOpen,
     addTab,
+    renderCallBackSync
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -332,6 +333,7 @@ export function K8SResourceList({
                 clearSearch={clearSearch}
                 isSearchInputDisabled={resourceListLoader}
                 isCreateModalOpen={isCreateModalOpen}
+                renderCallBackSync={renderCallBackSync}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>

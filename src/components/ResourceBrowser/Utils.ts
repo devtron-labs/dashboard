@@ -144,11 +144,19 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
     const childNode =  parentNode.child[0]
     let isResourceGroupPresent = false
     let groupedChild = null
-    if (nodeType) {
+
+    if (SIDEBAR_KEYS.overviewGVK.Kind === nodeType || SIDEBAR_KEYS.nodeGVK.Kind === nodeType && nodeType === 'terminal') {
+        isResourceGroupPresent = false
+        groupedChild = {
+            namespaced: false,
+            gvk: SIDEBAR_KEYS.nodeGVK.Kind === nodeType ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS.overviewGVK,
+            isGrouped: false,
+        }
+    }else if (nodeType) {
         for (const _parentNode of _k8SObjectList) {
             for (const _childNode of _parentNode.child) {
                 if (
-                    (_childNode.gvk.Kind.toLowerCase() === nodeType || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType || 'terminal' === nodeType) &&
+                    (_childNode.gvk.Kind.toLowerCase() === nodeType) &&
                     (_childNode.gvk.Group.toLowerCase() === group ||
                         SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
                         K8S_EMPTY_GROUP === group)

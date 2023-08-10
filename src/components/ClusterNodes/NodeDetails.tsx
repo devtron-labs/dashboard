@@ -621,9 +621,9 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     }
     const handleResourceClick = (e) => {
         const { name, namespace } = e.currentTarget.dataset
-        const beginpart = window.location.href.split('/clusters')[0]
-        const _url = `${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
-        window.open(_url, '_blank')
+        const url = location.pathname
+        const _url = `${url.split('/').slice(0, -3).join('/')}/pod/${K8S_EMPTY_GROUP}/${name}`
+        push(_url)
     }
     const renderPodHeaderCell = (
         columnName: string,

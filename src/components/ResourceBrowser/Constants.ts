@@ -175,6 +175,11 @@ export const SIDEBAR_KEYS = {
         Version: '',
         Kind: 'Node',
     },
+    overviewGVK: {
+        Group: '',
+        Version: '',
+        Kind: 'Cluster Overview',
+    }
 }
 
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13

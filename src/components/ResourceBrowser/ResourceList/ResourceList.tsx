@@ -24,7 +24,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
-import { OptionType } from '../../app/types'
+import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
     ERROR_SCREEN_LEARN_MORE,
@@ -134,8 +134,8 @@ export default function ResourceList() {
         prev: null,
         new: new AbortController(),
     })
-    const isOverview = nodeType === SIDEBAR_KEYS.overview.toLowerCase()
-    const isNodes = nodeType === SIDEBAR_KEYS.nodes.toLowerCase()
+    const isOverview = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
 
     useEffect(() => {
@@ -197,7 +197,7 @@ export default function ResourceList() {
 
     // Mark tab active on path change
     useEffect(() => {
-        if (nodeType === AppDetailsTabs.terminal) {
+        if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         } else if (selectedResource && !node) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
@@ -437,7 +437,7 @@ export default function ResourceList() {
 
                 const { parentNode, childNode, isResourceGroupPresent, groupedChild } = getParentAndChildNodes(
                     _k8SObjectList,
-                    nodeType,
+                    nodeType || SIDEBAR_KEYS.overviewGVK.Kind,
                     group,
                 )
 
@@ -445,7 +445,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${SIDEBAR_KEYS.overview.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
                     })
                 }
 
@@ -454,6 +454,7 @@ export default function ResourceList() {
                     namespaced: childNode.namespaced,
                     gvk: childNode.gvk,
                 }
+                
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected, true)
@@ -531,7 +532,22 @@ export default function ResourceList() {
         }
     }
 
-    const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
+    const renderRefreshBar = () => {
+        if (loader || showErrorState || !isStaleDataRef.current) {
+            return null
+        }
+        return <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
+            {!node && lastDataSyncTimeString && !resourceListLoader && (
+                <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
+                    <Warning className="icon-dim-20 mr-8" />
+                    <span>Last synced {lastDataSyncTimeString} minutes ago. The data might be stale. </span>
+                    <span className='cb-5 ml-4 fw-6 cursor' onClick={refreshData}>Sync now</span>
+                </div>
+            )}
+        </div>
+    }
+
+    const getResourceListData = async (retainSearched?: boolean): Promise<void> => {        
         try {
             setResourceListLoader(true)
             setResourceList(null)
@@ -747,6 +763,7 @@ export default function ResourceList() {
                 clearSearch={clearSearch}
                 isCreateModalOpen={showCreateResourceModal}
                 addTab={addTab}
+                renderCallBackSync={renderRefreshBar}
             />
         }
     }

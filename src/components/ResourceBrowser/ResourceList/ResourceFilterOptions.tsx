@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
-import {Option} from '../../v2/common/ReactSelect.utils'
+import { Option } from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -98,12 +98,10 @@ function ResourceFilterOptions({
     }
 
     return (
-        <div
-            className={`resource-filter-options-container flexbox ${
-                hideSearchInput ? 'dc__content-end' : 'dc__content-space'
-            } pt-16 pr-20 pb-12 pl-20 w-100`}
+        <>{typeof renderCallBackSync === 'function' && renderCallBackSync()}<div
+            className={`resource-filter-options-container flexbox ${hideSearchInput ? 'dc__content-end' : 'dc__content-space'
+                } pt-16 pr-20 pb-12 pl-20 w-100`}
         >
-            {typeof renderCallBackSync === 'function' && renderCallBackSync()}
             {!hideSearchInput && (
                 <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
                     <Search className="search__icon icon-dim-16" onClick={handleInputShortcut} />
@@ -145,8 +143,8 @@ function ResourceFilterOptions({
                             isNamespaceSelectDisabled
                                 ? ALL_NAMESPACE_OPTION
                                 : selectedResource?.namespaced
-                                ? selectedNamespace
-                                : NAMESPACE_NOT_APPLICABLE_OPTION
+                                    ? selectedNamespace
+                                    : NAMESPACE_NOT_APPLICABLE_OPTION
                         }
                         onChange={handleNamespaceChange}
                         blurInputOnSelect={true}
@@ -160,7 +158,7 @@ function ResourceFilterOptions({
                     />
                 </ConditionalWrap>
             </div>
-        </div>
+        </div></>
     )
 }
 

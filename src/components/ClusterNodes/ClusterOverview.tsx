@@ -41,7 +41,12 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                 const _clusterNote = response.result.clusterNote
                 let _moment: moment.Moment
                 let _date: string
-                const data = { ...descriptionData }
+                const data: DescriptionDataType = {
+                    descriptionText: defaultClusterNote,
+                    descriptionId:  0,
+                    descriptionUpdatedBy: '',
+                    descriptionUpdatedOn: ''
+                }
                 if (_clusterNote) {
                     data.descriptionText = _clusterNote.description
                     data.descriptionId = _clusterNote.id
@@ -49,11 +54,6 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                     _moment = moment(_clusterNote.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
                     _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : _clusterNote.updatedOn
                     data.descriptionUpdatedOn = _date
-                } else {
-                    data.descriptionText = defaultClusterNote
-                    data.descriptionId = 0
-                    data.descriptionUpdatedBy = ''
-                    data.descriptionUpdatedOn = ''
                 }
                 setDiscriptionData(data)
             }
@@ -91,40 +91,45 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                 <span className="fw-6 fs-13 cn-9 mr-16">
                     {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
                 </span>
-                <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>
             </div>
-            <div className="fw-6 pt-6 pb-6 pl-16 pr-16 dc__border-bottom">Message</div>
+            <div className="fw-6 pt-6 pb-6 pl-16 pr-16 flex left dc__border-bottom">
+                <div className='w-250 '>Error</div>
+                <span>Message</span>
+            </div>
             <div className='pl-16 pr-16 pt-8'>
-                        {clusterErrorList.map((error, index) => (
-                            <div key={`error-${index}`} className="fw-4 fs-13 cn-9 mb-8">
-                                {error.errorText}
-                                {error.errorType === ERROR_TYPE.OTHER ? (
-                                    <span
-                                        className="cb-5 pointer"
-                                        onClick={(event) => {
-                                            setCustomFilter(error.errorType, error.filterText.join(','))
-                                        }}
-                                    >
-                                        &nbsp; View nodes
-                                    </span>
-                                ) : (
-                                    error.filterText.map((filter, index) => (
-                                        <>
-                                            &nbsp;
-                                            {index > 0 && ', '}
-                                            <span
-                                                className="cb-5 pointer"
-                                                onClick={(event) => {
-                                                    setCustomFilter(error.errorType, filter)
-                                                }}
-                                            >
-                                                {filter}
-                                            </span>
-                                        </>
-                                    ))
-                                )}
-                            </div>
-                        ))}
+                {clusterErrorList.map((error, index) => (
+                    <div className='flex left'>
+                        <div className='w-250'>{error.errorType === ERROR_TYPE.OTHER ? 'Memory pressure' : `${ clusterErrorTitle }`}</div>
+                        <div key={`error-${index}`} className="fw-4 fs-13 cn-9">
+                            {error.errorText}
+                            {error.errorType === ERROR_TYPE.OTHER ? (
+                                <span
+                                    className="cb-5 pointer"
+                                    onClick={(event) => {
+                                        setCustomFilter(error.errorType, error.filterText.join(','))
+                                    }}
+                                >
+                                    &nbsp; View nodes
+                                </span>
+                            ) : (
+                                error.filterText.map((filter, index) => (
+                                    <>
+                                        &nbsp;
+                                        {index > 0 && ', '}
+                                        <span
+                                            className="cb-5 pointer"
+                                            onClick={(event) => {
+                                                setCustomFilter(error.errorType, filter)
+                                            }}
+                                        >
+                                            {filter}
+                                        </span>
+                                    </>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                ))}
                     </div>
         </div>
     }
