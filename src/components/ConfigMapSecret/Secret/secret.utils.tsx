@@ -456,13 +456,15 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
     const isEsoSecretData: boolean =
         (tempEsoSecretData?.secretStore || tempEsoSecretData?.secretStoreRef) && tempEsoSecretData.esoData
     let draftUnAuthorized = draftMode
-    if(draftMode && configMapSecretData?.data){
+    if(draftMode && configMapSecretData?.externalType === ''){
       for (const key in configMapSecretData.data) {
         if(configMapSecretData.data[key]!==""){
           draftUnAuthorized=false
           break
         }
       }
+    } else{
+      draftUnAuthorized= false
     }
     return {
         externalType: configMapSecretData?.externalType ?? '',
