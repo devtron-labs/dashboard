@@ -375,9 +375,9 @@ export const EMPTY_STATE_STATUS = {
     CD_MATERIAL: {
         TITLE: 'No Image Available',
     },
-    BUILD_NOT_FOUND: {
-        TITLE: 'Build not found',
-        SUBTITLE: 'The build you are looking for does not exist',
+    CI_DETAILS_NOT_FOUND: {
+        TITLE: 'Not found',
+        SUBTITLE: 'you are looking for does not exist',
     },
     TRIGGER_NOT_FOUND: {
         TITLE: 'Trigger not found',

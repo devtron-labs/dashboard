@@ -339,8 +339,8 @@ export const Details = ({
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState
-                title={EMPTY_STATE_STATUS.BUILD_NOT_FOUND.TITLE}
-                subTitle={EMPTY_STATE_STATUS.BUILD_NOT_FOUND.SUBTITLE}
+                title={`${isJobView ? 'Job' : 'Build'} ID ${EMPTY_STATE_STATUS.CI_DETAILS_NOT_FOUND.TITLE}`}
+                subTitle={`The ${isJobView ? 'Job' : 'Build'} ID ${EMPTY_STATE_STATUS.CI_DETAILS_NOT_FOUND.SUBTITLE}`}
             />
         )
     }
