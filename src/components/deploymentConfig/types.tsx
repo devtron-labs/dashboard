@@ -106,17 +106,18 @@ export interface DeploymentConfigFormCTAProps {
     disableCheckbox?: boolean
     disableButton?: boolean
     toggleAppMetrics: () => void
-    isDraftMode: boolean
+    isPublishedMode: boolean
     reload: () => void
 }
 
 export interface CompareWithDropdownProps {
+    envId: string
     isEnvOverride: boolean
     environments: DeploymentChartOptionType[]
     charts: DeploymentChartOptionType[]
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
-    setSelectedOption: React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
     isDraftMode: boolean
 }
 
@@ -181,7 +182,9 @@ export interface DeploymentConfigContextType {
     isUnSet: boolean
     state: DeploymentConfigStateWithDraft
     dispatch: React.Dispatch<DeploymentConfigStateAction>
+    isConfigProtectionEnabled: boolean
     environments: AppEnvironment[]
+    reloadEnvironments: () => void
     changeEditorMode: () => void
 }
 
@@ -301,17 +304,21 @@ export interface DeploymentConfigStateType {
     dialog: boolean
     latestAppChartRef: any
     latestChartRef: any
+    isOverride: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
     draftValues: string,
     showSaveChangsModal: boolean
-    isConfigProtectionEnabled: boolean
     allDrafts: any[]
     latestDraft: any
     showComments: boolean
     showDeleteOverrideDraftModal: boolean
+    showDraftOverriden: boolean
+    isDraftOverriden: boolean
+    unableToParseYaml: boolean
+    selectedCompareOption: DeploymentChartOptionType
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -346,8 +353,12 @@ export enum DeploymentConfigStateActionTypes {
     reset = 'reset',
     toggleSaveChangesModal = 'toggleSaveChangesModal',
     allDrafts = 'allDrafts',
+    publishedState = 'publishedState',
     toggleDraftComments = 'toggleDraftComments',
     toggleDeleteOverrideDraftModal = 'toggleDeleteOverrideDraftModal',
+    isDraftOverriden = 'isDraftOverriden',
+    unableToParseYaml = 'unableToParseYaml',
+    selectedCompareOption = 'selectedCompareOption',
     multipleOptions = 'multipleOptions',
 }
 

@@ -91,7 +91,9 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
             getAppConfigStatus(+appId, isJobView),
             getWorkflowList(appId),
             getAppOtherEnvironmentMin(appId),
-            typeof getConfigProtections === 'function' && !isJobView ? getConfigProtections(Number(appId)) : { result: null },
+            typeof getConfigProtections === 'function' && !isJobView
+                ? getConfigProtections(Number(appId))
+                : { result: null },
         ])
             .then(([configStatusRes, workflowRes, envResult, configProtectionsResp]) => {
                 const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
@@ -110,13 +112,15 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     }
                 }
                 const updatedEnvs =
-                    envResult.result?.map((env) => {
-                        let envData = { ...env, isProtected: false }
-                        if (envProtectMap[env.environmentId]) {
-                            envData.isProtected = true
-                        }
-                        return envData
-                    }) || []
+                    envResult.result
+                        ?.map((env) => {
+                            let envData = { ...env, isProtected: false }
+                            if (envProtectMap[env.environmentId]) {
+                                envData.isProtected = true
+                            }
+                            return envData
+                        })
+                        ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
 
                 setState({
@@ -148,10 +152,12 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
 
     function reloadWorkflows() {
         getWorkflowList(appId).then((response) => {
-            setState({
-                ...state,
-                canDeleteApp: response.result.workflows.length === 0,
-                workflowsRes: response.result,
+            setState((prevState) => {
+                return {
+                    ...prevState,
+                    canDeleteApp: response.result.workflows.length === 0,
+                    workflowsRes: response.result,
+                }
             })
         })
     }
@@ -252,7 +258,9 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     function reloadEnvironments() {
         Promise.all([
             getAppOtherEnvironmentMin(appId),
-            typeof getConfigProtections === 'function' && !isJobView ? getConfigProtections(Number(appId)) : { result: null },
+            typeof getConfigProtections === 'function' && !isJobView
+                ? getConfigProtections(Number(appId))
+                : { result: null },
         ])
             .then(([envResult, configProtectionsResp]) => {
                 const envProtectMap: Record<number, boolean> = {}
@@ -262,19 +270,23 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     }
                 }
                 const updatedEnvs =
-                    envResult.result?.map((env) => {
-                        let envData = { ...env, isProtected: false }
-                        if (envProtectMap[env.environmentId]) {
-                            envData.isProtected = true
-                        }
-                        return envData
-                    }) || []
+                    envResult.result
+                        ?.map((env) => {
+                            let envData = { ...env, isProtected: false }
+                            if (envProtectMap[env.environmentId]) {
+                                envData.isProtected = true
+                            }
+                            return envData
+                        })
+                        ?.sort((envA, envB) => envA.environmentName.localeCompare(envB.environmentName)) || []
                 const isBaseConfigProtectionEnabled = envProtectMap[-1] ?? false
-                setState({
-                    ...state,
-                    environmentList: updatedEnvs,
-                    isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                    configProtectionData: configProtectionsResp.result ?? [],
+                setState((prevState) => {
+                    return {
+                        ...prevState,
+                        environmentList: updatedEnvs,
+                        isBaseConfigProtected: isBaseConfigProtectionEnabled,
+                        configProtectionData: configProtectionsResp.result ?? [],
+                    }
                 })
             })
             .catch((errors) => {
@@ -430,7 +442,9 @@ function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean
             {item.isLocked && (
                 <Lock className="app-compose__nav-icon icon-dim-20" data-testid={`${linkDataTestName}-lockicon`} />
             )}
-            {!item.isLocked && isBaseConfigProtected && item.isProtectionAllowed && <ProtectedIcon className="icon-dim-16" />}
+            {!item.isLocked && isBaseConfigProtected && item.isProtectionAllowed && (
+                <ProtectedIcon className="icon-dim-20 fcv-5" />
+            )}
         </NavLink>
     )
 }

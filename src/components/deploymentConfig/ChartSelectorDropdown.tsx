@@ -61,7 +61,7 @@ export default function ChartSelectorDropdown({
 
     if (!isUnSet) {
         return (
-            <span className="fs-13 fw-6 cn-9 flex pointer" data-testid="select-chart-type-dropdown">
+            <span className="fs-13 fw-6 cn-9 flex" data-testid="select-chart-type-dropdown">
                 {selectedChart?.name}
             </span>
         )

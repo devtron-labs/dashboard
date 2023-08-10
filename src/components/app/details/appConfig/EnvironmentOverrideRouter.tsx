@@ -9,6 +9,7 @@ import {
     InfoColourBar,
     PopupMenu,
     OptionType,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     addJobEnvironment,
@@ -211,7 +212,7 @@ const EnvOverrideRoute = ({
                     {envOverride.environmentName}
                 </div>
                 <div className="flex">
-                    {isEnvProtected && <ProtectedIcon className="icon-dim-16" />}
+                    {isEnvProtected && <ProtectedIcon className="icon-dim-20 fcv-5" />}
                     {isJobView && deletePopUpMenu()}
                     {isJobView && showDelete && showDeleteDialog(deletePipeline)}
                 </div>
@@ -260,6 +261,7 @@ export default function EnvironmentOverrideRouter({
     const [jobEnvs, setJobEnvs] = useState([])
     const [addEnvironment, setEnvironmentView] = useState(true)
     const [ciPipelines, setCIPipelines] = useState([])
+    const [isEnvLoading, setIsEnvLoading] = useState(false)
 
     useEffect(() => {
         if (
@@ -284,37 +286,53 @@ export default function EnvironmentOverrideRouter({
     }, [appId])
 
     const getJobOtherEnvironment = async () => {
-        const [{ result: envListMinRes }, { result: ciConfigRes }, { result: jobEnvRes }] = await Promise.all([
-            getEnvironmentListMinPublic(),
-            getCIConfig(Number(appId)),
-            getJobOtherEnvironmentMin(appId),
-        ])
-        let list = []
-        envListMinRes?.forEach((env) => {
-            if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
-                list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
-            }
-        })
-        setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
-        setCIPipelines(ciConfigRes?.ciPipelines)
-        setJobEnvs(jobEnvRes ?? [])
+        setIsEnvLoading(true)
+        try {
+            const [{ result: envListMinRes }, { result: ciConfigRes }, { result: jobEnvRes }] = await Promise.all([
+                getEnvironmentListMinPublic(),
+                getCIConfig(Number(appId)),
+                getJobOtherEnvironmentMin(appId),
+            ])
+            let list = []
+            envListMinRes?.forEach((env) => {
+                if (env.cluster_name !== 'default_cluster' && env.isClusterCdActive) {
+                    list.push({ id: env.id, clusterName: env.cluster_name, name: env.environment_name })
+                }
+            })
+            setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
+            setCIPipelines(ciConfigRes?.ciPipelines)
+            setJobEnvs(jobEnvRes ?? [])
+        } catch (error) {
+        } finally {
+            setIsEnvLoading(false)
+        }
     }
 
-    const selectEnvironment = (selection) => {
-        let requestBody = { envId: selection.id, appId: appId }
-        addJobEnvironment(requestBody)
-            .then((response) => {
-                toast.success('Saved Successfully')
-                reloadEnvironments()
-                setEnvironmentView(!addEnvironment)
-            })
-            .catch((error) => {
-                showError(error)
-            })
+    const selectEnvironment = async (selection) => {
+        try {
+            setIsEnvLoading(true)
+            setEnvironmentView(!addEnvironment)
+            let requestBody = { envId: selection.id, appId: appId }
+            await addJobEnvironment(requestBody)
+            toast.success('Saved Successfully')
+            getJobOtherEnvironment()
+        } catch (error) {
+            showError(error)
+        } finally {
+            setIsEnvLoading(false)
+        }
     }
 
     const handleAddEnvironment = () => {
         setEnvironmentView(!addEnvironment)
+    }
+
+    const reloadEnvData = () => {
+        if (isJobView) {
+            getJobOtherEnvironment()
+        } else {
+            reloadEnvironments()
+        }
     }
 
     const ValueContainer = (props): JSX.Element => {
@@ -388,7 +406,7 @@ export default function EnvironmentOverrideRouter({
                                     key={env.environmentName}
                                     isJobView={isJobView}
                                     ciPipelines={ciPipelines}
-                                    reload={reloadEnvironments}
+                                    reload={reloadEnvData}
                                     appId={appId}
                                     workflowsRes={workflowsRes}
                                     isEnvProtected={env.isProtected}
@@ -433,7 +451,11 @@ export default function EnvironmentOverrideRouter({
                     </div>
                 </div>
             )}
-            <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>
+            {isEnvLoading ? (
+                <Progressing styles={{ height: '80px' }} />
+            ) : (
+                <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>
+            )}
         </div>
     )
 }

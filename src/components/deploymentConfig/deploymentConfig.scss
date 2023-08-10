@@ -68,7 +68,7 @@
 
         .white-card__deployment-config {
             height: calc(100% - 37px);
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 50% 50%;
         }
 
         .white-card__deployment-config,
@@ -79,6 +79,12 @@
                 .form-cta-section {
                     .form-app-metrics-cta {
                         width: 38%;
+                    }
+
+                    &.tippy-over {
+                        .tippy-box {
+                            top: 42px;
+                        }
                     }
                 }
             }
@@ -101,10 +107,17 @@
         }
 
         .deployment-template-override-form {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 50% 50%;
 
             &.comparison-view {
-                height: calc(100% - 40px);
+                height: calc(100% - 38px);
+
+                .delete-override-state {
+                    .react-monaco-editor-container {
+                        height: calc(100vh - 275px) !important;
+                        margin-top: 52px;
+                    }
+                }
             }
 
             &.readme-view {
@@ -113,7 +126,7 @@
 
             .dt-readme {
                 .dt-readme-markdown {
-                    height: calc(100vh - 230px);
+                    height: calc(100vh - 220px);
                     overflow: scroll;
                 }
             }
@@ -187,7 +200,7 @@
         }
 
         .dt-readme-markdown {
-            height: calc(100vh - 232px);
+            height: calc(100vh - 220px);
             overflow: scroll;
         }
     }
@@ -264,7 +277,7 @@
 
 .form__row--gui-container {
     &.gui {
-        height: calc(100% - 160px);
+        height: calc(100% - 140px);
 
         &.read-only-mode {
             height: calc(100% - 128px);
@@ -295,13 +308,13 @@
 }
 
 .form__row--code-editor-container {
-    height: calc(100% - 124px);
+    height: calc(100% - 104px);
     display: grid;
     grid-template-rows: 32px 1fr;
     overflow: hidden;
 
     &.read-only-mode {
-        height: calc(100% - 92px);
+        height: calc(100% - 82px);
     }
 
     &.form__row {
@@ -368,7 +381,7 @@
     }
 
     .readme {
-        height: calc(100% - 40px);
+        height: calc(100% - 38px);
         overflow-y: scroll;
         min-height: 0;
     }
@@ -431,10 +444,10 @@
 
     .deployment-template-override-form {
         .form__row--code-editor-container {
-            height: calc(100% - 195px);
+            height: calc(100% - 175px);
 
             &.read-only-mode {
-                height: calc(100% - 162px);
+                height: calc(100% - 155px);
             }
         }
 
@@ -446,10 +459,10 @@
 
         .form__row--gui-container {
             &.gui {
-                height: calc(100% - 220px);
+                height: calc(100% - 210px);
 
                 &.read-only-mode {
-                    height: calc(100% - 188px);
+                    height: calc(100% - 158px);
                 }
             }
         }

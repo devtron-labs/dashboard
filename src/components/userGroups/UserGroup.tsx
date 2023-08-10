@@ -812,10 +812,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
     const multiRole = permission.action.value.split(',')
+    const configApproverRoleIndex = multiRole.indexOf(CONFIG_APPROVER_ACTION.value)
+    const primaryActionRoleIndex = configApproverRoleIndex === 0 ? 1 : 0
     const primaryActionRole = {
-        label: multiRole[0],
-        value: multiRole[0],
-        configApprover: multiRole[1] ? !!multiRole[1] : permission.action.configApprover,
+        label: multiRole[primaryActionRoleIndex],
+        value: multiRole[primaryActionRoleIndex],
+        configApprover: multiRole[configApproverRoleIndex]
+            ? !!multiRole[configApproverRoleIndex]
+            : permission.action.configApprover,
     }
 
     const [possibleRoles, setPossibleRoles] = useState([])
@@ -1634,7 +1638,10 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
     switch (entity) {
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
+                return dataList.filter(
+                    (role) =>
+                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                )
             } else {
                 return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
             }

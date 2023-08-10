@@ -53,11 +53,12 @@ export interface ConfigMapListProps {
     parentName?: string
     parentState?: ComponentStates
     setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
+    reloadEnvironments?: () => void
 }
 
 export interface ConfigMapSecretFormProps {
     appChartRef: { id: number; version: string; name: string }
-    updateCollapsed: (collapse?: boolean)=> void
+    updateCollapsed: (collapse?: boolean) => void
     configMapSecretData: any
     id
     componentType: string
@@ -69,6 +70,7 @@ export interface ConfigMapSecretFormProps {
     isProtectedView: boolean
     draftMode: boolean
     latestDraftData: any
+    reloadEnvironments?: () => void
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
@@ -100,6 +102,23 @@ export interface ConfigMapSecretProps {
     toggleDraftComments?: (data: DraftDetailsForCommentDrawerType) => void
     reduceOpacity?: boolean
     parentName?: string
+    reloadEnvironments?: () => void
+}
+
+export interface ProtectedConfigMapSecretDetailsProps {
+    appChartRef: { id: number; version: string; name: string }
+    updateCollapsed: (collapse?: boolean) => void
+    data: any
+    id: number
+    componentType: string
+    update: (...args) => void
+    index: number
+    cmSecretStateLabel: CM_SECRET_STATE
+    isJobView: boolean
+    selectedTab
+    draftData
+    parentName
+    reloadEnvironments?: () => void
 }
 
 interface ValueWithError {
@@ -141,6 +160,7 @@ export interface ConfigMapState {
     cmSecretState: CM_SECRET_STATE
     showDeleteModal: boolean
     showDraftSaveModal: boolean
+    showProtectedDeleteModal: boolean,
     draftPayload: any
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
@@ -151,7 +171,6 @@ export enum ConfigMapActionTypes {
     overrideLoading = 'overrideLoading',
     success = 'success',
     error = 'error',
-    toggleDialog = 'toggleDialog',
     setExternal = 'setExternal',
     setSelectedType = 'setSelectedType',
     setVolumeMountPath = 'setVolumeMountPath',
@@ -165,14 +184,15 @@ export enum ConfigMapActionTypes {
     setExternalType = 'setExternalType',
     setSecretDataYaml = 'setSecretDataYaml',
     setEsoYaml = 'setEsoYaml',
-    setEsoData = 'setEsoData',
     setSecretData = 'setSecretData',
     setRoleARN = 'setRoleARN',
     setCodeEditorRadio = 'setCodeEditorRadio',
     updateCurrentData = 'updateCurrentData',
     toggleSecretMode = 'toggleSecretMode',
     toggleUnAuthorized = 'toggleUnAuthorized',
-    setShowDeleteModal = 'setShowDeleteModal',
+    toggleDialog = 'toggleDialog',
+    toggleDeleteModal = 'toggleDeleteModal',
+    toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
 }
 

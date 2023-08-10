@@ -334,6 +334,10 @@ a:focus {
     left: 35px;
 }
 
+.dc__left-150 {
+    left: 150px;
+}
+
 .dc__right-20 {
     right: 20px;
 }
@@ -960,7 +964,7 @@ button.anchor {
 .dc__configuration-list {
     display: grid;
     grid-template-columns: 24px 1fr 200px;
-    grid-column-gap: 16px;
+    grid-column-gap: 10px;
     .tag {
         border: 1px solid var(--N200);
         height: 20px;
@@ -1257,8 +1261,8 @@ button.anchor {
             }
 
             &:first-child input + .radio__item-label {
-                border-top-left-radius: 4px;
-                border-bottom-left-radius: 4px;
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
             }
 
             &:last-child input + .radio__item-label {
@@ -2659,6 +2663,10 @@ textarea,
     width: 25%;
 }
 
+.w-44 {
+    width: 44%;
+}
+
 .w-50 {
     width: 50%;
 }
@@ -3174,6 +3182,12 @@ textarea,
 .dc__no-svg-fill {
     path {
         fill: none !important;
+    }
+}
+
+.dc__no-svg-stroke {
+    path {
+        stroke: none !important;
     }
 }
 

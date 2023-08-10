@@ -1,8 +1,3 @@
-export const EXTERNAL_TYPES = {
-    '': 'Kubernetes ConfigMap',
-    KubernetesConfigMap: 'Kubernetes External ConfigMap',
-}
-
 export const EXTERNAL_INFO_TEXT = {
     secret: {
         title: 'Mount Existing Kubernetes Secret',

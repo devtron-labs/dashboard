@@ -22,6 +22,7 @@ export default function ConfigMapList({
     parentName,
     parentState,
     setParentState,
+    reloadEnvironments,
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [configMap, setConfigMap] = useState<{ id: number; configData: any[]; appId: number }>()
@@ -34,6 +35,9 @@ export default function ConfigMapList({
         setConfigMapLoading(true)
         setConfigMap(null)
         init(true)
+        if (!isJobView) {
+            reloadEnvironments()
+        }
     }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
@@ -96,8 +100,39 @@ export default function ConfigMapList({
         }
     }
 
-    function update() {
-        init()
+    function update(index, result) {
+        if ((index === undefined || index === null) && !result) {
+            init()
+            return
+        }
+        try {
+            setConfigMap((cmList) => {
+                let configData = cmList.configData
+                if (result === null) {
+                    //delete
+                    configData.splice(index, 1)
+                    cmList.configData = [...configData]
+                    return { ...cmList }
+                } else if (typeof index !== 'number' && Array.isArray(result.configData)) {
+                    //insert after create success
+                    configData.unshift({
+                        ...result.configData[0],
+                        data: result.configData[0].data,
+                    })
+                    cmList.configData = [...configData]
+                    return { ...cmList }
+                } else {
+                    const updatedConfigData = result.configData[0]
+                    updatedConfigData.global = cmList.configData[index].global
+                    updatedConfigData.overridden = cmList.configData[index].overridden
+                    updatedConfigData.secretMode = false
+                    updatedConfigData.unAuthorized = false
+                    delete updatedConfigData.isNew
+                    cmList.configData[index] = updatedConfigData
+                    return { ...cmList }
+                }
+            })
+        } catch (err) {}
     }
 
     if (parentState === ComponentStates.loading || !configMap || configMapLoading)
@@ -132,6 +167,8 @@ export default function ConfigMapList({
                         isJobView={isJobView}
                         isProtected={isProtected}
                         toggleDraftComments={toggleDraftComments}
+                        reduceOpacity={!!selectedDraft}
+                        reloadEnvironments={reloadEnvironments}
                     />
                     <div>
                         {configMap?.configData.map((cm, idx) => {
@@ -151,6 +188,7 @@ export default function ConfigMapList({
                                     toggleDraftComments={toggleDraftComments}
                                     reduceOpacity={selectedDraft && selectedDraft.index !== idx}
                                     parentName={parentName}
+                                    reloadEnvironments={reloadEnvironments}
                                 />
                             )
                         })}

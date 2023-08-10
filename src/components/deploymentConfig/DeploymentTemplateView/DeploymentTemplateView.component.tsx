@@ -21,9 +21,9 @@ import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles } from '../const
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import moment from 'moment'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
+import { handleConfigProtectionError } from '../DeploymentConfig.utils'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -47,14 +47,7 @@ export const ChartTypeVersionOptions = ({
     }
 
     return (
-        <div
-            className={`chart-type-version-options pr-16 pt-4 pb-4 ${
-                disableVersionSelect ||
-                (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT)
-                    ? ''
-                    : 'dc__border-right'
-            }`}
-        >
+        <div className="chart-type-version-options pr-16 pt-4 pb-4">
             <div className="chart-type-options">
                 <span className="fs-13 fw-4 cn-9">Chart type:</span>
                 <ChartSelectorDropdown
@@ -103,7 +96,7 @@ const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
     return (
         <div className="flex left column">
             <span className="w-100 dc__ellipsis-right">
-                {option.label}&nbsp;{option.version && `(${option.version})`}
+                {option.label}&nbsp;{option.version && `(v${option.version})`}
             </span>
         </div>
     )
@@ -113,7 +106,7 @@ const customValueContainer = (props): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
             {props.selectProps.value?.label}&nbsp;
-            {props.selectProps.value?.version && `(${props.selectProps.value.version})`}
+            {props.selectProps.value?.version && `(v${props.selectProps.value.version})`}
             {React.cloneElement(props.children[1], {
                 style: { position: 'absolute' },
             })}
@@ -122,6 +115,7 @@ const customValueContainer = (props): JSX.Element => {
 }
 
 export const CompareWithDropdown = ({
+    envId,
     isEnvOverride,
     environments,
     charts,
@@ -142,17 +136,23 @@ export const CompareWithDropdown = ({
         label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
         version: globalChartRef?.version || '',
         kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.key,
-    }
+    } as DeploymentChartOptionType
 
     useEffect(() => {
         _initOptions()
     }, [environments, charts])
 
     const getSelectedOption = () => {
-        if (isEnvOverride || isDraftMode) {
-            return baseTemplateOption as DeploymentChartOptionType
+        if (isEnvOverride) {
+            const currentEnv = environments.find((env) => +envId === env.id)
+            if (isDraftMode && currentEnv?.value) {
+                return currentEnv
+            }
+            return baseTemplateOption
+        } else if (isDraftMode) {
+            return baseTemplateOption
         } else if (environments.length > 0) {
-            return environments[0]
+            return environments.filter((env) => env.value)[0] ?? baseTemplateOption
         } else {
             return charts[0]
         }
@@ -182,9 +182,7 @@ export const CompareWithDropdown = ({
         })
 
         setGroupedOptions(_groupOptions)
-        if (!selectedOption) {
-            setSelectedOption(getSelectedOption())
-        }
+        setSelectedOption(getSelectedOption())
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
@@ -257,11 +255,11 @@ export const getCodeEditorHeight = (
     showReadme: boolean,
 ) => {
     if (openComparison || showReadme) {
-        return 'calc(100vh - 232px)'
+        return 'calc(100vh - 220px)'
     } else if (isEnvOverride) {
-        return 'calc(100vh - 301px)'
+        return 'calc(100vh - 272px)'
     } else {
-        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 269px)'
+        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
     }
 }
 
@@ -273,16 +271,20 @@ export const renderEditorHeading = (
     selectedChart: DeploymentChartVersionType,
     handleOverride: (e: any) => Promise<void>,
     latestDraft: any,
+    isPublishedOverriden: boolean,
+    isDeleteDraftState: boolean,
 ) => {
     return (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
                 {!readOnly && <Edit className="icon-dim-16 mr-10" />}
                 {!!latestDraft ? (
-                    <span className="fw-6 mr-4">Last saved draft</span>
+                    <span className="fw-6 mr-4">
+                        Last saved draft{selectedChart ? ` (v${selectedChart.version})` : ''}
+                    </span>
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
-                        selectedChart ? `(${selectedChart.version})` : ''
+                        selectedChart ? `(v${selectedChart.version})` : ''
                     }`
                 )}
                 {isEnvOverride && readOnly && (
@@ -296,15 +298,22 @@ export const renderEditorHeading = (
                     </Tippy>
                 )}
             </div>
-            {isEnvOverride && (
-                <span
-                    data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
-                    className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
-                    onClick={handleOverride}
-                >
-                    {overridden ? 'Delete override' : 'Allow override'}
-                </span>
-            )}
+            <div className="flex right dc__gap-8">
+                {!isDeleteDraftState && isEnvOverride && (
+                    <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
+                        {overridden ? 'Overriden' : 'Inheriting from base'}
+                    </span>
+                )}
+                {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (
+                    <span
+                        data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
+                        className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
+                        onClick={handleOverride}
+                    >
+                        {overridden ? 'Delete override' : 'Allow override'}
+                    </span>
+                )}
+            </div>
         </div>
     )
 }
@@ -374,7 +383,8 @@ export const SaveConfirmationDialog = ({ save }) => {
 }
 
 export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
-    const { state, dispatch } = useContext(DeploymentConfigContext)
+    const { state, dispatch, reloadEnvironments } = useContext(DeploymentConfigContext)
+    const [apiInProgress, setApiInProgress] = useState(false)
 
     const closeConfirmationDialog = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
@@ -382,15 +392,18 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
 
     async function handleDelete() {
         try {
+            setApiInProgress(true)
             await deleteDeploymentTemplate(state.data.environmentConfig.id, Number(appId), Number(envId))
             toast.success('Restored to global.', { autoClose: null })
             dispatch({
                 type: DeploymentConfigStateActionTypes.duplicate,
                 payload: null,
             })
-            initialise(true)
+            initialise(true, true)
         } catch (err) {
+            handleConfigProtectionError(3, err, dispatch, reloadEnvironments)
         } finally {
+            setApiInProgress(false)
             closeConfirmationDialog()
         }
     }
@@ -408,6 +421,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
                     type="button"
                     className="cta cancel"
                     onClick={closeConfirmationDialog}
+                    disabled={apiInProgress}
                 >
                     Cancel
                 </button>
@@ -416,8 +430,9 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
                     type="button"
                     className="cta delete"
                     onClick={handleDelete}
+                    disabled={apiInProgress}
                 >
-                    Confirm
+                    {apiInProgress ? <Progressing size={16} /> : 'Confirm'}
                 </button>
             </ConfirmationDialog.ButtonGroup>
         </ConfirmationDialog>

@@ -48,7 +48,7 @@ import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ResizableTextarea } from '../ConfigMapSecret/ConfigMapSecret.components'
+
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const KubectlProxyCheckBox = importComponentFromFELibrary('KubectlProxyCheckBox')
 

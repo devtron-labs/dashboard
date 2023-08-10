@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, Reducer } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer, useState } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
@@ -36,6 +36,7 @@ export default function DeploymentTemplateOverride({
     environments,
     environmentName,
     isProtected,
+    reloadEnvironments,
 }: DeploymentTemplateOverrideProps) {
     const { currentServerInfo } = useContext(mainContext)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -47,20 +48,15 @@ export default function DeploymentTemplateOverride({
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
-        dispatch({ type: DeploymentConfigStateActionTypes.loading, payload: true })
+        reloadEnvironments()
         initialise()
     }, [envId])
 
     useEffect(() => {
-        if (!state.chartConfigLoading && state.selectedChartRefId) {
+        if (state.selectedChart) {
             fetchDeploymentTemplate()
         }
-    }, [state.chartConfigLoading])
-
-    useEffectAfterMount(() => {
-        if (!state.selectedChartRefId) return
-        initialise(false, false, true)
-    }, [state.selectedChartRefId])
+    }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
         const payload = {
@@ -69,7 +65,10 @@ export default function DeploymentTemplateOverride({
         }
 
         if (clearPublishedState) {
-            payload.selectedTabIndex = state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex
+            payload.publishedState = null
+            payload.selectedTabIndex = 1
+            payload.openComparison = false
+            payload.showReadme = false
             payload.allDrafts = []
             payload.latestDraft = null
         }
@@ -86,8 +85,11 @@ export default function DeploymentTemplateOverride({
         updateChartRefOnly?: boolean,
     ) {
         dispatch({
-            type: DeploymentConfigStateActionTypes.chartConfigLoading,
-            payload: true,
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload: {
+                chartConfigLoading: true,
+                loading: true,
+            },
         })
         chartRefAutocomplete(Number(appId), Number(envId))
             .then((chartRefResp) => {
@@ -106,13 +108,9 @@ export default function DeploymentTemplateOverride({
                     latestChartRef: chartRefResp.result.latestChartRef,
                 }
 
-                if (!updateChartRefOnly) {
-                    chartRefsData['isConfigProtectionEnabled'] = isProtected
-                }
-
                 if (!updateChartRefOnly && isProtected && typeof getAllDrafts === 'function') {
                     fetchAllDrafts(chartRefsData)
-                } else if (!state.selectedChartRefId) {
+                } else {
                     updateRefsData(chartRefsData)
                 }
 
@@ -133,10 +131,6 @@ export default function DeploymentTemplateOverride({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.chartConfigLoading,
-            payload: true,
-        })
         getAllDrafts(Number(appId), Number(envId), 3)
             .then((allDraftsResp) => {
                 if (allDraftsResp.result) {
@@ -169,6 +163,7 @@ export default function DeploymentTemplateOverride({
                 const {
                     envOverrideValues,
                     id,
+                    isDraftOverriden,
                     globalConfig,
                     isAppMetricsEnabled,
                     currentEditorView,
@@ -180,9 +175,11 @@ export default function DeploymentTemplateOverride({
                     namespace,
                 } = JSON.parse(draftResp.result.data)
 
+                const isApprovalPending = draftResp.result.draftState === 4
                 const payload = {
+                    chartConfigLoading: false,
                     duplicate: envOverrideValues,
-                    draftValues: YAML.stringify(envOverrideValues, null),
+                    draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
                     environmentConfig: {
                         id,
                         status,
@@ -192,9 +189,13 @@ export default function DeploymentTemplateOverride({
                     },
                     isAppMetricsEnabled,
                     latestDraft: draftResp.result,
+                    selectedTabIndex: isApprovalPending ? 2 : 3,
+                    openComparison: isApprovalPending,
+                    showReadme: false,
                     allDrafts,
                     currentEditorView,
                     isBasicLocked,
+                    showDraftOverriden: isDraftOverriden,
                     ...{
                         ...chartRefsData,
                         selectedChartRefId: chartRefId,
@@ -202,14 +203,23 @@ export default function DeploymentTemplateOverride({
                     },
                 }
 
+                if (chartRefsData) {
+                    payload['publishedState'] = {
+                        ...state.publishedState,
+                        ...chartRefsData,
+                    }
+                } else if (!state.publishedState) {
+                    payload['publishedState'] = state
+                }
+
                 dispatch({
                     type: DeploymentConfigStateActionTypes.multipleOptions,
                     payload,
                 })
 
-                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
+                if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
                     updateTemplateFromBasicValue(envOverrideValues)
-                    parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues)
+                    parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, payload, false)
                 }
             })
             .catch((e) => {
@@ -238,6 +248,35 @@ export default function DeploymentTemplateOverride({
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
             )
+
+            const _duplicateFromResp =
+                result.IsOverride || state.duplicate
+                    ? result.environmentConfig.envOverrideValues || result.globalConfig
+                    : null
+            const payload = {
+                data: result,
+                duplicate: !!state.latestDraft ? state.duplicate : _duplicateFromResp,
+                readme: result.readme,
+                schema: result.schema,
+                isBasicLockedInBase:
+                    result.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
+                    result.environmentConfig.isBasicViewLocked,
+            }
+
+            if (isProtected && state.latestDraft) {
+                payload['publishedState'] = {
+                    ...state.publishedState,
+                    ...result,
+                    isBasicLockedInBase: payload.isBasicLockedInBase,
+                    isOverride: result.IsOverride,
+                }
+            }
+
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload,
+            })
+
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                 updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues || result.globalConfig)
                 parseDataForView(
@@ -245,26 +284,11 @@ export default function DeploymentTemplateOverride({
                     result.environmentConfig.currentViewEditor,
                     result.globalConfig,
                     result.environmentConfig.envOverrideValues,
+                    payload,
+                    true,
                 )
             }
 
-            const _duplicateFromResp =
-                result.IsOverride || state.duplicate
-                    ? result.environmentConfig.envOverrideValues || result.globalConfig
-                    : null
-
-            dispatch({
-                type: DeploymentConfigStateActionTypes.multipleOptions,
-                payload: {
-                    data: result,
-                    duplicate: !!state.latestDraft ? state.duplicate : _duplicateFromResp,
-                    readme: result.readme,
-                    schema: result.schema,
-                    isBasicLockedInBase:
-                        result.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
-                        result.environmentConfig.isBasicViewLocked,
-                },
-            })
             setParentState(ComponentStates.loaded)
         } catch (err) {
             setParentState(ComponentStates.failed)
@@ -276,11 +300,14 @@ export default function DeploymentTemplateOverride({
 
     async function handleOverride(e) {
         e.preventDefault()
-        if (state.duplicate) {
+        if (state.unableToParseYaml) {
+            return
+        } else if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
+            const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
             //permanent delete
-            if (state.isConfigProtectionEnabled) {
+            if (isProtected && showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
-            } else if (state.data.IsOverride) {
+            } else if (showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
             } else {
                 //remove copy
@@ -303,14 +330,15 @@ export default function DeploymentTemplateOverride({
                                 basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
                                 isBasicLocked: state.isBasicLockedInBase || _isBasicLocked,
                                 duplicate: null,
+                                isDraftOverriden: false,
                             },
                         })
                     } else {
                         dispatch({
-                            type: DeploymentConfigStateActionTypes.duplicate,
-                            payload: null,
+                            type: DeploymentConfigStateActionTypes.multipleOptions,
+                            payload: { duplicate: null, isDraftOverriden: false },
                         })
-                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null)
+                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null, {}, false)
                     }
                 }
             }
@@ -321,6 +349,7 @@ export default function DeploymentTemplateOverride({
                 payload: {
                     duplicate: state.data.globalConfig,
                     selectedChartRefId: state.data.globalChartRefId,
+                    isDraftOverriden: !!state.latestDraft,
                 },
             })
         }
@@ -331,6 +360,8 @@ export default function DeploymentTemplateOverride({
         _currentViewEditor: string,
         baseTemplate,
         envOverrideValues,
+        templateData,
+        updatePublishedState,
     ): Promise<void> => {
         if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             if (!envOverrideValues) {
@@ -357,7 +388,7 @@ export default function DeploymentTemplateOverride({
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
             statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.ADVANCED
-            statesToUpdate['currentViewEditor'] = _currentViewEditor
+            statesToUpdate['currentEditorView'] = _currentViewEditor
             statesToUpdate['isBasicLocked'] = _isBasicLocked
         }
 
@@ -378,7 +409,21 @@ export default function DeploymentTemplateOverride({
             }
         }
 
-        if (Object.keys(statesToUpdate).length > 0) {
+        // Override yamlMode state to advanced when draft state is 4 (approval pending)
+        if (templateData.latestDraft?.draftState === 4) {
+            statesToUpdate['yamlMode'] = true
+            statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
+        }
+
+        if (updatePublishedState && templateData['publishedState']) {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.publishedState,
+                payload: {
+                    ...templateData['publishedState'],
+                    ...statesToUpdate,
+                },
+            })
+        } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload: statesToUpdate,
@@ -404,14 +449,19 @@ export default function DeploymentTemplateOverride({
                 {state.data && state.charts && (
                     <DeploymentTemplateOverrideForm
                         state={state}
+                        isConfigProtectionEnabled={isProtected}
                         environments={environments}
                         environmentName={environmentName}
+                        reloadEnvironments={reloadEnvironments}
                         handleOverride={handleOverride}
                         dispatch={dispatch}
                         initialise={initialise}
                         handleAppMetrics={handleAppMetrics}
                         toggleDraftComments={toggleDraftComments}
                         isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                        isEnterpriseInstallation={
+                            currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+                        }
                     />
                 )}
             </div>

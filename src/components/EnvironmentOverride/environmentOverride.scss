@@ -114,11 +114,11 @@ div.override-container {
     padding: 10px 16px;
     grid-column-gap: 10px;
     background: var(--B100);
-    border: 1px solid var(--B200);
+    border-bottom: 1px solid var(--B200);
 
     &.override-warning {
         background: var(--Y100);
-        border: 1px solid var(--Y200);
+        border-bottom: 1px solid var(--Y200);
     }
 
     .override-title,

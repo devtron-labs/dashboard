@@ -21,6 +21,7 @@ import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/Devtro
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
+    handleConfigProtectionError,
     isBasicValueChanged,
     patchBasicData,
     updateTemplateFromBasicValue,
@@ -61,14 +62,17 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const appMetricsEnvironmentVariableEnabled = window._env_ && window._env_.APPLICATION_METRICS_ENABLED
+    const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
 
     useEffect(() => {
+        reloadEnvironments()
         initialise()
     }, [])
 
     useEffectAfterMount(() => {
-        fetchDeploymentTemplate()
+        if (state.selectedChart) {
+            fetchDeploymentTemplate()
+        }
     }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
@@ -105,7 +109,6 @@ export default function DeploymentConfig({
                     chartsMetadata: chartMetadata,
                     selectedChartRefId: selectedChartId,
                     selectedChart: chart,
-                    isConfigProtectionEnabled: isProtected,
                 }
 
                 if (isProtected && typeof getAllDrafts === 'function') {
@@ -179,9 +182,12 @@ export default function DeploymentConfig({
                         readme,
                     },
                     isAppMetricsEnabled: isAppMetricsEnabled,
-                    tempFormData: YAML.stringify(valuesOverride, null),
-                    draftValues: YAML.stringify(valuesOverride, null),
+                    tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
+                    draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
                     latestDraft: draftResp.result,
+                    selectedTabIndex: 3,
+                    openComparison: false,
+                    currentEditorView: currentViewEditor,
                     allDrafts,
                     readme,
                     schema,
@@ -234,29 +240,19 @@ export default function DeploymentConfig({
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
 
+        const statesToUpdate = {}
         if (!state.currentEditorView || !_currentViewEditor) {
             _currentViewEditor =
-                _isBasicViewLocked || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+                _isBasicViewLocked ||
+                currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE ||
+                state.selectedTabIndex === 2 ||
+                state.showReadme
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
 
-            const payload = {
-                isBasicLocked: _isBasicViewLocked,
-                currentEditorView: _currentViewEditor,
-                yamlMode: _currentViewEditor === EDITOR_VIEW.ADVANCED,
-            }
-
-            if (templateData['publishedState']) {
-                payload['publishedState'] = {
-                    ...templateData['publishedState'],
-                    ...payload,
-                }
-            }
-
-            dispatch({
-                type: DeploymentConfigStateActionTypes.multipleOptions,
-                payload,
-            })
+            statesToUpdate['isBasicLocked'] = _isBasicViewLocked
+            statesToUpdate['currentEditorView'] = _currentViewEditor
+            statesToUpdate['yamlMode'] = _currentViewEditor !== EDITOR_VIEW.BASIC
         }
         if (!_isBasicViewLocked) {
             const _basicFieldValues = getBasicFieldValue(template)
@@ -266,42 +262,28 @@ export default function DeploymentConfig({
                 !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
                 !_basicFieldValues[BASIC_FIELDS.RESOURCES]
             ) {
-                const payload = {
-                    isBasicLocked: true,
-                    currentEditorView: EDITOR_VIEW.ADVANCED,
-                    yamlMode: true,
-                }
-
-                if (templateData['publishedState']) {
-                    payload['publishedState'] = {
-                        ...templateData['publishedState'],
-                        ...payload,
-                    }
-                }
-
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload,
-                })
+                statesToUpdate['isBasicLocked'] = true
+                statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
+                statesToUpdate['yamlMode'] = true
             } else {
-                const payload = {
-                    isBasicLocked: _isBasicViewLocked,
-                    basicFieldValues: _basicFieldValues,
-                    basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                }
-
-                if (templateData['publishedState']) {
-                    payload['publishedState'] = {
-                        ...templateData['publishedState'],
-                        ...payload,
-                    }
-                }
-
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload,
-                })
+                statesToUpdate['basicFieldValues'] = _basicFieldValues
+                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
             }
+        }
+
+        if (updatePublishedState && templateData['publishedState']) {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.publishedState,
+                payload: {
+                    ...templateData['publishedState'],
+                    ...statesToUpdate,
+                },
+            })
+        } else {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload: statesToUpdate,
+            })
         }
     }
 
@@ -332,9 +314,10 @@ export default function DeploymentConfig({
                 template: defaultAppOverride,
                 schema,
                 readme,
+                currentEditorView: currentViewEditor,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
-                tempFormData: YAML.stringify(defaultAppOverride, null),
+                tempFormData: YAML.stringify(defaultAppOverride, { indent: 2 }),
             }
 
             let payload = {}
@@ -385,7 +368,7 @@ export default function DeploymentConfig({
         ) {
             toast.error('Some required fields are missing')
             return
-        } else if (state.isConfigProtectionEnabled) {
+        } else if (isProtected) {
             toggleSaveChangesModal()
             return
         }
@@ -424,7 +407,7 @@ export default function DeploymentConfig({
                 history.push(navItems[stageIndex + 1].href)
             }
         } catch (err) {
-            showError(err)
+            handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
@@ -445,29 +428,43 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-
         dispatch({
             type: DeploymentConfigStateActionTypes.tempFormData,
             payload: str,
         })
-        if (
-            state.selectedChart &&
-            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
-            str &&
-            state.currentEditorView &&
-            !state.isBasicLocked &&
-            !fromBasic
-        ) {
-            try {
+        try {
+            const parsedValues = YAML.parse(str)
+
+            // Unset unableToParseYaml flag when yaml is successfully parsed
+            dispatch({
+                type: DeploymentConfigStateActionTypes.unableToParseYaml,
+                payload: false,
+            })
+            if (
+                state.selectedChart &&
+                (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
+                str &&
+                state.currentEditorView &&
+                !state.isBasicLocked &&
+                !fromBasic
+            ) {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.isBasicLocked,
-                    payload: isBasicValueChanged(YAML.parse(str)),
+                    payload: isBasicValueChanged(parsedValues),
                 })
-            } catch (error) {}
+            }
+        } catch (error) {
+            // Set unableToParseYaml flag when yaml is malformed
+            dispatch({
+                type: DeploymentConfigStateActionTypes.unableToParseYaml,
+                payload: true,
+            })
         }
     }
 
     const handleReadMeClick = () => {
+        if (!state.showReadme && state.unableToParseYaml) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
             payload: {
@@ -485,12 +482,16 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
-        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
+        if (readOnlyPublishedMode) {
+            if (state.publishedState && !state.publishedState.isBasicLocked) {
+                toggleYamlMode(!state.yamlMode)
+            }
+            return
+        } else if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
             toast.error('Some required fields are missing')
             toggleYamlMode(false)
             return
-        }
-        if (state.isBasicLocked) {
+        } else if (state.isBasicLocked) {
             return
         }
 
@@ -515,6 +516,8 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
+        if (state.unableToParseYaml) return
+
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
             payload:
@@ -528,8 +531,16 @@ export default function DeploymentConfig({
         switch (index) {
             case 1:
             case 3:
+                const _isBasicLocked =
+                    state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
+                const defaultYamlMode =
+                    state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
+                toggleYamlMode(
+                    defaultYamlMode ||
+                        _isBasicLocked ||
+                        currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
+                )
                 if (state.selectedTabIndex === 2) {
-                    toggleYamlMode(state.isBasicLocked)
                     handleComparisonClick()
                 }
                 break
@@ -576,6 +587,7 @@ export default function DeploymentConfig({
         }
 
         if (!skipReadmeAndSchema) {
+            requestData['id'] = state.chartConfig.id
             requestData['readme'] = state.readme
             requestData['schema'] = state.schema
         }
@@ -584,9 +596,6 @@ export default function DeploymentConfig({
     }
 
     const renderValuesView = () => {
-        const readOnlyPublishedMode =
-            state.selectedTabIndex === 1 && state.isConfigProtectionEnabled && !!state.latestDraft
-
         return (
             <form
                 action=""
@@ -615,7 +624,7 @@ export default function DeploymentConfig({
                     showAppMetricsToggle={
                         state.charts &&
                         state.selectedChart &&
-                        appMetricsEnvironmentVariableEnabled &&
+                        window._env_?.APPLICATION_METRICS_ENABLED &&
                         grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
                         state.yamlMode
                     }
@@ -624,7 +633,7 @@ export default function DeploymentConfig({
                     }
                     isCiPipeline={isCiPipeline}
                     toggleAppMetrics={toggleAppMetrics}
-                    isDraftMode={readOnlyPublishedMode}
+                    isPublishedMode={readOnlyPublishedMode}
                     reload={initialise}
                 />
             </form>
@@ -633,11 +642,13 @@ export default function DeploymentConfig({
 
     const getValueForContext = () => {
         return {
-            isUnSet: state.latestDraft && state.selectedTabIndex === 1 ? false : isUnSet,
+            isUnSet: readOnlyPublishedMode ? false : isUnSet,
             state,
             dispatch,
+            isConfigProtectionEnabled: isProtected,
             environments: environments || [],
             changeEditorMode: changeEditorMode,
+            reloadEnvironments: reloadEnvironments,
         }
     }
 
@@ -661,9 +672,10 @@ export default function DeploymentConfig({
                         handleReadMeClick={handleReadMeClick}
                         handleCommentClick={toggleDraftComments}
                         commentsPresent={state.latestDraft?.commentsCount > 0}
-                        isDraftMode={state.isConfigProtectionEnabled && !!state.latestDraft}
+                        isDraftMode={isProtected && !!state.latestDraft}
                         isApprovalPending={state.latestDraft?.draftState === 4}
                         approvalUsers={state.latestDraft?.approvers}
+                        showValuesPostfix={true}
                         reload={initialise}
                     />
                     {renderValuesView()}

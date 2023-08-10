@@ -92,6 +92,7 @@ export default function EnvironmentOverride({
                                     : ''
                             }
                             isProtected={isProtected}
+                            reloadEnvironments={reloadEnvironments}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
@@ -102,6 +103,7 @@ export default function EnvironmentOverride({
                             parentName={getParentName()}
                             setParentState={setViewState}
                             isJobView={isJobView}
+                            reloadEnvironments={reloadEnvironments}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
@@ -112,6 +114,7 @@ export default function EnvironmentOverride({
                             parentName={getParentName()}
                             setParentState={setViewState}
                             isJobView={isJobView}
+                            reloadEnvironments={reloadEnvironments}
                         />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />

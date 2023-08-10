@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, ToastBody, noop, showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useState, useEffect } from 'react'
+import { Progressing, ResizableTextarea, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -17,24 +17,24 @@ import {
     KeyValue,
     KeyValueInputInterface,
     KeyValueValidated,
-    ResizableTextareaProps,
     KeyValueYaml,
+    ProtectedConfigMapSecretDetailsProps,
 } from './Types'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { CM_SECRET_STATE } from './Constants'
-import { importComponentFromFELibrary } from '../common'
+import { hasApproverAccess, importComponentFromFELibrary } from '../common'
 import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistoryDiff/DeploymentHistoryDiffView'
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
-import { getSecretKeys, unlockEnvSecret } from './service'
+import { getCMSecret, getSecretList } from './service'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
-const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
+const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     ({
         keyLabel,
@@ -112,30 +112,15 @@ export function ConfigMapSecretContainer({
     toggleDraftComments,
     reduceOpacity,
     parentName,
+    reloadEnvironments,
 }: ConfigMapSecretProps) {
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [collapsed, toggleCollapse] = useState(true)
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
     const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
 
-    async function getDraftData() {
-        try {
-            setLoader(true)
-            const { result: _draftData } = await getDraft(data.draftId)
-            if (_draftData && (_draftData.draftState === 1 || _draftData.draftState === 4)) {
-                setDraftData(_draftData)
-            } else {
-                setDraftData(null)
-            }
-            toggleCollapse(false)
-        } catch (error) {
-            setDraftData(null)
-            showError(error)
-        } finally {
-            setLoader(false)
-        }
-    }
-    let cmSecretStateLabel = CM_SECRET_STATE.BASE
+    let cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.BASE : CM_SECRET_STATE.UNPUBLISHED
     if (isOverrideView) {
         if (data?.global) {
             cmSecretStateLabel = data.overridden ? CM_SECRET_STATE.OVERRIDDEN : CM_SECRET_STATE.INHERITED
@@ -144,12 +129,62 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    const getData = async () => {
+        try {
+            setLoader(true)
+            const [_draftData, _cmSecretData] = await Promise.allSettled([
+                isProtected && getDraftByResourceName
+                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name)
+                    : null,
+                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId) : null,
+            ])
+            let draftId, draftState
+            if (
+                _draftData?.status === 'fulfilled' &&
+                _draftData.value?.result &&
+                (_draftData.value.result.draftState === 1 || _draftData.value.result.draftState === 4)
+            ) {
+                setDraftData(_draftData.value.result)
+                draftId = _draftData.value.result.draftId
+                draftState = _draftData.value.result.draftState
+            } else {
+                setDraftData(null)
+            }
+            if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && _cmSecretData?.status === 'fulfilled') {
+                if (_cmSecretData.value?.result?.configData?.length) {
+                    const _result = _cmSecretData.value.result
+                    if (draftId || draftState) {
+                        _result.configData[0].draftId = draftId
+                        _result.configData[0].draftState = draftState
+                    }
+                    update(index, _result)
+                } else {
+                    toast.error(`The ${componentType} '${data?.name}' has been deleted`)
+                    update(index, null)
+                }
+            }
+            toggleCollapse(false)
+            if (
+                (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
+                (_draftData?.status === 'rejected' && _draftData?.reason?.code === 403)
+            ) {
+                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            }
+        } catch (error) {
+            toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            setDraftData(null)
+            showError(error)
+        } finally {
+            setLoader(false)
+        }
+    }
+
     const updateCollapsed = (_collapsed?: boolean): void => {
         if (_collapsed !== undefined) {
             toggleCollapse(_collapsed)
         } else {
-            if (collapsed && getDraft && isProtected && data?.draftId) {
-                getDraftData()
+            if (collapsed && data?.name) {
+                getData()
             } else {
                 toggleCollapse(!collapsed)
                 if (!collapsed) {
@@ -219,6 +254,7 @@ export function ConfigMapSecretContainer({
                         selectedTab={selectedTab}
                         draftData={draftData}
                         parentName={parentName}
+                        reloadEnvironments={reloadEnvironments}
                     />
                 </>
             )
@@ -246,6 +282,7 @@ export function ConfigMapSecretContainer({
                           }
                         : null
                 }
+                reloadEnvironments={reloadEnvironments}
             />
         )
     }
@@ -263,6 +300,9 @@ export function ConfigMapSecretContainer({
     }
 
     const handleCMSecretClick = () => {
+        if (title && isProtected && draftData?.draftId) {
+            setSelectedTab(draftData.draftState === 4 ? 2 : 3)
+        }
         updateCollapsed()
     }
 
@@ -291,7 +331,7 @@ export function ConfigMapSecretContainer({
                             {isProtected && (
                                 <>
                                     {renderDraftState()}
-                                    <ProtectedIcon />
+                                    <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
                                 </>
                             )}
                             {isLoader ? (
@@ -323,40 +363,44 @@ export function ProtectedConfigMapSecretDetails({
     selectedTab,
     draftData,
     parentName,
-}) {
-    const { appId, envId } = useParams<{ appId; envId }>()
+    reloadEnvironments,
+}: ProtectedConfigMapSecretDetailsProps) {
+    const { appId } = useParams<{ appId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
+    const [baseData, setBaseData] = useState(null)
 
-    useEffect(() => {
-        if (
-            componentType === 'secret' &&
-            selectedTab === 2 &&
-            data?.unAuthorized &&
-            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-        ) {
-            setLoader(true)
-            handleSecretFetch()
-        }
-    }, [selectedTab])
-
-    async function handleSecretFetch() {
+    const getBaseData = async () => {
         try {
-            const { result } =
-                cmSecretStateLabel === CM_SECRET_STATE.BASE
-                    ? await getSecretKeys(id, appId, data?.name)
-                    : await unlockEnvSecret(id, appId, +envId, data?.name)
-            update(index, result)
-            setLoader(false)
-        } catch (err) {
-            toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
+            setLoader(true)
+            if (data.unAuthorized && componentType === 'secret') {
+                const { result } = await getSecretList(appId)
+                if (result?.configData?.length) {
+                    setBaseData(result.configData.find((config) => config.name === data.name))
+                }
+            } else {
+                const { result } = await getCMSecret(componentType, id, appId, data?.name)
+                if (result?.configData?.length) {
+                    setBaseData(result.configData[0])
+                }
+            }
+        } catch (error) {
+        } finally {
             setLoader(false)
         }
     }
 
+    useEffect(() => {
+        if (draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN) {
+            getBaseData()
+        }
+    }, [])
+
     const getData = () => {
         try {
             if (selectedTab === 3) {
-                return JSON.parse(draftData.data).configData[0]
+                return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    ? baseData
+                    : JSON.parse(draftData.data).configData[0]
             } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
                 return null
             } else {
@@ -367,10 +411,20 @@ export function ProtectedConfigMapSecretDetails({
         }
     }
 
+    const getObfuscatedData = (codeEditorData) => {
+        const _codeEditorData = { ...codeEditorData }
+        if (componentType === 'secret' && data.unAuthorized && _codeEditorData) {
+            for (const key in _codeEditorData) {
+                _codeEditorData[key] = Array(8).fill('*').join('')
+            }
+        }
+        return _codeEditorData
+    }
+
     const getCodeEditorData = (cmSecretData, isOverridden) => {
         if (isOverridden) {
             if (Object.keys(cmSecretData.defaultData ?? {}).length > 0) {
-                return cmSecretData.defaultData
+                return getObfuscatedData(cmSecretData.defaultData)
             } else if (componentType === 'secret') {
                 if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
                     return cmSecretData.defaultSecretData
@@ -380,7 +434,7 @@ export function ProtectedConfigMapSecretDetails({
             }
         }
         if (Object.keys(cmSecretData.data ?? {}).length > 0) {
-            return cmSecretData.data
+            return getObfuscatedData(cmSecretData.data)
         } else if (componentType === 'secret') {
             if (Object.keys(cmSecretData.secretData ?? {}).length > 0) {
                 return cmSecretData.secretData
@@ -394,7 +448,10 @@ export function ProtectedConfigMapSecretDetails({
         let currentConfigData = {},
             codeEditorValue = { displayName: 'data', value: '' }
         try {
-            currentConfigData = JSON.parse(draftData.data).configData[0]
+            currentConfigData =
+                draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    ? baseData
+                    : JSON.parse(draftData.data).configData[0]
             codeEditorValue.value = JSON.stringify(getCodeEditorData(currentConfigData, false)) ?? ''
         } catch (error) {}
         return prepareHistoryData(
@@ -402,6 +459,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            componentType === 'secret' && data.unAuthorized,
         )
     }
 
@@ -419,6 +477,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            componentType === 'secret' && data.unAuthorized,
         )
     }
 
@@ -431,9 +490,14 @@ export function ProtectedConfigMapSecretDetails({
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
         } else {
+            const hasAccess = hasApproverAccess(draftData.approvers)
             return (
-                <div className="flex right pr-16 pb-16 pl-16">
-                    {draftData.canApprove ? (
+                <div
+                    className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
+                        hasAccess && draftData.canApprove ? 'tippy-over' : ''
+                    }`}
+                >
+                    {hasAccess && draftData.canApprove ? (
                         <ApproveRequestTippy
                             draftId={draftData.draftId}
                             draftVersionId={draftData.draftVersionId}
@@ -454,7 +518,11 @@ export function ProtectedConfigMapSecretDetails({
                             className="default-tt w-200"
                             arrow={false}
                             placement="top-end"
-                            content="You have made changes to this file. Users who have edited cannot approve the changes."
+                            content={
+                                hasAccess
+                                    ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
+                                    : 'You do not have permission to approve configuration changes for this application - environment combination.'
+                            }
                         >
                             <button
                                 data-testid="approve-config-button"
@@ -481,19 +549,27 @@ export function ProtectedConfigMapSecretDetails({
         return (
             <>
                 <div className="en-2 bw-1 mt-16 mr-20 ml-20 bcn-1 dc__top-radius-4 deployment-diff__upper dc__no-bottom-border">
-                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9 dc__border-right">
+                    <div className="pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9 dc__border-right">
                         {cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED
                             ? 'No published version available'
                             : 'Published'}
                     </div>
-                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
+                    <div className="pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
                 </div>
+                {draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN && (
+                    <div className="en-2 bw-1 mr-20 ml-20 deployment-diff__upper dc__no-bottom-border">
+                        <div className="pl-16 pr-16 pt-8 fs-12 cn-6 code-editor-red-diff">Configuration</div>
+                        <div className="pl-16 pr-16 pt-8 fs-12 cn-6 code-editor-green-diff">Configuration</div>
+                        <div className="pl-16 pr-16 pb-8 fs-13 cn-9 code-editor-red-diff">Override base</div>
+                        <div className="pl-16 pr-16 pb-8 fs-13 cn-9 code-editor-green-diff">Inherit from base</div>
+                    </div>
+                )}
                 <DeploymentHistoryDiffView
                     currentConfiguration={getBaseConfig()}
                     baseTemplateConfiguration={getCurrentConfig()}
                     previousConfigAvailable={true}
                     isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
-                    isDeleteDraft={draftData.action === 3}
+                    isDeleteDraft={draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN}
                     rootClassName="dc__no-top-radius mt-0-imp"
                 />
                 {renderApproveButton()}
@@ -515,8 +591,8 @@ export function ProtectedConfigMapSecretDetails({
     const renderForm = (): JSX.Element => {
         if (selectedTab === 1 && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
             return renderEmptyMessage('No published version of this file is available')
-        } else if (selectedTab === 3 && draftData.action === 3) {
-            return renderEmptyMessage('This secret will be deleted on approval')
+        } else if (selectedTab === 3 && draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN) {
+            return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
             <ConfigMapSecretForm
@@ -527,20 +603,28 @@ export function ProtectedConfigMapSecretDetails({
                 componentType={componentType}
                 update={update}
                 index={index}
-                cmSecretStateLabel={cmSecretStateLabel}
+                cmSecretStateLabel={
+                    selectedTab === 3 && draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        ? CM_SECRET_STATE.INHERITED
+                        : cmSecretStateLabel
+                }
                 isJobView={isJobView}
                 readonlyView={selectedTab === 1}
                 isProtectedView={true}
-                draftMode={selectedTab === 3}
+                draftMode={
+                    selectedTab === 3 && (draftData.action !== 3 || cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN)
+                }
                 latestDraftData={
                     draftData?.draftId
                         ? {
                               draftId: draftData?.draftId,
                               draftState: draftData?.draftState,
                               draftVersionId: draftData?.draftVersionId,
+                              action: draftData.action,
                           }
                         : null
                 }
+                reloadEnvironments={reloadEnvironments}
             />
         )
     }
@@ -548,74 +632,11 @@ export function ProtectedConfigMapSecretDetails({
     return selectedTab === 2 ? renderDiffView() : renderForm()
 }
 
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-    minHeight,
-    maxHeight,
-    value,
-    onChange = null,
-    onBlur = null,
-    onFocus = null,
-    className = '',
-    placeholder = 'Enter your text here..',
-    lineHeight = 14,
-    padding = 12,
-    disabled = false,
-    dataTestId,
-    ...props
-}) => {
-    const [text, setText] = useState('')
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist()
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
+export const convertToValidValue = (k: any): string => {
+    if (k !== false && k !== true && !isNaN(Number(k))) {
+        return Number(k).toString()
     }
-
-    function handleBlur(e) {
-        if (typeof onBlur === 'function') onBlur(e)
-    }
-
-    function handleFocus(e) {
-        if (typeof onFocus === 'function') onFocus(e)
-    }
-
-    useThrottledEffect(
-        () => {
-            _textRef.current.style.height = 'auto'
-            let nextHeight = _textRef.current.scrollHeight
-            if (minHeight && nextHeight < minHeight) {
-                nextHeight = minHeight
-            }
-            if (maxHeight && nextHeight > maxHeight) {
-                nextHeight = maxHeight
-            }
-            _textRef.current.style.height = nextHeight + 2 + 'px'
-        },
-        500,
-        [text],
-    )
-
-    return (
-        <textarea
-            data-testid={dataTestId}
-            ref={(el) => (_textRef.current = el)}
-            value={text}
-            placeholder={placeholder}
-            className={`dc__resizable-textarea ${className}`}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
-    )
+    return k.toString()
 }
 
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
@@ -674,9 +695,9 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             let tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) return agg
                 let v =
-                    obj[k] && ['object', 'number'].includes(typeof obj[k])
+                    obj[k] && typeof obj[k] === 'object'
                         ? YAML.stringify(obj[k], { indent: 2 })
-                        : obj[k]
+                        : convertToValidValue(obj[k])
                 let keyErr: string
                 if (k && keyPattern.test(k)) {
                     keyErr = ''

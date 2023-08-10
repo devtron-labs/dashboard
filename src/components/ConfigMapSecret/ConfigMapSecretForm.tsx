@@ -1,12 +1,10 @@
 import React, { useEffect, useReducer, useRef } from 'react'
 import {
     overRideConfigMap,
-    unlockEnvSecret,
     overRideSecret,
     updateConfig,
     deleteEnvSecret,
     deleteEnvConfigMap,
-    getSecretKeys,
     updateSecret,
     deleteSecret,
     deleteConfig,
@@ -24,20 +22,20 @@ import {
     ConfirmationDialog,
     Checkbox,
     CHECKBOX_VALUE,
-    not,
     stopPropagation,
     InfoColourBar,
     ToastBody,
     RadioGroup,
     RadioGroupItem,
     DeleteDialog,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import warningIcon from '../../assets/img/warning-medium.svg'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '../../config'
 import { Override, validateKeyValuePair } from './ConfigMapSecret.components'
 import { ConfigMapActionTypes, ConfigMapSecretFormProps, KeyValueValidated } from './Types'
-import { ConfigMapReducer, initState, processCurrentData } from './ConfigMapSecret.reducer'
+import { ConfigMapReducer, initState } from './ConfigMapSecret.reducer'
 import ReactSelect from 'react-select'
 import {
     SecretOptions,
@@ -71,19 +69,19 @@ export const ConfigMapSecretForm = React.memo(
         id,
         componentType,
         update,
-        index,
         cmSecretStateLabel,
         isJobView,
         readonlyView,
         isProtectedView,
         draftMode,
         latestDraftData,
+        reloadEnvironments,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
         const [state, dispatch] = useReducer(
             memoizedReducer,
-            initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
+            initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode || latestDraftData?.draftId),
         )
 
         const { appId, envId } = useParams<{ appId; envId }>()
@@ -98,17 +96,6 @@ export const ConfigMapSecretForm = React.memo(
         const isESO = componentType === 'secret' && hasESO(state.externalType)
 
         useEffect(() => {
-            if (
-                componentType === 'secret' &&
-                configMapSecretData?.name &&
-                configMapSecretData?.unAuthorized &&
-                cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
-            ) {
-                handleSecretFetch()
-            }
-        }, [draftMode])
-
-        useEffect(() => {
             if (isESO && !state.yamlMode) {
                 dispatch({
                     type: ConfigMapActionTypes.toggleYamlMode,
@@ -119,41 +106,19 @@ export const ConfigMapSecretForm = React.memo(
         useEffect(() => {
             dispatch({
                 type: ConfigMapActionTypes.reInit,
-                payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
+                payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode || latestDraftData?.draftId),
             })
         }, [configMapSecretData])
-
-        async function handleSecretFetch() {
-            try {
-                const { result } =
-                    state.cmSecretState === CM_SECRET_STATE.BASE
-                        ? await getSecretKeys(id, appId, configMapSecretData?.name)
-                        : await unlockEnvSecret(id, appId, +envId, configMapSecretData?.name)
-                update(index, result)
-                dispatch({
-                    type: ConfigMapActionTypes.multipleOptions,
-                    payload: {
-                        unAuthorized: false,
-                        secretMode: false,
-                        currentData: processCurrentData(result.configData[0], cmSecretStateLabel, componentType),
-                    },
-                })
-            } catch (err) {
-                toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
-                dispatch({
-                    type: ConfigMapActionTypes.toggleUnAuthorized,
-                    payload: {
-                        unAuthorized: true,
-                    },
-                })
-            }
-        }
 
         async function handleOverride(e) {
             e.preventDefault()
             if (state.cmSecretState === CM_SECRET_STATE.OVERRIDDEN) {
-                if (configMapSecretData.data) {
-                    dispatch({ type: ConfigMapActionTypes.toggleDialog })
+                if (configMapSecretData.overridden) {
+                    if (isProtectedView) {
+                        dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+                    } else {
+                        dispatch({ type: ConfigMapActionTypes.toggleDialog })
+                    }
                 } else {
                     dispatch({
                         type: ConfigMapActionTypes.reInit,
@@ -262,7 +227,10 @@ export const ConfigMapSecretForm = React.memo(
                     isFormValid = false
                 }
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
-                    isFormValid = validateFilePermission()
+                    const isFilePermissionValid = validateFilePermission()
+                    if (!isFilePermissionValid) {
+                        isFormValid = isFilePermissionValid
+                    }
                 }
                 if (
                     state.isSubPathChecked &&
@@ -339,6 +307,12 @@ export const ConfigMapSecretForm = React.memo(
                 external: state.external,
                 data: data, //dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
             }
+            if (
+                (componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
+                (componentType !== 'secret' && state.external)
+            ) {
+                delete payload[CODE_EDITOR_RADIO_STATE.DATA]
+            }
             if (componentType === 'secret') {
                 payload['roleARN'] = ''
                 payload['externalType'] = state.externalType
@@ -353,7 +327,6 @@ export const ConfigMapSecretForm = React.memo(
                     })
                     payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
                     payload['roleARN'] = state.roleARN.value
-                    delete payload[CODE_EDITOR_RADIO_STATE.DATA]
                 } else if (isESO) {
                     payload['esoSecretData'] = {
                         secretStore: state.secretStore,
@@ -362,7 +335,6 @@ export const ConfigMapSecretForm = React.memo(
                         refreshInterval: state.refreshInterval,
                     }
                     payload['roleARN'] = state.roleARN.value
-                    delete payload[CODE_EDITOR_RADIO_STATE.DATA]
                 }
             }
             if (state.selectedType === 'volume') {
@@ -395,14 +367,42 @@ export const ConfigMapSecretForm = React.memo(
             return state.draftPayload
         }
 
+        const handleError = (actionType, err, payloadData?): void => {
+            if (err instanceof ServerErrors && Array.isArray(err.errors)) {
+                for (const error of err.errors) {
+                    if (error.code === 423) {
+                        if (actionType === 3) {
+                            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+                        } else {
+                            const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
+                            if (envId) {
+                                _draftPayload['environmentId'] = +envId
+                            }
+                            dispatch({
+                                type: ConfigMapActionTypes.multipleOptions,
+                                payload: {
+                                    showDraftSaveModal: true,
+                                    draftPayload: _draftPayload,
+                                },
+                            })
+                        }
+                        reloadEnvironments()
+                        return
+                    }
+                }
+            }
+            showError(err)
+            dispatch({ type: ConfigMapActionTypes.error })
+        }
+
         async function handleSubmit(e) {
             e.preventDefault()
             const { isValid, arr } = validateForm()
             if (!isValid) {
                 return
             }
+            const payloadData = createPayload(arr)
             try {
-                const payloadData = createPayload(arr)
                 if (isProtectedView) {
                     const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
                     if (envId) {
@@ -440,8 +440,7 @@ export const ConfigMapSecretForm = React.memo(
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
-                showError(err)
-                dispatch({ type: ConfigMapActionTypes.error })
+                handleError(2, err, payloadData)
             }
         }
 
@@ -463,16 +462,19 @@ export const ConfigMapSecretForm = React.memo(
 
                 toast.success(configMapSecretData.overridden ? 'Restored to global.' : 'Successfully deleted')
                 update()
-                updateCollapsed(false)
-                dispatch({ type: ConfigMapActionTypes.success })
-            } catch (err) {
-                showError(err)
-                dispatch({ type: ConfigMapActionTypes.error })
-            } finally {
+                updateCollapsed()
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
-                    payload: { dialog: false, showDeleteModal: false },
+                    payload: {
+                        dialog: false,
+                        showDeleteModal: false,
+                        showProtectedDeleteModal: false,
+                        submitLoading: false,
+                        overrideLoading: false,
+                    },
                 })
+            } catch (err) {
+                handleError(3, err)
             }
         }
 
@@ -523,15 +525,23 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const submitButtonText = (): string => {
-            return `Save ${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
+            return `Save${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
+        }
+
+        const closeProtectedDeleteModal = (): void => {
+            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
         }
 
         const closeDeleteModal = (): void => {
-            dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: false })
+            dispatch({ type: ConfigMapActionTypes.toggleDeleteModal })
         }
 
         const openDeleteModal = (e): void => {
-            dispatch({ type: ConfigMapActionTypes.setShowDeleteModal, payload: true })
+            if (isProtectedView) {
+                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+            } else {
+                dispatch({ type: ConfigMapActionTypes.toggleDeleteModal })
+            }
         }
 
         const toggleDraftSaveModal = (reload?: boolean): void => {
@@ -544,20 +554,6 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const renderDeleteOverRideModal = (): JSX.Element => {
-            if (isProtectedView && DeleteModal) {
-                return (
-                    <DeleteModal
-                        id={+id}
-                        appId={+appId}
-                        envId={envId ? +envId : -1}
-                        resourceType={componentType === 'secret' ? 2 : 1}
-                        resourceName={state.configName.value}
-                        latestDraft={latestDraftData}
-                        toggleDeleteModal={closeDeleteModal}
-                        reloadDrafts={reloadData}
-                    />
-                )
-            }
             return (
                 <ConfirmationDialog className="confirmation-dialog__body--w-400">
                     <ConfirmationDialog.Icon src={warningIcon} />
@@ -581,21 +577,7 @@ export const ConfigMapSecretForm = React.memo(
             )
         }
 
-        const renderDeleteCMModal = (): JSX.Element => {
-            if (isProtectedView && DeleteModal) {
-                return (
-                    <DeleteModal
-                        id={+id}
-                        appId={+appId}
-                        envId={envId ? +envId : -1}
-                        resourceType={componentType === 'secret' ? 2 : 1}
-                        resourceName={state.configName.value}
-                        latestDraft={latestDraftData}
-                        toggleDeleteModal={closeDeleteModal}
-                        reloadDrafts={reloadData}
-                    />
-                )
-            }
+        const renderDeleteModal = (): JSX.Element => {
             return (
                 <DeleteDialog
                     title={`Delete ${componentType === 'secret' ? 'Secret' : 'ConfigMap'} '${
@@ -606,6 +588,24 @@ export const ConfigMapSecretForm = React.memo(
                     delete={handleDelete}
                 />
             )
+        }
+
+        const renderProtectedDeleteModal = (): JSX.Element => {
+            if (DeleteModal) {
+                return (
+                    <DeleteModal
+                        id={+id}
+                        appId={+appId}
+                        envId={envId ? +envId : -1}
+                        resourceType={componentType === 'secret' ? 2 : 1}
+                        resourceName={state.configName.value}
+                        latestDraft={latestDraftData}
+                        toggleModal={closeProtectedDeleteModal}
+                        reload={reloadData}
+                    />
+                )
+            }
+            return null
         }
 
         const renderRollARN = (): JSX.Element => {
@@ -911,7 +911,7 @@ export const ConfigMapSecretForm = React.memo(
             return (
                 <div className="form__row">
                     <label className="form__label">Data type</label>
-                    <div className="form-row__select-external-type">
+                    <div className="form-row__select-external-type dc_max-width__max-content">
                         {componentType === 'secret' ? (
                             secretDataTypeSelectWithInfo()
                         ) : (
@@ -986,7 +986,10 @@ export const ConfigMapSecretForm = React.memo(
                             } pt-16 pr-16 pb-16 pl-16`}
                         >
                             {isShowDeleteButton() && (
-                                <button className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp" onClick={openDeleteModal}>
+                                <button
+                                    className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
+                                    onClick={openDeleteModal}
+                                >
                                     <Trash className="icon-dim-16 mr-4" />
                                     Delete{isProtectedView ? '...' : ''}
                                 </button>
@@ -1004,8 +1007,9 @@ export const ConfigMapSecretForm = React.memo(
                     )}
                 </div>
 
-                {configMapSecretData?.name && state.showDeleteModal && renderDeleteCMModal()}
+                {configMapSecretData?.name && state.showDeleteModal && renderDeleteModal()}
                 {state.dialog && renderDeleteOverRideModal()}
+                {state.showProtectedDeleteModal && renderProtectedDeleteModal()}
                 {state.showDraftSaveModal && (
                     <SaveChangesModal
                         appId={+appId}

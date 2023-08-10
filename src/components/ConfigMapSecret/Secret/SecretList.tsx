@@ -22,6 +22,7 @@ export default function SecretList({
     parentName,
     parentState,
     setParentState,
+    reloadEnvironments,
 }: ConfigMapListProps) {
     const { appId, envId } = useParams<{ appId; envId }>()
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -34,6 +35,9 @@ export default function SecretList({
         setSecretLoading(true)
         setList(null)
         init(true)
+        if (!isJobView) {
+            reloadEnvironments()
+        }
     }, [appId, envId])
 
     const toggleDraftComments = (selectedDraft: DraftDetailsForCommentDrawerType) => {
@@ -93,7 +97,7 @@ export default function SecretList({
     }
 
     function update(index, result) {
-        if (!index && !result) {
+        if ((index === undefined || index === null) && !result) {
             init()
             return
         }
@@ -114,20 +118,13 @@ export default function SecretList({
                     list.configData = [...configData]
                     return { ...list }
                 } else {
-                    const updatedData = result.configData[0].data
-                    const selectedConfigData = list.configData[index]
-                    if (selectedConfigData.global) {
-                        if (selectedConfigData.data) {
-                            configData.data = updatedData
-                        } else {
-                            selectedConfigData.defaultData = updatedData
-                        }
-                    } else {
-                        selectedConfigData.data = updatedData
-                    }
-                    selectedConfigData.secretMode = false
-                    selectedConfigData.unAuthorized = false
-                    list.configData[index] = selectedConfigData
+                    const updatedConfigData = result.configData[0]
+                    updatedConfigData.global = list.configData[index].global
+                    updatedConfigData.overridden = list.configData[index].overridden
+                    updatedConfigData.secretMode = false
+                    updatedConfigData.unAuthorized = false
+                    delete updatedConfigData.isNew
+                    list.configData[index] = updatedConfigData
                     return { ...list }
                 }
             })
@@ -165,6 +162,8 @@ export default function SecretList({
                         isJobView={isJobView}
                         isProtected={isProtected}
                         toggleDraftComments={toggleDraftComments}
+                        reduceOpacity={!!selectedDraft}
+                        reloadEnvironments={reloadEnvironments}
                     />
                     <div>
                         {list?.configData?.map((cs, idx) => (
@@ -183,6 +182,7 @@ export default function SecretList({
                                 toggleDraftComments={toggleDraftComments}
                                 reduceOpacity={selectedDraft && selectedDraft.index !== idx}
                                 parentName={parentName}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         ))}
                     </div>

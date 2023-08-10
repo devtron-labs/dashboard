@@ -7,7 +7,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help-outline.svg'
-import { importComponentFromFELibrary } from '../../common'
+import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -21,28 +21,32 @@ export default function DeploymentConfigFormCTA({
     disableCheckbox,
     disableButton,
     toggleAppMetrics,
-    isDraftMode,
+    isPublishedMode,
     reload,
 }: DeploymentConfigFormCTAProps) {
-    const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-    const _selectedChart = !isEnvOverride && isDraftMode ? state.publishedState?.selectedChart : state.selectedChart
+    const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
-    const approveDisabled = isApprovalPending && state.latestDraft && !state.latestDraft.canApprove
+    const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
+    const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
+
+    const getCTATippyContent = () => {
+        if (isApprovalPending) {
+            if (!hasAccess) {
+                return 'You do not have permission to approve configuration changes for this application - environment combination.'
+            } else if (approveDisabled) {
+                return 'You have made changes to this file. Users who have edited cannot approve the changes.'
+            }
+        }
+
+        return DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText
+    }
 
     const renderWrappedChildren = (children) => {
         return (
-            <Tippy
-                className="default-tt w-200"
-                arrow={false}
-                placement="top-end"
-                content={
-                    approveDisabled
-                        ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                        : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText
-                }
-            >
+            <Tippy className="default-tt w-200" arrow={false} placement="top-end" content={getCTATippyContent()}>
                 {children}
             </Tippy>
         )
@@ -64,6 +68,7 @@ export default function DeploymentConfigFormCTA({
                             ? 'base-deployment-template-save-and-next-button'
                             : 'base-deployment-template-save-changes-button'
                     }`}
+                    disabled={state.unableToParseYaml}
                 >
                     {loading ? (
                         <Progressing />
@@ -77,7 +82,7 @@ export default function DeploymentConfigFormCTA({
                                     <Next className={`icon-dim-16 ml-5 ${_disabled ? 'scn-4' : 'scn-0'}`} />
                                 </>
                             ) : (
-                                `Save changes${isDraftMode || isApprovalPending ? '...' : ''}`
+                                `Save changes${isConfigProtectionEnabled ? '...' : ''}`
                             )}
                         </>
                     )}
@@ -96,7 +101,7 @@ export default function DeploymentConfigFormCTA({
     const renderApplicationMetrics = () => {
         if (!showAppMetricsToggle) {
             return null
-        } else if (isDraftMode || isApprovalPending) {
+        } else if (isPublishedMode || isApprovalPending) {
             return (
                 <div className="form-app-metrics-cta flex left fs-13 fw-4 lh-20 cn-9">
                     <InfoIcon className="icon-dim-16 mr-8" />
@@ -131,8 +136,8 @@ export default function DeploymentConfigFormCTA({
                                 disabled={disableCheckbox || !_selectedChart.isAppMetricsSupported}
                             />
                             <div className="flex column left">
-                                <div className="flex left fs-13 mb-4">
-                                    <b className="fw-6 cn-9 mr-8">
+                                <div className="flex left fs-13">
+                                    <b className="fw-6 lh-18 cn-9 mr-8">
                                         {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
                                     </b>
                                     {compareTab || state.showReadme ? (
@@ -160,7 +165,7 @@ export default function DeploymentConfigFormCTA({
                                 {!compareTab && !state.showReadme && (
                                     <div
                                         data-testid="app-metrics-info-text"
-                                        className={`fs-13 fw-4 ${
+                                        className={`fs-13 fw-4 lh-18 ${
                                             !_selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'
                                         }`}
                                     >
@@ -178,7 +183,7 @@ export default function DeploymentConfigFormCTA({
     const getHeightClass = () => {
         if (compareTab || state.showReadme) {
             return 'h-56'
-        } else if (isDraftMode) {
+        } else if (isPublishedMode) {
             return 'h-44'
         } else {
             return 'h-64'
@@ -190,11 +195,11 @@ export default function DeploymentConfigFormCTA({
             <div
                 className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
                     showAppMetricsToggle ? 'dc__content-space' : 'right'
-                } ${getHeightClass()}`}
+                } ${getHeightClass()} ${state.latestDraft?.canApprove ? 'tippy-over ' : ''}`}
             >
                 {compareTab && !state.showReadme && <div className="w-50" />}
                 {renderApplicationMetrics()}
-                {!isDraftMode && (
+                {!isPublishedMode && (
                     <>
                         {isApprovalPending && state.latestDraft?.canApprove && ApproveRequestTippy ? (
                             <ApproveRequestTippy

@@ -31,12 +31,16 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     latestAppChartRef: null,
     latestChartRef: null,
     showSaveChangsModal: false,
-    isConfigProtectionEnabled: false,
     allDrafts: [],
     latestDraft: null,
     draftValues: '',
     showComments: false,
     showDeleteOverrideDraftModal: false,
+    isOverride: false,
+    showDraftOverriden: false,
+    isDraftOverriden: false,
+    unableToParseYaml: false,
+    selectedCompareOption: null,
 }
 
 export const deploymentConfigReducer = (
@@ -114,6 +118,14 @@ export const deploymentConfigReducer = (
             return { ...state, showComments: !state.showComments }
         case DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal:
             return { ...state, showDeleteOverrideDraftModal: !state.showDeleteOverrideDraftModal }
+        case DeploymentConfigStateActionTypes.publishedState:
+            return { ...state, publishedState: action.payload }
+        case DeploymentConfigStateActionTypes.isDraftOverriden:
+            return { ...state, isDraftOverriden: action.payload }
+        case DeploymentConfigStateActionTypes.unableToParseYaml:
+            return { ...state, unableToParseYaml: action.payload }
+        case DeploymentConfigStateActionTypes.selectedCompareOption:
+            return { ...state, selectedCompareOption: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
