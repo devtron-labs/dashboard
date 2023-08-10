@@ -81,7 +81,7 @@ export const ConfigMapSecretForm = React.memo(
         const tempArr = useRef([])
         const [state, dispatch] = useReducer(
             memoizedReducer,
-            initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
+            initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode || latestDraftData?.draftId),
         )
 
         const { appId, envId } = useParams<{ appId; envId }>()
@@ -106,7 +106,7 @@ export const ConfigMapSecretForm = React.memo(
         useEffect(() => {
             dispatch({
                 type: ConfigMapActionTypes.reInit,
-                payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode),
+                payload: initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode || latestDraftData?.draftId),
             })
         }, [configMapSecretData])
 
