@@ -216,7 +216,7 @@ export default function CDDetails() {
     function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
         if (triggerDetailsError) {
             if (deploymentHistoryResult.result?.cdWorkflows?.length) {
-                setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+                setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
             }
             setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
             return
@@ -234,7 +234,7 @@ export default function CDDetails() {
 
     const handleViewAllHistory = () => {
         if (deploymentHistoryResult.result?.cdWorkflows?.length) {
-            setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+            setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
         }
         setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
         replace(

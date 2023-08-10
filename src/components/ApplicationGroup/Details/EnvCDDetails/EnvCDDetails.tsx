@@ -133,7 +133,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
         if (triggerDetailsError) {
             if (deploymentHistoryResult.result?.cdWorkflows?.length) {
-                setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+                setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
             }
             setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
             return
@@ -151,7 +151,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     const handleViewAllHistory = () => {
         if (deploymentHistoryResult.result?.cdWorkflows?.length) {
-            setTriggerHistory(mapByKey(deploymentHistoryResult.result?.cdWorkflows, 'id'))
+            setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
         }
         setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
         replace(
