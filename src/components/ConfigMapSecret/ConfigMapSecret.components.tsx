@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Progressing, ToastBody, noop, showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useState, useEffect } from 'react'
+import { Progressing, ResizableTextarea, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
@@ -17,7 +17,6 @@ import {
     KeyValue,
     KeyValueInputInterface,
     KeyValueValidated,
-    ResizableTextareaProps,
     KeyValueYaml,
     ProtectedConfigMapSecretDetailsProps,
 } from './Types'
@@ -28,7 +27,7 @@ import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistor
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
-import { getCMSecret } from './service'
+import { getCMSecret, getSecretList } from './service'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -366,10 +365,42 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
+    const { appId } = useParams<{ appId }>()
+    const [isLoader, setLoader] = useState<boolean>(false)
+    const [baseData, setBaseData] = useState(null)
+
+    const getBaseData = async () => {
+        try {
+            setLoader(true)
+            if (data.unAuthorized && componentType === 'secret') {
+                const { result } = await getSecretList(appId)
+                if (result?.configData?.length) {
+                    setBaseData(result.configData.find((config) => config.name === data.name))
+                }
+            } else {
+                const { result } = await getCMSecret(componentType, id, appId, data?.name)
+                if (result?.configData?.length) {
+                    setBaseData(result.configData[0])
+                }
+            }
+        } catch (error) {
+        } finally {
+            setLoader(false)
+        }
+    }
+
+    useEffect(() => {
+        if (draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN) {
+            getBaseData()
+        }
+    }, [])
+
     const getData = () => {
         try {
             if (selectedTab === 3) {
-                return JSON.parse(draftData.data).configData[0]
+                return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    ? baseData
+                    : JSON.parse(draftData.data).configData[0]
             } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
                 return null
             } else {
@@ -417,7 +448,10 @@ export function ProtectedConfigMapSecretDetails({
         let currentConfigData = {},
             codeEditorValue = { displayName: 'data', value: '' }
         try {
-            currentConfigData = JSON.parse(draftData.data).configData[0]
+            currentConfigData =
+                draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                    ? baseData
+                    : JSON.parse(draftData.data).configData[0]
             codeEditorValue.value = JSON.stringify(getCodeEditorData(currentConfigData, false)) ?? ''
         } catch (error) {}
         return prepareHistoryData(
@@ -505,22 +539,37 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     const renderDiffView = (): JSX.Element => {
+        if (isLoader) {
+            return (
+                <div className="h-300">
+                    <Progressing />
+                </div>
+            )
+        }
         return (
             <>
                 <div className="en-2 bw-1 mt-16 mr-20 ml-20 bcn-1 dc__top-radius-4 deployment-diff__upper dc__no-bottom-border">
-                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9 dc__border-right">
+                    <div className="pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9 dc__border-right">
                         {cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED
                             ? 'No published version available'
                             : 'Published'}
                     </div>
-                    <div className=" pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
+                    <div className="pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
                 </div>
+                {draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN && (
+                    <div className="en-2 bw-1 mr-20 ml-20 deployment-diff__upper dc__no-bottom-border">
+                        <div className="pl-16 pr-16 pt-8 fs-12 cn-6 code-editor-red-diff">Configuration</div>
+                        <div className="pl-16 pr-16 pt-8 fs-12 cn-6 code-editor-green-diff">Configuration</div>
+                        <div className="pl-16 pr-16 pb-8 fs-13 cn-9 code-editor-red-diff">Override base</div>
+                        <div className="pl-16 pr-16 pb-8 fs-13 cn-9 code-editor-green-diff">Inherit from base</div>
+                    </div>
+                )}
                 <DeploymentHistoryDiffView
                     currentConfiguration={getBaseConfig()}
                     baseTemplateConfiguration={getCurrentConfig()}
                     previousConfigAvailable={true}
                     isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
-                    isDeleteDraft={draftData.action === 3}
+                    isDeleteDraft={draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN}
                     rootClassName="dc__no-top-radius mt-0-imp"
                 />
                 {renderApproveButton()}
@@ -542,7 +591,7 @@ export function ProtectedConfigMapSecretDetails({
     const renderForm = (): JSX.Element => {
         if (selectedTab === 1 && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
             return renderEmptyMessage('No published version of this file is available')
-        } else if (selectedTab === 3 && draftData.action === 3) {
+        } else if (selectedTab === 3 && draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN) {
             return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
@@ -554,17 +603,24 @@ export function ProtectedConfigMapSecretDetails({
                 componentType={componentType}
                 update={update}
                 index={index}
-                cmSecretStateLabel={cmSecretStateLabel}
+                cmSecretStateLabel={
+                    selectedTab === 3 && draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                        ? CM_SECRET_STATE.INHERITED
+                        : cmSecretStateLabel
+                }
                 isJobView={isJobView}
                 readonlyView={selectedTab === 1}
                 isProtectedView={true}
-                draftMode={selectedTab === 3}
+                draftMode={
+                    selectedTab === 3 && (draftData.action !== 3 || cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN)
+                }
                 latestDraftData={
                     draftData?.draftId
                         ? {
                               draftId: draftData?.draftId,
                               draftState: draftData?.draftState,
                               draftVersionId: draftData?.draftVersionId,
+                              action: draftData.action,
                           }
                         : null
                 }
@@ -574,76 +630,6 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     return selectedTab === 2 ? renderDiffView() : renderForm()
-}
-
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-    minHeight,
-    maxHeight,
-    value,
-    onChange = null,
-    onBlur = null,
-    onFocus = null,
-    className = '',
-    placeholder = 'Enter your text here..',
-    lineHeight = 14,
-    padding = 12,
-    disabled = false,
-    dataTestId,
-    ...props
-}) => {
-    const [text, setText] = useState('')
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist()
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
-    }
-
-    function handleBlur(e) {
-        if (typeof onBlur === 'function') onBlur(e)
-    }
-
-    function handleFocus(e) {
-        if (typeof onFocus === 'function') onFocus(e)
-    }
-
-    useThrottledEffect(
-        () => {
-            _textRef.current.style.height = 'auto'
-            let nextHeight = _textRef.current.scrollHeight
-            if (minHeight && nextHeight < minHeight) {
-                nextHeight = minHeight
-            }
-            if (maxHeight && nextHeight > maxHeight) {
-                nextHeight = maxHeight
-            }
-            _textRef.current.style.height = nextHeight + 2 + 'px'
-        },
-        500,
-        [text],
-    )
-
-    return (
-        <textarea
-            data-testid={dataTestId}
-            ref={(el) => (_textRef.current = el)}
-            value={text}
-            placeholder={placeholder}
-            className={`dc__resizable-textarea ${className}`}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
-    )
 }
 
 export const convertToValidValue = (k: any): string => {
