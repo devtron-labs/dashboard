@@ -16,16 +16,16 @@ import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoCo
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL } from '../../config'
+import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
 import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import TippyCustomized from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import { ChartFormFields } from './ChartRepoType'
 import {ChartRepoType} from "./chartRepo.types";
+import { NavLink } from 'react-router-dom'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
@@ -409,6 +409,7 @@ function ChartForm({
                 name={isNameField ? 'name' : 'url'}
                 error={isNameField ? state.name.error : state.url.error}
                 label={isNameField ? 'Name*' : 'URL*'}
+                placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
             />
         )
@@ -458,9 +459,9 @@ function ChartForm({
                 configName="chart repo"
             />
 
-            <div className="form__row form__row--two-third">
-                { renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
-                { renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
+            <div className="form__row--two-third mb-16">
+                {renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
+                {renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
                 {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
@@ -494,29 +495,43 @@ function ChartForm({
                     </>
                 )}
             </div>
-
-            <div className="form__row form__buttons">
-                {id && (
-                    <button
-                        data-testid="chart-repo-delete-button"
-                        className="cta delete dc__m-auto chart_repo__delete-button"
-                        type="button"
-                        onClick={handleDeleteClick}
-                    >
-                        {deleting ? <Progressing /> : 'Delete'}
-                    </button>
+            <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
+                {!id && (
+                    <div className="form-row flex left">
+                         <Question className="icon-dim-16 mr-8" />
+                        Looking to add OCI-based registry?
+                        <NavLink
+                            className="dc__no-decor pl-8 pr-8 flex left cb-5"
+                            to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}
+                        >
+                            Add OCI Registries
+                        </NavLink>
+                    </div>
                 )}
-                <button
-                    data-testid="chart-repo-cancel-button"
-                    className="cta cancel"
-                    type="button"
-                    onClick={handleCancelClick}
-                >
-                    Cancel
-                </button>
-                <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
-                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                </button>
+
+                <div className=" form__buttons">
+                    {id && (
+                        <button
+                            data-testid="chart-repo-delete-button"
+                            className="cta delete dc__m-auto chart_repo__delete-button"
+                            type="button"
+                            onClick={handleDeleteClick}
+                        >
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
+                    )}
+                    <button
+                        data-testid="chart-repo-cancel-button"
+                        className="cta cancel"
+                        type="button"
+                        onClick={handleCancelClick}
+                    >
+                        Cancel
+                    </button>
+                    <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
+                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                    </button>
+                </div>
             </div>
             {confirmation && (
                 <DeleteComponent

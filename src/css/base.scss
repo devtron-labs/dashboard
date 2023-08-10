@@ -396,6 +396,12 @@ a:focus {
   grid-column-gap: 16px;
 }
 
+.form__row--one-third {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-column-gap: 16px;
+  }
+
 // ClassName of text area
 .dc__code-textarea {
     min-width: 100%;
