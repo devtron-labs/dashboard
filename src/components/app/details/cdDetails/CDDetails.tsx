@@ -90,6 +90,12 @@ export default function CDDetails() {
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
+        if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
+            return
+        }
+        if (fetchTriggerIdData === FetchIdDataStatus.FETCHING || fetchTriggerIdData === FetchIdDataStatus.SUCCESS) {
+            return
+        }
         if (deploymentHistoryResult.result?.cdWorkflows?.length !== pagination.size) {
             setHasMore(false)
         } else {
@@ -157,6 +163,7 @@ export default function CDDetails() {
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setHasMore(false)
             setFetchTriggerIdData(null)
         }
     }, [envId])

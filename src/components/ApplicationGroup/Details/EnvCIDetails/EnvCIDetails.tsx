@@ -63,12 +63,14 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setPipelineList(null)
             showError(error)
             setHasMoreLoading(false)
+            setHasMore(false)
             setFetchBuildIdData(null)
         }
         return () => {
             setPipelineList(null)
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setHasMore(false)
             setFetchBuildIdData(null)
         }
     }, [filteredAppIds])
@@ -84,6 +86,12 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     useEffect(() => {
         if (!triggerHistoryResult) {
+            return
+        }
+        if (!triggerHistoryResult?.result?.ciWorkflows?.length) {
+            return
+        }
+        if (fetchBuildIdData === FetchIdDataStatus.FETCHING || fetchBuildIdData === FetchIdDataStatus.SUCCESS) {
             return
         }
         if (triggerHistoryResult.result.ciWorkflows?.length !== pagination.size) {
@@ -116,6 +124,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setHasMore(false)
             setAppReleaseTags([])
             setTagsEditable(false)
             setFetchBuildIdData(null)

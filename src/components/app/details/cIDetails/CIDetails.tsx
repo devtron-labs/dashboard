@@ -62,7 +62,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
-        if (!triggerHistoryResult?.result?.ciWorkflows) {
+        if (!triggerHistoryResult?.result?.ciWorkflows?.length) {
             return
         }
         if (fetchBuildIdData === FetchIdDataStatus.FETCHING || fetchBuildIdData === FetchIdDataStatus.SUCCESS) {
@@ -98,6 +98,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
+            setHasMore(false)
             setFetchBuildIdData(null)
         }
     }, [pipelineId])
