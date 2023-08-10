@@ -196,20 +196,19 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
             return (
-                <ol>
+                <ol className="pl-20 pr-20">
                     {node?.port.map((val) => {
                         return (
-                            <div className="flex row dc__content-space">
+                            <div className="flex dc__content-space">
                                 <li key={node.name}>
                                     {node.name}:{val}
-                                </li>
-                                <span>
                                 <Clipboard
+                                    className="ml-5 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
                                         toggleClipBoard(event, node.name)
                                     }}
                                 />
-                                </span>
+                                </li>
                             </div>
                         )
                     })}
@@ -222,11 +221,12 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                 return (
                     <TippyCustomized
                         theme={TippyTheme.white}
-                        className="dc__mxw-none w-250"
+                        className="default-tt"
                         arrow={false}
                         placement="bottom"
                         trigger="click"
                         additionalContent={additionalTippyContent(node)}
+                        interactive={true}
                     >
                         <div onClick={(e)=>stopPropagation(e)}>
                             <span>
