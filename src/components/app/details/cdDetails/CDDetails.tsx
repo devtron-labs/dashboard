@@ -148,7 +148,7 @@ export default function CDDetails() {
                 return {
                     value: `${envData.environmentId}`,
                     label: envData.environmentName,
-                    pipelineId: cdPipelinesMap.get(envData.environmentId).id,
+                    pipelineId: cdPipelinesMap.get(envData.environmentId)?.id,
                     deploymentAppDeleteRequest: envData.deploymentAppDeleteRequest,
                 }
             })
