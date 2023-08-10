@@ -28,7 +28,8 @@ import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
 
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
-const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
+//const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
+const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export default function DeploymentTemplateOverride({
     parentState,
@@ -70,6 +71,7 @@ export default function DeploymentTemplateOverride({
             payload.openComparison = false
             payload.showReadme = false
             //payload.allDrafts = []
+            payload.showComments = false
             payload.latestDraft = null
         }
 
@@ -131,35 +133,27 @@ export default function DeploymentTemplateOverride({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-        getAllDrafts(Number(appId), Number(envId), 3)
-            .then((allDraftsResp) => {
-                if (allDraftsResp.result) {
-                    const allDrafts = allDraftsResp.result
-                        .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
-                        .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
-                    const latestDraft = allDrafts[0]
-
-                    if (
-                        typeof getDraft === 'function' &&
-                        latestDraft &&
-                        (latestDraft.draftState === 1 || latestDraft.draftState === 4)
-                    ) {
-                        getDraftAndActivity(allDrafts, latestDraft, chartRefsData)
-                    } else {
-                        updateRefsData(chartRefsData)
-                    }
-                } else {
-                    updateRefsData(chartRefsData, true)
-                }
+      getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
+        //getAllDrafts(Number(appId), Number(envId), 3)
+            .then((draftsResp) => {
+              if ((draftsResp.result && draftsResp.result.draftState === 1) || draftsResp.result.draftState === 4) {
+                // const allDrafts = allDraftsResp.result
+                //     .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
+                //     .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
+                // const latestDraft = allDrafts[0]
+                processDraftData(draftsResp.result, chartRefsData)
+            } else {
+                updateRefsData(chartRefsData, !!state.publishedState)
+            }
             })
             .catch((e) => {
                 updateRefsData(chartRefsData)
             })
     }
 
-    const getDraftAndActivity = (allDrafts, latestDraft, chartRefsData) => {
-        getDraft(latestDraft.draftId)
-            .then((draftResp) => {
+    const processDraftData = (latestDraft, chartRefsData) => {
+        // getDraft(latestDraft.draftId)
+        //     .then((draftResp) => {
                 const {
                     envOverrideValues,
                     id,
@@ -173,9 +167,9 @@ export default function DeploymentTemplateOverride({
                     manualReviewed,
                     active,
                     namespace,
-                } = JSON.parse(draftResp.result.data)
+                } = JSON.parse(latestDraft.data)
 
-                const isApprovalPending = draftResp.result.draftState === 4
+                const isApprovalPending = latestDraft.draftState === 4
                 const payload = {
                     chartConfigLoading: false,
                     duplicate: envOverrideValues,
@@ -188,11 +182,11 @@ export default function DeploymentTemplateOverride({
                         namespace,
                     },
                     isAppMetricsEnabled,
-                    latestDraft: draftResp.result,
+                    latestDraft: latestDraft,
                     selectedTabIndex: isApprovalPending ? 2 : 3,
                     openComparison: isApprovalPending,
                     showReadme: false,
-                    allDrafts,
+                    //allDrafts,
                     currentEditorView,
                     isBasicLocked,
                     showDraftOverriden: isDraftOverriden,
@@ -221,10 +215,10 @@ export default function DeploymentTemplateOverride({
                     updateTemplateFromBasicValue(envOverrideValues)
                     parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, payload, false)
                 }
-            })
-            .catch((e) => {
-                updateRefsData(chartRefsData)
-            })
+            // })
+            // .catch((e) => {
+            //     updateRefsData(chartRefsData)
+            // })
     }
 
     async function handleAppMetrics() {
