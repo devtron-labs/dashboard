@@ -162,8 +162,17 @@ export function ConfigMapSecretContainer({
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
                 }
-            } else if(cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED && !draftState){
-              update()
+            } else if (
+                cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
+                _draftData?.status === 'fulfilled' &&
+                _draftData.value.result
+            ) {
+                if (_draftData.value.result.draftState === 3) {
+                    update(index, JSON.parse(_draftData.value.result.data))
+                } else if (_draftData.value.result.draftState === 2) {
+                    toast.error(`The ${componentType} '${data?.name}' has been deleted`)
+                    update(index, null)
+                }
             }
             toggleCollapse(false)
             if (
