@@ -127,10 +127,14 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         }
     }, [location.search, state.loading])
 
+    const getInitChartList = async()  => {
+     return  getChartProviderList()
+    }
+
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            let chartRepos = (await getChartProviderList()).result || []
+            let chartRepos = (await getInitChartList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
@@ -299,7 +303,8 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         setShowSourcePopoUp(true)
     }
 
-    const toggleChartListPopUp = (): void => {
+    const toggleChartListPopUp = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         setShowSourcePopoUp(!setShowSourcePopoUp)
     }
 
@@ -341,6 +346,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                             filteredChartList={filteredChartList}
                             setFilteredChartList={setFilteredChartList}
                             isLoading={isLoading}
+                            setShowSourcePopoUp={setShowSourcePopoUp}
                         />
                     )}
                 </div>

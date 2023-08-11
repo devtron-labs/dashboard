@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ChartListPopUpType, ChartListType } from '../charts.types'
+import { ChartListPopUpType } from '../charts.types'
 import {
     showError,
     Progressing,
@@ -10,13 +10,10 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { postChartProviderList, postSyncSpecificChart } from '../charts.service'
-import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
-import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
@@ -24,20 +21,37 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import EmptyFolder from '../../../assets/img/Empty-folder.png'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import AddChartSource from './AddChartSource'
+import ChartListPopUpRow from './ChartListPopUpRow'
+import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 
-function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setFilteredChartList }: ChartListPopUpType) {
+function ChartListPopUp({
+    onClose,
+    chartList,
+    filteredChartList,
+    isLoading,
+    setFilteredChartList,
+    setShowSourcePopoUp
+}: ChartListPopUpType) {
     const [searchApplied, setSearchApplied] = useState<boolean>(false)
     const [searchText, setSearchText] = useState<string>('')
     const [fetching, setFetching] = useState<boolean>(false)
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
-    const [enabled, toggleEnabled] = useState<boolean>()
     const isEmpty = chartList.length && !filteredChartList.length
 
     const setStore = (event): void => {
         setSearchText(event.target.value)
     }
 
-    const toggleAddPopUp = () => {
+    const closeChartPopUpModalOnBlur = () => {
+        if (showAddPopUp) {
+            setShowAddPopUp(false)
+        } else {
+            setShowSourcePopoUp(false)
+        }
+    }
+
+    const toggleAddPopUp = (event: React.MouseEvent): void => {
+        event.stopPropagation()
         setShowAddPopUp(!showAddPopUp)
     }
 
@@ -50,7 +64,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
                         <Add className="icon-dim-20 fcb-5 mr-8" />
                         Add
                     </div>
-                    {renderRefetch()}
+                    {renderGlobalRefetch()}
                     <div className="dc__divider ml-12 mr-4" />
                     <button className="dc__transparent flex mr-8" onClick={onClose}>
                         <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
@@ -66,10 +80,10 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
             return
         }
         setFetching(true)
-        toast.success(TOAST_INFO.RE_SYNC)
         await reSyncChartRepo()
             .then((response) => {
                 setFetching(false)
+                toast.success(TOAST_INFO.RE_SYNC)
             })
             .catch((error) => {
                 showError(error)
@@ -77,13 +91,6 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
             })
     }
 
-    async function refetchSpecificChart (id: number, isOCIRegistry: boolean) {
-        let payload ={
-             id: id,
-             isOCIRegistry: isOCIRegistry
-        }
-        await postSyncSpecificChart(payload)
-    }
     const renderInfoText = (isEmptyState?: boolean): JSX.Element => {
         const renderNavigationeToOCIRepository = () => {
             return (
@@ -112,33 +119,23 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         )
     }
 
-    const renderRefetch = () => {
+    const renderGlobalRefetch = () => {
         if (!isEmpty) {
             return (
-                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className={`chartRepo_form__subtitle dc__float-right dc__link flex ${!fetching ? 'cursor' : ''}`}
-                            onClick={refetchCharts}
-                        >
-                            <SyncIcon />
-                        </a>
+                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts from all resources">
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className={`chartRepo_form__subtitle dc__float-right dc__link flex ${
+                            !fetching ? 'cursor' : ''
+                        }`}
+                        onClick={refetchCharts}
+                    >
+                        {fetching ? <Progressing size={16} /> : <SyncIcon />}
+                    </a>
                 </Tippy>
             )
         }
-    }
-
-    const onSelectToggle = (repositortList: ChartListType) => {
-        toggleEnabled(repositortList.active)
-        let payload = {
-            id: repositortList.id,                  //eg: OCI registry: “test-registry” ; for chart repo: “1”
-            isOCIRegistry: repositortList.isOCIRegistry,   // for chart-repo: false
-            active: !repositortList.active,
-
-        }
-        postChartProviderList(payload)
-
     }
 
     const renderChartList = () => {
@@ -147,54 +144,9 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
         }
         return (
             <div className="dc__overflow-scroll h-100 mxh-390-imp">
-                { filteredChartList.map((list, index) => {
-                        return (
-                            <div className="chart-list__row">
-                                <List key={`chart-row-${index}`}>
-                                    <List.Logo>
-                                        <div className={'dc__registry-icon ' + list.registryProvider}></div>
-                                    </List.Logo>
-                                    <div>{list.name}</div>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="top"
-                                        content="Refetch chart from repositories"
-                                    >
-                                        <a
-                                            rel="noreferrer noopener"
-                                            target="_blank"
-                                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
-                                            onClick={() =>refetchSpecificChart(list.id, list.isOCIRegistry)}
-                                        >
-                                            <span>
-                                                <SyncIcon className="scn-5" />
-                                            </span>
-                                        </a>
-                                    </Tippy>
-
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
-                                    >
-                                        <span
-                                            data-testid={`${'name'}-chart-repo-toggle-button`}
-                                            style={{ marginLeft: 'auto' }}
-                                        >
-                                            <div>
-                                                <List.Toggle
-                                                    onSelect={() => onSelectToggle(list)}
-                                                    enabled={list.active ?? enabled}
-                                                />
-                                            </div>
-                                        </span>
-                                    </Tippy>
-                                </List>
-                            </div>
-                        )
-                    })}
+                {filteredChartList.map((list, index) => {
+                    return <ChartListPopUpRow index={index} list={list} />
+                })}
                 <InfoColourBar
                     message={renderInfoText()}
                     classname="question-bar m-16"
@@ -282,7 +234,7 @@ function ChartListPopUp({ onClose, chartList, filteredChartList, isLoading, setF
     }
 
     return (
-        <div className="dc__transparent-div bcn-0">
+        <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
             <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden">
                 {renderChartListHeaders()}
                 {renderChartListBody()}

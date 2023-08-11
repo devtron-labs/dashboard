@@ -1212,3 +1212,7 @@ export const getDeploymentAppType = (
   }
   return allowedDeploymentTypes[0]
 }
+
+export const getNonEditableChartRepoText = (name: string): string => {
+   return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
+}

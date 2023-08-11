@@ -1488,7 +1488,7 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && (
+                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig.isOCICompliantChart &&(
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}

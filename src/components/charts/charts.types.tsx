@@ -351,11 +351,12 @@ export interface HelmProjectUpdatePayload {
 }
 
 export interface ChartListPopUpType{
-  onClose:() => void
+  onClose:(e) => void
   chartList: ChartListType[]
   filteredChartList: ChartListType[]
   isLoading: boolean
   setFilteredChartList: React.Dispatch<React.SetStateAction<ChartListType[]>>
+  setShowSourcePopoUp: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ChartListType {
