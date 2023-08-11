@@ -333,21 +333,25 @@ export default function ChartValuesEditor({
         }
     }
 
-    const getDynamicHeight = (): string => {
-        if (isDeployChartView && (!showInfoText || showEditorHeader)) {
-            return 'calc(100vh - 130px)'
-        } else if (isDeployChartView || (!isDeployChartView && (!showInfoText || showEditorHeader))) {
-            return (manifestView && !comparisonView) ? 'calc(100vh - 208px)' : 'calc(100vh - 162px)'
-        } else {
-            return 'calc(100vh - 196px)'
+    const getDynamicClassName = (): string => {
+        if(isDeployChartView){
+            if(!showInfoText || showEditorHeader) return 'sub130-vh'
+            return manifestView ? 'sub200-vh' : 'sub160-vh'
         }
+
+        if(comparisonView){
+            if(manifestView) return 'sub193-vh'
+            return 'sub160-vh'
+        }
+
+        if(manifestView) return 'sub229-vh'
+        if(showEditorHeader) return 'sub160-vh'
+        return 'sub189-vh'
     }
 
     return (
         <div
-            className={`code-editor-container manifest-view ${
-                showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
-            }`}
+            className={`code-editor-container manifest-view ${getDynamicClassName()}`}
             data-testid="code-editor-container"
         >
             <CodeEditor
@@ -373,7 +377,6 @@ export default function ChartValuesEditor({
                         )}
                     </DetailsProgressing>
                 }
-                height={getDynamicHeight()}
                 readOnly={manifestView}
             >
                 {showEditorHeader && (
