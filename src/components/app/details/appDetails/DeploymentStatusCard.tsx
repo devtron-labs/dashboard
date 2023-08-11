@@ -9,8 +9,6 @@ import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../co
 import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import { getDeploymentStatusDetail } from './appDetails.service'
-import { processDeploymentStatusDetailsData } from './utils'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
@@ -20,9 +18,7 @@ function DeploymentStatusCard({
     deploymentTriggerTime,
     triggeredBy,
     isVirtualEnvironment,
-    appId,
-    envId,
-    isHelmApp
+    refetchDeploymentStatus
 }: DeploymentStatusCardType) {
     const history = useHistory()
 
@@ -77,17 +73,11 @@ function DeploymentStatusCard({
             </>
         )
     }
-    const getDeploymentDetailStepsData = (): void => {
-        // detailed deployments status
-        getDeploymentStatusDetail(appId, envId, true, '', isHelmApp).then((deploymentStatusDetailRes) => {
-            processDeploymentStatusDetailsData(deploymentStatusDetailRes.result)
-        })
-    }
 
     const onClickLastDeploymentStatus = (e) => {
-        if (!hideDetails){
-            getDeploymentDetailStepsData()
-        } 
+        if (!hideDetails) {
+            refetchDeploymentStatus(true)
+        }
         if (loadingResourceTree) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
