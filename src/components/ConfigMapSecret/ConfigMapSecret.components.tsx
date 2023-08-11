@@ -157,6 +157,22 @@ export function ConfigMapSecretContainer({
                         _result.configData[0].draftId = draftId
                         _result.configData[0].draftState = draftState
                     }
+                    if (componentType === 'secret' && _draftData?.status === 'fulfilled' && _draftData.value?.result) {
+                        _result.configData[0].overridden = data.overridden
+                        if (
+                            cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+                            _draftData.value.result.draftState === 3 &&
+                            _draftData.value.result.action === 2
+                        ) {
+                            _result.configData[0].overridden = true
+                        } else if (
+                            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
+                            _draftData.value.result.draftState === 3 &&
+                            _draftData.value.result.action === 3
+                        ) {
+                            _result.configData[0].overridden = false
+                        }
+                    }
                     update(index, _result)
                 } else {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
