@@ -153,7 +153,6 @@ export default function Docker({ ...props }) {
                     {...docker}
                     clusterOption={clusterOption}
                     key={docker.id || Math.random().toString(36).substr(2, 5)}
-                    isPublic={docker.isPublic}
                 />
             ))}
         </section>
@@ -176,7 +175,7 @@ function CollapsedList({
     connection = '',
     cert = '',
     isOCICompliantRegistry = false,
-    isPublic,
+    isPublic= false,
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -597,7 +596,7 @@ function DockerForm({
             if (!awsRegion) return
         }
         let payload = getRegistryPayload(awsRegion)
-        payload.ociRegistryConfig = isPublic ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
+        payload.ociRegistryConfig = registryStorageType === RegistryStorageType.OCI_PUBLIC ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
