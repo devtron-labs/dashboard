@@ -133,7 +133,7 @@ export default function DeploymentTemplateOverride({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-      getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
+      getDraftByResourceName(appId, Number(envId), 3, `${environmentName}-DeploymentTemplateOverride`)
         //getAllDrafts(Number(appId), Number(envId), 3)
             .then((draftsResp) => {
               if ((draftsResp.result && draftsResp.result.draftState === 1) || draftsResp.result.draftState === 4) {
