@@ -11,7 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import Tippy from '@tippyjs/react';
+import Tippy, { tippy } from '@tippyjs/react';
 import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -167,6 +167,15 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
             )
         }
     }
+
+    let tippyContent
+
+    if (!isEditable) {
+        tippyContent = "Can't disable repository"
+    } else {
+        tippyContent = enabled ? 'Disable chart repository' : 'Enable chart repository'
+    }
+
     return (
         <article
             className={`collapsed-list dc__clear-both ${
@@ -198,7 +207,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                             className="default-tt"
                             arrow={false}
                             placement="bottom"
-                            content={!isEditable ? "Can't disable repository" : enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                            content={tippyContent}
                         >
                             <span data-testid={`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
                                 {loading ? (
