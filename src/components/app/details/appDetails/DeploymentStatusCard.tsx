@@ -122,9 +122,7 @@ function DeploymentStatusCard({
                 </div>
 
                 {hideDeploymentStatusLeftInfo ? (
-                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
-                        by {triggeredBy || '-'}
-                    </div>
+                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">by {triggeredBy || '-'}</div>
                 ) : (
                     <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
                         by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
