@@ -98,18 +98,14 @@ export const handleConfigProtectionError = (
     dispatch: (value: DeploymentConfigStateAction) => void,
     reloadEnvironments: () => void,
 ): void => {
-    if (err instanceof ServerErrors && Array.isArray(err.errors)) {
-        for (const error of err.errors) {
-            if (error.code === 423) {
-                if (action === 3) {
-                    dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
-                } else {
-                    dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
-                }
-                reloadEnvironments()
-                return
-            }
+    if (err?.code === 423) {
+        if (action === 3) {
+            dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
+        } else {
+            dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
         }
+        reloadEnvironments()
+        return
     }
     showError(err)
 }

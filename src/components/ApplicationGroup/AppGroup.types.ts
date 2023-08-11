@@ -259,6 +259,7 @@ export interface AppGroupDetailDefaultType {
     filteredAppIds: string
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
+    envName?: string
 }
 
 interface CIPipeline {

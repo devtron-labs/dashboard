@@ -151,7 +151,7 @@ export default function DeploymentConfig({
     }
 
     const processDraftData = (latestDraft, chartRefsData) => {
-        // getDraft(latestDraft.draftId)
+        //getDraft(latestDraft.draftId)
         //     .then((draftResp) => {
                 const {
                     valuesOverride,
@@ -324,7 +324,7 @@ export default function DeploymentConfig({
                 payload['readme'] = readme
                 payload['schema'] = schema
                 payload['chartConfig'] = {
-                    ...state.publishedState?.chartConfig,
+                    ...state.chartConfig,
                     readme,
                 }
             } else {

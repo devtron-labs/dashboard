@@ -51,7 +51,7 @@ export default function DeploymentTemplateOverride({
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
         reloadEnvironments()
         initialise()
-    }, [envId])
+    }, [envId, appId])
 
     useEffect(() => {
         if (state.selectedChart) {

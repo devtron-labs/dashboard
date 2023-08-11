@@ -36,6 +36,7 @@ export interface EnvironmentOverrideComponentProps {
     isJobView?: boolean
     environments?: any
     reloadEnvironments: () => void
+    envName?: string
 }
 
 export interface CommonEnvironmentOverridesProps {
