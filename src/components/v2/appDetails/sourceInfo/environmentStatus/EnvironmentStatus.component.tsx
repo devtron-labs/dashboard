@@ -27,6 +27,7 @@ function EnvironmentStatusComponent({
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
     isHelmApp,
+    refetchDeploymentStatus
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -173,9 +174,7 @@ function EnvironmentStatusComponent({
                     deploymentTriggerTime={appDetails?.lastDeployedTime}
                     triggeredBy={appDetails?.lastDeployedBy}
                     isVirtualEnvironment={isVirtualEnvironment}
-                    appId={params.appId}
-                    envId={params.envId}
-                    isHelmApp={isHelmApp}
+                    refetchDeploymentStatus={refetchDeploymentStatus}
                 />
             )
         )

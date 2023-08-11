@@ -24,7 +24,11 @@ import { useSharedState } from '../utils/useSharedState'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
-const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary('processVirtualEnvironmentDeploymentData', null, 'function')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
+    'processVirtualEnvironmentDeploymentData',
+    null,
+    'function',
+)
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -47,12 +51,13 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const location = useLocation()
-    const deploymentModalShownRef = useRef(null)
-    deploymentModalShownRef.current =location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
+    const deploymentModalShownRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...((isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData():  processDeploymentStatusDetailsData()),
+            ...(isVirtualEnv.current && processVirtualEnvironmentDeploymentData
+                ? processVirtualEnvironmentDeploymentData()
+                : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS,
         })
@@ -64,8 +69,19 @@ const AppDetailsComponent = ({
     }, [])
 
     useEffect(() => {
+        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
+            deploymentModalShownRef.current = true
+        } else {
+            deploymentModalShownRef.current = false
+        }
+    }, [location.search])
+
+    useEffect(() => {
         // Get deployment status timeline on argocd apps
-        if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS || appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
+        if (
+            appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS ||
+            appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+        ) {
             getDeploymentDetailStepsData()
         }
         isVirtualEnv.current = appDetails?.isVirtualEnvironment
@@ -80,15 +96,24 @@ const AppDetailsComponent = ({
         }
     }
 
-    const getDeploymentDetailStepsData = (): void => {
+    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
         // Deployments status details for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current, '', true).then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(
+            params.appId,
+            params.envId,
+            showTimeline ?? deploymentModalShownRef.current,
+            '',
+            true,
+        ).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData =
+            isVirtualEnv.current && processVirtualEnvironmentDeploymentData
+                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         if (
             processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
@@ -96,7 +121,7 @@ const AppDetailsComponent = ({
             processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
             processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
         ) {
-            deploymentModalShownRef.current= false
+            deploymentModalShownRef.current = false
         }
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
@@ -133,7 +158,7 @@ const AppDetailsComponent = ({
             />
         )
     }
-    
+
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
             <div>
@@ -151,6 +176,7 @@ const AppDetailsComponent = ({
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
                         isHelmApp={true}
+                        refetchDeploymentStatus={getDeploymentDetailStepsData}
                     />
                 )}
             </div>
@@ -176,8 +202,8 @@ const AppDetailsComponent = ({
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
                     streamData={streamData}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} 
-                    isVirtualEnvironment={isVirtualEnv.current}                    
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    isVirtualEnvironment={isVirtualEnv.current}
                 />
             )}
         </div>
