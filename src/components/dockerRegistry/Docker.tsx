@@ -615,7 +615,6 @@ function DockerForm({
             const message = err["errors"][0].userMessage
             if (code === 409 ){
                 setRepositoryError(message)
-                console.log(message)
             }else{
                 showError(err)
             }
