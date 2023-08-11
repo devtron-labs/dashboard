@@ -378,11 +378,11 @@ export const ConfigMapSecretForm = React.memo(
                 for (const error of err.errors) {
                     if (error.code === 423) {
                         if (actionType === 3) {
-                          if(state.dialog){
-                            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
-                          } else{
-                            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
-                          }
+                            if (state.dialog) {
+                                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
+                            } else {
+                                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
+                            }
                         } else {
                             const _draftPayload = { id: id ?? 0, appId: +appId, configData: [payloadData] }
                             if (envId) {
@@ -559,7 +559,14 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const toggleDraftSaveModal = (reload?: boolean): void => {
-            dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
+            if (state.showDraftSaveModal) {
+                dispatch({
+                    type: ConfigMapActionTypes.multipleOptions,
+                    payload: { showDraftSaveModal: false, submitLoading: false },
+                })
+            } else {
+                dispatch({ type: ConfigMapActionTypes.toggleDraftSaveModal })
+            }
         }
 
         const reloadData = (): void => {
