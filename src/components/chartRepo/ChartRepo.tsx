@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useForm, useAsync } from '../common'
+import { useForm, useAsync, getNonEditableChartRepoText } from '../common'
 import {
     showError,
     Progressing,
@@ -45,22 +45,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
         const maxRange = 4294967296
         const num = randomBytes[0] / maxRange
         return Math.floor(num * range) + min
-    }
-
-    function refetchCharts(e) {
-        if (fetching) {
-            return
-        }
-        setFetching(true)
-        toast.success(TOAST_INFO.RE_SYNC)
-         reSyncChartRepo()
-            .then((response) => {
-                setFetching(false)
-            })
-            .catch((error) => {
-                showError(error)
-                setFetching(false)
-            })
     }
 
     if (!isSuperAdmin) {
@@ -148,7 +132,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
             toggleCollapse((t) => !t)
         } else {
             toast.info(
-                `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`,
+                getNonEditableChartRepoText(name),
             )
         }
     }
