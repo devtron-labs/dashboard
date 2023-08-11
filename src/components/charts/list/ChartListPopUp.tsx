@@ -6,6 +6,7 @@ import {
     InfoColourBar,
     GenericEmptyState,
     ImageType,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
@@ -236,7 +237,7 @@ function ChartListPopUp({
 
     return (
         <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
-            <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden">
+            <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"  onClick={stopPropagation}>
                 {renderChartListHeaders()}
                 {renderChartListBody()}
             </div>
