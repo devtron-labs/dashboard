@@ -43,7 +43,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                 let _date: string
                 const data: DescriptionDataType = {
                     descriptionText: defaultClusterNote,
-                    descriptionId:  0,
+                    descriptionId: 0,
                     descriptionUpdatedBy: '',
                     descriptionUpdatedOn: ''
                 }
@@ -64,26 +64,16 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
         })
     }, [])
 
-    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {    
+    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         if (errorType === ERROR_TYPE.VERSION_ERROR) {
             const newUrl = generatePath(path, { clusterId, namespace, nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(), group: K8S_EMPTY_GROUP }) + '?' + `k8sversion=${filterText}`
             history.push(newUrl)
-        } else {
-            const _searchedTextMap = new Map()
-            const searchedLabelArr = filterText.split(',')
-            for (const selectedVersion of searchedLabelArr) {
-                const currentItem = selectedVersion.trim()
-                _searchedTextMap.set(currentItem, true)
-            }
-            // setSelectedSearchTextType('name')
-            // setSearchedTextMap(_searchedTextMap)
-            // setSearchText(filterText)
         }
     }
 
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
-        return <div className='m-16 dc__border br-4 pt-12 pb-12'>
+        return <div className="m-16 dc__border br-4 pt-12 pb-12">
             <div
                 className="flexbox pointer mb-12 pl-16 pr-16"
             >
@@ -93,13 +83,13 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                 </span>
             </div>
             <div className="fw-6 pt-6 pb-6 pl-16 pr-16 flex left dc__border-bottom">
-                <div className='w-250 '>Error</div>
+                <div className="w-250">Error</div>
                 <span>Message</span>
             </div>
-            <div className='pl-16 pr-16 pt-8'>
+            <div className="pl-16 pr-16 pt-8">
                 {clusterErrorList.map((error, index) => (
-                    <div className='flex left'>
-                        <div className='w-250'>{error.errorType === ERROR_TYPE.OTHER ? 'Memory pressure' : `${ clusterErrorTitle }`}</div>
+                    <div className="flex left">
+                        <div className='w-250'>{error.errorType === ERROR_TYPE.OTHER ? 'Memory pressure' : `${clusterErrorTitle}`}</div>
                         <div key={`error-${index}`} className="fw-4 fs-13 cn-9">
                             {error.errorText}
                             {error.errorType === ERROR_TYPE.OTHER ? (
@@ -130,7 +120,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
                         </div>
                     </div>
                 ))}
-                    </div>
+            </div>
         </div>
     }
 
@@ -192,7 +182,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderClusterSummary = (): JSX.Element => {
         return (
-            <div className='dc__border-left'>
+            <div className="dc__border-left">
                 {isLoading ? <Progressing pageLoader /> :
                     <>  {renderCardDetails()}
                         {renderClusterError()}

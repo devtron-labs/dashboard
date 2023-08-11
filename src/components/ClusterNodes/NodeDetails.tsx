@@ -50,7 +50,6 @@ import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
-import { URLS } from '../../config'
 import { useRouteMatch } from 'react-router-dom'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 

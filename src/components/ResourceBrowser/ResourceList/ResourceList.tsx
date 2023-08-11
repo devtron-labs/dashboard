@@ -24,22 +24,19 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
-import { Nodes, OptionType } from '../../app/types'
+import { OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
     ERROR_SCREEN_LEARN_MORE,
     ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
     K8S_EMPTY_GROUP,
-    K8S_RESOURCE_LIST,
     ORDERED_AGGREGATORS,
     SIDEBAR_KEYS,
-    STALE_DATA_WARNING_TEXT,
 } from '../Constants'
 import { DOCUMENTATION, URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
-import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import K8ResourceIcon from '../../../assets/icons/ic-object.svg'
@@ -47,7 +44,6 @@ import { CreateResource } from './CreateResource'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
-import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
@@ -119,7 +115,7 @@ export default function ResourceList() {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(window._env_.K8S_CLIENT ? true : false)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
-    const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail[]>()
+    const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
     const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
     const [clusterErrorList, setClusterErrorList] = useState<
         { errorText: string; errorType: ERROR_TYPE; filterText: string[] }[]
@@ -145,7 +141,6 @@ export default function ResourceList() {
 
         // Get cluster data &  Initialize tabs on mount
         getClusterData()
-        // console.log(JSON.parse(localStorage.getItem('persisted-tabs-data')));  
         initTabs([
             {
                 idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
@@ -188,7 +183,7 @@ export default function ResourceList() {
 
     useEffect(() => {
         if (clusterId) {
-            const _selectedCluster = terminalclusterData?.find((list) => list.id == +clusterId)
+            const _selectedCluster = terminalClusterData?.find((list) => list.id == +clusterId)
             if (_selectedCluster) {
                 setSelectedTerminal(_selectedCluster)
             }
@@ -314,6 +309,8 @@ export default function ResourceList() {
             return (): void => {
                 resourceListAbortController.abort()
             }
+        } else if (isNodes) {
+            getPodListData()
         }
     }, [selectedResource])
 
@@ -366,8 +363,8 @@ export default function ResourceList() {
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
                     // Will added this changes if we are not redirecting to cluster page
-                    // } else if (_clusterOptions.length === 1) {
-                    //     onChangeCluster(_clusterOptions[0], true)
+                // } else if (_clusterOptions.length === 1) {
+                //     onChangeCluster(_clusterOptions[0], true)
                 }
             }
 
@@ -454,7 +451,7 @@ export default function ResourceList() {
                     namespaced: childNode.namespaced,
                     gvk: childNode.gvk,
                 }
-                
+
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected, true)
@@ -547,7 +544,33 @@ export default function ResourceList() {
         </div>
     }
 
-    const getResourceListData = async (retainSearched?: boolean): Promise<void> => {        
+    const getPodListData = async () => {
+        try {
+            const selectedGVK = k8SObjectMap.get("Workloads").child.get("Pod").data[0]
+            updateResourceSelectionData(selectedGVK)
+            setResourceListLoader(true)
+            const resourceListPayload: ResourceListPayloadType = {
+                clusterId: Number(clusterId),
+                k8sRequest: {
+                    resourceIdentifier: {
+                        groupVersionKind: selectedGVK.gvk,
+                    },
+                },
+            }
+            if (selectedResource.namespaced) {
+                resourceListPayload.k8sRequest.resourceIdentifier.namespace =
+                    namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
+            }
+            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
+            setResourceList(result)
+            setFilteredResourceList(result.data)
+            setResourceListLoader(false)
+        } catch (error) {
+
+        }
+    }
+
+    const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
         try {
             setResourceListLoader(true)
             setResourceList(null)
@@ -702,7 +725,6 @@ export default function ResourceList() {
             updateNodeSelectionData(selectedNode)
         }
 
-
         return {
             clusterId: Number(clusterId),
             group: _selectedResource?.Group || '',
@@ -775,7 +797,7 @@ export default function ResourceList() {
                 markTabActiveByIdentifier={markTabActiveByIdentifier}
                 addTab={addTab} />
         }
-        if (nodeType === 'terminal') {
+        if (nodeType ===  AppDetailsTabs.terminal) {
             const _imageList = filterImageList(imageList, selectedTerminal.serverVersion)
             if (!selectedTerminal) return null
             return <ClusterTerminal
@@ -918,37 +940,6 @@ export default function ResourceList() {
                     <div className="resource-browser-tab flex left w-100">
                         <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} />
                     </div>
-                    {/* <div className="fs-13 flex pt-12 pb-12">
-                        {!loader && !showErrorState && (
-                            <>
-                                {!node && lastDataSyncTimeString && (
-                                    <div className="ml-12 flex pl-12 dc__border-left">
-                                        {resourceListLoader ? (
-                                            <span className="dc__loading-dots">Syncing</span>
-                                        ) : (
-                                            <>
-                                                {isStaleDataRef.current && (
-                                                    <Tippy
-                                                        className="default-tt w-200"
-                                                        placement="bottom"
-                                                        arrow={false}
-                                                        content={STALE_DATA_WARNING_TEXT}
-                                                    >
-                                                        <Warning className="icon-dim-16 mr-4" />
-                                                    </Tippy>
-                                                )}
-                                                <span>{lastDataSyncTimeString}</span>
-                                                <RefreshIcon
-                                                    className="icon-dim-16 scb-5 ml-8 cursor"
-                                                    onClick={refreshData}
-                                                />
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div> */}
                 </div>
                 {renderResourceBrowser()}
             </div>
