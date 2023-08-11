@@ -18,7 +18,7 @@
     height: calc(100vh - 90px);
 
     .list-min-height {
-        min-height: calc(100vh - 279px);
+        min-height: calc(100vh - 120px);
         &.no-result-container {
             overflow: hidden;
             display: grid;
@@ -472,4 +472,8 @@
         height: calc(100vh - 118px);
         overflow: auto;
     }
+}
+
+.node-code-editor-header {
+    background: var(--terminal-bg);
 }

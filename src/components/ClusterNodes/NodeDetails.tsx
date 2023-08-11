@@ -901,9 +901,10 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                     value={modifiedManifest}
                     defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
                     height={
-                        isReviewState ? `calc( 100vh - ${isShowWarning ? '180px' : '156px'})` : 'calc( 100vh - 120px)'
+                        isReviewState ? `calc( 100vh - ${isShowWarning ? '180px' : '148px'})` : 'calc( 100vh - 116px)'
                     }
                     readOnly={!isEdit}
+                    theme="vs-dark--dt"
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     mode={MODES.YAML}
@@ -916,11 +917,11 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader={true}>
-                            <div className="h-32 lh-32 fs-12 fw-6 bcn-1 dc__border-bottom flexbox w-100 cn-7">
-                                <div className="dc__border-right pl-10 w-49">Current node YAML </div>
+                        <CodeEditor.Header hideDefaultSplitHeader={true} className="node-code-editor-header" >
+                            <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 cn-0">
+                                <div className=" pl-10 w-49">Current node YAML </div>
                                 <div className="pl-25 w-51 flexbox">
-                                    <Edit className="icon-dim-16 mt-7 mr-5" />
+                                    <Edit className="icon-dim-16 scn-0 mt-7 mr-5" />
                                     YAML (Editing)
                                 </div>
                             </div>

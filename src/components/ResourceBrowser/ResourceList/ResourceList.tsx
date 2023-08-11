@@ -301,6 +301,13 @@ export default function ResourceList() {
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
+        if(nodeType === AppDetailsTabs.terminal && selectedCluster?.value && selectedNamespace?.value){
+            updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,`${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
+            }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`)
+        }
+    },[location.search])
+
+    useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
             getResourceListData()
             setSearchText('')
@@ -329,10 +336,10 @@ export default function ResourceList() {
         const _staleDataCheckTime = moment()
         isStaleDataRef.current = false
 
-        setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
+        setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
-            setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
+            setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
         }, 1000)
 
         return () => {
@@ -537,7 +544,7 @@ export default function ResourceList() {
             {!node && lastDataSyncTimeString && !resourceListLoader && (
                 <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
                     <Warning className="icon-dim-20 mr-8" />
-                    <span>Last synced {lastDataSyncTimeString} minutes ago. The data might be stale. </span>
+                    <span>Last synced {lastDataSyncTimeString}. The data might be stale. </span>
                     <span className='cb-5 ml-4 fw-6 cursor' onClick={refreshData}>Sync now</span>
                 </div>
             )}
