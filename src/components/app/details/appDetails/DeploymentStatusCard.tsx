@@ -98,7 +98,7 @@ function DeploymentStatusCard({
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
-            className={`source-info-container flex left bcn-0 p-16 br-8 mw-382 ${
+            className={`source-info-container flex left bcn-0 p-16 br-8 ${
                 hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
             } mr-12`}
         >
