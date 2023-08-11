@@ -72,7 +72,6 @@ export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
     const [clusterOption, setClusterOptions] = useState([])
     const [clusterLoader, setClusterLoader] = useState(false)
-    const [registryStorageType, setRegistryStorageType] = useState()
 
     const _getInit = async () => {
         setClusterLoader(true)
@@ -153,8 +152,6 @@ export default function Docker({ ...props }) {
                     {...docker}
                     clusterOption={clusterOption}
                     key={docker.id || Math.random().toString(36).substr(2, 5)}
-                    setRegistryStorageType={setRegistryStorageType}
-                    registryStorageType={registryStorageType}
                     isPublic={docker.isPublic}
                 />
             ))}
@@ -179,15 +176,6 @@ function CollapsedList({
     cert = '',
     isOCICompliantRegistry = false,
     isPublic,
-    registryStorageType = isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
-    setRegistryStorageType,
-    ociRegistryConfig = registryStorageType === RegistryStorageType.OCI_PUBLIC
-        ? {
-              CHART: OCIRegistryConfigConstants.PULL,
-          }
-        : {
-              CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-          },
     ipsConfig = {
         id: 0,
         credentialType: '',
@@ -268,14 +256,11 @@ function CollapsedList({
                         connection,
                         cert,
                         isOCICompliantRegistry,
-                        ociRegistryConfig,
                         ipsConfig,
                         clusterOption,
                         setToggleCollapse,
                         repositoryList,
                         isPublic,
-                        registryStorageType,
-                        setRegistryStorageType,
                         disabledFields,
                     }}
                 />
@@ -301,14 +286,11 @@ function DockerForm({
     connection,
     cert,
     isOCICompliantRegistry,
-    ociRegistryConfig,
     ipsConfig,
     clusterOption,
     setToggleCollapse,
     repositoryList,
     isPublic,
-    registryStorageType,
-    setRegistryStorageType,
     disabledFields,
     ...rest
 }) {
@@ -409,6 +391,15 @@ function DockerForm({
     )
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
+    const [registryStorageType, setRegistryStorageType] = useState<string>(isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE)
+    let ociRegistryConfig =
+        registryStorageType === RegistryStorageType.OCI_PUBLIC
+            ? {
+                  CHART: OCIRegistryConfigConstants.PULL,
+              }
+            : {
+                  CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+              }
     let InitialValueOfIsContainerStore: boolean = ociRegistryConfig?.CONTAINER === OCIRegistryConfigConstants.PULL_PUSH
     const [isContainerStore, setContainerStore] = useState<boolean>(InitialValueOfIsContainerStore)
     const [OCIRegistryStorageConfig, setOCIRegistryStorageConfig] =
