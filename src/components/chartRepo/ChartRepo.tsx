@@ -99,10 +99,10 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
     const [loading, setLoading] = useState(false);
 
     useEffectAfterMount(() => {
-        if (!collapsed) return
         async function update() {
             let payload = {
-                id: id || 0, name, url, authMode, active: enabled,
+                id: id || 0, name, url, active: enabled,
+                authMode: authMode || 'ANONYMOUS', 
                 ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? { username: userName, password } : {}),
                 ...(authMode === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken } : {})
             }
