@@ -30,7 +30,7 @@ function ChartListPopUp({
     filteredChartList,
     isLoading,
     setFilteredChartList,
-    setShowSourcePopoUp
+    setShowSourcePopoUp,
 }: ChartListPopUpType) {
     const [searchApplied, setSearchApplied] = useState<boolean>(false)
     const [searchText, setSearchText] = useState<string>('')
@@ -42,7 +42,8 @@ function ChartListPopUp({
         setSearchText(event.target.value)
     }
 
-    const closeChartPopUpModalOnBlur = () => {
+    const closeChartPopUpModalOnBlur = (e) => {
+        e.stopPropagation()
         if (showAddPopUp) {
             setShowAddPopUp(false)
         } else {

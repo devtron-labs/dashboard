@@ -295,7 +295,13 @@ function DockerForm({
     repositoryList,
     isPublic,
     disabledFields,
-    ociRegistryConfig,
+    ociRegistryConfig = isPublic
+    ? {
+          CHART: OCIRegistryConfigConstants.PULL,
+      }
+    : {
+          CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+      },
     ...rest
 }) {
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -396,14 +402,7 @@ function DockerForm({
     const [credentialValue, setCredentialValue] = useState<string>(isCustomScript ? '' : ipsConfig?.credentialValue)
     const [showManageModal, setManageModal] = useState(false)
     const [registryStorageType, setRegistryStorageType] = useState<string>(isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE)
-    let _ociRegistryConfig =
-        registryStorageType === RegistryStorageType.OCI_PUBLIC
-            ? {
-                  CHART: OCIRegistryConfigConstants.PULL,
-              }
-            : {
-                  CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-              }
+       
     let InitialValueOfIsContainerStore: boolean = ociRegistryConfig?.CONTAINER === OCIRegistryConfigConstants.PULL_PUSH
     const [isContainerStore, setContainerStore] = useState<boolean>(InitialValueOfIsContainerStore)
     const [OCIRegistryStorageConfig, setOCIRegistryStorageConfig] =

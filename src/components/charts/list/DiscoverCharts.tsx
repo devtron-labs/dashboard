@@ -289,6 +289,15 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         )
     }
 
+    const onChangeShowSourcePopup = () => {
+        setShowSourcePopoUp(true)
+    }
+
+    const toggleChartListPopUp = (e: React.MouseEvent): void => {
+        e.stopPropagation()
+        setShowSourcePopoUp(!setShowSourcePopoUp)
+    }
+
     const renderBreadcrumbs = () => {
         if (typeof state.configureChartIndex === 'number') {
             return (
@@ -299,14 +308,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
             )
         }
 
-    const onChangeShowSourcePopup = () => {
-        setShowSourcePopoUp(true)
-    }
-
-    const toggleChartListPopUp = (e: React.MouseEvent): void => {
-        e.stopPropagation()
-        setShowSourcePopoUp(!setShowSourcePopoUp)
-    }
+  
 
         return (
             <>
