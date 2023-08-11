@@ -405,6 +405,7 @@ export interface DeleteChartDialogProps {
     handleDelete: (deleteAction: DELETE_ACTION) => void
     toggleConfirmation: (isDeleteConfirmation:boolean) => void
     isCreateValueView?: boolean
+    diableButton?: boolean
 }
 
 export interface DeleteApplicationButtonProps {

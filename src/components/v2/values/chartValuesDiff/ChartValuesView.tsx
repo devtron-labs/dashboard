@@ -578,12 +578,12 @@ function ChartValuesView({
         if (commonState.isDeleteInProgress) {
             return
         }
+        dispatch({
+            type: ChartValuesViewActionTypes.isDeleteInProgress,
+            payload: true,
+        })
         getDeleteApplicationApi(deleteAction)
             .then((response: ResponseType) => {
-                dispatch({
-                    type: ChartValuesViewActionTypes.isDeleteInProgress,
-                    payload: false,
-                })
                 if (response.result.deleteResponse?.deleteInitiated) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
@@ -1613,6 +1613,7 @@ function ChartValuesView({
                                 payload: false,
                             })
                         }}
+                        diableButton={commonState.isDeleteInProgress}
                         isCreateValueView
                     />
                 )}
