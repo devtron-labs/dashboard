@@ -336,7 +336,7 @@ export default function ChartValuesEditor({
     const getDynamicClassName = (): string => {
         if (isDeployChartView) {
             if (!showInfoText || showEditorHeader) return 'sub130-vh'
-            return manifestView ? 'sub200-vh' : 'sub160-vh'
+            return manifestView ? 'sub193-vh' : 'sub160-vh'
         }
 
         if (comparisonView) {
@@ -344,7 +344,7 @@ export default function ChartValuesEditor({
             return 'sub160-vh'
         }
 
-        if (manifestView) return 'sub229-vh'
+        if (manifestView) return 'sub222-vh'
         if (showEditorHeader) return 'sub160-vh'
         return 'sub189-vh'
     }

@@ -75,12 +75,12 @@
         }
     }
 
-    &.sub200-vh {
+    &.sub222-vh {
 
         .react-monaco-editor-container,
         .overflow-guard,
         .details-loader-height {
-            height: calc(100vh - 200px) !important;
+            height: calc(100vh - 222px) !important;
         }
 
         .monaco-editor {
@@ -90,26 +90,7 @@
                 background-color: var(--N000) !important;
             }
 
-            height: calc(100vh - 200px) !important;
-        }
-    }
-
-    &.sub229-vh {
-
-        .react-monaco-editor-container,
-        .overflow-guard,
-        .details-loader-height {
-            height: calc(100vh - 229px) !important;
-        }
-
-        .monaco-editor {
-
-            .monaco-editor-background,
-            .margin {
-                background-color: var(--N000) !important;
-            }
-
-            height: calc(100vh - 229px) !important;
+            height: calc(100vh - 222px) !important;
         }
     }
 }
