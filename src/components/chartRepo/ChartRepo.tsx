@@ -130,10 +130,10 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
     const [loading, setLoading] = useState(false);
 
     useEffectAfterMount(() => {
-        if (!collapsed) return
         async function update() {
             let payload = {
-                id: id || 0, name, url, authMode, active: enabled,
+                id: id || 0, name, url, active: enabled,
+                authMode: authMode || 'ANONYMOUS', 
                 ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? { username: userName, password } : {}),
                 ...(authMode === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken } : {})
             }
@@ -198,13 +198,13 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                             className="default-tt"
                             arrow={false}
                             placement="bottom"
-                            content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                            content={!isEditable ? "Can't disable repository" : enabled ? 'Disable chart repository' : 'Enable chart repository'}
                         >
                             <span data-testid={`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
+                                    <List.Toggle onSelect={isEditable && toggleEnabled} enabled={enabled} isButtonDisabled={!isEditable} />
                                 )}
                             </span>
                         </Tippy>
