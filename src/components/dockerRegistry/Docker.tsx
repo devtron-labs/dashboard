@@ -738,7 +738,6 @@ function DockerForm({
 
     const handleOCIRegistryStorageAction = (e, key ) => {
         e.stopPropagation()
-
         if (key === RepositoryAction.CONTAINER) {
             setContainerStore(!isContainerStore)
             if (isContainerStore) {
@@ -769,41 +768,66 @@ function DockerForm({
 
         if (key === RepositoryAction.CHART_PUSH) {
             setOCIRegistryHelmPush(!isOCIRegistryHelmPush)
-            if (isOCIRegistryHelmPush) {
+            if (isOCIRegistryHelmPush && showHelmPull && isContainerStore) {
                 setOCIRegistryStorageConfig({
-                    ...OCIRegistryStorageConfig,
-                    CHART: showHelmPull ? OCIRegistryConfigConstants.PULL : OCIRegistryConfigConstants.PULL,
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                    CHART: OCIRegistryConfigConstants.PULL,
+                })
+            } else if (isOCIRegistryHelmPush && !showHelmPull && isContainerStore) {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            } else if (isOCIRegistryHelmPush && showHelmPull && !isContainerStore) {
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PULL,
+                })
+            } else if (isContainerStore && showHelmPull) {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                    CHART: OCIRegistryConfigConstants.PULL,
+                })
+            } else if (isContainerStore && !showHelmPull) {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                    CHART: OCIRegistryConfigConstants.PUSH,
+                })
+            } else if (showHelmPull && !isContainerStore) {
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
                 })
             } else {
-                if (isContainerStore && showHelmPull) {
-                    setOCIRegistryStorageConfig({
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                        CHART: OCIRegistryConfigConstants.PULL,
-                    })
-                } else if (isContainerStore && !showHelmPull) {
-                    setOCIRegistryStorageConfig({
-                        CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
-                        CHART: OCIRegistryConfigConstants.PUSH,
-                    })
-                } else if (showHelmPull && !isContainerStore) {
-                    setOCIRegistryStorageConfig({
-                        CHART: OCIRegistryConfigConstants.PULL_PUSH,
-                    })
-                } else {
-                    setOCIRegistryStorageConfig({
-                        CHART: OCIRegistryConfigConstants.PUSH,
-                    })
-                }
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PUSH,
+                })
             }
+            
         }
 
         if (key === RepositoryAction.CHART_PULL) {
             setListRepositories(!showHelmPull)
-
-            if (isContainerStore && isOCIRegistryHelmPush) {
+            if (isContainerStore && isOCIRegistryHelmPush && showHelmPull) {
                 setOCIRegistryStorageConfig({
                     CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
                     CHART: OCIRegistryConfigConstants.PUSH,
+                })
+            }
+
+            else if (isContainerStore && !isOCIRegistryHelmPush && showHelmPull) {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            }
+
+            else if (!isContainerStore && isOCIRegistryHelmPush && showHelmPull) {
+                setOCIRegistryStorageConfig({
+                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
+                })
+            }
+       
+            else if (isContainerStore && isOCIRegistryHelmPush) {
+                setOCIRegistryStorageConfig({
+                    CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
+                    CHART: OCIRegistryConfigConstants.PULL_PUSH,
                 })
             } else if (isContainerStore && !isOCIRegistryHelmPush) {
                 setOCIRegistryStorageConfig({
