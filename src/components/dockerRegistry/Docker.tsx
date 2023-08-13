@@ -1031,7 +1031,7 @@ function DockerForm({
                         </TippyCustomized>
                     )}
                 >
-                    <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
+                    <div className={`flex left ${isContainerStore ? 'mb-12' : ''} ${!RegistryHelmPushCheckbox ? 'mb-12' : ''}`}>
                         <Checkbox
                             rootClassName={`${
                                 disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
