@@ -1016,6 +1016,12 @@ function DockerForm({
                         <span className="flex left w-150">
                             <span className="dc__required-field">Use repository to</span>
                         </span>
+                        {!(isContainerStore || isOCIRegistryHelmPush || showHelmPull) && (
+                            <span className="form__error">
+                                <Error className="form__icon form__icon--error" />
+                                This field is mandatory
+                            </span>
+                        )}
                     </span>
                 </div>
                 <ConditionalWrap
@@ -1031,7 +1037,11 @@ function DockerForm({
                         </TippyCustomized>
                     )}
                 >
-                    <div className={`flex left ${isContainerStore ? 'mb-12' : ''} ${!RegistryHelmPushCheckbox ? 'mb-12' : ''}`}>
+                    <div
+                        className={`flex left ${isContainerStore ? 'mb-12' : ''} ${
+                            !RegistryHelmPushCheckbox ? 'mb-12' : ''
+                        }`}
+                    >
                         <Checkbox
                             rootClassName={`${
                                 disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
