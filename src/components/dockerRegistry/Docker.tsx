@@ -492,7 +492,11 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: registryStorageType === RegistryStorageType.OCI_PRIVATE ? Isdefault : false,
+            isDefault:
+                registryStorageType === RegistryStorageType.OCI_PRIVATE ||
+                selectedDockerRegistryType.value === RegistryType.GCR
+                    ? Isdefault
+                    : false,
             isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
             ociRegistryConfig:
                 registryStorageType === RegistryStorageType.OCI_PUBLIC
