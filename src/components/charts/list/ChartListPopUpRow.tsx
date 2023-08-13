@@ -4,6 +4,7 @@ import Tippy from '@tippyjs/react'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Helm } from '../../../assets/icons/ic-helmchart.svg'
 import { ChartListType } from '../charts.types'
 import { toast } from 'react-toastify'
 import { getNonEditableChartRepoText } from '../../common'
@@ -62,7 +63,11 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
         <div className="chart-list__row">
             <List key={`chart-row-${index}`}>
                 <List.Logo>
-                    <div className={'dc__registry-icon ' + list.registryProvider}></div>
+                    {list.isOCIRegistry ? (
+                        <div className={'dc__registry-icon ' + list.registryProvider}></div>
+                    ) : (
+                        <Helm className="icon-dim-20 fcb-5 dc__vertical-align-middle " />
+                    )}
                 </List.Logo>
                 <div>{list.name}</div>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts">
@@ -75,10 +80,10 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                         onClick={() => enabled && refetchSpecificChart(list.id, list.isOCIRegistry)}
                     >
                         {isSpecificChartRefetchLoading ? (
-                            <Progressing size={16} fillColor="var(--N500)"/>
+                            <Progressing size={16} fillColor="var(--N500)" />
                         ) : (
                             <span>
-                                <SyncIcon className={`${enabled ? "scn-5" : "scn-2"}`} />
+                                <SyncIcon className={`${enabled ? 'scn-5' : 'scn-2'}`} />
                             </span>
                         )}
                     </a>
@@ -90,8 +95,11 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                     placement="bottom"
                     content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
                 >
-                    
-                    <span data-testid={`${'name'}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }} className={`${list.isEditable ? "cursor-not-allowed" : ""}`}>
+                    <span
+                        data-testid={`${'name'}-chart-repo-toggle-button`}
+                        style={{ marginLeft: 'auto' }}
+                        className={`${list.isEditable ? 'cursor-not-allowed' : ''}`}
+                    >
                         {isToggleLoading ? (
                             <Progressing size={16} />
                         ) : (

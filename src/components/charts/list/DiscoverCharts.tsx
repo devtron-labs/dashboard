@@ -392,7 +392,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && noChartAvailable && (
+                        {typeof state.configureChartIndex != 'number' && chartRepos?.length && (
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}

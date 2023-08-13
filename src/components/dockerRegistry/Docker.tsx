@@ -26,6 +26,7 @@ import {
     InfoColourBar,
     ConditionalWrap,
     RepositoryAction,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList, validateContainerConfiguration } from '../../services/service'
@@ -309,7 +310,6 @@ function DockerForm({
             registryType: { value: registryType || 'ecr', error: '' },
             advanceSelect: { value: connection || CERTTYPE.SECURE, error: '' },
             certInput: { value: cert || '', error: '' },
-            repositoryList: { value: repositoryList.join(',') || '', error: '' },
         },
         {
             id: {
@@ -325,9 +325,6 @@ function DockerForm({
                 validator: { error: 'Mode is required', regex: /^.*$/ },
             },
             certInput: {
-                required: false,
-            },
-            repositoryList: {
                 required: false,
             },
         },
@@ -355,6 +352,7 @@ function DockerForm({
             value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
+        repositoryList: { value: repositoryList.join(',') || '', error: '' },
     })
 
     const clusterlistMap = new Map()
@@ -431,6 +429,13 @@ function DockerForm({
         }))
     }
 
+    const handleRepositoryListChange = (e) => {
+        setCustomState((st) => ({
+            ...st,
+            repositoryList: { value: e.target?.value || '', error: '' },
+        }))
+    }
+
     const onECRAuthTypeChange = (e) => {
         if (e.target.value === AuthenticationType.IAM) {
             setIAMAuthType(true)
@@ -458,7 +463,7 @@ function DockerForm({
     }
 
     function fetchAWSRegion(): string {
-        const pattern = /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i
+        const pattern =  registryStorageType === RegistryStorageType.OCI_PUBLIC ? /^public\.ecr\.aws(\/.*)?$/i : /(ecr.)[a-z]{2}-[a-z]*-[0-9]{1}/i
         let result = customState.registryUrl.value.match(pattern)
         if (!result) {
             setCustomState((st) => ({
@@ -487,10 +492,19 @@ function DockerForm({
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
             registryType: selectedDockerRegistryType.value,
-            isDefault: registryStorageType === RegistryStorageType.OCI_PRIVATE  ? Isdefault : false,
+            isDefault: registryStorageType === RegistryStorageType.OCI_PRIVATE ? Isdefault : false,
             isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
+            ociRegistryConfig:
+                registryStorageType === RegistryStorageType.OCI_PUBLIC
+                    ? { CHART: OCIRegistryConfigConstants.PULL }
+                    : OCIRegistryStorageConfig,
             isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
-            repositoryList: state.repositoryList?.value.split(',') || [],
+            repositoryList:
+                registryStorageType === RegistryStorageType.OCI_PUBLIC ||
+                OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
+                OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL
+                    ? customState.repositoryList?.value.split(',') || []
+                    : null,
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === RegistryType.ECR
                 ? {
@@ -526,20 +540,23 @@ function DockerForm({
                   }
                 : {}),
 
-            ipsConfig: {
-                id: ipsConfig.id,
-                credentialType: credentialsType,
-                credentialValue:
-                    credentialsType === CredentialType.CUSTOM_CREDENTIAL
-                        ? JSON.stringify(customCredential)
-                        : credentialValue,
-                appliedClusterIdsCsv: appliedClusterIdsCsv,
-                ignoredClusterIdsCsv:
-                    whiteList.length === 0 &&
-                    (blackList.length === 0 || blackList.findIndex((cluster) => cluster.value === '-1') >= 0)
-                        ? '-1'
-                        : ignoredClusterIdsCsv,
-            },
+            ipsConfig:
+                registryStorageType === RegistryStorageType.OCI_PRIVATE && OCIRegistryStorageConfig?.CONTAINER
+                    ? {
+                          id: ipsConfig.id,
+                          credentialType: credentialsType,
+                          credentialValue:
+                              credentialsType === CredentialType.CUSTOM_CREDENTIAL
+                                  ? JSON.stringify(customCredential)
+                                  : credentialValue,
+                          appliedClusterIdsCsv: appliedClusterIdsCsv,
+                          ignoredClusterIdsCsv:
+                              whiteList.length === 0 &&
+                              (blackList.length === 0 || blackList.findIndex((cluster) => cluster.value === '-1') >= 0)
+                                  ? '-1'
+                                  : ignoredClusterIdsCsv,
+                      }
+                    : null,
         }
     }
 
@@ -555,7 +572,6 @@ function DockerForm({
         setValidationStatus(VALIDATION_STATUS.LOADER)
        
         let payload = getRegistryPayload(awsRegion)
-        payload.ociRegistryConfig = isPublic ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
 
         let promise = validateContainerConfiguration(payload)
         await promise
@@ -596,7 +612,6 @@ function DockerForm({
             if (!awsRegion) return
         }
         let payload = getRegistryPayload(awsRegion)
-        payload.ociRegistryConfig = registryStorageType === RegistryStorageType.OCI_PUBLIC ? { CHART: OCIRegistryConfigConstants.PULL } : OCIRegistryStorageConfig
 
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
@@ -609,14 +624,13 @@ function DockerForm({
             await setToggleCollapse()
             toast.success('Successfully saved.')
         } catch (err) {
-            const code = err["code"]
-            const message = err["errors"][0].userMessage
-            if (code === 409 ){
-                setRepositoryError(message)
+            if (err instanceof ServerErrors && Array.isArray(err.errors) && err.code === 409) {
+                err.errors.map(({ userMessage, internalMessage }) => {
+                    setRepositoryError(userMessage || internalMessage)
+                })
             }else{
                 showError(err)
             }
-
         } finally {
             toggleLoading(false)
         }
@@ -710,7 +724,15 @@ function DockerForm({
                 return
             }
         }
-
+        if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) { 
+            setCustomState((st) => ({
+                ...st,
+                repositoryList: { ...st.repositoryList, error: st.repositoryList?.value ? '' : 'Mandatory' },
+            }))
+            if (customState.repositoryList?.value === "") {
+                return
+            }
+        }
         onSave()
     }
 
@@ -969,110 +991,114 @@ function DockerForm({
     }
 
     const renderStoredContainerImage = () => {
-        if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
-            return registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                selectedDockerRegistryType.value !== RegistryType.GCR ? (
-                <>
-                    <div className="mb-12">
-                        <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
-                            <span className="flex left w-150">
-                                <span className="dc__required-field">Use repository to</span>
-                            </span>
-                        </span>
-                    </div>
-                    <ConditionalWrap
-                        condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
-                        wrap={(children) => (
-                            <TippyCustomized
-                                theme={TippyTheme.black}
-                                className="w-200 dc__zi-4 mt-0-imp"
-                                placement="left"
-                                infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
-                            >
-                                <div>{children}</div>
-                            </TippyCustomized>
-                        )}
-                    >
-                        <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
-                            <Checkbox
-                                rootClassName={`${
-                                    disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
-                                } docker-default mb-0`}
-                                isChecked={isContainerStore}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CONTAINER)}
-                                dataTestId="store-checkbox"
-                                disabled={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
-                            >
-                                Push container images
-                            </Checkbox>
-                        </div>
-                    </ConditionalWrap>
-                    {isContainerStore && (
-                        <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
-                    )}
-                    <ConditionalWrap
-                        condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
-                        wrap={(children) => (
-                            <TippyCustomized
-                                theme={TippyTheme.black}
-                                className="w-200 dc__zi-4 pt-0-imp"
-                                placement="left"
-                                infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
-                            >
-                                <div>{children}</div>
-                            </TippyCustomized>
-                        )}
-                    >
-                        <div>
-                            {RegistryHelmPushCheckbox && (
-                                <RegistryHelmPushCheckbox
-                                    handleOCIRegistryStorageAction={handleOCIRegistryStorageAction}
-                                    disabledFields={disabledFields}
-                                    isOCIRegistryHelmPush={isOCIRegistryHelmPush}
-                                />
-                            )}
-                        </div>
-                    </ConditionalWrap>
-                    <ConditionalWrap
-                        condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
-                        wrap={(children) => (
-                            <TippyCustomized
-                                theme={TippyTheme.black}
-                                className="w-200 dc__zi-4 pt-0 mt-0"
-                                placement="left"
-                                infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
-                            >
-                                <div>{children}</div>
-                            </TippyCustomized>
-                        )}
-                    >
-                        <div>
-                            <Checkbox
-                                rootClassName={`${
-                                    disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
-                                        ? 'dc__opacity-0_5'
-                                        : ''
-                                } docker-default mb-0`}
-                                id={RepositoryAction.CHART_PULL}
-                                isChecked={showHelmPull}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PULL)}
-                                dataTestId="store-checkbox"
-                                disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
-                            >
-                                Use as chart repository (Pull helm charts and show in chart store)
-                            </Checkbox>
-                        </div>
-                    </ConditionalWrap>
-                    {showHelmPull && <div className="pl-28">{renderOCIPublic()}</div>}
-
-                    <hr className="mt-16 mb-16" />
-                </>
-            ) : (
-                renderRegistryCredentialsAutoInjectToClustersComponent()
-            )
+        if (
+            registryStorageType === RegistryStorageType.OCI_PUBLIC &&
+            selectedDockerRegistryType.value !== RegistryType.GCR
+        ) {
+            return
         }
+        return registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+            selectedDockerRegistryType.value !== RegistryType.GCR ? (
+            <>
+                <div className="mb-12">
+                    <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
+                        <span className="flex left w-150">
+                            <span className="dc__required-field">Use repository to</span>
+                        </span>
+                    </span>
+                </div>
+                <ConditionalWrap
+                    condition={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
+                    wrap={(children) => (
+                        <TippyCustomized
+                            theme={TippyTheme.black}
+                            className="w-200 dc__zi-4 mt-0-imp"
+                            placement="left"
+                            infoText="Cannot be disabled as some build pipelines are using this registry to push container images."
+                        >
+                            <div>{children}</div>
+                        </TippyCustomized>
+                    )}
+                >
+                    <div className={`flex left ${isContainerStore ? 'mb-12' : ''}`}>
+                        <Checkbox
+                            rootClassName={`${
+                                disabledFields.some((test) => test === 'CONTAINER') ? 'dc__opacity-0_5' : ''
+                            } docker-default mb-0`}
+                            isChecked={isContainerStore}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CONTAINER)}
+                            dataTestId="store-checkbox"
+                            disabled={disabledFields.some((test) => test === RepositoryAction.CONTAINER)}
+                        >
+                            Push container images
+                        </Checkbox>
+                    </div>
+                </ConditionalWrap>
+                {isContainerStore && (
+                    <div className="pl-28">{renderRegistryCredentialsAutoInjectToClustersComponent()}</div>
+                )}
+                <ConditionalWrap
+                    condition={disabledFields.some((test) => test === RepositoryAction.CHART_PUSH)}
+                    wrap={(children) => (
+                        <TippyCustomized
+                            theme={TippyTheme.black}
+                            className="w-200 dc__zi-4 pt-0-imp"
+                            placement="left"
+                            infoText="Cannot be disabled as some deployment pipelines are using this registry to push helm packages."
+                        >
+                            <div>{children}</div>
+                        </TippyCustomized>
+                    )}
+                >
+                    <div>
+                        {RegistryHelmPushCheckbox && (
+                            <RegistryHelmPushCheckbox
+                                handleOCIRegistryStorageAction={handleOCIRegistryStorageAction}
+                                disabledFields={disabledFields}
+                                isOCIRegistryHelmPush={isOCIRegistryHelmPush}
+                            />
+                        )}
+                    </div>
+                </ConditionalWrap>
+                <ConditionalWrap
+                    condition={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
+                    wrap={(children) => (
+                        <TippyCustomized
+                            theme={TippyTheme.black}
+                            className="w-200 dc__zi-4 pt-0 mt-0"
+                            placement="left"
+                            infoText="Cannot be disabled as some applications are deployed using helm charts from this registry."
+                        >
+                            <div>{children}</div>
+                        </TippyCustomized>
+                    )}
+                >
+                    <div>
+                        <Checkbox
+                            rootClassName={`${
+                                disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
+                                    ? 'dc__opacity-0_5'
+                                    : ''
+                            } docker-default mb-0`}
+                            id={RepositoryAction.CHART_PULL}
+                            isChecked={showHelmPull}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={(e) => handleOCIRegistryStorageAction(e, RepositoryAction.CHART_PULL)}
+                            dataTestId="store-checkbox"
+                            disabled={disabledFields.some((test) => test === RepositoryAction.CHART_PULL)}
+                        >
+                            Use as chart repository (Pull helm charts and show in chart store)
+                        </Checkbox>
+                    </div>
+                </ConditionalWrap>
+                {showHelmPull && <div className="pl-28">{renderOCIPublic()}</div>}
+
+                <hr className="mt-16 mb-16" />
+            </>
+        ) : (
+            renderRegistryCredentialsAutoInjectToClustersComponent()
+        )
     }
 
     const renderRepositoryList = () => {
@@ -1083,11 +1109,11 @@ function DockerForm({
                     labelClassName="dc__required-field"
                     name="repositoryList"
                     autoFocus={true}
-                    value={state.repositoryList?.value.trim()}
+                    value={customState.repositoryList?.value.trim()}
                     autoComplete="off"
-                    error={state.repositoryList.error}
+                    error={customState.repositoryList.error}
                     tabIndex={3}
-                    onChange={handleOnChange}
+                    onChange={handleRepositoryListChange}
                     label="List of repositories"
                     placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
                 />
@@ -1121,10 +1147,8 @@ function DockerForm({
 
     const renderDefaultRegistry = () => {
         if (
-            registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
-            (selectedDockerRegistryType.value === RegistryType.GCR ||
-                registryStorageType !== RegistryStorageType.OCI_PRIVATE ||
-                isContainerStore)
+            selectedDockerRegistryType.value === RegistryType.GCR ||
+            (registryStorageType === RegistryStorageType.OCI_PRIVATE && (isContainerStore || isOCIRegistryHelmPush))
         ) {
             return (
                 <>
