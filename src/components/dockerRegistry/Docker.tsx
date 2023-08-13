@@ -457,6 +457,13 @@ function DockerForm({
     const onRegistryStorageTypeChange = (e) => {
         if (e.target.value === RegistryStorageType.OCI_PRIVATE) {
             setRegistryStorageType(RegistryStorageType.OCI_PRIVATE)
+            setCustomState((st) => ({
+                ...st,
+                registryUrl: {
+                    value: selectedDockerRegistryType.defaultRegistryURL || customState.registryUrl.value,
+                    error: '',
+                },
+            }))
         } else if (e.target.value === RegistryStorageType.OCI_PUBLIC) {
             setRegistryStorageType(RegistryStorageType.OCI_PUBLIC)
         }
@@ -1519,6 +1526,7 @@ function DockerForm({
                             error={customState.registryUrl.error}
                             onChange={customHandleChange}
                             disabled={
+                                selectedDockerRegistryType.value === RegistryType.GCR ||
                                 registryStorageType === RegistryStorageType.OCI_PRIVATE &&
                                 !!(registryUrl || selectedDockerRegistryType.defaultRegistryURL)
                             }
