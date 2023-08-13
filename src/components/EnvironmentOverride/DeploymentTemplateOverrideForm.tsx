@@ -347,9 +347,8 @@ export default function DeploymentTemplateOverrideForm({
     const getCodeEditorValueForReadOnly = () => {
         if (state.publishedState) {
             if (
-                state.selectedCompareOption &&
-                state.selectedCompareOption?.id !== -1 &&
-                state.publishedState.isOverride
+                state.publishedState.isOverride &&
+                (state.selectedCompareOption?.id !== -1 || state.selectedTabIndex === 1)
             ) {
                 return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2 })
             }

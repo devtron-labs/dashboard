@@ -39,7 +39,6 @@ import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/Deplo
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
-//const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
@@ -84,7 +83,6 @@ export default function DeploymentConfig({
         if (clearPublishedState) {
             payload.selectedTabIndex = state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex
             payload.publishedState = null
-            //payload.allDrafts = [],
             payload.showComments = false
             payload.latestDraft = null
         }
@@ -133,13 +131,8 @@ export default function DeploymentConfig({
             payload: true,
         })
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
-            //getAllDrafts(Number(appId), -1, 3)
             .then((draftsResp) => {
-                if ((draftsResp.result && draftsResp.result.draftState === 1) || draftsResp.result.draftState === 4) {
-                    // const allDrafts = allDraftsResp.result
-                    //     .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
-                    //     .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
-                    // const latestDraft = allDrafts[0]
+                if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
                     processDraftData(draftsResp.result, chartRefsData)
                 } else {
                     updateRefsData(chartRefsData, !!state.publishedState)
@@ -151,66 +144,60 @@ export default function DeploymentConfig({
     }
 
     const processDraftData = (latestDraft, chartRefsData) => {
-        //getDraft(latestDraft.draftId)
-        //     .then((draftResp) => {
-                const {
-                    valuesOverride,
-                    id,
-                    refChartTemplate,
-                    refChartTemplateVersion,
-                    isAppMetricsEnabled,
-                    chartRefId,
-                    isBasicViewLocked,
-                    currentViewEditor,
-                    readme,
-                    schema,
-                } = JSON.parse(latestDraft.data)
+        const {
+            valuesOverride,
+            id,
+            refChartTemplate,
+            refChartTemplateVersion,
+            isAppMetricsEnabled,
+            chartRefId,
+            isBasicViewLocked,
+            currentViewEditor,
+            readme,
+            schema,
+        } = JSON.parse(latestDraft.data)
 
-                const payload = {
-                    template: valuesOverride,
-                    chartConfig: {
-                        id,
-                        refChartTemplate,
-                        refChartTemplateVersion,
-                        chartRefId,
-                        readme,
-                    },
-                    isAppMetricsEnabled: isAppMetricsEnabled,
-                    tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
-                    draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
-                    latestDraft: latestDraft,
-                    selectedTabIndex: 3,
-                    openComparison: false,
-                    currentEditorView: currentViewEditor,
-                    //allDrafts,
-                    readme,
-                    schema,
-                    ...{
-                        ...chartRefsData,
-                        selectedChartRefId: chartRefId,
-                        selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
-                    }
-                }
+        const isApprovalPending = latestDraft.draftState === 4
+        const payload = {
+            template: valuesOverride,
+            chartConfig: {
+                id,
+                refChartTemplate,
+                refChartTemplateVersion,
+                chartRefId,
+                readme,
+            },
+            isAppMetricsEnabled: isAppMetricsEnabled,
+            tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
+            draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
+            latestDraft: latestDraft,
+            selectedTabIndex: isApprovalPending ? 2 : 3,
+            openComparison: isApprovalPending,
+            currentEditorView: currentViewEditor,
+            readme,
+            schema,
+            ...{
+                ...chartRefsData,
+                selectedChartRefId: chartRefId,
+                selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
+            },
+        }
 
-                if (chartRefsData) {
-                    payload['publishedState'] = chartRefsData
-                } else if (!state.publishedState) {
-                    payload['publishedState'] = state
-                }
+        if (chartRefsData) {
+            payload['publishedState'] = chartRefsData
+        } else if (!state.publishedState) {
+            payload['publishedState'] = state
+        }
 
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload,
-                })
+        dispatch({
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload,
+        })
 
-                if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-                    updateTemplateFromBasicValue(valuesOverride)
-                    parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
-                }
-            // })
-            // .catch((e) => {
-            //     updateRefsData(chartRefsData)
-            // })
+        if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
+            updateTemplateFromBasicValue(valuesOverride)
+            parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
+        }
     }
 
     const toggleYamlMode = (yamlMode: boolean) => {

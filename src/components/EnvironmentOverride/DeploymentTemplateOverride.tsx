@@ -27,8 +27,6 @@ import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymen
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
 
 const DraftComments = importComponentFromFELibrary('DraftComments')
-const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
-//const getDraft = importComponentFromFELibrary('getDraft', null, 'function')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export default function DeploymentTemplateOverride({
@@ -70,7 +68,6 @@ export default function DeploymentTemplateOverride({
             payload.selectedTabIndex = 1
             payload.openComparison = false
             payload.showReadme = false
-            //payload.allDrafts = []
             payload.showComments = false
             payload.latestDraft = null
         }
@@ -110,7 +107,7 @@ export default function DeploymentTemplateOverride({
                     latestChartRef: chartRefResp.result.latestChartRef,
                 }
 
-                if (!updateChartRefOnly && isProtected && typeof getAllDrafts === 'function') {
+                if (!updateChartRefOnly && isProtected && typeof getDraftByResourceName === 'function') {
                     fetchAllDrafts(chartRefsData)
                 } else {
                     updateRefsData(chartRefsData)
@@ -133,18 +130,13 @@ export default function DeploymentTemplateOverride({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-      getDraftByResourceName(appId, Number(envId), 3, `${environmentName}-DeploymentTemplateOverride`)
-        //getAllDrafts(Number(appId), Number(envId), 3)
+        getDraftByResourceName(appId, Number(envId), 3, `${environmentName}-DeploymentTemplateOverride`)
             .then((draftsResp) => {
-              if ((draftsResp.result && draftsResp.result.draftState === 1) || draftsResp.result.draftState === 4) {
-                // const allDrafts = allDraftsResp.result
-                //     .sort((draftA, draftB) => draftB.draftId - draftA.draftId)
-                //     .sort((draftA, draftB) => draftB.draftVersionId - draftA.draftVersionId)
-                // const latestDraft = allDrafts[0]
-                processDraftData(draftsResp.result, chartRefsData)
-            } else {
-                updateRefsData(chartRefsData, !!state.publishedState)
-            }
+                if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
+                    processDraftData(draftsResp.result, chartRefsData)
+                } else {
+                    updateRefsData(chartRefsData, !!state.publishedState)
+                }
             })
             .catch((e) => {
                 updateRefsData(chartRefsData)
@@ -152,73 +144,66 @@ export default function DeploymentTemplateOverride({
     }
 
     const processDraftData = (latestDraft, chartRefsData) => {
-        // getDraft(latestDraft.draftId)
-        //     .then((draftResp) => {
-                const {
-                    envOverrideValues,
-                    id,
-                    isDraftOverriden,
-                    globalConfig,
-                    isAppMetricsEnabled,
-                    currentEditorView,
-                    isBasicLocked,
-                    chartRefId,
-                    status,
-                    manualReviewed,
-                    active,
-                    namespace,
-                } = JSON.parse(latestDraft.data)
+        const {
+            envOverrideValues,
+            id,
+            isDraftOverriden,
+            globalConfig,
+            isAppMetricsEnabled,
+            currentEditorView,
+            isBasicLocked,
+            chartRefId,
+            status,
+            manualReviewed,
+            active,
+            namespace,
+        } = JSON.parse(latestDraft.data)
 
-                const isApprovalPending = latestDraft.draftState === 4
-                const payload = {
-                    chartConfigLoading: false,
-                    duplicate: envOverrideValues,
-                    draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
-                    environmentConfig: {
-                        id,
-                        status,
-                        manualReviewed,
-                        active,
-                        namespace,
-                    },
-                    isAppMetricsEnabled,
-                    latestDraft: latestDraft,
-                    selectedTabIndex: isApprovalPending ? 2 : 3,
-                    openComparison: isApprovalPending,
-                    showReadme: false,
-                    //allDrafts,
-                    currentEditorView,
-                    isBasicLocked,
-                    showDraftOverriden: isDraftOverriden,
-                    ...{
-                        ...chartRefsData,
-                        selectedChartRefId: chartRefId,
-                        selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
-                    },
-                }
+        const isApprovalPending = latestDraft.draftState === 4
+        const payload = {
+            chartConfigLoading: false,
+            duplicate: envOverrideValues,
+            draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
+            environmentConfig: {
+                id,
+                status,
+                manualReviewed,
+                active,
+                namespace,
+            },
+            isAppMetricsEnabled,
+            latestDraft: latestDraft,
+            selectedTabIndex: isApprovalPending ? 2 : 3,
+            openComparison: isApprovalPending,
+            showReadme: false,
+            currentEditorView,
+            isBasicLocked,
+            showDraftOverriden: isDraftOverriden,
+            ...{
+                ...chartRefsData,
+                selectedChartRefId: chartRefId,
+                selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
+            },
+        }
 
-                if (chartRefsData) {
-                    payload['publishedState'] = {
-                        ...state.publishedState,
-                        ...chartRefsData,
-                    }
-                } else if (!state.publishedState) {
-                    payload['publishedState'] = state
-                }
+        if (chartRefsData) {
+            payload['publishedState'] = {
+                ...state.publishedState,
+                ...chartRefsData,
+            }
+        } else if (!state.publishedState) {
+            payload['publishedState'] = state
+        }
 
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload,
-                })
+        dispatch({
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload,
+        })
 
-                if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-                    updateTemplateFromBasicValue(envOverrideValues)
-                    parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, payload, false)
-                }
-            // })
-            // .catch((e) => {
-            //     updateRefsData(chartRefsData)
-            // })
+        if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
+            updateTemplateFromBasicValue(envOverrideValues)
+            parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, payload, false)
+        }
     }
 
     async function handleAppMetrics() {
