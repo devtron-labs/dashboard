@@ -495,6 +495,10 @@ function DockerForm({
         let appliedClusterIdsCsv = whiteList?.map((cluster) => cluster?.value)?.join(',')
         let ignoredClusterIdsCsv = blackList?.map((cluster) => cluster?.value)?.join(',')
         const trimmedUsername = customState.username.value.replace(/\s/g, '')
+        const _ociRegistryConfig =
+            registryStorageType === RegistryStorageType.OCI_PUBLIC
+                ? { CHART: OCIRegistryConfigConstants.PULL }
+                : OCIRegistryStorageConfig
         return {
             id: state.id.value,
             pluginId: 'cd.go.artifact.docker.registry',
@@ -505,15 +509,16 @@ function DockerForm({
                     ? Isdefault
                     : false,
             isOCICompliantRegistry: selectedDockerRegistryType.value !== RegistryType.GCR,
-            ociRegistryConfig:
-                registryStorageType === RegistryStorageType.OCI_PUBLIC
-                    ? { CHART: OCIRegistryConfigConstants.PULL }
-                    : OCIRegistryStorageConfig,
-            isPublic: registryStorageType === RegistryStorageType.OCI_PUBLIC,
+            ociRegistryConfig: selectedDockerRegistryType.value !== RegistryType.GCR ? _ociRegistryConfig : null,
+            isPublic:
+                selectedDockerRegistryType.value !== RegistryType.GCR
+                    ? registryStorageType === RegistryStorageType.OCI_PUBLIC
+                    : false,
             repositoryList:
-                registryStorageType === RegistryStorageType.OCI_PUBLIC ||
-                OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
-                OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL
+                selectedDockerRegistryType.value !== RegistryType.GCR &&
+                (registryStorageType === RegistryStorageType.OCI_PUBLIC ||
+                    OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
+                    OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
                     ? customState.repositoryList?.value.split(',') || []
                     : null,
             registryUrl: customState.registryUrl.value,
@@ -552,7 +557,8 @@ function DockerForm({
                 : {}),
 
             ipsConfig:
-                registryStorageType === RegistryStorageType.OCI_PRIVATE && OCIRegistryStorageConfig?.CONTAINER
+                selectedDockerRegistryType.value === RegistryType.GCR ||
+                (registryStorageType === RegistryStorageType.OCI_PRIVATE && OCIRegistryStorageConfig?.CONTAINER)
                     ? {
                           id: ipsConfig.id,
                           credentialType: credentialsType,
@@ -735,12 +741,20 @@ function DockerForm({
                 return
             }
         }
-        if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) { 
-            setCustomState((st) => ({
-                ...st,
-                repositoryList: { ...st.repositoryList, error: st.repositoryList?.value ? '' : 'Mandatory' },
-            }))
-            if (customState.repositoryList?.value === "") {
+        if (selectedDockerRegistryType.value !== RegistryType.GCR) {
+            if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) {
+                setCustomState((st) => ({
+                    ...st,
+                    repositoryList: { ...st.repositoryList, error: st.repositoryList?.value ? '' : 'Mandatory' },
+                }))
+                if (customState.repositoryList?.value === '') {
+                    return
+                }
+            }
+            if (
+                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                !(isContainerStore || isOCIRegistryHelmPush || showHelmPull)
+            ) {
                 return
             }
         }
