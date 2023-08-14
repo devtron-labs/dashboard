@@ -1,5 +1,5 @@
 import { PATTERNS } from "../../config";
-import { CHARACTER_ERROR_MAX,CHARACTER_ERROR_MIN,ERROR_MESSAGE_FOR_VALIDATION,MAX_LENGTH_30,REPO_NAME_VALIDATION,REQUIRED_FIELD_MSG } from "../../config/constantMessaging";
+import { CHARACTER_ERROR_MAX,CHARACTER_ERROR_MIN,ERROR_MESSAGE_FOR_VALIDATION,REQUIRED_FIELD_MSG } from "../../config/constantMessaging";
 
 export class ValidationRules {
     name = (value: string, pattern?: string): { isValid: boolean; message: string } => {
@@ -36,8 +36,6 @@ export class ValidationRules {
 
     repository = (repository: string): { isValid: boolean; message: string } => {
         if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        if (repository.split('/').slice(-1).length > 30) return { isValid: false, message: MAX_LENGTH_30 }
-        if (repository.split('/').slice(-1).includes("_")) return { isValid: false, message: REPO_NAME_VALIDATION }
         return { isValid: true, message: null }
     }
 }
