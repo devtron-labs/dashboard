@@ -82,7 +82,7 @@ export default function Docker({ ...props }) {
                 if (Array.isArray(clusterListRes.result)) {
                     setClusterOptions([
                         { label: 'All clusters', value: '-1' },
-                        ...clusterListRes.result.map((cluster) => {
+                        ...clusterListRes.result.filter((cluster) => !cluster.isVirtualCluster).map((cluster) => {
                             return {
                                 label: cluster.cluster_name,
                                 value: cluster.id,
