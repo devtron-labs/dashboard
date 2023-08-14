@@ -154,7 +154,7 @@ function ChartListPopUp({
                     iconClass="icon-dim-20 fcv-5"
                 />
             </div>
-        )
+            )
     }
 
     const handleFilterChanges = (_searchText: string): void => {
@@ -210,7 +210,6 @@ function ChartListPopUp({
                 title={noChartFound ? <>No result for "{searchText}"</> : EMPTY_STATE_STATUS.CHART.NO_SOURCE_TITLE}
                 subTitle={noChartFound ? EMPTY_STATE_STATUS.CHART.NO_CHART_FOUND : renderInfoText(true)}
                 imageType={ImageType.Medium}
-                classname="dc__align-reload-center"
             />
         )
     }
@@ -227,10 +226,10 @@ function ChartListPopUp({
             return renderEmptyState()
         }
         return (
-            <>
+            <div>
                 {renderChartListSearch()}
                 {renderChartList()}
-            </>
+            </div>
         )
     }
 
@@ -238,7 +237,7 @@ function ChartListPopUp({
         <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
             <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"  onClick={stopPropagation}>
                 {renderChartListHeaders()}
-                {renderChartListBody()}
+               {renderChartListBody()}
             </div>
         </div>
     )

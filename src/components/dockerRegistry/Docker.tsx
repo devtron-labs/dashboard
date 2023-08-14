@@ -361,8 +361,7 @@ function DockerForm({
         const currentItem = clusterOption[index]
         clusterlistMap.set(currentItem.value + '', currentItem)
     }
-
-    const _ignoredClusterIdsCsv = !ipsConfig
+    let _ignoredClusterIdsCsv = !ipsConfig
         ? []
         : ipsConfig.ignoredClusterIdsCsv && ipsConfig.ignoredClusterIdsCsv != '-1'
         ? ipsConfig.ignoredClusterIdsCsv.split(',').map((clusterId) => {
@@ -372,12 +371,17 @@ function DockerForm({
         ? clusterOption
         : []
 
-    const _appliedClusterIdsCsv = ipsConfig?.appliedClusterIdsCsv
+        _ignoredClusterIdsCsv = _ignoredClusterIdsCsv.filter((clusterIds) => !!clusterIds)
+
+    let _appliedClusterIdsCsv = ipsConfig?.appliedClusterIdsCsv
         ? ipsConfig.appliedClusterIdsCsv.split(',').map((clusterId) => {
+            if (clusterId || clusterlistMap.get(clusterId) )
               return clusterlistMap.get(clusterId)
-          })
+          }) 
         : []
 
+        _appliedClusterIdsCsv = _appliedClusterIdsCsv.filter((clusterIds) => !!clusterIds)
+        
     const isCustomScript = ipsConfig?.credentialType === CredentialType.CUSTOM_CREDENTIAL
 
     const defaultCustomCredential = {
@@ -933,11 +937,11 @@ function DockerForm({
     }
 
     const appliedClusterList = whiteList?.map((_ac) => {
-        return _ac.label
+        return _ac?.label
     })
 
     const ignoredClusterList = blackList?.map((_ic) => {
-        return _ic.label
+        return _ic?.label
     })
 
     const renderRegistryCredentialText = () => {
@@ -1513,14 +1517,19 @@ function DockerForm({
                         <hr className="mt-0 mb-0" />
                     </div>
                 )}
-                <ValidateForm
-                    id={id}
-                    onClickValidate={onClickValidate}
-                    validationError={validationError}
-                    isChartRepo={true}
-                    validationStatus={validationStatus}
-                    configName="registry"
-                />
+                {isGCROrGCP ||
+                    registryStorageType === RegistryStorageType.OCI_PRIVATE ||
+                    (selectedDockerRegistryType.value === RegistryType.OTHER && (
+                        <ValidateForm
+                            id={id}
+                            onClickValidate={onClickValidate}
+                            validationError={validationError}
+                            isChartRepo={true}
+                            validationStatus={validationStatus}
+                            configName="registry"
+                        />
+                    ))}
+
                 <div className="form__row--two-third">
                     <div className="form__row">
                         <CustomInput
@@ -1551,8 +1560,8 @@ function DockerForm({
                             onChange={customHandleChange}
                             disabled={
                                 selectedDockerRegistryType.value === RegistryType.GCR ||
-                                registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                                !!(registryUrl || selectedDockerRegistryType.defaultRegistryURL)
+                                (registryStorageType === RegistryStorageType.OCI_PRIVATE &&
+                                    !!(registryUrl || selectedDockerRegistryType.defaultRegistryURL))
                             }
                             placeholder={selectedDockerRegistryType.registryURL.placeholder}
                         />
@@ -1560,10 +1569,8 @@ function DockerForm({
                 </div>
                 {renderAuthentication()}
 
-                {
-                 renderPublicECR()   
-                }
-               
+                {renderPublicECR()}
+
                 {selectedDockerRegistryType.value === RegistryType.OTHER && (
                     <>
                         <div className={`form__buttons flex left ${toggleCollapsedAdvancedRegistry ? '' : 'mb-16'}`}>
