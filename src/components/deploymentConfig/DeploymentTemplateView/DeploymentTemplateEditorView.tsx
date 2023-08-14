@@ -173,7 +173,7 @@ export default function DeploymentTemplateEditorView({
     const renderCodeEditor = (): JSX.Element => {
         return (
             <div
-                className={`form__row--code-editor-container dc__border-top dc__border-bottom-imp ${
+                className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
                     isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
                 }`}
             >
