@@ -257,6 +257,7 @@ export default function DeploymentTemplateOverride({
             dispatch({ type: 'removeDuplicate' })
             initialise(true)
         } catch (err) {
+            showError(err)
         } finally {
             dispatch({ type: 'toggleDialog' })
         }
