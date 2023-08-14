@@ -39,7 +39,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         <AddIcon className="icon-dim-16 fcb-5 mr-8" />
                         Add chart source
                     </button>
-                    {showAddSource && <div className="dc__transparent-div" onClick={handleTogleAddSource}> <AddChartSource className="accordian-add-position"/> </div>}
+                    {showAddSource && <div className="dc__transparent-div" onClick={handleTogleAddSource}> <AddChartSource baseClass="accordian-add-position"/> </div>}
                     {options.map((option) => (
                         <div
                             className="dc__position-rel flex left cursor dc__hover-n50"
