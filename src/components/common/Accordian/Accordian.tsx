@@ -47,7 +47,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         >
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
-                                isChecked={ value && value.filter((selectedVal) => selectedVal.value === option.value).length}
+                                isChecked={ value?.filter((selectedVal) => selectedVal.value === option.value).length}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={() => onChange(option)}
                             >
