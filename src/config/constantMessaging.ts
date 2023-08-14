@@ -48,6 +48,8 @@ export const enum DeleteComponentsName {
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
+export const MAX_LENGTH_30 = 'Max 30 characters allowed'
+export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid character(s) "_"'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
 export const DEPLOY_IMAGE_EXTERNALSOURCE = 'Deploy image from external source'
