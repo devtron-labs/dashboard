@@ -6,10 +6,9 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-help-out
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { useHistory } from 'react-router'
-import { DeploymentStatusCardType, DeploymentStatusDetailsType } from './appDetails.type'
+import { DeploymentStatusCardType } from './appDetails.type'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import { getDeploymentStatusDetail } from './appDetails.service'
-import { processDeploymentStatusDetailsData, validateMomentDate } from './utils'
+import { validateMomentDate } from './utils'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
@@ -19,9 +18,7 @@ function DeploymentStatusCard({
     deploymentTriggerTime,
     triggeredBy,
     isVirtualEnvironment,
-    appId,
-    envId,
-    isHelmApp,
+    refetchDeploymentStatus
 }: DeploymentStatusCardType) {
     const history = useHistory()
 
@@ -76,16 +73,10 @@ function DeploymentStatusCard({
             </>
         )
     }
-    const getDeploymentDetailStepsData = (): void => {
-        // detailed deployments status
-        getDeploymentStatusDetail(appId, envId, true, '', isHelmApp).then((deploymentStatusDetailRes) => {
-            processDeploymentStatusDetailsData(deploymentStatusDetailRes.result)
-        })
-    }
 
     const onClickLastDeploymentStatus = (e) => {
         if (!hideDetails) {
-            getDeploymentDetailStepsData()
+            refetchDeploymentStatus(true)
         }
         if (loadingResourceTree) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
