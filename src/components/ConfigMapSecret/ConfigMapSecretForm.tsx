@@ -1038,7 +1038,10 @@ export const ConfigMapSecretForm = React.memo(
                                 </button>
                             )}
                             <button
-                                disabled={!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED}
+                                disabled={
+                                    (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
+                                    (draftMode && !configMapSecretData.isAppAdmin)
+                                }
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
                                 className="cta h-32 lh-20-imp p-6-12-imp"

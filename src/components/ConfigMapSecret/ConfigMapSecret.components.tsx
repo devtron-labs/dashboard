@@ -186,16 +186,7 @@ export function ConfigMapSecretContainer({
                 if (_draftData.value.result.draftState === 3) {
                     const dataFromDraft = JSON.parse(_draftData.value.result.data)
                     const configData = dataFromDraft.configData[0]
-                    let unAuthorized = false
-                    if (componentType === 'secret' && configData.externalType === '') {
-                        for (const key in configData.data) {
-                            if (configData.data[key] === '') {
-                                unAuthorized = true
-                                break
-                            }
-                        }
-                    }
-                    update(index, { ...dataFromDraft, unAuthorized: unAuthorized })
+                    update(index, { ...dataFromDraft, unAuthorized: dataFromDraft.dataEncrypted })
                 } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
@@ -672,7 +663,7 @@ export function ProtectedConfigMapSecretDetails({
 }
 
 export const convertToValidValue = (k: any): string => {
-    if (k !== false && k !== true && !isNaN(Number(k))) {
+    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
         return Number(k).toString()
     }
     return k.toString()
