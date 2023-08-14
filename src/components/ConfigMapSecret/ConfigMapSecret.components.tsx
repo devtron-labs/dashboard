@@ -443,7 +443,7 @@ export function ProtectedConfigMapSecretDetails({
 
     const getObfuscatedData = (codeEditorData) => {
         const _codeEditorData = { ...codeEditorData }
-        if (componentType === 'secret' && data.unAuthorized && _codeEditorData) {
+        if (componentType === 'secret' && (data.unAuthorized || draftData?.dataEncrypted) && _codeEditorData) {
             for (const key in _codeEditorData) {
                 _codeEditorData[key] = Array(8).fill('*').join('')
             }

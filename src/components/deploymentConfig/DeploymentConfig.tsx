@@ -594,7 +594,7 @@ export default function DeploymentConfig({
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : (
                     <DeploymentTemplateEditorView
-                        defaultValue={state.data}
+                        defaultValue={state.publishedState?.tempFormData ?? state.data}
                         value={isCompareAndApprovalState ? state.draftValues : state.tempFormData}
                         globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
