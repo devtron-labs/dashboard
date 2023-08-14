@@ -1517,9 +1517,9 @@ function DockerForm({
                         <hr className="mt-0 mb-0" />
                     </div>
                 )}
-                {!isGCROrGCP ||
-                    registryStorageType !== RegistryStorageType.OCI_PUBLIC ||
-                    (selectedDockerRegistryType.value !== RegistryType.OTHER && (
+                {!isGCROrGCP &&
+                    registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
+                    selectedDockerRegistryType.value !== RegistryType.OTHER && (
                         <ValidateForm
                             id={id}
                             onClickValidate={onClickValidate}
@@ -1528,7 +1528,7 @@ function DockerForm({
                             validationStatus={validationStatus}
                             configName="registry"
                         />
-                    ))}
+                    )}
 
                 <div className="form__row--two-third">
                     <div className="form__row">
