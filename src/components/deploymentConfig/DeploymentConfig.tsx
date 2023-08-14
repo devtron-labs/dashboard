@@ -299,6 +299,7 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
                 tempFormData: YAML.stringify(defaultAppOverride, { indent: 2 }),
+                data: YAML.stringify(defaultAppOverride, { indent: 2 })
             }
 
             let payload = {}
@@ -593,7 +594,7 @@ export default function DeploymentConfig({
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : (
                     <DeploymentTemplateEditorView
-                        defaultValue={state.publishedState?.tempFormData}
+                        defaultValue={state.data}
                         value={isCompareAndApprovalState ? state.draftValues : state.tempFormData}
                         globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
