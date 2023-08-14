@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { DropdownIcon } from '../../common';
 import moment from 'moment';
 
-export function About({ description = "", home = "", chartYaml, appVersion = "", created = "", digest = "", source = "", ...rest }) {
+export function About({ description = "", home = "", chartYaml, appVersion = "", created = "", digest = "", source = "", isOCICompliantChart=false, ...rest }) {
     return <div className="flex column left about white-card white-card--no-padding">
         <div className="chart-store-card__header" data-testid="single-chart-about-heading">About</div>
         <div className="chart-store-card__body">
@@ -12,12 +12,12 @@ export function About({ description = "", home = "", chartYaml, appVersion = "",
             <div className="mb-16">
                 <a rel="noreferrer noopener" className="chart-store-card__text homepage anchor" href={home} target="_blank" data-testid="home-chart-deploy-link">{home}</a>
             </div>
-            <Detailed {...{ appVersion, created, digest, home, source, chartYaml }} />
+            <Detailed {...{ appVersion, created, digest, home, source, chartYaml, isOCICompliantChart }} />
         </div>
     </div>
 }
 
-function Detailed({ appVersion = "", created = "", digest = "", home = "", source = "", chartYaml, ...rest }) {
+function Detailed({ appVersion = "", created = "", digest = "", home = "", source = "", chartYaml, isOCICompliantChart, ...rest }) {
     const [detailed, toggleDetailed] = useState(false)
     return (
         <div className="detailed-container flex column left detailed">
@@ -25,7 +25,7 @@ function Detailed({ appVersion = "", created = "", digest = "", home = "", sourc
                 <span className="chart-store-card__subtitle">Application version</span>
                 <div className="chart-store-card__text dc__ellipsis-right">{appVersion}</div>
                 <span className="chart-store-card__subtitle">Created</span>
-                <div className="chart-store-card__text dc__ellipsis-right">{moment(created).fromNow()}</div>
+                <div className="chart-store-card__text dc__ellipsis-right">{isOCICompliantChart ? "-" : moment(created).fromNow()}</div>
                 <span className="chart-store-card__subtitle">Digest</span>
                 <div className="chart-store-card__text digest">{digest}</div>
                 {chartYaml && <>
