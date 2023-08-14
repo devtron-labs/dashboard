@@ -12,6 +12,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
 import { OptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { excludeVariables } from './Constants'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -100,7 +101,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: isCdPipeline ? globalVariables.filter((variable) => variable.stageType !== 'post-cd') : globalVariables ,
+                    options: globalVariables.filter((variable) => (isCdPipeline && variable.stageType !== 'post-cd') || (!excludeVariables.includes(variable.value))),
+                    
                 },
             ])
         }

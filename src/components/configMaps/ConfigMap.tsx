@@ -11,10 +11,10 @@ import {
     showError,
     Progressing,
     DeleteDialog,
-    useThrottledEffect,
     Checkbox,
     CHECKBOX_VALUE,
     not,
+    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
@@ -36,7 +36,7 @@ const EXTERNAL_TYPES = {
     KubernetesConfigMap: 'Kubernetes External ConfigMap',
 }
 
-const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void, isJobView?: boolean } ) => {
+const ConfigMap = ({ respondOnSuccess, isJobView }: { respondOnSuccess: () => void; isJobView?: boolean }) => {
     const { appId } = useParams<{ appId }>()
     const [configmap, setConfigmap] = useState<{ id: number; configData: any[]; appId: number }>()
     const [configmapLoading, setConfigmapLoading] = useState(true)
@@ -77,9 +77,12 @@ const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void
     }
 
     let configData = [{ id: null, name: null }].concat(configmap?.configData)
+    
     return (
         <div className="form__app-compose">
-            <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">ConfigMaps</h1>
+            <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">
+                ConfigMaps
+            </h1>
             <p className="form__subtitle form__subtitle--artifacts">
                 ConfigMap is used to store common configuration variables, allowing users to unify environment variables
                 for different modules in a distributed system into one object.&nbsp;
@@ -96,7 +99,7 @@ const ConfigMap = ({ respondOnSuccess, isJobView }: {respondOnSuccess: ()=> void
                 return (
                     <CollapsedConfigMapForm
                         key={cm?.name || Math.random().toString(36).substr(2, 5)}
-                        {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
+                        {...{ ...cm, title: cm?.name ? '' : 'Add ConfigMap' }}
                         appChartRef={appChartRef}
                         appId={appId}
                         id={configmap?.id}
@@ -242,96 +245,16 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div data-testid={`configmap-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
+            <div
+                data-testid={`configmap-${title.toLowerCase().split(' ').join('-')}-radio-button`}
+                className="tab__title"
+            >
+                {title}
+            </div>
         </nav>
     )
 }
 
-interface ResizableTextareaProps {
-    minHeight?: number
-    maxHeight?: number
-    value?: string
-    onChange?: (e) => void
-    onBlur?: (e) => void
-    onFocus?: (e) => void
-    className?: string
-    placeholder?: string
-    lineHeight?: number
-    padding?: number
-    disabled?: boolean
-    name?: string
-    dataTestId?: string
-}
-
-export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
-    minHeight,
-    maxHeight,
-    value,
-    onChange = null,
-    onBlur = null,
-    onFocus = null,
-    className = '',
-    placeholder = 'Enter your text here..',
-    lineHeight = 14,
-    padding = 12,
-    disabled = false,
-    dataTestId,
-    ...props
-}) => {
-    const [text, setText] = useState('')
-    const _textRef = useRef(null)
-
-    useEffect(() => {
-        setText(value)
-    }, [value])
-
-    function handleChange(e) {
-        e.persist()
-        setText(e.target.value)
-        if (typeof onChange === 'function') onChange(e)
-    }
-
-    function handleBlur(e) {
-        if (typeof onBlur === 'function') onBlur(e)
-    }
-
-    function handleFocus(e) {
-        if (typeof onFocus === 'function') onFocus(e)
-    }
-
-    useThrottledEffect(
-        () => {
-            _textRef.current.style.height = 'auto'
-            let nextHeight = _textRef.current.scrollHeight
-            if (minHeight && nextHeight < minHeight) {
-                nextHeight = minHeight
-            }
-            if (maxHeight && nextHeight > maxHeight) {
-                nextHeight = maxHeight
-            }
-            _textRef.current.style.height = nextHeight + 2 + 'px'
-        },
-        500,
-        [text],
-    )
-
-    return (
-        <textarea
-            data-testid={dataTestId}
-            ref={(el) => (_textRef.current = el)}
-            value={text}
-            placeholder={placeholder}
-            className={`dc__resizable-textarea ${className}`}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-            style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
-            spellCheck={false}
-            disabled={disabled}
-            {...props}
-        />
-    )
-}
 
 export function ListComponent({ title, name = '', subtitle = '', onClick, className = '', collapsible = false }) {
     return (
@@ -687,11 +610,18 @@ export function ConfigMapForm({
                             toggleExternalValues(e.target.value !== '')
                         }}
                     >
-                        <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
+                        <Select.Button
+                            dataTestIdDropdown="select-configmap-datatype-dropdown"
+                            dataTestId="data-type-select-control"
+                        >
                             {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
+                            <Select.Option
+                                dataTestIdMenuList={`select-configmap-datatype-dropdown-${name}`}
+                                key={value}
+                                value={value}
+                            >
                                 {name}
                             </Select.Option>
                         ))}
@@ -856,7 +786,7 @@ export function ConfigMapForm({
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
-                        dataTestid = "configmap-file-permission-textbox"
+                        dataTestid="configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}
@@ -876,8 +806,12 @@ export function ConfigMapForm({
                         disabled={false}
                         onChange={changeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui" dataTestId="GUI">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml" dataTestId="YAML">YAML</RadioGroup.Radio>
+                        <RadioGroup.Radio value="gui" dataTestId="GUI">
+                            GUI
+                        </RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml" dataTestId="YAML">
+                            YAML
+                        </RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             )}
@@ -894,7 +828,7 @@ export function ConfigMapForm({
                 <>
                     {yamlMode ? (
                         <div className="yaml-container">
-                        <CodeEditor
+                            <CodeEditor
                                 value={yaml}
                                 mode="yaml"
                                 inline
@@ -949,7 +883,12 @@ export function ConfigMapForm({
                 </>
             )}
             <div className="form__buttons">
-                <button data-testid={`configmap-save-button-${name}`} type="button" className="cta" onClick={handleSubmit}>
+                <button
+                    data-testid={`configmap-save-button-${name}`}
+                    type="button"
+                    className="cta"
+                    onClick={handleSubmit}
+                >
                     {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
                 </button>
             </div>
@@ -958,7 +897,7 @@ export function ConfigMapForm({
     )
 }
 export const convertToValidValue = (k: any): string => {
-    if (!isNaN(Number(k))) {
+    if (k !== '' && !isNaN(Number(k))) {
         return Number(k).toString()
     }
     return k
@@ -998,7 +937,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             let tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) return agg
                 let v =
-                    obj[k] && (typeof obj[k]=='object')
+                    obj[k] && typeof obj[k] == 'object'
                         ? YAML.stringify(obj[k], { indent: 2 })
                         : convertToValidValue(obj[k])
                 let keyErr: string

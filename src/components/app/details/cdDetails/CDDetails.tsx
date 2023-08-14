@@ -170,7 +170,7 @@ export default function CDDetails() {
 
     useEffect(() => {
         if (result) {
-            const pipelines = result[1]['value']?.pipelines
+            const pipelines = result[1]['value']?.pipelines || []
             const _deploymentAppType = pipelines?.find(
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
@@ -187,11 +187,11 @@ export default function CDDetails() {
                 return {
                     value: `${envData.environmentId}`,
                     label: envData.environmentName,
-                    pipelineId: cdPipelinesMap.get(envData.environmentId).id,
+                    pipelineId: cdPipelinesMap.get(envData.environmentId)?.id,
                     deploymentAppDeleteRequest: envData.deploymentAppDeleteRequest,
                 }
             })
-
+            
             if (envOptions.length === 1 && !envId && !isEnvDeleted) {
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
             }

@@ -820,25 +820,23 @@ export const DeploymentTemplateEditorView = ({
         )
     }
 
-    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
+    return yamlMode || (selectedChart?.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
         <>
             {showReadme ? (
                 <>
-                <div className="dt-readme dc__border-right">
-                    <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
-                    {chartConfigLoading ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <MarkDown markdown={readme} className="dt-readme-markdown" />
-                    )}
-                </div>
-                {renderCodeEditor()}
+                    <div className="dt-readme dc__border-right">
+                        <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
+                        {chartConfigLoading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <MarkDown markdown={readme} className="dt-readme-markdown" />
+                        )}
+                    </div>
+                    {renderCodeEditor()}
                 </>
-            )
-                :
+            ) : (
                 renderCodeEditor()
-            }
-            
+            )}
         </>
     ) : (
         <>

@@ -908,7 +908,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
-        console.log(this.state.searchExpanded)
 
         return (
             <>
