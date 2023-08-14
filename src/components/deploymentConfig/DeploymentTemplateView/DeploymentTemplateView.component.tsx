@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
 import { versionComparator } from '../../common'
 import { ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
@@ -122,7 +121,6 @@ export const CompareWithDropdown = ({
     selectedOption,
     setSelectedOption,
     globalChartRef,
-    isDraftMode,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState<DeploymentChartGroupOptionType[]>([
         {
@@ -145,35 +143,23 @@ export const CompareWithDropdown = ({
     const getSelectedOption = () => {
         if (isEnvOverride) {
             const currentEnv = environments.find((env) => +envId === env.id)
-            if (isDraftMode && currentEnv?.value) {
+            if (currentEnv?.value) {
                 return currentEnv
             }
-            return baseTemplateOption
-        } else if (isDraftMode) {
-            return baseTemplateOption
-        } else if (environments.length > 0) {
-            return environments.filter((env) => env.value)[0] ?? baseTemplateOption
-        } else {
-            return charts[0]
         }
+        return baseTemplateOption
     }
 
     const _initOptions = () => {
         const _groupOptions = []
-
-        // Push base template option if in environment override view
-        if (isEnvOverride || isDraftMode) {
-            _groupOptions.push({
-                label: '',
-                options: [baseTemplateOption],
-            })
-        }
+        _groupOptions.push({
+            label: '',
+            options: [baseTemplateOption],
+        })
 
         // Push all environment & other version options
         _groupOptions.push({
-            label: isDraftMode
-                ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.publishedLabel
-                : DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.label,
+            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.publishedLabel,
             options: environments.length > 0 ? environments : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.noOptions],
         })
         _groupOptions.push({

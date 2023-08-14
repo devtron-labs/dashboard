@@ -229,7 +229,6 @@ export default function DeploymentTemplateEditorView({
                                             selectedOption={state.selectedCompareOption}
                                             setSelectedOption={setSelectedOption}
                                             globalChartRef={globalChartRef}
-                                            isDraftMode={!!state.latestDraft}
                                         />
                                         {!isDeleteDraftState &&
                                             isEnvOverride &&

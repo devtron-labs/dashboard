@@ -352,7 +352,10 @@ export default function DeploymentTemplateOverrideForm({
             ) {
                 return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2 })
             }
-        } else if (state.selectedCompareOption?.id === Number(envId)) {
+        } else if (
+            state.selectedCompareOption?.id === Number(envId) &&
+            state.data.environmentConfig.envOverrideValues
+        ) {
             return YAML.stringify(state.data.environmentConfig.envOverrideValues, { indent: 2 })
         }
 
