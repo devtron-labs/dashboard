@@ -873,7 +873,7 @@ export function ConfigMapForm({
     )
 }
 export const convertToValidValue = (k: any): string => {
-    if (!isNaN(Number(k))) {
+    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
         return Number(k).toString()
     }
     return k
