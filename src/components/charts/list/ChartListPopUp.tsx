@@ -8,7 +8,7 @@ import {
     ImageType,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
@@ -69,7 +69,7 @@ function ChartListPopUp({
                     {renderGlobalRefetch()}
                     <div className="dc__divider ml-12 mr-4" />
                     <button className="dc__transparent flex mr-8" onClick={onClose}>
-                        <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
+                        <Close className="dc__page-header__close-icon icon-dim-20 cursor" />
                     </button>
                 </div>
                 {showAddPopUp && <AddChartSource />}
@@ -122,7 +122,6 @@ function ChartListPopUp({
     }
 
     const renderGlobalRefetch = () => {
-        if (!isEmpty) {
             return (
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts from all resources">
                     <a
@@ -137,7 +136,6 @@ function ChartListPopUp({
                     </a>
                 </Tippy>
             )
-        }
     }
 
     const renderChartList = () => {
@@ -194,6 +192,7 @@ function ChartListPopUp({
                     onChange={setStore}
                     data-testid="chart-store-list-search-box"
                     onKeyDown={handleFilterKeyPress}
+                    autoFocus={true}
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
