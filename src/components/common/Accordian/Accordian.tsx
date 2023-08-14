@@ -15,10 +15,6 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
         toggleAddSource(!showAddSource)
     }
 
-    const getChecked = (option): boolean => {
-        return value.filter((selectedVal) => selectedVal.value === option.value).length
-    } 
-
     return (
         <div>
             <div
@@ -37,13 +33,13 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                 <div>
                     <button
                         type="button"
-                        className="dc__transparent dc__hover-n50 cursor flex left cb-5 fs-13 fw-6 lh-20 h-32 pl-10 w-100"
+                        className="dc__position-rel dc__transparent dc__hover-n50 cursor flex left cb-5 fs-13 fw-6 lh-20 h-32 pl-10 w-100"
                         onClick={handleTogleAddSource}
                     >
                         <AddIcon className="icon-dim-16 fcb-5 mr-8" />
                         Add chart source
                     </button>
-                    {showAddSource && <AddChartSource />}
+                    {showAddSource && <div className="dc__transparent-div" onClick={handleTogleAddSource}> <AddChartSource baseClass="accordian-add-position"/> </div>}
                     {options.map((option) => (
                         <div
                             className="dc__position-rel flex left cursor dc__hover-n50"
@@ -51,7 +47,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         >
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
-                                isChecked={getChecked(option)}
+                                isChecked={ value?.filter((selectedVal) => selectedVal.value === option.value).length}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={() => onChange(option)}
                             >
