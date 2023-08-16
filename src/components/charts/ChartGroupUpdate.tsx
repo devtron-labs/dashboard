@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
 import ChartSelect from './util/ChartSelect'
-import { ChartGroupEntry, Chart } from './charts.types'
+import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
-import { updateChartGroupEntries, getChartGroups } from './charts.service'
+import { updateChartGroupEntries, getChartGroups, getChartProviderList } from './charts.service'
 import useChartGroup from './useChartGroup'
 import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import CreateChartGroup from './modal/CreateChartGroup'
@@ -18,6 +18,7 @@ import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import PageHeader from '../common/header/PageHeader'
 import DetectBottom from '../common/DetectBottom'
+import { sortOptionsByLabel } from '../common'
 
 export default function ChartGroupUpdate({}) {
     const history = useHistory()
@@ -53,6 +54,7 @@ export default function ChartGroupUpdate({}) {
     const { url } = match
     const [chartListLoading, setChartListLoading] = useState(true)
     const chartList: Chart[] = Array.from(state.availableCharts.values())
+    const [chartLists, setChartLists] = useState<ChartListType[]>([])
     const [isGrid, setIsGrid] = useState<boolean>(true)
 
     const { breadcrumbs } = useBreadcrumb(
@@ -103,7 +105,33 @@ export default function ChartGroupUpdate({}) {
         }
     }
 
+    const chartRepos = useMemo(
+        () =>
+            chartLists
+                .filter((chartRepo) => chartRepo.active)
+                .map((chartRepo) => {
+                    return {
+                        value: chartRepo.id,
+                        label: chartRepo.name,
+                        isOCIRegistry: chartRepo.isOCIRegistry,
+                    }
+                })
+                .sort(sortOptionsByLabel),
+        [chartLists]
+    )
+
+    const getChartFilter = async () => {
+        try {
+            let chartRepos = (await getChartProviderList()).result || []
+            chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
+            setChartLists(chartRepos)
+        } catch (err) {
+            showError(err)
+        }
+    }
+
     useEffect(() => {
+        getChartFilter()
         window.addEventListener('beforeunload', reloadCallback)
         return () => {
             window.removeEventListener('beforeunload', reloadCallback)
@@ -113,10 +141,10 @@ export default function ChartGroupUpdate({}) {
     useEffect(() => {
         if (!state.loading) {
             resetPaginationOffset()
-            initialiseFromQueryParams(state.chartRepos)
+            chartRepos && initialiseFromQueryParams(chartRepos)
             callApplyFilterOnCharts(true)
         }
-    }, [location.search, state.loading])
+    }, [chartRepos, location.search, state.loading])
 
     function reloadCallback(event): void {
         event.preventDefault()
@@ -140,15 +168,24 @@ export default function ChartGroupUpdate({}) {
     function initialiseFromQueryParams(chartRepoList): void {
         let searchParams = new URLSearchParams(location.search)
         let allChartRepoIds: string = searchParams.get(QueryParams.ChartRepoId)
+        let allRegistryIds: string = searchParams.get(QueryParams.RegistryId)
         let deprecated: string = searchParams.get(QueryParams.IncludeDeprecated)
         let appStoreName: string = searchParams.get(QueryParams.AppStoreName)
         let chartRepoIdArray = []
+        let ociRegistryArray = []
         if (allChartRepoIds) chartRepoIdArray = allChartRepoIds.split(',')
+        if (allRegistryIds) ociRegistryArray = allRegistryIds.split(',')
         chartRepoIdArray = chartRepoIdArray.map((chartRepoId) => parseInt(chartRepoId))
+        ociRegistryArray = ociRegistryArray.map((ociRegistryId) => ociRegistryId)
+
         let selectedRepos = []
         for (let i = 0; i < chartRepoIdArray.length; i++) {
-            let chartRepo = chartRepoList.find((item) => item.value === chartRepoIdArray[i])
+            let chartRepo = chartRepoList?.find((item) => +item.value === chartRepoIdArray[i])
             if (chartRepo) selectedRepos.push(chartRepo)
+        }
+        for (let i = 0; i < ociRegistryArray.length; i++) {
+            let registry = chartRepoList?.find((item) => item.value === ociRegistryArray[i])
+            if (registry) selectedRepos.push(registry)
         }
         if (selectedRepos) setSelectedChartRepo(selectedRepos)
         if (deprecated) setIncludeDeprecated(parseInt(deprecated))
@@ -221,7 +258,7 @@ export default function ChartGroupUpdate({}) {
                     <div className={`chart-group--details-body summary-show`}>
                         {typeof state.configureChartIndex != 'number' ? (
                             <ChartHeaderFilters
-                                chartRepoList={state.chartRepos}
+                                chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
                                 searchApplied={searchApplied}
                                 appStoreName={appStoreName}

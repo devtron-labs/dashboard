@@ -142,14 +142,11 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         }
     }, [chartRepos, location.search, state.loading])
 
-    const getInitChartList = async()  => {
-     return  getChartProviderList()
-    }
 
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            let chartRepos = (await getInitChartList()).result || []
+            let chartRepos = (await getChartProviderList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
