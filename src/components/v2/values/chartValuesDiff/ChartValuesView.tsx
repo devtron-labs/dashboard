@@ -1613,7 +1613,7 @@ function ChartValuesView({
                                 payload: false,
                             })
                         }}
-                        diableButton={commonState.isDeleteInProgress}
+                        disableButton={commonState.isDeleteInProgress}
                         isCreateValueView
                     />
                 )}
