@@ -61,7 +61,7 @@ function ChartListPopUp({
     }
 
     const onClickAddSource = (e) => {
-        if (serverMode !== SERVER_MODE.EA_ONLY) {
+        if (serverMode === SERVER_MODE.EA_ONLY) {
             history.push(URLS.GLOBAL_CONFIG_CHART)
         } else {
             toggleAddPopUp(e)
