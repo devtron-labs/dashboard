@@ -658,7 +658,8 @@ function DockerForm({
         }
     }
 
-    function onValidation() {
+     function onValidation() {
+        onClickValidate()
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
             if (
                 (!isIAMAuthType &&
@@ -1120,7 +1121,7 @@ function DockerForm({
                                 disabledFields.some((test) => test === RepositoryAction.CHART_PULL)
                                     ? 'dc__opacity-0_5'
                                     : ''
-                            } docker-default mb-0`}
+                            } docker-default mb-12`}
                             id={RepositoryAction.CHART_PULL}
                             isChecked={showHelmPull}
                             value={CHECKBOX_VALUE.CHECKED}
@@ -1143,8 +1144,8 @@ function DockerForm({
 
     const renderRepositoryList = () => {
         return (
-            <div className="form__row">
-                <div className="dc__required-field">List of repositories</div>
+            <div className="mb-12">
+                <div className="dc__required-field fs-13 cn-9 mb-6">List of repositories</div>
                 <textarea
                     className="form__textarea"
                     name="repositoryList"
