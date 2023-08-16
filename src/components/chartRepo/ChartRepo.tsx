@@ -490,14 +490,14 @@ function ChartForm({
             </div>
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (
-                    <div className="form-row flex left">
+                    <div className="form-row flex left fs-13">
                          <Question className="icon-dim-16 mr-8" />
                         Looking to add OCI-based registry?
                         <NavLink
                             className="dc__no-decor pl-8 pr-8 flex left cb-5"
                             to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}
                         >
-                            Add OCI Registries
+                            Add OCI Registry
                         </NavLink>
                     </div>
                 )}

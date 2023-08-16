@@ -197,7 +197,7 @@ function ChartListPopUp({
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
-                    placeholder="Search by repository registry"
+                    placeholder="Search by repository or registry"
                     value={searchText}
                     className="search__input"
                     onChange={setStore}

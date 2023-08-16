@@ -55,7 +55,6 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                     )}
                     {showAddSource && (
                         <div className="dc__transparent-div" onClick={handleTogleAddSource}>
-                            {' '}
                             <AddChartSource baseClass="accordian-add-position" />{' '}
                         </div>
                     )}
@@ -70,7 +69,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={() => onChange(option)}
                             >
-                                <div className="ml-5">{option.label}</div>
+                                <div className="dc__ellipsis-right ml-5 dc__mxw-180">{option.label}</div>
                             </Checkbox>
                         </div>
                     ))}

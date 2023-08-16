@@ -61,6 +61,7 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
+import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 
@@ -1143,17 +1144,15 @@ function DockerForm({
     const renderRepositoryList = () => {
         return (
             <div className="form__row">
-                <CustomInput
-                    dataTestid="container-registry-name"
-                    labelClassName="dc__required-field"
+                <div className="dc__required-field">List of repositories</div>
+                <textarea
+                    className="form__textarea"
                     name="repositoryList"
                     autoFocus={true}
                     value={customState.repositoryList?.value.trim()}
                     autoComplete="off"
-                    error={customState.repositoryList.error}
                     tabIndex={3}
                     onChange={handleRepositoryListChange}
-                    label="List of repositories"
                     placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
                 />
                 {repositoryError.length > 0 && (
@@ -1164,6 +1163,14 @@ function DockerForm({
                         <div className="ml-4 cr-5">{repositoryError}</div>
                     </div>
                 )}
+                {customState.repositoryList?.error && (
+                <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                        <div className="error-label-icon">
+                        <AlertTriangle className="icon-dim-16" />
+                        </div>
+                        <div className="ml-4 cr-5">{customState.repositoryList?.error}</div>
+                    </div>
+            )}
             </div>
         )
     }

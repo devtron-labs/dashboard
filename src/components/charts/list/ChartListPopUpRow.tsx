@@ -69,7 +69,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                         <Helm className="icon-dim-20 fcb-5 dc__vertical-align-middle " />
                     )}
                 </List.Logo>
-                <div>{list.name}</div>
+                <div className="dc__truncate-text">{list.name}</div>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts">
                     <a
                         rel="noreferrer noopener"
