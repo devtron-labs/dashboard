@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { ChartListPopUpType } from '../charts.types'
 import {
     showError,
@@ -17,13 +17,14 @@ import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessagin
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NavLink } from 'react-router-dom'
-import { URLS } from '../../../config'
+import { SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import EmptyFolder from '../../../assets/img/Empty-folder.png'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import AddChartSource from './AddChartSource'
 import ChartListPopUpRow from './ChartListPopUpRow'
 import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 function ChartListPopUp({
     onClose,
@@ -33,6 +34,7 @@ function ChartListPopUp({
     setFilteredChartList,
     setShowSourcePopoUp,
 }: ChartListPopUpType) {
+    const { serverMode } = useContext(mainContext)
     const [searchApplied, setSearchApplied] = useState<boolean>(false)
     const [searchText, setSearchText] = useState<string>('')
     const [fetching, setFetching] = useState<boolean>(false)
@@ -62,10 +64,19 @@ function ChartListPopUp({
             <div className="pt-12 pb-12 pl-16 flex dc__content-space dc__border-bottom fw-6">
                 <span>Helm chart sources</span>
                 <div className="flex">
-                    <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
-                        <Add className="icon-dim-20 fcb-5 mr-8" />
-                        Add
-                    </div>
+                    {serverMode === SERVER_MODE.EA_ONLY ? (
+                        <NavLink to={URLS.GLOBAL_CONFIG_CHART}>
+                            <div className="flex cb-5 fw-6 cursor mr-12">
+                                <Add className="icon-dim-20 fcb-5 mr-8" />
+                                Add
+                            </div>
+                        </NavLink>
+                    ) : (
+                        <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
+                            <Add className="icon-dim-20 fcb-5 mr-8" />
+                            Add
+                        </div>
+                    )}
                     {renderGlobalRefetch()}
                     <div className="dc__divider ml-12 mr-4" />
                     <button className="dc__transparent flex mr-8" onClick={onClose}>
