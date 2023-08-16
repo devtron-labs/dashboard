@@ -10,6 +10,7 @@ import {
     CDModalTab,
     DeploymentAppTypes,
     ToastBodyWithButton,
+    ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCDMaterialList,
@@ -917,7 +918,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return
         }
         let envId
-        if(this.state.selectedEnv && this.state.selectedEnv.id!==0){
+        if (this.state.selectedEnv && this.state.selectedEnv.id !== 0) {
             envId = this.state.selectedEnv.id
         }
         const payload = {
@@ -950,22 +951,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                
             })
             .catch((errors: ServerErrors) => {
-                
-                errors.errors.map(error=>{
-                    if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                        const errorToastBody = (
-                            <ToastBodyWithButton
-                                onClick={this.redirectToCIPipeline}
-                                subtitle={error.userMessage}
-                                title="Nothing to execute"
-                                buttonText="EDIT PIPELINE"
-                            />
-                        )
-                        toast.error(errorToastBody)
-                    } else {
-                        toast.error(error)
-                    }
-                })
+                if (errors.code === 403) {
+                    toast.info(
+                        <ToastBody title="Access denied" subtitle="You don't have access to perform this action." />,
+                        {
+                            className: 'devtron-toast unauthorized',
+                        },
+                    )
+                } else {
+                    errors.errors.map((error) => {
+                        if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
+                            const errorToastBody = (
+                                <ToastBodyWithButton
+                                    onClick={this.redirectToCIPipeline}
+                                    subtitle={error.userMessage}
+                                    title="Nothing to execute"
+                                    buttonText="EDIT PIPELINE"
+                                />
+                            )
+                            toast.error(errorToastBody)
+                        } else {
+                            toast.error(error)
+                        }
+                    })
+                }
                 this.setState({ code: errors.code, isLoading: false })
             })
     }
