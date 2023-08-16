@@ -15,6 +15,7 @@ export default function EnvironmentOverride({
     isJobView,
     environments,
     reloadEnvironments,
+    envName,
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
@@ -25,7 +26,8 @@ export default function EnvironmentOverride({
     const [isDeploymentOverride, setIsDeploymentOverride] = useState(false)
     const environmentsMap = mapByKey(environments || [], 'environmentId')
     const appMap = mapByKey(appList || [], 'id')
-    const isProtected = environmentsMap.get(+params.envId)?.isProtected ?? appMap.get(+params.appId)?.isProtected ?? false
+    const isProtected =
+        environmentsMap.get(+params.envId)?.isProtected ?? appMap.get(+params.appId)?.isProtected ?? false
     useEffect(() => {
         if (params.envId) {
             setEnvironmentId(+params.envId)
@@ -77,6 +79,16 @@ export default function EnvironmentOverride({
         }
     }
 
+    const getEnvName = (): string => {
+        if (envName) {
+            return envName
+        } else if (environmentsMap.has(+params.envId)) {
+            return environmentsMap.get(+params.envId).environmentName
+        } else {
+            return ''
+        }
+    }
+
     return (
         <ErrorBoundary>
             <div className={isDeploymentOverride ? 'deployment-template-override' : ''}>
@@ -86,11 +98,7 @@ export default function EnvironmentOverride({
                             parentState={viewState}
                             setParentState={setViewState}
                             environments={environments}
-                            environmentName={
-                                environmentsMap.has(+params.envId)
-                                    ? environmentsMap.get(+params.envId).environmentName
-                                    : ''
-                            }
+                            environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
                         />

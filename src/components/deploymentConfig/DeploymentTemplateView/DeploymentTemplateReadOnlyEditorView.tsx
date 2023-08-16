@@ -15,7 +15,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
 
     const renderCodeEditor = (): JSX.Element => {
         return (
-            <div className="form__row--code-editor-container dc__border-top dc__border-bottom read-only-mode">
+            <div className="form__row--code-editor-container dc__border-top-n1 dc__border-bottom read-only-mode">
                 <CodeEditor
                     value={value}
                     mode={MODES.YAML}

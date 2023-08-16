@@ -118,7 +118,6 @@ export interface CompareWithDropdownProps {
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
     setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
-    isDraftMode: boolean
 }
 
 export interface ChartTypeVersionOptionsProps {

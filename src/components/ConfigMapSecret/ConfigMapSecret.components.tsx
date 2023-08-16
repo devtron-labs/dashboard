@@ -27,7 +27,7 @@ import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistor
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
-import { getCMSecret, getSecretList } from './service'
+import { getCMSecret, getConfigMapList, getSecretList } from './service'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -157,8 +157,37 @@ export function ConfigMapSecretContainer({
                         _result.configData[0].draftId = draftId
                         _result.configData[0].draftState = draftState
                     }
+                    if (componentType === 'secret' && _draftData?.status === 'fulfilled' && _draftData.value?.result) {
+                        _result.configData[0].overridden = data.overridden
+                        if (
+                            cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+                            _draftData.value.result.draftState === 3 &&
+                            _draftData.value.result.action === 2
+                        ) {
+                            _result.configData[0].overridden = true
+                        } else if (
+                            cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
+                            _draftData.value.result.draftState === 3 &&
+                            _draftData.value.result.action === 3
+                        ) {
+                            _result.configData[0].overridden = false
+                        }
+                    }
                     update(index, _result)
                 } else {
+                    toast.error(`The ${componentType} '${data?.name}' has been deleted`)
+                    update(index, null)
+                }
+            } else if (
+                cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
+                _draftData?.status === 'fulfilled' &&
+                _draftData.value.result
+            ) {
+                if (_draftData.value.result.draftState === 3) {
+                    const dataFromDraft = JSON.parse(_draftData.value.result.data)
+                    const configData = dataFromDraft.configData[0]
+                    update(index, { ...dataFromDraft, unAuthorized: dataFromDraft.dataEncrypted })
+                } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
                 }
@@ -365,24 +394,25 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
-    const { appId } = useParams<{ appId }>()
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
 
     const getBaseData = async () => {
         try {
             setLoader(true)
-            if (data.unAuthorized && componentType === 'secret') {
-                const { result } = await getSecretList(appId)
-                if (result?.configData?.length) {
-                    setBaseData(result.configData.find((config) => config.name === data.name))
-                }
-            } else {
-                const { result } = await getCMSecret(componentType, id, appId, data?.name)
-                if (result?.configData?.length) {
-                    setBaseData(result.configData[0])
+            const { result } = await (componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
+            let _baseData
+            if (result?.configData?.length) {
+                _baseData = result.configData.find((config) => config.name === data.name)
+                if (componentType === 'secret' && !data.unAuthorized) {
+                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
+                    if (secretResult?.configData?.length) {
+                        _baseData = secretResult.configData[0]
+                    }
                 }
             }
+            setBaseData(_baseData)
         } catch (error) {
         } finally {
             setLoader(false)
@@ -413,7 +443,7 @@ export function ProtectedConfigMapSecretDetails({
 
     const getObfuscatedData = (codeEditorData) => {
         const _codeEditorData = { ...codeEditorData }
-        if (componentType === 'secret' && data.unAuthorized && _codeEditorData) {
+        if (componentType === 'secret' && (data.unAuthorized || draftData?.dataEncrypted) && _codeEditorData) {
             for (const key in _codeEditorData) {
                 _codeEditorData[key] = Array(8).fill('*').join('')
             }
@@ -633,7 +663,7 @@ export function ProtectedConfigMapSecretDetails({
 }
 
 export const convertToValidValue = (k: any): string => {
-    if (k !== false && k !== true && !isNaN(Number(k))) {
+    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
         return Number(k).toString()
     }
     return k.toString()

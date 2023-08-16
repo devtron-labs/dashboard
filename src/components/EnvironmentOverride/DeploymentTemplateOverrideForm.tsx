@@ -347,13 +347,15 @@ export default function DeploymentTemplateOverrideForm({
     const getCodeEditorValueForReadOnly = () => {
         if (state.publishedState) {
             if (
-                state.selectedCompareOption &&
-                state.selectedCompareOption?.id !== -1 &&
-                state.publishedState.isOverride
+                state.publishedState.isOverride &&
+                (state.selectedCompareOption?.id !== -1 || state.selectedTabIndex === 1)
             ) {
                 return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2 })
             }
-        } else if (state.selectedCompareOption?.id === Number(envId)) {
+        } else if (
+            state.selectedCompareOption?.id === Number(envId) &&
+            state.data.environmentConfig.envOverrideValues
+        ) {
             return YAML.stringify(state.data.environmentConfig.envOverrideValues, { indent: 2 })
         }
 
