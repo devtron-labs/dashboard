@@ -135,7 +135,7 @@ export default function CDDetails() {
             )
         }
 
-        if (triggerId && !newTriggerHistory.has(+triggerId)) {
+        if (triggerId && !newTriggerHistory.has(+triggerId) && fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) {
             setFetchTriggerIdData(FetchIdDataStatus.FETCHING)
             newTriggerHistory.clear()
         } else {

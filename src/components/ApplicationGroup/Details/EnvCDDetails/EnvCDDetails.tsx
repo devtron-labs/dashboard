@@ -99,7 +99,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         setTagsEditable(deploymentHistoryResult?.result?.tagsEditable || false)
         setAppReleaseTags(deploymentHistoryResult?.result?.appReleaseTagNames || [])
 
-        if (triggerId && !newTriggerHistory.has(+triggerId)) {
+        if (triggerId && !newTriggerHistory.has(+triggerId) && fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) {
             setFetchTriggerIdData(FetchIdDataStatus.FETCHING)
             newTriggerHistory.clear()
         } else {
