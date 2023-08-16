@@ -14,7 +14,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
     const [isSpecificChartRefetchLoading, setSpecificChartRefetchLoading] = useState(false)
     const [isToggleLoading, setToggleLoading] = useState(false)
     const [enabled, toggleEnabled] = useState<boolean>(list.active)
-
+    
     function refetchSpecificChart(id: number, isOCIRegistry: boolean) {
         let payload = {
             id: id,
@@ -93,7 +93,11 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                     className="default-tt"
                     arrow={false}
                     placement="bottom"
-                    content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                    content={
+                        enabled
+                            ? `${list.isEditable ? "Disable" : "Can't disable"} chart repository`
+                            : 'Enable chart repository'
+                    }
                 >
                     <span
                         data-testid={`${'name'}-chart-repo-toggle-button`}
@@ -103,7 +107,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                         {isToggleLoading ? (
                             <Progressing size={16} />
                         ) : (
-                            <List.Toggle onSelect={onSelectToggle} enabled={enabled} />
+                            <List.Toggle disabled={!list.isEditable} onSelect={onSelectToggle} enabled={enabled} />
                         )}
                     </span>
                 </Tippy>
