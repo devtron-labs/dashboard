@@ -115,17 +115,32 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
 
     useEffect(() => {
         getChartFilter()
-    }, [showSourcePopoUp])
+    }, [])
+
+    const chartRepos = useMemo(
+        () =>
+            chartLists
+                .filter((chartRepo) => chartRepo.active)
+                .map((chartRepo) => {
+                    return {
+                        value: chartRepo.id,
+                        label: chartRepo.name,
+                        isOCIRegistry: chartRepo.isOCIRegistry,
+                    }
+                })
+                .sort(sortOptionsByLabel),
+        [chartLists]
+    )
 
     useEffect(() => {
         if (!state.loading) {
             resetPaginationOffset()
-            initialiseFromQueryParams(chartRepos);
-            callApplyFilterOnCharts(true);
+            chartRepos && initialiseFromQueryParams(chartRepos)
+            callApplyFilterOnCharts(true)
             getGitOpsModuleInstalledAndConfigured()
 
         }
-    }, [location.search, state.loading])
+    }, [chartRepos, location.search, state.loading])
 
     const getInitChartList = async()  => {
      return  getChartProviderList()
@@ -364,20 +379,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         history.push(url)
     }
 
-    const chartRepos = useMemo(
-        () =>
-            chartLists
-                .filter((chartRepo) => chartRepo.active)
-                .map((chartRepo) => {
-                    return {
-                        value: chartRepo.id,
-                        label: chartRepo.name,
-                        isOCIRegistry: chartRepo.isOCIRegistry,
-                    }
-                })
-                .sort(sortOptionsByLabel),
-        [chartLists]
-    )
+  
 
     return (
         <>
@@ -392,7 +394,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && chartRepos?.length && (
+                        {typeof state.configureChartIndex != 'number' && (chartRepos?.length > 0) && (
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
