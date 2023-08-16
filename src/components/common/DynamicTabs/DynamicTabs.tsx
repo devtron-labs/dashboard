@@ -23,7 +23,7 @@ import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
  *
  * Note: To be used with useTabs hook
  */
-export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
+export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }: DynamicTabsProps) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
@@ -48,7 +48,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
         const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
-        const _showNameOnSelect = !(!isSelected && showNameOnSelect)
+        const _showNameOnSelect = showNameOnSelect ? !!url.split('?')[1] : true
         let tabName = dynamicTitle || name
         
         return (
@@ -82,6 +82,16 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         }, 1)
     }
 
+    const handleTabStopAction = (e) => {
+        e.stopPropagation()
+        const pushURL = stopTabByIdentifier(e.currentTarget.dataset.title)
+        setTimeout(() => {
+            if (pushURL) {
+                push(pushURL)
+            }
+        }, 1)
+    }
+
     const getTabTippyContent = (title: string) => {
         const _titleSplit = title.split('/')
 
@@ -94,6 +104,8 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     }
 
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
+        const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1] ) && isFixed && tab.showNameOnSelect
+        
         return (
             <Fragment key={`${idx}-tab`}>
                 <li
@@ -121,9 +133,18 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                             <div
                                 className={`w-100 ${
                                     tab.isSelected ? 'dynamic-tab-selected bcn-0 cn-9' : ''
-                                } flex left ${isFixed ? '' : 'pr-12'} h-36`}
+                                } flex left ${isFixed && !_showNameOnSelect ? '' : 'pr-12'} h-36`}
                             >
                                 {getTabNavLink(tab, isFixed)}
+                                {_showNameOnSelect && (
+                                    <div
+                                        className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
+                                        data-title={tab.title}
+                                        onClick={handleTabStopAction}
+                                    >
+                                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                                    </div>
+                                )}
                                 {!isFixed && (
                                     <div
                                         className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"

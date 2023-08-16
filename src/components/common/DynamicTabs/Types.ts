@@ -24,6 +24,7 @@ export interface DynamicTabType extends CommonTabArgsType {
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     removeTabByIdentifier: (title: string) => string
+    stopTabByIdentifier: (title: string) => string
 }
 
 export interface TabsDataType {

@@ -138,6 +138,30 @@ export function useTabs(persistanceKey: string) {
         return pushURL
     }
 
+    const stopTabByIdentifier = (title: string): string => {
+        let pushURL = ''
+        let selectedRemoved = false
+        const _tabs = tabs.map((tab) => {
+            if (tab.title.toLowerCase() === title.toLowerCase()) {
+                selectedRemoved = tab.isSelected
+                return {
+                    ...tab,
+                    url: tab.url.split('?')[0],
+                    isSelected: false
+                }
+            } else return tab
+        })
+
+        if (selectedRemoved) {
+            _tabs[0].isSelected = true
+            pushURL = _tabs[0].url
+        }
+
+        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+        setTabs(_tabs)
+        return pushURL
+    }
+
     const markTabActiveByIdentifier = (idPrefix: string, name: string, kind?: string, url?: string) => {
         if (!name) return
 
@@ -200,5 +224,6 @@ export function useTabs(persistanceKey: string) {
         markTabActiveByIdentifier,
         markTabResourceDeletedByIdentifier,
         updateTabUrl,
+        stopTabByIdentifier
     }
 }

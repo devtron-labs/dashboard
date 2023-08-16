@@ -126,6 +126,30 @@ function Sidebar({
             },
             groupName: '',
         })
+        _k8sObjectOptionsList.push({
+            label: SIDEBAR_KEYS.overview as Nodes,
+            value: K8S_EMPTY_GROUP,
+            dataset: {
+                group: SIDEBAR_KEYS.overviewGVK.Group,
+                version: SIDEBAR_KEYS.overviewGVK.Version,
+                kind: SIDEBAR_KEYS.overviewGVK.Kind as Nodes,
+                namespaced: 'false',
+                grouped: 'false',
+            },
+            groupName: '',
+        })
+        _k8sObjectOptionsList.push({
+            label: SIDEBAR_KEYS.nodes as Nodes,
+            value: K8S_EMPTY_GROUP,
+            dataset: {
+                group: SIDEBAR_KEYS.nodeGVK.Group,
+                version: SIDEBAR_KEYS.nodeGVK.Version,
+                kind: SIDEBAR_KEYS.nodeGVK.Kind as Nodes,
+                namespaced: 'false',
+                grouped: 'false',
+            },
+            groupName: '',
+        })
         setK8sObjectOptionsList(_k8sObjectOptionsList)
     }
 

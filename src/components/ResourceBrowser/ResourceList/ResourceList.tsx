@@ -84,7 +84,7 @@ export default function ResourceList() {
     }>()
     const { replace, push } = useHistory()
     const location = useLocation()
-    const { tabs, initTabs, addTab, markTabActiveByIdentifier, removeTabByIdentifier, updateTabUrl } = useTabs(
+    const { tabs, initTabs, addTab, markTabActiveByIdentifier, removeTabByIdentifier, updateTabUrl, stopTabByIdentifier } = useTabs(
         `${URLS.RESOURCE_BROWSER}`,
     )
     const [loader, setLoader] = useState(false)
@@ -149,14 +149,6 @@ export default function ResourceList() {
                 isSelected: true,
                 positionFixed: true,
                 iconPath: K8ResourceIcon,
-            }, {
-                idPrefix: AppDetailsTabsIdPrefix.terminal,
-                name: AppDetailsTabs.terminal,
-                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-                isSelected: false,
-                positionFixed: true,
-                iconPath: TerminalIcon,
-                showNameOnSelect: true
             }
         ])
 
@@ -284,28 +276,18 @@ export default function ResourceList() {
 
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
-            const updateData = [{
-                id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-                url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                    }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-                    }`,
-                dynamicTitle: selectedResource.gvk.Kind
-            }, {
-                id: `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
-                url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                    }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-                dynamicTitle: ''
-            }]
-            updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
+            updateTabUrl(`${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
+                }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+                }`, selectedResource.gvk.Kind)
         }
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
-        if(nodeType === AppDetailsTabs.terminal && selectedCluster?.value && selectedNamespace?.value){
-            updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,`${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-            }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`)
+        if (nodeType === AppDetailsTabs.terminal && selectedCluster?.value && selectedNamespace?.value) {
+            updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`, `terminal  '${selectedCluster.label}'`)
         }
-    },[location.search])
+    }, [location.search])
 
     useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
@@ -429,6 +411,25 @@ export default function ResourceList() {
             sideDataAbortController.current.new = new AbortController()
             const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
             if (result) {
+                initTabs([
+                    {
+                        idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                        name: AppDetailsTabs.k8s_Resources,
+                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                        isSelected: true,
+                        positionFixed: true,
+                        iconPath: K8ResourceIcon,
+                    },
+                    {
+                        idPrefix: AppDetailsTabsIdPrefix.terminal,
+                        name: AppDetailsTabs.terminal,
+                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                        isSelected: false,
+                        positionFixed: true,
+                        iconPath: TerminalIcon,
+                        showNameOnSelect: true,
+                    }
+                ])
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
                 const _k8SObjectList: K8SObjectType[] = []
@@ -945,7 +946,7 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} />
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} />
                     </div>
                 </div>
                 {renderResourceBrowser()}

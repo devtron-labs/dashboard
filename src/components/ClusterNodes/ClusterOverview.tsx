@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ERROR_TYPE } from "./types";
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { getClusterNote } from './clusterNodes.service';
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom';
 import GenericDescription from '../common/Description/GenericDescription';
@@ -182,7 +181,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderClusterSummary = (): JSX.Element => {
         return (
-            <div className="dc__border-left">
+            <div className="dc__border-left resource-details-container dc__overflow-scroll">
                 {isLoading ? <Progressing pageLoader /> :
                     <>  {renderCardDetails()}
                         {renderClusterError()}
