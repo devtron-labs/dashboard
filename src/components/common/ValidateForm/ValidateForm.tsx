@@ -84,7 +84,7 @@ function ValidateFailure({ formId, validationError, onClickValidate, validatedTi
             <div className="fs-13">
                 {isChartRepo &&
                     <>
-                        {validationError?.errtitle} <br />
+                        <div>{validationError?.errtitle} </div>
                         <span className="fw-6">Error: </span> {validationError?.errMessage}
                     </>}
                 {!isChartRepo && <>

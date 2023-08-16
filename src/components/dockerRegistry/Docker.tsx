@@ -600,7 +600,6 @@ function DockerForm({
             .then((response) => {
                 if (response.code === 200) {
                     setValidationStatus(VALIDATION_STATUS.SUCCESS)
-                    toast.success('Configuration validated')
                 }
             })
             .catch((error) => {
@@ -608,17 +607,17 @@ function DockerForm({
                 const message = error['errors'][0].userMessage
                 if (code === 400) {
                     setValidationStatus(VALIDATION_STATUS.FAILURE)
-                    toast.error('Configuration validation failed')
+                    // toast.error('Configuration validation failed')
                     setValidationError({ errTitle: message, errMessage: message })
                 } else {
-                    showError(error)
+                    // showError(error)
                     setValidationStatus(VALIDATION_STATUS.DRY_RUN)
                 }
             })
     }
 
     async function onSave() {
-        setValidationStatus(VALIDATION_STATUS.LOADER)
+       
         if (credentialsType === CredentialType.NAME && !credentialValue) {
             setErrorValidation(true)
             return
@@ -640,6 +639,7 @@ function DockerForm({
         const api = id ? updateRegistryConfig : saveRegistryConfig
         try {
             toggleLoading(true)
+            id && await onClickValidate()
             await api(payload, id)
             if (!id) {
                 toggleCollapse(true)
@@ -657,7 +657,7 @@ function DockerForm({
             }
         } finally {
             toggleLoading(false)
-            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
+
         }
     }
 
