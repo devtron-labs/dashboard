@@ -107,7 +107,7 @@ function ChartListPopUpRow({ index, list }: { index: number; list: ChartListType
                         {isToggleLoading ? (
                             <Progressing size={16} />
                         ) : (
-                            <List.Toggle disabled={!list.isEditable} onSelect={onSelectToggle} enabled={enabled} />
+                            <List.Toggle isButtonDisabled={!list.isEditable} onSelect={onSelectToggle} enabled={enabled} />
                         )}
                     </span>
                 </Tippy>
