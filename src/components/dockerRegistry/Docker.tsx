@@ -618,20 +618,22 @@ function DockerForm({
     }
 
     async function onSave() {
+        setValidationStatus(VALIDATION_STATUS.LOADER)
         if (credentialsType === CredentialType.NAME && !credentialValue) {
             setErrorValidation(true)
             return
-        }
-        if (registryStorageType === RegistryStorageType.OCI_PUBLIC) {
-            setOCIRegistryStorageConfig({
-                CHART: OCIRegistryConfigConstants.PULL,
-            })
         }
 
         let awsRegion
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
             awsRegion = fetchAWSRegion()
             if (!awsRegion) return
+        }
+
+        if (registryStorageType === RegistryStorageType.OCI_PUBLIC) {
+            setOCIRegistryStorageConfig({
+                CHART: OCIRegistryConfigConstants.PULL,
+            })
         }
         let payload = getRegistryPayload(awsRegion)
 
@@ -643,7 +645,7 @@ function DockerForm({
                 toggleCollapse(true)
             }
             await reload()
-            await setToggleCollapse()
+            await setToggleCollapse()  
             toast.success('Successfully saved.')
         } catch (err) {
             if (err instanceof ServerErrors && Array.isArray(err.errors) && err.code === 409) {
@@ -655,11 +657,11 @@ function DockerForm({
             }
         } finally {
             toggleLoading(false)
+            setValidationStatus(VALIDATION_STATUS.DRY_RUN)
         }
     }
 
      function onValidation() {
-        onClickValidate()
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
             if (
                 (!isIAMAuthType &&

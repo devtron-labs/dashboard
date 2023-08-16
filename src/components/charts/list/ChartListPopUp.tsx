@@ -16,7 +16,7 @@ import { toast } from 'react-toastify'
 import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory } from 'react-router-dom'
 import { SERVER_MODE, URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import EmptyFolder from '../../../assets/img/Empty-folder.png'
@@ -40,7 +40,8 @@ function ChartListPopUp({
     const [fetching, setFetching] = useState<boolean>(false)
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
     const isEmpty = chartList.length && !filteredChartList.length
-
+    const history = useHistory()
+    
     const setStore = (event): void => {
         setSearchText(event.target.value)
     }
@@ -59,24 +60,23 @@ function ChartListPopUp({
         setShowAddPopUp(!showAddPopUp)
     }
 
+    const onClickAddSource = (e) => {
+        if (serverMode !== SERVER_MODE.EA_ONLY) {
+            history.push(URLS.GLOBAL_CONFIG_CHART)
+        } else {
+            toggleAddPopUp(e)
+        }
+    }
+
     const renderChartListHeaders = () => {
         return (
             <div className="pt-12 pb-12 pl-16 flex dc__content-space dc__border-bottom fw-6">
                 <span>Helm chart sources</span>
                 <div className="flex">
-                    {serverMode === SERVER_MODE.EA_ONLY ? (
-                        <NavLink to={URLS.GLOBAL_CONFIG_CHART}>
-                            <div className="flex cb-5 fw-6 cursor mr-12">
-                                <Add className="icon-dim-20 fcb-5 mr-8" />
-                                Add
-                            </div>
-                        </NavLink>
-                    ) : (
-                        <div className="flex cb-5 fw-6 cursor mr-12" onClick={toggleAddPopUp}>
-                            <Add className="icon-dim-20 fcb-5 mr-8" />
-                            Add
-                        </div>
-                    )}
+                    <div className="flex cb-5 fw-6 cursor mr-12" onClick={onClickAddSource}>
+                        <Add className="icon-dim-20 fcb-5 mr-8" />
+                        Add
+                    </div>
                     {renderGlobalRefetch()}
                     <div className="dc__divider ml-12 mr-4" />
                     <button className="dc__transparent flex mr-8" onClick={onClose}>
