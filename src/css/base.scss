@@ -625,6 +625,10 @@ button.anchor {
     flex-shrink: 0;
 }
 
+.dc__no-shrink {
+    flex-shrink: 0;
+}
+
 .app-summary__app-status {
     display: flex;
     align-items: center;
@@ -1886,6 +1890,10 @@ button.anchor {
     justify-content: flex-end !important;
 }
 
+.dc__align-self-stretch {
+    align-self: stretch;
+}
+
 // Text alignment
 .dc__align-start {
     align-items: flex-start !important;
@@ -2187,6 +2195,10 @@ button.anchor {
 
 .dc__no-border-radius {
     border-radius: 0 !important;
+}
+
+.dc__border-radius-4{
+    border-radius: 4px;
 }
 
 .dc__border-radius-24 {
@@ -2608,6 +2620,10 @@ textarea,
 
 .w-300 {
     width: 300px !important;
+}
+
+.w-320{
+    width: 320px;
 }
 
 .w-303 {
@@ -3225,6 +3241,10 @@ textarea,
 
 .dc__gap-16 {
     gap: 16px;
+}
+
+.dc__gap-20 {
+    gap: 20px;
 }
 
 .dc__flip-180 {

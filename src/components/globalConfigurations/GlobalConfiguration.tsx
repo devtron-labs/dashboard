@@ -24,6 +24,7 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType } from './globalConfiguration.type'
+import ScopedVariables from '../scopedVariables'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -381,6 +382,15 @@ function NavItem({ serverMode }) {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
+
+                    <NavLink
+                        to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                        key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">Scoped Variables</div>
+                    </NavLink>
+
                     {PluginsPolicy && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_PLUGINS}
@@ -539,6 +549,9 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 />,
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
+                </Route>,
+                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                    <ScopedVariables />
                 </Route>,
             ]}
             {PluginsPolicy && (

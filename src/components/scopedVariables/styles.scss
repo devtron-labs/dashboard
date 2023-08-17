@@ -1,0 +1,70 @@
+.upload-description-l1-typography {
+    color: var(--B500);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0px;
+}
+
+.upload-description-l2-typography {
+    color: var(--N600);
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+    margin: 0px;
+}
+
+.default-view-title-typography {
+    color: var(--N900);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0px;
+}
+
+.default-view-description-typography {
+    color: var(--N700);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: center;
+    align-self: stretch;
+    margin: 0px;
+}
+
+.upload-scoped-variables-button {
+    border-radius: 4px;
+    border: 1px dashed var(--N200);
+    background: var(--N50);
+    display: flex;
+    min-width: 56px;
+    padding: 24px 36px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+}
+
+.upload-scoped-variables-button__icon {
+    padding: 8px;
+    gap: 4px;
+    border-radius: 20px;
+    background: var(--B100);
+}
+
+.default-download-template-typography {
+    color: var(--B500);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+
+.default-bg-color {
+    background: var(--N0);
+}
