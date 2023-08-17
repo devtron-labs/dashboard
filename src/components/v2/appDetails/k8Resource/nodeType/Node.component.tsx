@@ -358,13 +358,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                 {node.name}
                                             </span>
                                             <div
-                                                className={`flex left ml-8 ${
+                                                className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
                                                         ? 'mw-232'
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && renderClipboardInteraction(node.name)}
+                                                {renderClipboardInteraction(node.name)}
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
