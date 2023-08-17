@@ -22,7 +22,7 @@ const addAOT = (tabName: string, tabUrl: string, isSelected: boolean, title?: st
 export const AppDetailsTabs = {
     k8s_Resources: 'K8s Resources',
     log_analyzer: 'Log Analyzer',
-    terminal: 'terminal'
+    terminal: 'Terminal'
 };
 
 export const AppDetailsTabsIdPrefix = {

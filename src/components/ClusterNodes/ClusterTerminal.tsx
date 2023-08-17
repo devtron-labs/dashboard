@@ -841,7 +841,7 @@ export default function ClusterTerminal({
             },
             {
                 type: TerminalWrapperType.CONNECTION_BUTTON,
-                hideTerminalStripComponent: !isNodeDetailsPage,
+                hideTerminalStripComponent: true,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: closeTerminalModal,
                 reconnectTerminal: reconnectTerminal,

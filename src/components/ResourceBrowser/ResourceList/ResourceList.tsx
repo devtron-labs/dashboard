@@ -19,7 +19,6 @@ import {
     ResourceListPayloadType,
 } from '../Types'
 import {
-    getClusterList,
     getResourceGroupList,
     getResourceList,
     namespaceListByClusterId,
@@ -64,7 +63,7 @@ import {
 import '../ResourceBrowser.scss'
 import { ClusterCapacityType, ClusterDetail, ClusterImageList, ERROR_TYPE } from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterCapacity, getClusterList as getDetailsClusterList } from '../../ClusterNodes/clusterNodes.service'
+import { clusterNamespaceList, getClusterCapacity, getClusterList as getDetailsClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -276,18 +275,23 @@ export default function ResourceList() {
 
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
-            updateTabUrl(`${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-                }`, selectedResource.gvk.Kind)
+            const updateData = [{
+                id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+                url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
+                    }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+                    }`,
+                dynamicTitle: selectedResource.gvk.Kind
+            }]
+            updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
         }
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
-        if (nodeType === AppDetailsTabs.terminal && selectedCluster?.value && selectedNamespace?.value) {
+        if (selectedCluster?.value && selectedNamespace?.value) {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`, `terminal  '${selectedCluster.label}'`)
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : tabs[1].url.split('?')[1]}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
         }
-    }, [location.search])
+    }, [selectedCluster, location.search])
 
     useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
@@ -333,7 +337,7 @@ export default function ResourceList() {
         try {
             setClusterLoader(true)
             const [clusterList, clusterDetails, hostUrlConfig, userRole, namespaceList] = await Promise.all([
-                getClusterList(),
+                getClusterListMin(),
                 getDetailsClusterList(),
                 getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
                 window._env_.K8S_CLIENT ? null : getUserRole(),
@@ -342,10 +346,10 @@ export default function ResourceList() {
             if (clusterList.result) {
                 const _clusterList = clusterList.result.filter((resource) => !resource?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
-                    sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
-                    'cluster_name',
+                    sortObjectArrayAlphabetically(_clusterList, 'name'),
+                    'name',
                     'id',
-                    'errorInConnecting',
+                    'nodeErrors',
                 )
                 setClusterOptions(_clusterOptions as ClusterOptionType[])
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
@@ -423,11 +427,12 @@ export default function ResourceList() {
                     {
                         idPrefix: AppDetailsTabsIdPrefix.terminal,
                         name: AppDetailsTabs.terminal,
-                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
                         isSelected: false,
                         positionFixed: true,
                         iconPath: TerminalIcon,
                         showNameOnSelect: true,
+                        dynamicTitle: `${AppDetailsTabs.terminal}  '${selectedCluster?.label}'`
                     }
                 ])
                 const processedData = processK8SObjects(result.apiResources, nodeType)
