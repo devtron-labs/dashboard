@@ -22,6 +22,7 @@ import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import * as queryString from 'query-string'
 import { URLS } from '../../config'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
 export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions}) {
     const match = useRouteMatch()
@@ -463,7 +464,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
         const url = location.pathname
-        history.push(`${url.split('/').slice(0, -2).join('/')}/terminal?${queryParams.toString()}`)
+        history.push(`${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}?${queryParams.toString()}`)
     }
 
 

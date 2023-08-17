@@ -289,9 +289,9 @@ export default function ResourceList() {
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value) {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : tabs[1].url.split('?')[1]}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1].url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
         }
-    }, [selectedCluster, location.search])
+    }, [selectedCluster,selectedResource,location.search])
 
     useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
@@ -432,7 +432,6 @@ export default function ResourceList() {
                         positionFixed: true,
                         iconPath: TerminalIcon,
                         showNameOnSelect: true,
-                        dynamicTitle: `${AppDetailsTabs.terminal}  '${selectedCluster?.label}'`
                     }
                 ])
                 const processedData = processK8SObjects(result.apiResources, nodeType)
@@ -455,7 +454,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1]?.url.split('?')[1]}` : '')}`,
                     })
                 }
 
@@ -899,7 +898,7 @@ export default function ResourceList() {
                 data-testid="create-resource"
                 onClick={showResourceModal}
             >
-                <Add className="icon-dim-16 fcb-5 mr-5" /> Create
+                <Add className="icon-dim-16 fcb-5 mr-5" /> Create resource
             </div>
                 <span className="dc__divider" /></>)
 

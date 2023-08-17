@@ -124,7 +124,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
     }
 
     const renderCardDetails = () => {
-        return <div className="flexbox dc__content-space p-16">
+        return <div className="flexbox dc__content-space pb-16">
             <div className="flexbox dc__content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
                 <div className="mr-16 w-25">
                     <div className="dc__align-center fs-13 fw-4 cn-7">CPU Usage</div>
@@ -181,7 +181,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderClusterSummary = (): JSX.Element => {
         return (
-            <div className="dc__border-left resource-details-container dc__overflow-scroll">
+            <div className="dc__border-left resource-details-container dc__overflow-scroll p-16">
                 {isLoading ? <Progressing pageLoader /> :
                     <>  {renderCardDetails()}
                         {renderClusterError()}
