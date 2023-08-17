@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'

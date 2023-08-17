@@ -4,7 +4,7 @@ import {
     mapByKey,
     sortOptionsByLabel,
 } from '../../common'
-import { showError, Progressing, ConditionalWrap, InfoColourBar, getUserRole } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -115,26 +115,37 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
 
     useEffect(() => {
         getChartFilter()
-    }, [showSourcePopoUp])
+    }, [])
+
+    const chartRepos = useMemo(
+        () =>
+            chartLists
+                .filter((chartRepo) => chartRepo.active)
+                .map((chartRepo) => {
+                    return {
+                        value: chartRepo.id,
+                        label: chartRepo.name,
+                        isOCIRegistry: chartRepo.isOCIRegistry,
+                    }
+                })
+                .sort(sortOptionsByLabel),
+        [chartLists]
+    )
 
     useEffect(() => {
         if (!state.loading) {
             resetPaginationOffset()
-            initialiseFromQueryParams(chartRepos);
-            callApplyFilterOnCharts(true);
+            chartRepos && initialiseFromQueryParams(chartRepos)
+            callApplyFilterOnCharts(true)
             getGitOpsModuleInstalledAndConfigured()
 
         }
-    }, [location.search, state.loading])
-
-    const getInitChartList = async()  => {
-     return  getChartProviderList()
-    }
+    }, [chartRepos, location.search, state.loading])
 
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
-            let chartRepos = (await getInitChartList()).result || []
+            let chartRepos = (await getChartProviderList()).result || []
             chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
@@ -308,8 +319,6 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
             )
         }
 
-  
-
         return (
             <>
                 <div className="m-0 flex left ">
@@ -364,20 +373,27 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         history.push(url)
     }
 
-    const chartRepos = useMemo(
-        () =>
-            chartLists
-                .filter((chartRepo) => chartRepo.active)
-                .map((chartRepo) => {
-                    return {
-                        value: chartRepo.id,
-                        label: chartRepo.name,
-                        isOCIRegistry: chartRepo.isOCIRegistry,
-                    }
-                })
-                .sort(sortOptionsByLabel),
-        [chartLists]
-    )
+    const randerChartStoreEmptyState = (): JSX.Element => {
+        return chartRepos?.length > 0 && noChartAvailable ? (
+            <ChartEmptyState onClickViewChartButton={clearSearch}>
+                <InfoColourBar
+                    message="Can’t find what you’re looking for?"
+                    classname="br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12"
+                    Icon={Help}
+                    iconClass="fcv-5 h-20"
+                    linkText="Try refetching connected chart repos or connect a chart repository"
+                    linkOnClick={handleViewAllCharts}
+                />
+            </ChartEmptyState>
+        ) : (
+            <ChartEmptyState
+                title={'No charts available right now'}
+                subTitle={'The connected chart repositories are syncing or no charts are available.'}
+                onClickViewChartButton={handleViewAllCharts}
+                buttonText={'View connected chart repositories'}
+            />
+        )
+    }
 
     return (
         <>
@@ -392,7 +408,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && chartRepos?.length && (
+                        {typeof state.configureChartIndex != 'number' && (chartRepos?.length > 0) && (
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -424,16 +440,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                                                 handleNameChange={handleNameChange}
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
                                             />
-                                        ) : (
-                                            <ChartEmptyState
-                                                title={'No charts available right now'}
-                                                subTitle={
-                                                    'The connected chart repositories are syncing or no charts are available.'
-                                                }
-                                                onClickViewChartButton={handleViewAllCharts}
-                                                buttonText={'View connected chart repositories'}
-                                            />
-                                        )}
+                                        ) : randerChartStoreEmptyState()}
                                     </div>
                                 ) : (
                                     <>
@@ -504,18 +511,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                                                             {state.hasMoreCharts && <Progressing size={25} styles={{height:'0%', paddingBottom:'5px'}}/>}
 
                                                         </>
-                                                    ) : (
-                                                        <ChartEmptyState onClickViewChartButton={clearSearch}>
-                                                            <InfoColourBar
-                                                                message="Can’t find what you’re looking for?"
-                                                                classname="br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12"
-                                                                Icon={Help}
-                                                                iconClass="fcv-5 h-20"
-                                                                linkText="Try refetching connected chart repos or connect a chart repository"
-                                                                linkOnClick={handleViewAllCharts}
-                                                            />
-                                                        </ChartEmptyState>
-                                                    )}
+                                                    ) : randerChartStoreEmptyState()}
                                                 </div>
                                             )}
                                         </div>
