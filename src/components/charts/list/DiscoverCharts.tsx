@@ -142,7 +142,6 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         }
     }, [chartRepos, location.search, state.loading])
 
-
     const getChartFilter = async () => {
         setIsLoading(true)
         try {
@@ -319,8 +318,6 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                 </span>
             )
         }
-
-  
 
         return (
             <>
