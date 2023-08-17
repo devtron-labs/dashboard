@@ -211,7 +211,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 <Clipboard
                                     className="ml-5 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, node.name)
+                                        toggleClipBoardPort(event, val)
                                     }}
                                 />
                                 </li>
@@ -358,13 +358,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                 {node.name}
                                             </span>
                                             <div
-                                                className={`flex left ${
+                                                className={`flex left ml-8 ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
                                                         ? 'mw-232'
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {renderClipboardInteraction(node.name)}
+                                                {node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && renderClipboardInteraction(node.name)}
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
