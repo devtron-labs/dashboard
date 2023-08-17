@@ -17,7 +17,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-export interface CDMaterialProps extends RouteComponentProps<{}> {
+export interface CDMaterialProps {
     material: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -70,8 +70,6 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
-    getSearchedItem?: (searchedItems?: any[]) => void
-    isApplicationGroupTrigger?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -103,10 +101,6 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
-    searchString?: string
-    searchApplied?: boolean
-    loadingSearchedImage?: boolean
-    searchExpanded?: boolean
 }
 
 export interface MaterialInfo {
@@ -287,10 +281,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<{
-    appId: string
-    envId: string
-}> {
+export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
     isJobView?: boolean
 }
 
@@ -359,9 +350,6 @@ export interface TriggerViewState {
     appReleaseTags?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
-    configs?: boolean
-    isDefaultConfigPresent?: boolean
-    filterMaterials?: any[]
 }
 
 //-- begining of response type objects for trigger view

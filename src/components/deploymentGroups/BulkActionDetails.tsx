@@ -12,7 +12,7 @@ import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as DeployButton } from '../../assets/icons/ic-deploy.svg';
 import React, { useState } from 'react'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
-import { Switch, Route, useLocation } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import moment from 'moment'
 import BulkActionEdit from './BulkActionEdit'
 import { toast } from 'react-toastify'
@@ -34,9 +34,6 @@ export default function BulkActionDetails() {
     const [isLoading, setIsLoading] = useState(false)
     const [materials, saveMaterials] = useState([])
     const [pausing, setPausing] = useState(false)
-    const location = useLocation()
-    const history = useHistory()
-    const match = useRouteMatch()
     const [loading, result, error, reload] = useAsync(() => getDeploymentGroupDetail(Number(deploymentGroupId)), [deploymentGroupId])
     useInterval(reload, 30000)
 
@@ -233,9 +230,6 @@ export default function BulkActionDetails() {
             toggleSourceInfo={toggleSourceInfo}
             selectImage={selectImage}
             closeCDModal={() => { toggleShowCDModal(false) }}
-            history={history}
-            location={location}
-            match={match}
         />}
     </>
 }

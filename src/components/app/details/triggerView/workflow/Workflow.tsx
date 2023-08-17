@@ -259,9 +259,6 @@ export class Workflow extends Component<WorkflowProps> {
 
     onClickNodeEdge = (nodeId: number) => {
         this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-        this.props.history.push({
-            search: `approval-node=${nodeId}`
-        })
     }
 
     renderEdgeList() {

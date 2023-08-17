@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError, Progressing, get, Host, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, get, Host } from '@devtron-labs/devtron-fe-common-lib'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
@@ -23,7 +23,7 @@ import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils';
-import { useAsync, useKeyDown } from '../common';
+import { useAsync, useKeyDown, useSearchString } from '../common';
 import { SocketConnectionType } from './details/appDetails/appDetails.type';
 
 const commandLineParser = require('command-line-parser')

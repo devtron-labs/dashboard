@@ -287,9 +287,6 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     selectImage={this.selectImage}
                     closeCDModal={this.closeCDModal}
                     hideInfoTabsContainer={true}
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
                 />
             )
         }
