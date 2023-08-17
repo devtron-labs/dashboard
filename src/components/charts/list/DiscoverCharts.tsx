@@ -376,7 +376,27 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
         history.push(url)
     }
 
-  
+    const randerChartStoreEmptyState = (): JSX.Element => {
+        return chartRepos?.length > 0 && noChartAvailable ? (
+            <ChartEmptyState onClickViewChartButton={clearSearch}>
+                <InfoColourBar
+                    message="Can’t find what you’re looking for?"
+                    classname="br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12"
+                    Icon={Help}
+                    iconClass="fcv-5 h-20"
+                    linkText="Try refetching connected chart repos or connect a chart repository"
+                    linkOnClick={handleViewAllCharts}
+                />
+            </ChartEmptyState>
+        ) : (
+            <ChartEmptyState
+                title={'No charts available right now'}
+                subTitle={'The connected chart repositories are syncing or no charts are available.'}
+                onClickViewChartButton={handleViewAllCharts}
+                buttonText={'View connected chart repositories'}
+            />
+        )
+    }
 
     return (
         <>
@@ -423,16 +443,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                                                 handleNameChange={handleNameChange}
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
                                             />
-                                        ) : (
-                                            <ChartEmptyState
-                                                title={'No charts available right now'}
-                                                subTitle={
-                                                    'The connected chart repositories are syncing or no charts are available.'
-                                                }
-                                                onClickViewChartButton={handleViewAllCharts}
-                                                buttonText={'View connected chart repositories'}
-                                            />
-                                        )}
+                                        ) : randerChartStoreEmptyState()}
                                     </div>
                                 ) : (
                                     <>
@@ -503,18 +514,7 @@ function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
                                                             {state.hasMoreCharts && <Progressing size={25} styles={{height:'0%', paddingBottom:'5px'}}/>}
 
                                                         </>
-                                                    ) : (
-                                                        <ChartEmptyState onClickViewChartButton={clearSearch}>
-                                                            <InfoColourBar
-                                                                message="Can’t find what you’re looking for?"
-                                                                classname="br-4 bw-1 bcv-1 ev-2 dc__mxw-300 bcv-1 fs-12 pl-12 pr-12"
-                                                                Icon={Help}
-                                                                iconClass="fcv-5 h-20"
-                                                                linkText="Try refetching connected chart repos or connect a chart repository"
-                                                                linkOnClick={handleViewAllCharts}
-                                                            />
-                                                        </ChartEmptyState>
-                                                    )}
+                                                    ) : randerChartStoreEmptyState()}
                                                 </div>
                                             )}
                                         </div>
