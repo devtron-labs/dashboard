@@ -1072,7 +1072,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isSelected: i === index,
                         }
                     })
-                    setFilterMaterials(artifacts)
+                    if (filterMaterials.length > 0) {
+                        setFilterMaterials(artifacts)
+                    }
                     node[materialType] = artifacts
                 }
                 return node
