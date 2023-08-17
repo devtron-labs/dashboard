@@ -4,7 +4,7 @@ import {
     mapByKey,
     sortOptionsByLabel,
 } from '../../common'
-import { showError, Progressing, ConditionalWrap, InfoColourBar, getUserRole } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'

@@ -7,12 +7,11 @@ import {
     ErrorScreenNotAuthorized,
     Checkbox,
     CHECKBOX_VALUE,
-    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
+import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
@@ -20,7 +19,7 @@ import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_R
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
-import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
+import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName} from '../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartFormFields } from './ChartRepoType'
 import {ChartRepoType} from "./chartRepo.types";
@@ -29,7 +28,6 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
-    const [fetching, setFetching] = useState(false)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -95,30 +93,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
 
 function CollapsedList({ id, name, active, url, authMode, isEditable, accessToken = "", userName = "", password = "", reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
-    const [enabled, toggleEnabled] = useState(active);
-    const [loading, setLoading] = useState(false);
-
-    useEffectAfterMount(() => {
-        async function update() {
-            let payload = {
-                id: id || 0, name, url, active: enabled,
-                authMode: authMode || 'ANONYMOUS', 
-                ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? { username: userName, password } : {}),
-                ...(authMode === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken } : {})
-            }
-            try {
-                setLoading(true);
-                await updateChartProviderConfig(payload, id);
-                await reload();
-                toast.success(`Repository ${enabled ? 'enabled' : 'disabled'}.`)
-            } catch (err) {
-                showError(err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        update()
-    }, [enabled])
 
     const setToggleCollapse = () => {
         if (!id){
@@ -135,14 +109,6 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                 getNonEditableChartRepoText(name),
             )
         }
-    }
-
-    let tippyContent
-
-    if (!isEditable) {
-        tippyContent = "Can't disable repository"
-    } else {
-        tippyContent = enabled ? 'Disable chart repository' : 'Enable chart repository'
     }
 
     return (
