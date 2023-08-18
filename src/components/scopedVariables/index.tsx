@@ -5,8 +5,15 @@ import {
     DEFAULT_TITLE,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
+    PARSE_ERROR_STATUS,
+    FILE_NOT_SUPPORTED_STATUS,
+    JSON_PARSE_ERROR_STATUS,
+    YAML_PARSE_ERROR_STATUS,
 } from './constants'
+import { useFileReader } from './utils/hooks'
+import yaml from 'js-yaml'
 import './styles.scss'
+import { ReadFileAs, ValidatorT } from './types'
 
 const ICUpload = () => {
     return (
@@ -23,6 +30,55 @@ const ICUpload = () => {
 }
 
 const UploadScopedVariables = () => {
+    const { progress, status, readFile } = useFileReader()
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        const file = e.target.files[0]
+        const validator: ValidatorT = ({ data, type }) => {
+            if (!data) {
+                return {
+                    status: false,
+                    message: 'File is empty',
+                }
+            }
+
+            switch (type) {
+                case 'application/json':
+                    try {
+                        const parsedData = JSON.parse(data)
+                        if (parsedData && typeof parsedData === 'object') {
+                            return {
+                                status: true,
+                                message: parsedData,
+                            }
+                        }
+                        return PARSE_ERROR_STATUS
+                    } catch (e) {
+                        return JSON_PARSE_ERROR_STATUS
+                    }
+                case 'application/x-yaml':
+                case 'text/yaml':
+                case 'text/x-yaml':
+                    try {
+                        const parsedData = yaml.safeLoad(data)
+                        if (parsedData && typeof parsedData === 'object') {
+                            return {
+                                status: true,
+                                message: parsedData,
+                            }
+                        }
+                        return PARSE_ERROR_STATUS
+                    } catch (e) {
+                        return YAML_PARSE_ERROR_STATUS
+                    }
+                default:
+                    return FILE_NOT_SUPPORTED_STATUS
+            }
+        }
+
+        readFile(file, validator, ReadFileAs.TEXT)
+    }
+
     return (
         <div className="flex column center h-100vh default-bg-color">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
@@ -31,13 +87,25 @@ const UploadScopedVariables = () => {
                     <p className="default-view-description-typography">{DEFAULT_DESCRIPTION}</p>
                 </div>
                 <button className="upload-scoped-variables-button">
-                    <div className="flex center upload-scoped-variables-button__icon">
-                        <ICUpload />
-                    </div>
-                    <div className="flex column center">
-                        <p className="upload-description-l1-typography">{UPLOAD_DESCRIPTION_L1}</p>
-                        <p className="upload-description-l2-typography">{UPLOAD_DESCRIPTION_L2}</p>
-                    </div>
+                    <input
+                        type="file"
+                        id="file"
+                        accept=".yaml, .yml, .json"
+                        style={{
+                            display: 'none',
+                        }}
+                        onChange={handleFileUpload}
+                    />
+
+                    <label htmlFor="file" className="flex column center" style={{ cursor: 'pointer' }}>
+                        <div className="flex center upload-scoped-variables-button__icon">
+                            <ICUpload />
+                        </div>
+                        <div className="flex column center">
+                            <p className="upload-description-l1-typography">{UPLOAD_DESCRIPTION_L1}</p>
+                            <p className="upload-description-l2-typography">{UPLOAD_DESCRIPTION_L2}</p>
+                        </div>
+                    </label>
                 </button>
 
                 <button className="p-0 dc__no-background dc__no-border default-download-template-typography">
