@@ -101,6 +101,7 @@ export default function ColumnSelector() {
             options={columnOptions}
             onChange={setSelectedColumns}
             isMulti={true}
+            autoFocus={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
             onMenuOpen={() => handleMenuState(true)}
@@ -113,7 +114,6 @@ export default function ColumnSelector() {
             onInputChange={(value, action) => {
                 if (action.action === 'input-change') setColumnFilterInput(value)
             }}
-            autoFocus
             components={{
                 Option: Option,
                 ValueContainer,

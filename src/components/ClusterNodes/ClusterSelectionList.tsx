@@ -4,26 +4,23 @@ import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, filterImageList, createGroupSelectList } from '../common'
+import { handleUTCTime } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail } from './types'
-import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
-import ClusterTerminal from './ClusterTerminal'
-import { createTaintsList } from '../cluster/cluster.util'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 
 export default function ClusterSelectionList({
     clusterOptions,
     onChangeCluster,
-    imageList,
     isSuperAdmin,
-    namespaceList,
 }: ClusterSelectionType) {
     const match = useRouteMatch()
     const location = useLocation()
@@ -38,8 +35,6 @@ export default function ClusterSelectionList({
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
-    const [showTerminalModal, setShowTerminal] = useState(false)
-    const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
 
     const getMinData = () => {
         const _clusterList = clusterOptions.map((list) => {
@@ -85,12 +80,6 @@ export default function ClusterSelectionList({
     }, [])
 
     useEffect(() => {
-        if (filteredClusterList && imageList && namespaceList) {
-            handleUrlChange(filteredClusterList)
-        }
-    }, [filteredClusterList, imageList, namespaceList])
-
-    useEffect(() => {
         const _lastDataSyncTime = Date()
         setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
         const interval = setInterval(() => {
@@ -101,27 +90,10 @@ export default function ClusterSelectionList({
         }
     }, [lastDataSync])
 
-    const handleUrlChange = (sortedResult) => {
-        const queryParams = new URLSearchParams(location.search)
-        const selectedCluster = sortedResult.find(
-            (item) => item.id == queryParams.get('clusterId') && item.nodeCount > 0,
-        )
-        if (selectedCluster) {
-            openTerminal(selectedCluster)
-        }
-    }
-
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredClusterList(_filteredData)
         setNoResults(_filteredData.length === 0)
-    }
-
-    const handleClusterClick = (ev, error: string): void => {
-        if (error) {
-            ev.preventDefault()
-            toast.error(error)
-        }
     }
 
     const clearSearch = (): void => {
@@ -166,26 +138,10 @@ export default function ClusterSelectionList({
         )
     }
 
-    const openTerminal = (clusterData): void => {
-        setTerminalCluster(clusterData)
-        setNodeImageList(filterImageList(imageList, clusterData.serverVersion))
-        setShowTerminal(true)
-    }
-
     const openTerminalComponent = (clusterData): void => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('clusterId', clusterData.id)
-        history.push({
-            search: queryParams.toString(),
-        })
-        openTerminal(clusterData)
-    }
-
-    const closeTerminal = (skipRedirection: boolean): void => {
-        setShowTerminal(false)
-        if (!skipRedirection) {
-            history.push(match.url)
-        }
+        history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
     }
 
     const selectCluster = (e): void => {
@@ -269,7 +225,7 @@ export default function ClusterSelectionList({
                 <div
                     data-testid="cluster-list-container"
                     className="dc__overflow-scroll"
-                    style={{ height: `calc(${showTerminalModal ? '50vh - 112px)' : '100vh - 112px)'}` }}
+                    style={{ height: '100vh - 112px)' }}
                 >
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                         <div>Cluster</div>
@@ -310,17 +266,6 @@ export default function ClusterSelectionList({
                 </div>
                 {renderClusterList()}
             </div>
-            {showTerminalModal && terminalclusterData && (
-                <ClusterTerminal
-                    clusterId={terminalclusterData.id}
-                    clusterName={terminalclusterData.name}
-                    nodeGroups={createGroupSelectList(terminalclusterData?.nodeDetails, 'nodeName')}
-                    closeTerminal={closeTerminal}
-                    taints={createTaintsList(terminalclusterData?.nodeDetails, 'nodeName')}
-                    clusterImageList={nodeImageList}
-                    namespaceList={namespaceList[terminalclusterData.name]}
-                />
-            )}
         </div>
     )
 }

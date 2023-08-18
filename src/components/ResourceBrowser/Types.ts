@@ -94,9 +94,7 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 export interface ClusterSelectionType {
     clusterOptions: ClusterOptionType[]
     onChangeCluster: (selectedCluster: any, fromClusterSelect?: boolean) => void
-    imageList: ClusterImageList[]
     isSuperAdmin: boolean
-    namespaceList: string[]
 }
 
 export interface CreateResourceType {

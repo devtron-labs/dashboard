@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
@@ -8,6 +8,7 @@ import { OptionType } from '../app/types'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
+import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -49,6 +50,31 @@ export default function NodeListSearchFliter({
             }
         }
     }, [searchText, searchedTextMap])
+
+    const handleFocus = () => {
+        document.removeEventListener('keydown', keyPressHandler);
+      };
+  
+      const handleBlur = () => {
+        document.addEventListener('keydown', keyPressHandler);
+      };
+
+    useEffect(() => {
+          handleBlur()
+          document.addEventListener('focusin', handleFocus);
+          document.addEventListener('focusout', handleBlur);
+        return () => {
+            document.removeEventListener('keydown', keyPressHandler);
+            document.removeEventListener('focusin', handleFocus);
+            document.removeEventListener('focusout', handleBlur);
+        };
+    }, [])
+
+    const keyPressHandler = (e) => {
+       if(e.key === "r"){
+            setOpenFilterPopup(true)
+       }
+    }
 
     const clearTextFilter = (): void => {
         setSearchInputText('')
@@ -146,6 +172,7 @@ export default function NodeListSearchFliter({
                     ) : (
                         <span>Search nodes by name, labels or node group</span>
                     )}
+                    {!selectedSearchTextType && <ShortcutKeyBadge shortcutKey="r" rootClassName="node-list-search-key" />}
                 </div>
                 {openFilterPopup && (
                     <>

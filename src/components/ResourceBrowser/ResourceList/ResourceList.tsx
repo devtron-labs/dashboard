@@ -291,7 +291,10 @@ export default function ResourceList() {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
                 }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1].url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
         }
-    }, [selectedCluster,selectedResource,location.search])
+        if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
+            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
+        }
+    }, [selectedCluster, selectedResource, location.search])
 
     useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
@@ -454,7 +457,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1]?.url.split('?')[1]}` : '')}`,
+                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
                     })
                 }
 
@@ -938,7 +941,7 @@ export default function ResourceList() {
                 </div>
             )
         } else if (!showSelectClusterState && !selectedCluster?.value) {
-            return <ClusterSelectionList clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
+            return <ClusterSelectionList clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} isSuperAdmin={isSuperAdmin} />
         }
 
         return (

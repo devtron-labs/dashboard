@@ -2,6 +2,7 @@ import moment from 'moment'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
 import { eventAgeComparator } from '../common'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
 import { K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType } from './Types'
@@ -145,8 +146,8 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
     let isResourceGroupPresent = false
     let groupedChild = null
 
-    if (SIDEBAR_KEYS.overviewGVK.Kind === nodeType || SIDEBAR_KEYS.nodeGVK.Kind === nodeType && nodeType === 'terminal') {
-        isResourceGroupPresent = false
+    if (SIDEBAR_KEYS.overviewGVK.Kind === nodeType || SIDEBAR_KEYS.nodeGVK.Kind === nodeType || nodeType === AppDetailsTabs.terminal) {
+        isResourceGroupPresent = nodeType === AppDetailsTabs.terminal 
         groupedChild = {
             namespaced: false,
             gvk: SIDEBAR_KEYS.nodeGVK.Kind === nodeType ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS.overviewGVK,
@@ -154,7 +155,7 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
         }
     }else if (nodeType) {
         for (const _parentNode of _k8SObjectList) {
-            for (const _childNode of _parentNode.child) {
+            for (const _childNode of _parentNode.child) {    
                 if (
                     (_childNode.gvk.Kind.toLowerCase() === nodeType) &&
                     (_childNode.gvk.Group.toLowerCase() === group ||
