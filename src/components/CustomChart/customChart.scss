@@ -5,7 +5,13 @@
     }
     .chart-list-row {
         display: grid;
-        grid-template-columns: 220px 120px auto;
+        gap: 16px;
+        grid-template-columns: 200px 150px auto 200px 16px;
+    }
+
+    .custom-chart-info-bar {
+        padding: 6px 16px;
+        border-radius: 8px 8px 0 0;
     }
 }
 .upload-modal {
