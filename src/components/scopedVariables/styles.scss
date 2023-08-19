@@ -36,18 +36,20 @@
     margin: 0px;
 }
 
-.upload-scoped-variables-button {
+.upload-scoped-variables-card {
     border-radius: 4px;
     border: 1px dashed var(--N200);
     background: var(--N50);
     display: flex;
     min-width: 56px;
-    padding: 24px 36px;
+    padding: 24px 36px; //TODO: Ask whether it should be there
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 8px;
     align-self: stretch;
+    width: 320px;
+    height: 128px;
 }
 
 .upload-scoped-variables-button__icon {
@@ -67,4 +69,58 @@
 
 .default-bg-color {
     background: var(--N0);
+}
+
+.load-scoped-variables-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: default;
+    width: 200px;
+}
+
+.load-scoped-variables-container__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    align-self: stretch;
+}
+
+.load-scoped-variables-container__typography {
+    flex: 1 0 0;
+    margin: 0;
+    color: var(--N600);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
+}
+
+.load-scoped-variables-container__abort-read-btn {
+    flex: 0 0 auto;
+    padding: 0px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    width: 20px;
+    height: 20px;
+}
+
+.load-scoped-variables-container__error-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    align-self: stretch;
+}
+
+.load-scoped-variables-container__error-typography {
+    color: var(--R500);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
 }

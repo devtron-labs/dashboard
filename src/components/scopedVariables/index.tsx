@@ -1,4 +1,9 @@
 import React from 'react'
+import yaml from 'js-yaml'
+import { useFileReader } from './utils/hooks'
+import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as ICError } from '../../assets/icons/ic-error.svg'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
@@ -10,8 +15,6 @@ import {
     JSON_PARSE_ERROR_STATUS,
     YAML_PARSE_ERROR_STATUS,
 } from './constants'
-import { useFileReader } from './utils/hooks'
-import yaml from 'js-yaml'
 import './styles.scss'
 import { ReadFileAs, ValidatorT } from './types'
 
@@ -29,8 +32,80 @@ const ICUpload = () => {
     )
 }
 
+const ScopedVariablesInput = ({ handleFileUpload }) => {
+    return (
+        <>
+            <input
+                type="file"
+                id="scoped-variables-input"
+                accept=".yaml, .yml, .json"
+                style={{
+                    display: 'none',
+                }}
+                onChange={handleFileUpload}
+            />
+
+            <label
+                htmlFor="scoped-variables-input"
+                className="flex column center"
+                style={{ cursor: 'pointer', width: '100%', height: '100%' }}
+            >
+                <div className="flex center upload-scoped-variables-button__icon">
+                    <ICUpload />
+                </div>
+                <div className="flex column center">
+                    <p className="upload-description-l1-typography">{UPLOAD_DESCRIPTION_L1}</p>
+                    <p className="upload-description-l2-typography">{UPLOAD_DESCRIPTION_L2}</p>
+                </div>
+            </label>
+        </>
+    )
+}
+
+const LoadScopedVariables = ({ status, progress, fileData, abortRead }) => {
+    return (
+        <div className='load-scoped-variables-container'>
+            <div className='load-scoped-variables-container__header'>
+                <p className="dc__ellipsis-right load-scoped-variables-container__typography">
+                    {fileData?.name}
+                </p>
+
+                <button className='load-scoped-variables-container__abort-read-btn' onClick={abortRead}>
+                    <Close
+                        width={'20px'}
+                        height={'20px'}
+                    />
+                </button>
+            </div>
+
+            <StyledProgressBar
+                styles={{
+                    height: '4px',
+                    width: '100%',
+                    borderRadius: '2px',
+                }}
+                classes={`${status?.status ? '' : 'styled-progress-bar-error'}`}
+                progress={progress}
+            />
+
+            {!(status?.status) && (
+                <div className='load-scoped-variables-container__error-container'>
+                    <ICError
+                        width={'20px'}
+                        height={'20px'}
+                    />
+
+                    <p className='load-scoped-variables-container__error-typography'>
+                        Upload failed
+                    </p>
+                </div>
+            )}
+        </div>
+    )
+}
+
 const UploadScopedVariables = () => {
-    const { progress, status, readFile } = useFileReader()
+    const { fileData, progress, status, readFile, abortRead } = useFileReader()
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         const file = e.target.files[0]
@@ -49,7 +124,9 @@ const UploadScopedVariables = () => {
                         if (parsedData && typeof parsedData === 'object') {
                             return {
                                 status: true,
-                                message: parsedData,
+                                message: {
+                                    data: parsedData,
+                                },
                             }
                         }
                         return PARSE_ERROR_STATUS
@@ -64,7 +141,9 @@ const UploadScopedVariables = () => {
                         if (parsedData && typeof parsedData === 'object') {
                             return {
                                 status: true,
-                                message: parsedData,
+                                message: {
+                                    data: parsedData,
+                                },
                             }
                         }
                         return PARSE_ERROR_STATUS
@@ -86,27 +165,19 @@ const UploadScopedVariables = () => {
                     <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
                     <p className="default-view-description-typography">{DEFAULT_DESCRIPTION}</p>
                 </div>
-                <button className="upload-scoped-variables-button">
-                    <input
-                        type="file"
-                        id="file"
-                        accept=".yaml, .yml, .json"
-                        style={{
-                            display: 'none',
-                        }}
-                        onChange={handleFileUpload}
-                    />
 
-                    <label htmlFor="file" className="flex column center" style={{ cursor: 'pointer' }}>
-                        <div className="flex center upload-scoped-variables-button__icon">
-                            <ICUpload />
-                        </div>
-                        <div className="flex column center">
-                            <p className="upload-description-l1-typography">{UPLOAD_DESCRIPTION_L1}</p>
-                            <p className="upload-description-l2-typography">{UPLOAD_DESCRIPTION_L2}</p>
-                        </div>
-                    </label>
-                </button>
+                <div className="upload-scoped-variables-card">
+                    {status === null ? (
+                        <ScopedVariablesInput handleFileUpload={handleFileUpload} />
+                    ) : (
+                        <LoadScopedVariables
+                            status={status}
+                            progress={progress}
+                            fileData={fileData}
+                            abortRead={abortRead}
+                        />
+                    )}
+                </div>
 
                 <button className="p-0 dc__no-background dc__no-border default-download-template-typography">
                     {DOWNLOAD_TEMPLATE}

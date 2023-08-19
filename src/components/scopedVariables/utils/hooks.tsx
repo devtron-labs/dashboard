@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { FileDataI, FileReaderStatusI, ReadFileAs, ValidatorT } from '../types'
-import { FILE_READING_ABORTED_STATUS, FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from '../constants'
+import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from '../constants'
 
 export const useFileReader = () => {
-    const [fileData, setFileData] = useState<FileDataI>({
-        data: null,
-        type: null,
-    })
+    const [fileData, setFileData] = useState<FileDataI>(null)
     const [progress, setProgress] = useState<number>(0)
     const [status, setStatus] = useState<FileReaderStatusI>(null)
     // Since its a function and not a value, we need to use a callback to set the value
     const [validator, setValidator] = useState<ValidatorT>(null)
+    const reader = new FileReader()
 
     useEffect(() => {
         if (!fileData || !fileData.data) return
@@ -21,10 +19,8 @@ export const useFileReader = () => {
             status,
         }))
         if (status) {
-            setProgress(() => 100)
+            setProgress(100)
             // Don't set the value of fileData to null here, as it will cause the cause useEffect to run again
-        } else {
-            setProgress(() => 0)
         }
         return () => {
             setProgress(() => 0)
@@ -42,20 +38,16 @@ export const useFileReader = () => {
 
     const handleFileError = (e: any) => {
         setStatus(() => FILE_READING_FAILED_STATUS)
-        setFileData(() => null)
-        setValidator(() => null)
     }
 
     const handleFileProgress = (e: any) => {
-        const progress = Math.min(Math.round((e.loaded * 100) / e.total), 90)
+        const progress = Math.min(Math.round((e.loaded * 100) / e.total), 70)
         setProgress(() => progress)
     }
 
     const handleFileAbort = (e: any) => {
-        setStatus(() => FILE_READING_ABORTED_STATUS)
-        setProgress(() => 0)
         setFileData(() => null)
-        setValidator(() => null)
+        // others will be handled by useEffect and validator is anyways not going to beinvoked
     }
 
     const readFile = (file: any, fileValidator: ValidatorT, readAs: string) => {
@@ -66,10 +58,9 @@ export const useFileReader = () => {
         setFileData({
             data: null,
             type: file.type,
+            name: file.name,
         })
         setValidator(() => fileValidator)
-        const reader = new FileReader()
-
         try {
             reader.addEventListener('load', handleFileRead)
             reader.addEventListener('error', handleFileError)
@@ -103,11 +94,14 @@ export const useFileReader = () => {
             reader.removeEventListener('error', handleFileError)
             reader.removeEventListener('progress', handleFileProgress)
             reader.removeEventListener('abort', handleFileAbort)
-            setFileData(() => null)
-            setValidator(() => null)
             setStatus(() => FILE_READING_FAILED_STATUS)
         }
     }
 
-    return { fileData, progress, status, readFile }
+    const abortRead = () => {
+        reader.abort()
+        setFileData(() => null)
+    }
+
+    return { fileData, progress, status, readFile, abortRead }
 }

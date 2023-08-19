@@ -1,11 +1,14 @@
 export interface FileReaderStatusI {
-    message: string
     status: boolean
+    message: string | {
+        data: any
+    }
 }
 
 export interface FileDataI {
     data: any
     type: string
+    name: string
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI

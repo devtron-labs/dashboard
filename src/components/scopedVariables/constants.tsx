@@ -8,10 +8,6 @@ export const FILE_READING_FAILED_STATUS = {
     message: 'File reading failed',
     status: false,
 }
-export const FILE_READING_ABORTED_STATUS = {
-    message: 'File reading aborted',
-    status: false,
-}
 export const NO_FILE_SELECTED_STATUS = {
     message: 'No file selected',
     status: false,

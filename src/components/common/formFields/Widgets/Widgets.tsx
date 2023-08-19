@@ -303,14 +303,26 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
     )
 }
 
-export const StyledProgressBar = ({ resetProgress, updateProgressValue }: StyledProgressBarProps) => {
-    const [progressValue, setProgressValue] = useState(0)
+export const StyledProgressBar = ({
+    resetProgress,
+    updateProgressValue,
+    styles,
+    classes,
+    progress,
+}: StyledProgressBarProps) => {
+    const [progressValue, setProgressValue] = useState(progress ?? 0)
     let progressTimer = null
 
     useEffect(() => {
         progressTimer = setInterval(() => {
             setProgressValue((prevValue) => {
                 const _currentValue = prevValue + 1
+
+                if (classes?.includes('styled-progress-bar-error')) {
+                    clearInterval(progressTimer)
+                    return prevValue
+                }
+
                 if (_currentValue === 100) {
                     clearInterval(progressTimer)
                 }
@@ -328,9 +340,16 @@ export const StyledProgressBar = ({ resetProgress, updateProgressValue }: Styled
                 clearInterval(progressTimer)
             }
         }
-    }, [resetProgress])
+    }, [resetProgress, classes])
 
-    return <progress className="styled-progress-bar" value={progressValue} max={100} />
+    return (
+        <progress
+            className={`styled-progress-bar ${classes ?? ''}`}
+            value={progressValue}
+            max={100}
+            style={styles ? { ...styles } : {}}
+        />
+    )
 }
 
 export const ShortcutKeyBadge = ({ rootClassName, shortcutKey, onClick }: ShortcutKeyBadgeProps) => {
