@@ -4,7 +4,7 @@ import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error.svg'
 import { validator } from './utils/helpers'
-import { ReadFileAs } from './types'
+import { ReadFileAs, LoadScopedVariablesI, ScopedVariablesInputI } from './types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
@@ -28,7 +28,7 @@ const ICUpload = () => {
     )
 }
 
-const ScopedVariablesInput = ({ handleFileUpload }) => {
+const ScopedVariablesInput = ({ handleFileUpload }: ScopedVariablesInputI) => {
     return (
         <>
             <input
@@ -58,7 +58,7 @@ const ScopedVariablesInput = ({ handleFileUpload }) => {
     )
 }
 
-const LoadScopedVariables = ({ status, progress, fileData, abortRead }) => {
+const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
     return (
         <div className="load-scoped-variables-container">
             <div className="load-scoped-variables-container__header">

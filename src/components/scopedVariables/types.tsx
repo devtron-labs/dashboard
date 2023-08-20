@@ -19,4 +19,15 @@ export interface FileDataI {
     name: string
 }
 
+export interface LoadScopedVariablesI {
+    status: FileReaderStatusI
+    progress: number
+    fileData: FileDataI
+    abortRead: () => void
+}
+
+export interface ScopedVariablesInputI {
+    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI
