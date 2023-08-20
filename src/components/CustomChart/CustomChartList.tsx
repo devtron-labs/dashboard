@@ -186,9 +186,16 @@ export default function CustomChartList() {
     }
 
     const handleCustomChartDownload = async(e: any) => {
-        const chartRefId = e.currentTarget.dataset.version
+        const chartRefId = e.currentTarget.dataset.versionid
+        const chartVersion = e.currentTarget.dataset.version
+        const chartName = e.currentTarget.dataset.name
         try {
             const response = await downloadCustomChart(chartRefId)
+            const b = await (response as any).blob()
+            const a = document.createElement('a')
+            a.href = URL.createObjectURL(b)
+            a.download = `${chartName}_${chartVersion}.tgz`
+            a.click()
             toast.success('Chart Downloaded Successfully')
             closeChartVersionsModal()
         } catch (error) {
@@ -199,13 +206,15 @@ export default function CustomChartList() {
     const randerChartVersionsModalBody = (chartData: ChartDetailType) : JSX.Element => {
         return (
             <>
-                <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8">
+                <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center">
                     Select Version
                 </div>
                 <div className="mb-4 mxh-140 dc__overflow-scroll">
                     {chartData.versions.map((versionsList) => (
                         <div
-                            data-version={versionsList.id}
+                            data-versionid={versionsList.id}
+                            data-version={versionsList.version}
+                            data-name={chartData.name}
                             onClick={handleCustomChartDownload}
                             className="chart-version-row flex left pt-6 pb-6 pl-8 pr-8 lh-20 cn-9 fw-4 fs-13 pointer">
                             {versionsList.version}
