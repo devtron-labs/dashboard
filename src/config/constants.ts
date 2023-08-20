@@ -187,6 +187,7 @@ export const Routes = {
     CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
+    DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
     CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',

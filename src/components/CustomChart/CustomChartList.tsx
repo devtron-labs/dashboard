@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT, DOCUMENTATION } from '../../config'
 import './customChart.scss'
 import UploadChartModal from './UploadChartModal'
@@ -6,15 +6,16 @@ import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-upload.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-down-n6.svg'
-
+import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { getChartList } from './customChart.service'
+import { downloadCustomChart, getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export default function CustomChartList() {
@@ -22,8 +23,27 @@ export default function CustomChartList() {
     const [loader, setLoader] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [chartList, setChartList] = useState([])
+    const [chartList, setChartList] = useState<ChartDetailType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const tippyRef = useRef(null)
+
+    const onChartVersionsModalMount = (tippyInstance) => {
+        tippyRef.current = tippyInstance
+        document.addEventListener('keydown', closeOnEsc)
+    }
+
+    const closeChartVersionsModal = () => {
+        if (tippyRef.current?.hide) {
+            tippyRef.current.hide()
+            tippyRef.current = null
+        }
+    }
+
+    const closeOnEsc = (e) => {
+        if (e.keyCode === 27) {
+            closeChartVersionsModal()
+        }
+    }
 
     useEffect(() => {
         getData()
@@ -44,7 +64,7 @@ export default function CustomChartList() {
                 setLoader(false)
             })
     }
-    console.log(chartList)
+
     const processChartData = (data: ChartDetailType[]): ChartDetailType[] => {
         let resultData = []
         const uniqueChartList = new Map<string, ChartDetailType>()
@@ -164,6 +184,38 @@ export default function CustomChartList() {
     const additionalRegistryTitleTippyContent = () => {
         return <p className="p-12 fs-13 fw-4 lh-20">{CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.additionalParagraphText}</p>
     }
+
+    const handleCustomChartDownload = async(e: any) => {
+        const chartRefId = e.currentTarget.dataset.version
+        try {
+            const response = await downloadCustomChart(chartRefId)
+            toast.success('Chart Downloaded Successfully')
+            closeChartVersionsModal()
+        } catch (error) {
+            showError(error)
+        }
+    }
+
+    const randerChartVersionsModalBody = (chartData: ChartDetailType) : JSX.Element => {
+        return (
+            <>
+                <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8">
+                    Select Version
+                </div>
+                <div className="mb-4 mxh-140 dc__overflow-scroll">
+                    {chartData.versions.map((versionsList) => (
+                        <div
+                            data-version={versionsList.id}
+                            onClick={handleCustomChartDownload}
+                            className="chart-version-row flex left pt-6 pb-6 pl-8 pr-8 lh-20 cn-9 fw-4 fs-13 pointer">
+                            {versionsList.version}
+                        </div>
+                    ))}
+                </div>
+            </>
+        )
+    }
+
     const customChartInfoBarMessage = () : JSX.Element => {
         return (
             <>
@@ -175,6 +227,16 @@ export default function CustomChartList() {
             </>
         )
     }
+
+    const randerDevtronChipTag = (chartData: ChartDetailType) : JSX.Element => { 
+        return !chartData.isUserUploaded ? (
+            <span className="pl-6 pr-6 ml-8 flex bcb-1 h-20 br-6">
+                <DevtronIcon className="icon-dim-20" />
+                <span className="ml-4 fs-11 fw-6 cn-7 lh-20 devtron-tag">by Devtron</span>
+            </span>
+        ) : null
+    }
+
     const renderChartList = (): JSX.Element => {
         return (
             <div className="chart-list">
@@ -216,12 +278,12 @@ export default function CustomChartList() {
                         <div>Name</div>
                         <div>Version</div>
                         <div>Description</div>
-                        <div>Uploaded by</div>
                     </div>
                     {chartList?.map((chartData) => (
                         <div className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
                             <div className="flexbox">
                                 <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
+                                {randerDevtronChipTag(chartData)}
                             </div>
                             <div>
                                 {chartData.version}
@@ -240,12 +302,21 @@ export default function CustomChartList() {
                                     <span>{chartData.chartDescription}</span>
                                 </Tippy>
                             </div>
-                            <div className="flexbox">
-                                <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
-                            </div>
-                            <div className="flex">
-                                <Download className="icon-dim-16 ic-download-n6" />
-                            </div>
+                            <Tippy
+                                className="tippy-white-container default-white no-content-padding tippy-shadow w-100"
+                                interactive
+                                arrow={false}
+                                placement="bottom-end"
+                                content={randerChartVersionsModalBody(chartData)}
+                                trigger="click"
+                                onMount={onChartVersionsModalMount}
+                                onClickOutside={closeChartVersionsModal}
+                                animation="fade"
+                            >
+                                <div className="flex pointer">
+                                    <Download className="icon-dim-16 ic-download-n6" />
+                                </div>
+                            </Tippy>
                         </div>
                     ))}
                 </div>

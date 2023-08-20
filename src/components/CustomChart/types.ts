@@ -4,6 +4,7 @@ export interface ChartDetailType {
     chartDescription: string
     name: string
     version: string
+    isUserUploaded: boolean
     count?: number
     versions?: {
         id: number

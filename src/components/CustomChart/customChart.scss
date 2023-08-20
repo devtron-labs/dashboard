@@ -6,7 +6,13 @@
     .chart-list-row {
         display: grid;
         gap: 16px;
-        grid-template-columns: 200px 150px auto 200px 16px;
+        grid-template-columns: 250px 150px auto 16px;
+        .devtron-tag {
+            white-space: nowrap;
+        }
+        .chart-version-row:hover {
+            background-color: var(--N50);
+        }
     }
 
     .custom-chart-info-bar {

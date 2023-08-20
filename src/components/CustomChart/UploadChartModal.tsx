@@ -33,7 +33,9 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 setUploadState(UPLOAD_STATE.ERROR)
                 if (Array.isArray(error.errors)) {
                     if (error.errors[0].code === '5001') {
-                        setErrorData({ title: error.errors[0].userMessage, message: ['Try uploading another chart'] })
+                        setErrorData({ title: error.errors[0]?.userMessage || "", message: ['Try uploading another chart'] })
+                    } else if (error.errors[0].code === '5002') {
+                        setErrorData({ title: error.errors[0]?.userMessage || "", message: [error.errors[0]?.internalMessage || ""] })
                     } else {
                         setErrorData({
                             title: 'Unsupported chart template',
