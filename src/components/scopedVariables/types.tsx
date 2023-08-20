@@ -1,7 +1,15 @@
+export enum ReadFileAs {
+    TEXT = 'text',
+    DATA_URL = 'dataUrl',
+    BINARY_STRING = 'binaryString',
+    ARRAY_BUFFER = 'arrayBuffer',
+}
+
 export interface FileReaderStatusI {
-    status: boolean
-    message: string | {
+    status: boolean | 'loading'
+    message: {
         data: any
+        description: string
     }
 }
 
@@ -12,10 +20,3 @@ export interface FileDataI {
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI
-
-export enum ReadFileAs {
-    TEXT = 'text',
-    DATA_URL = 'dataUrl',
-    BINARY_STRING = 'binaryString',
-    ARRAY_BUFFER = 'arrayBuffer',
-}

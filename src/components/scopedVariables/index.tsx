@@ -1,22 +1,18 @@
 import React from 'react'
-import yaml from 'js-yaml'
 import { useFileReader } from './utils/hooks'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error.svg'
+import { validator } from './utils/helpers'
+import { ReadFileAs } from './types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
     DEFAULT_TITLE,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
-    PARSE_ERROR_STATUS,
-    FILE_NOT_SUPPORTED_STATUS,
-    JSON_PARSE_ERROR_STATUS,
-    YAML_PARSE_ERROR_STATUS,
 } from './constants'
 import './styles.scss'
-import { ReadFileAs, ValidatorT } from './types'
 
 const ICUpload = () => {
     return (
@@ -64,17 +60,12 @@ const ScopedVariablesInput = ({ handleFileUpload }) => {
 
 const LoadScopedVariables = ({ status, progress, fileData, abortRead }) => {
     return (
-        <div className='load-scoped-variables-container'>
-            <div className='load-scoped-variables-container__header'>
-                <p className="dc__ellipsis-right load-scoped-variables-container__typography">
-                    {fileData?.name}
-                </p>
+        <div className="load-scoped-variables-container">
+            <div className="load-scoped-variables-container__header">
+                <p className="dc__ellipsis-right load-scoped-variables-container__typography">{fileData?.name}</p>
 
-                <button className='load-scoped-variables-container__abort-read-btn' onClick={abortRead}>
-                    <Close
-                        width={'20px'}
-                        height={'20px'}
-                    />
+                <button className="load-scoped-variables-container__abort-read-btn" onClick={abortRead}>
+                    <Close width={'20px'} height={'20px'} />
                 </button>
             </div>
 
@@ -88,16 +79,11 @@ const LoadScopedVariables = ({ status, progress, fileData, abortRead }) => {
                 progress={progress}
             />
 
-            {!(status?.status) && (
-                <div className='load-scoped-variables-container__error-container'>
-                    <ICError
-                        width={'20px'}
-                        height={'20px'}
-                    />
+            {!status?.status && (
+                <div className="load-scoped-variables-container__error-container">
+                    <ICError width={'20px'} height={'20px'} />
 
-                    <p className='load-scoped-variables-container__error-typography'>
-                        Upload failed
-                    </p>
+                    <p className="load-scoped-variables-container__error-typography">Upload failed</p>
                 </div>
             )}
         </div>
@@ -106,56 +92,10 @@ const LoadScopedVariables = ({ status, progress, fileData, abortRead }) => {
 
 const UploadScopedVariables = () => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
-        const file = e.target.files[0]
-        const validator: ValidatorT = ({ data, type }) => {
-            if (!data) {
-                return {
-                    status: false,
-                    message: 'File is empty',
-                }
-            }
-
-            switch (type) {
-                case 'application/json':
-                    try {
-                        const parsedData = JSON.parse(data)
-                        if (parsedData && typeof parsedData === 'object') {
-                            return {
-                                status: true,
-                                message: {
-                                    data: parsedData,
-                                },
-                            }
-                        }
-                        return PARSE_ERROR_STATUS
-                    } catch (e) {
-                        return JSON_PARSE_ERROR_STATUS
-                    }
-                case 'application/x-yaml':
-                case 'text/yaml':
-                case 'text/x-yaml':
-                    try {
-                        const parsedData = yaml.safeLoad(data)
-                        if (parsedData && typeof parsedData === 'object') {
-                            return {
-                                status: true,
-                                message: {
-                                    data: parsedData,
-                                },
-                            }
-                        }
-                        return PARSE_ERROR_STATUS
-                    } catch (e) {
-                        return YAML_PARSE_ERROR_STATUS
-                    }
-                default:
-                    return FILE_NOT_SUPPORTED_STATUS
-            }
-        }
-
-        readFile(file, validator, ReadFileAs.TEXT)
+        readFile(e.target.files[0], validator, ReadFileAs.TEXT)
     }
 
     return (
@@ -190,4 +130,5 @@ const UploadScopedVariables = () => {
 const ScopedVariables = () => {
     return <UploadScopedVariables />
 }
+
 export default ScopedVariables
