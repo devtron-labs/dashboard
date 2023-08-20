@@ -18,9 +18,9 @@ import {
     EnvFormatOptions,
     formatHighlightedTextDescription,
     GroupHeading,
+    groupStyle,
 } from '../v2/common/ReactSelect.utils'
 import ReactSelect from 'react-select'
-import { groupStyle } from '../secrets/secret.utils'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -100,7 +100,7 @@ export default function BuildCD({
     const selectEnvironment = (selection: Environment): void => {
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
-        
+
         if (selection) {
             _form.environmentId = selection.id
             _form.environmentName = selection.name
@@ -249,7 +249,7 @@ export default function BuildCD({
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
-        
+
     }
 
     const  onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {

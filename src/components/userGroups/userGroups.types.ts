@@ -74,6 +74,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter {
     action: {
         label: string
         value: string
+        configApprover?: boolean
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS,
     approver?: boolean

@@ -851,7 +851,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
-
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
