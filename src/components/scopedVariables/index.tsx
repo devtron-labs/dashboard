@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
+import {TippyCustomized, TippyTheme} from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { useFileReader } from './utils/hooks'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
+import { validator, downloadData } from './utils/helpers'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
-import { validator, downloadData } from './utils/helpers'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import {
     ReadFileAs,
     LoadScopedVariablesI,
@@ -109,9 +111,21 @@ export const Descriptor = ({
         <div className="descriptor-container">
             <div className="flex center dc__gap-8">
                 <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
-                <button className="descriptor-help-button">
-                    <ICHelpOutline width={20} height={20} />
-                </button>
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300 h-100 fcv-5"
+                    placement="right"
+                    Icon={QuestionFilled}
+                    heading={DEFAULT_TITLE}
+                    infoText={DEFAULT_DESCRIPTION}
+                    showCloseButton={true}
+                    trigger="click"
+                    interactive = {true}
+                >
+                    <button className="descriptor-help-button">
+                        <ICHelpOutline width={20} height={20} />
+                    </button>
+                </TippyCustomized>
             </div>
             {showUploadButton && <button className="descriptor-container__upload-button">Upload</button>}
             {children}
