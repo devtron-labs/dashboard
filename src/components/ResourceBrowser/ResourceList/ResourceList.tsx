@@ -212,6 +212,25 @@ export default function ResourceList() {
             const { result } = await getClusterCapacity(clusterId)
             if (result) {
                 setClusterCapacityData(result)
+                initTabs([
+                    {
+                        idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                        name: AppDetailsTabs.k8s_Resources,
+                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                        isSelected: true,
+                        positionFixed: true,
+                        iconPath: K8ResourceIcon,
+                    },
+                    {
+                        idPrefix: AppDetailsTabsIdPrefix.terminal,
+                        name: AppDetailsTabs.terminal,
+                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
+                        isSelected: false,
+                        positionFixed: true,
+                        iconPath: TerminalIcon,
+                        showNameOnSelect: true,
+                    }
+                ])
                 let _errorTitle = '',
                     _errorList = [],
                     _nodeErrors = Object.keys(result.nodeErrors || {})
@@ -416,25 +435,6 @@ export default function ResourceList() {
         try {
             setLoader(true)
             sideDataAbortController.current.new = new AbortController()
-            initTabs([
-                {
-                    idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-                    name: AppDetailsTabs.k8s_Resources,
-                    url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
-                    isSelected: true,
-                    positionFixed: true,
-                    iconPath: K8ResourceIcon,
-                },
-                {
-                    idPrefix: AppDetailsTabsIdPrefix.terminal,
-                    name: AppDetailsTabs.terminal,
-                    url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
-                    isSelected: false,
-                    positionFixed: true,
-                    iconPath: TerminalIcon,
-                    showNameOnSelect: true,
-                }
-            ])
             const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
