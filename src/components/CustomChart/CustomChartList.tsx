@@ -10,7 +10,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { downloadCustomChart, getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically, versionComparator } from '../common'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnKeyPressed } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -38,9 +38,7 @@ export default function CustomChartList() {
     }
 
     const closeOnEsc = (e: any) => {
-        if (e.keyCode === 27 || e.key === 'Escape') {
-            closeChartVersionsModal()
-        }
+        closeOnKeyPressed(e, closeChartVersionsModal, e.keyCode, e.key)
     }
 
     useEffect(() => {
