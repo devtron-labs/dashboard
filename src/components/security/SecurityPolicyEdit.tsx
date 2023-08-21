@@ -50,9 +50,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     }
 
     private actions = [
-        { label: "Block always", value: "block" },
-        { label: "Block if fix is available", value: "blockiffixed" },
-        { label: "Allow", value: "allow" },
+        { label: "Block always", value: VulnerabilityAction.block },
+        { label: "Block if fix is available", value: VulnerabilityAction.blockiffixed },
+        { label: "Allow", value: VulnerabilityAction.allow },
     ]
 
     constructor(props: FetchPolicyQueryParams) {
@@ -255,7 +255,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     private renderVulnerability(props: VulnerabilityUIMetaData, v: VulnerabilityPolicy, severity: SeverityPolicy) {
         let actions = this.actions;
         if (this.props.level !== "global") {
-            actions = this.actions.concat({ label: "inherit", value: "inherit" });
+            actions = this.actions.concat({ label: VulnerabilityAction.inherit, value: VulnerabilityAction.inherit });
         }
         const selectedValue =  severity.policy.inherited && !severity.policy.isOverriden
         ?{ label: 'inherit', value: 'inherit' }: this.actions.find(data=> data.value===severity.policy.action)

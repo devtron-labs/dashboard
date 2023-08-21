@@ -43,7 +43,7 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState>{
         this.state = {
             view: ViewType.FORM,
             cve: "",
-            policy: "allow",
+            policy: VulnerabilityAction.allow,
             cveError: false,
             clusters: [],
         }
@@ -167,13 +167,13 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState>{
                     </div>
                     <div className="ml-24 mr-24 flexbox" tabIndex={2}>
                         <label className="form__label form__label--flex cursor mr-8">
-                            <input type="radio" name="policy" value="allow" tabIndex={1} onClick={this.handlePolicyChange} checked={this.state.policy === "allow"} /> <span className="ml-10 mr-5">Allow</span>
+                            <input type="radio" name="policy" value="allow" tabIndex={1} onClick={this.handlePolicyChange} checked={this.state.policy === VulnerabilityAction.allow} /> <span className="ml-10 mr-5">Allow</span>
                         </label>
                         <label className="form__label form__label--flex cursor ml-10">
-                            <input type="radio" name="policy" value="block" tabIndex={2} onClick={this.handlePolicyChange} checked={this.state.policy === "block"} /><span className="ml-10 mr-5">Block always</span>
+                            <input type="radio" name="policy" value="block" tabIndex={2} onClick={this.handlePolicyChange} checked={this.state.policy === VulnerabilityAction.block} /><span className="ml-10 mr-5">Block always</span>
                         </label>
                         <label className="form__label form__label--flex cursor ml-10">
-                            <input type="radio" name="policy" value="blockiffixed" tabIndex={2} onClick={this.handlePolicyChange} checked={this.state.policy === "blockiffixed"} /><span className="ml-10 mr-5">Block if fix is available</span>
+                            <input type="radio" name="policy" value="blockiffixed" tabIndex={2} onClick={this.handlePolicyChange} checked={this.state.policy === VulnerabilityAction.blockiffixed} /><span className="ml-10 mr-5">Block if fix is available</span>
                         </label>
                     </div>
                     {/* <hr className="mt-10 mb-20"></hr>
