@@ -55,3 +55,31 @@ export const EMPTY_FILE_STATUS = {
     },
     status: false,
 }
+
+export const VARIABLES_TEMPLATE = `Variables:
+- definition:
+    varName: variable1
+    dataType: primitive
+    varType: private
+    description: This is variable 1
+  attributeValue:
+  - value: value1
+    attributeType: ApplicationEnv
+    attributeParams:
+      ApplicationName: app1
+      EnvName: dev
+  - value: value11
+    attributeType: Env
+    attributeParams:
+      EnvName: prod
+- definition:
+    varName: variable2
+    dataType: primitive
+    varType: public
+    description: This is variable 2
+  attributeValue:
+  - value: value2
+    attributeType: Application
+    attributeParams:
+      ApplicationName: app2
+`

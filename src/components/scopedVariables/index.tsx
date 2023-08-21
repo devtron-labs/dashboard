@@ -1,21 +1,27 @@
-import React from 'react'
-import yaml from 'yaml'
+import React, { useState } from 'react'
+import CodeEditor from '../CodeEditor/CodeEditor'
 import { useFileReader } from './utils/hooks'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
-import { validator } from './utils/helpers'
-import { ReadFileAs, LoadScopedVariablesI, ScopedVariablesInputI, ScopedVariablesEditorI } from './types'
+import { validator, downloadData } from './utils/helpers'
+import {
+    ReadFileAs,
+    LoadScopedVariablesI,
+    ScopedVariablesInputI,
+    ScopedVariablesEditorI,
+    UploadScopedVariablesI,
+} from './types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
     DEFAULT_TITLE,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
+    VARIABLES_TEMPLATE,
 } from './constants'
 import './styles.scss'
-import CodeEditor from '../CodeEditor/CodeEditor'
 
 const ICUpload = () => {
     return (
@@ -113,32 +119,48 @@ export const Descriptor = ({
     )
 }
 
-// WIP
-export const ScopedVariablesEditor = ({ variablesData, type, name }: ScopedVariablesEditorI) => {
-    if (type === 'application/json') {
-        variablesData = JSON.stringify(variablesData)
-    }
-    if (
-        type === 'application/yaml' ||
-        type === 'application/x-yaml' ||
-        type === 'text/yaml' ||
-        type === 'text/x-yaml'
-    ) {
-        variablesData = yaml.stringify(variablesData)
+export const ScopedVariablesEditor = ({
+    variablesData,
+    name,
+    abortRead,
+    setScopedVariables,
+}: ScopedVariablesEditorI) => {
+    const handleSave = () => {
+        setScopedVariables(variablesData)
     }
     return (
         <div className="flex column dc__content-space h-100 default-bg-color">
             <Descriptor />
             <div className="uploaded-variables-editor-background">
                 <div className="uploaded-variables-editor-container">
-                    <CodeEditor mode="yaml" value={variablesData} noParsing={false} />
+                    <div className="uploaded-variables-editor-infobar">
+                        <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
+                            Upload <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
+                        </p>
+
+                        <button className="uploaded-variables-editor-infobar__abort-read-btn" onClick={abortRead}>
+                            <Close width={'20px'} height={'20px'} />
+                        </button>
+                    </div>
+
+                    <CodeEditor mode="yaml" value={variablesData} noParsing={false} height={'100%'} />
+
+                    <div className="uploaded-variables-editor-footer">
+                        <button className="uploaded-variables-editor-footer__cancel-button" onClick={abortRead}>
+                            Cancel
+                        </button>
+
+                        <button className="uploaded-variables-editor-footer__save-button" onClick={handleSave}>
+                            Save
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     )
 }
 
-const UploadScopedVariables = () => {
+const UploadScopedVariables = ({ setScopedVariables }: UploadScopedVariablesI) => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +169,12 @@ const UploadScopedVariables = () => {
     }
 
     return status?.status === true ? (
-        <ScopedVariablesEditor variablesData={status?.message?.data} type={fileData?.type} name={fileData?.name} />
+        <ScopedVariablesEditor
+            variablesData={status?.message?.data}
+            name={fileData?.name}
+            abortRead={abortRead}
+            setScopedVariables={setScopedVariables}
+        />
     ) : (
         <div className="flex column center default-bg-color h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
@@ -169,7 +196,10 @@ const UploadScopedVariables = () => {
                     )}
                 </div>
 
-                <button className="p-0 dc__no-background dc__no-border default-download-template-typography">
+                <button
+                    className="p-0 dc__no-background dc__no-border default-download-template-typography"
+                    onClick={() => downloadData(VARIABLES_TEMPLATE, 'ScopedVariables', 'application/x-yaml')}
+                >
                     {DOWNLOAD_TEMPLATE}
                 </button>
             </div>
@@ -178,7 +208,8 @@ const UploadScopedVariables = () => {
 }
 
 const ScopedVariables = () => {
-    return <UploadScopedVariables />
+    const [ScopedVariables, setScopedVariables] = useState(null)
+    return <UploadScopedVariables setScopedVariables={setScopedVariables} />
 }
 
 export default ScopedVariables

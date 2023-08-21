@@ -32,8 +32,13 @@ export interface ScopedVariablesInputI {
 
 export interface ScopedVariablesEditorI {
     variablesData: any
-    type: string
     name: string
+    abortRead: () => void
+    setScopedVariables: (variables: any) => void
+}
+
+export interface UploadScopedVariablesI {
+    setScopedVariables: (variables: any) => void
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI
