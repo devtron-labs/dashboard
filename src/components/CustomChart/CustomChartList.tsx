@@ -279,7 +279,7 @@ export default function CustomChartList() {
                 >
                     <InfoColourBar
                         message={customChartInfoBarMessage()}
-                        classname="dc__content-start dc__no-top-border dc__no-bottom-border dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 custom-chart-info-bar"
+                        classname="dc__content-start dc__no-top-border dc__no-left-border dc__no-right-border bw-1 bcv-1 ev-2 w-100 custom-chart-info-bar"
                         Icon={HelpIcon}
                         iconClass="fcv-5 icon-dim-20"
                     />
