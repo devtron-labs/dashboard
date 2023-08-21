@@ -49,6 +49,8 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         "blockiffixed": "Blocked if fix is available"
     }
 
+    private inheritAction = { label: "Inherit", value: VulnerabilityAction.inherit }
+
     private actions = [
         { label: "Block always", value: VulnerabilityAction.block },
         { label: "Block if fix is available", value: VulnerabilityAction.blockiffixed },
@@ -129,7 +131,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     deleteCve(id: number): void {
         let payload = {
             id,
-            action: 'inherit',
+            action: VulnerabilityAction.inherit,
         }
         updatePolicy(payload).then((response) => {
             if (response.result) {
@@ -145,7 +147,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         const actionLowerCase = action.toLowerCase()
         if (
             (policy.policy.isOverriden && actionLowerCase === policy.policy.action.toLowerCase()) ||
-            (policy.policy.inherited && actionLowerCase === 'inherit')
+            (policy.policy.inherited && actionLowerCase === VulnerabilityAction.inherit)
         ) {
             return
         }
@@ -153,7 +155,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         let payload = {};
         let promise;
 
-        if (actionLowerCase === "inherit") { //update
+        if (actionLowerCase === VulnerabilityAction.inherit) { //update
             payload = {
                 id: policy.id,
                 action: actionLowerCase
@@ -255,10 +257,10 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     private renderVulnerability(props: VulnerabilityUIMetaData, v: VulnerabilityPolicy, severity: SeverityPolicy) {
         let actions = this.actions;
         if (this.props.level !== "global") {
-            actions = this.actions.concat({ label: VulnerabilityAction.inherit, value: VulnerabilityAction.inherit });
+            actions = this.actions.concat(this.inheritAction);
         }
         const selectedValue =  severity.policy.inherited && !severity.policy.isOverriden
-        ?{ label: 'inherit', value: 'inherit' }: this.actions.find(data=> data.value===severity.policy.action)
+        ? this.inheritAction : this.actions.find(data=> data.value===severity.policy.action)
         let permission = this.permissionText[severity.policy.action]
         return (
             <div key={severity.id} className="vulnerability">
