@@ -230,7 +230,7 @@ export default function CustomChartList() {
                 <div
                     data-testid="custom-chart-list"
                     className="mt-16 en-2 bw-1 bcn-0 br-8"
-                    style={{ minHeight: 'calc(100vh - 235px)' }}
+                    style={{ minHeight: 'calc(100vh - 139px)' }}
                 >
                     <InfoColourBar
                         message={customChartInfoBarMessage()}
