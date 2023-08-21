@@ -132,6 +132,7 @@ export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
     otherEnv: {
         key: 'env',
         label: 'Values on other environments',
+        publishedLabel: 'Published on environments',
         noOptions: { label: 'No options', value: 0, kind: 'env' },
     },
     otherVersion: {
