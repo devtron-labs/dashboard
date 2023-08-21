@@ -83,7 +83,7 @@ export default function ResourceList() {
     }>()
     const { replace, push } = useHistory()
     const location = useLocation()
-    const { tabs, initTabs, addTab, markTabActiveByIdentifier, removeTabByIdentifier, updateTabUrl, stopTabByIdentifier } = useTabs(
+    const { tabs, initTabs, addTab, markTabActiveByIdentifier, removeTabByIdentifier, updateTabUrl, stopTabByIdentifier, removeAllTempTabs } = useTabs(
         `${URLS.RESOURCE_BROWSER}`,
     )
     const [loader, setLoader] = useState(false)
@@ -436,6 +436,7 @@ export default function ResourceList() {
     const getSidebarData = async (_clusterId): Promise<void> => {
         if (!_clusterId) return
         try {
+            setK8SObjectMap(null)
             setLoader(true)
             sideDataAbortController.current.new = new AbortController()
             const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
@@ -646,6 +647,7 @@ export default function ResourceList() {
         if (sideDataAbortController.current.prev?.signal.aborted) {
             sideDataAbortController.current.prev = null
         }
+        removeAllTempTabs()
         updateOnClusterChange(selected.value)
         abortReqAndUpdateSideDataController()
         setSelectedCluster(selected)

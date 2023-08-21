@@ -138,6 +138,13 @@ export function useTabs(persistanceKey: string) {
         return pushURL
     }
 
+    const removeAllTempTabs = () => {
+        const _tabs = tabs.filter((tab) => tab.positionFixed)
+        _tabs[0].isSelected = true
+        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+        setTabs(_tabs)
+    }
+
     const stopTabByIdentifier = (title: string): string => {
         let pushURL = ''
         let selectedRemoved = false
@@ -224,6 +231,7 @@ export function useTabs(persistanceKey: string) {
         markTabActiveByIdentifier,
         markTabResourceDeletedByIdentifier,
         updateTabUrl,
-        stopTabByIdentifier
+        stopTabByIdentifier,
+        removeAllTempTabs
     }
 }
