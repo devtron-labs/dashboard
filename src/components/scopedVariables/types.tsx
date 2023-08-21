@@ -30,4 +30,8 @@ export interface ScopedVariablesInputI {
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
+export interface ScopedVariablesEditorI {
+    variablesData: any
+}
+
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI

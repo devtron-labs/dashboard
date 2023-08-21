@@ -123,3 +123,13 @@
     line-height: 20px;
     text-align: left;
 }
+
+.descriptor-container {
+    display: flex;
+    padding: 16px 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-self: stretch;
+    border-bottom: 1px solid var(--N200);
+    background: var(--N0);
+}

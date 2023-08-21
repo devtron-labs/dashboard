@@ -2,9 +2,9 @@ import React from 'react'
 import { useFileReader } from './utils/hooks'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as ICError } from '../../assets/icons/ic-error.svg'
+import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { validator } from './utils/helpers'
-import { ReadFileAs, LoadScopedVariablesI, ScopedVariablesInputI } from './types'
+import { ReadFileAs, LoadScopedVariablesI, ScopedVariablesInputI, ScopedVariablesEditorI } from './types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
@@ -13,6 +13,7 @@ import {
     UPLOAD_DESCRIPTION_L2,
 } from './constants'
 import './styles.scss'
+import CodeEditor from '../CodeEditor/CodeEditor'
 
 const ICUpload = () => {
     return (
@@ -28,7 +29,7 @@ const ICUpload = () => {
     )
 }
 
-const ScopedVariablesInput = ({ handleFileUpload }: ScopedVariablesInputI) => {
+export const ScopedVariablesInput = ({ handleFileUpload }: ScopedVariablesInputI) => {
     return (
         <>
             <input
@@ -90,6 +91,35 @@ const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScop
     )
 }
 
+// WIP
+export const Descriptor = ({
+    children,
+    showUploadButton,
+}: {
+    children?: React.ReactNode
+    showUploadButton?: boolean
+}) => {
+    return (
+        <div className="descriptor-container">
+            <div className="flex column center dc__gap-8">
+                <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
+            </div>
+            {showUploadButton && <button className="descriptor-container__upload-button">Upload</button>}
+            {children}
+        </div>
+    )
+}
+
+// WIP
+export const ScopedVariablesEditor = ({ variablesData }: ScopedVariablesEditorI) => {
+    return (
+        <div className="flex column dc__content-space h-100vh default-bg-color">
+            <Descriptor />
+            <CodeEditor value={JSON.stringify(variablesData)} mode="yaml" />
+        </div>
+    )
+}
+
 const UploadScopedVariables = () => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
@@ -98,7 +128,9 @@ const UploadScopedVariables = () => {
         readFile(e.target.files[0], validator, ReadFileAs.TEXT)
     }
 
-    return (
+    return status?.status === true ? (
+        <ScopedVariablesEditor variablesData={status?.message?.data} />
+    ) : (
         <div className="flex column center h-100vh default-bg-color">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
