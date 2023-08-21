@@ -4,10 +4,8 @@ import './customChart.scss'
 import UploadChartModal from './UploadChartModal'
 import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-upload.svg'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-down-n6.svg'
 import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { downloadCustomChart, getChartList } from './customChart.service'
@@ -22,8 +20,6 @@ import { SortingOrder } from '../app/types'
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const [loader, setLoader] = useState(false)
-    const [searchApplied, setSearchApplied] = useState(false)
-    const [searchText, setSearchText] = useState('')
     const [chartList, setChartList] = useState<ChartDetailType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const tippyRef = useRef(null)
@@ -103,8 +99,6 @@ export default function CustomChartList() {
         isReloadChartList && getData()
     }
 
-    const handleFilterChanges = (selected, key): void => {}
-
     const renderUploadButton = (): JSX.Element => {
         return (
             <button onClick={openUploadPopup} className="cta h-32 flex">
@@ -116,50 +110,9 @@ export default function CustomChartList() {
 
     const renderLearnMoreLink = (): JSX.Element => {
         return (
-            <a className="dc__no-decor" href={DOCUMENTATION.CUSTOM_CHART} target="_blank" rel="noreferrer noopener">
+            <a className="dc__no-decor" href={DOCUMENTATION.DEPLOYMENT_TEMPLATE} target="_blank" rel="noreferrer noopener">
                 Learn more
             </a>
-        )
-    }
-
-    const renderSubtitleAndUploadButton = (subtitleText: string): JSX.Element => {
-        return (
-            <>
-                <p className="fs-13 fw-4">
-                    {subtitleText}&nbsp;
-                    {renderLearnMoreLink()}
-                </p>
-                <div className="flexbox dc__content-space">
-                    {renderUploadButton()}
-                    {false && (
-                        <form
-                            onSubmit={(e) => handleFilterChanges(e, 'search')}
-                            className="search dc__position-rel margin-right-0 en-2 bw-1 br-4"
-                        >
-                            <Search className="search__icon icon-dim-18" />
-                            <input
-                                type="text"
-                                placeholder="Search charts"
-                                value={searchText}
-                                className="search__input bcn-0"
-                                onChange={(event) => {
-                                    setSearchText(event.target.value)
-                                }}
-                            />
-                            {searchApplied ? (
-                                <button
-                                    className="search__clear-button"
-                                    type="button"
-                                    onClick={(e) => handleFilterChanges(e, 'clear')}
-                                >
-                                    <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                                </button>
-                            ) : null}
-                        </form>
-                    )}
-                </div>
-                {renderSubtitleAndUploadButton('Manage custom charts to be used in Devtron applications.')}
-            </>
         )
     }
 

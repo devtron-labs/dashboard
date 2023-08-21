@@ -337,6 +337,7 @@ export const DOCUMENTATION = {
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/app-details/app-metrics`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets#external-secrets`,
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/job-and-cronjob`,
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
