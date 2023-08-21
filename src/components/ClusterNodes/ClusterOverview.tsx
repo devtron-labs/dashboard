@@ -203,7 +203,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderClusterSummary = (): JSX.Element => {
         return (
-            <div className="dc__border-left resource-details-container dc__overflow-scroll p-16">
+            <div className={`dc__border-left resource-details-container dc__overflow-scroll p-16 ${errorStatusCode ? 'flex' : ''}`}>
                 {renderState()}
             </div>
         )

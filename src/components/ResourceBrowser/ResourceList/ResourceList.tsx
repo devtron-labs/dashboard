@@ -475,7 +475,6 @@ export default function ResourceList() {
                 updateResourceSelectionData(defaultSelected, true)
                 setShowErrorState(false)
                 setErrorMsg('')
-                setErrorStatusCode(0)
             }
             setLoader(false)
         } catch (err) {

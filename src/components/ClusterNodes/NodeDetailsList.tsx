@@ -163,7 +163,9 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {
-                showError(error)
+                if(error['code'] !== 403){
+                    showError(error)
+                }
                 setErrorResponseCode(error.code)
                 setClusterDetailsLoader(false)
             })
@@ -470,7 +472,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
 
     if (errorResponseCode) {
         return (
-            <div className="dc__loading-wrapper dc__border-left">
+            <div className="dc__border-left flex">
                 <ErrorScreenManager code={errorResponseCode} />
             </div>
         )
