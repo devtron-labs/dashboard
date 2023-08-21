@@ -416,27 +416,27 @@ export default function ResourceList() {
         try {
             setLoader(true)
             sideDataAbortController.current.new = new AbortController()
+            initTabs([
+                {
+                    idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                    name: AppDetailsTabs.k8s_Resources,
+                    url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                    isSelected: true,
+                    positionFixed: true,
+                    iconPath: K8ResourceIcon,
+                },
+                {
+                    idPrefix: AppDetailsTabsIdPrefix.terminal,
+                    name: AppDetailsTabs.terminal,
+                    url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
+                    isSelected: false,
+                    positionFixed: true,
+                    iconPath: TerminalIcon,
+                    showNameOnSelect: true,
+                }
+            ])
             const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
             if (result) {
-                initTabs([
-                    {
-                        idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-                        name: AppDetailsTabs.k8s_Resources,
-                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
-                        isSelected: true,
-                        positionFixed: true,
-                        iconPath: K8ResourceIcon,
-                    },
-                    {
-                        idPrefix: AppDetailsTabsIdPrefix.terminal,
-                        name: AppDetailsTabs.terminal,
-                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
-                        isSelected: false,
-                        positionFixed: true,
-                        iconPath: TerminalIcon,
-                        showNameOnSelect: true,
-                    }
-                ])
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
                 const _k8SObjectList: K8SObjectType[] = []
@@ -478,14 +478,18 @@ export default function ResourceList() {
         } catch (err) {
             if (err['code'] > 0) {
                 if (err['code'] === 403) {
-                    setErrorStatusCode(err['code'])
+                    // setErrorStatusCode(err['code'])
                 } else if (err['code'] === 404) {
                     setSelectedCluster(null)
                     replace({
                         pathname: URLS.RESOURCE_BROWSER,
                     })
                 }
-                setShowErrorState(true)
+                // setShowErrorState(true)
+                replace({
+                    pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
+                        }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                })
                 setErrorMsg(
                     (err instanceof ServerErrors && Array.isArray(err.errors)
                         ? err.errors[0]?.userMessage
@@ -839,7 +843,7 @@ export default function ResourceList() {
             )
         }
 
-        return showSelectClusterState || errorMsg || loader ? (
+        return showSelectClusterState || loader ? (
             <ConnectingToClusterState
                 loader={loader}
                 errorMsg={errorMsg}
@@ -930,16 +934,16 @@ export default function ResourceList() {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (errorStatusCode > 0) {
-            return (
-                <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
-                    <ErrorScreenManager
-                        code={errorStatusCode}
-                        subtitle={unauthorizedInfoText()}
-                        subtitleClass="w-300"
-                    />
-                </div>
-            )
+        // } else if (errorStatusCode > 0) {
+        //     return (
+        //         <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
+        //             <ErrorScreenManager
+        //                 code={errorStatusCode}
+        //                 subtitle={unauthorizedInfoText()}
+        //                 subtitleClass="w-300"
+        //             />
+        //         </div>
+        //     )
         } else if (!showSelectClusterState && !selectedCluster?.value) {
             return <ClusterSelectionList clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} isSuperAdmin={isSuperAdmin} />
         }

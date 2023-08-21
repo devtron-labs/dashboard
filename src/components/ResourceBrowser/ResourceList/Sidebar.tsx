@@ -317,9 +317,7 @@ function Sidebar({
 
     const noOptionsMessage = () => 'No matching kind'
 
-    return !k8SObjectMap?.size ? (
-        <Progressing pageLoader />
-    ) : (
+    return (
         <div className="k8s-object-container">
             <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
                 <ReactSelect
@@ -385,7 +383,7 @@ function Sidebar({
                     >
                         {SIDEBAR_KEYS.nodes}
                     </div>
-                    {SIDEBAR_KEYS.eventGVK.Version && (
+                    {k8SObjectMap?.size && SIDEBAR_KEYS.eventGVK.Version && (
                         <div
                             key={SIDEBAR_KEYS.eventGVK.Kind}
                             ref={updateRef}
@@ -404,7 +402,7 @@ function Sidebar({
                             {SIDEBAR_KEYS.events}
                         </div>
                     )}
-                    {SIDEBAR_KEYS.namespaceGVK.Version && (
+                    {k8SObjectMap?.size && SIDEBAR_KEYS.namespaceGVK.Version && (
                         <div
                             key={SIDEBAR_KEYS.namespaceGVK.Kind}
                             ref={updateRef}
@@ -424,7 +422,7 @@ function Sidebar({
                         </div>
                     )}
             </div>
-                {[...k8SObjectMap.values()].map((k8sObject) =>
+                {k8SObjectMap?.size && [...k8SObjectMap.values()].map((k8sObject) =>
                     k8sObject.name === AggregationKeys.Events ? null : (
                         <Fragment key={`${k8sObject.name}-parent`}>
                             <div
