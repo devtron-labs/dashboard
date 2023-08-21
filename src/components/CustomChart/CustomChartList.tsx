@@ -37,8 +37,8 @@ export default function CustomChartList() {
         }
     }
 
-    const closeOnEsc = (e) => {
-        if (e.keyCode === 27) {
+    const closeOnEsc = (e: any) => {
+        if (e.keyCode === 27 || e.key === 'Escape') {
             closeChartVersionsModal()
         }
     }
