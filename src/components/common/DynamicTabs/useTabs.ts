@@ -139,10 +139,12 @@ export function useTabs(persistanceKey: string) {
     }
 
     const removeAllTempTabs = () => {
-        const _tabs = tabs.filter((tab) => tab.positionFixed)
-        _tabs[0].isSelected = true
-        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-        setTabs(_tabs)
+        if(tabs.length > 0){
+            const _tabs = tabs.filter((tab) => tab.positionFixed)
+            _tabs[0].isSelected = true
+            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            setTabs(_tabs)
+        }
     }
 
     const stopTabByIdentifier = (title: string): string => {

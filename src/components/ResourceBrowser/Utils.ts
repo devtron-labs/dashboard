@@ -142,15 +142,15 @@ export const sortEventListData = (eventList: Record<string, any>[]): Record<stri
 
 export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType: string, group: string) => {
     const parentNode = _k8SObjectList[0]
-    const childNode =  parentNode.child[0]
+    const childNode =  parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
     let isResourceGroupPresent = false
     let groupedChild = null
 
-    if (SIDEBAR_KEYS.overviewGVK.Kind === nodeType || SIDEBAR_KEYS.nodeGVK.Kind === nodeType || nodeType === AppDetailsTabs.terminal) {
+    if (SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() === nodeType || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType || nodeType === AppDetailsTabs.terminal) {
         isResourceGroupPresent = nodeType === AppDetailsTabs.terminal 
         groupedChild = {
             namespaced: false,
-            gvk: SIDEBAR_KEYS.nodeGVK.Kind === nodeType ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS.overviewGVK,
+            gvk: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS.overviewGVK,
             isGrouped: false,
         }
     }else if (nodeType) {

@@ -349,7 +349,7 @@ function Sidebar({
                 />
             </div>
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
-            <div className="p-8">
+            <div className="pb-8">
                     <div 
                         key={SIDEBAR_KEYS.overviewGVK.Kind}
                         ref={updateRef}

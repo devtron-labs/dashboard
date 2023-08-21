@@ -170,7 +170,7 @@ export default function NodeListSearchFliter({
                             />
                         </>
                     ) : (
-                        <span>Search nodes by name, labels or node group</span>
+                        <span className='cn-5'>Search nodes by name, labels or node group</span>
                     )}
                     {!selectedSearchTextType && <ShortcutKeyBadge shortcutKey="r" rootClassName="node-list-search-key" />}
                 </div>
