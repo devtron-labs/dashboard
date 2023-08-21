@@ -20,6 +20,7 @@ import { SortingOrder } from '../app/types'
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const [loader, setLoader] = useState(false)
+    const [downloadInProgress, setDownloadInProgress] = useState<string>("")
     const [chartList, setChartList] = useState<ChartDetailType[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const tippyRef = useRef(null)
@@ -145,6 +146,7 @@ export default function CustomChartList() {
         const chartVersion = e.currentTarget.dataset.version
         const chartName = e.currentTarget.dataset.name
         try {
+            setDownloadInProgress(chartName)
             const response = await downloadCustomChart(chartRefId)
             const b = await (response as any).blob()
             const a = document.createElement('a')
@@ -155,6 +157,8 @@ export default function CustomChartList() {
             closeChartVersionsModal()
         } catch (error) {
             showError(error)
+        } finally {
+            setDownloadInProgress("")
         }
     }
 
@@ -278,7 +282,11 @@ export default function CustomChartList() {
                                 animation="fade"
                             >
                                 <div className="flex pointer">
-                                    <Download className="icon-dim-16 ic-download-n6" />
+                                    {downloadInProgress === chartData.name ? (
+                                        <Progressing pageLoader size={16} />
+                                    ) : (
+                                        <Download className="icon-dim-16 ic-download-n6" />
+                                    )}
                                 </div>
                             </Tippy>
                         </div>
