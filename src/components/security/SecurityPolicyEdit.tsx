@@ -43,15 +43,15 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     ]
 
     private permissionText = {
-        "block": "Blocked",
+        "block": "Blocked always",
         "allow": "Allowed",
-        "blockiffixed": "Blocked only if fixed version available"
+        "blockiffixed": "Blocked if fix is available"
     }
 
     private actions = [
-        { label: "block", value: "block" },
+        { label: "Block always", value: "block" },
+        { label: "Block if fix is available", value: "blockiffixed" },
         { label: "allow", value: "allow" },
-        { label: "block only if fixed version available", value: "blockiffixed" },
     ]
 
     constructor(props: FetchPolicyQueryParams) {
