@@ -20,6 +20,7 @@ import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-
 import { ViewType } from '../../config';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { NavLink } from 'react-router-dom';
+import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
 
 export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean, view: string; }> {
 
@@ -51,7 +52,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     private actions = [
         { label: "Block always", value: "block" },
         { label: "Block if fix is available", value: "blockiffixed" },
-        { label: "allow", value: "allow" },
+        { label: "Allow", value: "allow" },
     ]
 
     constructor(props: FetchPolicyQueryParams) {
@@ -256,8 +257,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         if (this.props.level !== "global") {
             actions = this.actions.concat({ label: "inherit", value: "inherit" });
         }
-        let theAction = severity.policy.inherited && !severity.policy.isOverriden ? 'inherit' : severity.policy.action
-        let permission = this.permissionText[severity.policy.action];
+        const selectedValue =  severity.policy.inherited && !severity.policy.isOverriden
+        ?{ label: 'inherit', value: 'inherit' }: this.actions.find(data=> data.value===severity.policy.action)
+        let permission = this.permissionText[severity.policy.action]
         return (
             <div key={severity.id} className="vulnerability">
                 <div className="flex-1">
@@ -274,7 +276,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                 <div className="vulnerability__menu">
                     <ReactSelect
                         classNamePrefix={`select-vulnerability-${props.className}`}
-                        value={{ label: theAction.toLowerCase(), value: theAction.toLowerCase() }}
+                        value={selectedValue}
                         onChange={(selected) => {
                             this.updateSeverity((selected as any).value, severity, v.envId)
                         }}
@@ -288,6 +290,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                         }}
                         styles={{
                             ...styles,
+                            option: getCustomOptionSelectionStyle(),
                         }}
                         isSearchable={false}
                         options={actions}
@@ -326,50 +329,67 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     }
 
     private renderPolicyList(cves: CvePolicy[], envId?: number) {
-        return <>
-            <div className="security-policy__table mt-20">
-                <table className="w-100">
-                    <thead>
-                        <tr>
-                            <th className="security-policy__header-cell security-policy__cve-cell">CVE</th>
-                            <th className="security-policy__header-cell security-policy__severity-cell">Severity</th>
-                            <th className="security-policy__header-cell">Policy Last Defined</th>
-                            <th className="security-policy__header-cell">Policy</th>
-                            <th className="security-policy__header-cell"><span className="icon-dim-20"></span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {cves.map((cve) => {
-                            //inherited is created at parent level
-                            return <tr key={cve.name} className="security-policy__table-row">
-                                <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cell">
-                                    <a href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`} rel="noopener noreferrer" target="_blank">
-                                        {cve.name}
-                                    </a>
-                                </td>
-                                <td className="security-policy__data-cell">
-                                    <span className={`fill-${cve.severity.toLowerCase()}`}>
-                                        {cve.severity}
-                                    </span>
-                                </td>
-                                <td className="security-policy__data-cell security-policy__data-cell--policy">{cve.policyOrigin}</td>
-                                <td className="security-policy__data-cell">
-                                    <ReactSelect menuPortalTarget={document.getElementById('root')}
-                                        closeMenuOnScroll={true}
-                                        value={{ 'label': cve.policy.action.toLowerCase(), 'value': cve.policy.action.toLowerCase() }}
-                                        onChange={(selected) => { this.updateCVE((selected as any).value, cve, envId) }}
-                                        components={{
-                                            DropdownIndicator
-                                        }}
-                                        styles={{
-                                            ...styles,
-                                            ...portalStyles,
-                                        }}
-                                        isSearchable={false}
-                                        options={this.actions} />
-                                </td>
-                                <td className="security-policy__header-cell">
-                                    {/* {!cve.policy.inherited && this.props.level === cve.policyOrigin ? <Tippy
+        return (
+            <>
+                <div className="security-policy__table mt-20">
+                    <table className="w-100">
+                        <thead>
+                            <tr>
+                                <th className="security-policy__header-cell security-policy__cve-cell">CVE</th>
+                                <th className="security-policy__header-cell security-policy__severity-cell">
+                                    Severity
+                                </th>
+                                <th className="security-policy__header-cell">Policy Last Defined</th>
+                                <th className="security-policy__header-cell">Policy</th>
+                                <th className="security-policy__header-cell">
+                                    <span className="icon-dim-20"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cves.map((cve) => {
+                                const selectedValue = this.actions.find(data=> data.value===cve.policy.action)
+                                    
+                                //inherited is created at parent level
+                                return (
+                                    <tr key={cve.name} className="security-policy__table-row">
+                                        <td className="security-policy__data-cell security-policy__cve-cell dc__cve-cell">
+                                            <a
+                                                href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve.name}`}
+                                                rel="noopener noreferrer"
+                                                target="_blank"
+                                            >
+                                                {cve.name}
+                                            </a>
+                                        </td>
+                                        <td className="security-policy__data-cell">
+                                            <span className={`fill-${cve.severity.toLowerCase()}`}>{cve.severity}</span>
+                                        </td>
+                                        <td className="security-policy__data-cell security-policy__data-cell--policy">
+                                            {cve.policyOrigin}
+                                        </td>
+                                        <td className="security-policy__data-cell">
+                                            <ReactSelect
+                                                menuPortalTarget={document.getElementById('root')}
+                                                closeMenuOnScroll={true}
+                                                value={selectedValue}
+                                                onChange={(selected) => {
+                                                    this.updateCVE((selected as any).value, cve, envId)
+                                                }}
+                                                components={{
+                                                    DropdownIndicator,
+                                                }}
+                                                styles={{
+                                                    ...styles,
+                                                    ...portalStyles,
+                                                    option: getCustomOptionSelectionStyle(),
+                                                }}
+                                                isSearchable={false}
+                                                options={this.actions}
+                                            />
+                                        </td>
+                                        <td className="security-policy__header-cell">
+                                            {/* {!cve.policy.inherited && this.props.level === cve.policyOrigin ? <Tippy
                                         className="default-tt"
                                         arrow={false}
                                         placement="top"
@@ -377,16 +397,23 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                                         <Close className="icon-dim-20 dc__align-right cursor" onClick={(event) => { this.deleteCve(cve.id) }} />
                                     </Tippy> :
                                      */}
-                                    <Delete className={`icon-dim-20 dc__align-right ${this.props.level === cve.policyOrigin ? 'cursor scn-4' : 'scn-2'}`}
-                                        onClick={() => { if (this.props.level === cve.policyOrigin) this.deleteCve(cve.id) }} />
-                                </td>
-                            </tr>
-                        }
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </>
+                                            <Delete
+                                                className={`icon-dim-20 dc__align-right ${
+                                                    this.props.level === cve.policyOrigin ? 'cursor scn-4' : 'scn-2'
+                                                }`}
+                                                onClick={() => {
+                                                    if (this.props.level === cve.policyOrigin) this.deleteCve(cve.id)
+                                                }}
+                                            />
+                                        </td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </>
+        )
     }
 
     renderEmptyPolicyList() {
