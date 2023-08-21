@@ -113,7 +113,7 @@ export const Descriptor = ({
 // WIP
 export const ScopedVariablesEditor = ({ variablesData }: ScopedVariablesEditorI) => {
     return (
-        <div className="flex column dc__content-space h-100vh default-bg-color">
+        <div className="flex column dc__content-space h-100 default-bg-color">
             <Descriptor />
             <CodeEditor value={JSON.stringify(variablesData)} mode="yaml" />
         </div>
@@ -131,7 +131,7 @@ const UploadScopedVariables = () => {
     return status?.status === true ? (
         <ScopedVariablesEditor variablesData={status?.message?.data} />
     ) : (
-        <div className="flex column center h-100vh default-bg-color">
+        <div className="flex column center default-bg-color h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
                     <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
