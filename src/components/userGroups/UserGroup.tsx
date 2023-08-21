@@ -790,6 +790,7 @@ const allEnvironmentsOption = {
 }
 
 export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
+export const CONFIG_APPROVER_ACTION = { label: 'configApprover', value: 'configApprover' }
 
 interface DirectPermissionRow {
     permission: DirectPermissionsRoleFilter
@@ -810,8 +811,18 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
+    const multiRole = permission.action.value.split(',')
+    const configApproverRoleIndex = multiRole.indexOf(CONFIG_APPROVER_ACTION.value)
+    const primaryActionRoleIndex = configApproverRoleIndex === 0 ? 1 : 0
+    const primaryActionRole = {
+        label: multiRole[primaryActionRoleIndex],
+        value: multiRole[primaryActionRoleIndex],
+        configApprover: multiRole[configApproverRoleIndex]
+            ? !!multiRole[configApproverRoleIndex]
+            : permission.action.configApprover,
+    }
 
-    const [possibleRoles, setPossibleRoles] = useState([])    
+    const [possibleRoles, setPossibleRoles] = useState([])
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
@@ -863,7 +874,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? customRoles.possibleRolesMetaForHelm[value].value
                     : customRoles.possibleRolesMeta[value].value}
-                {ApproverPermission && permission.approver && ', Approver'}
+                {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
         )
@@ -877,6 +888,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     <ApproverPermission
                         optionProps={props}
                         approver={permission.approver}
+                        configApprover={primaryActionRole.configApprover}
                         handleDirectPermissionChange={(...rest: any[]) => {
                             props.selectOption(props.selectProps.value)
                             handleDirectPermissionChange(...rest)
@@ -889,8 +901,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        const  envOptions = createClusterEnvGroup(environmentsList,'cluster_name','environment_name','environmentIdentifier')
-        setEnvironments(envOptions)  
+        const envOptions = createClusterEnvGroup(
+            environmentsList,
+            'cluster_name',
+            'environment_name',
+            'environmentIdentifier',
+        )
+        setEnvironments(envOptions)
     }, [environmentsList])
 
     useEffect(() => {
@@ -927,9 +944,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     clusterName: cluster.clusterName,
                 })),
             ],
-            isVirtualEnvironment: cluster?.isVirtualCluster
+            isVirtualEnvironment: cluster?.isVirtualCluster,
         }))
-        
+
         setEnvClusters(envOptions)
     }, [envClustersList])
 
@@ -992,7 +1009,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     <>
                         <span>{option.label}</span>
                         <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
-                            {option.clusterName + ((option.clusterName && option.namespace) ? '/' : '') + (option.namespace || '')}
+                            {option.clusterName +
+                                (option.clusterName && option.namespace ? '/' : '') +
+                                (option.namespace || '')}
                         </small>
                     </>
                 ) : (
@@ -1129,7 +1148,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer: clusterValueContainer,
                             IndicatorSeparator: null,
                             Option,
-                            GroupHeading
+                            GroupHeading,
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1154,7 +1173,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         onFocus={() => onFocus('environment')}
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
-                        options={[{label: '', options: [allEnvironmentsOption]}, ...environments]}
+                        options={[{ label: '', options: [allEnvironmentsOption] }, ...environments]}
                         className="basic-multi-select"
                         menuPlacement="auto"
                         classNamePrefix="select-devtron-app-environment-dropdown"
@@ -1165,7 +1184,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer,
                             IndicatorSeparator: null,
                             Option,
-                            GroupHeading
+                            GroupHeading,
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1222,7 +1241,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
             </div>
             <Select
-                value={permission.action}
+                value={primaryActionRole}
                 name="action"
                 placeholder="Select role"
                 options={ParseData(possibleRoles, permission.entity, permission.accessType)}
@@ -1431,14 +1450,14 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 const ValueContainer = (props) => {
     let length = props.getValue().length
     let optionLength = props.options.length
-    if( props.selectProps.name === 'environment'){
+    if (props.selectProps.name === 'environment') {
         let _optionLength = 0
         props.options.forEach((option) => {
             _optionLength += option.options?.length
         })
         optionLength = _optionLength
     }
-    
+
     let count = ''
     if (
         length === optionLength &&
@@ -1605,7 +1624,7 @@ function SearchEmpty({ searchString, setSearchString }) {
             title={EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
             subTitle={
                 <>
-                    We couldn’t find any result for 
+                    We couldn’t find any result for
                     {<b>{searchString}</b>}
                 </>
             }
@@ -1619,7 +1638,10 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
     switch (entity) {
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
+                return dataList.filter(
+                    (role) =>
+                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                )
             } else {
                 return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
             }
