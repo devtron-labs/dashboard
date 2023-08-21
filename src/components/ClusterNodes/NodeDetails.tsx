@@ -790,10 +790,10 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const nodeControls = () => {
         return <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
             <div className="flex left">
-                <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
+                {isSuperAdmin && <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
                     <TerminalLineIcon className="icon-dim-16 mr-5" />
                     {NODE_DETAILS_TABS.debug}
-                </span>
+                </span>}
                 <span className="cn-2 mr-16 ml-16">|</span>
                 {renderTabControls()}
             </div>

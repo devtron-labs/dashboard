@@ -211,26 +211,28 @@ export default function ResourceList() {
             setClusterLoader(true)
             const { result } = await getClusterCapacity(clusterId)
             if (result) {
+                if(isSuperAdmin){
+                    initTabs([
+                        {
+                            idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                            name: AppDetailsTabs.k8s_Resources,
+                            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                            isSelected: true,
+                            positionFixed: true,
+                            iconPath: K8ResourceIcon,
+                        },
+                        {
+                            idPrefix: AppDetailsTabsIdPrefix.terminal,
+                            name: AppDetailsTabs.terminal,
+                            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
+                            isSelected: false,
+                            positionFixed: true,
+                            iconPath: TerminalIcon,
+                            showNameOnSelect: true,
+                        }
+                    ])
+                }
                 setClusterCapacityData(result)
-                initTabs([
-                    {
-                        idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-                        name: AppDetailsTabs.k8s_Resources,
-                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
-                        isSelected: true,
-                        positionFixed: true,
-                        iconPath: K8ResourceIcon,
-                    },
-                    {
-                        idPrefix: AppDetailsTabsIdPrefix.terminal,
-                        name: AppDetailsTabs.terminal,
-                        url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
-                        isSelected: false,
-                        positionFixed: true,
-                        iconPath: TerminalIcon,
-                        showNameOnSelect: true,
-                    }
-                ])
                 let _errorTitle = '',
                     _errorList = [],
                     _nodeErrors = Object.keys(result.nodeErrors || {})
@@ -306,14 +308,15 @@ export default function ResourceList() {
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
+        if(!isSuperAdmin) return 
         if (selectedCluster?.value && selectedNamespace?.value) {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1].url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
         }
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
-    }, [selectedCluster, selectedResource, location.search])
+    }, [clusterCapacityData, selectedResource, location.search])
 
     useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
