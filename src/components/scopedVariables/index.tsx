@@ -4,6 +4,9 @@ import './styles.scss'
 
 const ScopedVariables = () => {
     const [ScopedVariables, setScopedVariables] = useState(null)
+    if(ScopedVariables) return (
+        <></>
+    )
     return <UploadScopedVariables setScopedVariables={setScopedVariables} />
 }
 
