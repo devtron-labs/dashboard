@@ -7,7 +7,7 @@ import GenericDescription from '../common/Description/GenericDescription';
 import { defaultClusterNote } from './constants';
 import moment from 'moment';
 import { Moment12HourFormat } from '../../config';
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib';
+import { ErrorScreenManager, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib';
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants';
 
 interface DescriptionDataType {
@@ -18,7 +18,7 @@ interface DescriptionDataType {
 }
 
 
-export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clusterErrorList, clusterErrorTitle }) {
+export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clusterErrorList, clusterErrorTitle, errorStatusCode }) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -35,6 +35,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     useEffect(() => {
         setIsLoading(true)
+        if(errorStatusCode > 0) return
         getClusterNote(clusterId).then((response) => {
             if (response.result) {
                 const _clusterNote = response.result.clusterNote
@@ -179,23 +180,31 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
         </div>
     }
 
+    const renderState = () => {
+        if (errorStatusCode) {
+            return <ErrorScreenManager code={errorStatusCode} />
+        } else if (isLoading) {
+            return <Progressing pageLoader />
+        } else {
+            return <>  {renderCardDetails()}
+                {renderClusterError()}
+                <GenericDescription
+                    isClusterTerminal={true}
+                    clusterId={clusterId}
+                    isSuperAdmin={isSuperAdmin}
+                    descriptionId={descriptionData.descriptionId}
+                    initialDescriptionText={descriptionData.descriptionText}
+                    initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
+                    initialDescriptionUpdatedOn={descriptionData.descriptionUpdatedOn}
+                    initialEditDescriptionView={true}
+                /></>
+        }
+    }
+
     const renderClusterSummary = (): JSX.Element => {
         return (
             <div className="dc__border-left resource-details-container dc__overflow-scroll p-16">
-                {isLoading ? <Progressing pageLoader /> :
-                    <>  {renderCardDetails()}
-                        {renderClusterError()}
-                        <GenericDescription
-                            isClusterTerminal={true}
-                            clusterId={clusterId}
-                            isSuperAdmin={isSuperAdmin}
-                            descriptionId={descriptionData.descriptionId}
-                            initialDescriptionText={descriptionData.descriptionText}
-                            initialDescriptionUpdatedBy={descriptionData.descriptionUpdatedBy}
-                            initialDescriptionUpdatedOn={descriptionData.descriptionUpdatedOn}
-                            initialEditDescriptionView={true}
-                        /></>
-                }
+                {renderState()}
             </div>
         )
     }

@@ -208,7 +208,9 @@ export default function ResourceList() {
 
     const updateOnClusterChange = async (clusterId) => {
         try {
+            setErrorStatusCode(0)
             setClusterLoader(true)
+            setClusterCapacityData(null)
             const { result } = await getClusterCapacity(clusterId)
             if (result) {
                 if(isSuperAdmin){
@@ -284,8 +286,6 @@ export default function ResourceList() {
         } catch (err) {
             if (err['code'] === 403) {
                 setErrorStatusCode(err['code'])
-            } else {
-                showError(err)
             }
         } finally {
             setClusterLoader(false)
@@ -783,7 +783,7 @@ export default function ResourceList() {
 
     const renderListBar = () => {
         if (isOverview) {
-            return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} />
+            return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} errorStatusCode={errorStatusCode}  />
         } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
             return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} />
         } else {

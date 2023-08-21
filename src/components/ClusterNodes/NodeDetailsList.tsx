@@ -470,14 +470,14 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
 
     if (errorResponseCode) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="dc__loading-wrapper dc__border-left">
                 <ErrorScreenManager code={errorResponseCode} />
             </div>
         )
     }
 
     if (clusterDetailsLoader) {
-        return <div className='dc__border-left'><Progressing pageLoader /></div>
+        return <div className="dc__border-left"><Progressing pageLoader /></div>
     }
 
     return (
