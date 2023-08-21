@@ -7,7 +7,7 @@ import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { groupStyle } from '../../../secrets/secret.utils'
+import { groupStyle } from '../../common/ReactSelect.utils'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {

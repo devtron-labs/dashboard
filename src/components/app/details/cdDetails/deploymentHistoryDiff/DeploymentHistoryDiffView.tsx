@@ -11,6 +11,9 @@ export default function DeploymentHistoryDiffView({
     currentConfiguration,
     baseTemplateConfiguration,
     previousConfigAvailable,
+    isUnpublished,
+    isDeleteDraft,
+    rootClassName,
 }: DeploymentTemplateHistoryType) {
     const { historyComponent, historyComponentName } = useParams<DeploymentHistoryParamsType>()
     const ref = useRef(null)
@@ -24,23 +27,44 @@ export default function DeploymentHistoryDiffView({
         }
     }, [ref.current?.clientHeight])
 
+    const getTheme = () => {
+        if (isDeleteDraft) {
+            return 'delete-draft'
+        } else if (isUnpublished) {
+            return 'unpublished'
+        } else {
+            return null
+        }
+    }
+
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             <CodeEditor
-                value={YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))}
+                value={
+                    !baseTemplateConfiguration?.codeEditorValue?.value || isDeleteDraft
+                        ? ''
+                        : YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))
+                }
                 defaultValue={
-                    currentConfiguration?.codeEditorValue?.value &&
-                    YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
+                    !currentConfiguration?.codeEditorValue?.value || isUnpublished
+                        ? ''
+                        : YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
                 }
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}
                 readOnly={true}
                 noParsing
                 mode={MODES.YAML}
+                theme={getTheme()}
             />
         )
     }
-    const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue , dataTestId: string) => {
+
+    const renderDetailedValue = (
+        parentClassName: string,
+        singleValue: DeploymentHistorySingleValue,
+        dataTestId: string,
+    ) => {
         return (
             <div className={parentClassName}>
                 <div className="cn-6 pt-8 pl-16 pr-16 lh-16" data-testid={dataTestId}>
@@ -69,7 +93,7 @@ export default function DeploymentHistoryDiffView({
             <div
                 className={`en-2 bw-1 br-4 bcn-0 mt-16 mb-16 mr-20 ml-20 pt-2 pb-2 ${
                     previousConfigAvailable ? 'deployment-diff__upper' : ''
-                }`}
+                } ${rootClassName ?? ''}`}
                 ref={ref}
                 data-testid={`configuration-link-${
                     previousConfigAvailable ? 'previous-deployment' : 'no-previous-deployment'
@@ -83,23 +107,23 @@ export default function DeploymentHistoryDiffView({
                             const changeBGColor = previousConfigAvailable && currentValue?.value !== baseValue?.value
                             return (
                                 <Fragment key={`deployment-history-diff-view-${index}`}>
-                                    {currentValue && currentValue.value ? (
+                                    {!isUnpublished && currentValue?.value ? (
                                         renderDetailedValue(
-                                            changeBGColor ? 'code-editor-red-diff' : '',
+                                            !isDeleteDraft && changeBGColor ? 'code-editor-red-diff' : '',
                                             currentValue,
                                             `configuration-deployment-template-heading-${index}`,
                                         )
                                     ) : (
                                         <div></div>
                                     )}
-                                    {baseValue && baseValue.value ? (
+                                    {!isDeleteDraft && baseValue?.value ? (
                                         renderDetailedValue(
                                             changeBGColor ? 'code-editor-green-diff' : '',
                                             baseValue,
                                             `configuration-deployment-template-heading-${index}`,
                                         )
                                     ) : (
-                                        <div></div>
+                                        <div className={isDeleteDraft ? 'code-editor-red-diff' : ''}></div>
                                     )}
                                 </Fragment>
                             )
@@ -107,15 +131,17 @@ export default function DeploymentHistoryDiffView({
                     )}
             </div>
 
-            <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
-                <div
-                    className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0"
-                    data-testid="configuration-link-comparison-body-heading"
-                >
-                    {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
+            {(currentConfiguration?.codeEditorValue?.value || baseTemplateConfiguration?.codeEditorValue?.value) && (
+                <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
+                    <div
+                        className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom"
+                        data-testid="configuration-link-comparison-body-heading"
+                    >
+                        {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
+                    </div>
+                    {renderDeploymentDiffViaCodeEditor()}
                 </div>
-                {baseTemplateConfiguration?.codeEditorValue?.value && renderDeploymentDiffViaCodeEditor()}
-            </div>
+            )}
         </div>
     )
 }
