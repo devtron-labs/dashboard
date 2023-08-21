@@ -32,6 +32,8 @@ export interface ScopedVariablesInputI {
 
 export interface ScopedVariablesEditorI {
     variablesData: any
+    type: string
+    name: string
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI

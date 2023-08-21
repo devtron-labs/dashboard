@@ -30,6 +30,7 @@ export const validator: ValidatorT = ({ data, type }) => {
                 return JSON_PARSE_ERROR_STATUS
             }
         case 'application/x-yaml':
+        case 'application/yaml':
         case 'text/yaml':
         case 'text/x-yaml':
             try {

@@ -1,8 +1,10 @@
 import React from 'react'
+import yaml from 'yaml'
 import { useFileReader } from './utils/hooks'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { validator } from './utils/helpers'
 import { ReadFileAs, LoadScopedVariablesI, ScopedVariablesInputI, ScopedVariablesEditorI } from './types'
 import {
@@ -83,7 +85,6 @@ const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScop
             {!status?.status && (
                 <div className="load-scoped-variables-container__error-container">
                     <ICError width={'20px'} height={'20px'} />
-
                     <p className="load-scoped-variables-container__error-typography">Upload failed</p>
                 </div>
             )}
@@ -91,7 +92,6 @@ const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScop
     )
 }
 
-// WIP
 export const Descriptor = ({
     children,
     showUploadButton,
@@ -101,8 +101,11 @@ export const Descriptor = ({
 }) => {
     return (
         <div className="descriptor-container">
-            <div className="flex column center dc__gap-8">
+            <div className="flex center dc__gap-8">
                 <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
+                <button className="descriptor-help-button">
+                    <ICHelpOutline width={20} height={20} />
+                </button>
             </div>
             {showUploadButton && <button className="descriptor-container__upload-button">Upload</button>}
             {children}
@@ -111,11 +114,26 @@ export const Descriptor = ({
 }
 
 // WIP
-export const ScopedVariablesEditor = ({ variablesData }: ScopedVariablesEditorI) => {
+export const ScopedVariablesEditor = ({ variablesData, type, name }: ScopedVariablesEditorI) => {
+    if (type === 'application/json') {
+        variablesData = JSON.stringify(variablesData)
+    }
+    if (
+        type === 'application/yaml' ||
+        type === 'application/x-yaml' ||
+        type === 'text/yaml' ||
+        type === 'text/x-yaml'
+    ) {
+        variablesData = yaml.stringify(variablesData)
+    }
     return (
         <div className="flex column dc__content-space h-100 default-bg-color">
             <Descriptor />
-            <CodeEditor value={JSON.stringify(variablesData)} mode="yaml" />
+            <div className="uploaded-variables-editor-background">
+                <div className="uploaded-variables-editor-container">
+                    <CodeEditor mode="yaml" value={variablesData} noParsing={false} />
+                </div>
+            </div>
         </div>
     )
 }
@@ -129,7 +147,7 @@ const UploadScopedVariables = () => {
     }
 
     return status?.status === true ? (
-        <ScopedVariablesEditor variablesData={status?.message?.data} />
+        <ScopedVariablesEditor variablesData={status?.message?.data} type={fileData?.type} name={fileData?.name} />
     ) : (
         <div className="flex column center default-bg-color h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
