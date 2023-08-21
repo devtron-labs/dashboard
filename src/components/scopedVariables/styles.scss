@@ -126,6 +126,7 @@
 
 .descriptor-container {
     display: flex;
+    flex-direction: column;
     padding: 16px 20px;
     justify-content: space-between;
     align-items: flex-start;
@@ -239,4 +240,68 @@
     font-style: normal;
     font-weight: 600;
     line-height: 20px;
+}
+
+.descriptor-container__upload-button{
+    display: flex;
+    min-width: 56px;
+    padding: 6px 10px 6px 8px;
+    align-items: center;
+    gap: 6px;
+    border-radius: 4px;
+    background: var(--B500);
+    color: var(--N0);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px; 
+    outline: none;
+    border: none;
+}
+
+.scoped-variables-tab-container{
+    display: flex;
+    padding: 0px 20px;
+    align-self: stretch;
+    align-items: center;
+    border-bottom: 1px solid var(--N200);
+    background: var(--N0);
+}
+
+.scoped-variables-tab{
+    outline: none;
+    border: none;
+    background: none;
+    display: flex;
+    padding: 8px 16px 6px 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: var(--N900);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-transform: capitalize;
+}
+
+.scoped-variables-editor-infobar{
+    display: flex;
+    padding: 8px 12px;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    align-self: stretch;
+    border-radius: 4px 4px 0px 0px;
+    border-bottom: 1px solid var(--N200);
+    background: var(--N0);
+}
+
+.scoped-variables-editor-infobar__btn{
+    outline: none;
+    border: none;
+    background: none;
+    padding: 0px;
+    width: 20px;
+    height: 20px;
 }
