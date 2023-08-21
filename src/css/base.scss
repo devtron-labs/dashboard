@@ -334,6 +334,10 @@ a:focus {
     left: 35px;
 }
 
+.dc__left-150 {
+    left: 150px;
+}
+
 .dc__right-20 {
     right: 20px;
 }
@@ -391,9 +395,9 @@ a:focus {
 }
 
 .form__row--two-third {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-column-gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-column-gap: 16px;
 }
 
 .form__row--one-third {
@@ -965,8 +969,19 @@ button.anchor {
 
 .dc__configuration-list {
     display: grid;
-    grid-template-columns: 24px 1fr 24px;
-    grid-column-gap: 16px;
+    grid-template-columns: 24px 1fr 200px;
+    grid-column-gap: 10px;
+    .tag {
+        border: 1px solid var(--N200);
+        height: 20px;
+        line-height: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--N900);
+        padding: 0 6px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
 }
 
 .animate-background {
@@ -1252,8 +1267,8 @@ button.anchor {
             }
 
             &:first-child input + .radio__item-label {
-                border-top-left-radius: 4px;
-                border-bottom-left-radius: 4px;
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
             }
 
             &:last-child input + .radio__item-label {
@@ -1313,7 +1328,7 @@ button.anchor {
             }
         }
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             padding: 4px 8px;
         }
 
@@ -1936,6 +1951,10 @@ button.anchor {
     border-bottom: solid 1px var(--N200);
 }
 
+.dc__border-bottom-imp {
+    border-bottom: solid 1px var(--N200) !important;
+}
+
 .dc__border-bottom-2 {
     border-bottom: 2px solid var(--N200);
 }
@@ -2033,6 +2052,10 @@ button.anchor {
 
 .dc__mxw-180 {
     max-width: 180px;
+}
+
+.dc__mxw-155 {
+    max-width: 155px;
 }
 
 .fw-n {
@@ -2457,6 +2480,10 @@ textarea,
     min-width: 24px !important;
 }
 
+.mw-36 {
+    min-width: 36px !important;
+}
+
 .mw-48 {
     min-width: 48px;
 }
@@ -2475,6 +2502,14 @@ textarea,
 
 .w-32 {
     width: 32px !important;
+}
+
+.w-36 {
+    width: 36px !important;
+}
+
+.w-40 {
+    width: 40px !important;
 }
 
 .min-w-800 {
@@ -2634,6 +2669,10 @@ textarea,
     width: 25%;
 }
 
+.w-44 {
+    width: 44%;
+}
+
 .w-50 {
     width: 50%;
 }
@@ -2790,8 +2829,16 @@ textarea,
     height: 60px !important;
 }
 
+.h-64 {
+    height: 64px !important;
+}
+
 .h-66 {
     height: 66px !important;
+}
+
+.h-76 {
+    height: 76px !important;
 }
 
 .h-80 {
@@ -2865,6 +2912,10 @@ textarea,
 
 .mh-92 {
     min-height: 92px;
+}
+
+.mh-150 {
+    min-height: 150px !important;
 }
 
 .mh-200 {
@@ -2945,6 +2996,10 @@ textarea,
     line-height: 20px;
 }
 
+.lh-20-imp {
+    line-height: 20px !important;
+}
+
 .lh-22 {
     line-height: 22px;
 }
@@ -3008,6 +3063,10 @@ textarea,
     padding-right: 12px !important;
 }
 
+.p-0-imp {
+    padding: 0 !important;
+}
+
 .pb-0-imp {
     padding-bottom: 0 !important;
 }
@@ -3034,6 +3093,10 @@ textarea,
 
 .pl-8-imp {
     padding-left: 8px !important;
+}
+
+.p-6-12-imp {
+    padding: 6px 12px !important;
 }
 
 // Margin in pixels
@@ -3133,6 +3196,12 @@ textarea,
 .dc__no-svg-fill {
     path {
         fill: none !important;
+    }
+}
+
+.dc__no-svg-stroke {
+    path {
+        stroke: none !important;
     }
 }
 
@@ -3239,9 +3308,18 @@ textarea::placeholder {
     opacity: 0.5;
 }
 
+// blur
+.dc__blur-1_5 {
+    filter: blur(1.5px);
+}
+
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__bg-g5 {
+    background-color: var(--G500) !important;
 }
 
 .dc__hover-n100:hover {
@@ -3499,14 +3577,18 @@ textarea::placeholder {
 }
 
 .dc__row-container {
-  display: grid;
-  grid-template-columns: 220px auto;
+    display: grid;
+    grid-template-columns: 220px auto;
 
-  .radio-group {
-      justify-content: flex-start;
-  }
+    .radio-group {
+        justify-content: flex-start;
+    }
 
-  .form__radio-item {
-      min-width: 0px !important;
-  }
+    .form__radio-item {
+        min-width: 0px !important;
+    }
+}
+
+.dc__disable-click {
+    pointer-events: none;
 }
