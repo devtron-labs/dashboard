@@ -55,7 +55,7 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
 
 export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, addTab }: ClusterListType) {
-    const { clusterId, nodeName, nodeType, node } = useParams<{ clusterId: string; nodeName: string; nodeType: string; node: string }>()
+    const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -184,7 +184,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
-        if (nodeName !== AUTO_SELECT.value) {
+        if (node !== AUTO_SELECT.value) {
             let _searchParam = '?tab='
             if (_tabIndex === 0) {
                 _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
@@ -847,13 +847,13 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
             const parsedManifest = YAML.parse(modifiedManifest)
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
-                name: nodeName,
+                name: node,
                 manifestPatch: JSON.stringify(parsedManifest),
                 version: nodeDetail.version,
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            updateNodeManifest(clusterId, nodeName, requestData)
+            updateNodeManifest(clusterId, node, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
@@ -1038,7 +1038,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 {renderTabs()}
                 {showCordonNodeDialog && (
                     <CordonNodeModal
-                        name={nodeName}
+                        name={node}
                         version={nodeDetail.version}
                         kind={nodeDetail.kind}
                         unschedulable={nodeDetail.unschedulable}
@@ -1047,7 +1047,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 )}
                 {showDrainNodeDialog && (
                     <DrainNodeModal
-                        name={nodeName}
+                        name={node}
                         version={nodeDetail.version}
                         kind={nodeDetail.kind}
                         closePopup={hideDrainNodeModal}
@@ -1055,7 +1055,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 )}
                 {showDeleteNodeDialog && (
                     <DeleteNodeModal
-                        name={nodeName}
+                        name={node}
                         version={nodeDetail.version}
                         kind={nodeDetail.kind}
                         closePopup={hideDeleteNodeModal}
@@ -1063,7 +1063,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 )}
                 {showEditTaints && (
                     <EditTaintsModal
-                        name={nodeName}
+                        name={node}
                         version={nodeDetail.version}
                         kind={nodeDetail.kind}
                         taints={nodeDetail.taints}

@@ -147,13 +147,13 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
     let groupedChild = null
 
     if (SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() === nodeType || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType || nodeType === AppDetailsTabs.terminal) {
-        isResourceGroupPresent = nodeType === AppDetailsTabs.terminal 
+        isResourceGroupPresent = nodeType === AppDetailsTabs.terminal || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType
         groupedChild = {
             namespaced: false,
             gvk: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS.overviewGVK,
             isGrouped: false,
         }
-    }else if (nodeType) {
+    } else if (nodeType) {
         for (const _parentNode of _k8SObjectList) {
             for (const _childNode of _parentNode.child) {    
                 if (

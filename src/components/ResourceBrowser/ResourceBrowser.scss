@@ -126,6 +126,10 @@
                     height: calc(100vh - 201px);
                 }
 
+                &.sync-error {
+                    height: calc(100vh - 212px);
+                }
+
                 .list-header {
                     width: max-content;
                     min-width: calc(100vw - 277px);

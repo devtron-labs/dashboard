@@ -39,7 +39,8 @@ export function K8SResourceList({
     clearSearch,
     isCreateModalOpen,
     addTab,
-    renderCallBackSync
+    renderCallBackSync,
+    syncError
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -253,7 +254,7 @@ export function K8SResourceList({
         return (
             <div
                 ref={resourceListRef}
-                className={`scrollable-resource-list ${showPaginatedView ? 'paginated-list-view' : ''}`}
+                className={`scrollable-resource-list ${syncError ? 'sync-error' : '' } ${showPaginatedView ? 'paginated-list-view' : ''}`}
             >
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (

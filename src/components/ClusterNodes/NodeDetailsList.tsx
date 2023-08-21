@@ -24,7 +24,7 @@ import * as queryString from 'query-string'
 import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
-export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions}) {
+export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions, renderCallBackSync, syncError}) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -485,8 +485,9 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     return (
         <>
             <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
+            {typeof renderCallBackSync === 'function' && renderCallBackSync()}
                 <div 
-                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''}`}
+                    className={`bcn-0 pt-16 list-min-height ${ syncError ? 'sync-error' : ''} ${noResults ? 'no-result-container' : ''}`}
                 >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter

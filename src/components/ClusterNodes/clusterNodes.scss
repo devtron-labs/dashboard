@@ -23,6 +23,9 @@
             overflow: hidden;
             display: grid;
             grid-template-rows: 32px;
+        } 
+        &.sync-error {
+            min-height: calc(100vh - 152px);
         }
         &.with-error-bar {
             min-height: calc(100vh - 270px);

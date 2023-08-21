@@ -132,6 +132,7 @@ export default function ResourceList() {
     const isOverview = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
+    const hideSyncWarning: boolean = loader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -552,17 +553,15 @@ export default function ResourceList() {
     }
 
     const renderRefreshBar = () => {
-        if (loader || showErrorState || !isStaleDataRef.current) {
+        if (hideSyncWarning) {
             return null
         }
         return <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
-            {!node && lastDataSyncTimeString && !resourceListLoader && (
                 <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
                     <Warning className="icon-dim-20 mr-8" />
                     <span>Last synced {lastDataSyncTimeString}. The data might be stale. </span>
                     <span className='cb-5 ml-4 fw-6 cursor' onClick={refreshData}>Sync now</span>
                 </div>
-            )}
         </div>
     }
 
@@ -786,7 +785,7 @@ export default function ResourceList() {
         if (isOverview) {
             return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} errorStatusCode={errorStatusCode}  />
         } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
-            return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} />
+            return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} renderCallBackSync={renderRefreshBar} syncError={!hideSyncWarning} />
         } else {
             return <K8SResourceList
                 selectedResource={selectedResource}
@@ -809,6 +808,7 @@ export default function ResourceList() {
                 isCreateModalOpen={showCreateResourceModal}
                 addTab={addTab}
                 renderCallBackSync={renderRefreshBar}
+                syncError={!hideSyncWarning}
             />
         }
     }
@@ -886,22 +886,6 @@ export default function ResourceList() {
         )
     }
 
-    const unauthorizedInfoText = () => {
-        return (
-            <>
-                {ERROR_SCREEN_SUBTITLE}&nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.K8S_RESOURCES_PERMISSIONS}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                >
-                    {ERROR_SCREEN_LEARN_MORE}
-                </a>
-            </>
-        )
-    }
-
     const addClusterButton = () => {
         if (clusterId) return (!loader && !showErrorState &&
             <><div
@@ -938,16 +922,6 @@ export default function ResourceList() {
                     <Progressing pageLoader />
                 </div>
             )
-        // } else if (errorStatusCode > 0) {
-        //     return (
-        //         <div className="error-screen-wrapper flex column" style={{ height: 'calc(100vh - 92px)' }}>
-        //             <ErrorScreenManager
-        //                 code={errorStatusCode}
-        //                 subtitle={unauthorizedInfoText()}
-        //                 subtitleClass="w-300"
-        //             />
-        //         </div>
-        //     )
         } else if (!showSelectClusterState && !selectedCluster?.value) {
             return <ClusterSelectionList clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} isSuperAdmin={isSuperAdmin} />
         }

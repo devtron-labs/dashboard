@@ -130,6 +130,7 @@ export interface ResourceFilterOptionsProps {
     isSearchInputDisabled?: boolean
     isCreateModalOpen?: boolean
     renderCallBackSync?: () => JSX.Element
+    syncError?: boolean
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
