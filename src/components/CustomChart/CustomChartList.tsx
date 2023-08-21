@@ -11,12 +11,13 @@ import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { downloadCustomChart, getChartList } from './customChart.service'
-import { sortObjectArrayAlphabetically } from '../common'
+import { sortObjectArrayAlphabetically, versionComparator } from '../common'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { SortingOrder } from '../app/types'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -86,6 +87,7 @@ export default function CustomChartList() {
             }
         })
         uniqueChartList.forEach((element) => {
+            element.versions?.sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
             resultData.push(element)
         })
         resultData = sortObjectArrayAlphabetically(resultData, 'name')
