@@ -10,6 +10,7 @@ import {
     CDModalTab,
     DeploymentAppTypes,
     ToastBodyWithButton,
+    ToastBody,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCDMaterialList,
@@ -101,7 +102,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             tagsEditable:false,
             configs: false,
             isDefaultConfigPresent: false,
-            filterMaterials: []
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -637,7 +637,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
-            imageTag
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -917,7 +916,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return
         }
         let envId
-        if(this.state.selectedEnv && this.state.selectedEnv.id!==0){
+        if (this.state.selectedEnv && this.state.selectedEnv.id !== 0) {
             envId = this.state.selectedEnv.id
         }
         const payload = {
@@ -950,22 +949,30 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                
             })
             .catch((errors: ServerErrors) => {
-                
-                errors.errors.map(error=>{
-                    if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                        const errorToastBody = (
-                            <ToastBodyWithButton
-                                onClick={this.redirectToCIPipeline}
-                                subtitle={error.userMessage}
-                                title="Nothing to execute"
-                                buttonText="EDIT PIPELINE"
-                            />
-                        )
-                        toast.error(errorToastBody)
-                    } else {
-                        toast.error(error)
-                    }
-                })
+                if (errors.code === 403) {
+                    toast.info(
+                        <ToastBody title="Access denied" subtitle="You don't have access to perform this action." />,
+                        {
+                            className: 'devtron-toast unauthorized',
+                        },
+                    )
+                } else {
+                    errors.errors.map((error) => {
+                        if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
+                            const errorToastBody = (
+                                <ToastBodyWithButton
+                                    onClick={this.redirectToCIPipeline}
+                                    subtitle={error.userMessage}
+                                    title="Nothing to execute"
+                                    buttonText="EDIT PIPELINE"
+                                />
+                            )
+                            toast.error(errorToastBody)
+                        } else {
+                            toast.error(error)
+                        }
+                    })
+                }
                 this.setState({ code: errors.code, isLoading: false })
             })
     }
@@ -1031,14 +1038,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (this.state.cdNodeId == +node.id && node.type === this.state.nodeType) {
-                    let materials = this.state.filterMaterials.length > 0 ? this.state.filterMaterials : node[materialType]
-                    const artifacts = materials.map((artifact, i) => {
+                    const artifacts = node[materialType].map((artifact, i) => {
                         return {
                             ...artifact,
                             isSelected: i === index,
                         }
                     })
-                    this.setState({filterMaterials: artifacts})
                     node[materialType] = artifacts
                 }
                 return node
@@ -1332,30 +1337,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as NodeAttr)
     }
 
-    getSearchedItem = (searchedItems?: any[])  => {
-        const node: NodeAttr = this.getCDNode()
-        const material = node[this.state.materialType] || []
-        let resultMaterials = []
-        material.forEach((mat) => {
-            if (((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
-                mat.isSelected = false
-                resultMaterials.push(mat)
-            }
-        })
-        searchedItems.forEach((mat) => {
-            if (!((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
-                resultMaterials.push(mat)
-            }
-        })
-        this.setState({
-            filterMaterials: resultMaterials
-        })
-    }
-
     renderCDMaterial() {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
-            const material = ( this.state.filterMaterials.length > 0 ? this.state.filterMaterials : node[this.state.materialType] ) || [] 
+            const material = node[this.state.materialType] || []
+
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
@@ -1407,7 +1393,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 history={this.props.history}
                                 location={this.props.location}
                                 match={this.props.match}
-                                getSearchedItem={this.getSearchedItem}
                                 isApplicationGroupTrigger={false}
                             />
                         )}

@@ -21,7 +21,7 @@ export interface AppConfigProps {
 }
 export interface AppConfigState {
     view: string
-    stattusCode: number
+    statusCode: number
     stageName: StageNames
     isUnlocked: any
     appName: string
@@ -33,6 +33,8 @@ export interface AppConfigState {
     canDeleteApp: boolean
     workflowsRes?: WorkflowResult
     environmentList?: any[]
+    isBaseConfigProtected?: boolean
+    configProtectionData?: any[]
 }
 
 export interface AppStageUnlockedType {
@@ -53,6 +55,7 @@ export interface CustomNavItemsType {
     supportDocumentURL: string
     flowCompletionPercent: number
     currentStep: number
+    isProtectionAllowed?: boolean
 }
 
 export interface AppConfigNavigationProps {
@@ -60,15 +63,20 @@ export interface AppConfigNavigationProps {
     deleteApp: () => void
     canShowExternalLinks: boolean
     showCannotDeleteTooltip: boolean
+    isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
     getRepo: string
     isJobView: boolean
     hideConfigHelp: boolean
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
+    environmentList?: any[]
+    isBaseConfigProtected?: boolean
+    reloadEnvironments:()=> void
 }
 
 export interface AppComposeRouterProps {
+    appId: string
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
     respondOnSuccess: () => void
@@ -77,14 +85,15 @@ export interface AppComposeRouterProps {
     maxAllowedUrl: string
     isCDPipeline: boolean
     environments: AppEnvironment[]
-    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
     workflowsRes: WorkflowResult
     userRole: UserRoleType
     canShowExternalLinks: boolean
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    envList?: any[]
+    isBaseConfigProtected?: boolean
+    reloadEnvironments:()=> void
+    configProtectionData: any[]
 }
 
 export interface EnvironmentOverridesProps {
@@ -100,12 +109,20 @@ export interface EnvironmentOverridesProps {
 
 export interface EnvironmentOverrideRouteProps {
     envOverride: AppEnvironment
-    environmentList?: any[]
     isJobView?: boolean
     ciPipelines?: any[]
     reload?: () => void
     appId?: string
     workflowsRes?: WorkflowResult
+    isEnvProtected?: boolean
+}
+
+export interface EnvironmentOverrideRouterProps {
+    isJobView?: boolean
+    workflowsRes?: WorkflowResult
+    getWorkflows: () => void
+    allEnvs?: any[]
+    reloadEnvironments: ()=> void
 }
 
 export interface NextButtonProps {
