@@ -6,12 +6,13 @@ export enum ReadFileAs {
 }
 
 export enum FileView {
-    UPLOADED = 'uploaded',
+    YAML = 'yaml',
     SAVED = 'saved',
 }
 
 export interface SavedVariablesViewI {
     scopedVariables: any
+    setScopedVariables: (variables: any) => void
 }
 
 export interface FileReaderStatusI {

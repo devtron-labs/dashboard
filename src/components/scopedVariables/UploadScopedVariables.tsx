@@ -16,6 +16,7 @@ import {
     VARIABLES_TEMPLATE,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
+    DOWNLOAD_TEMPLATE_NAME,
 } from './constants'
 
 export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
@@ -57,6 +58,7 @@ export const ScopedVariablesEditor = ({
 }: ScopedVariablesEditorI) => {
     const handleSave = () => {
         setScopedVariables(variablesData)
+        abortRead()
     }
     return (
         <div className="flex column dc__content-space h-100 default-bg-color">
@@ -92,6 +94,8 @@ export const ScopedVariablesEditor = ({
 
 const UploadScopedVariables = ({ setScopedVariables }: UploadScopedVariablesI) => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
+    console.log(fileData, progress, status)
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         readFile(e.target.files![0], validator, ReadFileAs.TEXT)
@@ -135,7 +139,7 @@ const UploadScopedVariables = ({ setScopedVariables }: UploadScopedVariablesI) =
 
                 <button
                     className="p-0 dc__no-background dc__no-border default-download-template-typography"
-                    onClick={() => downloadData(VARIABLES_TEMPLATE, 'ScopedVariables', 'application/x-yaml')}
+                    onClick={() => downloadData(VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')}
                 >
                     {DOWNLOAD_TEMPLATE}
                 </button>
