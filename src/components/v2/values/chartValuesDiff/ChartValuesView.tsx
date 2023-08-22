@@ -1126,14 +1126,22 @@ function ChartValuesView({
                         }
                         wrap={() => renderComparisonOption(isDeployChartView)}
                     >
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="bottom"
-                            content={getComparisonTippyContent()}
-                        >
-                            {renderComparisonOption(commonState.activeTab === 'manifest' ? !commonState.isComparisonAvailable ||  !commonState.deploymentHistoryArr || (commonState.deploymentHistoryArr.length === 0): !commonState.isComparisonAvailable)}
-                        </Tippy>
+                        {commonState.activeTab !== 'gui' && (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="bottom"
+                                content={getComparisonTippyContent()}
+                            >
+                                {renderComparisonOption(
+                                    commonState.activeTab === 'manifest'
+                                        ? !commonState.isComparisonAvailable ||
+                                              !commonState.deploymentHistoryArr ||
+                                              commonState.deploymentHistoryArr.length === 0
+                                        : !commonState.isComparisonAvailable,
+                                )}
+                            </Tippy>
+                        )}
                         {commonState.activeTab !== 'manifest' && renderReadMeOption()}
                     </ConditionalWrap>
                 </div>

@@ -253,9 +253,12 @@ export default function ChartValuesEditor({
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
                             const _manifestsForDiff = valuesForDiffState.manifestsForDiff
-                            const _selectedValues = isExternalApp
-                                ? YAML.stringify(JSON.parse(res.result.valuesYaml))
-                                : res.result.valuesYaml
+                            let _selectedValues : string
+                            try {
+                                _selectedValues = YAML.stringify(JSON.parse(res.result.valuesYaml))
+                            } catch (error) {
+                                _selectedValues = res.result.valuesYaml 
+                            }
                             _valuesForDiff.set(_version, _selectedValues)
                             _manifestsForDiff.set(_version, res.result.manifest)
                             const _valuesForDiffState = {

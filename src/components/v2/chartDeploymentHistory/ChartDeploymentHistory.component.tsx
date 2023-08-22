@@ -11,6 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
+import DataNotFound from '../../../assets/img/app-not-deployed.png';
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
@@ -72,6 +73,7 @@ function ChartDeploymentHistory({
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
     const [showDockerInfo, setShowDockerInfo] = useState(false)
+    const [showReleaseNotFound, setReleaseNotFound] = useState<boolean>(false)
     const history = useHistory()
     const { url } = useRouteMatch()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
@@ -108,6 +110,7 @@ function ChartDeploymentHistory({
     const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
             .then((deploymentHistoryResponse: ChartDeploymentHistoryResponse) => {
+                setReleaseNotFound(false)
                 const _deploymentHistoryArr =
                     deploymentHistoryResponse.result?.deploymentHistory?.sort(
                         (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
@@ -164,8 +167,12 @@ function ChartDeploymentHistory({
                 }
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (Array.isArray(errors.errors) && String(errors.errors[0].code) === "7001") {
+                    setReleaseNotFound(true)
+                } else {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
                 setIsLoading(false)
             })
     }
@@ -724,7 +731,15 @@ function ChartDeploymentHistory({
     if(isLoadingDetails){
         return <DetailsProgressing loadingText="Please wait…" size={24} />
     }
-
+    if (showReleaseNotFound) {
+        return (
+            <GenericEmptyState
+                image={DataNotFound}
+                title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                subTitle="We could not find any deployment history for this application."
+            />
+        )
+    }
     return (
         <>
             {isLoading ? (
