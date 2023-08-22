@@ -50,9 +50,9 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
 
     return status?.status == null ? (
         <div
-            className="flex column dc__content-space default-bg-color"
+            className="flex column h-100 dc__content-space default-bg-color" 
             style={{
-                height: 'calc(100vh - 48px)',
+                overflowY: "hidden"
             }}
         >
             <Descriptor showUploadButton readFile={readFile}>
