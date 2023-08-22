@@ -80,6 +80,7 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
                 {currentView === FileView.YAML ? (
                     <div className="saved-variables-editor-container">
                         <div className="scoped-variables-editor-infobar">
+                            <p className="scoped-variables-editor-infobar__typography">Last saved file</p>
                             <button className="scoped-variables-editor-infobar__btn" onClick={handleDropdownClick}>
                                 <ICFileDownload width={20} height={20} />
                             </button>
