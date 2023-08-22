@@ -4,6 +4,7 @@ export const DEFAULT_DESCRIPTION =
 export const UPLOAD_DESCRIPTION_L1 = 'Upload file to add'
 export const UPLOAD_DESCRIPTION_L2 = '.JSON or .YAML'
 export const DOWNLOAD_TEMPLATE = 'Download template'
+export const DROPDOWN_ITEMS = ['Download file', 'Download template']
 
 // File Reader error messages
 export const FILE_READING_FAILED_STATUS = {

@@ -5,6 +5,15 @@ export enum ReadFileAs {
     ARRAY_BUFFER = 'arrayBuffer',
 }
 
+export enum FileView {
+    UPLOADED = 'uploaded',
+    SAVED = 'saved',
+}
+
+export interface SavedVariablesViewI {
+    scopedVariables: any
+}
+
 export interface FileReaderStatusI {
     status: boolean | 'loading'
     message: {
@@ -28,6 +37,7 @@ export interface LoadScopedVariablesI {
 
 export interface ScopedVariablesInputI {
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
+    children?: React.ReactNode
 }
 
 export interface ScopedVariablesEditorI {
@@ -39,6 +49,12 @@ export interface ScopedVariablesEditorI {
 
 export interface UploadScopedVariablesI {
     setScopedVariables: (variables: any) => void
+}
+
+export interface DescriptorI {
+    children?: React.ReactNode
+    showUploadButton?: boolean
+    readFile?: (file: File, validator: ValidatorT, readAs: ReadFileAs) => void
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI
