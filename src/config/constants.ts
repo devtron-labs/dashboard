@@ -520,11 +520,21 @@ export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
 }
 
 export const EXTERNAL_TYPES = {
-    '': 'Kubernetes Secret',
-    KubernetesSecret: 'Kubernetes External Secret',
-    AWSSecretsManager: 'AWS Secrets Manager',
-    AWSSystemManager: 'AWS System Manager',
-    HashiCorpVault: 'Hashi Corp Vault',
+    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME]: {
+        '': 'Kubernetes Secret',
+        KubernetesSecret: 'Kubernetes External Secret',
+        AWSSecretsManager: 'AWS Secrets Manager',
+        AWSSystemManager: 'AWS System Manager',
+        HashiCorpVault: 'Hashi Corp Vault',
+        ESO_HashiCorpVault: 'Hashi Corp Vault',
+        ESO_AWSSecretsManager: 'AWS Secrets Manager',
+        ESO_GoogleSecretsManager: 'Google Secrets Manager',
+        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+    },
+    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
+        '': 'Kubernetes ConfigMap',
+        KubernetesConfigMap: 'Kubernetes External ConfigMap',
+    },
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'

@@ -133,12 +133,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
     const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
     const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
-    const [fliteredWorkflowDataUpdated, setfliteredWorkflowDataUpdated] = useState<boolean>(false)
     const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
     const { queryParams } = useSearchString()
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    const [filterMaterials, setFilterMaterials] = useState<any[]>([])
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -166,7 +164,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
             getConfigs()
         }
-    }, [location.search, fliteredWorkflowDataUpdated])
+    }, [location.search])
 
     const getConfigs = () => {
         getDefaultConfig()
@@ -243,7 +241,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
         _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
         setFilteredWorkflows(_filteredWorkflows)
-        setfliteredWorkflowDataUpdated(true)
     }
 
     const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
@@ -1063,16 +1060,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                    (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
+                    (!showBulkCDModal && selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
                 ) {
-                    let materials = filterMaterials.length > 0 ? filterMaterials : node[materialType]
-                    const artifacts = materials.map((artifact, i) => {
+                    const artifacts = node[materialType].map((artifact, i) => {
                         return {
                             ...artifact,
                             isSelected: i === index,
                         }
                     })
-                    setFilterMaterials(artifacts)
                     node[materialType] = artifacts
                 }
                 return node
@@ -1866,35 +1861,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
-    const getSearchedItem = (searchedItems?: any[])  => {
-        let node: NodeAttr, _appID
-            if (selectedCDNode?.id) {
-                for (const _wf of filteredWorkflows) {
-                    node = _wf.nodes.find((el) => {
-                        return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
-                    })
-                    if (node) {
-                        _appID = _wf.appId
-                        break
-                    }
-                }
-            }
-        const material = node?.[materialType] || []
-        let resultMaterials = []
-        material.forEach((mat) => {
-            if (((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
-                mat.isSelected = false
-                resultMaterials.push(mat)
-            }
-        })
-        searchedItems.forEach((mat) => {
-            if (!((!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) || !(searchedItems)) {
-                resultMaterials.push(mat)
-            }
-        })
-        setFilterMaterials(resultMaterials)
-    }
-
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal) {
             let node: NodeAttr, _appID
@@ -1909,7 +1875,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     }
                 }
             }
-            const material = ( filterMaterials.length > 0 ? filterMaterials : node?.[materialType] ) || []
+            const material = node?.[materialType] || []
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
                     <div
@@ -1960,7 +1926,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 history={history}
                                 location={location}
                                 match={match}
-                                getSearchedItem={getSearchedItem}
                                 isApplicationGroupTrigger={true}
                             />
                         )}
