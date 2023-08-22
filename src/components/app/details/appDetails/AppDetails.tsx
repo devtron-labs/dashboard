@@ -105,6 +105,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 let deploymentStatusTimer = null
+let resourceTreeIntervalID = null
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -454,6 +455,7 @@ export const Details: React.FC<DetailsType> = ({
     function clearPollingInterval() {
         if (pollingIntervalID) {
             clearInterval(pollingIntervalID)
+            clearInterval(resourceTreeIntervalID)
         }
     }
 
@@ -493,8 +495,12 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(() => {
         if (isAppDeployed && !resourcePollingStarted) {
             callResourceTreeAPI()
-            setInterval(callResourceTreeAPI, interval)
+            resourceTreeIntervalID = setInterval(callResourceTreeAPI, interval)
             setResourcePollingStarted(true)
+        }
+        return () => {
+            if (resourceTreeIntervalID)
+                clearInterval(resourceTreeIntervalID)
         }
     }, [isAppDeployed, resourcePollingStarted])
 
@@ -733,7 +739,7 @@ export const Details: React.FC<DetailsType> = ({
                 </ConfirmationDialog>
             )}
             {rotateModal && (
-                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} callResourceTreeAPI={callAppDetailsAPI} />
+                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} callResourceTreeAPI={callResourceTreeAPI} />
             )}
         </React.Fragment>
     )
