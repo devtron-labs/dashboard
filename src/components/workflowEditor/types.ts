@@ -123,11 +123,17 @@ export interface PipelineBuildStageType {
     steps: StepType[];
 }
 
-export interface PipelineFormType extends Partial<FormType> , Partial<CDFormType> {
-    name: string;
-    triggerType: string;
-    preBuildStage?: PipelineBuildStageType;
-    postBuildStage?: PipelineBuildStageType;
+export interface CustomTagType {
+    tagPattern: string
+    counterX: number
+}
+export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
+    name: string
+    triggerType: string
+    preBuildStage?: PipelineBuildStageType
+    postBuildStage?: PipelineBuildStageType
+    defaultTag?: string[]
+    customTagObject?: CustomTagType
 }
 
 export interface PipelineFormDataErrorType {

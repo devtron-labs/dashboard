@@ -18,7 +18,9 @@ export function Build({
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
     isJobView,
-    getPluginData
+    getPluginData,
+    defaultTag, //remove when defaultTag is used from context
+    customTagObject //remove when customTagObject is used from context
 }: BuildType) {
     const {
         formData,
@@ -29,7 +31,6 @@ export function Build({
         setFormDataErrorObj,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
-
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
         const allMaterials = _formData.materials.map((mat) => {
@@ -255,6 +256,8 @@ export function Build({
             </>
         )
     }
+console.log(defaultTag)
+
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
             <Progressing pageLoader />
@@ -272,6 +275,8 @@ export function Build({
                         setDockerConfigOverridden={setDockerConfigOverridden}
                         loadingState={loadingState}
                         setLoadingState={setLoadingState}
+                        defaultTag={defaultTag}
+                        customTagObject={customTagObject} //remove when customTagObject is used from context
                     />
                 </>
             )}

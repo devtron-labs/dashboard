@@ -13,7 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { PipelineFormType } from '../workflowEditor/types'
+import { CustomTagType, PipelineFormType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number
@@ -386,6 +386,8 @@ export interface BuildType {
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
     getPluginData: (_formData?: PipelineFormType) => void
+    defaultTag?: string[], //remove later on
+    customTagObject?: CustomTagType
 }
 
 export interface PreBuildType {

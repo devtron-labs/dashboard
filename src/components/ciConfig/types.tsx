@@ -15,7 +15,7 @@ import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/det
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { PipelineFormType } from '../workflowEditor/types'
+import { CustomTagType, PipelineFormType } from '../workflowEditor/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 
 export interface ArgsFieldSetProps {
@@ -133,6 +133,8 @@ export interface AdvancedConfigOptionsProps {
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     loadingState?: LoadingState
     setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
+    defaultTag?: string[], //remove later on
+    customTagObject?: CustomTagType
 }
 
 interface LanguageBuilderType {

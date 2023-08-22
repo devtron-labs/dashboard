@@ -122,6 +122,11 @@ export default function CIPipeline({
             id: 0,
             steps: [],
         },
+        defaultTag: ["{git_hash}", "{ci_pipeline_id}", "{global_counter}"],
+        customTagObject: {
+            tagPattern: "version1.3.{x}",
+            counterX: 0,
+        }
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -767,6 +772,8 @@ export default function CIPipeline({
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobView}
                                     getPluginData={getPluginData}
+                                    defaultTag={formData.defaultTag}
+                                    customTagObject={formData.customTagObject}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

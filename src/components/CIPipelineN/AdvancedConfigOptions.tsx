@@ -4,14 +4,17 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import CIConfig from '../ciConfig/CIConfig'
-import { deepEqual } from '../common'
+import { deepEqual, importComponentFromFELibrary } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { CIBuildConfigType, CIBuildType, noop, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildConfigType, CIBuildType, noop, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { OptionType } from '../app/types'
+import '../ciConfig/CIConfig.scss'
+
+const CustomImageTags = importComponentFromFELibrary('CustomImageTags')
 
 export default function AdvancedConfigOptions({
     ciPipeline,
@@ -20,6 +23,8 @@ export default function AdvancedConfigOptions({
     setDockerConfigOverridden,
     loadingState,
     setLoadingState,
+    defaultTag= ["{git_hash}", "{ci_pipeline_id}", "{global_counter}"],
+    // customTagObject
 }: AdvancedConfigOptionsProps) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -32,6 +37,10 @@ export default function AdvancedConfigOptions({
         defaultDockerConfigs: null,
         currentCIBuildType: null,
     })
+   const [customTagObject, setCustomTagObject] = useState({
+    tagPattern: '',
+    counter: 0
+   })
 
     const [targetPlatforms, setTargetPlatforms] = useState<string>('')
     const targetPlatformMap = getTargetPlatformMap()
@@ -270,6 +279,14 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
+                            {CustomImageTags && (
+                                <CustomImageTags
+                                    setCustomTagObject={setCustomTagObject}
+                                    customTagObject={customTagObject}
+                                    defaultTag={defaultTag}
+                                />
+                            )}
+
                             {renderDockerArgs()}
                         </>
                     )}
