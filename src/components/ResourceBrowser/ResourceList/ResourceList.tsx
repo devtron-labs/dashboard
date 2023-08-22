@@ -310,14 +310,16 @@ export default function ResourceList() {
 
     useEffect(() => {
         if(!isSuperAdmin) return 
-        if (selectedCluster?.value && selectedNamespace?.value) {
+        if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
                 }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
+        } else {
+            removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
         if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
         }
-    }, [clusterCapacityData, selectedResource, location.search])
+    }, [clusterCapacityData, location.search])
 
     useEffect(() => {
         if (clusterId && selectedResource && !isOverview && !isNodes) {
@@ -454,7 +456,7 @@ export default function ResourceList() {
 
                 const { parentNode, childNode, isResourceGroupPresent, groupedChild } = getParentAndChildNodes(
                     _k8SObjectList,
-                    nodeType || SIDEBAR_KEYS.overviewGVK.Kind,
+                    nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase(),
                     group,
                 )
 
@@ -462,7 +464,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}/${location.search}`,
                     })
                 }
 
@@ -492,7 +494,7 @@ export default function ResourceList() {
                 // setShowErrorState(true)
                 replace({
                     pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                        }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                        }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}/${location.search}`,
                 })
                 setErrorMsg(
                     (err instanceof ServerErrors && Array.isArray(err.errors)

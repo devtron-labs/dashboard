@@ -488,6 +488,16 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
             </div>
         )
     }
+
+    const renderStatus = () => {
+        return <span className="flex left">
+            <span>{nodeDetail.status}</span>
+            {nodeDetail.unschedulable && <><span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                <span className="cr-5"> SchedulingDisabled</span></>}
+        </span>
+    }
+
+
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-10">
@@ -501,7 +511,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                     </div>
                     <div>
                         <div className="fw-6 fs-13 cn-7">Status</div>
-                        <p className={`fw-4 fs-13 cn-9 mb-12 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>{nodeDetail.status}</p>
+                        <p className={`fw-4 fs-13 cn-9 mb-12 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>{renderStatus()}</p>
                     </div>
                     <div>
                         <div className="fw-6 fs-13 cn-7">Role</div>
