@@ -238,6 +238,7 @@ interface NodeDataPropType {
 export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
     isSuperAdmin: boolean
+    addTab: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string, dynamicTitle?: string, showNameOnSelect?: boolean) => boolean
 }
 
 export interface NodeActionRequest {

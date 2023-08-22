@@ -24,7 +24,7 @@ import * as queryString from 'query-string'
 import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
-export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions, renderCallBackSync, syncError}) {
+export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions, renderCallBackSync, addTab, syncError}) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -45,7 +45,6 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
-    
    
     const [nodeListOffset, setNodeListOffset] = useState(0)
     
@@ -416,6 +415,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
                                     openTerminal={openTerminalComponent}
                                     getNodeListData={getNodeListData}
                                     isSuperAdmin={isSuperAdmin}
+                                    addTab={addTab}
                                 />
                             </div>
                         </div>

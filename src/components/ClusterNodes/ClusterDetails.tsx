@@ -672,12 +672,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                                         {nodeData[column.value]}
                                     </NavLink>
                                 </div>
-                                <NodeActionsMenu
-                                    nodeData={nodeData as NodeDetail}
-                                    openTerminal={openTerminalComponent}
-                                    getNodeListData={getNodeListData}
-                                    isSuperAdmin={isSuperAdmin}
-                                />
+                               
                             </div>
                         </div>
                     ) : (

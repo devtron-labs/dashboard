@@ -121,9 +121,11 @@ export function K8SResourceList({
 
     const handleNodeClick = (e) => {
         const {name} = e.currentTarget.dataset
-        const beginpart = window.location.href.split('/resource-browser')[0]
-        const _url = `${beginpart}/clusters/${clusterId}/${name}`
-        window.open(_url, 'blank')
+        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
+        const isAdded = addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+        if (isAdded) {
+            push(_url)
+        }
     }
 
     const getStatusClass = (status: string) => {

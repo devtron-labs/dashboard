@@ -214,7 +214,7 @@ export default function ResourceList() {
             setClusterCapacityData(null)
             const { result } = await getClusterCapacity(clusterId)
             if (result) {
-                if(isSuperAdmin){
+                if (isSuperAdmin) {
                     initTabs([
                         {
                             idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
@@ -309,7 +309,7 @@ export default function ResourceList() {
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
-        if(!isSuperAdmin) return 
+        if (!isSuperAdmin) return
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
                 }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
@@ -384,8 +384,8 @@ export default function ResourceList() {
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
                     // Will added this changes if we are not redirecting to cluster page
-                // } else if (_clusterOptions.length === 1) {
-                //     onChangeCluster(_clusterOptions[0], true)
+                    // } else if (_clusterOptions.length === 1) {
+                    //     onChangeCluster(_clusterOptions[0], true)
                 }
             }
 
@@ -559,11 +559,11 @@ export default function ResourceList() {
             return null
         }
         return <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
-                <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
-                    <Warning className="icon-dim-20 mr-8" />
-                    <span>Last synced {lastDataSyncTimeString}. The data might be stale. </span>
-                    <span className='cb-5 ml-4 fw-6 cursor' onClick={refreshData}>Sync now</span>
-                </div>
+            <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
+                <Warning className="icon-dim-20 mr-8" />
+                <span>Last synced {lastDataSyncTimeString}. The data might be stale. </span>
+                <span className='cb-5 ml-4 fw-6 cursor' onClick={refreshData}>Sync now</span>
+            </div>
         </div>
     }
 
@@ -785,9 +785,10 @@ export default function ResourceList() {
 
     const renderListBar = () => {
         if (isOverview) {
-            return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} errorStatusCode={errorStatusCode}  />
+            return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} errorStatusCode={errorStatusCode} />
         } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
-            return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} renderCallBackSync={renderRefreshBar} syncError={!hideSyncWarning} />
+            return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} renderCallBackSync={renderRefreshBar}
+                addTab={addTab} syncError={!hideSyncWarning} />
         } else {
             return <K8SResourceList
                 selectedResource={selectedResource}
@@ -822,7 +823,7 @@ export default function ResourceList() {
                 markTabActiveByIdentifier={markTabActiveByIdentifier}
                 addTab={addTab} />
         }
-        if (nodeType ===  AppDetailsTabs.terminal) {
+        if (nodeType === AppDetailsTabs.terminal) {
             const _imageList = filterImageList(imageList, selectedTerminal.serverVersion)
             if (!selectedTerminal) return null
             return <ClusterTerminal

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
 import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'
@@ -15,12 +15,14 @@ import DrainNodeModal from './DrainNodeModal'
 import DeleteNodeModal from './DeleteNodeModal'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../constants'
 import EditTaintsModal from './EditTaintsModal'
+import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
 
 export default function NodeActionsMenu({
     nodeData,
     openTerminal,
     getNodeListData,
     isSuperAdmin,
+    addTab
 }: NodeActionsMenuProps) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -45,7 +47,11 @@ export default function NodeActionsMenu({
 
     const handleEditYamlAction = () => {
         if (isAuthorized()) {
-            history.push(`${url}/${nodeData.name}?tab=yaml`)
+            const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
+            const isAdded = addTab(K8S_EMPTY_GROUP, 'node', nodeData.name, _url)
+            if (isAdded) {
+                history.push(_url)
+            }
         }
     }
 
