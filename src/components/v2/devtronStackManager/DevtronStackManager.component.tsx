@@ -34,10 +34,10 @@ import {
     ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
-    EmptyState,
     Toggle,
     toastAccessDenied,
     ConfirmationDialog,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
@@ -65,6 +65,7 @@ import clair from "../../../assets/icons/ic-trivy-to-clair.svg"
 import warn  from '../../../assets/icons/ic-error-medium.svg';
 import { SuccessModalComponent } from './SuccessModalComponent'
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
     enableStatus: boolean,
@@ -1084,27 +1085,33 @@ export const ModuleDetailsView = ({
 
 export const NoIntegrationsInstalledView = (): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
+    const redirectToDiscoverModules = () => {
+        history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)
+        
+    }
+
+    const renderDiscoverIntegrationsButton = () => {
+        return (
+            <button
+                type="button"
+                className="empty-state__discover-btn flex fs-13 fw-6 br-4"
+                onClick={redirectToDiscoverModules}
+                >
+                <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
+            </button>
+        )
+    }
 
     return (
-        <div className="no-integrations__installed-view">
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={NoIntegrations} width="250" height="200" alt="no results" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">No integrations installed</h2>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>Installed integrations will be available here</EmptyState.Subtitle>
-                <EmptyState.Button>
-                    <button
-                        type="button"
-                        className="empty-state__discover-btn flex fs-13 fw-6 br-4"
-                        onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
-                    >
-                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
-                    </button>
-                </EmptyState.Button>
-            </EmptyState>
+        <div className="no-integrations__installed-view dc__position-rel">
+            <GenericEmptyState
+                image={NoIntegrations}
+                classname="fs-16"
+                title={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.TITLE}
+                subTitle={EMPTY_STATE_STATUS.DEVTRON_STACK_MANAGER.SUBTITLE}
+                isButtonAvailable={true}
+                renderButton={renderDiscoverIntegrationsButton}
+            />
         </div>
     )
 }

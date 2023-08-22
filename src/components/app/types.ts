@@ -1,7 +1,6 @@
-import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
-import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -46,6 +45,8 @@ export interface AddNewAppState {
         appName: boolean
         cloneAppId: boolean
     }
+    createAppLoader: boolean
+    showClusterDescription: boolean
 }
 
 export interface AppDetails {
@@ -65,7 +66,7 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
     imageTag?: string
 }
@@ -78,11 +79,18 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: string
+    description: Description
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
+}
+
+interface Description{
+    id: number
+    description: string
+    updatedBy: string
+    updatedOn: string
 }
 
 export interface AppHeaderType {
@@ -449,11 +457,14 @@ export interface AppStatusType {
     isVirtualEnv?: boolean
 }
 export interface JobPipeline {
-    ci_pipeline_id: number
-    ci_pipeline_name: string
-    started_on: string
+    ciPipelineID: number
+    ciPipelineName: string
+    startedOn: string
     status: string
     dataTestId?: string
+    environmentName?: string
+    environmentId?: string
+    lastTriggeredEnvironmentName?: string
 }
 
 export interface TagChipsContainerType {
@@ -472,6 +483,7 @@ export interface SourceInfoType {
   loadingResourceTree?: boolean
   isVirtualEnvironment?: boolean
   setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+  refetchDeploymentStatus: (showTimeline?: boolean)=> void
 }
 
 export interface EnvironmentListMinType {
@@ -486,5 +498,6 @@ export interface EnvironmentListMinType {
     isClusterCdActive?: boolean
     isVirtualEnvironment?: boolean
     namespace?: string
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 

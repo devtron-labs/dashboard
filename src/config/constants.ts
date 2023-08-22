@@ -17,6 +17,7 @@ export const Routes = {
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
+    IMAGE_TAGGING: 'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
@@ -25,9 +26,11 @@ export const Routes = {
     VALIDATE: 'cluster/validate',
     SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
-    CLUSTER_NOTE: 'cluster/description/note',
+    CLUSTER_NOTE: 'cluster/description',
+    APPLICATION_NOTE: 'app/description',
 
     CD_CONFIG: 'app/cd-pipeline',
+    V2_CD_CONFIG: 'app/v2/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
@@ -155,7 +158,7 @@ export const Routes = {
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
     NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
-    NONCASCADE_DELETE_DEVTRON_APP : 'app/delete',
+    NONCASCADE_DELETE_DEVTRON_APP: 'app/delete',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
@@ -230,6 +233,9 @@ export const Routes = {
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
+    EDIT: 'edit',
+    JOB_CONFIG_ENVIRONMENTS: 'config/environment',
+    PERMISSION: 'permission/check',
 }
 
 export const ViewType = {
@@ -254,7 +260,7 @@ export const AppConfigStatus = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '^[a-z][a-z0-9-.]*[a-z0-9]$/*',
+    APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     CONFIG_MAP_AND_SECRET_KEY: /^[-._a-zA-Z0-9]+$/,
     CONFIGMAP_AND_SECRET_NAME: /^[a-z0-9][a-z0-9-.]*[a-z0-9]$/,
@@ -288,6 +294,7 @@ export const SourceTypeMap = {
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
+export const MomentInvalidDate = 'Invalid date'
 
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
@@ -402,186 +409,56 @@ export enum MODES {
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
-export interface InputDetailType {
-    label: string
-    defaultValue: string
-    placeholder: string
+export type OCIRegistryStorageActionType = 'PULL' | 'PUSH' | 'PULL/PUSH'
+export type OCIRegistryStorageConfigType = {
+    CONTAINER?: OCIRegistryStorageActionType
+    CHART?: OCIRegistryStorageActionType
 }
-export interface RegistryTypeDetailType {
-    value: string
-    label: string
-    desiredFormat: string
-    placeholderText: string
-    gettingStartedLink: string
-    defaultRegistryURL: string
-    registryURL: InputDetailType
-    id: InputDetailType
-    password: InputDetailType
+export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageActionType> = {
+    PULL: 'PULL',
+    PUSH: 'PUSH',
+    PULL_PUSH: 'PULL/PUSH',
+}
+export const RegistryStorageType = {
+    CONTAINER: 'CONTAINER',
+    OCI_PRIVATE: 'OCI_PRIVATE',
 }
 
-export const REGISTRY_TYPE_MAP: Record<string, RegistryTypeDetailType> = {
-    ecr: {
-        value: 'ecr',
-        label: 'ECR',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink: 'https://docs.aws.amazon.com/AmazonECR/latest/userguide/get-set-up-for-amazon-ecr.html',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: 'Eg. xxxxxxxxxxxx.dkr.ecr.region.amazonaws.com',
-        },
-        id: {
-            label: 'Access key ID*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Secret access key*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    'docker-hub': {
-        value: 'docker-hub',
-        label: 'Docker',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: 'https://docs.docker.com/docker-hub/',
-        defaultRegistryURL: 'docker.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'docker.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token (Recommended: Token)*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    acr: {
-        value: 'acr',
-        label: 'Azure',
-        desiredFormat: '(desired format: repo-name)',
-        placeholderText: 'Eg. repo_name',
-        gettingStartedLink:
-            'https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL/Login Server*',
-            defaultValue: '',
-            placeholder: 'Eg. xxx.azurecr.io',
-        },
-        id: {
-            label: 'Username/Registry Name*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    'artifact-registry': {
-        value: 'artifact-registry',
-        label: 'Artifact Registry (GCP)',
-        desiredFormat: '(desired format: project-id/artifacts-repo/repo-name)',
-        placeholderText: 'Eg. project-id/artifacts-repo/repo-name',
-        gettingStartedLink: 'https://cloud.google.com/artifact-registry/docs/manage-repos?hl=en_US',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: 'Eg. region-docker.pkg.dev',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File*',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    gcr: {
-        value: 'gcr',
-        label: 'GCR',
-        desiredFormat: '(desired format: project-id/repo-name)',
-        placeholderText: 'Eg. project-id/repo_name',
-        gettingStartedLink: 'https://cloud.google.com/container-registry/docs/quickstart',
-        defaultRegistryURL: 'gcr.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'gcr.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '_json_key',
-            placeholder: '',
-        },
-        password: {
-            label: 'Service Account JSON File*',
-            defaultValue: '',
-            placeholder: 'Paste json file content here',
-        },
-    },
-    quay: {
-        value: 'quay',
-        label: 'Quay',
-        desiredFormat: '(desired format: username/repo-name)',
-        placeholderText: 'Eg. username/repo_name',
-        gettingStartedLink: '',
-        defaultRegistryURL: 'quay.io',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: 'quay.io',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Token*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
-    other: {
-        value: 'other',
-        label: 'Other',
-        desiredFormat: '',
-        placeholderText: '',
-        gettingStartedLink: '',
-        defaultRegistryURL: '',
-        registryURL: {
-            label: 'Registry URL*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        id: {
-            label: 'Username*',
-            defaultValue: '',
-            placeholder: '',
-        },
-        password: {
-            label: 'Password/Token*',
-            defaultValue: '',
-            placeholder: '',
-        },
-    },
+export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'Container / OCI Registry',
+    infoText:
+        'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
+    additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export interface RegistryPayloadType {
+    id: string
+    pluginId: string
+    registryType: string
+    isDefault: boolean
+    isOCICompliantRegistry: boolean
+    registryUrl: string
+    awsAccessKeyId?: string
+    awsSecretAccessKey?: string
+    awsRegion?: string
+    username?: string
+    password?: string
+    connection?: string
+    cert?: string
+    ipsConfig: {
+        id: string
+        credentialType: string
+        credentialValue: string
+        appliedClusterIdsCsv: string
+        ignoredClusterIdsCsv: string
+    }
+    ociRegistryConfig?: OCIRegistryStorageConfigType
+}
+
+export const RegistryTypeName = {
+    CONTAINER: 'Container registry',
+    OCI_PRIVATE: 'OCI Registry (Private)',
 }
 
 export const AppCreationType = {
@@ -604,6 +481,12 @@ export const BuildTabText = {
     preBuildStage: 'Pre-build stage',
     buildStage: 'Build stage',
     postBuildStage: 'Post-build stage',
+}
+
+export const CDDeploymentTabText = {
+    preBuildStage: 'Pre-Deployment stage',
+    buildStage: 'Deployment stage',
+    postBuildStage: 'Post-Deployment stage',
 }
 
 export const JobPipelineTabText = {
@@ -637,11 +520,21 @@ export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
 }
 
 export const EXTERNAL_TYPES = {
-    '': 'Kubernetes Secret',
-    KubernetesSecret: 'Kubernetes External Secret',
-    AWSSecretsManager: 'AWS Secrets Manager',
-    AWSSystemManager: 'AWS System Manager',
-    HashiCorpVault: 'Hashi Corp Vault',
+    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME]: {
+        '': 'Kubernetes Secret',
+        KubernetesSecret: 'Kubernetes External Secret',
+        AWSSecretsManager: 'AWS Secrets Manager',
+        AWSSystemManager: 'AWS System Manager',
+        HashiCorpVault: 'Hashi Corp Vault',
+        ESO_HashiCorpVault: 'Hashi Corp Vault',
+        ESO_AWSSecretsManager: 'AWS Secrets Manager',
+        ESO_GoogleSecretsManager: 'Google Secrets Manager',
+        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+    },
+    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
+        '': 'Kubernetes ConfigMap',
+        KubernetesConfigMap: 'Kubernetes External ConfigMap',
+    },
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
@@ -784,8 +677,10 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
-    INPROGRESS= 'INPROGRESS',
-    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
+    INPROGRESS = 'INPROGRESS',
+    HELM_PACKAGE_GENERATED = 'HELM_PACKAGE_GENERATED',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -805,7 +700,7 @@ export const HELM_DEPLOYMENT_STATUS_TEXT = {
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
-export const RESOURCES_NOT_FOUND = 'Resources are not available' 
+export const RESOURCES_NOT_FOUND = 'Resources are not available'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
@@ -831,17 +726,23 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
-export enum DeploymentAppTypes {
-  HELM = 'helm',
-  GITOPS = 'argo_cd',
-  MANIFEST_DOWNLOAD = 'manifest_download'
-}
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'
 
 export enum DELETE_ACTION {
-    DELETE= 'delete',
-    FORCE_DELETE= 'force_delete',
-    NONCASCADE_DELETE= 'noncascade_delete',
+    DELETE = 'delete',
+    FORCE_DELETE = 'force_delete',
+    NONCASCADE_DELETE = 'noncascade_delete',
+}
+export const ManifestMessaging = {
+    POD_NAME_EXIST_IN_NAMESPACE: 'Pod with provided name already exists in namespace',
+    POD_NAME: 'A pod named',
+    ALREADY_EXIST: 'already exists in',
+    NAMESPACE: 'namespace',
+    CONTINUE_TERMINATE_EXISTING_POD:
+        'Continuing will terminate the existing pod and create a new one with the provided manifest.',
+    SURE_WANT_TO_CONTINUE: 'Are you sure you want to continue?',
+    CANCEL: 'Cancel',
+    TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }

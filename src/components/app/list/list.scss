@@ -467,7 +467,7 @@
 .jobs-view-container .app-list .app-list__header,
 .jobs-view-container .app-list .app-list__row {
     display: grid;
-    grid-template-columns: 24px 250px 150px repeat(2, 170px) auto 48px;
+    grid-template-columns: 25px 300px 200px repeat(3, 248px) auto 0px;
     align-items: center;
     column-gap: 16px;
 }

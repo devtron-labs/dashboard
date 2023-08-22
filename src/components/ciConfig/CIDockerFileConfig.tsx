@@ -1,10 +1,11 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -16,12 +17,22 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { CIBuildType, ConditionalWrap, showError, TippyCustomized, TippyTheme, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildType,
+    ConditionalWrap,
+    showError,
+    TippyCustomized,
+    TippyTheme,
+    OptionType,
+    Progressing,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
+import { BuildersAndFrameworksType, CIDockerFileConfigProps, LoadingState } from './types'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
+import { FEATURE_DISABLED } from '../../config/constantMessaging'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -49,7 +60,7 @@ export default function CIDockerFileConfig({
     setShowCustomPlatformWarning,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
-    setInProgress,
+    setLoadingState,
 }: CIDockerFileConfigProps) {
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
     const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
@@ -58,6 +69,10 @@ export default function CIDockerFileConfig({
         selectedBuilder: null,
         selectedLanguage: null,
         selectedVersion: null,
+    })
+    const [loadingTemplateData, setLoadingTemplateData] = useState<LoadingState>({
+        loading: false,
+        failed: false,
     })
     const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
     const CI_BUILD_TYPE_OPTIONS = [
@@ -90,14 +105,21 @@ export default function CIDockerFileConfig({
         },
     ]
     const isDefaultBuildContext = (): boolean => {
-        if(window._env_.ENABLE_BUILD_CONTEXT) {
-            let currentOverriddenGitMaterialId = 0, currentOverriddenBuildContextGitMaterialId = 0;
-            let currentOverriddenBuildContext = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-            currentOverriddenGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
-            currentOverriddenBuildContextGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId
-            return (configOverrideView && allowOverride) ?
-                (currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId) && (!currentOverriddenBuildContext || (currentOverriddenBuildContext === ''))
-                : ((currentMaterial.id === currentBuildContextGitMaterial.id) && (!(ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext) || ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === ''))
+        if (window._env_.ENABLE_BUILD_CONTEXT) {
+            let currentOverriddenGitMaterialId = 0,
+                currentOverriddenBuildContextGitMaterialId = 0
+            let currentOverriddenBuildContext =
+                ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+            currentOverriddenGitMaterialId =
+                ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
+            currentOverriddenBuildContextGitMaterialId =
+                ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId
+            return configOverrideView && allowOverride
+                ? currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId &&
+                      (!currentOverriddenBuildContext || currentOverriddenBuildContext === '')
+                : currentMaterial.id === currentBuildContextGitMaterial.id &&
+                      (!ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
+                          ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '')
         }
         return false
     }
@@ -111,6 +133,7 @@ export default function CIDockerFileConfig({
         checkoutPathArray.push({ label: buildContextCheckoutPath, value: buildContextCheckoutPath })
     }
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
+    const { isAirgapped } = useContext(mainContext)
 
     useEffect(() => {
         let checkoutPathArray = [{ label: RootBuildContext, value: RootBuildContext }]
@@ -124,21 +147,14 @@ export default function CIDockerFileConfig({
     }, [selectedBuildContextGitMaterial])
 
     useEffect(() => {
-        setInProgress(true)
-        Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
-            .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
-                setBuildersAndFrameworks({
-                    ...buildersAndFrameworks,
-                    builders: buildpackMetadata?.LanguageBuilder || [],
-                    frameworks: dockerfileTemplate?.LanguageFrameworks || [],
-                })
-                setInProgress(false)
-            })
-            .catch((err) => {
-                showError(err)
-                setInProgress(false)
-            })
-    }, [])
+        if (
+            (buildersAndFrameworks.builders.length === 0 || buildersAndFrameworks.frameworks.length === 0) &&
+            (ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
+                ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE)
+        ) {
+            fetchBuildPackAndTemplateData()
+        }
+    }, [ciBuildTypeOption])
 
     useEffect(() => {
         if (configOverrideView && updateDockerConfigOverride && currentCIBuildConfig) {
@@ -171,6 +187,38 @@ export default function CIDockerFileConfig({
         }
     }, [allowOverride])
 
+    const fetchBuildPackAndTemplateData = () => {
+        const _loadingState = {
+            loading: true,
+            failed: false,
+        }
+        setLoadingState(_loadingState)
+        setLoadingTemplateData(_loadingState)
+        Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
+            .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
+                setBuildersAndFrameworks({
+                    ...buildersAndFrameworks,
+                    builders: buildpackMetadata?.LanguageBuilder || [],
+                    frameworks: dockerfileTemplate?.LanguageFrameworks || [],
+                })
+                const _loadingState = {
+                    loading: false,
+                    failed: false,
+                }
+                setLoadingTemplateData(_loadingState)
+                setLoadingState(_loadingState)
+            })
+            .catch((err) => {
+                showError(err)
+                const _loadingState = {
+                    loading: false,
+                    failed: true,
+                }
+                setLoadingTemplateData(_loadingState)
+                setLoadingState(_loadingState)
+            })
+    }
+
     const handleFileLocationChange = (selectedMaterial): void => {
         let buildContextGitMaterialId = 0
         if (window._env_.ENABLE_BUILD_CONTEXT) {
@@ -201,12 +249,14 @@ export default function CIDockerFileConfig({
         })
     }
 
-    const handleCIBuildTypeOptionSelection = (id: CIBuildType) => {
-        setCIBuildTypeOption(id)
-        setCurrentCIBuildConfig({
-            ...currentCIBuildConfig,
-            ciBuildType: id,
-        })
+    const handleCIBuildTypeOptionSelection = (id: CIBuildType, isDisabled:boolean) => {
+        if (!isDisabled) {
+            setCIBuildTypeOption(id)
+            setCurrentCIBuildConfig({
+                ...currentCIBuildConfig,
+                ciBuildType: id,
+            })
+        }  
     }
 
     const canShowTick = (id: CIBuildType) => {
@@ -252,7 +302,7 @@ export default function CIDockerFileConfig({
         setIsCollapsed(!isCollapsed)
     }
 
-    const getSelectedBuildContextGitMaterial = ():any => {
+    const getSelectedBuildContextGitMaterial = (): any => {
         return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
     }
     const getCheckoutPathValue = (
@@ -260,12 +310,11 @@ export default function CIDockerFileConfig({
         currentMaterial: any,
         useRootBuildContextFlag: boolean,
     ): OptionType => {
-        const path = configOverrideView && !allowOverride
-            ? currentBuildContextGitMaterial?.checkoutPath
-            : getSelectedBuildContextGitMaterial()?.checkoutPath
-        const val = useRootBuildContextFlag
-            ? RootBuildContext
-            : path
+        const path =
+            configOverrideView && !allowOverride
+                ? currentBuildContextGitMaterial?.checkoutPath
+                : getSelectedBuildContextGitMaterial()?.checkoutPath
+        const val = useRootBuildContextFlag ? RootBuildContext : path
 
         return { label: val, value: val }
     }
@@ -298,18 +347,16 @@ export default function CIDockerFileConfig({
                 {CI_BUILD_TYPE_OPTIONS.map((option) => {
                     const isCurrentlySelected = ciBuildTypeOption === option.id
                     const showTick = canShowTick(option.id)
+                    const isDisabled = isAirgapped && option.id != CIBuildType.SELF_DOCKERFILE_BUILD_TYPE
+                    const content = !isDisabled ? option.info : FEATURE_DISABLED
+                    const condition = (configOverrideView && allowOverride) || isDisabled
 
                     return (
                         <Fragment key={option.id}>
                             <ConditionalWrap
-                                condition={configOverrideView && allowOverride}
+                                condition={condition}
                                 wrap={(children) => (
-                                    <Tippy
-                                        className="default-tt w-250"
-                                        arrow={false}
-                                        placement="top"
-                                        content={option.info}
-                                    >
+                                    <Tippy className="default-tt w-250" arrow={false} placement="top" content={content}>
                                         <div className="flex top left flex-1">{children}</div>
                                     </Tippy>
                                 )}
@@ -321,9 +368,10 @@ export default function CIDockerFileConfig({
                                         configOverrideView ? 'h-40' : 'h-80'
                                     } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
                                         isCurrentlySelected ? 'bcb-1 eb-2' : 'bcn-0 en-2'
-                                    }`}
+                                    } 
+                                    ${isDisabled ? 'dockerfile-select__option--is-disabled' : ''}`}
                                     onClick={() => {
-                                        handleCIBuildTypeOptionSelection(option.id)
+                                        handleCIBuildTypeOptionSelection(option.id, isDisabled)
                                     }}
                                 >
                                     {showTick && (
@@ -611,6 +659,91 @@ export default function CIDockerFileConfig({
         )
     }
 
+    const renderManagedDockerfile = () => {
+        return (
+            <CICreateDockerfileOption
+                configOverrideView={configOverrideView}
+                allowOverride={allowOverride}
+                frameworks={buildersAndFrameworks.frameworks}
+                sourceConfig={sourceConfig}
+                currentMaterial={currentMaterial}
+                currentBuildContextGitMaterial={currentBuildContextGitMaterial}
+                selectedMaterial={selectedMaterial}
+                handleFileLocationChange={handleFileLocationChange}
+                handleBuildContextPathChange={handleBuildContextPathChange}
+                repository={formState.repository}
+                currentCIBuildConfig={currentCIBuildConfig}
+                setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                setLoadingState={setLoadingState}
+                selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
+                ciConfig={ciConfig}
+                formState={formState}
+                handleOnChangeConfig={handleOnChangeConfig}
+                renderInfoCard={renderInfoCard}
+                isDefaultBuildContext={isDefaultBuildContext}
+                handleBuildContextCheckoutPathChange={handleBuildContextCheckoutPathChange}
+                getCheckoutPathValue={getCheckoutPathValue}
+                useRootBuildContextFlag={useRootBuildContextFlag}
+                checkoutPathOptions={checkoutPathOptions}
+            />
+        )
+    }
+
+    const renderBuildpackBuildOptions = () => {
+        return (
+            <CIBuildpackBuildOptions
+                ciBuildConfig={
+                    configOverrideView && allowOverride
+                        ? selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig
+                        : ciConfig?.ciBuildConfig
+                }
+                sourceConfig={sourceConfig}
+                buildersAndFrameworks={buildersAndFrameworks}
+                setBuildersAndFrameworks={setBuildersAndFrameworks}
+                configOverrideView={configOverrideView}
+                allowOverride={allowOverride}
+                currentMaterial={currentMaterial}
+                selectedMaterial={selectedMaterial}
+                handleFileLocationChange={handleFileLocationChange}
+                repository={formState.repository}
+                projectPath={formState.projectPath}
+                handleOnChangeConfig={handleOnChangeConfig}
+                currentCIBuildConfig={currentCIBuildConfig}
+                setCurrentCIBuildConfig={setCurrentCIBuildConfig}
+                buildEnvArgs={buildEnvArgs}
+                setBuildEnvArgs={setBuildEnvArgs}
+            />
+        )
+    }
+
+    const renderOptionBasedOnBuildType = () => {
+        if (ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE) {
+            return renderSelfDockerfileBuildOption()
+        } else if (loadingTemplateData.loading) {
+            return (
+                <div className="h-250">
+                    <Progressing size={24} fillColor="var(--N500)" />
+                </div>
+            )
+        } else if (loadingTemplateData.failed) {
+            return (
+                <div className="flex column h-250 dc__gap-12">
+                    <ErrorIcon className="icon-dim-20" />
+                    <h3 className="fs-13 fw-6 cn-9 m-0">Failed to fetch</h3>
+                    <span className="fs-12 fw-6 cb-5 cursor" onClick={fetchBuildPackAndTemplateData}>
+                        Retry
+                    </span>
+                </div>
+            )
+        } else if (ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE) {
+            return renderManagedDockerfile()
+        } else if (ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE) {
+            return renderBuildpackBuildOptions()
+        } else {
+            return null
+        }
+    }
+
     return (
         <div className="white-card white-card__docker-config dc__position-rel">
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">
@@ -619,71 +752,24 @@ export default function CIDockerFileConfig({
                     : 'How do you want to build the container image?'}
             </h3>
             {(!configOverrideView || allowOverride) && renderCIBuildTypeOptions()}
-            {ciBuildTypeOption === CIBuildType.SELF_DOCKERFILE_BUILD_TYPE && renderSelfDockerfileBuildOption()}
-            {ciBuildTypeOption === CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE && (
-                <CICreateDockerfileOption
-                    configOverrideView={configOverrideView}
-                    allowOverride={allowOverride}
-                    frameworks={buildersAndFrameworks.frameworks}
-                    sourceConfig={sourceConfig}
-                    currentMaterial={currentMaterial}
-                    currentBuildContextGitMaterial={currentBuildContextGitMaterial}
-                    selectedMaterial={selectedMaterial}
-                    handleFileLocationChange={handleFileLocationChange}
-                    handleBuildContextPathChange={handleBuildContextPathChange}
-                    repository={formState.repository}
-                    currentCIBuildConfig={currentCIBuildConfig}
-                    setCurrentCIBuildConfig={setCurrentCIBuildConfig}
-                    setInProgress={setInProgress}
-                    selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
-                    ciConfig={ciConfig}
-                    formState={formState}
-                    handleOnChangeConfig={handleOnChangeConfig}
-                    renderInfoCard={renderInfoCard}
-                    isDefaultBuildContext={isDefaultBuildContext}
-                    handleBuildContextCheckoutPathChange={handleBuildContextCheckoutPathChange}
-                    getCheckoutPathValue={getCheckoutPathValue}
-                    useRootBuildContextFlag={useRootBuildContextFlag}
-                    checkoutPathOptions={checkoutPathOptions}
-                />
+            {renderOptionBasedOnBuildType()}
+            {!loadingTemplateData.loading && !loadingTemplateData.failed && (
+                <>
+                    {(!configOverrideView || isBuildpackType) && <hr className="mt-16 mb-16" />}
+                    <CIAdvancedConfig
+                        configOverrideView={configOverrideView}
+                        allowOverride={allowOverride}
+                        args={isBuildpackType ? buildEnvArgs : args}
+                        setArgs={isBuildpackType ? setBuildEnvArgs : setArgs}
+                        isBuildpackType={isBuildpackType}
+                        selectedTargetPlatforms={selectedTargetPlatforms}
+                        setSelectedTargetPlatforms={setSelectedTargetPlatforms}
+                        targetPlatformMap={targetPlatformMap}
+                        showCustomPlatformWarning={showCustomPlatformWarning}
+                        setShowCustomPlatformWarning={setShowCustomPlatformWarning}
+                    />
+                </>
             )}
-            {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
-                <CIBuildpackBuildOptions
-                    ciBuildConfig={
-                        configOverrideView && allowOverride
-                            ? selectedCIPipeline?.dockerConfigOverride?.ciBuildConfig
-                            : ciConfig?.ciBuildConfig
-                    }
-                    sourceConfig={sourceConfig}
-                    buildersAndFrameworks={buildersAndFrameworks}
-                    setBuildersAndFrameworks={setBuildersAndFrameworks}
-                    configOverrideView={configOverrideView}
-                    allowOverride={allowOverride}
-                    currentMaterial={currentMaterial}
-                    selectedMaterial={selectedMaterial}
-                    handleFileLocationChange={handleFileLocationChange}
-                    repository={formState.repository}
-                    projectPath={formState.projectPath}
-                    handleOnChangeConfig={handleOnChangeConfig}
-                    currentCIBuildConfig={currentCIBuildConfig}
-                    setCurrentCIBuildConfig={setCurrentCIBuildConfig}
-                    buildEnvArgs={buildEnvArgs}
-                    setBuildEnvArgs={setBuildEnvArgs}
-                />
-            )}
-            {(!configOverrideView || isBuildpackType) && <hr className="mt-16 mb-16" />}
-            <CIAdvancedConfig
-                configOverrideView={configOverrideView}
-                allowOverride={allowOverride}
-                args={isBuildpackType ? buildEnvArgs : args}
-                setArgs={isBuildpackType ? setBuildEnvArgs : setArgs}
-                isBuildpackType={isBuildpackType}
-                selectedTargetPlatforms={selectedTargetPlatforms}
-                setSelectedTargetPlatforms={setSelectedTargetPlatforms}
-                targetPlatformMap={targetPlatformMap}
-                showCustomPlatformWarning={showCustomPlatformWarning}
-                setShowCustomPlatformWarning={setShowCustomPlatformWarning}
-            />
         </div>
     )
 }

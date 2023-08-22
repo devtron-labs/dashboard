@@ -1,6 +1,6 @@
 import { Routes } from '../../../config/constants'
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
-import { AppType, DeploymentAppType } from './appDetails.type'
+import { DeploymentAppTypes, get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType } from './appDetails.type'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
@@ -32,14 +32,13 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         nodeDetails.group = ''
     }
 
-    const { appName, environmentName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
+    const { appName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
     const { group, version, kind, name } = nodeDetails
-    const applicationObject = deploymentAppType == DeploymentAppType.argo_cd ? `${appName}-${environmentName}` : appName
     
     const data = {
         appId : appType == AppType.DEVTRON_APP
         ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-        : getAppId(clusterId, namespace, applicationObject),
+        : getAppId(clusterId, namespace, appName),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -52,7 +51,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
             },
         },
         appType : appType == AppType.DEVTRON_APP ? 0 : 1,
-        deploymentType : deploymentAppType == DeploymentAppType.helm ? 0 : 1,
+        deploymentType : deploymentAppType == DeploymentAppTypes.HELM ? 0 : 1,
     }
     return post(Routes.DELETE_RESOURCE, data)
 }

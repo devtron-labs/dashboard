@@ -3,12 +3,12 @@ import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle, CiPipelineSourceTypeOption, FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
-import { ciPipelineContext } from './CIPipeline'
+import { Progressing, Toggle, CiPipelineSourceTypeOption } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function Build({
     showFormError,
@@ -24,15 +24,10 @@ export function Build({
         formData,
         setFormData,
         formDataErrorObj,
-        setLoadingData,
+        loadingState,
+        setLoadingState,
         setFormDataErrorObj,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        formDataErrorObj: FormErrorObjectType
-        setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
@@ -275,7 +270,8 @@ export function Build({
                         formData={formData}
                         setFormData={setFormData}
                         setDockerConfigOverridden={setDockerConfigOverridden}
-                        setLoadingData={setLoadingData}
+                        loadingState={loadingState}
+                        setLoadingState={setLoadingState}
                     />
                 </>
             )}

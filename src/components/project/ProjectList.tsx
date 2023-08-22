@@ -183,7 +183,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     render() {
         if (!this.props.isSuperAdmin) {
-            return <ErrorScreenNotAuthorized />
+            return (
+                <div className="dc__align-reload-center">
+                    <ErrorScreenNotAuthorized />
+                </div>
+            )
         }
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) {

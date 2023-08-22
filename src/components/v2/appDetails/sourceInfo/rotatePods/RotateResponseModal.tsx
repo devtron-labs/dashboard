@@ -19,7 +19,7 @@ import { RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import { POD_ROTATION_INITIATED } from '../../../../../config'
 import { ReactComponent as BackIcon } from '../../../../../assets/icons/ic-arrow-backward.svg'
-export default function RotateResponseModal({ onClose, response, setResult, callAppDetailsAPI}: RotateResponseModalProps) {
+export default function RotateResponseModal({ onClose, response, setResult, callAppDetailsAPI, callResourceTreeAPI}: RotateResponseModalProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
 
@@ -116,6 +116,7 @@ export default function RotateResponseModal({ onClose, response, setResult, call
 
             const { result } = await RotatePods(requestPayload)
             callAppDetailsAPI()
+            callResourceTreeAPI()
             if (!result.containsError) {
                 onClose()
                 toast.success(POD_ROTATION_INITIATED)

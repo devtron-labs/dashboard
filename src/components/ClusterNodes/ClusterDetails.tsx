@@ -15,7 +15,6 @@ import {
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFilter'
@@ -23,10 +22,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import {
-    COLUMN_METADATA,
-    NODE_SEARCH_TEXT,
-} from './constants'
+import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
@@ -34,6 +30,7 @@ import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import * as queryString from 'query-string'
 import { URLS } from '../../config'
+import { createTaintsList } from '../cluster/cluster.util'
 
 export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList, clusterId}: ClusterDetailsPropType) {
     const match = useRouteMatch()
@@ -73,19 +70,25 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     useEffect(() => {
         if (appliedColumns.length > 0) {
             /*
-          116 is standard with of every column for calculations
+          136 is standard with of every column for calculations
           65 is width of left nav
-          180 is the diff of node column
-          80 is the diff of status column
+          160 is the diff of node column
+          60 is the diff of status column
           */
 
-            const appliedColumnDerivedWidth = appliedColumns.length * 116 + 65 + 180 + 80
+            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
   
+    useEffect(() => {
+        const qs=queryString.parse(location.search)
+        const offset=Number(qs["offset"])
+        setNodeListOffset(offset||0)
+    }, [location.search])
+
     useEffect(() => {
         const qs=queryString.parse(location.search)
         const offset=Number(qs["offset"])
@@ -216,7 +219,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
 
                     if (_nodeErrors.length > 0) {
                         _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
-                        for ( const _nodeError of _nodeErrors) {
+                        for (const _nodeError of _nodeErrors) {
                             const _errorLength = response[1].result.nodeErrors[_nodeError].length
                             _errorList.push({
                                 errorText: `${_nodeError} on ${
@@ -458,7 +461,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         {isSuperAdmin && (
                             <>
                                 <span className="dc__divider ml-12 h-16"></span>
-                                <div className="flex left cursor pl-12 pr-12 cb-5" onClick={headerTerminalIcon}>
+                                <div className="flex left cursor pl-12 pr-12 cb-5" data-testid="node-list-header-terminal" onClick={headerTerminalIcon}>
                                     <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
                                     <span className="h-20">Terminal</span>
                                 </div>
@@ -537,12 +540,28 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         )
     }
 
+    const renderSortDirection = (column: ColumnMetadataType) : JSX.Element => {
+        if(column.isSortingAllowed) {
+            if(sortByColumn.value === column.value) {
+                return (
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
+                )
+            } else {
+                return (
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>
+                )
+            }
+        }
+    }
+
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
-        const nodeColumnClassName = fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
+        const nodeColumnClassName = fixedNodeNameColumn
+            ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+            : ''
         return (
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
-                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-100px'
+                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-120'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
                 } ${column.value === 'status' && 'w-180'}`}
@@ -553,7 +572,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
                 </Tippy>
-                {column.isSortingAllowed && <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />}
+                {renderSortDirection(column)}
             </div>
         )
     }
@@ -631,6 +650,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             return '-'
         }
     }
+
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
@@ -648,7 +668,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         >
                             <div className="w-100 flex left">
                                 <div className="w-250 pr-4 dc__ellipsis-right">
-                                    <NavLink to={`${match.url}/${nodeData[column.value]}`} >
+                                    <NavLink data-testid="cluster-node-link" to={`${match.url}/${nodeData[column.value]}`} >
                                         {nodeData[column.value]}
                                     </NavLink>
                                 </div>
@@ -665,7 +685,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                             className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
                                 column.value === 'status'
                                     ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
-                                    : 'w-100px'
+                                    : 'w-120'
                             }`}
                         >
                             {renderNodeRow(column, nodeData)}
@@ -786,12 +806,13 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
                     nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}
-                    isClusterDetailsPage={true}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
+                    isClusterDetailsPage={true}
                     namespaceList={namespaceList[clusterName]}
                     node={selectedNode}
                     setSelectedNode={setSelectedNode}
+                    taints={createTaintsList(filteredFlattenNodeList, 'name')}
                 />
             )}
         </>

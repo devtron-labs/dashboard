@@ -5,7 +5,7 @@ import {
     ErrorScreenManager,
     ServerErrors,
     Host,
-    EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
@@ -353,6 +353,11 @@ export default function HelmAppList({
         sortApplicationList('appNameSort')
     }
 
+    function sortByLastDeployed(e) {
+        e.preventDefault()
+        sortApplicationList('lastDeployedSort')
+    }
+
     function renderHeaders() {
         return (
             <div className="app-list__header">
@@ -365,7 +370,7 @@ export default function HelmAppList({
                             {sortBy == SortBy.APP_NAME ? (
                                 <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
                             ) : (
-                                <span className="sort-col ml-4"></span>
+                                <span className="sort-col dc__opacity-0_5 ml-4"></span>
                             )}
                         </button>
                     )}
@@ -393,7 +398,14 @@ export default function HelmAppList({
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.LastDeployedAt}</span>
+                    <span className="app-list__cell-header flex cursor" onClick={sortByLastDeployed}>
+                        {APP_LIST_HEADERS.LastDeployedAt}
+                        {sortBy == SortBy.LAST_DEPLOYED ? (
+                            <span className={`sort ${sortOrder == OrderBy.DESC ? 'sort-up' : ''} ml-4`}></span>
+                        ) : (
+                            <span className="sort-col dc__opacity-0_5 ml-4"></span>
+                        )}
+                    </span>
                 </div>
             </div>
         )
@@ -438,17 +450,24 @@ export default function HelmAppList({
                     </div>
                 )}
                 <div className="app-list__cell app-list__cell--env">
-                    <p className="dc__truncate-text  m-0">
+                    <p
+                        className="dc__truncate-text  m-0"
+                        data-testid={`${app.environmentDetail.environmentName}-environment`}
+                    >
                         {app.environmentDetail.environmentName
                             ? app.environmentDetail.environmentName
                             : app.environmentDetail.clusterName + '__' + app.environmentDetail.namespace}
                     </p>
                 </div>
                 <div className="app-list__cell app-list__cell--cluster">
-                    <p className="dc__truncate-text  m-0"> {app.environmentDetail.clusterName}</p>
+                    <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.clusterName}`}>
+                        {app.environmentDetail.clusterName}
+                    </p>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
-                    <p className="dc__truncate-text  m-0"> {app.environmentDetail.namespace}</p>
+                    <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.namespace}`}>
+                        {app.environmentDetail.namespace}
+                    </p>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
                     {app.lastDeployedAt && (
@@ -533,19 +552,12 @@ export default function HelmAppList({
 
     function askToSelectClusterId() {
         return (
-            <div style={{ height: 'calc(100vh - 150px)' }}>
-                <EmptyState>
-                    <img
-                        src={NoClusterSelectImage}
-                        width="250"
-                        height="250"
-                        alt={APPLIST_EMPTY_STATE_MESSAGING.altText}
-                    />
-                    <h2 className="fs-16 fw-4 c-9">{APPLIST_EMPTY_STATE_MESSAGING.heading}</h2>
-                    <p className="text-left" style={{ width: '300px' }}>
-                        {APPLIST_EMPTY_STATE_MESSAGING.infoText}
-                    </p>
-                </EmptyState>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+                <GenericEmptyState
+                    image={NoClusterSelectImage}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.heading}
+                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.infoText}
+                />
             </div>
         )
     }
@@ -584,25 +596,24 @@ export default function HelmAppList({
     }
 
     function askToConnectAClusterForNoResult() {
+        const handleButton = () => {
+            return (
+                <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+                    <button type="button" className="cta flex">
+                        {APPLIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
+                    </button>
+                </Link>
+            )
+        }
         return (
-            <div style={{ height: 'calc(100vh - 150px)' }}>
-                <EmptyState>
-                    <img
-                        src={noChartInClusterImage}
-                        width="250"
-                        height="250"
-                        alt={APPLIST_EMPTY_STATE_MESSAGING.connectClusterAltText}
-                    />
-                    <h2 className="fs-16 fw-4 c-9">{APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}</h2>
-                    <p className="text-left" style={{ width: '450px' }}>
-                        {APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
-                    </p>
-                    <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
-                        <button type="button" className="cta flex">
-                            {APPLIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
-                        </button>
-                    </Link>
-                </EmptyState>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+                <GenericEmptyState
+                    image={noChartInClusterImage}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
+                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
+                    isButtonAvailable={true}
+                    renderButton={handleButton}
+                />
             </div>
         )
     }

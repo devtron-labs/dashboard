@@ -11,8 +11,16 @@ import {
 import { decode } from '../../../../util/Util'
 
 export interface DeploymentHistoryResult extends ResponseType {
-    result?: History[]
+    result?: DeploymentHistoryResultObject
 }
+
+export interface DeploymentHistoryResultObject {
+    cdWorkflows: History[]
+    appReleaseTagNames: string[]
+    tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
+}
+
 export async function getTriggerHistory(
     appId: number | string,
     envId: number | string,
@@ -23,19 +31,28 @@ export async function getTriggerHistory(
         `app/cd-pipeline/workflow/history/${appId}/${envId}/${pipelineId}?offset=${pagination.offset}&size=${pagination.size}`,
     ).then(({ result, code, status }) => {
         return {
-            result: (result || []).map((deploymentHistory: DeploymentHistory) => ({
-                ...deploymentHistory,
-                triggerId: deploymentHistory?.cd_workflow_id,
-                podStatus: deploymentHistory?.pod_status,
-                startedOn: deploymentHistory?.started_on,
-                finishedOn: deploymentHistory?.finished_on,
-                pipelineId: deploymentHistory?.pipeline_id,
-                logLocation: deploymentHistory?.log_file_path,
-                triggeredBy: deploymentHistory?.triggered_by,
-                artifact: deploymentHistory?.image,
-                triggeredByEmail: deploymentHistory?.email_id,
-                stage: deploymentHistory?.workflow_type,
-            })),
+            result: {
+                cdWorkflows: (result.cdWorkflows || []).map((deploymentHistory: DeploymentHistory) => ({
+                    ...deploymentHistory,
+                    triggerId: deploymentHistory?.cd_workflow_id,
+                    podStatus: deploymentHistory?.pod_status,
+                    startedOn: deploymentHistory?.started_on,
+                    finishedOn: deploymentHistory?.finished_on,
+                    pipelineId: deploymentHistory?.pipeline_id,
+                    logLocation: deploymentHistory?.log_file_path,
+                    triggeredBy: deploymentHistory?.triggered_by,
+                    artifact: deploymentHistory?.image,
+                    triggeredByEmail: deploymentHistory?.email_id,
+                    stage: deploymentHistory?.workflow_type,
+                    image: deploymentHistory?.image,
+                    imageComment: deploymentHistory?.imageComment,
+                    imageReleaseTags: deploymentHistory?.imageReleaseTags,
+                    artifactId: deploymentHistory?.ci_artifact_id,
+                })),
+                appReleaseTagNames: result.appReleaseTagNames,
+                tagsEditable: result.tagsEditable,
+                hideImageTaggingHardDelete: result.hideImageTaggingHardDelete,
+            },
             code,
             status,
         }
@@ -97,26 +114,36 @@ export const prepareConfigMapAndSecretData = (
     rawData,
     type: string,
     historyData: DeploymentHistoryDetail,
+    skipDecode?: boolean,
 ): Record<string, DeploymentHistorySingleValue> => {
     const secretValues = {}
 
-    if (rawData['external']) {
-        if (rawData['externalType']) {
-            secretValues['external'] = {
-                displayName: 'Data type',
-                value: EXTERNAL_TYPES[rawData['externalType']],
+    if (rawData['external'] !== undefined) {
+        if (rawData['external']) {
+            if (rawData['externalType']) {
+                secretValues['external'] = {
+                    displayName: 'Data type',
+                    value: EXTERNAL_TYPES[type][rawData['externalType']],
+                }
+            } else {
+                secretValues['external'] = {
+                    displayName: 'Data type',
+                    value:
+                        type === 'Secret'
+                            ? EXTERNAL_TYPES[type]['KubernetesSecret']
+                            : EXTERNAL_TYPES[type]['KubernetesConfigMap'],
+                }
             }
         } else {
-            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES['KubernetesSecret'] }
-        }
-    } else {
-        secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[''] }
-        if (type === 'Secret' && historyData.codeEditorValue.value) {
-            const secretData = JSON.parse(historyData.codeEditorValue.value)
-            const decodeNotRequired = Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
-            historyData.codeEditorValue.value = decodeNotRequired
-                ? historyData.codeEditorValue.value
-                : JSON.stringify(decode(secretData))
+            secretValues['external'] = { displayName: 'Data type', value: EXTERNAL_TYPES[type][''] }
+            if (type === 'Secret' && historyData.codeEditorValue.value) {
+                const secretData = JSON.parse(historyData.codeEditorValue.value)
+                const decodeNotRequired =
+                    skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
+                historyData.codeEditorValue.value = decodeNotRequired
+                    ? historyData.codeEditorValue.value
+                    : JSON.stringify(decode(secretData))
+            }
         }
     }
     if (rawData['type']) {
@@ -149,7 +176,11 @@ export const prepareConfigMapAndSecretData = (
     return secretValues
 }
 
-export const prepareHistoryData = (rawData, historyComponent: string): DeploymentHistoryDetail => {
+export const prepareHistoryData = (
+    rawData,
+    historyComponent: string,
+    skipDecode?: boolean,
+): DeploymentHistoryDetail => {
     let values
     const historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
     delete rawData.codeEditorValue
@@ -164,6 +195,7 @@ export const prepareHistoryData = (rawData, historyComponent: string): Deploymen
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME,
             historyData,
+            skipDecode,
         )
     }
     historyData.values = values

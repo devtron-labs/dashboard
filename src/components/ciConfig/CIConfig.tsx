@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
+import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails } from '../../services/service'
 import { useParams } from 'react-router-dom'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
@@ -21,7 +21,8 @@ export default function CIConfig({
     isCDPipeline,
     isCiPipeline,
     navItems,
-    setLoadingData,
+    loadingStateFromParent,
+    setLoadingStateFromParent,
 }: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
@@ -34,6 +35,7 @@ export default function CIConfig({
     const { appId } = useParams<{ appId: string }>()
 
     useEffect(() => {
+        
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
             initialise()
         }
@@ -69,11 +71,14 @@ export default function CIConfig({
                     dockerRegistries: dockerRegistries,
                     sourceConfig: sourceConfig,
                     ciConfig: ciConfig,
-                    defaultDockerConfigs: Object.assign({}, {
-                        dockerRegistry: ciConfig.dockerRegistry,
-                        dockerRepository: ciConfig.dockerRepository,
-                        ciBuildConfig: ciConfig.ciBuildConfig,
-                    }),
+                    defaultDockerConfigs: Object.assign(
+                        {},
+                        {
+                            dockerRegistry: ciConfig.dockerRegistry,
+                            dockerRepository: ciConfig.dockerRepository,
+                            ciBuildConfig: ciConfig.ciBuildConfig,
+                        },
+                    ),
                 })
             }
         } catch (err) {
@@ -141,7 +146,8 @@ export default function CIConfig({
             navItems={navItems}
             parentState={parentState}
             setParentState={setParentState}
-            setLoadingData={setLoadingData}
+            loadingStateFromParent={loadingStateFromParent}
+            setLoadingStateFromParent={setLoadingStateFromParent}
         />
     )
 }

@@ -2,8 +2,9 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
+import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -76,7 +77,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'white',
         }
     },
     singleValue: (base, state) => {
@@ -185,6 +186,17 @@ export const CustomValueContainer = (props): JSX.Element => {
     )
 }
 
+export const menuComponentForImage = (props) => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
+            </div>
+            {props.children}
+        </components.MenuList>
+    )
+}
+
 export const menuComponent = (props, text) => {
     return (
         <components.MenuList {...props}>
@@ -275,4 +287,30 @@ export const groupHeaderStyle = {
         backgroundColor: 'var(--N100)',
         marginBottom: 0,
     }),
+}
+
+export const groupStyle = () => {
+  return {
+      ...multiSelectStyles,
+      menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+      control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
+      group: (base) => ({
+          ...base,
+          paddingTop: 0,
+          paddingBottom: 0,
+      }),
+      groupHeading: (base) => ({
+          ...base,
+          fontWeight: 600,
+          fontSize: '12px',
+          height: '28px',
+          color: 'var(--N900)',
+          backgroundColor: 'var(--N100)',
+          marginBottom: 0,
+      }),
+      indicatorsContainer: (provided, state) => ({
+          ...provided,
+      }),
+      option: getCustomOptionSelectionStyle(),
+  }
 }
