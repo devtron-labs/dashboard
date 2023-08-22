@@ -94,7 +94,6 @@ export const ScopedVariablesEditor = ({
 
 const UploadScopedVariables = ({ setScopedVariables }: UploadScopedVariablesI) => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
-    console.log(fileData, progress, status)
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
