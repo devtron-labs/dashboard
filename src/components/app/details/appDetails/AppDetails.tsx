@@ -215,8 +215,6 @@ export const Details: React.FC<DetailsType> = ({
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
-    const [isAppDeployed, setIsAppDeployed] = useState<boolean>(false)
-    const [resourcePollingStarted, setResourcePollingStarted] = useState<boolean>(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
         imageScanDeployInfoId: 0,
         severityCount: { critical: 0, moderate: 0, low: 0 },
@@ -235,6 +233,7 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsRequestRef = useRef(null)
     const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
+    const pollResourceTreeRef = useRef(true)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -338,6 +337,7 @@ export const Details: React.FC<DetailsType> = ({
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)
+                    pollResourceTreeRef.current = false
                     return
                 }
                 appDetailsRef.current = {
@@ -352,15 +352,18 @@ export const Details: React.FC<DetailsType> = ({
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
                 }
-                setIsAppDeployed(true)
+                pollResourceTreeRef.current = true
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
                 setLoadingDetails(false)
             })
+        if (pollResourceTreeRef.current) {
+            fetchResourceTree()
+        }
     }
 
-    async function callResourceTreeAPI() {
+    const fetchResourceTree = () => {
         fetchResourceTreeInTime(params.appId, params.envId, 25000)
             .then((response) => {
                 if (
@@ -490,14 +493,6 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [pollingIntervalID])
 
-    useEffect(() => {
-        if (isAppDeployed && !resourcePollingStarted) {
-            callResourceTreeAPI()
-            setInterval(callResourceTreeAPI, interval)
-            setResourcePollingStarted(true)
-        }
-    }, [isAppDeployed, resourcePollingStarted])
-
     async function handleHibernate(e) {
         try {
             setHibernating(true)
@@ -506,7 +501,6 @@ export const Details: React.FC<DetailsType> = ({
             )
             await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             await callAppDetailsAPI()
-            await callResourceTreeAPI()
             toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
             setHibernateConfirmationModal('')
         } catch (err) {
@@ -597,8 +591,6 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     setRotateModal={isAppDeployment ? setRotateModal : null}
-                    loadingDetails={loadingDetails}
-                    loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
                 />
             </div>
@@ -735,7 +727,7 @@ export const Details: React.FC<DetailsType> = ({
                 </ConfirmationDialog>
             )}
             {rotateModal && (
-                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} callResourceTreeAPI={callAppDetailsAPI} />
+                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} />
             )}
         </React.Fragment>
     )
