@@ -597,6 +597,8 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     setRotateModal={isAppDeployment ? setRotateModal : null}
+                    loadingDetails={loadingDetails}
+                    loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
                 />
             </div>
