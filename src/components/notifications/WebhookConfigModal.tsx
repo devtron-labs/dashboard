@@ -143,7 +143,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             isFormValid = isFormValid && this.state.isValid[key];
             return isFormValid;
         }, true);
-        console.log(isFormValid)
         if (!isFormValid) {
             state.form.isLoading = false;
             state.form.isError = true;
