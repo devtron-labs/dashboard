@@ -79,3 +79,69 @@ export interface ScopedVariablesI {
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI
+
+export const ScopedVariablesSchema = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    definitions: {
+        AttributeType: {
+            type: 'string',
+            enum: ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global'],
+        },
+        IdentifierType: {
+            type: 'string',
+            enum: ['ApplicationName', 'EnvName', 'ClusterName'],
+        },
+        Definition: {
+            type: 'object',
+            properties: {
+                varName: { type: 'string' },
+                dataType: { type: 'string', enum: ['json', 'yaml', 'primitive'] },
+                varType: { type: 'string', enum: ['private', 'public'] },
+                description: { type: 'string' },
+            },
+            required: ['varName', 'dataType', 'varType', 'description'],
+        },
+        VariableValue: {
+            type: 'object',
+            properties: {
+                value: { type: 'string' },
+            },
+            required: ['value'],
+        },
+        AttributeValue: {
+            type: 'object',
+            properties: {
+                variableValue: { $ref: '#/definitions/VariableValue' },
+                attributeType: { $ref: '#/definitions/AttributeType' },
+                attributeParams: {
+                    type: 'object',
+                    additionalProperties: { type: 'string' },
+                },
+            },
+            required: ['variableValue', 'attributeType', 'attributeParams'],
+        },
+        Variables: {
+            type: 'object',
+            properties: {
+                definition: { $ref: '#/definitions/Definition' },
+                attributeValue: {
+                    type: 'array',
+                    items: { $ref: '#/definitions/AttributeValue' },
+                },
+            },
+            required: ['definition', 'attributeValue'],
+        },
+        Payload: {
+            type: 'object',
+            properties: {
+                variables: {
+                    type: 'array',
+                    items: { $ref: '#/definitions/Variables' },
+                },
+                userId: { type: 'integer' },
+            },
+            required: ['variables'],
+        },
+    },
+    $ref: '#/definitions/Payload',
+}

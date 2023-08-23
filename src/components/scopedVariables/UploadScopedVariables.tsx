@@ -1,14 +1,13 @@
 import React from 'react'
 import ScopedVariablesInput from './ScopedVariablesInput'
-import Descriptor from './Descriptor'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import ScopedVariablesEditor from './ScopedVariablesEditor'
 import { useFileReader } from './utils/hooks'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { validator, downloadData } from './utils/helpers'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { ReadFileAs, LoadScopedVariablesI, ScopedVariablesEditorI, UploadScopedVariablesI } from './types'
+import { ReadFileAs, LoadScopedVariablesI, UploadScopedVariablesI } from './types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
@@ -46,48 +45,6 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
                     <p className="load-scoped-variables-container__error-typography">Upload failed</p>
                 </div>
             )}
-        </div>
-    )
-}
-
-export const ScopedVariablesEditor = ({
-    variablesData,
-    name,
-    abortRead,
-    setScopedVariables,
-}: ScopedVariablesEditorI) => {
-    const handleSave = () => {
-        setScopedVariables(variablesData)
-        abortRead()
-    }
-    return (
-        <div className="flex column dc__content-space h-100 default-bg-color">
-            <Descriptor />
-            <div className="uploaded-variables-editor-background">
-                <div className="uploaded-variables-editor-container">
-                    <div className="uploaded-variables-editor-infobar">
-                        <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
-                            Upload <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
-                        </p>
-
-                        <button className="uploaded-variables-editor-infobar__abort-read-btn" onClick={abortRead}>
-                            <Close width={'20px'} height={'20px'} />
-                        </button>
-                    </div>
-
-                    <CodeEditor mode="yaml" value={variablesData} noParsing={false} height={'100%'} />
-
-                    <div className="uploaded-variables-editor-footer">
-                        <button className="uploaded-variables-editor-footer__cancel-button" onClick={abortRead}>
-                            Cancel
-                        </button>
-
-                        <button className="uploaded-variables-editor-footer__save-button" onClick={handleSave}>
-                            Save
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
     )
 }

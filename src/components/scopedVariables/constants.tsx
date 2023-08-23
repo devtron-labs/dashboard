@@ -67,23 +67,35 @@ export const VARIABLES_TEMPLATE = `variables:
     varType: private
     description: This is variable 1
   attributeValue:
-  - value: value1
-    attributeType: ApplicationEnv
-    attributeParams:
-      ApplicationName: app1
-      EnvName: dev
-  - value: value11
-    attributeType: Env
-    attributeParams:
-      EnvName: prod
+    - variableValue: 
+       value: value1
+      attributeType: ApplicationEnv
+      attributeParams:
+        ApplicationName: app1
+        EnvName: dev
+    - variableValue: 
+       value: value1
+      attributeType: Env
+      attributeParams:
+        EnvName: prod
 - definition:
     varName: variable2
     dataType: primitive
     varType: public
     description: This is variable 2
   attributeValue:
-  - value: value2
-    attributeType: Application
-    attributeParams:
-      ApplicationName: app2
-`
+    - variableValue:
+       value: value2
+      attributeType: Application
+      attributeParams:
+        ApplicationName: app2`
+
+export const ROUTES = {
+    GET_SCOPED_VARIABLES_JSON: 'global/variables/detail',
+    SCOPED_VARIABLES: 'global/variables',
+}
+
+// TOAST Messages while saving file
+export const SAVE_SUCCESS_TOAST_MESSAGE = 'Scoped variables saved successfully'
+export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
+export const PARSE_ERROR_TOAST_MESSAGE = 'Error while parsing file'

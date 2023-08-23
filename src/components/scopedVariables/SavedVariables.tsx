@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { LoadScopedVariables, ScopedVariablesEditor } from './UploadScopedVariables'
+import { LoadScopedVariables } from './UploadScopedVariables'
+import ScopedVariablesEditor from './ScopedVariablesEditor'
 import { TableList, TableItem } from './Table'
 import { useFileReader, useClickOutside } from './utils/hooks'
 import CodeEditor from '../CodeEditor/CodeEditor'
