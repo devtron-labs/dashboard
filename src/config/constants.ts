@@ -746,3 +746,7 @@ export const ManifestMessaging = {
     CANCEL: 'Cancel',
     TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }
+
+export const SERVER_ERROR_CODES = {
+    RELEASE_NOT_FOUND: "7001"
+}

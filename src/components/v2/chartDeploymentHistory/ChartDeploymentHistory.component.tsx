@@ -13,7 +13,7 @@ import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.png';
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
+import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -167,7 +167,7 @@ function ChartDeploymentHistory({
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (Array.isArray(errors.errors) && String(errors.errors[0].code) === "7001") {
+                if (Array.isArray(errors.errors) && String(errors.errors[0].code) === SERVER_ERROR_CODES.RELEASE_NOT_FOUND) {
                     setReleaseNotFound(true)
                 } else {
                     showError(errors)
