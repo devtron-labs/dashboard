@@ -4,13 +4,13 @@ import './customChart.scss'
 import UploadChartModal from './UploadChartModal'
 import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-upload.svg'
-import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-down-n6.svg'
+import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { downloadCustomChart, getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically, versionComparator } from '../common'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnKeyPressed } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnEscKeyPressed } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -38,7 +38,7 @@ export default function CustomChartList() {
     }
 
     const closeOnEsc = (e: any) => {
-        closeOnKeyPressed(e, closeChartVersionsModal, e.keyCode, e.key)
+        closeOnEscKeyPressed(e, closeChartVersionsModal)
     }
 
     useEffect(() => {
@@ -160,7 +160,7 @@ export default function CustomChartList() {
         }
     }
 
-    const randerChartVersionsModalBody = (chartData: ChartDetailType) : JSX.Element => {
+    const renderChartVersionsModalBody = (chartData: ChartDetailType) : JSX.Element => {
         return (
             <>
                 <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center">
@@ -194,7 +194,7 @@ export default function CustomChartList() {
         )
     }
 
-    const randerDevtronChipTag = (chartData: ChartDetailType) : JSX.Element => { 
+    const renderDevtronChipTag = (chartData: ChartDetailType) : JSX.Element => { 
         return !chartData.isUserUploaded ? (
             <span className="pl-6 pr-6 ml-8 flex bcb-1 h-20 br-6">
                 <DevtronIcon className="icon-dim-20" />
@@ -236,7 +236,7 @@ export default function CustomChartList() {
                 >
                     <InfoColourBar
                         message={customChartInfoBarMessage()}
-                        classname="dc__content-start dc__no-top-border dc__no-left-border dc__no-right-border bw-1 bcv-1 ev-2 w-100 custom-chart-info-bar"
+                        classname="dc__content-start bcv-1 w-100 custom-chart-info-bar dc__border-bottom-v2 pt-6 pb-6 pl-16 pr-16"
                         Icon={HelpIcon}
                         iconClass="fcv-5 icon-dim-20"
                     />
@@ -249,7 +249,7 @@ export default function CustomChartList() {
                         <div className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
                             <div className="flexbox">
                                 <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
-                                {randerDevtronChipTag(chartData)}
+                                {renderDevtronChipTag(chartData)}
                             </div>
                             <div>
                                 {chartData.version}
@@ -273,7 +273,7 @@ export default function CustomChartList() {
                                 interactive
                                 arrow={false}
                                 placement="bottom-end"
-                                content={randerChartVersionsModalBody(chartData)}
+                                content={renderChartVersionsModalBody(chartData)}
                                 trigger="click"
                                 onMount={onChartVersionsModalMount}
                                 onClickOutside={closeChartVersionsModal}
@@ -283,7 +283,7 @@ export default function CustomChartList() {
                                     {downloadInProgress === chartData.name ? (
                                         <Progressing pageLoader size={16} />
                                     ) : (
-                                        <Download className="icon-dim-16 ic-download-n6" />
+                                        <Download className="icon-dim-16 scn-6 dc__flip-180" />
                                     )}
                                 </div>
                             </Tippy>

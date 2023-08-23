@@ -8,7 +8,7 @@ import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION } from '../../config'
+import { DOCUMENTATION, SERVER_ERROR_CODES } from '../../config'
 import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from './types'
 
 export default function UploadChartModal({ closeUploadPopup }: UploadChartModalType) {
@@ -32,9 +32,9 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
             .catch((error) => {
                 setUploadState(UPLOAD_STATE.ERROR)
                 if (Array.isArray(error.errors)) {
-                    if (error.errors[0].code === '5001') {
+                    if (error.errors[0].code === SERVER_ERROR_CODES.CHART_ALREADY_EXISTS) {
                         setErrorData({ title: error.errors[0]?.userMessage || "", message: ['Try uploading another chart'] })
-                    } else if (error.errors[0].code === '5002') {
+                    } else if (error.errors[0].code === SERVER_ERROR_CODES.CHART_NAME_RESERVED) {
                         setErrorData({ title: error.errors[0]?.userMessage || "", message: [error.errors[0]?.internalMessage || ""] })
                     } else {
                         setErrorData({
