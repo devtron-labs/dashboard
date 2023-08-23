@@ -144,7 +144,7 @@ export function ConfigMapSecretContainer({
                 _draftData.value?.result &&
                 (_draftData.value.result.draftState === 1 || _draftData.value.result.draftState === 4)
             ) {
-                setDraftData(_draftData.value.result)
+                setDraftData({..._draftData.value.result, unAuthorized: _draftData.value.result.dataEncrypted})
                 draftId = _draftData.value.result.draftId
                 draftState = _draftData.value.result.draftState
             } else {
@@ -407,7 +407,7 @@ export function ProtectedConfigMapSecretDetails({
                 if (componentType === 'secret' && !data.unAuthorized) {
                     const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
                     if (secretResult?.configData?.length) {
-                        _baseData = secretResult.configData[0]
+                        _baseData = {...secretResult.configData[0], unAuthorized: false}
                     }
                 }
             }
@@ -429,7 +429,7 @@ export function ProtectedConfigMapSecretDetails({
             if (selectedTab === 3) {
                 return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? baseData
-                    : JSON.parse(draftData.data).configData[0]
+                    : {...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted}
             } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
                 return null
             } else {
