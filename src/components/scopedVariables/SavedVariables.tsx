@@ -4,29 +4,30 @@ import { TableList, TableItem } from './Table'
 import { useFileReader, useClickOutside } from './utils/hooks'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
-import { downloadData } from './utils/helpers'
+import { downloadData, parseIntoYAMLString } from './utils/helpers'
 import { FileView, SavedVariablesViewI, VariableListItemI } from './types'
 import {
     DOWNLOAD_FILE_NAME,
     DOWNLOAD_TEMPLATE_NAME,
     DROPDOWN_ITEMS,
     VARIABLES_TEMPLATE,
-    SAMPLE_DATA,
     TABLE_LIST_HEADINGS,
 } from './constants'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
-const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariablesViewI) => {
+const SavedVariablesView = ({ scopedVariablesData, setScopedVariables }: SavedVariablesViewI) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableListItemI[]>(null)
     const dropdownRef = useRef(null)
+    // No need to make it a state since editor here is read only and we don't need to update it
+    let scopedVariables = parseIntoYAMLString(scopedVariablesData)
 
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
     useEffect(() => {
         if (status?.status == null) {
-            const variables = SAMPLE_DATA?.Variables?.map((item) => {
+            const variables = scopedVariablesData?.variables?.map((item) => {
                 return {
                     name: item.definition?.varName,
                     description: item.definition?.description,
@@ -46,6 +47,7 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
     })
 
     const handleDownload = (item: string) => {
+        if (!scopedVariables) return
         switch (item) {
             case DROPDOWN_ITEMS[0]:
                 downloadData(scopedVariables, DOWNLOAD_FILE_NAME, 'application/x-yaml')

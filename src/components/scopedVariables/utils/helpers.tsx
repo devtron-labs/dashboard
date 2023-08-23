@@ -1,4 +1,5 @@
 import yaml from 'js-yaml'
+import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { ValidatorT } from '../types'
 import {
     EMPTY_FILE_STATUS,
@@ -61,4 +62,12 @@ export const downloadData = (data: string, filename: string, type: string) => {
     a.download = filename
     a.click()
     window.URL.revokeObjectURL(url)
+}
+
+export const parseIntoYAMLString = (data: any) => {
+    return yaml.safeDump(data)
+}
+
+export const getScopedVariablesJSON = () => {
+    return get('global/variables/detail')
 }

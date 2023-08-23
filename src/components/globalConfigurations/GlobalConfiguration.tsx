@@ -550,9 +550,13 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
-                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
-                    <ScopedVariables />
-                </Route>,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                    path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                    render={() => {
+                        return <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                    }}
+                />,
             ]}
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>

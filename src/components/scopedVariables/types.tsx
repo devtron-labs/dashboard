@@ -11,7 +11,7 @@ export enum FileView {
 }
 
 export interface SavedVariablesViewI {
-    scopedVariables: any
+    scopedVariablesData: any
     setScopedVariables: (variables: any) => void
 }
 
@@ -72,6 +72,10 @@ export interface TableListI {
 export interface TableItemI {
     columnsData?: string[]
     width?: string[]
+}
+
+export interface ScopedVariablesI {
+    isSuperAdmin: boolean
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI

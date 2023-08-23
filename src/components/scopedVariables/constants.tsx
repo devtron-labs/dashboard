@@ -60,7 +60,7 @@ export const EMPTY_FILE_STATUS = {
     status: false,
 }
 
-export const VARIABLES_TEMPLATE = `Variables:
+export const VARIABLES_TEMPLATE = `variables:
 - definition:
     varName: variable1
     dataType: primitive
@@ -87,69 +87,3 @@ export const VARIABLES_TEMPLATE = `Variables:
     attributeParams:
       ApplicationName: app2
 `
-
-// WIll remove it on API integration
-export const SAMPLE_DATA = {
-    Variables: [
-        {
-            definition: {
-                varName: 'variable1',
-                dataType: 'primitive',
-                varType: 'private',
-                description: 'This is variable 1',
-            },
-            attributeValue: [
-                {
-                    value: 'value1',
-                    attributeType: 'ApplicationEnv',
-                    attributeParams: {
-                        ApplicationName: 'app1',
-                        EnvName: 'dev',
-                    },
-                },
-                {
-                    value: 'value11',
-                    attributeType: 'Env',
-                    attributeParams: {
-                        EnvName: 'prod',
-                    },
-                },
-            ],
-        },
-        {
-            definition: {
-                varName: 'variable2',
-                dataType: 'primitive',
-                varType: 'public',
-                description: 'This is variable 2',
-            },
-            attributeValue: [
-                {
-                    value: 'value2',
-                    attributeType: 'Application',
-                    attributeParams: {
-                        ApplicationName: 'app2',
-                    },
-                },
-            ],
-        },
-        {
-            definition: {
-                varName: 'A very descriptive variable name, which is really long',
-                dataType: 'primitive',
-                varType: 'public',
-                description:
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            },
-            attributeValue: [
-                {
-                    value: 'value3',
-                    attributeType: 'Application',
-                    attributeParams: {
-                        ApplicationName: 'app3',
-                    },
-                },
-            ],
-        },
-    ],
-}
