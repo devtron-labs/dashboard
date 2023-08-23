@@ -52,6 +52,15 @@ export default function DeploymentConfigFormCTA({
         )
     }
 
+    const handleOnClick = (e) => {
+        if (_disabled || isApprovalPending) {
+            if (approveDisabled) {
+                e.stopPropagation()
+            }
+        }
+        return false
+    }
+
     const renderButton = () => {
         return (
             <ConditionalWrap
@@ -69,6 +78,7 @@ export default function DeploymentConfigFormCTA({
                             : 'base-deployment-template-save-changes-button'
                     }`}
                     disabled={state.unableToParseYaml}
+                    onClick={handleOnClick}
                 >
                     {loading ? (
                         <Progressing />
