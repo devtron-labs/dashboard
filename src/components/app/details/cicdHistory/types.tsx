@@ -155,6 +155,8 @@ export interface SidebarType {
     triggerHistory: Map<number, History>
     hasMore: boolean
     setPagination: React.Dispatch<React.SetStateAction<{ offset: number; size: number }>>
+    fetchIdData?: FetchIdDataStatus
+    handleViewAllHistory?: () => void
 }
 
 export interface HistorySummaryCardType {
@@ -259,6 +261,12 @@ export enum DeploymentStageType {
     PRE = 'PRE',
     DEPLOY = 'DEPLOY',
     POST = 'POST',
+}
+
+export enum FetchIdDataStatus {
+    SUCCESS = 'SUCCESS',
+    FETCHING = 'FETCHING',
+    SUSPEND = 'SUSPEND',
 }
 
 export const TERMINAL_STATUS_COLOR_CLASS_MAP = {
