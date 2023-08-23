@@ -139,9 +139,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
     }
 
-    const toggleClipBoardPort = (event: React.MouseEvent, port: string) => {
+    const toggleClipBoardPort = (event: React.MouseEvent, node: string) => {
         event.stopPropagation()
-        copyToClipboard(port, () => setCopiedPortName(port))
+        copyToClipboard(node, () => setCopiedPortName(node))
     }
 
     const getPodRestartCount = (node: iNode) => {
@@ -205,13 +205,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                 <ol className="pl-20 pr-20">
                     {node?.port.map((val) => {
                         return (
-                            <div className="flex dc__content-space">
+                            <div className="flex">
                                 <li key={node.name}>
                                     {node.name}:{val}
                                 <Clipboard
-                                    className="ml-5 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
+                                    className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, val)
+                                        toggleClipBoardPort(event, node.name)
                                     }}
                                 />
                                 </li>
@@ -225,21 +225,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
                 return (
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        trigger="click"
-                        additionalContent={additionalTippyContent(node)}
-                        interactive={true}
-                    >
+                    <>
                         <div onClick={(e) => stopPropagation(e)}>
                             <span>
                                 {node.name}.{node.namespace}:
                             </span>
-                            <span className="fs-13 dc__truncate-text mw-18 cursor">
-                            {node.port[0]}  
+                            <span>
+                                {node.port[0]}
                                 <span>
                                     <Clipboard
                                         className="resource-action-tabs__clipboard icon-dim-12 pointer ml-4 mr-4"
@@ -248,10 +240,23 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         }}
                                     />
                                 </span>
-                                +{node.port.length - 1} more
                             </span>
                         </div>
-                    </TippyCustomized>
+                        <TippyCustomized
+                            noHeadingBorder={true}
+                            theme={TippyTheme.white}
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            trigger="click"
+                            additionalContent={additionalTippyContent(node)}
+                            interactive={true}
+                        >
+                            <span className="cursor" onClick={(e) => stopPropagation(e)}>
+                                +{node.port.length - 1} more
+                            </span>
+                        </TippyCustomized>
+                    </>
                 )
             } else if(node.port?.length ===  1){
                 return `${node.name}.${node.namespace} : ${node.port}`
@@ -276,9 +281,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
                     </span>
                 </Tippy>
-            ) : ( null
-
-            )
+            ) : ( null )
         }
 
         return nodes.map((node, index) => {
