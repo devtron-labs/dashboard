@@ -153,12 +153,12 @@ export function ConfigMapSecretContainer({
             if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && _cmSecretData?.status === 'fulfilled') {
                 if (_cmSecretData.value?.result?.configData?.length) {
                     const _result = _cmSecretData.value.result
+                    _result.configData[0].overridden = data.overridden
                     if (draftId || draftState) {
                         _result.configData[0].draftId = draftId
                         _result.configData[0].draftState = draftState
                     }
                     if (componentType === 'secret' && _draftData?.status === 'fulfilled' && _draftData.value?.result) {
-                        _result.configData[0].overridden = data.overridden
                         if (
                             cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
                             _draftData.value.result.draftState === 3 &&
@@ -185,7 +185,6 @@ export function ConfigMapSecretContainer({
             ) {
                 if (_draftData.value.result.draftState === 3) {
                     const dataFromDraft = JSON.parse(_draftData.value.result.data)
-                    const configData = dataFromDraft.configData[0]
                     update(index, { ...dataFromDraft, unAuthorized: dataFromDraft.dataEncrypted })
                 } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
