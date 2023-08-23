@@ -295,6 +295,7 @@ export const SourceTypeMap = {
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
+export const MomentInvalidDate = 'Invalid date'
 
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
