@@ -655,6 +655,7 @@ export function ProtectedConfigMapSecretDetails({
                         : null
                 }
                 reloadEnvironments={reloadEnvironments}
+                isAppAdmin={draftData.isAppAdmin}
             />
         )
     }
