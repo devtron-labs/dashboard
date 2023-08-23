@@ -61,7 +61,7 @@ export default function ChartSelectorDropdown({
 
     if (!isUnSet) {
         return (
-            <span className="fs-13 fw-6 cn-9 flex pointer" data-testid="select-chart-type-dropdown">
+            <span className="fs-13 fw-6 cn-9 flex" data-testid="select-chart-type-dropdown">
                 {selectedChart?.name}
             </span>
         )
@@ -133,7 +133,7 @@ export default function ChartSelectorDropdown({
                                         )}
                                     </div>
                                     {(chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description) && (
-                                        <div className="fs-12 fw-4 cn-7">
+                                        <div className="fs-12 fw-4 cn-7 lh-18 mt-4">
                                             {chartsMetadata?.[chart.name]?.['chartDescription'] ||
                                                 chart.description.substring(0, 250)}
                                             &nbsp;

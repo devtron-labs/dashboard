@@ -281,7 +281,16 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
                     </span>
                 </Tippy>
-            ) : ( null )
+            ) : (
+                <span>
+                    <Clipboard
+                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                        onClick={(event) => {
+                            toggleClipBoard(event, nodeName)
+                        }}
+                    />
+                </span>
+            )
         }
 
         return nodes.map((node, index) => {
