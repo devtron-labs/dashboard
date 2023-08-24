@@ -1,13 +1,9 @@
 import { Routes } from '../../config'
-import { post, get, put, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { post, get, put } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartListResponse, ChartUploadResponse, ChartUploadType } from './types'
 
 export const getChartList = (): Promise<ChartListResponse> => {
     return get(Routes.CUSTOM_CHART_LIST)
-}
-
-export const downloadCustomChart = (id: number): Promise<ResponseType> => {
-    return get(`${Routes.DOWNLOAD_CUSTOM_CHART}/${id}`)
 }
 
 export const validateChart = (payload: FormData): Promise<ChartUploadResponse> => {

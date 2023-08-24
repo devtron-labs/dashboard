@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT, DOCUMENTATION } from '../../config'
+import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT, DOCUMENTATION, Routes } from '../../config'
 import './customChart.scss'
 import UploadChartModal from './UploadChartModal'
 import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
@@ -8,9 +8,9 @@ import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-up.
 import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { downloadCustomChart, getChartList } from './customChart.service'
+import { getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically, versionComparator } from '../common'
-import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnEscKeyPressed } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnEscKeyPressed, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -145,10 +145,8 @@ export default function CustomChartList() {
         const chartName = e.currentTarget.dataset.name
         try {
             setDownloadInProgress(chartName)
-            const response = await downloadCustomChart(chartRefId)
-            const b = await (response as any).blob()
             const a = document.createElement('a')
-            a.href = URL.createObjectURL(b)
+            a.href = `${Host}/${Routes.DOWNLOAD_CUSTOM_CHART}/${chartRefId}`
             a.download = `${chartName}_${chartVersion}.tgz`
             a.click()
             toast.success('Chart Downloaded Successfully')

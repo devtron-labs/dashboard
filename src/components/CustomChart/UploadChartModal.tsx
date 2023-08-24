@@ -156,7 +156,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
         return (
             <div className="flex column" style={{ width: '100%', height: '310px' }}>
                 <img src={imgSrc} alt="image" style={{ height: '100px' }} className="mb-10" />
-                <h4 className="fw-6 fs-16">{title}</h4>
+                <h4 className="fw-6 fs-16 text-center">{title}</h4>
                 {descriptionList.map((description) => (
                     <p className="fs-13 fw-4 m-0">{description}</p>
                 ))}
