@@ -215,7 +215,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                         </li>
                         <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
                             <div className={`mb-6 flexbox fs-12 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
-                                <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
+                                <Edit className="icon-dim-14 mr-4 mt-2 edit-yaml-icon" />
                                 {NODE_DETAILS_TABS.yaml}
                             </div>
                             {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
