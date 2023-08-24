@@ -97,7 +97,7 @@ export default function ClusterTerminal({
     const [showPodExistPopup, setShowPodExistPopup] = useState<boolean>()
     const [forceDelete, setForceDelete] = useState<boolean>()
     const [manifestErrors, setManifestErrors] = useState<string[]>()
-    const [debugMode, setDebugMode] = useState<boolean>(selectedNodeName.value !== AUTO_SELECT.value)
+    const [debugMode, setDebugMode] = useState<boolean>(false)
     const [isManifestAvailable, setManifestAvailable] = useState<boolean>()
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
@@ -459,7 +459,6 @@ export default function ClusterTerminal({
             if (node !== selectedNodeName.value) {
                 setSocketConnection(SocketConnectionType.DISCONNECTED)
                 setSelectedNodeName({ label: node, value: node })
-                setDebugMode(node !== AUTO_SELECT.value)
             }
         } else {
             setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -468,9 +467,9 @@ export default function ClusterTerminal({
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
             setResourceData(null)
-            setDebugMode(false)
             setSelectedNodeName(nodeGroups[0].options[0])
         }
+        setDebugMode(false)
     }
 
     function closeTerminalModal(e: any, skipRedirection?: boolean): void {

@@ -132,7 +132,7 @@ export default function ResourceList() {
     const isOverview = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
-    const hideSyncWarning: boolean = loader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
+    const hideSyncWarning: boolean = loader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader) 
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -479,6 +479,7 @@ export default function ResourceList() {
                 updateResourceSelectionData(defaultSelected, true)
                 setShowErrorState(false)
                 setErrorMsg('')
+                setLastDataSync(!lastDataSync)
             }
             setLoader(false)
         } catch (err) {
@@ -612,7 +613,6 @@ export default function ResourceList() {
                     namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
             const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
-            setLastDataSync(!lastDataSync)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
             }
