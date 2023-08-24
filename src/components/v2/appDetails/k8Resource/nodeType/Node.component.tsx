@@ -228,7 +228,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     <>
                         <div onClick={(e) => stopPropagation(e)}>
                             <span>
-                                {node.name}.{node.namespace}:
+                                {node.name}.{node.namespace}:{node.port[0]}
                             </span>
                         </div>
                         <TippyCustomized
@@ -243,7 +243,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             interactive={true}
                         >
                             <div className="dc__hover-icon">
-                            <span className="dc__link dc__link_over fs-13 dc__truncate-text mw-18 cursor" data-key={node.name}>
+                            <span className="dc__link dc__link_over fs-13 dc__truncate-text mw-18 cursor ml-5" data-key={node.name}>
                                 +{node.port.length - 1} more
                             </span>
                             </div>
@@ -251,7 +251,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     </>
                 )
             } else if(node.port?.length ===  1){
-                return `${node.name}.${node.namespace} : ${node.port}`
+                return `${node.name}.${node.namespace}:${node.port}`
             } else {
                 return "Port Number is missing"
             }
