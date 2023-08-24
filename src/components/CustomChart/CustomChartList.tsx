@@ -9,13 +9,12 @@ import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getChartList } from './customChart.service'
-import { sortObjectArrayAlphabetically, versionComparator } from '../common'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState, TippyCustomized, TippyTheme, InfoColourBar, closeOnEscKeyPressed, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
-import { SortingOrder } from '../app/types'
+import { processChartData } from './CustomChartList.utils'
 
 export default function CustomChartList() {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
@@ -61,33 +60,7 @@ export default function CustomChartList() {
             })
     }
 
-    const processChartData = (data: ChartDetailType[]): ChartDetailType[] => {
-        let resultData = []
-        const uniqueChartList = new Map<string, ChartDetailType>()
-        data.forEach((element) => {
-            const chartDetail = uniqueChartList.get(element.name)
-            if (chartDetail) {
-                chartDetail.count++
-                chartDetail.versions.push({ id: element.id, version: element.version })
-                if (chartDetail.version < element.version) {
-                    chartDetail.version = element.version
-                    chartDetail.chartDescription = element.chartDescription
-                }
-            } else {
-                uniqueChartList.set(element.name, {
-                    ...element,
-                    count: 0,
-                    versions: [{ id: element.id, version: element.version }],
-                })
-            }
-        })
-        uniqueChartList.forEach((element) => {
-            element.versions?.sort((a, b) => versionComparator(a, b, 'version', SortingOrder.DESC))
-            resultData.push(element)
-        })
-        resultData = sortObjectArrayAlphabetically(resultData, 'name')
-        return resultData
-    }
+    
 
     const openUploadPopup = (): void => {
         setShowUploadPopup(true)
@@ -100,8 +73,8 @@ export default function CustomChartList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={openUploadPopup} className="cta h-32 flex">
-                <Upload className="icon-dim-14 dc__no-svg-fill mr-8"  data-testid="upload-custom-chart-button"/>
+            <button onClick={openUploadPopup}  data-testid="upload-custom-chart-button" className="cta h-32 flex">
+                <Upload className="icon-dim-14 dc__no-svg-fill mr-8"/>
                 Upload Chart
             </button>
         )
@@ -161,12 +134,13 @@ export default function CustomChartList() {
     const renderChartVersionsModalBody = (chartData: ChartDetailType) : JSX.Element => {
         return (
             <>
-                <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center">
+                <div className="fs-12 fw-6 cn-9 bc-n50 pt-4 pb-4 pl-8 pr-8 dc__top-radius-4 dc__text-center" data-testid="chart-versions-modal">
                     Select Version
                 </div>
                 <div className="mb-4 mxh-140 dc__overflow-scroll">
                     {chartData.versions.map((versionsList) => (
                         <div
+                            data-testid="chart-version-row"
                             data-versionid={versionsList.id}
                             data-version={versionsList.version}
                             data-name={chartData.name}
@@ -203,7 +177,7 @@ export default function CustomChartList() {
 
     const renderChartList = (): JSX.Element => {
         return (
-            <div className="chart-list">
+            <div className="chart-list" data-testid="custom-charts-list" >
                 <div className="flexbox dc__content-space cn-9 fw-6 fs-16 mb-20">
                     <div className="flex left">
                         {CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
@@ -281,7 +255,7 @@ export default function CustomChartList() {
                                     {downloadInProgress === chartData.name ? (
                                         <Progressing pageLoader size={16} />
                                     ) : (
-                                        <Download className="icon-dim-16 scn-6 dc__flip-180" />
+                                            <Download className="icon-dim-16 scn-6 dc__flip-180" data-testid={`download-${chartData.name}`} />
                                     )}
                                 </div>
                             </Tippy>
