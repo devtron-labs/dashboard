@@ -3,19 +3,25 @@ import { toast } from 'react-toastify'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
-import { postScopedVariables, parseYAMLString } from './utils/helpers'
-import { ScopedVariablesEditorI, ScopedVariablesSchema } from './types'
+import { postScopedVariables, parseYAMLStringToObj } from './utils/helpers'
+import { ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE, SAVE_SUCCESS_TOAST_MESSAGE } from './constants'
 
-const ScopedVariablesEditor = ({ variablesData, name, abortRead, setScopedVariables }: ScopedVariablesEditorI) => {
+const ScopedVariablesEditor = ({
+    variablesData,
+    name,
+    abortRead,
+    setScopedVariables,
+    jsonSchema,
+}: ScopedVariablesEditorI) => {
     const [isLoading, setIsLoading] = useState(false)
     const [editorData, setEditorData] = useState(variablesData)
 
     const handleSave = async () => {
         try {
             setIsLoading(true)
-            const variablesObj = parseYAMLString(editorData)
+            const variablesObj = parseYAMLStringToObj(editorData)
 
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
                 toast.error(PARSE_ERROR_TOAST_MESSAGE)
@@ -62,7 +68,7 @@ const ScopedVariablesEditor = ({ variablesData, name, abortRead, setScopedVariab
                         noParsing={false}
                         height="100%"
                         onChange={handleEditorChange}
-                        validatorSchema={ScopedVariablesSchema}
+                        validatorSchema={jsonSchema}
                     />
 
                     <div className="uploaded-variables-editor-footer">

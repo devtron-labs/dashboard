@@ -69,7 +69,7 @@ export const parseIntoYAMLString = (data: any) => {
     return yaml.safeDump(data)
 }
 
-export const parseYAMLString = (data: string) => {
+export const parseYAMLStringToObj = (data: string) => {
     return yaml.safeLoad(data)
 }
 

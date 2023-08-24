@@ -16,7 +16,7 @@ import {
 } from './constants'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
-const SavedVariablesView = ({ scopedVariablesData, setScopedVariables }: SavedVariablesViewI) => {
+const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchema }: SavedVariablesViewI) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableListItemI[]>(null)
@@ -68,6 +68,7 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables }: SavedVa
                 name={fileData?.name}
                 abortRead={abortRead}
                 setScopedVariables={setScopedVariables}
+                jsonSchema={jsonSchema}
             />
         )
     }

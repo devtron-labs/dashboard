@@ -8,23 +8,37 @@ import { ScopedVariablesI } from './types'
 import './styles.scss'
 
 const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
-    const [scopedVariables, setScopedVariables] = useState(null)
+    const [scopedVariables, setScopedVariables] = useState<object>(null)
     const [loadingScopedVariables, scopedVariablesData, scopedVariablesError] = useAsync(getScopedVariablesJSON, [])
+    const [schemaError, setSchemaError] = useState<boolean>(false)
+    const [jsonSchema, setJsonSchema] = useState<object>(null)
 
     useEffect(() => {
-        if (scopedVariablesData?.result) {
-            setScopedVariables(scopedVariablesData.result)
+        try {
+            if (scopedVariablesData?.result) {
+                const parsedSchema = JSON.parse(scopedVariablesData.result.jsonSchema)
+                setJsonSchema(parsedSchema)
+                setScopedVariables(scopedVariablesData.result.payload)
+            }
+        } catch (e) {
+            setSchemaError(true)
         }
     }, [scopedVariablesData, loadingScopedVariables])
 
     if (!isSuperAdmin) return <ErrorScreenNotAuthorized />
     if (loadingScopedVariables) return <Progressing pageLoader />
-    if ((!loadingScopedVariables && !scopedVariablesData) || scopedVariablesError) return <Reload />
+    if (schemaError || (!loadingScopedVariables && !scopedVariablesData) || scopedVariablesError) return <Reload />
 
     if (scopedVariables)
-        return <SavedVariablesView scopedVariablesData={scopedVariables} setScopedVariables={setScopedVariables} />
+        return (
+            <SavedVariablesView
+                scopedVariablesData={scopedVariables}
+                setScopedVariables={setScopedVariables}
+                jsonSchema={jsonSchema}
+            />
+        )
 
-    return <UploadScopedVariables setScopedVariables={setScopedVariables} />
+    return <UploadScopedVariables setScopedVariables={setScopedVariables} jsonSchema={jsonSchema} />
 }
 
 export default ScopedVariables
