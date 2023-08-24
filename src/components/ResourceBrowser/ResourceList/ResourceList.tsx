@@ -8,7 +8,7 @@ import {
     processK8SObjects,
     sortObjectArrayAlphabetically,
 } from '../../common'
-import { showError, Progressing, ErrorScreenManager, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -26,14 +26,12 @@ import {
 import { OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
-    ERROR_SCREEN_LEARN_MORE,
-    ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
     K8S_EMPTY_GROUP,
     ORDERED_AGGREGATORS,
     SIDEBAR_KEYS,
 } from '../Constants'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -313,7 +311,7 @@ export default function ResourceList() {
         if (!isSuperAdmin) return
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
             updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal}  '${selectedCluster.label}'`)
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal} '${selectedCluster.label}'`)
         } else {
             removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
