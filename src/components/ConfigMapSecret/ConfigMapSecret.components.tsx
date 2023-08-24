@@ -488,7 +488,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === 'secret' && data.unAuthorized,
+            componentType === 'secret' && (data.unAuthorized ?? draftData?.unAuthorized),
         )
     }
 
