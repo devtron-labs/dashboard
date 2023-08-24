@@ -5,6 +5,7 @@ import {
     CHARACTER_ERROR_MAX,
     REQUIRED_FIELD_MSG,
     ERROR_MESSAGE_FOR_VALIDATION,
+    CustomErrorMessage,
 } from '../../config/constantMessaging'
 
 export class ValidationRules {
@@ -144,5 +145,20 @@ export class ValidationRules {
     repository = (repository: string): { isValid: boolean; message: string } => {
         if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
         else return { isValid: true, message: null }
+    }
+
+    customTag = (value: string): { message: string[] | []; isValid: boolean } => {
+        let _message = []
+        const regExp = new RegExp(PATTERNS.CUSTOM_TAG)
+        if (!value?.length) return { isValid: false, message: [REQUIRED_FIELD_MSG] }
+        else {
+            if (value.length >= 128) _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
+            if ( !(value.includes('{x}') || value.includes('{X}'))) _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
+            if (!regExp.test(value)) _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
+        }
+        if (_message.length) {
+            return { isValid: false, message: _message }
+        } else return { isValid: true, message: [] }
+       
     }
 }

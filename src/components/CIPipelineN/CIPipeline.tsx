@@ -141,6 +141,10 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
+        customTag:{
+            message: [], 
+            isValid: true
+        }
     })
     const [ciPipeline, setCIPipeline] = useState<CIPipelineDataType>({
         active: true,

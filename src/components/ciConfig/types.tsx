@@ -15,7 +15,7 @@ import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/det
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { CustomTagType, PipelineFormType } from '../workflowEditor/types'
+import { CustomTagType, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 
 export interface ArgsFieldSetProps {
@@ -135,6 +135,8 @@ export interface AdvancedConfigOptionsProps {
     setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
     defaultTag?: string[], //remove later on
     customTagObject?: CustomTagType
+    formDataErrorObj?: PipelineFormDataErrorType
+    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
 }
 
 interface LanguageBuilderType {

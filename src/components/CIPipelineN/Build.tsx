@@ -256,7 +256,6 @@ export function Build({
             </>
         )
     }
-console.log(defaultTag)
 
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">
@@ -277,6 +276,8 @@ console.log(defaultTag)
                         setLoadingState={setLoadingState}
                         defaultTag={defaultTag}
                         customTagObject={customTagObject} //remove when customTagObject is used from context
+                        formDataErrorObj={formDataErrorObj}
+                        setFormDataErrorObj={setFormDataErrorObj}
                     />
                 </>
             )}
