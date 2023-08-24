@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef } from 'react'
+import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { getLoginInfo, showError, Progressing, Host, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
@@ -23,7 +23,7 @@ import {
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { useAsync } from '../helpers/Helpers'
+import { importComponentFromFELibrary, useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
@@ -44,7 +44,8 @@ const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/Resour
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-export const mainContext = createContext(null)
+export const mainContext = createContext<any>(null)
+const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -72,6 +73,9 @@ export default function NavigationRoutes() {
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    const [environmentId, setEnvironmentId] = useState(null)
+    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
+    const [isAirgapped, setIsAirGapped] = useState(false)
 
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
@@ -210,6 +214,23 @@ export default function NavigationRoutes() {
         }
     }
 
+    async function getAirGapEnvironmentValue() {
+        if (typeof Storage === 'undefined' || !localStorage.getItem('isAirGapped')) {
+            try {
+                const { result } = await getEnvironmentData()
+                setIsAirGapped(result.isAirGapEnvironment)
+                if (typeof Storage !== 'undefined') {
+                    localStorage.setItem('isAirGapped', result.isAirGapEnvironment)
+                }
+            } catch (err) {
+                setIsAirGapped(false)
+            }
+        } else {
+            const isAirGap = JSON.parse(localStorage.getItem('isAirGapped'))
+            setIsAirGapped(isAirGap)
+        }
+    }
+
     useEffect(() => {
         if (window._env_.K8S_CLIENT) {
             setPageState(ViewType.FORM)
@@ -217,6 +238,9 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
+            if (getEnvironmentData) {
+                getAirGapEnvironmentValue()
+            }
             getCurrentServerInfo()
         }
     }, [])
@@ -300,6 +324,7 @@ export default function NavigationRoutes() {
                     setModuleInInstallingState,
                     installedModuleMap,
                     currentServerInfo,
+                    isAirgapped,
                 }}
             >
                 <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
@@ -312,6 +337,7 @@ export default function NavigationRoutes() {
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
                             isSuperAdmin={isSuperAdmin}
+                            isAirgapped={isAirgapped}
                         />
                     )}
                     {serverMode && (
@@ -384,7 +410,9 @@ export default function NavigationRoutes() {
                                         ]}
                                         {isSuperAdmin && !window._env_.K8S_CLIENT && (
                                             <Route path={URLS.JOB}>
-                                                <Jobs />
+                                                <AppContext.Provider value={contextValue}>
+                                                    <Jobs />
+                                                </AppContext.Provider>
                                             </Route>
                                         )}
                                         <Route>

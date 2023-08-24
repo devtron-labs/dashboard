@@ -32,6 +32,7 @@ import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { EMAIL_AGENT } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
+import { channel } from 'diagnostics_channel'
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {}
 
@@ -159,7 +160,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
                 smtpConfigOptions: result.smtpConfigOptions,
-                channelOptions: result.channelOptions,
+                channelOptions: result.channelOptions?.map(channel=>{
+                    channel.value = channel.value + "-" + channel.data.dest
+                    return channel
+                }),
                 view: ViewType.FORM,
             })
         })

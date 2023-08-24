@@ -120,6 +120,11 @@ export function getChannelConfigs(): Promise<ResponseType> {
     return get(URL)
 }
 
+export function getDefaultConfig(): Promise<ResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel/config`
+    return get(URL)
+}
+
 export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
     return get(`${Routes.NOTIFIER}/variables`)
 }
@@ -274,7 +279,7 @@ export function updateNotificationRecipients(
             if (r.configId) {
                 return {
                     configId: r.configId,
-                    dest: r.dest === 'slack' ? r.dest : emailChannel,
+                    dest: r.dest === 'slack' || r.dest === "webhook" ? r.dest : emailChannel,
                     recipient: '',
                 }
             } else

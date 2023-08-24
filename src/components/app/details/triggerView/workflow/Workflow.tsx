@@ -175,6 +175,8 @@ export class Workflow extends Component<WorkflowProps> {
                     index={this.props.index}
                     isCITriggerBlocked={node.isCITriggerBlocked}
                     ciBlockState={node.ciBlockState}
+                    filteredCIPipelines={this.props.filteredCIPipelines}
+                    environmentLists={this.props.environmentLists}
                 />
             )
         }
@@ -246,10 +248,10 @@ export class Workflow extends Component<WorkflowProps> {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
                 let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
-                edgeList.push({
-                    startNode: node,
-                    endNode: endNode,
-                })
+                    edgeList.push({
+                        startNode: node,
+                        endNode: endNode,
+                    })
             })
             return edgeList
         }, [])
@@ -257,6 +259,9 @@ export class Workflow extends Component<WorkflowProps> {
 
     onClickNodeEdge = (nodeId: number) => {
         this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+        this.props.history.push({
+            search: `approval-node=${nodeId}`
+        })
     }
 
     renderEdgeList() {

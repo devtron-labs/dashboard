@@ -131,7 +131,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
                         </span>
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
-                                data-testid="click-on-env"
+                                data-testid={`${envData.namespace}-click-on-env`}
                                 to={`/application-group/${envData.id}`}
                                 data-noapp={!envData.appCount}
                                 onClick={handleClusterClick}

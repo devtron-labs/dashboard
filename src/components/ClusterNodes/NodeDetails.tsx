@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
-    ButtonWithLoader,
-    copyToClipboard,
-    handleUTCTime,
-    ToastBodyWithButton,
-    filterImageList,
-} from '../common'
+import { ButtonWithLoader, copyToClipboard, handleUTCTime, ToastBodyWithButton, filterImageList } from '../common'
 import {
     showError,
     Progressing,
@@ -13,6 +7,7 @@ import {
     useBreadcrumb,
     toastAccessDenied,
     ServerErrors,
+    Reload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -55,17 +50,20 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
-import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
+import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
+import { createTaintsList } from '../cluster/cluster.util'
+import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import { URLS } from '../../config'
 
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
-    const selectedNodeName: SelectGroupType = {label: '', options:[{label: nodeName,value: nodeName}]}
+    const selectedNodeName: SelectGroupType = { label: '', options: [{ label: nodeName, value: nodeName }] }
     const nodeListRef = useRef([selectedNodeName])
-    const [loader, setLoader] = useState(false)
+    const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
@@ -91,12 +89,12 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
+    const isNodeAuto: boolean = nodeName === AUTO_SELECT.value
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
-        setLoader(true)
         getNodeCapacity(clusterId, nodeName)
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
@@ -134,8 +132,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     useEffect(() => {
-        getData(patchData)
-    }, [])
+        nodeListRef.current = [selectedNodeName]
+        if (nodeName !== AUTO_SELECT.value) {
+            getData(patchData)
+        }
+    }, [nodeName])
 
     useEffect(() => {
         if (imageList?.length && nodeDetail?.k8sVersion) {
@@ -171,50 +172,54 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
-        let _searchParam = '?tab='
-        if (_tabIndex === 0) {
-            _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
-        } else if (_tabIndex === 1) {
-            _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
-        } else if (_tabIndex === 2) {
-            _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
-        } else if (_tabIndex === 3) {
-            _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
+        if (nodeName !== AUTO_SELECT.value) {
+            let _searchParam = '?tab='
+            if (_tabIndex === 0) {
+                _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
+            } else if (_tabIndex === 1) {
+                _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
+            } else if (_tabIndex === 2) {
+                _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
+            } else if (_tabIndex === 3) {
+                _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
+            }
+            push({
+                pathname: location.pathname,
+                search: _searchParam,
+            })
         }
-        push({
-            pathname: location.pathname,
-            search: _searchParam,
-        })
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
+        const cursorValue = isNodeAuto ? 'cursor-not-allowed' : 'cursor'
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
+                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.summary}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
+                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
                         {NODE_DETAILS_TABS.yaml}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
-                <li className="tab-list__tab pointer" data-tab-index="2" onClick={changeNodeTab}>
+                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.nodeConditions}
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
                 {isSuperAdmin && (
-                    <li className="tab-list__tab pointer" data-tab-index="3" onClick={changeNodeTab}>
+                    <li className="tab-list__tab cursor" data-tab-index="3" onClick={changeNodeTab}>
                         <div
                             className={`mb-6 flexbox fs-13 tab-hover${
                                 selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
                             }`}
+                            data-testid="node-details-terminal-tab"
                         >
                             <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
                             {NODE_DETAILS_TABS.debug}
@@ -238,7 +243,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     linked: true,
                 },
                 ':nodeName': {
-                    component: nodeName,
+                    component: isNodeAuto ? 'Selecting node' : nodeName,
                     linked: false,
                 },
             },
@@ -247,7 +252,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     )
 
     const renderBreadcrumbs = (): JSX.Element => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return (
+            <span className={isNodeAuto ? 'dc__loading-dots' : ''}>
+                <BreadCrumb breadcrumbs={breadcrumbs} />
+            </span>
+        )
     }
 
     const noDataInSubTab = (tabName: string): JSX.Element => {
@@ -287,7 +296,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     interactive={true}
                 >
                     <Clipboard
-                        className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
                         onClick={() => {
                             copyToClipboard(`${key}=${value || ''}`, () => {
                                 setCopied(true)
@@ -345,7 +354,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     interactive={true}
                 >
                     <Clipboard
-                        className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
                         onClick={() => {
                             copyToClipboard(key, () => {
                                 setCopied(true)
@@ -385,7 +394,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className="cb-5 pointer flexbox fs-13 fw-6"
+                className="cb-5 cursor flexbox fs-13 fw-6"
                 onClick={() => {
                     onClickHandler(!condition)
                 }}
@@ -404,7 +413,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
                 <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(0)
                         }}
@@ -415,7 +424,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(1)
                         }}
@@ -426,7 +435,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
                     </li>
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(2)
                         }}
@@ -626,7 +635,12 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                   }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
-
+    const handleResourceClick=(e)=>{
+        const {name,namespace}=e.currentTarget.dataset
+        const beginpart=window.location.href.split('/clusters')[0]
+        const _url=`${beginpart}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
+        window.open(_url,'_blank')
+    }
     const renderPodHeaderCell = (
         columnName: string,
         sortingFieldName: string,
@@ -635,7 +649,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 pointer ${className} ${
+                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${
                     sortByColumnName === sortingFieldName ? 'sort-by' : ''
                 } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
                 onClick={() => {
@@ -694,8 +708,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <span
-                                                    className="dc__inline-block dc__ellipsis-right lh-20"
+                                                    className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
+                                                    data-name={pod.name}
+                                                    data-namespace={pod.namespace}
+                                                    onClick={handleResourceClick}
                                                 >
                                                     {pod.name}
                                                 </span>
@@ -712,7 +729,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <Clipboard
-                                                    className="ml-5 mt-5 pointer hover-only icon-dim-14"
+                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14"
                                                     onClick={() => {
                                                         copyToClipboard(pod.name, () => {
                                                             setCopied(true)
@@ -969,6 +986,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 clusterImageList={nodeImageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}
+                taints={createTaintsList(
+                    [{ nodeName: nodeName, nodeGroup: '', taints: nodeDetail.taints }],
+                    'nodeName',
+                )}
             />
         )
     }
@@ -1047,6 +1068,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
 
     if (loader) {
         return <Progressing pageLoader />
+    }
+
+    if (!loader && !nodeDetail) {
+        return <Reload />
     }
 
     return (

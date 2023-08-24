@@ -1,6 +1,8 @@
-import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
+import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -151,12 +153,6 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
-//TODO replace it everthere with DeploymentAppType from common constant
-export enum DeploymentAppType {
-    helm = 'helm',
-    argo_cd = 'argo_cd',
-    manifest_download = 'manifest_download'
-}
 
 export interface AppDetails {
     appId: number
@@ -187,7 +183,7 @@ export interface AppDetails {
     additionalData?: any
     clusterId?: number
     notes?: string
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean
     externalCi?: boolean
     clusterName?: string
@@ -228,6 +224,7 @@ export interface ResourceTree {
 export interface PodMetaData {
     containers: Array<string>
     initContainers: any
+    ephemeralContainers: any
     isNew: boolean
     name: string
     uid: string
@@ -251,6 +248,7 @@ export interface Node {
     group: string
     isSelected: boolean
     info: Info[]
+    port: number
     canBeHibernated: boolean
     isHibernated: boolean
 }
@@ -401,8 +399,13 @@ export interface NodeDetailPropsType extends LogSearchTermType {
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
+    selectedTab: (_tabName: string, _url?: string) => void
+    isDeleted: boolean
+    ephemeralContainerType?: string
+    ephemeralForm?: EphemeralForm
+    targetContainerOption?: OptionType[]
+    ephemeralFormAdvanced?: EphemeralFormAdvancedType
+    imageListOption?: OptionType[]
 }
 
 export interface TerminalComponentProps {
@@ -412,6 +415,11 @@ export interface TerminalComponentProps {
     selectedResource?: SelectedResourceType
     selectedContainer: Map<string, string>
     setSelectedContainer: (containerName: Map<string, string>) => void
+    containers: Options[]
+    setContainers?: React.Dispatch<React.SetStateAction<Options[]>>
+    selectedContainerName: string
+    setSelectedContainerName: React.Dispatch<React.SetStateAction<string>>
+    switchSelectedContainer: (string) => void
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
@@ -421,6 +429,8 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
 export interface OptionsBase {
     name: string;
     isInitContainer?: boolean
+    isEphemeralContainer?: boolean
+    isExternal?: boolean
 }
 
 export interface Options extends OptionsBase {

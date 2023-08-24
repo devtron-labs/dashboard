@@ -4,6 +4,8 @@ import { OptionType } from '../app/types'
 
 export const POLLING_INTERVAL = 30000
 
+export const DEFAULT_CLUSTER_ID = 1
+
 export const AuthenticationType = {
     BASIC: 'BASIC',
     ANONYMOUS: 'ANONYMOUS',
@@ -29,6 +31,7 @@ export interface DataListType{
     active: boolean
     defaultClusterComponent: number
     insecureSkipTlsVerify: boolean
+    proxyUrl: string
 }
 
 export interface SaveClusterPayloadType {
@@ -40,6 +43,7 @@ export interface SaveClusterPayloadType {
     prometheus_url: string,
     prometheusAuth: Record<string, string>,
     server_url: string,
+    proxyUrl: string,
 }
 
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'

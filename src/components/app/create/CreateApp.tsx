@@ -31,6 +31,7 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
+import GenericDescription from '../../common/Description/GenericDescription'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
@@ -60,6 +61,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 cloneAppId: true,
             },
             createAppLoader: false,
+            showClusterDescription: false,
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -113,11 +115,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid, appNameErrors: true })
     }
 
-    handleDescription = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-        const { form } = { ...this.state }
-        form.description = event.target.value
-        this.setState({ form })
-    }
 
     handleProject(item: number): void {
         let { form, isValid } = { ...this.state }
@@ -169,16 +166,20 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             return
         }
 
+        const genericNoteResponseBean = {
+            description: this.state.form.description,
+        }
+
         const request = {
             appName: this.state.form.appName,
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
+            description: genericNoteResponseBean,
             labels: labelTags,
         }
 
         if (this.props.isJobView) {
             request['appType'] = 2 // type 2 is for job type
-            request['description'] = this.state.form.description
         }
 
         this.setState({ disableForm: true, createAppLoader: true })
@@ -239,11 +240,21 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
+    updateCreateAppFormDescription = (description: string): void => {
+        const { form } = { ...this.state }
+        form.description = description
+        this.setState({ form })
+    }
+
     handleCloneAppChange = ({ value }): void => {
         let { form, isValid } = { ...this.state }
         form.cloneId = value
         isValid.cloneAppId = !!value
         this.setState({ form, isValid })
+    }
+
+    setAppDescription = () => {
+        this.setState({ showClusterDescription: true })
     }
 
     setTags = (tags: TagType[]): void => {
@@ -273,9 +284,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                    Create {this.props.isJobView ? 'job' : 'application'}
-                </h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Create {this.props.isJobView ? 'job' : 'application'}</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -301,49 +310,69 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
-                    <input
-                        ref={(node) => (this._inputAppName = node)}
-                        data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
-                        className="form__input"
-                        type="text"
-                        name="app-name"
-                        value={this.state.form.appName}
-                        placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
-                        autoComplete="off"
-                        autoFocus={true}
-                        tabIndex={1}
-                        onChange={this.handleAppname}
-                        required
-                    />
-                    <span className="form__error">
-                        {appNameErrors && !this.state.isValid.appName ? (
-                            <>
-                                <Error className="form__icon form__icon--error" />
-                                {errorObject[0].message} <br />
-                            </>
-                        ) : null}
-                    </span>
+                    <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
+                        <span className="form__label dc__required-field">
+                            {this.props.isJobView ? 'Job' : 'App'} Name
+                        </span>
+                        <input
+                            ref={(node) => (this._inputAppName = node)}
+                            data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
+                            className="form__input"
+                            type="text"
+                            name="app-name"
+                            value={this.state.form.appName}
+                            placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
+                            autoComplete="off"
+                            autoFocus={true}
+                            tabIndex={1}
+                            onChange={this.handleAppname}
+                            required
+                        />
+                        <span className="form__error">
+                            {appNameErrors && !this.state.isValid.appName ? (
+                                <>
+                                    <Error className="form__icon form__icon--error" />
+                                    {errorObject[0].message} <br />
+                                </>
+                            ) : null}
+                        </span>
+                    </div>
                     {!this.props.isJobView && (
                         <span className="form__text-field-info form__text-field-info--create-app">
                             <Info className="form__icon form__icon--info form__icon--create-app" />
                             Apps are NOT env specific and can be used to deploy to multiple environments.
                         </span>
                     )}
-                    {this.props.isJobView && (
-                        <>
-                            <span className="form__label">Description</span>
+                    <>
+                        <span className="form__label mt-16">Description</span>
+                        {this.state.showClusterDescription ? (
+                            <div className="h-auto">
+                                <GenericDescription
+                                    isClusterTerminal={false}
+                                    isSuperAdmin={true}
+                                    appId={this.state.form.appId}
+                                    initialDescriptionText=""
+                                    initialEditDescriptionView={false}
+                                    updateCreateAppFormDescription={this.updateCreateAppFormDescription}
+                                    tabIndex={2}
+                                />
+                            </div>
+                        ) : (
                             <textarea
                                 data-testid="description-textbox"
-                                className="form__textarea"
-                                name="job-description"
+                                className="form__textarea h-76-imp"
+                                name={this.props.isJobView ? 'job-description' : 'app-description'}
                                 value={this.state.form.description}
-                                placeholder="Describe this job"
+                                placeholder={
+                                    this.props.isJobView
+                                        ? 'Describe this job'
+                                        : 'Write a description for this application'
+                                }
                                 tabIndex={2}
-                                onChange={this.handleDescription}
+                                onFocus={this.setAppDescription}
                             />
-                        </>
-                    )}
+                        )}
+                    </>
                 </div>
 
                 <div className="form__row clone-apps dc__inline-block">
@@ -461,9 +490,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <ButtonWithLoader
                     rootClassName="flex cta h-36"
                     onClick={this.createApp}
-                    dataTestId={`${
-                        this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
-                    }-${this.props.isJobView ? 'job' : 'app'}-button-on-drawer`}
+                    dataTestId={`${this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'}-${
+                        this.props.isJobView ? 'job' : 'app'
+                    }-button-on-drawer`}
                     disabled={this.state.createAppLoader}
                     isLoading={this.state.createAppLoader}
                     loaderColor="white"

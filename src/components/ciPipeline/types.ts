@@ -2,7 +2,6 @@ import React from 'react'
 import {
     MaterialType,
     DockerConfigOverrideType,
-    FormType,
     CiPipelineSourceTypeOption,
     Githost,
     ErrorObj,
@@ -14,6 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
+import { PipelineFormType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number
@@ -279,13 +279,14 @@ export interface CIPipelineDataType {
     scanEnabled?: boolean
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    environmentId?: any
 }
 export interface CIPipelineState {
     code: number
     view: string
     showError: boolean
     loadingData: boolean
-    form: FormType
+    form: PipelineFormType
     ciPipeline: CIPipelineDataType
     sourcePipelineURL?: string //required Linked CI
     showDeleteModal: boolean
@@ -384,12 +385,12 @@ export interface BuildType {
     isSecurityModuleInstalled: boolean
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
-    getPluginData: (_formData?: FormType) => void
+    getPluginData: (_formData?: PipelineFormType) => void
 }
 
 export interface PreBuildType {
   presetPlugins: PluginDetailType[]
   sharedPlugins: PluginDetailType[]
-  mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+  mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
   isJobView?: boolean
 }

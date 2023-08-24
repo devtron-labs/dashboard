@@ -288,6 +288,7 @@ export const CLUSTER_TERMINAL_MESSAGING = {
     BUSYBOX: 'busybox',
     DEBUG_CLUSTER: ') which can be used to debug clusters and workloads.',
     PUBLIC_IMAGE: 'You can use publicly available custom images as well.',
+    DEBUG_MODE_TEXT: `The debug mode is helpful in scenarios where you can't access your Node by using an SSH connection. When enabled, a pod is created on the node, which opens an interactive shell on the Node.`,
 }
 
 export const SELECT_TITLE = {
@@ -361,8 +362,7 @@ export const nodeSelect = {
         marginBottom: 0,
     }),
 }
-export const DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE = 
-`
+export const DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE = `
 <br>
 Nothing to preview
 `
@@ -370,27 +370,28 @@ export const CLUSTER_DESCRIPTION_UPDATE_MSG = 'Saved changes'
 export const CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG =
     'Description cannot be empty. Please provide a description or cancel the changes.'
 export const CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG = 'Are you sure you want to discard your changes?'
-export const defaultClusterNote = 
-`## Describe this cluster
+export const defaultClusterNote = `## Describe this cluster
 
 Describe your Kubernetes cluster in a few words. This will help others understand the purpose and configuration of your cluster. For example, you might mention the number of worker nodes, the types of applications running on the cluster, or any relevant security considerations. Keep it concise and informative!
 `
-export const MARKDOWN_EDITOR_COMMANDS = [[
-    'header',
-    'bold',
-    'italic',
-    'strikethrough',
-    'link',
-    'quote',
-    'code',
-    'image',
-    'unordered-list',
-    'ordered-list',
-    'checked-list',
-]]
+export const MARKDOWN_EDITOR_COMMANDS = [
+    [
+        'header',
+        'bold',
+        'italic',
+        'strikethrough',
+        'link',
+        'quote',
+        'code',
+        'image',
+        'unordered-list',
+        'ordered-list',
+        'checked-list',
+    ],
+]
 
 export enum MARKDOWN_EDITOR_COMMAND_TITLE {
-    HEADER  = 'header',
+    HEADER = 'header',
     BOLD = 'bold',
     ITALIC = 'italic',
     STRIKETHROUGH = 'strikethrough',
@@ -408,7 +409,28 @@ export enum CLUSTER_PAGE_TAB {
     ABOUT = 'About Cluster',
 }
 
-export const MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT = { 
+export enum SocketConnectionType {
+    CONNECTING = 'CONNECTING',
+    CONNECTED = 'CONNECTED',
+    DISCONNECTING = 'DISCONNECTING',
+    DISCONNECTED = 'DISCONNECTED',
+}
+
+export const ERROR_MESSAGE = {
+    UNAUTHORIZED: 'Not authorized. You do not have permission to access the terminal for this application.',
+}
+
+export const POD_LINKS = {
+    POD_MANIFEST: 'View/Edit Pod Manifest',
+    POD_EVENTS: 'View Pod Events',
+}
+
+export interface ErrorMessageType {
+    message: string
+    reason: string
+}
+
+export const MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT = {
     [MARKDOWN_EDITOR_COMMAND_TITLE.HEADER]: 'Add heading text',
     [MARKDOWN_EDITOR_COMMAND_TITLE.BOLD]: 'Add bold text',
     [MARKDOWN_EDITOR_COMMAND_TITLE.ITALIC]: 'Add italic text',
@@ -436,6 +458,12 @@ export const PRE_FETCH_DATA_MESSAGING = {
     CONNECTING_TO_POD: 'Connecting to pod terminal.',
     TIMED_OUT_LINK: ' \u001b[38;5;196mTimed out\u001b[0m',
     FAILED_TEXT: '  \u001b[38;5;196mFailed\u001b[0m',
-    CHECK_POD_EVENTS: ' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m',
-    CHEKC_POD_MANIFEST: '\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m',
+    CHECK_POD_EVENTS: ` | \u001b[38;5;110m\u001b[4m${POD_LINKS.POD_EVENTS}\u001b[0m`,
+    CHECK_POD_MANIFEST: `\u001b[38;5;110m\u001b[4m${POD_LINKS.POD_MANIFEST}\u001b[0m`,
+    MULTIPLE_CONTAINER: 'Multiple containers detected. Connecting to first container',
 }
+
+export const defaultManifestErrorText =
+    "# Please edit the object below. Lines beginning with a '#' will be ignored,\n# and an empty file will abort the edit. If an error occurs while saving this file will be\n# reopened with the relevant failures.\n# \n"
+
+export const manifestCommentsRegex = /^(.*?apiVersion:)/s

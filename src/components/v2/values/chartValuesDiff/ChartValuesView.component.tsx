@@ -10,16 +10,15 @@ import {
     Option,
 } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
 import {
     Progressing,
     DeleteDialog,
-    EmptyState,
     RadioGroup,
     RadioGroupItem,
     ConditionalWrap,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -34,7 +33,6 @@ import {
     DeleteChartDialogProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
-    ErrorScreenWithInfoProps,
     UpdateApplicationButtonProps,
     ValueNameInputType,
 } from './ChartValuesView.type'
@@ -48,7 +46,6 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
-import { DeploymentAppTypes } from '../../../../config/constants'
 import { DELETE_ACTION } from '../../../../config'
 import Tippy from '@tippyjs/react'
 
@@ -386,6 +383,7 @@ export const DeleteChartDialog = ({
     handleDelete,
     toggleConfirmation,
     isCreateValueView,
+    disableButton,
 }: DeleteChartDialogProps) => {
     const closeConfirmation = () => {
         toggleConfirmation(false)
@@ -395,6 +393,7 @@ export const DeleteChartDialog = ({
     }
     return (
         <DeleteDialog
+            apiCallInProgress={disableButton}
             title={`Delete '${appName}' ?`}
             delete={handleForceDelete}
             closeDelete={closeConfirmation}
@@ -557,13 +556,3 @@ export const UpdateApplicationButton = ({
     )
 }
 
-export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <ErrorExclamation className="icon-dim-20 mb-10" />
-            </EmptyState.Image>
-            <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
-        </EmptyState>
-    )
-}

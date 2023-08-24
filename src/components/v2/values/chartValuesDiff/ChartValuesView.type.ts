@@ -4,7 +4,8 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import {AppMetaInfo} from "../../../app/types";
-import { DELETE_ACTION, DeploymentAppTypes } from '../../../../config'
+import { DELETE_ACTION } from '../../../../config'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -332,11 +333,6 @@ export enum ChartValuesViewActionTypes {
     selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
-// TOdo replace this with the common
-export enum DeploymentAppType {
-    Helm = 'helm',
-    GitOps = 'argo_cd',
-}
 
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
@@ -380,12 +376,13 @@ export interface ActiveReadmeColumnProps {
 }
 
 export interface CompareWithDropdownProps {
-    deployedChartValues: ChartValuesDiffOptionType[]
-    defaultChartValues: ChartValuesDiffOptionType[]
-    presetChartValues: ChartValuesDiffOptionType[]
-    deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
-    selectedVersionForDiff: ChartValuesDiffOptionType
+    deployedChartValues?: ChartValuesDiffOptionType[]
+    defaultChartValues?: ChartValuesDiffOptionType[]
+    presetChartValues?: ChartValuesDiffOptionType[]
+    deploymentHistoryOptionsList?: ChartValuesDiffOptionType[]
+    selectedVersionForDiff?: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
+    manifestView:boolean
 }
 
 export interface ValuesForDiffStateType {
@@ -395,9 +392,12 @@ export interface ValuesForDiffStateType {
     presetChartValues: ChartValuesDiffOptionType[]
     deploymentHistoryOptionsList: ChartValuesDiffOptionType[]
     selectedVersionForDiff: ChartValuesDiffOptionType
+    selectedManifestVersionForDiff: ChartValuesDiffOptionType
     deployedManifest: string
     valuesForDiff: Map<number, string>
-    selectedValuesForDiff: string
+    manifestsForDiff: Map<number, string>
+    selectedManifestForDiff?: string
+    selectedValuesForDiff: string 
 }
 
 export interface DeleteChartDialogProps {
@@ -405,6 +405,7 @@ export interface DeleteChartDialogProps {
     handleDelete: (deleteAction: DELETE_ACTION) => void
     toggleConfirmation: (isDeleteConfirmation:boolean) => void
     isCreateValueView?: boolean
+    disableButton?: boolean
 }
 
 export interface DeleteApplicationButtonProps {

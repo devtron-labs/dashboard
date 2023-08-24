@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
 import { DatePicker } from '../../../common';
-import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
@@ -37,6 +37,7 @@ import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclam
 import ReactGA from 'react-ga4';
 import './deploymentMetrics.scss';
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types';
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging';
 
 
 export default class DeploymentMetrics extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
@@ -390,37 +391,42 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     renderEmptyState() {
         let env = this.state.environments.find(e => e.value === Number(this.props.match.params.envId));
         let envName = env ? env.label : "";
-        return <div>
-            {this.renderInputs()}
-            <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <EmptyState >
-                    <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
-                    <EmptyState.Title><h4>No deployments found</h4></EmptyState.Title>
-                    <EmptyState.Subtitle>{`There are no deployments in this period on '${envName}'.`}</EmptyState.Subtitle>
-                </EmptyState>
+        return (
+            <div>
+                {this.renderInputs()}
+                <div
+                    className="dc__position-rel"
+                    style={{ backgroundColor: 'var(--N000)', height: 'calc(100vh - 150px' }}
+                >
+                    <GenericEmptyState
+                        image={AppNotDeployed}
+                        title={EMPTY_STATE_STATUS.RENDER_EMPTY_STATE.TITILE}
+                        subTitle={`There are no deployments in this period on '${envName}'.`}
+                    />
+                </div>
             </div>
-        </div>
+        )
     }
 
     renderNoEnvironmentView() {
-        return <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
-            <EmptyState >
-                <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
-                <EmptyState.Title><h4>Deployment Metrics</h4></EmptyState.Title>
-                <EmptyState.Subtitle>This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.</EmptyState.Subtitle>
-            </EmptyState>
-        </div >
+        return <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
+            <GenericEmptyState
+                image={SelectEnvImage}
+                title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
+                subTitle={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.SUBTITLE}
+        />
+        </div>
     }
 
     renderSelectEnvironmentView() {
         return <div>
             {this.renderInputs()}
-            <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <EmptyState >
-                    <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
-                    <EmptyState.Title><h4>Select an Environment</h4></EmptyState.Title>
-                    <EmptyState.Subtitle>Please select an Enviroment to view deployment metrics.</EmptyState.Subtitle>
-                </EmptyState>
+            <div className="dc__position-rel" style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
+                <GenericEmptyState
+                    image={SelectEnvImage}
+                    title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.SUBTITLE}
+                />
             </div>
         </div>
     }

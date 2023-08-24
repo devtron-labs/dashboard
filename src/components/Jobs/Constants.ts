@@ -39,6 +39,7 @@ export const JOB_LIST_HEADERS = {
     LastRunAt: 'LAST RUN AT',
     LastSuccessAt: 'LAST SUCCESS AT',
     Description: 'Description',
+    RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT'
 }
 
 export const YET_TO_RUN = 'Yet to run'
@@ -59,6 +60,9 @@ export const JobsFilterTypeText = {
     SearchStatus: 'Search job status',
     ProjectText: 'Projects',
     SearchProject: 'Search Project',
+    ENVIRONMENT: 'environment',
+    EnvironmentText: 'Environments',
+    SearchEnvironment: 'Search Environment',
 }
 
 export const JobsStatusConstants = {
@@ -69,6 +73,10 @@ export const JobsStatusConstants = {
     PROJECT: {
         pluralLower: 'projects',
         lowerCase: 'project',
+    },
+    ENVIRONMENT: {
+        pluralLower: 'environments',
+        lowerCase: 'environment',
     },
 }
 

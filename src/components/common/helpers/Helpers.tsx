@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { showError, useThrottledEffect, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib';
+import {
+    showError,
+    useThrottledEffect,
+    OptionType,
+    noop,
+    DeploymentAppTypes,
+    getLoginInfo,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
-import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
@@ -13,7 +19,6 @@ import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
-import { DeploymentAppTypes } from '../../../config';
 
 const commandLineParser = require('command-line-parser')
 
@@ -827,32 +832,6 @@ export function FragmentHOC({ children, ...props }) {
     )
 }
 
-interface UseSearchString {
-    queryParams: URLSearchParams
-    searchParams: {
-        [key: string]: string
-    }
-}
-
-export function useSearchString(): UseSearchString {
-    const location = useLocation()
-    const queryParams: URLSearchParams = useMemo(() => {
-        const queryParams = new URLSearchParams(location.search)
-        return queryParams
-    }, [location])
-
-    // const searchParams={}
-    // for (let [key, value] of queryParams.entries()){
-    //     searchParams[key]=value
-    // }
-    const searchParams = Array.from(queryParams.entries()).reduce((agg, curr, idx) => {
-        agg[curr[0]] = curr[1]
-        return agg
-    }, {})
-
-    return { queryParams, searchParams }
-}
-
 export const sortOptionsByLabel = (optionA, optionB) => {
     if (optionA.label < optionB.label) {
         return -1
@@ -1226,17 +1205,29 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
 export const getDeploymentAppType = (
     allowedDeploymentTypes: DeploymentAppTypes[],
     selectedDeploymentAppType: string,
-    isVirtualEnvironment: boolean
+    isVirtualEnvironment: boolean,
 ): string => {
-  if (isVirtualEnvironment) {
-      return DeploymentAppTypes.MANIFEST_DOWNLOAD
-  } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
-      return ''
-  } else if (
-      selectedDeploymentAppType &&
-      allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
-  ) {
-      return selectedDeploymentAppType
-  }
-  return allowedDeploymentTypes[0]
+    if (isVirtualEnvironment) {
+        return DeploymentAppTypes.MANIFEST_DOWNLOAD
+    } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+        return ''
+    } else if (
+        selectedDeploymentAppType &&
+        allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
+    ) {
+        return selectedDeploymentAppType
+    }
+    return allowedDeploymentTypes[0]
+}
+
+export const hasApproverAccess = (approverList: string[]): boolean => {
+    const loginInfo = getLoginInfo()
+    let hasAccess = false
+    for (const approver of approverList) {
+        if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
+            hasAccess = true
+            break
+        }
+    }
+    return hasAccess
 }

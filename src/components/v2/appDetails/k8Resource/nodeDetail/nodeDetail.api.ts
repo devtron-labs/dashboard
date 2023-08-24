@@ -1,6 +1,7 @@
 import { Routes } from '../../../../../config';
-import { post, put } from '@devtron-labs/devtron-fe-common-lib';
-import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
+import { DeploymentAppTypes, post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
+import { AppDetails, AppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
+import { ParamsType } from './nodeDetail.type';
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
@@ -76,8 +77,8 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
     const applicationObject =
-        appDetails.deploymentAppType == DeploymentAppType.argo_cd ? `${appDetails.appName}` : appDetails.appName
-    
+        appDetails.deploymentAppType == DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
+
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
@@ -97,14 +98,13 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             },
         },
         appType: appDetails.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP,
-        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        deploymentType: appDetails.deploymentAppType == DeploymentAppTypes.HELM ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
     }
     return requestBody
 }
-
 
 export const updateManifestResourceHelmApps = (
     ad: AppDetails,
@@ -143,7 +143,7 @@ export const getLogsURL = (
     clusterId?: number,
     namespace?: string,
 ) => {
-    const applicationObject = ad.deploymentAppType == DeploymentAppType.argo_cd ? `${ad.appName}` : ad.appName
+    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId =
         ad.appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
@@ -155,7 +155,7 @@ export const getLogsURL = (
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
         const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
-        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        const deploymentType = ad.deploymentAppType == DeploymentAppTypes.HELM ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
         if (appType  === 0){
             logsURL += `&namespace=${ad.namespace}`
         }
@@ -175,4 +175,55 @@ export const createResource = (
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
     return post(Routes.CREATE_RESOURCE, requestData)
+}
+
+export const generateEphemeralUrl = (
+    requestData,
+    clusterId: number,
+    environmentId: number,
+    namespace: string,
+    appName: string,
+    appId: number,
+    appType: string,
+    isResourceBrowserView: boolean,
+    params: ParamsType,
+) => {
+    const appIds =
+        appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
+            : getAppId(clusterId, namespace, appName)
+    let url: string = 'k8s/resources/ephemeralContainers'
+    if (isResourceBrowserView) {
+        url += `?identifier=${params.clusterId}`
+    } else {
+        url += `?identifier=${appIds}&appType=${appType === AppType.DEVTRON_APP ? '0' : '1'}`
+    }
+
+    return post(url, requestData)
+}
+
+export const deleteEphemeralUrl = (
+    requestData,
+    clusterId: number,
+    environmentId: number,
+    namespace: string,
+    appName: string,
+    appId: number,
+    appType: string,
+    isResourceBrowserView: boolean,
+    params: ParamsType,
+) => {
+    const appIds =
+        appType == AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
+            : getAppId(clusterId, namespace, appName)
+
+    let url: string = 'k8s/resources/ephemeralContainers'
+    const appTypes = appType === AppType.DEVTRON_APP ? '0' : '1'
+    if (isResourceBrowserView) {
+        url += `?identifier=${params.clusterId}`
+    } else {
+        url += `?identifier=${appIds}&appType=${appTypes}`
+    }
+    return trash(url, requestData)
 }

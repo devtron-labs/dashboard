@@ -5,6 +5,8 @@ import * as queryString from 'query-string'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import moment from 'moment'
+import { JobPipeline } from '../app/types'
+import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 export const getInitialJobListState = (payloadParsedFromUrl): JobListState => {
     return {
@@ -65,13 +67,15 @@ export const jobListModal = (jobContainers) => {
             return {
                 id: job.jobId || 0,
                 name: job.jobName || 'NA',
-                description: job.description || '',
+                description: job.description.description || '',
                 ciPipelines: pipelineModal(job.ciPipelines),
                 defaultPipeline: getDefaultPipeline(job.ciPipelines),
             }
         }) ?? []
     )
 }
+
+
 
 const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
     return (
@@ -92,6 +96,8 @@ const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
                         ? handleUTCTime(ciPipeline.lastSuccessAt, true)
                         : '-',
                 status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
+                environmentName: ciPipeline.environmentName || '-',
+                lastTriggeredEnvironmentName: ciPipeline.lastTriggeredEnvironmentName
             }
         }) ?? []
     )
@@ -114,6 +120,8 @@ const getDefaultPipeline = (ciPipelines) => {
                     ? handleUTCTime(ciPipeline.lastSuccessAt, true)
                     : '-',
             status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
+            environmentName: ciPipeline.environmentName || '-',
+            lastTriggeredEnvironmentName: ciPipeline.lastTriggeredEnvironmentName,
         }
     }
     return {
@@ -152,6 +160,7 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
     let search = params.search || ''
     let appStatus = params.appStatus || ''
     let teams = params.team || ''
+    let environments = params.environment || ''
     const teamsArr = teams
         .toString()
         .split(',')
@@ -162,11 +171,17 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
         .split(',')
         .filter((status) => status != '')
         .map((status) => status)
+    const environmentsArr = environments
+        .toString()
+        .split(',')
+        .filter((environment) => environment != '')
+        .map((environment) => Number(environment))
 
     // update master filters data (check/uncheck)
     const filterApplied = {
         teams: new Set<number>(teamsArr),
         appStatus: new Set<string>(appStatusArr),
+        environments: new Set<number>(environmentsArr),
     }
 
     const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
@@ -187,6 +202,15 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
             label: status.label,
             isSaved: true,
             isChecked: filterApplied.appStatus.has(status.key),
+        }
+    })
+
+    _masterFilters.environments = masterFilters.environments.map((status) => {
+        return {
+            key: status.key,
+            label: status.label,
+            isSaved: true,
+            isChecked: filterApplied.environments.has(status.key),
         }
     })
     setMasterFilters(_masterFilters)
@@ -211,6 +235,7 @@ export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams
         teams: teamsArr,
         appNameSearch: search,
         appStatuses: appStatusArr,
+        environments: environmentsArr,
         sortBy: sortBy,
         sortOrder: sortOrder,
         offset: offset,
@@ -227,4 +252,19 @@ export const populateQueryString = (searchParams: string): Record<string, any> =
         query[key] = qs[key]
     }
     return query
+}
+
+export const environmentName = (jobPipeline: JobPipeline | JobCIPipeline): string => {
+    const status = jobPipeline.status === "notdeployed" ? "" : jobPipeline.status;
+    if (status === "") {
+        if (jobPipeline.environmentName === "") {
+            return DEFAULT_ENV
+        }
+        return jobPipeline.environmentName
+    } else {
+        if (jobPipeline.lastTriggeredEnvironmentName === "") {
+            return DEFAULT_ENV
+        }
+        return jobPipeline.lastTriggeredEnvironmentName
+    }
 }

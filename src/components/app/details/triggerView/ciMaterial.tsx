@@ -14,7 +14,7 @@ import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
-
+import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
@@ -39,6 +39,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
+        if(this.props.isJobView && this.props.environmentLists?.length > 0) {
+            let envId = this.state.selectedCIPipeline?.environmentId || 0
+            const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+            this.props.setSelectedEnv(_selectedEnv)
+        }
     }
 
     async getSecurityModuleStatus(): Promise<void> {
@@ -114,6 +119,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
     }
 
+    renderEnvironments = () => {
+        return <EnvironmentList isBuildStage={false} environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
+    }
+
     handleStartBuildAction = (e) => {
         e.stopPropagation()
         this.context.onClickTriggerCINode()
@@ -150,7 +159,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         return (
             <ButtonWithLoader
-                rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
                 dataTestId="ci-trigger-start-build-button"
                 loaderColor="#ffffff"
                 disabled={!canTrigger}
@@ -175,7 +184,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderMaterialStartBuild = (canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
-                {!this.props.isJobView && this.renderIgnoreCache()}
+                {!this.props.isJobView ? this.renderIgnoreCache() : this.renderEnvironments()}
                 {this.renderCTAButton(canTrigger)}
             </div>
         )

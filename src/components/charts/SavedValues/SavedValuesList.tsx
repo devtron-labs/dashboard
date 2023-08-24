@@ -17,6 +17,7 @@ import {
     useBreadcrumb,
     DeleteDialog,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SavedValueType } from './types'
 import {
@@ -30,6 +31,7 @@ import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
@@ -201,27 +203,25 @@ export default function SavedValuesList() {
         )
     }
 
+    const renderClearSearchButton = () => {
+        return (
+             <button onClick={clearSearch} className="add-link cta flex">
+                Clear search
+            </button>
+        )
+    }
+
     const renderEmptyState = (title?: string, subTitle?: string, showClearButton?: boolean): JSX.Element => {
         return (
-            <div style={{ height: 'calc(100vh - 235px)' }}>
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={emptyCustomChart} alt={title || 'No values saved for this chart'} />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="title" data-testid = "no-matching-preset-values-message">{title || 'No values saved for this chart'}</h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>
-                        {subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}&nbsp;
-                    </EmptyState.Subtitle>
-                    {showClearButton && (
-                        <EmptyState.Button>
-                            <button onClick={clearSearch} className="add-link cta flex" data-testid = "preset-values-clear-search-button">
-                                Clear search
-                            </button>
-                        </EmptyState.Button>
-                    )}
-                </EmptyState>
+            <div className='dc__position-rel' style={{ height: 'calc(100vh - 235px)' }}>
+                <GenericEmptyState
+                    image={emptyCustomChart}
+                    heightToDeduct={235}
+                    title={title || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.TITLE}
+                    subTitle={subTitle || EMPTY_STATE_STATUS.SAVED_VALUES_EMPTY_STATE.SUBTITLE}
+                    isButtonAvailable={showClearButton}
+                    renderButton={renderClearSearchButton}
+                />
             </div>
         )
     }
