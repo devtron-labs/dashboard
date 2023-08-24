@@ -221,10 +221,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             </>
             )
         }
-        var _flag=false
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
-                _flag=true
                 return (
                     <>
                         <div onClick={(e) => stopPropagation(e)}>
