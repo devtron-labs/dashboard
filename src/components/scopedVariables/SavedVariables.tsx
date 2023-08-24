@@ -14,12 +14,14 @@ import {
     VARIABLES_TEMPLATE,
     TABLE_LIST_HEADINGS,
 } from './constants'
+import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
 const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchema }: SavedVariablesViewI) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableListItemI[]>(null)
+    const [showEditView, setShowEditView] = useState<boolean>(false)
     const dropdownRef = useRef(null)
     // No need to make it a state since editor here is read only and we don't need to update it
     let scopedVariables = parseIntoYAMLString(scopedVariablesData)
@@ -59,6 +61,19 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchem
                 setShowDropdown(false)
                 break
         }
+    }
+
+    if (showEditView) {
+        return (
+            <ScopedVariablesEditor
+                variablesData={scopedVariables}
+                name={fileData?.name}
+                abortRead={null}
+                setScopedVariables={setScopedVariables}
+                jsonSchema={jsonSchema}
+                setShowEditView={setShowEditView}
+            />
+        )
     }
 
     if (status?.status === true) {
@@ -106,6 +121,14 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchem
                     <div className="saved-variables-editor-container">
                         <div className="scoped-variables-editor-infobar">
                             <p className="scoped-variables-editor-infobar__typography">Last saved file</p>
+
+                            <button
+                                className="scoped-variables-editor-infobar__btn"
+                                onClick={() => setShowEditView(true)}
+                            >
+                                <ICPencil width={20} height={20} />
+                            </button>
+
                             <button className="scoped-variables-editor-infobar__btn" onClick={handleDropdownClick}>
                                 <ICFileDownload width={20} height={20} />
                             </button>

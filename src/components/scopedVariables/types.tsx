@@ -48,6 +48,7 @@ export interface ScopedVariablesEditorI {
     jsonSchema: object
     abortRead: () => void
     setScopedVariables: (variables: any) => void
+    setShowEditView?: (show: boolean) => void
 }
 
 export interface UploadScopedVariablesI {
