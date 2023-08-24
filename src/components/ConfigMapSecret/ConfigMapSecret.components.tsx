@@ -144,7 +144,7 @@ export function ConfigMapSecretContainer({
                 _draftData.value?.result &&
                 (_draftData.value.result.draftState === 1 || _draftData.value.result.draftState === 4)
             ) {
-                setDraftData({..._draftData.value.result, unAuthorized: _draftData.value.result.dataEncrypted})
+                setDraftData({ ..._draftData.value.result, unAuthorized: _draftData.value.result.dataEncrypted })
                 draftId = _draftData.value.result.draftId
                 draftState = _draftData.value.result.draftState
             } else {
@@ -400,14 +400,17 @@ export function ProtectedConfigMapSecretDetails({
     const getBaseData = async () => {
         try {
             setLoader(true)
-            const { result } = await (componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
+            const { result } = await(componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
             let _baseData
             if (result?.configData?.length) {
                 _baseData = result.configData.find((config) => config.name === data.name)
+                if (_baseData) {
+                    _baseData.unAuthorized = data.unAuthorized
+                }
                 if (componentType === 'secret' && !data.unAuthorized) {
                     const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
                     if (secretResult?.configData?.length) {
-                        _baseData = {...secretResult.configData[0], unAuthorized: false}
+                        _baseData = { ...secretResult.configData[0], unAuthorized: false }
                     }
                 }
             }
@@ -429,7 +432,7 @@ export function ProtectedConfigMapSecretDetails({
             if (selectedTab === 3) {
                 return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? baseData
-                    : {...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted}
+                    : { ...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted }
             } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
                 return null
             } else {
