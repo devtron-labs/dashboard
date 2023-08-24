@@ -206,7 +206,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     {node?.port.map((val) => {
                         return (
                             <div className="flex">
-                                <div className="mr-5 ml-5" key={node.name}>
+                                <div className="mr-5 ml-5 pb-5 " key={node.name}>
                                     {node.name}:{val}
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
@@ -232,7 +232,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </span>
                         </div>
                         <TippyCustomized
-                            isHeadingVisible={true}
+                            // isHeadingVisible={true}
                             noHeadingBorder={true}
                             theme={TippyTheme.white}
                             className="default-tt"
