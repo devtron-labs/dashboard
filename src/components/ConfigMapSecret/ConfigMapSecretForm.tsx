@@ -77,6 +77,7 @@ export const ConfigMapSecretForm = React.memo(
         draftMode,
         latestDraftData,
         reloadEnvironments,
+        isAppAdmin
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
@@ -999,7 +1000,7 @@ export const ConfigMapSecretForm = React.memo(
                                 onClick={handleOverride}
                                 loading={state.overrideLoading}
                                 type={componentType}
-                                readonlyView={readonlyView}
+                                readonlyView={readonlyView || configMapSecretData?.unAuthorized}
                                 isProtectedView={isProtectedView}
                             />
                         )}
@@ -1040,7 +1041,7 @@ export const ConfigMapSecretForm = React.memo(
                             <button
                                 disabled={
                                     (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
-                                    (draftMode && !configMapSecretData.isAppAdmin)
+                                    (draftMode && !isAppAdmin)
                                 }
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"
