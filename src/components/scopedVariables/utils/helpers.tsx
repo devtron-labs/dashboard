@@ -73,6 +73,18 @@ export const parseYAMLStringToObj = (data: string) => {
     return yaml.safeLoad(data)
 }
 
+// WARNING: This function intends to be used inside a try-catch block as variablesObj can have any type
+export const manipulateVariables = (manipulator, variablesObj) => {
+    const mutatedVariablesObj = JSON.parse(JSON.stringify(variablesObj))
+    mutatedVariablesObj.variables.forEach((variable) => {
+        variable.attributeValue.forEach((attributes) => {
+            attributes.variableValue.value = manipulator(attributes.variableValue.value)
+        })
+    })
+    return mutatedVariablesObj
+}
+
+// Services
 export const getScopedVariablesJSON = () => {
     return get(ROUTES.GET_SCOPED_VARIABLES_JSON)
 }
