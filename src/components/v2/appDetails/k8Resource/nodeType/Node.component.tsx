@@ -221,9 +221,10 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             </>
             )
         }
-
+        var _flag=false
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
+                _flag=true
                 return (
                     <>
                         <div onClick={(e) => stopPropagation(e)}>
@@ -231,6 +232,14 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 {node.name}.{node.namespace}:{node.port[0]}
                             </span>
                         </div>
+                        <span>
+                            <Clipboard
+                                className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                                onClick={(event) => {
+                                    toggleClipBoard(event, node.port)
+                                }}
+                            />
+                        </span>
                         <TippyCustomized
                             showHeading={true}
                             noHeadingBorder={true}
@@ -243,9 +252,12 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             interactive={true}
                         >
                             <div className="dc__hover-icon">
-                            <span className="dc__link dc__link_over fs-13 dc__truncate-text mw-18 cursor ml-5" data-key={node.name}>
-                                +{node.port.length - 1} more
-                            </span>
+                                <span
+                                    className="dc__link dc__link_over fs-13 dc__truncate-text mw-18 cursor"
+                                    data-key={node.name}
+                                >
+                                    +{node.port.length - 1} more
+                                </span>
                             </div>
                         </TippyCustomized>
                     </>
@@ -258,7 +270,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         }
 
         let _currentNodeHeader = ''
-        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
+        const renderClipboardInteraction = (nodeName: string, node?:any): JSX.Element => {
             return copiedNodeName === nodeName ? (
                 <Tippy
                     className="default-tt"
@@ -274,6 +286,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     </span>
                 </Tippy>
             ) : (
+                (node?.length > 1 ? null :
                 <span>
                     <Clipboard
                         className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
@@ -281,7 +294,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             toggleClipBoard(event, nodeName)
                         }}
                     />
-                </span>
+                </span>)
             )
         }
 
@@ -361,7 +374,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {renderClipboardInteraction(node.name)}
+                                                {renderClipboardInteraction(node.name, node.port)}
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -430,7 +443,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
                                 {portNumberPlaceHolder(node)}
-                                {renderClipboardInteraction(nodeName)}
+                                {renderClipboardInteraction(nodeName, node.port)}
                             </div>
                         )}
 
