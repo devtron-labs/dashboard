@@ -9,7 +9,10 @@ import './styles.scss'
 
 const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
     const [scopedVariables, setScopedVariables] = useState<object>(null)
-    const [loadingScopedVariables, scopedVariablesData, scopedVariablesError] = useAsync(getScopedVariablesJSON, [])
+    const [loadingScopedVariables, scopedVariablesData, scopedVariablesError, reloadScopedVariables] = useAsync(
+        getScopedVariablesJSON,
+        [],
+    )
     const [schemaError, setSchemaError] = useState<boolean>(false)
     const [jsonSchema, setJsonSchema] = useState<object>(null)
 
@@ -33,12 +36,12 @@ const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
         return (
             <SavedVariablesView
                 scopedVariablesData={scopedVariables}
-                setScopedVariables={setScopedVariables}
+                reloadScopedVariables={reloadScopedVariables}
                 jsonSchema={jsonSchema}
             />
         )
 
-    return <UploadScopedVariables setScopedVariables={setScopedVariables} jsonSchema={jsonSchema} />
+    return <UploadScopedVariables reloadScopedVariables={reloadScopedVariables} jsonSchema={jsonSchema} />
 }
 
 export default ScopedVariables

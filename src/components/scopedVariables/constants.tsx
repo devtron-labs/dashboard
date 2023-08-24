@@ -87,6 +87,6 @@ export const ROUTES = {
 }
 
 // TOAST Messages while saving file
-export const SAVE_SUCCESS_TOAST_MESSAGE = 'Scoped variables saved successfully'
+export const SAVE_SUCCESS_TOAST_MESSAGE = 'File saved successfully'
 export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
 export const PARSE_ERROR_TOAST_MESSAGE = 'Error while parsing file'

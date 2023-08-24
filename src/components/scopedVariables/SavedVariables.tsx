@@ -17,14 +17,14 @@ import {
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
-const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchema }: SavedVariablesViewI) => {
+const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVariables }: SavedVariablesViewI) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableListItemI[]>(null)
     const [showEditView, setShowEditView] = useState<boolean>(false)
     const dropdownRef = useRef(null)
     // No need to make it a state since editor here is read only and we don't need to update it
-    let scopedVariables = parseIntoYAMLString(scopedVariablesData)
+    let scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
 
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
@@ -50,10 +50,10 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchem
     })
 
     const handleDownload = (item: string) => {
-        if (!scopedVariables) return
+        if (!scopedVariablesYAML) return
         switch (item) {
             case DROPDOWN_ITEMS[0]:
-                downloadData(scopedVariables, DOWNLOAD_FILE_NAME, 'application/x-yaml')
+                downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, 'application/x-yaml')
                 setShowDropdown(false)
                 break
             case DROPDOWN_ITEMS[1]:
@@ -66,10 +66,10 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchem
     if (showEditView) {
         return (
             <ScopedVariablesEditor
-                variablesData={scopedVariables}
+                variablesData={scopedVariablesYAML}
                 name={fileData?.name}
                 abortRead={null}
-                setScopedVariables={setScopedVariables}
+                reloadScopedVariables={reloadScopedVariables}
                 jsonSchema={jsonSchema}
                 setShowEditView={setShowEditView}
             />
@@ -82,7 +82,7 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchem
                 variablesData={status?.message?.data}
                 name={fileData?.name}
                 abortRead={abortRead}
-                setScopedVariables={setScopedVariables}
+                reloadScopedVariables={reloadScopedVariables}
                 jsonSchema={jsonSchema}
             />
         )
@@ -147,7 +147,7 @@ const SavedVariablesView = ({ scopedVariablesData, setScopedVariables, jsonSchem
                             )}
                         </div>
 
-                        <CodeEditor value={scopedVariables} mode="yaml" height="100%" readOnly />
+                        <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly />
                     </div>
                 </div>
             ) : (

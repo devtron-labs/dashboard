@@ -49,7 +49,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
     )
 }
 
-const UploadScopedVariables = ({ setScopedVariables, jsonSchema }: UploadScopedVariablesI) => {
+const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema }: UploadScopedVariablesI) => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +62,7 @@ const UploadScopedVariables = ({ setScopedVariables, jsonSchema }: UploadScopedV
             variablesData={status?.message?.data}
             name={fileData?.name}
             abortRead={abortRead}
-            setScopedVariables={setScopedVariables}
+            reloadScopedVariables={reloadScopedVariables}
             jsonSchema={jsonSchema}
         />
     ) : (

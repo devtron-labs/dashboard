@@ -12,7 +12,7 @@ const ScopedVariablesEditor = ({
     variablesData,
     name,
     abortRead,
-    setScopedVariables,
+    reloadScopedVariables,
     jsonSchema,
     setShowEditView,
 }: ScopedVariablesEditorI) => {
@@ -31,13 +31,13 @@ const ScopedVariablesEditor = ({
 
             const res = await postScopedVariables(variablesObj)
             if (+res?.code === 200) {
-                setScopedVariables(variablesObj)
                 if (setShowEditView) {
                     setShowEditView(false)
                 } else {
                     abortRead()
                 }
                 toast.success(SAVE_SUCCESS_TOAST_MESSAGE)
+                reloadScopedVariables()
             } else {
                 toast.error(SAVE_ERROR_TOAST_MESSAGE)
             }

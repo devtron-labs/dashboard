@@ -13,7 +13,7 @@ export enum FileView {
 export interface SavedVariablesViewI {
     scopedVariablesData: any
     jsonSchema: object
-    setScopedVariables: (variables: any) => void
+    reloadScopedVariables: () => void
 }
 
 export interface FileReaderStatusI {
@@ -47,12 +47,12 @@ export interface ScopedVariablesEditorI {
     name: string
     jsonSchema: object
     abortRead: () => void
-    setScopedVariables: (variables: any) => void
     setShowEditView?: (show: boolean) => void
+    reloadScopedVariables: () => void
 }
 
 export interface UploadScopedVariablesI {
-    setScopedVariables: (variables: any) => void
+    reloadScopedVariables: () => void
     jsonSchema: object
 }
 
