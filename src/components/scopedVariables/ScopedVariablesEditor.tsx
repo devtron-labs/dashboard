@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
-import { postScopedVariables, parseIntoYAMLString, parseYAMLString } from './utils/helpers'
+import { postScopedVariables, parseYAMLString } from './utils/helpers'
 import { ScopedVariablesEditorI, ScopedVariablesSchema } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE, SAVE_SUCCESS_TOAST_MESSAGE } from './constants'
@@ -52,7 +52,7 @@ const ScopedVariablesEditor = ({ variablesData, name, abortRead, setScopedVariab
                         </p>
 
                         <button className="uploaded-variables-editor-infobar__abort-read-btn" onClick={abortRead}>
-                            <Close width={'20px'} height={'20px'} />
+                            <Close width="20px" height="20px" />
                         </button>
                     </div>
 
@@ -60,7 +60,7 @@ const ScopedVariablesEditor = ({ variablesData, name, abortRead, setScopedVariab
                         mode="yaml"
                         value={editorData}
                         noParsing={false}
-                        height={'100%'}
+                        height="100%"
                         onChange={handleEditorChange}
                         validatorSchema={ScopedVariablesSchema}
                     />

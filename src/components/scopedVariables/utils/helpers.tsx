@@ -1,14 +1,7 @@
 import yaml from 'js-yaml'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { ValidatorT } from '../types'
-import {
-    EMPTY_FILE_STATUS,
-    FILE_NOT_SUPPORTED_STATUS,
-    JSON_PARSE_ERROR_STATUS,
-    PARSE_ERROR_STATUS,
-    YAML_PARSE_ERROR_STATUS,
-    ROUTES,
-} from '../constants'
+import { EMPTY_FILE_STATUS, FILE_NOT_SUPPORTED_STATUS, ROUTES } from '../constants'
 
 export const validator: ValidatorT = ({ data, type }) => {
     if (!data) {
@@ -16,39 +9,23 @@ export const validator: ValidatorT = ({ data, type }) => {
     }
     switch (type) {
         case 'application/json':
-            try {
-                const parsedData = JSON.parse(data)
-                if (parsedData && typeof parsedData === 'object') {
-                    return {
-                        status: true,
-                        message: {
-                            data: yaml.safeDump(parsedData),
-                            description: 'File uploaded successfully',
-                        },
-                    }
-                }
-                return PARSE_ERROR_STATUS
-            } catch (e) {
-                return JSON_PARSE_ERROR_STATUS
+            return {
+                status: true,
+                message: {
+                    data,
+                    description: 'File uploaded successfully',
+                },
             }
         case 'application/x-yaml':
         case 'application/yaml':
         case 'text/yaml':
         case 'text/x-yaml':
-            try {
-                const parsedData = yaml.safeLoad(data)
-                if (parsedData && typeof parsedData === 'object') {
-                    return {
-                        status: true,
-                        message: {
-                            data: yaml.safeDump(parsedData),
-                            description: 'File uploaded successfully',
-                        },
-                    }
-                }
-                return PARSE_ERROR_STATUS
-            } catch (e) {
-                return YAML_PARSE_ERROR_STATUS
+            return {
+                status: true,
+                message: {
+                    data,
+                    description: 'File uploaded successfully',
+                },
             }
         default:
             return FILE_NOT_SUPPORTED_STATUS
