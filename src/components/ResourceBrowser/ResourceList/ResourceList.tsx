@@ -903,7 +903,7 @@ export default function ResourceList() {
 
         return (
             <>
-                <NavLink className="flex cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16" to={URLS.GLOBAL_CONFIG_CLUSTER}>
+                <NavLink className="flex dc__no-decor cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16" to={URLS.GLOBAL_CONFIG_CLUSTER}>
                     <Add
                         data-testid="add_cluster_button"
                         className="icon-dim-16 mr-4 fcb-5 dc__vertical-align-middle"

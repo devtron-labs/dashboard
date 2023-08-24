@@ -219,6 +219,10 @@ a:focus {
     align-items: center;
 }
 
+.dc__container-below-header {
+    height: calc(100vh - 48px);
+}
+
 .dc__empty__subtitle {
     font-size: 14px;
     font-weight: normal;

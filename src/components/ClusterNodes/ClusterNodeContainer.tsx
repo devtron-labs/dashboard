@@ -1,59 +1,24 @@
-import React, { useEffect, useState } from 'react'
-import { URLS } from '../../config'
-import { Redirect, Route, Switch } from 'react-router-dom'
-import ClusterList from './ClusterList'
-import NodeDetails from './NodeDetails'
-import NodeList from './NodeList'
-import { getHostURLConfiguration } from '../../services/service'
-import { getUserRole } from '../userGroups/userGroup.service'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
-import { clusterNamespaceList } from './clusterNodes.service'
-import { ClusterImageList } from './types'
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+import { URLS } from '../../config/routes'
+import clusterMovedToResource from '../../assets/img/cluster-resource-merge.png'
+import PageHeader from '../common/header/PageHeader'
+import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-forward.svg'
 
 export default function ClusterNodeContainer() {
-    const [imageList, setImageList] = useState<ClusterImageList[]>(null)
-    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(window._env_.K8S_CLIENT ? true : false)
-    const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
-
-    useEffect(() => {
-        try {
-            Promise.all([
-                getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
-                window._env_.K8S_CLIENT ? null : getUserRole(),
-                clusterNamespaceList(),
-            ])
-                .then(([hostUrlConfig, userRole, namespaceList]) => {
-                    if (hostUrlConfig.result) {
-                        const imageValue: string = hostUrlConfig.result.value
-                        setImageList(JSON.parse(imageValue))
-                    }
-                    if (userRole?.result) {
-                        setSuperAdmin(userRole.result?.superAdmin)
-                    }
-                    if (namespaceList.result) {
-                        setNameSpaceList(namespaceList.result)
-                    }
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-        } catch (error) {
-            showError(error)
-        }
-    }, [])
-
     return (
-        <Switch>
-            <Route path={URLS.CLUSTER_LIST} exact>
-                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
-            </Route>
-            <Route path={`${URLS.CLUSTER_LIST}/:clusterId`} exact>
-                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
-            </Route>
-            <Route path={`${URLS.CLUSTER_LIST}/:clusterId/:nodeName`} exact>
-                <NodeDetails  isSuperAdmin={isSuperAdmin} />
-            </Route>
-            <Redirect to={URLS.CLUSTER_LIST} />
-        </Switch>
+        <div>
+            <PageHeader headerName="Clusters" />
+            <div className="bcn-0 dc__container-below-header flex">
+                <div className="w-600">
+                    <div className="fw-6 fs-20 lh-30 flex">This section has moved to Resource Browser</div>
+                    <span className="fw-4 fs-14 lh-20 flex mb-20 dc__align-center">Clusters and node details have been merged into the Resource Browser, providing an integrated view of the cluster and its resources.</span>
+                    <img className="w-600" src={clusterMovedToResource} />
+                    <div className="flex mt-20">
+                        <NavLink className="flex h-36 dc__no-decor cta h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5" to={URLS.RESOURCE_BROWSER}>Go to Resource Browser <Arrow className='icon-dim-16 ml-8 scn-0' /></NavLink>
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }
