@@ -1000,7 +1000,7 @@ export const ConfigMapSecretForm = React.memo(
                                 onClick={handleOverride}
                                 loading={state.overrideLoading}
                                 type={componentType}
-                                readonlyView={readonlyView}
+                                readonlyView={readonlyView || configMapSecretData?.unAuthorized}
                                 isProtectedView={isProtectedView}
                             />
                         )}
