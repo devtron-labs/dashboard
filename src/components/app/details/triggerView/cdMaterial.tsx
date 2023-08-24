@@ -822,23 +822,35 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
 
-            materialList =
-                this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
+            //materialList = this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
+            if (this.state.isRollbackTrigger && this.state.showOlderImages) {
+                materialList = [
+                    { ...approvedImages[0], isSelected: this.state.selectedMaterial?.id === approvedImages[0].id },
+                ]
+            } else {
+                materialList = approvedImages
+                // if (!approvedImages.some((mat) => mat.isSelected)) {
+                //     for (const mat of materialList) {
+                //         if (this.state.selectedMaterial?.id === mat.id) {
+                //             mat.isSelected = true
+                //             break
+                //         }
+                //     }
+                // }
+            }
         } else {
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages
                     ? [this.props.material[0]]
                     : this.props.material
         }
-
         // reset the selection for some cases
-        for (const mat of materialList) {
-            if (this.state.selectedMaterial?.id === mat.id) {
-                mat.isSelected = true
-                break
-            }
-        }
-
+        // for (const mat of materialList) {
+        //     if (this.state.selectedMaterial?.id === mat.id) {
+        //         mat.isSelected = true
+        //         break
+        //     }
+        // }
         return {
             consumedImage: _consumedImage,
             materialList,
