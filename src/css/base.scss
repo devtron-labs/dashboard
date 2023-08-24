@@ -1903,6 +1903,10 @@ button.anchor {
     align-self: center;
 }
 
+.dc__align-self-stretch {
+    align-self: stretch;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -2941,7 +2945,7 @@ textarea,
 }
 
 .mxh-300-imp {
-    max-height: 300px!important;
+    max-height: 300px !important;
 }
 
 // Height in percentage
@@ -2957,7 +2961,7 @@ textarea,
     height: 100vh;
 }
 
-.h-76-imp{
+.h-76-imp {
     height: 76px !important;
 }
 
@@ -3577,6 +3581,16 @@ textarea::placeholder {
     .form__radio-item {
         min-width: 0px !important;
     }
+}
+
+.ci-cd-details__sidebar-typography {
+    color: var(--n-900, #000a14);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .dc__disable-click {
