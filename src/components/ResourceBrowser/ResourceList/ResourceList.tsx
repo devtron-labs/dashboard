@@ -130,6 +130,7 @@ export default function ResourceList() {
         new: new AbortController(),
     })
     const isOverview = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isTerminal = nodeType === AppDetailsTabs.terminal
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
     const hideSyncWarning: boolean = loader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader) 
@@ -171,7 +172,7 @@ export default function ResourceList() {
             resourceListAbortController.abort()
             abortReqAndUpdateSideDataController()
         }
-    }, [])
+    }, [])    
 
     useEffect(() => {
         if (clusterId) {
@@ -322,7 +323,7 @@ export default function ResourceList() {
     }, [clusterCapacityData, location.search])
 
     useEffect(() => {
-        if (clusterId && selectedResource && !isOverview && !isNodes) {
+        if (clusterId && selectedResource && !isOverview && !isTerminal && !isNodes) {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
@@ -890,7 +891,7 @@ export default function ResourceList() {
     }
 
     const addClusterButton = () => {
-        if (clusterId) return (!loader && !showErrorState &&
+        if (clusterId) return (!loader && !showErrorState && k8SObjectMap &&
             <><div
                 className="cursor flex cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16"
                 data-testid="create-resource"

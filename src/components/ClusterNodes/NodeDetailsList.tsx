@@ -406,9 +406,16 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
                         >
                             <div className="w-100 flex left">
                                 <div className="w-250 pr-4 dc__ellipsis-right">
-                                    <NavLink data-testid="cluster-node-link" to={`${match.url}/${nodeData[column.value]}`} >
-                                        {nodeData[column.value]}
-                                    </NavLink>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="right"
+                                        content={nodeData[column.value]}
+                                    >
+                                        <NavLink data-testid="cluster-node-link" to={`${match.url}/${nodeData[column.value]}`} >
+                                            {nodeData[column.value]}
+                                        </NavLink>
+                                    </Tippy>
                                 </div>
                                 <NodeActionsMenu
                                     nodeData={nodeData as NodeDetail}
