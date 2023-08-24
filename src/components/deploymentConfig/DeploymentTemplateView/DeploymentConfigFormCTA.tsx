@@ -201,7 +201,7 @@ export default function DeploymentConfigFormCTA({
                 {renderApplicationMetrics()}
                 {!isPublishedMode && (
                     <>
-                        {isApprovalPending && state.latestDraft?.canApprove && ApproveRequestTippy ? (
+                        {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
                             <ApproveRequestTippy
                                 draftId={state.latestDraft.draftId}
                                 draftVersionId={state.latestDraft.draftVersionId}

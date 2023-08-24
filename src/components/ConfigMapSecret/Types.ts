@@ -71,6 +71,7 @@ export interface ConfigMapSecretFormProps {
     draftMode: boolean
     latestDraftData: any
     reloadEnvironments?: () => void
+    isAppAdmin?: boolean
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
