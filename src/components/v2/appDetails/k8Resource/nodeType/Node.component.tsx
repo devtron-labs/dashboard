@@ -202,23 +202,23 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
             return (
-                <ol className="pl-20 pr-20">
+                <>
                     {node?.port.map((val) => {
                         return (
                             <div className="flex">
-                                <li key={node.name}>
+                                <div className="mr-5 ml-5" key={node.name}>
                                     {node.name}:{val}
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, node.name)
+                                        toggleClipBoardPort(event, node.name.concat(":",val))
                                     }}
                                 />
-                                </li>
+                                </div>
                             </div>
                         )
                     })}
-                </ol>
+            </>
             )
         }
 
@@ -230,19 +230,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             <span>
                                 {node.name}.{node.namespace}:
                             </span>
-                            <span>
-                                {node.port[0]}
-                                <span>
-                                    <Clipboard
-                                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-4 mr-4"
-                                        onClick={(event) => {
-                                            toggleClipBoard(event, node.name)
-                                        }}
-                                    />
-                                </span>
-                            </span>
                         </div>
                         <TippyCustomized
+                            isHeadingVisible={true}
                             noHeadingBorder={true}
                             theme={TippyTheme.white}
                             className="default-tt"
@@ -252,9 +242,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             additionalContent={additionalTippyContent(node)}
                             interactive={true}
                         >
-                            <span className="cursor" onClick={(e) => stopPropagation(e)}>
+                            <div className="dc__hover-icon">
+                            <span className="dc__link dc__link_over fs-13 dc__truncate-text mw-18 cursor" data-key={node.name}>
                                 +{node.port.length - 1} more
                             </span>
+                            </div>
                         </TippyCustomized>
                     </>
                 )
