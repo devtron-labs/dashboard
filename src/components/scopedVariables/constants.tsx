@@ -60,35 +60,26 @@ export const EMPTY_FILE_STATUS = {
     status: false,
 }
 
-export const VARIABLES_TEMPLATE = `variables:
-- definition:
-    varName: variable1
-    dataType: primitive
-    varType: private
-    description: This is variable 1
-  attributeValue:
-    - variableValue: 
-       value: value1
-      attributeType: ApplicationEnv
-      attributeParams:
-        ApplicationName: app1
-        EnvName: dev
-    - variableValue: 
-       value: value1
-      attributeType: Env
-      attributeParams:
-        EnvName: prod
-- definition:
-    varName: variable2
-    dataType: primitive
-    varType: public
-    description: This is variable 2
-  attributeValue:
-    - variableValue:
-       value: value2
-      attributeType: Application
-      attributeParams:
-        ApplicationName: app2`
+export const VARIABLES_TEMPLATE = `{
+    "variables": [
+      {
+        "definition": {
+          "varName": "var1",
+          "dataType": "primitive",
+          "varType": "public",
+          "description": "Description 1"
+        },
+        "attributeValue": [
+          {
+            "variableValue": {
+              "value": "aditya"
+            },
+            "attributeType": "Global"
+          }
+        ]
+      }
+    ]
+  }`
 
 export const ROUTES = {
     GET_SCOPED_VARIABLES_JSON: 'global/variables/detail',
