@@ -446,6 +446,7 @@ export default function ResourceList() {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
                 const _k8SObjectList: K8SObjectType[] = []
+                const currentNodeType = clusterId == _clusterId ? nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() : SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
 
                 for (const element of ORDERED_AGGREGATORS) {
                     if (_k8SObjectMap.get(element)) {
@@ -455,7 +456,7 @@ export default function ResourceList() {
 
                 const { parentNode, childNode, isResourceGroupPresent, groupedChild } = getParentAndChildNodes(
                     _k8SObjectList,
-                    nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase(),
+                    currentNodeType,
                     group,
                 )
 
@@ -463,7 +464,7 @@ export default function ResourceList() {
                     parentNode.isExpanded = true
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}/${location.search}`,
+                            }/${currentNodeType}/${K8S_EMPTY_GROUP}/${location.search}`,
                     })
                 }
 
@@ -669,6 +670,10 @@ export default function ResourceList() {
         }
     }
 
+    const onClusterChange = (value) => {
+        onChangeCluster(value, false, true)
+    }
+
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -677,7 +682,7 @@ export default function ResourceList() {
                     linked: true,
                 },
                 ':clusterId?': {
-                    component: <ClusterSelector onChange={onChangeCluster} clusterList={clusterOptions} clusterId={clusterId} />,
+                    component: <ClusterSelector onChange={onClusterChange} clusterList={clusterOptions} clusterId={clusterId} />,
                     linked: false,
                 },
                 ':namespace?': null,
