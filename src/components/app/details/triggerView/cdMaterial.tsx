@@ -821,36 +821,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (isApprovalConfigured) {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
-
-            //materialList = this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
-            if (this.state.isRollbackTrigger && this.state.showOlderImages) {
-                materialList = [
-                    { ...approvedImages[0], isSelected: this.state.selectedMaterial?.id === approvedImages[0].id },
-                ]
-            } else {
-                materialList = approvedImages
-                // if (!approvedImages.some((mat) => mat.isSelected)) {
-                //     for (const mat of materialList) {
-                //         if (this.state.selectedMaterial?.id === mat.id) {
-                //             mat.isSelected = true
-                //             break
-                //         }
-                //     }
-                // }
-            }
+            materialList =
+                this.state.isRollbackTrigger && this.state.showOlderImages
+                    ? [{ ...approvedImages[0], isSelected: this.state.selectedMaterial?.id === approvedImages[0].id }]
+                    : approvedImages
         } else {
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages
                     ? [this.props.material[0]]
                     : this.props.material
         }
-        // reset the selection for some cases
-        // for (const mat of materialList) {
-        //     if (this.state.selectedMaterial?.id === mat.id) {
-        //         mat.isSelected = true
-        //         break
-        //     }
-        // }
         return {
             consumedImage: _consumedImage,
             materialList,
@@ -1228,16 +1208,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     20,
                     this.handleOlderImagesLoading,
                 )
-                this.setState({
-                    showOlderImages: false,
-                    loadingMore: true,
-                })
-            } else {
-                this.setState({
-                    showOlderImages: false,
-                    noMoreImages: true,
-                })
             }
+            this.setState({
+                showOlderImages: false,
+                noMoreImages: true,
+            })
         }
     }
 
