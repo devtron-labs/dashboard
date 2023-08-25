@@ -8,7 +8,7 @@ import {
     processK8SObjects,
     sortObjectArrayAlphabetically,
 } from '../../common'
-import { showError, Progressing, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -61,7 +61,7 @@ import {
 import '../ResourceBrowser.scss'
 import { ClusterCapacityType, ClusterDetail, ClusterImageList, ERROR_TYPE } from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterCapacity, getClusterList as getDetailsClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
+import { clusterNamespaceList, getClusterCapacity, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
@@ -106,6 +106,7 @@ export default function ResourceList() {
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
     const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
     const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [accessDeniedCode, setAccessDeniedCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
     const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
@@ -118,6 +119,9 @@ export default function ResourceList() {
         { errorText: string; errorType: ERROR_TYPE; filterText: string[] }[]
     >([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
+    const [terminalLoader, setTerminalLoader] = useState(false)
+    const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
+    const [toggleSync, setToggle] = useState(false)
     const isStaleDataRef = useRef<boolean>(false)
     const resourceListAbortController = new AbortController()
     const sideDataAbortController = useRef<{
@@ -170,16 +174,20 @@ export default function ResourceList() {
             resourceListAbortController.abort()
             abortReqAndUpdateSideDataController()
         }
-    }, [])    
+    }, [])   
+    
+    useEffect(() => {
+        getDetailsClusterList()
+    },[toggleSync])
 
     useEffect(() => {
-        if (clusterId) {
-            const _selectedCluster = terminalClusterData?.find((list) => list.id == +clusterId)
+        if (clusterId && terminalClusterData?.length > 0) {
+            const _selectedCluster = terminalClusterData.find((list) => list.id == +clusterId)
             if (_selectedCluster) {
                 setSelectedTerminal(_selectedCluster)
             }
         }
-    }, [clusterId])
+    }, [clusterId, terminalClusterData])
 
     // Mark tab active on path change
     useEffect(() => {
@@ -310,7 +318,7 @@ export default function ResourceList() {
     useEffect(() => {
         if (!isSuperAdmin) return
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
-            updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
+            updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
                 }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal} '${selectedCluster.label}'`)
         } else {
             removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
@@ -360,12 +368,33 @@ export default function ResourceList() {
         }
     }, [lastDataSync])
 
+    const getDetailsClusterList = async () => {
+        setTerminalLoader(true)
+        getClusterList().then((response) => {
+            if(response.result){
+                if (response.result) {
+                    const sortedResult = response.result
+                        .sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
+    
+                    setTerminalCluster(sortedResult)
+                    setClusterList(sortedResult)
+                }
+            }
+            setTerminalLoader(false)
+        }).catch((err) => {
+            setTerminalLoader(false)
+            if (err['code'] !== 403) {
+                showError(err)
+            }
+        })
+    }
+
     const getClusterData = async () => {
         try {
             setClusterLoader(true)
-            const [clusterList, clusterDetails, hostUrlConfig, userRole, namespaceList] = await Promise.all([
+            setAccessDeniedCode(0)
+            const [clusterList, hostUrlConfig, userRole, namespaceList] = await Promise.all([
                 getClusterListMin(),
-                getDetailsClusterList(),
                 getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
                 window._env_.K8S_CLIENT ? null : getUserRole(),
                 clusterNamespaceList(),
@@ -379,23 +408,13 @@ export default function ResourceList() {
                     'nodeErrors',
                 )
                 setClusterOptions(_clusterOptions as ClusterOptionType[])
+                setClusterList(_clusterList)
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
                     // Will added this changes if we are not redirecting to cluster page
                     // } else if (_clusterOptions.length === 1) {
                     //     onChangeCluster(_clusterOptions[0], true)
-                }
-            }
-
-            if (clusterDetails.result) {
-                const sortedResult = clusterDetails.result
-                    .sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
-
-                setTerminalCluster(sortedResult)
-                const _selectedCluster = sortedResult.find((list) => list.id == +clusterId)
-                if (_selectedCluster) {
-                    setSelectedTerminal(_selectedCluster)
                 }
             }
 
@@ -411,7 +430,7 @@ export default function ResourceList() {
             }
         } catch (err) {
             if (err['code'] === 403) {
-                setErrorStatusCode(err['code'])
+                setAccessDeniedCode(err['code'])
             } else {
                 showError(err)
             }
@@ -828,8 +847,10 @@ export default function ResourceList() {
                 addTab={addTab} />
         }
         if (nodeType === AppDetailsTabs.terminal) {
-            const _imageList = filterImageList(imageList, selectedTerminal.serverVersion)
-            if (!selectedTerminal) return null
+            const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
+            if(terminalLoader) {
+                return <div className="h-100 node-data-container bcn-0"><Progressing pageLoader/></div>
+            }else if (!selectedTerminal) return null
             return <ClusterTerminal
                 clusterId={+clusterId}
                 nodeGroups={createGroupSelectList(selectedTerminal?.nodeDetails, 'nodeName')}
@@ -922,15 +943,25 @@ export default function ResourceList() {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
+    const refreshSync = () => {
+        setToggle(!toggleSync)
+    }
+
     const renderResourceListBody = () => {
-        if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
+        if(accessDeniedCode) {
+            return (
+                <div className='flex' style={{ height: 'calc(100vh - 48px)' }}>
+                    <ErrorScreenManager code={accessDeniedCode} />
+                </div>
+            )
+        } else if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <Progressing pageLoader />
                 </div>
             )
         } else if (!showSelectClusterState && !selectedCluster?.value) {
-            return <ClusterSelectionList clusterOptions={clusterOptions} onChangeCluster={onChangeCluster} isSuperAdmin={isSuperAdmin} />
+            return <ClusterSelectionList clusterOptions={clusterList} onChangeCluster={onChangeCluster} isSuperAdmin={isSuperAdmin} clusterListLoader={terminalLoader} refreshData={refreshSync} />
         }
 
         return (

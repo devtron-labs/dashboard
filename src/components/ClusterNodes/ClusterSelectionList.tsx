@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { getClusterList } from './clusterNodes.service'
 import { handleUTCTime } from '../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
@@ -16,72 +14,34 @@ import './clusterNodes.scss'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
-import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 
 export default function ClusterSelectionList({
     clusterOptions,
     onChangeCluster,
     isSuperAdmin,
+    clusterListLoader,
+    refreshData
 }: ClusterSelectionType) {
-    const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
-    const [loader, setLoader] = useState(false)
     const [minLoader, setMinLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
-    const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
 
-    const getMinData = () => {
-        const _clusterList = clusterOptions.map((list) => {
-            return {
-                id: +list.value,
-                name: list.label,
-                errorInNodeListing: list.errorInConnecting,
-            }
-        }) as ClusterDetail[]
-        setClusterList(_clusterList)
-        setFilteredClusterList(_clusterList)
-        setMinLoader(false)
-    }
-
-    const getFullData = async () => {
-        setLoader(true)
-        setErrorResponseCode(null)
-        getClusterList().then((response) => {
-            setLastDataSync(!lastDataSync)
-        if (response?.result) {
-            const sortedResult = response.result
-                .sort((a, b) => a['name'].localeCompare(b['name']))
-                .filter((item) => !item?.isVirtualCluster)
-            setClusterList(sortedResult)
-            setFilteredClusterList(sortedResult)
-        }
-        setLoader(false)
-        }).catch((error) => {
-            if(error['code'] !== 403){
-                showError(error)
-            }
-            setLoader(false)
-            setErrorResponseCode(error.code)
-        })
-    }
-
-    const getData = () => {
-        setClusterList([])
-        setFilteredClusterList([])
-        getMinData()
-        getFullData()
-    }
 
     useEffect(() => {
-        getData()
-    }, [])
+        setClusterList([])
+        setFilteredClusterList([])
+        setLastDataSync(!lastDataSync)
+        setClusterList(clusterOptions)
+        setFilteredClusterList(clusterOptions)
+        setMinLoader(false)
+    }, [clusterOptions])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
@@ -131,7 +91,7 @@ export default function ClusterSelectionList({
                         setSearchText(event.target.value)
                     }}
                     onKeyDown={handleFilterKeyPress}
-                    disabled={loader}
+                    disabled={clusterListLoader}
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
@@ -153,14 +113,19 @@ export default function ClusterSelectionList({
         onChangeCluster({ label: data.label, value: +data.value }, true)
     }
 
+    const hideDataOnLoad = (value) => {
+        if(clusterListLoader)return
+        return value
+    }
+
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
             <div
                 key={`cluster-${clusterData.id}`}
                 className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
-                    clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
-                } ${loader ? 'show-shimmer-loading' : ''}`}
+                    clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
+                } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
             >
                 <div
                     data-testid={`cluster-row-${clusterData.name}`}
@@ -181,7 +146,7 @@ export default function ClusterSelectionList({
                     />
                 </div>
                 <div>
-                    {clusterData.errorInNodeListing ? (
+                    {errorCount > 0 ? (
                         <Tippy className="default-tt w-200" arrow={false} content={clusterData.errorInNodeListing}>
                             <div className="flexbox">
                                 <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
@@ -195,9 +160,9 @@ export default function ClusterSelectionList({
                         </div>
                     )}
                 </div>
-                <div className="child-shimmer-loading">{clusterData.nodeCount}</div>
+                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
                 <div className="child-shimmer-loading">
-                    {errorCount > 0 && (
+                    {errorCount > 0 && hideDataOnLoad(
                         <>
                             <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
                             <span className="cr-5">{errorCount}</span>
@@ -205,12 +170,12 @@ export default function ClusterSelectionList({
                     )}
                 </div>
                 <div className="dc__ellipsis-right child-shimmer-loading">
-                    <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
+                {hideDataOnLoad(<Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
                         <span>{clusterData.serverVersion}</span>
-                    </Tippy>
+                    </Tippy>)}
                 </div>
-                <div className="child-shimmer-loading">{clusterData.cpu?.capacity}</div>
-                <div className="child-shimmer-loading">{clusterData.memory?.capacity}</div>
+                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.cpu?.capacity)}</div>
+                <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.memory?.capacity)}</div>
             </div>
         )
     }
@@ -246,14 +211,6 @@ export default function ClusterSelectionList({
         }
     }
 
-    if (errorResponseCode) {
-        return (
-            <div className="dc__border-left flex dc__container-below-header">
-                <ErrorScreenManager code={errorResponseCode} subtitle={unauthorizedInfoText()} />
-            </div>
-        )
-    }
-
     return (
         <div>
             <div className={`cluster-list-main-container bcn-0 ${noResults ? 'no-result-container' : ''}`}>
@@ -268,7 +225,7 @@ export default function ClusterSelectionList({
                                       <button
                                           data-testid="cluster-list-refresh-button"
                                           className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                          onClick={getData}
+                                          onClick={refreshData}
                                       >
                                           Refresh
                                       </button>

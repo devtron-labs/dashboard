@@ -2,7 +2,7 @@ import React from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
-import { ClusterImageList } from '../ClusterNodes/types'
+import { ClusterDetail, ClusterImageList } from '../ClusterNodes/types'
 
 export interface ResourceDetailType {
     headers: string[]
@@ -92,9 +92,11 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 }
 
 export interface ClusterSelectionType {
-    clusterOptions: ClusterOptionType[]
+    clusterOptions: ClusterDetail[]
     onChangeCluster: (selectedCluster: any, fromClusterSelect?: boolean) => void
     isSuperAdmin: boolean
+    clusterListLoader: boolean
+    refreshData: () => void
 }
 
 export interface CreateResourceType {
