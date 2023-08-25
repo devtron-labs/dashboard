@@ -1,5 +1,5 @@
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { CustomImageTagsType, ImageTagType } from './CustomImageTag.type'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
@@ -9,14 +9,15 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-function CustomImageTags({
-    defaultTag,
-    formDataErrorObj,
-    setFormDataErrorObj,
-    formData,
-    setFormData
-}: CustomImageTagsType) {
+function CustomImageTags() {
+    const {
+        formData,
+        setFormData,
+        formDataErrorObj,
+        setFormDataErrorObj,
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [showImageTagPatternDetails, setShowImageTagPatternDetails] = useState<boolean>(false)
     const defaultTagValue = formData.customTag?.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default
@@ -142,7 +143,7 @@ function CustomImageTags({
     const getDefaultTagValue = () => {
         return (
             <div className="flex left cn-7">
-                {defaultTag?.map((tag, index) => {
+                {formData.defaultTag?.map((tag, index) => {
                     return (
                         <div key={`tag-${index}`} className="flex left">
                             <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">{tag}</div>

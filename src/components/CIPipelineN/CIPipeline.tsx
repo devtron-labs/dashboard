@@ -122,6 +122,11 @@ export default function CIPipeline({
             id: 0,
             steps: [],
         },
+        customTag: {
+            tagPattern: '',
+            counterX: 0,
+        },
+        defaultTag: []
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },

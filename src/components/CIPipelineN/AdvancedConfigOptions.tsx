@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
@@ -14,17 +14,18 @@ import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { OptionType } from '../app/types'
 import '../ciConfig/CIConfig.scss'
 import CustomImageTags from './CustomImageTags'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export default function AdvancedConfigOptions({
     ciPipeline,
-    formData,
-    setFormData,
     setDockerConfigOverridden,
-    loadingState,
-    setLoadingState,
-    formDataErrorObj,
-    setFormDataErrorObj,
 }: AdvancedConfigOptionsProps) {
+    const {
+        formData,
+        setFormData,
+        loadingState,
+        setLoadingState,
+    } = useContext(pipelineContext)
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
     const [parentState, setParentState] = useState<CIConfigParentState>({
@@ -40,7 +41,7 @@ export default function AdvancedConfigOptions({
     const targetPlatformMap = getTargetPlatformMap()
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
-
+  
     useEffect(() => {
         if (parentState.ciConfig) {
             populateCurrentPlatformsData()
@@ -273,13 +274,7 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
-                                <CustomImageTags
-                                    defaultTag={formData.defaultTag}
-                                    formDataErrorObj={formDataErrorObj}
-                                    setFormDataErrorObj={setFormDataErrorObj}
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                />
+                                <CustomImageTags />
 
                             {renderDockerArgs()}
                         </>

@@ -128,13 +128,7 @@ export interface CIConfigFormProps {
 
 export interface AdvancedConfigOptionsProps {
     ciPipeline: CIPipelineDataType
-    formData: PipelineFormType
-    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
-    loadingState?: LoadingState
-    setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
-    formDataErrorObj?: PipelineFormDataErrorType
-    setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
 }
 
 interface LanguageBuilderType {

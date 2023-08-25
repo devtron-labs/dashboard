@@ -267,13 +267,7 @@ export function Build({
                     {isSecurityModuleInstalled && renderScanner()}
                     <AdvancedConfigOptions
                         ciPipeline={ciPipeline}
-                        formData={formData}
-                        setFormData={setFormData}
                         setDockerConfigOverridden={setDockerConfigOverridden}
-                        loadingState={loadingState}
-                        setLoadingState={setLoadingState}
-                        formDataErrorObj={formDataErrorObj}
-                        setFormDataErrorObj={setFormDataErrorObj}
                     />
                 </>
             )}

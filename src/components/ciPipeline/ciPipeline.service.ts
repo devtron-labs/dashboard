@@ -488,8 +488,8 @@ function parseCIResponse(
                 isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin,
                 defaultTag: ciPipeline.defaultTag,
                 customTag: {
-                    tagPattern: ciPipeline.customTag.tagPattern,
-                    counterX: ciPipeline.customTag.counterX,
+                    tagPattern: ciPipeline.customTag?.tagPattern || '',
+                    counterX: ciPipeline.customTag?.counterX || 0,
                 }
             },
             loadingData: false,
