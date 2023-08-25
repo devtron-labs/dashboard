@@ -822,9 +822,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
             materialList =
-                this.state.isRollbackTrigger && this.state.showOlderImages
-                    ? [{ ...approvedImages[0], isSelected: this.state.selectedMaterial?.id === approvedImages[0].id }]
-                    : approvedImages
+                this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
         } else {
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages
