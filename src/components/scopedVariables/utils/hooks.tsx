@@ -18,8 +18,7 @@ export const useFileReader = () => {
     }, [])
 
     useEffect(() => {
-        // doing == since we want to check for null and undefined
-        if (!fileData || fileData.data == null) return
+        if (!fileData || !fileData.data) return
         if (!validator) return
         const { status, message } = validator(fileData)
         setStatus(() => ({
