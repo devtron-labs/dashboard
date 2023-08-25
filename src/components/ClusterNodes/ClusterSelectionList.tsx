@@ -16,6 +16,7 @@ import './clusterNodes.scss'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 
 export default function ClusterSelectionList({
     clusterOptions,
@@ -248,7 +249,7 @@ export default function ClusterSelectionList({
     if (errorResponseCode) {
         return (
             <div className="dc__border-left flex dc__container-below-header">
-                <ErrorScreenManager code={errorResponseCode} />
+                <ErrorScreenManager code={errorResponseCode} subtitle={unauthorizedInfoText()} />
             </div>
         )
     }

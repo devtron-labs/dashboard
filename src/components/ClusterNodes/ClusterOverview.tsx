@@ -9,6 +9,7 @@ import moment from 'moment';
 import { Moment12HourFormat } from '../../config';
 import { ErrorScreenManager, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib';
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants';
+import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector';
 
 interface DescriptionDataType {
     descriptionId: number,
@@ -182,7 +183,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderState = () => {
         if (errorStatusCode) {
-            return <ErrorScreenManager code={errorStatusCode} />
+            return <ErrorScreenManager code={errorStatusCode} subtitle={unauthorizedInfoText()} />
         } else if (isLoading) {
             return <Progressing pageLoader />
         } else {
