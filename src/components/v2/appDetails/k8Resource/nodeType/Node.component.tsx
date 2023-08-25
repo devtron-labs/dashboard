@@ -206,7 +206,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     {node?.port.map((val) => {
                         return (
                             <div className="flex pb-5 pt-5">
-                                <div className="mr-5 ml-15" key={node.name}>
+                                <div className="mr-10 ml-15" key={node.name}>
                                     {node.name}:{val}
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
