@@ -187,6 +187,8 @@ export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You ca
 export const ERROR_SCREEN_SUBTITLE =
     'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
 export const ERROR_SCREEN_LEARN_MORE = 'Learn about Kubernetes resource permissions.'
+export const clusterOverviewNodeText = (isOverview) => `To view ${isOverview ? 'Cluster overview' : 'Nodes'}, you must have view permission to at least one environment for this cluster. This access can be granted through Devtron Apps or Helm Apps permissions`
+export const LEARN_MORE = 'Learn more.'
 
 export const RESOURCE_LIST_ERROR_STATE = {
     title: 'Some error occured',

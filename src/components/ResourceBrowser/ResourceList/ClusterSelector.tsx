@@ -2,7 +2,7 @@ import React from 'react'
 import ReactSelect from 'react-select'
 import { DOCUMENTATION } from '../../../config'
 import { appSelectorStyle, DropdownIndicator } from '../../AppSelector/AppSelectorUtil'
-import { ERROR_SCREEN_LEARN_MORE, ERROR_SCREEN_SUBTITLE } from '../Constants'
+import { clusterOverviewNodeText, ERROR_SCREEN_LEARN_MORE, ERROR_SCREEN_SUBTITLE, LEARN_MORE, SIDEBAR_KEYS } from '../Constants'
 import { ClusterOptionType } from '../Types'
 
 interface ClusterSelectorType {
@@ -30,17 +30,33 @@ export default function ClusterSelector({ onChange, clusterList, clusterId }: Cl
     )
 }
 
-export const unauthorizedInfoText = () => {
+export const unauthorizedInfoText = (nodeType?: string) => {
+    const emptyStateData = {
+        text: ERROR_SCREEN_SUBTITLE,
+        link: DOCUMENTATION.K8S_RESOURCES_PERMISSIONS,
+        linkText: ERROR_SCREEN_LEARN_MORE
+    }
+
+    if(nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()){
+        emptyStateData.text = clusterOverviewNodeText(true)
+        emptyStateData.link = DOCUMENTATION.GLOBAL_CONFIG_PERMISSION
+        emptyStateData.linkText = LEARN_MORE
+    } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()){
+        emptyStateData.text = clusterOverviewNodeText(false)
+        emptyStateData.link = DOCUMENTATION.GLOBAL_CONFIG_PERMISSION
+        emptyStateData.linkText = LEARN_MORE
+    }
+
     return (
         <>
-            {ERROR_SCREEN_SUBTITLE}&nbsp;
+            {emptyStateData.text}&nbsp;
             <a
                 className="dc__link"
-                href={DOCUMENTATION.K8S_RESOURCES_PERMISSIONS}
+                href={emptyStateData.link}
                 target="_blank"
                 rel="noreferrer noopener"
             >
-                {ERROR_SCREEN_LEARN_MORE}
+                {emptyStateData.linkText}
             </a>
         </>
     )

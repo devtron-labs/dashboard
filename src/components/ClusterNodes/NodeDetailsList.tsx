@@ -24,6 +24,7 @@ import * as queryString from 'query-string'
 import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
+import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 
 export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions, renderCallBackSync, addTab, syncError}) {
     const match = useRouteMatch()
@@ -481,7 +482,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     if (errorResponseCode) {
         return (
             <div className="dc__border-left flex">
-                <ErrorScreenManager code={errorResponseCode} subtitle={unauthorizedInfoText()} />
+                <ErrorScreenManager code={errorResponseCode} subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())} />
             </div>
         )
     }

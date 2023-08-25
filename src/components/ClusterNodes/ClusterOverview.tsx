@@ -183,7 +183,7 @@ export default function ClusterOverview({ isSuperAdmin, clusterCapacityData, clu
 
     const renderState = () => {
         if (errorStatusCode) {
-            return <ErrorScreenManager code={errorStatusCode} subtitle={unauthorizedInfoText()} />
+            return <ErrorScreenManager code={errorStatusCode} subtitle={unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())} />
         } else if (isLoading) {
             return <Progressing pageLoader />
         } else {
