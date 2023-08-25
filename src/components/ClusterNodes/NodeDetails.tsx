@@ -89,6 +89,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
+        setLoader(true)
         getNodeCapacity(clusterId, node)
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
@@ -152,11 +153,8 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     }
 
     useEffect(() => {
-        handleSelectedTab(node)
-    }, [])
-
-    useEffect(() => {
         getData(patchData)
+        handleSelectedTab(node)
     }, [node])
 
     useEffect(() => {

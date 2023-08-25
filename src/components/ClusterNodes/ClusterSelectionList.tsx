@@ -5,7 +5,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
 import { handleUTCTime } from '../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
@@ -31,7 +31,7 @@ export default function ClusterSelectionList({
     const [searchText, setSearchText] = useState('')
     const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
-    const [nodeImageList, setNodeImageList] = useState([])
+    const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
@@ -50,22 +50,25 @@ export default function ClusterSelectionList({
     }
 
     const getFullData = async () => {
-        try {
-            setLoader(true)
-            const { result } = await getClusterList()
+        setLoader(true)
+        setErrorResponseCode(null)
+        getClusterList().then((response) => {
             setLastDataSync(!lastDataSync)
-            if (result) {
-                const sortedResult = result
-                    .sort((a, b) => a['name'].localeCompare(b['name']))
-                    .filter((item) => !item?.isVirtualCluster)
-                setClusterList(sortedResult)
-                setFilteredClusterList(sortedResult)
+        if (response?.result) {
+            const sortedResult = response.result
+                .sort((a, b) => a['name'].localeCompare(b['name']))
+                .filter((item) => !item?.isVirtualCluster)
+            setClusterList(sortedResult)
+            setFilteredClusterList(sortedResult)
+        }
+        setLoader(false)
+        }).catch((error) => {
+            if(error['code'] !== 403){
+                showError(error)
             }
             setLoader(false)
-        } catch (error) {
-            showError(error)
-            setLoader(false)
-        }
+            setErrorResponseCode(error.code)
+        })
     }
 
     const getData = () => {
@@ -240,6 +243,14 @@ export default function ClusterSelectionList({
                 </div>
             )
         }
+    }
+
+    if (errorResponseCode) {
+        return (
+            <div className="dc__border-left flex dc__container-below-header">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
     }
 
     return (
