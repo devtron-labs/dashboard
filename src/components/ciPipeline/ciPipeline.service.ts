@@ -487,9 +487,9 @@ function parseCIResponse(
                 isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
                 isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin,
                 defaultTag: ciPipeline.defaultTag,
-                customTagObject: {
-                    tagPattern: ciPipeline.customTagObject.tagPattern,
-                    counterX: ciPipeline.customTagObject.counterX,
+                customTag: {
+                    tagPattern: ciPipeline.customTag.tagPattern,
+                    counterX: ciPipeline.customTag.counterX,
                 }
             },
             loadingData: false,

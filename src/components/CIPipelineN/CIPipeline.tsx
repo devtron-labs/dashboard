@@ -136,7 +136,7 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
-        customTagObject:{
+        customTag:{
             message: [], 
             isValid: true
         }
@@ -771,8 +771,6 @@ export default function CIPipeline({
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobView}
                                     getPluginData={getPluginData}
-                                    defaultTag={formData.defaultTag}
-                                    customTagObject={formData.customTagObject}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

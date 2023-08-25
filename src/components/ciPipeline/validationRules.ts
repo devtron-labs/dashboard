@@ -147,7 +147,7 @@ export class ValidationRules {
         else return { isValid: true, message: null }
     }
 
-    customTagObject = (value: string): { message: string[] | []; isValid: boolean } => {
+    customTag = (value: string): { message: string[] | []; isValid: boolean } => {
         let _message = []
         const regExp = new RegExp(PATTERNS.CUSTOM_TAG)
         if (!value?.length) return { isValid: false, message: [REQUIRED_FIELD_MSG] }

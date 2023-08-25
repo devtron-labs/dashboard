@@ -133,7 +133,7 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     preBuildStage?: PipelineBuildStageType
     postBuildStage?: PipelineBuildStageType
     defaultTag?: string[]
-    customTagObject?: CustomTagType
+    customTag?: CustomTagType
 }
 
 export interface PipelineFormDataErrorType {
@@ -153,7 +153,7 @@ export interface PipelineFormDataErrorType {
         steps: any[],
         isValid: boolean,
     },
-    customTagObject?:{
+    customTag?:{
         message?: string[], isValid: boolean
     }
 }
