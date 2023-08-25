@@ -324,7 +324,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
                             mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
                             this.renderFailedCD(mat)}
-                        {mat.index == 0 && (
+                        {mat.index == 0 && this.props.materialType !== MATERIAL_TYPE.rollbackMaterialList && (
                             <div className="">
                                 <ImageTagButton
                                     text="Latest"
