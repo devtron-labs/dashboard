@@ -317,8 +317,7 @@ export const StyledProgressBar = ({
         progressTimer = setInterval(() => {
             setProgressValue((prevValue) => {
                 const _currentValue = prevValue + 1
-                // checking for both null and undefined
-                if (progress != null) {
+                if (progress) {
                     clearInterval(progressTimer)
                     return progress
                 }
