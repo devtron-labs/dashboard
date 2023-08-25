@@ -122,7 +122,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getHostURLConfig()
         this.getWorkflows(true)
         this.getEnvironments()
-        
+
     }
 
     getEnvironments = () => {
@@ -580,7 +580,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
-        this.setState({ loader: true, showCIModal: true })
+        this.setState({ loader: true, showCIModal: true, materialType: 'inputMaterialList' })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.abortController = new AbortController()
 
@@ -946,7 +946,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         },
                     )
                 }
-               
+
             })
             .catch((errors: ServerErrors) => {
                 if (errors.code === 403) {
