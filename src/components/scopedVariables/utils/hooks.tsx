@@ -18,7 +18,8 @@ export const useFileReader = () => {
     }, [])
 
     useEffect(() => {
-        if (!fileData || !fileData.data) return
+        // doing == since we want to check for null and undefined
+        if (!fileData || fileData.data == null) return
         if (!validator) return
         const { status, message } = validator(fileData)
         setStatus(() => ({
@@ -111,4 +112,18 @@ export const useFileReader = () => {
     }
 
     return { fileData, progress, status, readFile, abortRead }
+}
+
+export const useClickOutside = (ref: any, callback: () => void) => {
+    useEffect(() => {
+        const handleClickOutside = (e: any) => {
+            if (ref?.current && !ref.current.contains(e.target)) {
+                callback()
+            }
+        }
+        document.addEventListener('click', handleClickOutside)
+        return () => {
+            document.removeEventListener('click', handleClickOutside)
+        }
+    }, [ref, callback])
 }
