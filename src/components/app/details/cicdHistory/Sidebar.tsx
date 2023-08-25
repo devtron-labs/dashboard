@@ -193,6 +193,12 @@ const HistorySummaryCard = React.memo(
                 targetCardRef.current.scrollIntoView({ behavior: 'smooth' })
             }
         }
+
+        const assignTargetCardRef = (el) => {
+            if (+activeID === +id) {
+                targetCardRef.current = el
+            }
+        }
         return (
             <ConditionalWrap
                 condition={Array.isArray(ciMaterials)}
@@ -220,7 +226,7 @@ const HistorySummaryCard = React.memo(
                     className="w-100 ci-details__build-card-container"
                     data-testid={dataTestId}
                     activeClassName="active"
-                    ref={+activeID === +id && targetCardRef}
+                    ref={assignTargetCardRef}
                 >
                     <div className="w-100 ci-details__build-card">
                         <div
