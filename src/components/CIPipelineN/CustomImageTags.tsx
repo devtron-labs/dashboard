@@ -4,22 +4,24 @@ import { CustomImageTagsType, ImageTagType } from './CustomImageTag.type'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as Alert } from '../../assets/icons/ic-alert-warning-yellow.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
+import '../ciPipeline/ciPipeline.scss'
 
 function CustomImageTags({
-    setCustomTagObject,
-    customTagObject,
     defaultTag,
     formDataErrorObj,
     setFormDataErrorObj,
+    formData,
+    setFormData
 }: CustomImageTagsType) {
     const validationRules = new ValidationRules()
     const [showImageTagPatternDetails, setShowImageTagPatternDetails] = useState<boolean>(false)
-    const [imageTagValue, setImageTagValue] = useState<string>(ImageTagType.Default)
-    const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
+    const defaultTagValue = formData.customTagObject?.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default
+    const [imageTagValue, setImageTagValue] = useState<string>(defaultTagValue)
+    const isCustomTagError = formDataErrorObj.customTagObject.message.length > 0 && !formDataErrorObj.customTagObject.isValid
 
     const toggleEditAction = () => {
         setShowImageTagPatternDetails(!showImageTagPatternDetails)
@@ -62,20 +64,24 @@ function CustomImageTags({
     }
 
     const onChangeCustomInput = (event) => {
-        setCustomTagObject({
-            ...customTagObject,
+        const _form = { ...formData }
+        _form.customTagObject = {
+            ..._form.customTagObject,
             tagPattern: event.target.value,
-        })
+        }
+        setFormData(_form)
         const _formDataErrorObj = { ...formDataErrorObj }
-        _formDataErrorObj.customTag = validationRules.customTag(event.target.value)
+        _formDataErrorObj.customTagObject = validationRules.customTagObject(event.target.value)
         setFormDataErrorObj(_formDataErrorObj)
     }
 
     const onChangeCustomImageCounter = (event) => {
-        setCustomTagObject({
-            ...customTagObject,
+        const _form = { ...formData }
+        _form.customTagObject = {
+            ..._form.customTagObject,
             counterX: event.target.value,
-        })
+        }
+        setFormData(_form)
     }
 
     const renderCustomImageDetails = () => {
@@ -91,13 +97,13 @@ function CustomImageTags({
                         autoComplete={'off'}
                         autoFocus={true}
                         data-testid="container-repository-textbox"
-                        value={customTagObject?.tagPattern}
+                        value={formData.customTagObject?.tagPattern}
                         onChange={onChangeCustomInput}
                     />
 
                     <div className="image-tag-preview en-2 bw-1 dc__bottom-radius-4 dc__no-border-top-imp pl-8 pr-8 pt-6 pb-6 cn-7">
                         {isCustomTagError ? (
-                            formDataErrorObj.customTag.message.map((_msg: string) => {
+                            formDataErrorObj.customTagObject.message.map((_msg: string) => {
                                 return renderInputErrorMessage(_msg)
                             })
                         ) : (
@@ -105,13 +111,13 @@ function CustomImageTags({
                                 Tag Preview:
                                 <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
                                     <div className={'dc__registry-icon mr-5 '}></div>
-                                    {customTagObject?.tagPattern.replace('{x}', customTagObject?.counterX.toString())}
+                                    {formData.customTagObject?.tagPattern.replace('{x}', formData.customTagObject?.counterX.toString())}
                                 </div>
                             </div>
                         )}
                     </div>
                     <div className="mt-4 cn-7 fs-11 flex left">
-                        <Alert className="mr-4" />
+                        <Warning className="mr-4 icon-dim-16 alert-icon-c9-imp" />
                         Build will fail if resulting image tag has already been built
                     </div>
                     <hr />
@@ -123,7 +129,7 @@ function CustomImageTags({
                             className="form__input form__input-p-2 w-80px-imp ml-8 dc__bg-n50"
                             name="image_counter"
                             autoComplete={'off'}
-                            value={customTagObject?.counterX}
+                            value={formData.customTagObject?.counterX}
                             onChange={onChangeCustomImageCounter}
                         />
                         <div></div>
@@ -139,7 +145,7 @@ function CustomImageTags({
                 {defaultTag?.map((tag, index) => {
                     return (
                         <div key={`tag-${index}`} className="flex left">
-                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content">{tag}</div>
+                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">{tag}</div>
                             {index < 2 && <span className="bcn-0 pl-2 pr-2">-</span>}
                         </div>
                     )
@@ -151,9 +157,9 @@ function CustomImageTags({
     const renderCustomTagCollapsedValue = () => {
         return (
             <div className="dc__ff-monospace  mt-4">
-                <div>{customTagObject?.tagPattern}</div>
+                <div>{formData.customTagObject?.tagPattern}</div>
                 <div className="dc__italic-font-style cn-7">
-                    {`{X}`} = {customTagObject.counterX} in the next build trigger
+                    {`{X}`} = {formData.customTagObject.counterX} in the next build trigger
                 </div>
             </div>
         )
@@ -162,12 +168,12 @@ function CustomImageTags({
     const getCustomTagCollapsedErrorText = (): string => {
         let errorMessage = ''
         if (
-            formDataErrorObj.customTag.message.find(
+            formDataErrorObj.customTagObject.message.find(
                 (errorMsg) => errorMsg === CustomErrorMessage.CUSTOM_TAG_ERROR_MSG || errorMsg === CustomErrorMessage.CUSTOM_TAG_MANDATORY_X,
             )
         ) {
             errorMessage = CustomErrorMessage.INVALID_IMAGE_PATTERN
-        } else if (formDataErrorObj.customTag.message.find((errorMsg) => errorMsg === REQUIRED_FIELD_MSG)) {
+        } else if (formDataErrorObj.customTagObject.message.find((errorMsg) => errorMsg === REQUIRED_FIELD_MSG)) {
             errorMessage = CustomErrorMessage.REQUIRED_IMAGE_PATTERN
         }
         return errorMessage
@@ -178,7 +184,7 @@ function CustomImageTags({
             if (isCustomTagError) {
                 return renderInputErrorMessage(getCustomTagCollapsedErrorText())
             }
-            if (customTagObject.tagPattern) {
+            if (formData.customTagObject.tagPattern.length > 0) {
                 return renderCustomTagCollapsedValue()
             } else {
                 return getDefaultTagValue()

@@ -19,8 +19,6 @@ export function Build({
     setDockerConfigOverridden,
     isJobView,
     getPluginData,
-    defaultTag, //remove when defaultTag is used from context
-    customTagObject //remove when customTagObject is used from context
 }: BuildType) {
     const {
         formData,
@@ -274,8 +272,6 @@ export function Build({
                         setDockerConfigOverridden={setDockerConfigOverridden}
                         loadingState={loadingState}
                         setLoadingState={setLoadingState}
-                        defaultTag={defaultTag}
-                        customTagObject={customTagObject} //remove when customTagObject is used from context
                         formDataErrorObj={formDataErrorObj}
                         setFormDataErrorObj={setFormDataErrorObj}
                     />

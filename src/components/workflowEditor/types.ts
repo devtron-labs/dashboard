@@ -153,7 +153,7 @@ export interface PipelineFormDataErrorType {
         steps: any[],
         isValid: boolean,
     },
-    customTag?:{
+    customTagObject?:{
         message?: string[], isValid: boolean
     }
 }

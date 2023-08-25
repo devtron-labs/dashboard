@@ -79,7 +79,7 @@ export default function CIPipeline({
     }
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
-    const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
+    const saveOrUpdate = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobView ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
         isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
@@ -122,11 +122,6 @@ export default function CIPipeline({
             id: 0,
             steps: [],
         },
-        defaultTag: ["{git_hash}", "{ci_pipeline_id}", "{global_counter}"],
-        customTagObject: {
-            tagPattern: "version1.3.{x}",
-            counterX: 0,
-        }
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<PipelineFormDataErrorType>({
         name: { isValid: true },
@@ -141,7 +136,7 @@ export default function CIPipeline({
             steps: [],
             isValid: true,
         },
-        customTag:{
+        customTagObject:{
             message: [], 
             isValid: true
         }
@@ -808,7 +803,7 @@ export default function CIPipeline({
                                     }
                                     isLoading={apiInProgress}
                                 >
-                                    {text}
+                                    {saveOrUpdate}
                                 </ButtonWithLoader>
                             )}
                         </div>

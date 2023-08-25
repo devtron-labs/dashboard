@@ -515,3 +515,11 @@
         fill: var(--B500);
     }
 }
+
+.alert-icon-c9-imp {
+    path {
+        &:nth-child(1) {
+            fill: (--Y500) !important;
+        }
+    }
+}

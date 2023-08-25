@@ -24,8 +24,6 @@ export default function AdvancedConfigOptions({
     setLoadingState,
     formDataErrorObj,
     setFormDataErrorObj,
-    defaultTag= ["{git_hash}", "{ci_pipeline_id}", "{global_counter}"],
-    // customTagObject
 }: AdvancedConfigOptionsProps) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -38,11 +36,6 @@ export default function AdvancedConfigOptions({
         defaultDockerConfigs: null,
         currentCIBuildType: null,
     })
-   const [customTagObject, setCustomTagObject] = useState({
-    tagPattern: '',
-    counterX: 0
-   })
-
     const [targetPlatforms, setTargetPlatforms] = useState<string>('')
     const targetPlatformMap = getTargetPlatformMap()
     const [selectedTargetPlatforms, setSelectedTargetPlatforms] = useState<OptionType[]>([])
@@ -281,11 +274,11 @@ export default function AdvancedConfigOptions({
                                 />
                             </div>
                                 <CustomImageTags
-                                    setCustomTagObject={setCustomTagObject}
-                                    customTagObject={customTagObject}
-                                    defaultTag={defaultTag}
+                                    defaultTag={formData.defaultTag}
                                     formDataErrorObj={formDataErrorObj}
                                     setFormDataErrorObj={setFormDataErrorObj}
+                                    formData={formData}
+                                    setFormData={setFormData}
                                 />
 
                             {renderDockerArgs()}

@@ -485,7 +485,12 @@ function parseCIResponse(
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
                 dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
                 isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
-                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin
+                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin,
+                defaultTag: ciPipeline.defaultTag,
+                customTagObject: {
+                    tagPattern: ciPipeline.customTagObject.tagPattern,
+                    counterX: ciPipeline.customTagObject.counterX,
+                }
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
