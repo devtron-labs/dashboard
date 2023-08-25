@@ -69,6 +69,7 @@ describe('ScopedVariables helpers', () => {
 
             expect(window.URL.createObjectURL).toHaveBeenCalledWith(blob)
             expect(window.URL.revokeObjectURL).toHaveBeenCalledWith(url)
+            expect(a.click).toHaveBeenCalled()
         })
     })
 })
