@@ -1206,11 +1206,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     20,
                     this.handleOlderImagesLoading,
                 )
+                this.setState({
+                    showOlderImages: false,
+                    loadingMore: true,
+                })
+            } else {
+                this.setState({
+                    showOlderImages: false,
+                    noMoreImages: true,
+                })
             }
-            this.setState({
-                showOlderImages: false,
-                noMoreImages: true,
-            })
         }
     }
 
