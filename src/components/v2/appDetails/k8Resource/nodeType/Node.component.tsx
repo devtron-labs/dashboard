@@ -239,7 +239,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             />
                         </span>
                         <TippyCustomized
-                            showHeading={true}
+                            hideHeading={true}
                             noHeadingBorder={true}
                             theme={TippyTheme.white}
                             className="default-tt"
