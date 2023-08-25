@@ -57,11 +57,12 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
             /*
           136 is standard with of every column for calculations
           65 is width of left nav
+          220 is width of resource
           160 is the diff of node column
           60 is the diff of status column
           */
 
-            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60
+            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60 + 220
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)

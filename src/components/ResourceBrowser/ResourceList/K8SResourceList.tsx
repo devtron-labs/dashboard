@@ -149,7 +149,7 @@ export function K8SResourceList({
                         <div
                             key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? 'dc__position-sticky  sticky-column dc__border-right' : ''
+                                fixedNodeNameColumn ? 'dc__position-sticky bcn-0 dc__hover-n50 sticky-column dc__border-right' : ''
                             }`}
                         >
                             <div className="w-100 flex left" data-testid="created-resource-name">
