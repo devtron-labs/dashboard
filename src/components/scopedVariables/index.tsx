@@ -21,11 +21,13 @@ const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
             if (scopedVariablesData?.result) {
                 const parsedSchema = JSON.parse(scopedVariablesData.result.jsonSchema)
                 setJsonSchema(parsedSchema)
+                if(scopedVariablesData.result.payload){
                 const deStringifiedVariables = manipulateVariables(
                     (value) => JSON.parse(value),
                     scopedVariablesData.result.payload,
-                )
-                setScopedVariables(deStringifiedVariables)
+                    )
+                    setScopedVariables(deStringifiedVariables)
+                }
             }
         } catch (e) {
             setSchemaError(true)
