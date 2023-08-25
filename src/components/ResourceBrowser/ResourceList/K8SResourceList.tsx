@@ -142,14 +142,14 @@ export function K8SResourceList({
         return (
             <div
                 key={`row--${index}-${resourceData.name}`}
-                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover"
+                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__hover-n50"
             >
                 {resourceList.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
+                                fixedNodeNameColumn ? 'dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
                             <div className="w-100 flex left" data-testid="created-resource-name">
