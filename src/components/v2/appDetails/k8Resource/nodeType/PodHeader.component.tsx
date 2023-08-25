@@ -4,6 +4,7 @@ import { getNodeStatus } from './nodeType.util';
 import './nodeType.scss';
 import { iNode } from '../../appDetails.type';
 import PodTabSection from './PodTabSection';
+import { useSharedState } from '../../../utils/useSharedState';
 
 function PodHeaderComponent({ callBack }) {
     const [podTab, selectPodTab] = useState<'old' | 'new'>('new');
@@ -13,6 +14,10 @@ function PodHeaderComponent({ callBack }) {
     const oldPodStats = { running: 0, all: 0 }
     const [newPods, setNewPods] = useState(newPodStats)
     const [oldPods, setOldPods] = useState(oldPodStats)
+    const [filteredNodes] = useSharedState(
+        IndexStore.getAppDetailsFilteredNodes(),
+        IndexStore.getAppDetailsNodesFilteredObservable(),
+    );
 
     useEffect(() => {
         if (pods && podMetaData?.length > 0) {
@@ -26,8 +31,10 @@ function PodHeaderComponent({ callBack }) {
                     oldPodStats['all'] += 1
                 }
             })
+            setNewPods({...newPodStats});
+            setOldPods({...oldPodStats});
         }
-    }, [podMetaData,pods]);
+    }, [filteredNodes]);
 
     useEffect(() => {
         callBack(podTab === 'new');
