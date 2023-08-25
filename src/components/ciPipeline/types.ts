@@ -386,8 +386,6 @@ export interface BuildType {
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
     getPluginData: (_formData?: PipelineFormType) => void
-    defaultTag?: string[], //remove later on
-    customTagObject?: CustomTagType
 }
 
 export interface PreBuildType {

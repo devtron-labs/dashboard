@@ -133,8 +133,6 @@ export interface AdvancedConfigOptionsProps {
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     loadingState?: LoadingState
     setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
-    defaultTag?: string[], //remove later on
-    customTagObject?: CustomTagType
     formDataErrorObj?: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
 }
