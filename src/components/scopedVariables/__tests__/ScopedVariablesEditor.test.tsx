@@ -2,7 +2,6 @@ import React from 'react'
 import { fireEvent, render, act, screen, waitFor } from '@testing-library/react'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
-import { postScopedVariables } from '../utils/helpers'
 import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE, SAVE_SUCCESS_TOAST_MESSAGE } from '../constants'
 import { toast } from 'react-toastify'
 
@@ -16,7 +15,6 @@ jest.mock('react-toastify', () => ({
 }))
 
 describe('ScopedVariablesEditor', () => {
-
     beforeEach(() => {
         jest.clearAllMocks()
     })
@@ -76,9 +74,6 @@ describe('ScopedVariablesEditor', () => {
         const saveButton = container.querySelector('.uploaded-variables-editor-footer__save-button')
         expect(saveButton).toBeTruthy()
         fireEvent.click(saveButton as Element)
-        await act(async () => {
-            await Promise.resolve()
-        })
         expect(toast.error).toHaveBeenCalledWith(PARSE_ERROR_TOAST_MESSAGE)
     })
 
@@ -101,9 +96,38 @@ describe('ScopedVariablesEditor', () => {
         const saveButton = container.querySelector('.uploaded-variables-editor-footer__save-button')
         expect(saveButton).toBeTruthy()
         fireEvent.click(saveButton as Element)
+        expect(toast.error).toHaveBeenCalledWith(PARSE_ERROR_TOAST_MESSAGE)
+    })
+
+    it('should show error toast when save button is clicked and save fails', async () => {
+        jest.spyOn(global, 'fetch').mockImplementation(
+            () =>
+                Promise.resolve({
+                    json: () =>
+                        Promise.resolve({
+                            result: {
+                                code: 500,
+                                status: 'Internal Server Error',
+                            },
+                        }),
+                }) as Promise<Response>,
+        )
+
         await act(async () => {
+            const { container } = render(
+                <ScopedVariablesEditor
+                    variablesData={JSON.stringify(validScopedVariablesData.result.payload)}
+                    name="test"
+                    abortRead={() => {}}
+                    reloadScopedVariables={() => {}}
+                    jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
+                />,
+            )
+            const saveButton = container.querySelector('.uploaded-variables-editor-footer__save-button')
+            expect(saveButton).toBeTruthy()
+            fireEvent.click(saveButton as Element)
             await Promise.resolve()
         })
-        expect(toast.error).toHaveBeenCalledWith(PARSE_ERROR_TOAST_MESSAGE)
+        expect(toast.error).toHaveBeenCalledWith(SAVE_ERROR_TOAST_MESSAGE)
     })
 })
