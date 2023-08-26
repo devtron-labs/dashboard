@@ -191,6 +191,20 @@ export default function DeploymentTemplateEditorView({
                     height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                     diffView={state.openComparison}
                     readOnly={readOnly}
+                    newVariables={[
+                        {
+                            name: 'var1',
+                            value: 'variable-1',
+                        },
+                        {
+                            name: 'var2',
+                            value: 'variable-2',
+                        },
+                        {
+                            name: 'AmbassdorHostname',
+                            value: 'ambassador',
+                        }
+                    ]}
                 >
                     {isUnSet && !state.openComparison && !state.showReadme && (
                         <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
