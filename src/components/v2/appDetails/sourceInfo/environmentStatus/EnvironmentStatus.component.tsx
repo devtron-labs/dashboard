@@ -250,7 +250,6 @@ function EnvironmentStatusComponent({
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
                     {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
-                    {/* {<CurrentSyncStatus status={status} loadingResourceTree={loadingResourceTree} />} */}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
