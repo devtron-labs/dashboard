@@ -38,7 +38,7 @@ const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVaria
             })
             if (variables) setVariablesList([...variables])
         }
-    }, [])
+    }, [scopedVariablesData])
 
     const handleDropdownClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.stopPropagation()
