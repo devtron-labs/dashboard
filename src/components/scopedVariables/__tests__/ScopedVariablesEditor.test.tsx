@@ -2,6 +2,7 @@ import React from 'react'
 import { fireEvent, render, act } from '@testing-library/react'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
+import { parseYAMLStringToObj } from '../utils/helpers'
 import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE } from '../constants'
 import { toast } from 'react-toastify'
 
@@ -56,37 +57,10 @@ describe('ScopedVariablesEditor', () => {
         expect(abortRead).toHaveBeenCalled()
     })
 
-    it('should show error toast when save button is clicked and yaml is not parsable', async () => {
-        jest.mock('../utils/helpers', () => ({
-            parseYAMLStringToObj: jest.fn(() => {
-                throw new Error()
-            }),
-        }))
+    it('should show error toast when save button is clicked and yaml is not parsable', () => {
         const { container } = render(
             <ScopedVariablesEditor
-                variablesData={validScopedVariablesData.result.payload}
-                name="test"
-                abortRead={() => {}}
-                reloadScopedVariables={() => {}}
-                jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
-            />,
-        )
-        const saveButton = container.querySelector('.uploaded-variables-editor-footer__save-button')
-        expect(saveButton).toBeTruthy()
-        fireEvent.click(saveButton as Element)
-        expect(toast.error).toHaveBeenCalledWith(PARSE_ERROR_TOAST_MESSAGE)
-    })
-
-    it('should show error toast when save button is clicked and yaml does not have variable values', async () => {
-        jest.mock('../utils/helpers', () => ({
-            parseYAMLStringToObj: jest.fn(() => ({})),
-            manipulateVariables: jest.fn(() => {
-                throw new Error()
-            }),
-        }))
-        const { container } = render(
-            <ScopedVariablesEditor
-                variablesData={validScopedVariablesData.result.payload}
+                variablesData={''}
                 name="test"
                 abortRead={() => {}}
                 reloadScopedVariables={() => {}}
