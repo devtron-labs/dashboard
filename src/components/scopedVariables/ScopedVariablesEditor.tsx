@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
-import { postScopedVariables, parseYAMLStringToObj, manipulateVariables } from './utils/helpers'
+import { postScopedVariables, parseYAMLStringToObj } from './utils/helpers'
 import { ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE, SAVE_SUCCESS_TOAST_MESSAGE } from './constants'
@@ -27,7 +27,6 @@ const ScopedVariablesEditor = ({
                 toast.error(PARSE_ERROR_TOAST_MESSAGE)
                 return
             }
-            variablesObj = manipulateVariables((value) => JSON.stringify(value), variablesObj)
         } catch (e) {
             toast.error(PARSE_ERROR_TOAST_MESSAGE)
             return

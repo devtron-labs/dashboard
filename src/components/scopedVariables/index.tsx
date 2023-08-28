@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ErrorScreenNotAuthorized, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import SavedVariablesView from './SavedVariables'
 import UploadScopedVariables from './UploadScopedVariables'
-import { getScopedVariablesJSON, manipulateVariables } from './utils/helpers'
+import { getScopedVariablesJSON } from './utils/helpers'
 import { useAsync } from '../common'
 import { ScopedVariablesI } from './types'
 import './styles.scss'
@@ -21,13 +21,7 @@ const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
             if (scopedVariablesData?.result) {
                 const parsedSchema = JSON.parse(scopedVariablesData.result.jsonSchema)
                 setJsonSchema(parsedSchema)
-                if(scopedVariablesData.result.payload){
-                const deStringifiedVariables = manipulateVariables(
-                    (value) => JSON.parse(value),
-                    scopedVariablesData.result.payload,
-                    )
-                    setScopedVariables(deStringifiedVariables)
-                }
+                setScopedVariables(scopedVariablesData.result.payload)
             }
         } catch (e) {
             setSchemaError(true)

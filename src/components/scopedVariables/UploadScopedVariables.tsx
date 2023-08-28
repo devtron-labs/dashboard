@@ -25,7 +25,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
                 <p className="dc__ellipsis-right load-scoped-variables-container__typography">{fileData?.name}</p>
 
                 <button className="load-scoped-variables-container__abort-read-btn" onClick={abortRead}>
-                    <Close width={'20px'} height={'20px'} />
+                    <Close width="20px" height="20px" />
                 </button>
             </div>
 
@@ -41,7 +41,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
 
             {!status?.status && (
                 <div className="load-scoped-variables-container__error-container">
-                    <ICError width={'20px'} height={'20px'} />
+                    <ICError width="20px" height="20px" />
                     <p className="load-scoped-variables-container__error-typography">Upload failed</p>
                 </div>
             )}
