@@ -1061,7 +1061,7 @@ export default function NewCDPipeline({
                     </button>
                 </div>
                 {renderCDPipelineBody()}
-                {pageState !== ViewType.LOADING && (
+                {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <>
                         <div
                             className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${

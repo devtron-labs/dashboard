@@ -383,6 +383,7 @@ export const DeleteChartDialog = ({
     handleDelete,
     toggleConfirmation,
     isCreateValueView,
+    disableButton,
 }: DeleteChartDialogProps) => {
     const closeConfirmation = () => {
         toggleConfirmation(false)
@@ -392,6 +393,7 @@ export const DeleteChartDialog = ({
     }
     return (
         <DeleteDialog
+            apiCallInProgress={disableButton}
             title={`Delete '${appName}' ?`}
             delete={handleForceDelete}
             closeDelete={closeConfirmation}

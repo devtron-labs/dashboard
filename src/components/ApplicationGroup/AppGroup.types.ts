@@ -163,6 +163,7 @@ export interface WorkflowAppSelectionType {
 export interface ConfigAppList {
     id: number
     name: string
+    isProtected?: boolean
 }
 
 export interface EnvApp {
@@ -258,6 +259,7 @@ export interface AppGroupDetailDefaultType {
     filteredAppIds: string
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
+    envName?: string
 }
 
 interface CIPipeline {
@@ -284,8 +286,8 @@ export interface AppGroupAppFilterContextType {
     groupFilterOptions: GroupOptionType[]
     selectedGroupFilter: MultiValue<GroupOptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
-    openCreateGroup: (e, groupId?: string) => void
-    openDeleteGroup: (e, groupId: string) => void
+    openCreateGroup: (e, groupId?: string, _edit?: boolean) => void
+    openDeleteGroup: (e, groupId: string, _delete?: boolean) => void
     isSuperAdmin: boolean
 }
 
@@ -295,9 +297,15 @@ export interface CreateGroupAppListType {
     isSelected: boolean
 }
 
+export interface CreateTypeOfAppListType{
+    id: number
+    appName: string
+}
+
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
+    unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
 }
 
@@ -337,12 +345,25 @@ export interface EnvGroupListType {
     description: string
 }
 
+export interface CheckPermissionType{
+    id?: number
+    appIds: number[]
+    name?: string
+    description?: string
+    envId?: number
+    active?: boolean
+}
+
 export interface EnvGroupListResponse extends ResponseType {
     result?: EnvGroupListType[]
 }
 
 export interface EnvGroupResponse extends ResponseType {
     result?: EnvGroupListType
+}
+
+export interface CheckPermissionResponse extends ResponseType {
+    result?: boolean
 }
 
 export interface GroupOptionType extends OptionType {

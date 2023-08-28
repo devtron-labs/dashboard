@@ -463,7 +463,7 @@ export interface JobPipeline {
     status: string
     dataTestId?: string
     environmentName?: string
-    environmentId?: string 
+    environmentId?: string
     lastTriggeredEnvironmentName?: string
 }
 
@@ -483,6 +483,7 @@ export interface SourceInfoType {
   loadingResourceTree?: boolean
   isVirtualEnvironment?: boolean
   setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+  refetchDeploymentStatus: (showTimeline?: boolean)=> void
 }
 
 export interface EnvironmentListMinType {

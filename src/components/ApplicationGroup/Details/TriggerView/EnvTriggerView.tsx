@@ -17,6 +17,7 @@ import {
     CHECKBOX_VALUE,
     VisibleModal,
     DeploymentAppTypes,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -86,6 +87,7 @@ import {
 import Tippy from '@tippyjs/react'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import { getDefaultConfig } from '../../../notifications/notifications.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -132,6 +134,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
     const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const { queryParams } = useSearchString()
+    const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
+    const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -151,6 +156,25 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         }
     }, [filteredAppIds])
+
+    useEffect(() => {
+        if(location.search.includes('approval-node') && filteredWorkflows?.length) {
+            setShowBulkCDModal(false)
+            setShowApprovalModal(true)
+            onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
+            getConfigs()
+        }
+    }, [location.search])
+
+    const getConfigs = () => {
+        getDefaultConfig()
+            .then((response) => {
+                let isConfigPresent = response.result.isConfigured
+                let _isDefaultConfig = response.result.is_default_configured
+                setDefaultConfig(_isDefaultConfig)
+                setConfigPresent(isConfigPresent)
+            })
+    }
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -738,13 +762,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 node.userApprovalConfig = data.userApprovalConfig
                                 node.requestedUserId = data.requestedUserId
                             }
-
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId
                         }
                         return node
                     })
+                    
                     workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.tagsEditable = data.tagsEditable
                     workflow.nodes = nodes
@@ -1036,7 +1060,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                    (selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
+                    (!showBulkCDModal && selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
                 ) {
                     const artifacts = node[materialType].map((artifact, i) => {
                         return {
@@ -1198,6 +1222,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const closeApprovalModal = (e): void => {
         preventBodyScroll(false)
         setShowApprovalModal(false)
+        history.push({
+            search: ''
+        })
     }
 
     const hideWebhookModal = (e?) => {
@@ -1896,6 +1923,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 tagsEditable = {tagsEditableVal}
                                 setTagsEditable = {setTagsEditableVal}
                                 hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
+                                history={history}
+                                location={location}
+                                match={match}
+                                isApplicationGroupTrigger={true}
                             />
                         )}
                     </div>
@@ -1941,6 +1972,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     tagsEditable = {tagsEditableVal}
                     setTagsEditable = {setTagsEditableVal}
                     hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
+                    configs={isConfigPresent}
+                    isDefaultConfigPresent={isDefaultConfigPresent}
                 />
             )
         }

@@ -35,6 +35,7 @@ export function SourceInfo({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
+    refetchDeploymentStatus
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
@@ -99,9 +100,7 @@ export function SourceInfo({
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            isArgoCdApp
-                                ? DeploymentAppTypeNameMapping.GitOps
-                                : DeploymentAppTypeNameMapping.Helm
+                            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
                         <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
@@ -315,9 +314,7 @@ export function SourceInfo({
                                 loadingResourceTree={loadingResourceTree}
                                 hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
                                 isVirtualEnvironment={isVirtualEnvironment}
-                                appId={params.appId}
-                                envId={params.envId}
-                                isHelmApp={false}
+                                refetchDeploymentStatus={refetchDeploymentStatus}
                             />
                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (

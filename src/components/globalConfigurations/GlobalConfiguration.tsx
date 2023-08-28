@@ -576,8 +576,13 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
+function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
+    const handleToggle = () => {
+        if (!isButtonDisabled) {
+            onSelect(!enabled);
+        }
+    };
+    return <Toggle dataTestId="toggle-button" {...props} onSelect={handleToggle} selected={enabled} disabled={isButtonDisabled} />
 }
 
 function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {

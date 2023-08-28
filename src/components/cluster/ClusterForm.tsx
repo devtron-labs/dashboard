@@ -10,6 +10,7 @@ import {
     InfoColourBar,
     Toggle,
     GenericEmptyState,
+    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
@@ -19,7 +20,6 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
-import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
@@ -32,6 +32,7 @@ import {
     DataListType,
     UserDetails,
     SaveClusterPayloadType,
+    DEFAULT_CLUSTER_ID,
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
@@ -47,7 +48,9 @@ import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
+const KubectlProxyCheckBox = importComponentFromFELibrary('KubectlProxyCheckBox')
 
 const PrometheusWarningInfo = () => {
     return (
@@ -87,6 +90,8 @@ export default function ClusterForm({
     prometheus_url,
     prometheusAuth,
     defaultClusterComponent,
+    proxyUrl,
+    isConnectedViaProxy,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -123,6 +128,7 @@ export default function ClusterForm({
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
+    const [isConnectedViaProxyTemp, setisConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -136,6 +142,7 @@ export default function ClusterForm({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
+            proxyUrl: { value: proxyUrl?.value ? proxyUrl.value : '', error: ''},
             tlsClientKey: { value: config?.tls_key, error: '' },
             tlsClientCert: { value: config?.cert_data, error: '' },
             certificateAuthorityData: { value: config?.cert_auth_data, error: '' },
@@ -180,6 +187,10 @@ export default function ClusterForm({
             },
             prometheusTlsClientCert: {
                 required: false,
+            },
+            proxyUrl: {
+                required: (id && KubectlProxyCheckBox) && isConnectedViaProxyTemp,
+                validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
@@ -227,6 +238,7 @@ export default function ClusterForm({
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
                     active: true,
                     prometheus_url: '',
+                    proxyUrl: _dataList.proxyUrl,
                     prometheusAuth: {
                         userName: '',
                         password: '',
@@ -323,6 +335,7 @@ export default function ClusterForm({
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
                             id: _cluster['id'],
+                            proxyUrl: _cluster['proxyUrl'],
                         }
                     }),
                 ])
@@ -365,6 +378,7 @@ export default function ClusterForm({
                 cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
+            proxyUrl: state.proxyUrl?.value,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
                 userName: prometheusToggleEnabled ? state.userName.value : '',
@@ -382,6 +396,16 @@ export default function ClusterForm({
             payload['server_url'] = urlValue.slice(0, -1)
         } else {
             payload['server_url'] = urlValue
+        }
+        if (isConnectedViaProxyTemp) {
+            const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
+            if (proxyUrlValue.endsWith('/')) {
+                payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
+            } else {
+                payload['proxyUrl'] = proxyUrlValue
+            }
+        } else{
+            payload['proxyUrl'] = ''
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
@@ -415,6 +439,7 @@ export default function ClusterForm({
                 />,
             )
             toggleShowAddCluster()
+            setProxyUrlConnectionFalse()
             setTlsConnectionFalse()
             reload()
             toggleEditMode((e) => !e)
@@ -450,6 +475,7 @@ export default function ClusterForm({
             tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
+        proxyUrl: state.proxyUrl.value,
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
@@ -518,6 +544,7 @@ export default function ClusterForm({
 
     const handleCloseButton = () => {
         if (id) {
+            setProxyUrlConnectionFalse()
             setTlsConnectionFalse()
             toggleEditMode((e) => !e)
             return
@@ -531,11 +558,21 @@ export default function ClusterForm({
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
         }
+        setProxyUrlConnectionFalse()
         setTlsConnectionFalse()
         toggleShowAddCluster()
 
         setLoadingState(false)
         reload()
+    }
+
+
+    const toggleCheckProxyUrlConnection = () => {
+        setisConnectedViaProxyTemp(!isConnectedViaProxyTemp)
+    }
+
+   const setProxyUrlConnectionFalse = () => {
+       setisConnectedViaProxyTemp(false)
     }
 
     const renderUrlAndBearerToken = () => {
@@ -569,7 +606,7 @@ export default function ClusterForm({
                     />
                 </div>
                 <div className="form__row form__row--bearer-token flex column left top">
-                    {id !== 1 && (
+                    {id !== DEFAULT_CLUSTER_ID && (
                         <div className="bearer-token">
                             <ResizableTextarea
                                 className="dc__resizable-textarea__with-max-height dc__required-field"
@@ -598,7 +635,15 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {id !== 1 && (
+                {id !== DEFAULT_CLUSTER_ID && KubectlProxyCheckBox && (
+                    <KubectlProxyCheckBox
+                        toConnectViaProxyTemp={isConnectedViaProxyTemp}
+                        toggleCheckProxyUrlConnection={toggleCheckProxyUrlConnection}
+                        proxyUrl={state.proxyUrl}
+                        handleOnChange={handleOnChange}
+                    />
+                )}
+                {id !== DEFAULT_CLUSTER_ID && (
                     <>
                         <hr />
                         <div className="dc__position-rel flex left dc__hover mb-20">
@@ -616,7 +661,7 @@ export default function ClusterForm({
                         {!isTlsConnection && <hr />}
                         {isTlsConnection && (
                             <>
-                                <div className="form__row">
+                                <div className="form__row ml-24">
                                     <span
                                         data-testid="certificate_authority_data"
                                         className="form__label dc__required-field"
@@ -644,7 +689,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div className="form__row">
+                                <div className="form__row ml-24">
                                     <span data-testid="tls_client_key" className="form__label dc__required-field">
                                         TLS Key
                                     </span>
@@ -669,7 +714,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div className="form__row">
+                                <div className="form__row ml-24">
                                     <span data-testid="tls_certificate" className="form__label dc__required-field">
                                         TLS Certificate
                                     </span>

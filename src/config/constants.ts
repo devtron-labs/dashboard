@@ -17,7 +17,7 @@ export const Routes = {
     CHART_REFERENCES_MIN: 'chartref/autocomplete',
     CI_CONFIG_GET: 'app/ci-pipeline',
     CI_CONFIG_UPDATE: 'app/ci-pipeline/template/patch',
-    IMAGE_TAGGING:'app/image-tagging',
+    IMAGE_TAGGING: 'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
 
@@ -160,7 +160,7 @@ export const Routes = {
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
     NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
-    NONCASCADE_DELETE_DEVTRON_APP : 'app/delete',
+    NONCASCADE_DELETE_DEVTRON_APP: 'app/delete',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
@@ -236,7 +236,8 @@ export const Routes = {
     ROTATE_PODS: 'app/rotate-pods',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
-    JOB_CONFIG_ENVIRONMENTS: 'config/environment'
+    JOB_CONFIG_ENVIRONMENTS: 'config/environment',
+    PERMISSION: 'permission/check',
 }
 
 export const ViewType = {
@@ -295,6 +296,7 @@ export const SourceTypeMap = {
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
+export const MomentInvalidDate = 'Invalid date'
 
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
@@ -411,15 +413,15 @@ export enum MODES {
 }
 
 export const HELM_APP_UNASSIGNED_PROJECT = 'unassigned'
-export type OCIRegistryStorageActionType = "PULL" | "PUSH" | "PULL/PUSH"
+export type OCIRegistryStorageActionType = 'PULL' | 'PUSH' | 'PULL/PUSH'
 export type OCIRegistryStorageConfigType = {
-    CONTAINER ?: OCIRegistryStorageActionType,
-    CHART ?: OCIRegistryStorageActionType,
+    CONTAINER?: OCIRegistryStorageActionType
+    CHART?: OCIRegistryStorageActionType
 }
-export const OCIRegistryConfigConstants: Record<string,OCIRegistryStorageActionType>= {
-    PULL: "PULL",
-    PUSH: "PUSH",
-    PULL_PUSH: "PULL/PUSH",
+export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageActionType> = {
+    PULL: 'PULL',
+    PUSH: 'PUSH',
+    PULL_PUSH: 'PULL/PUSH',
 }
 export const RegistryStorageType = {
     CONTAINER: 'CONTAINER',
@@ -435,32 +437,32 @@ export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 }
 
 export interface RegistryPayloadType {
-    id: string,
-    pluginId: string,
-    registryType: string,
-    isDefault: boolean,
-    isOCICompliantRegistry: boolean,
-    registryUrl: string,
-    awsAccessKeyId?: string,
-    awsSecretAccessKey?: string,
-    awsRegion?: string,
-    username?: string,
-    password?: string,
-    connection?: string,
-    cert?: string,
+    id: string
+    pluginId: string
+    registryType: string
+    isDefault: boolean
+    isOCICompliantRegistry: boolean
+    registryUrl: string
+    awsAccessKeyId?: string
+    awsSecretAccessKey?: string
+    awsRegion?: string
+    username?: string
+    password?: string
+    connection?: string
+    cert?: string
     ipsConfig: {
-        id: string,
-        credentialType: string,
-        credentialValue: string,
-        appliedClusterIdsCsv: string,
-        ignoredClusterIdsCsv: string,
-    },
+        id: string
+        credentialType: string
+        credentialValue: string
+        appliedClusterIdsCsv: string
+        ignoredClusterIdsCsv: string
+    }
     ociRegistryConfig?: OCIRegistryStorageConfigType
 }
 
 export const RegistryTypeName = {
-    'CONTAINER': 'Container registry',
-    'OCI_PRIVATE': 'OCI Registry (Private)',
+    CONTAINER: 'Container registry',
+    OCI_PRIVATE: 'OCI Registry (Private)',
 }
 
 export const AppCreationType = {
@@ -522,11 +524,21 @@ export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
 }
 
 export const EXTERNAL_TYPES = {
-    '': 'Kubernetes Secret',
-    KubernetesSecret: 'Kubernetes External Secret',
-    AWSSecretsManager: 'AWS Secrets Manager',
-    AWSSystemManager: 'AWS System Manager',
-    HashiCorpVault: 'Hashi Corp Vault',
+    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME]: {
+        '': 'Kubernetes Secret',
+        KubernetesSecret: 'Kubernetes External Secret',
+        AWSSecretsManager: 'AWS Secrets Manager',
+        AWSSystemManager: 'AWS System Manager',
+        HashiCorpVault: 'Hashi Corp Vault',
+        ESO_HashiCorpVault: 'Hashi Corp Vault',
+        ESO_AWSSecretsManager: 'AWS Secrets Manager',
+        ESO_GoogleSecretsManager: 'Google Secrets Manager',
+        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+    },
+    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
+        '': 'Kubernetes ConfigMap',
+        KubernetesConfigMap: 'Kubernetes External ConfigMap',
+    },
 }
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
@@ -669,10 +681,10 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
-    INPROGRESS= 'INPROGRESS',
-    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED',
+    INPROGRESS = 'INPROGRESS',
+    HELM_PACKAGE_GENERATED = 'HELM_PACKAGE_GENERATED',
     HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
-    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED= 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED'
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -718,15 +730,14 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
-
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'
 
 export enum DELETE_ACTION {
-    DELETE= 'delete',
-    FORCE_DELETE= 'force_delete',
-    NONCASCADE_DELETE= 'noncascade_delete',
+    DELETE = 'delete',
+    FORCE_DELETE = 'force_delete',
+    NONCASCADE_DELETE = 'noncascade_delete',
 }
 export const ManifestMessaging = {
     POD_NAME_EXIST_IN_NAMESPACE: 'Pod with provided name already exists in namespace',

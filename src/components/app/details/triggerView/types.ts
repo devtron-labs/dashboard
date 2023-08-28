@@ -17,7 +17,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-export interface CDMaterialProps {
+export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -70,6 +70,7 @@ export interface CDMaterialProps {
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
+    isApplicationGroupTrigger?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -281,7 +282,10 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
+export interface TriggerViewProps extends RouteComponentProps<{
+    appId: string
+    envId: string
+}> {
     isJobView?: boolean
 }
 
@@ -350,6 +354,8 @@ export interface TriggerViewState {
     appReleaseTags?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    configs?: boolean
+    isDefaultConfigPresent?: boolean
 }
 
 //-- begining of response type objects for trigger view

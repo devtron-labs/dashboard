@@ -19,6 +19,9 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
+import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -55,11 +58,13 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
+import { ARTIFACT_STATUS, EMPTY_STATE, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import noapprovedimages from '../../../../assets/img/empty-noresult@2x.png'
+import { getConfigs } from '../../../notifications/notifications.service'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -90,7 +95,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
-            materialInEditModeMap: new Map<number,boolean>(),
+            materialInEditModeMap: new Map<number, boolean>(),
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -101,12 +106,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { ...state, selectedMaterial: props.material.find((_mat) => _mat.isSelected)}
+        return { ...state, selectedMaterial: props.material.find((_mat) => _mat.isSelected) }
     }
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-
         if (
             (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
             this.state.selectedMaterial &&
@@ -786,8 +790,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         })
     }
 
-    viewAllImages = () => {
-        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+    viewAllImages = (e) => {
+        e.stopPropagation()
+        if (!this.props.isApplicationGroupTrigger) {
+            this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+        }
+        this.props.history.push({
+            search: `approval-node=${this.props.pipelineId}`,
+        })
     }
 
     processConsumedAndApprovedImages = () => {
@@ -801,7 +811,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 approvedImages.push(mat)
             }
         })
-
         return { consumedImage, approvedImages }
     }
 
@@ -846,8 +855,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
-                {(!this.props.isFromBulkCD || isApprovalConfigured) && (
-                    <div className="material-list__title pb-16">{titleText}</div>
+                {!this.props.isFromBulkCD && (
+                    <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                        <span className="flex dc__align-start">{titleText}</span>
+                    </div>
                 )}
                 {isApprovalConfigured && materialList.length <= 0
                     ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
@@ -1046,10 +1057,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-        const hideConfigDiffSelector = isApprovalConfigured && this.props.material.length <= 1
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
             (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
+        const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
             <div
@@ -1270,20 +1281,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 ) : (
                     <>
                         {this.renderMaterialList(isApprovalConfigured)}
-                        {this.state.isRollbackTrigger &&
-                            !this.state.noMoreImages &&
-                            this.props.material.length !== 1 && (
-                                <button
-                                    className="show-older-images-cta cta ghosted flex h-32"
-                                    onClick={this.loadOlderImages}
-                                >
-                                    {this.state.loadingMore ? (
-                                        <Progressing styles={{ height: '32px' }} />
-                                    ) : (
-                                        'Show older images'
-                                    )}
-                                </button>
-                            )}
+                        {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
+                            <button
+                                className="show-older-images-cta cta ghosted flex h-32"
+                                onClick={this.loadOlderImages}
+                            >
+                                {this.state.loadingMore ? (
+                                    <Progressing styles={{ height: '32px' }} />
+                                ) : (
+                                    'Show older images'
+                                )}
+                            </button>
+                        )}
                     </>
                 )}
             </div>
@@ -1350,13 +1359,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         return (
-           <GenericEmptyState
+            <GenericEmptyState
                 image={noartifact}
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'
-                        : 'Please Trigger CI Pipeline and find the image here for deployment.'}
+                        : 'Please Trigger CI Pipeline and find the image here for deployment.'
+                }
             />
         )
     }

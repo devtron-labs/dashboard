@@ -7,7 +7,7 @@ export interface EnvironmentStatusComponentType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     isVirtualEnvironment?: boolean
     isHelmApp?: boolean
-
+    refetchDeploymentStatus: (showTimeline?: boolean)=> void
 }
 export interface AppEnvironment {
     environmentName: string
