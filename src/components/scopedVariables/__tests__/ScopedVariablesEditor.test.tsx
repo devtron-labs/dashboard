@@ -1,5 +1,5 @@
 import React from 'react'
-import { fireEvent, render, act, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, act } from '@testing-library/react'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
 import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE } from '../constants'
