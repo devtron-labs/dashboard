@@ -163,8 +163,7 @@ export default function CIPipeline({
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
-    const defaultTagValue = formData.customTag?.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default
-    const [imageTagValue, setImageTagValue] = useState<string>(defaultTagValue)
+    const [imageTagValue, setImageTagValue] = useState<string>(ImageTagType.Default)
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
@@ -175,8 +174,6 @@ export default function CIPipeline({
         }
         return _mandatoryPluginsMap
     }, [mandatoryPluginData])
-
-    const isDefaultTag = formData.customTag.tagPattern.length === 0
 
     useEffect(() => {
         getInitialData()
@@ -279,6 +276,7 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.Build, ciResponse.form)
                     validateStage(BuildStageVariable.PostBuild, ciResponse.form)
                     setFormData(ciResponse.form)
+                    setImageTagValue(ciResponse.form.customTag.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default)
                     setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
@@ -544,6 +542,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+            imageTagValue
         )
             .then((response) => {
                 if (response) {
