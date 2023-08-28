@@ -24,7 +24,6 @@ export interface HibernateTargetObject {
 export interface RotatePodsModalProps {
     onClose: () => void
     callAppDetailsAPI: () => void
-    callResourceTreeAPI: () => void
 }
 
 export interface RotateResponseModalProps {
@@ -32,7 +31,6 @@ export interface RotateResponseModalProps {
     response: RotatePodsResponseTargetObject[]
     setResult: Dispatch<SetStateAction<RotatePodsStatus>>
     callAppDetailsAPI: () => void
-    callResourceTreeAPI: () => void
 }
 
 export interface RotatePodsTargetObject {

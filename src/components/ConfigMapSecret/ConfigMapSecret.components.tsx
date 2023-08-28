@@ -144,7 +144,7 @@ export function ConfigMapSecretContainer({
                 _draftData.value?.result &&
                 (_draftData.value.result.draftState === 1 || _draftData.value.result.draftState === 4)
             ) {
-                setDraftData(_draftData.value.result)
+                setDraftData({ ..._draftData.value.result, unAuthorized: _draftData.value.result.dataEncrypted })
                 draftId = _draftData.value.result.draftId
                 draftState = _draftData.value.result.draftState
             } else {
@@ -153,12 +153,12 @@ export function ConfigMapSecretContainer({
             if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED && _cmSecretData?.status === 'fulfilled') {
                 if (_cmSecretData.value?.result?.configData?.length) {
                     const _result = _cmSecretData.value.result
+                    _result.configData[0].overridden = data.overridden
                     if (draftId || draftState) {
                         _result.configData[0].draftId = draftId
                         _result.configData[0].draftState = draftState
                     }
                     if (componentType === 'secret' && _draftData?.status === 'fulfilled' && _draftData.value?.result) {
-                        _result.configData[0].overridden = data.overridden
                         if (
                             cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
                             _draftData.value.result.draftState === 3 &&
@@ -185,7 +185,6 @@ export function ConfigMapSecretContainer({
             ) {
                 if (_draftData.value.result.draftState === 3) {
                     const dataFromDraft = JSON.parse(_draftData.value.result.data)
-                    const configData = dataFromDraft.configData[0]
                     update(index, { ...dataFromDraft, unAuthorized: dataFromDraft.dataEncrypted })
                 } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
@@ -401,14 +400,17 @@ export function ProtectedConfigMapSecretDetails({
     const getBaseData = async () => {
         try {
             setLoader(true)
-            const { result } = await (componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
+            const { result } = await(componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
             let _baseData
             if (result?.configData?.length) {
                 _baseData = result.configData.find((config) => config.name === data.name)
+                if (_baseData) {
+                    _baseData.unAuthorized = data.unAuthorized
+                }
                 if (componentType === 'secret' && !data.unAuthorized) {
                     const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
                     if (secretResult?.configData?.length) {
-                        _baseData = secretResult.configData[0]
+                        _baseData = { ...secretResult.configData[0], unAuthorized: false }
                     }
                 }
             }
@@ -430,7 +432,7 @@ export function ProtectedConfigMapSecretDetails({
             if (selectedTab === 3) {
                 return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? baseData
-                    : JSON.parse(draftData.data).configData[0]
+                    : { ...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted }
             } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
                 return null
             } else {
@@ -489,7 +491,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === 'secret' && data.unAuthorized,
+            componentType === 'secret' && (data.unAuthorized ?? draftData?.unAuthorized),
         )
     }
 
@@ -507,7 +509,7 @@ export function ProtectedConfigMapSecretDetails({
             componentType === 'secret'
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === 'secret' && data.unAuthorized,
+            componentType === 'secret' && (data.unAuthorized ?? draftData?.unAuthorized),
         )
     }
 
@@ -655,6 +657,7 @@ export function ProtectedConfigMapSecretDetails({
                         : null
                 }
                 reloadEnvironments={reloadEnvironments}
+                isAppAdmin={draftData.isAppAdmin}
             />
         )
     }

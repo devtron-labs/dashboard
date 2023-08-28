@@ -175,6 +175,11 @@ export const getCIHistoricalStatus = (params): Promise<CIHistoricalStatus> => {
     return get(URL)
 }
 
+export const getTagDetails = (params) => {
+    const URL = `${Routes.IMAGE_TAGGING}/${params.pipelineId}/${params.artifactId}`
+    return get(URL)
+}
+
 const gitTriggersModal = (triggers, materials) => {
     let ids = Object.keys(triggers)
     return ids.map((key) => {
@@ -288,18 +293,16 @@ export function getCDMaterialList(
                 requestedUserId: 0,
                 tagsEditable: false,
                 appReleaseTagNames: [],
-                hideImageTaggingHardDelete: false
+                hideImageTaggingHardDelete: false,
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
                 approvalUsers: response.result.approvalUsers,
                 materials: cdMaterialListModal(
                     response.result.ci_artifacts,
-                    true,
+                    1,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
-                    response.result.appReleaseTagNames,
-                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
@@ -312,11 +315,9 @@ export function getCDMaterialList(
                 approvalUsers: [],
                 materials: cdMaterialListModal(
                     response.result.ci_artifacts,
-                    true,
+                    1,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
-                    response.result.appReleaseTagNames,
-                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
@@ -342,7 +343,7 @@ export function getRollbackMaterialList(
             code: response.code,
             status: response.status,
             result: {
-                materials: cdMaterialListModal(response.result?.ci_artifacts, offset === 1 ? true : false),
+                materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
                 requestedUserId: response.result?.requestedUserId,
             },
         }
@@ -355,14 +356,13 @@ export function extractImage(image: string): string {
 
 function cdMaterialListModal(
     artifacts: any[],
-    markFirstSelected: boolean,
+    offset: number,
     artifactId?: number,
     artifactStatus?: string,
-    appReleaseTagNames?: string[],
-    tagsEditable?: boolean
 ) {
     if (!artifacts || !artifacts.length) return []
-
+    const markFirstSelected = offset===1
+    const startIndex = offset-1
     const materials = artifacts.map((material, index) => {
         let artifactStatusValue = ''
         if (artifactId && artifactStatus && material.id === artifactId) {
@@ -370,7 +370,7 @@ function cdMaterialListModal(
         }
 
         return {
-            index,
+            index: startIndex+index,
             id: material.id,
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
@@ -536,14 +536,13 @@ export function getTriggerHistory(pipelineId, params) {
     let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
-export function setImageTags(request, pipelineId: number, artifactId: number){
-    return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`,request )
+export function setImageTags(request, pipelineId: number, artifactId: number) {
+    return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`, request)
 }
 
-export function getImageTags(pipelineId: number, artifactId: number){
-    return get (`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
+export function getImageTags(pipelineId: number, artifactId: number) {
+    return get(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
 }
-
 
 function handleTime(ts: string) {
     let timestamp = ''
