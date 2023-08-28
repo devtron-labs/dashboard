@@ -14,7 +14,7 @@ import {
     ArgoAppListResult,
 } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
-import { SERVER_MODE, URLS } from '../../../config'
+import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import { Link } from 'react-router-dom'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
@@ -31,7 +31,6 @@ import {
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
 import AppStatus from '../AppStatus'
-import { clusterId } from '../../ClusterNodes/__mocks__/clusterAbout.mock'
 import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
 import Tippy from '@tippyjs/react'
@@ -142,7 +141,7 @@ export default function ExternalArgoList({
             )
         }
 
-        // handle sort
+        // handle sorting by asending/descending order
         if (_sortOrder == OrderBy.ASC) {
             _filteredArgoAppsList = _filteredArgoAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
         } else {

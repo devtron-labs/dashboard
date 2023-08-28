@@ -17,7 +17,6 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
-    const isExternalArgoApp = appType === AppType.EXTERNAL_ARGO_APP
 
     const clearLogSearchTerm = (tabIdentifier: string): void => {
         if (logSearchTerms) {

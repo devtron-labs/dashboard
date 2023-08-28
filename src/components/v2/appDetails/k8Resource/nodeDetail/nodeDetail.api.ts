@@ -77,10 +77,10 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
     const applicationObject =
-        appDetails.deploymentAppType == DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
+        appDetails.deploymentAppType === DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
 
     const appId =
-        appDetails.appType == AppType.DEVTRON_APP
+        appDetails.appType === AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
             : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
 
@@ -99,13 +99,13 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             },
         },
         appType:
-            appDetails.appType == AppType.DEVTRON_APP
+            appDetails.appType === AppType.DEVTRON_APP
                 ? K8sResourcePayloadAppType.DEVTRON_APP
                 : appDetails.appType === AppType.EXTERNAL_ARGO_APP
                 ? K8sResourcePayloadAppType.EXTERNAL_ARGO_APP
                 : K8sResourcePayloadAppType.HELM_APP,
         deploymentType:
-            appDetails.deploymentAppType == DeploymentAppTypes.HELM
+            appDetails.deploymentAppType === DeploymentAppTypes.HELM
                 ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
                 : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED,
     }
@@ -166,7 +166,7 @@ export const getLogsURL = (
 ) => {
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId =
-        ad.appType == AppType.DEVTRON_APP
+        ad.appType === AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
             : getAppId(ad.clusterId, ad.namespace, applicationObject)
 
@@ -178,11 +178,11 @@ export const getLogsURL = (
         logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}`
     } else {
         const appType =
-            ad.appType == AppType.DEVTRON_APP
+            ad.appType === AppType.DEVTRON_APP
                 ? K8sResourcePayloadAppType.DEVTRON_APP
                 : K8sResourcePayloadAppType.HELM_APP
         const deploymentType =
-            ad.deploymentAppType == DeploymentAppTypes.HELM
+            ad.deploymentAppType === DeploymentAppTypes.HELM
                 ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
                 : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
         if (appType === 0) {
