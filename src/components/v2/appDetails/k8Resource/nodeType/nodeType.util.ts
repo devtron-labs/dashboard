@@ -6,7 +6,11 @@ export const getNodeStatus = (node: iNode) => {
             return _info.name === 'Status Reason'
         })
         if (statusReason && statusReason.length > 0) {
-            return statusReason[0].value
+            let status =  statusReason[0].value;
+            if(status ==='ContainerCreating'){  // quick fix for status display
+                status = 'Container Creating'
+            }
+            return status;
         }
     }
     if (node.status) {
