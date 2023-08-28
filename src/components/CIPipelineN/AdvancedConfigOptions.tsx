@@ -19,6 +19,8 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 export default function AdvancedConfigOptions({
     ciPipeline,
     setDockerConfigOverridden,
+    imageTagValue,
+    setImageTagValue
 }: AdvancedConfigOptionsProps) {
     const {
         formData,
@@ -274,7 +276,9 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
-                                <CustomImageTags />
+                                <CustomImageTags
+                                    imageTagValue={imageTagValue}
+                                    setImageTagValue={setImageTagValue} />
 
                             {renderDockerArgs()}
                         </>

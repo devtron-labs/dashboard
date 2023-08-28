@@ -1,6 +1,6 @@
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
-import { CustomImageTagsType, ImageTagType } from './CustomImageTag.type'
+import { ImageTagType } from './CustomImageTag.type'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-arrow-left.svg'
@@ -11,7 +11,10 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-function CustomImageTags() {
+function CustomImageTags({
+    imageTagValue,
+    setImageTagValue
+}) {
     const {
         formData,
         setFormData,
@@ -20,8 +23,6 @@ function CustomImageTags() {
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [showImageTagPatternDetails, setShowImageTagPatternDetails] = useState<boolean>(false)
-    const defaultTagValue = formData.customTag?.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default
-    const [imageTagValue, setImageTagValue] = useState<string>(defaultTagValue)
     const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
 
     const toggleEditAction = () => {

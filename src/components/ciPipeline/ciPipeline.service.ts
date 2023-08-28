@@ -208,6 +208,9 @@ export function saveCIPipeline(
     ciPipelineSourceTypeOptions,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
+    // if(!formData.customTag.tagPattern){
+    //     delete(ci.customTag)
+    // }
     const request = {
         appId: appId,
         appWorkflowId: workflowId,
@@ -304,6 +307,11 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             }, {}),
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
         dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
+        defaultTag: formData.defaultTag,
+        customTag: {
+            tagPattern: formData.customTag?.tagPattern || '',
+            counterX: formData.customTag?.counterX || 0,
+        },
     }
     return ci
 }

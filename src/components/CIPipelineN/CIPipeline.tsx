@@ -53,11 +53,11 @@ import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/t
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ImageTagType } from './CustomImageTag.type'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
-
 export default function CIPipeline({
     appName,
     connectCDPipelines,
@@ -163,6 +163,8 @@ export default function CIPipeline({
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
     const selectedBranchRef = useRef(null)
+    const defaultTagValue = formData.customTag?.tagPattern.length > 0 ? ImageTagType.Custom : ImageTagType.Default
+    const [imageTagValue, setImageTagValue] = useState<string>(defaultTagValue)
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
@@ -173,6 +175,8 @@ export default function CIPipeline({
         }
         return _mandatoryPluginsMap
     }, [mandatoryPluginData])
+
+    const isDefaultTag = formData.customTag.tagPattern.length === 0
 
     useEffect(() => {
         getInitialData()
@@ -776,6 +780,8 @@ export default function CIPipeline({
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobView}
                                     getPluginData={getPluginData}
+                                    setImageTagValue={setImageTagValue}
+                                    imageTagValue={imageTagValue}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

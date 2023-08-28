@@ -129,6 +129,8 @@ export interface CIConfigFormProps {
 export interface AdvancedConfigOptionsProps {
     ciPipeline: CIPipelineDataType
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
+    imageTagValue: string
+    setImageTagValue: React.Dispatch<React.SetStateAction<string>>
 }
 
 interface LanguageBuilderType {

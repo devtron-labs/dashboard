@@ -19,6 +19,8 @@ export function Build({
     setDockerConfigOverridden,
     isJobView,
     getPluginData,
+    imageTagValue,
+    setImageTagValue,
 }: BuildType) {
     const {
         formData,
@@ -268,6 +270,8 @@ export function Build({
                     <AdvancedConfigOptions
                         ciPipeline={ciPipeline}
                         setDockerConfigOverridden={setDockerConfigOverridden}
+                        imageTagValue={imageTagValue}
+                        setImageTagValue={setImageTagValue}
                     />
                 </>
             )}
