@@ -1,9 +1,7 @@
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import UploadScopedVariables, { LoadScopedVariables } from '../UploadScopedVariables'
-import { useFileReader } from '../utils/hooks'
-import { validator, downloadData } from '../utils/helpers'
-import { ReadFileAs } from '../types'
+import { downloadData } from '../utils/helpers'
 import { VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME } from '../constants'
 
 jest.mock('../utils/helpers', () => ({

@@ -2,7 +2,7 @@ import React from 'react'
 import { fireEvent, render, act, screen, waitFor } from '@testing-library/react'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
-import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE, SAVE_SUCCESS_TOAST_MESSAGE } from '../constants'
+import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE } from '../constants'
 import { toast } from 'react-toastify'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))

@@ -4,8 +4,6 @@ import ScopedVariables from '../'
 import { useAsync } from '../../common'
 import { validScopedVariablesData, noScopedVariablesData } from '../mocks'
 
-// TODO: Add Snapshot testing when the component is finalized
-
 jest.mock('../../common', () => ({
     useAsync: jest.fn(),
 }))
