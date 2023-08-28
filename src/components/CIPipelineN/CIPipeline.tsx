@@ -79,7 +79,7 @@ export default function CIPipeline({
     }
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
-    const saveOrUpdate = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
+    const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobView ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
         isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
@@ -811,7 +811,7 @@ export default function CIPipeline({
                                     }
                                     isLoading={apiInProgress}
                                 >
-                                    {saveOrUpdate}
+                                    {saveOrUpdateButtonTitle}
                                 </ButtonWithLoader>
                             )}
                         </div>

@@ -276,9 +276,7 @@ export default function AdvancedConfigOptions({
                                     updateDockerConfigOverride={updateDockerConfigOverride}
                                 />
                             </div>
-                                <CustomImageTags
-                                    imageTagValue={imageTagValue}
-                                    setImageTagValue={setImageTagValue} />
+                            <CustomImageTags imageTagValue={imageTagValue} setImageTagValue={setImageTagValue} />
 
                             {renderDockerArgs()}
                         </>

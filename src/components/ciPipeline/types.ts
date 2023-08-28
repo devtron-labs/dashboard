@@ -13,7 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { CustomTagType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number
