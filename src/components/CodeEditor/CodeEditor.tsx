@@ -325,10 +325,22 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         2. Currently assuming YAML only, but it can be extended to JSON as well So marking TODO: for JSON
         3. There can be multiple variables in the code editor, so we have to handle all of them
     */
+
+    /*
+        Points of discussion:
+        1. Should we use Glyph Margin for wrong variable and success?
+        2. How to use variables like {{ variable1 + variable2 }}?, or should we restrict to only {{ variable }}? or {{ variable1 }} + {{ variable2 }}?
+        3. When to trigger suggestions
+        4. Optimisation concerns
+        5. How to handle multiple variables in the same line
+        6. Can we have json in the code editor?
+    */
     useEffect(() => {
         if (editorRef.current) {
+            const editor = editorRef.current
             const originalModel = monaco.editor.createModel(originlaYaml, 'yaml')
             const modifiedModel = monaco.editor.createModel(state.code, 'yaml')
+
             const hoverProvider = {
                 provideHover: (model, position) => {
                     const lineContent = model.getLineContent(position.lineNumber)
@@ -337,8 +349,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                     const matches = lineContent.match(regex)
                     if (!matches) return null
                     const variableNames = matches.map((match) => match.replace(/{{|}}/g, '').trim())
-                    console.log(variableNames, matches);
-                    
+
                     const matchedVariables = variables?.filter((variable) => variableNames.includes(variable.name))
                     if (matchedVariables?.length) {
                         const contents = matchedVariables.map((variable) => {
@@ -360,12 +371,95 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
             const registration = monaco.languages.registerHoverProvider('yaml', hoverProvider)
 
-            
+            const { dispose } = monacoRef.current.languages.registerCompletionItemProvider('yaml', {
+                provideCompletionItems: function (model, position) {
+                    const word = model.getWordAtPosition(position)                
+                    if (word) {
+                        const similarNames = newVariables?.filter((variable) => {
+                            return variable.name.includes(word.word)
+                        })
+                        if(similarNames.length === 0){
+                            return {
+                                suggestions: [{
+                                    label: "No Suggestions",
+                                }]
+                            } 
+                        }
+                        return {
+                            suggestions: similarNames?.map((variable) => {
+                                return {
+                                    label: variable.name,
+                                    kind: monaco.languages.CompletionItemKind.Variable,
+                                    insertText: `${variable.name}`,
+                                    detail: "Variable",
+                                    documentation: variable.value,
+                                }
+                            }),
+                        }
+                    }
+                },
+            })
 
+            // if variable does not exist in the glyph margin, then show error icon
+            const errorClass = 'error-icon'
+            const successClass = 'success-icon'
+            // get the line numbers of the variables and if variable is not present then add errorClass to glyph margin
+            
+            const modifiedDecorations = []
+            const originalDecorations = []
+
+            for (let i = 1; i <= modifiedModel.getLineCount(); i++) {
+                const lineContent = modifiedModel.getLineContent(i)
+                const matches = lineContent.match(/{{\s*[\w\.]+\s*}}/g)
+                if (matches) {
+                    const variableNames = matches.map((match) => match.replace(/{{|}}/g, '').trim())
+                    const matchedVariables = newVariables?.filter((variable) =>
+                        variableNames.includes(variable.name),
+                    )
+                    if (!matchedVariables?.length) {
+                        modifiedDecorations.push({
+                            range: new monaco.Range(i, 1, i, 1),
+                            options: {
+                                isWholeLine: true,
+                                glyphMarginClassName: errorClass,
+                            },
+                        })
+                    }
+                    else{
+                        modifiedDecorations.push({
+                            range: new monaco.Range(i, 1, i, 1),
+                            options: {
+                                isWholeLine: true,
+                                glyphMarginClassName: successClass,
+                            },
+                        })
+                    }
+                }
+                // else{
+                //     modifiedDecorations.push({
+                //         range: new monaco.Range(i, 1, i, 1),
+                //         options: {
+                //             isWholeLine: true,
+                //             glyphMarginClassName: 'background-none',
+                //         },
+                //     })
+                // }
+            }
+            
+            const modifiedDecorationIds =  (!state.diffMode) && editor.deltaDecorations([], modifiedDecorations)
+            const modifiedDiffDecorationIds = editor.modifiedEditor?.deltaDecorations([], modifiedDecorations) 
+            const originalDiffDecorationIds = editor.originalEditor?.deltaDecorations([], originalDecorations)
+
+
+            
             return () => {
                 registration.dispose()
                 originalModel.dispose()
                 modifiedModel.dispose()
+                dispose()
+                modifiedDecorationIds && editor.deltaDecorations(modifiedDecorationIds, [])
+                editor.modifiedEditor?.deltaDecorations(modifiedDiffDecorationIds, [])
+                editor.originalEditor?.deltaDecorations(originalDiffDecorationIds, [])
             }
         }
     }, [originlaYaml, state.code, oldVariables, newVariables, state.diffMode])
