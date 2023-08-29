@@ -81,7 +81,7 @@ function CustomImageTags({
         const _form = { ...formData }
         _form.customTag = {
             ..._form.customTag,
-            counterX: event.target.value,
+            counterX: +event.target.value,
         }
         setFormData(_form)
     }
