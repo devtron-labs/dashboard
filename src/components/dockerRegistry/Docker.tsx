@@ -463,8 +463,8 @@ function DockerForm({
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
-                      awsAccessKeyId: customState.awsAccessKeyId.value,
-                      awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
+                      awsAccessKeyId: customState.awsAccessKeyId.value.trim(),
+                      awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value).trim(),
                       awsRegion: awsRegion,
                   }
                 : {}),
@@ -473,8 +473,8 @@ function DockerForm({
                       username: trimmedUsername,
                       password:
                           customState.password.value === DEFAULT_SECRET_PLACEHOLDER
-                              ? parsePassword(customState.password.value)
-                              : `'${parsePassword(customState.password.value)}'`,
+                              ? parsePassword(customState.password.value).trim()
+                              : `'${parsePassword(customState.password.value).trim()}'`,
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'docker-hub' ||
@@ -482,13 +482,13 @@ function DockerForm({
             selectedDockerRegistryType.value === 'quay'
                 ? {
                       username: trimmedUsername,
-                      password: parsePassword(customState.password.value),
+                      password: parsePassword(customState.password.value).trim(),
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'other'
                 ? {
                       username: trimmedUsername,
-                      password: parsePassword(customState.password.value),
+                      password: parsePassword(customState.password.value).trim(),
                       connection: state.advanceSelect.value,
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
