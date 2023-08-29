@@ -36,6 +36,8 @@ export interface History {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    customTag?: CustomTags
+    appWorkflowId?: number
 }
 
 export interface CiMaterial {
@@ -67,6 +69,12 @@ export interface GitTriggers {
     CiConfigureSourceValue: string
 }
 
+export interface CustomTags{
+    conflictingLink: string
+    counterX: number
+    message: string
+    tagPattern: string
+}
 export interface ArtifactType {
     status: string
     artifact: string
@@ -82,6 +90,8 @@ export interface ArtifactType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    customTag?: CustomTags
+    appWorkflowId?: number
 }
 
 export interface CopyTippyWithTextType {

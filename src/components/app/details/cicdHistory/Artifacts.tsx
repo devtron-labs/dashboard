@@ -19,6 +19,7 @@ import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
+import { useHistory } from 'react-router-dom'
 
 let ApprovalInfoTippy = null
 
@@ -37,10 +38,14 @@ export default function Artifacts({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    customTag,
+    appWorkflowId,
 }: ArtifactType) {
-    const { triggerId, buildId } = useParams<{
+    const history = useHistory()
+    const { triggerId, buildId, appId } = useParams<{
         triggerId: string
         buildId: string
+        appId: string
     }>()
     const [copied, setCopied] = useState(false)
 
@@ -60,6 +65,10 @@ export default function Artifacts({
         } catch (err) {
             showError(err)
         }
+    }
+
+    const redirectToBuildPipeline = () => {
+        history.push(`/app/${appId}/edit/workflow/${appWorkflowId}/ci-pipeline/${ciPipelineId}/build`)
     }
 
     if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING || status.toLowerCase() === TERMINAL_STATUS_MAP.STARTING) {
@@ -97,10 +106,11 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
         return (
-            <>
+            <div className="flex column">
                 <GenericEmptyState
                     title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+                    classname="dc__h-fit-content"
                 />
                 <div className="br-4 w-250 en-2 bw-1">
                     <InfoColourBar
@@ -109,23 +119,24 @@ export default function Artifacts({
                         Icon={Warn}
                         iconClass="warning-icon"
                     />
-                    <div className="p-12">
+                    <div className="p-12 bcn-0">
                         <div className="pb-10 dc__border-bottom">
                             <span className="fw-6 fs-12 ">Desired Image tag:</span>
-                            <div className="br-4 dc__bg-n50 p-4 fs-12 flex">
-                                <Docker />
-                                version-1
-                            </div>
+                            <span className="br-4 dc__bg-n50 p-4 fs-12 flex left">
+                                <Docker className="icon-dim-16 mr-8" />
+                                {customTag.tagPattern.replace('{x}', customTag.counterX.toString())}
+                            </span>
                         </div>
-                        <div className="pb-10">
+                        <div className="pt-10">
                             <span className="fw-6 fs-12 ">Pattern used to generate tag:</span>
-                            <div className="br-4  p-4 fs-12 flex">
-                                version-1 <span className="dc__bg-n50 pl-4 pr-4">{`{x}`}</span>
+                            <div className="br-4  p-4 fs-12 flex left">{customTag.tagPattern}</div>
+                            <div onClick={redirectToBuildPipeline} className="cb-5 cursor">
+                                Modify Pattern
                             </div>
                         </div>
                     </div>
                 </div>
-            </>
+            </div>
         )
     } else {
         return (

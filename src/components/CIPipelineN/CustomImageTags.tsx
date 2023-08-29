@@ -10,17 +10,10 @@ import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMes
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import Tippy from '@tippyjs/react'
 
-function CustomImageTags({
-    imageTagValue,
-    setImageTagValue
-}) {
-    const {
-        formData,
-        setFormData,
-        formDataErrorObj,
-        setFormDataErrorObj,
-    } = useContext(pipelineContext)
+function CustomImageTags({ imageTagValue, setImageTagValue }) {
+    const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [showImageTagPatternDetails, setShowImageTagPatternDetails] = useState<boolean>(false)
     const isCustomTagError = formDataErrorObj.customTag.message.length > 0 && !formDataErrorObj.customTag.isValid
@@ -86,11 +79,26 @@ function CustomImageTags({
         setFormData(_form)
     }
 
+    const renderImageVariableTippy = (tippyContent) => {
+        return (
+            <Tippy 
+            arrow={false}
+            className="default-tt w-200"
+            content="{X} is an auto increasing number. It will increase by one on each build trigger."
+            >
+                <span className="dc__border-bottom pl-4 pr-4">{tippyContent}</span>
+            </Tippy>
+        )
+    }
+
     const renderCustomImageDetails = () => {
         return (
             imageTagValue === ImageTagType.Custom && (
                 <div className="pl-26">
-                    <span className="cn-7">Use mix of fixed pattern and variable {`{x}`}</span>
+                    <div className="cn-7 pb-4">
+                        Use mix of fixed pattern and
+                        {renderImageVariableTippy('variable {x}')}
+                    </div>
                     <textarea
                         tabIndex={1}
                         className="form__input form__input-no-bottom-radius"
@@ -113,7 +121,10 @@ function CustomImageTags({
                                 Tag Preview:
                                 <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
                                     <div className={'dc__registry-icon mr-5 '}></div>
-                                    {formData.customTag?.tagPattern.replace('{x}', formData.customTag?.counterX.toString())}
+                                    {formData.customTag?.tagPattern.replace(
+                                        '{x}',
+                                        formData.customTag?.counterX.toString(),
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -124,7 +135,11 @@ function CustomImageTags({
                     </div>
                     <hr />
                     <div className="flex left">
-                        <span className="cn-7">Value of variable {`{x}`} in the next build trigger will be</span>
+                        <span className="cn-7">
+                            Value of variable
+                            {renderImageVariableTippy('{x}')}
+                            in the next build trigger will be
+                        </span>
                         <input
                             tabIndex={2}
                             type="number"
@@ -147,7 +162,9 @@ function CustomImageTags({
                 {formData.defaultTag?.map((tag, index) => {
                     return (
                         <div key={`tag-${index}`} className="flex left">
-                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">{tag}</div>
+                            <div className="dc__bg-n50 br-6 pl-4 pr-4 flex left dc_width-max-content dc__lowercase">
+                                {tag}
+                            </div>
                             {index < 2 && <span className="bcn-0 pl-2 pr-2">-</span>}
                         </div>
                     )
@@ -171,7 +188,9 @@ function CustomImageTags({
         let errorMessage = ''
         if (
             formDataErrorObj.customTag.message.find(
-                (errorMsg) => errorMsg === CustomErrorMessage.CUSTOM_TAG_ERROR_MSG || errorMsg === CustomErrorMessage.CUSTOM_TAG_MANDATORY_X,
+                (errorMsg) =>
+                    errorMsg === CustomErrorMessage.CUSTOM_TAG_ERROR_MSG ||
+                    errorMsg === CustomErrorMessage.CUSTOM_TAG_MANDATORY_X,
             )
         ) {
             errorMessage = CustomErrorMessage.INVALID_IMAGE_PATTERN

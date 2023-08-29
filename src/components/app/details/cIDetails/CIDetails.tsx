@@ -449,7 +449,6 @@ const HistoryLogs = ({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
     const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
-
     return (
         <div className="trigger-outputs-container">
             <Switch>
@@ -487,6 +486,8 @@ const HistoryLogs = ({
                         appReleaseTagNames={appReleaseTags}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         type={HistoryComponentType.CI}
+                        customTag={triggerDetails?.customTag}
+                        appWorkflowId={triggerDetails?.appWorkflowId}
                     />
                 </Route>
                 {!isJobView && (
