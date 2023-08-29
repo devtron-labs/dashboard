@@ -352,7 +352,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             if(!expressions) return variables
             expressions.forEach((expression)=>{
                 const expressionWithoutBraces = expression.replace(/@{{|}}/g, '')
-                variables.push(expressionWithoutBraces)
+                variables.push(expressionWithoutBraces.trim())
             })
             return variables
         }
@@ -366,13 +366,37 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                 const word = model.getWordAtPosition(position)
                 if(!word) return null
 
-                // check prefix and suffix to ensure its a variable, minding word can be greater than current cursor position
-                const prefix = lineContent.substring(word.endColumn - word.word.length - 4, word.endColumn - word.word.length - 1)
-                const suffix = lineContent.substring(word.endColumn-1, word.endColumn+2)
-                
-                const prefixMatch = prefix.match(/@{{/g)
-                const suffixMatch = suffix.match(/}}/g)
-                if (!prefixMatch || !suffixMatch) return null
+                let startColumn = position.column
+                let endColumn = position.column
+                let wordFound = false
+
+                while(!wordFound){
+                    if(startColumn - 3 <= 0) break
+                    const lastThreeChars = lineContent.substring(startColumn - 3, startColumn)
+                    
+                    if(lastThreeChars === '@{{'){
+                        wordFound = true
+                        break
+                    }
+                    startColumn--
+                }
+
+                if(!wordFound) return null
+
+                wordFound = false
+
+                while(!wordFound){
+                    if(endColumn + 1 > lineContent.length) break
+                    const nextTwoChars = lineContent.substring(endColumn-1, endColumn + 1)
+                    
+                    if(nextTwoChars === '}}'){
+                        wordFound = true
+                        break
+                    }
+                    endColumn++
+                }
+
+                if (!wordFound) return null
 
                 if (word) {
                     const matchedVariables = variables?.filter((variable) => variable.name === word.word)
@@ -465,7 +489,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
         // Implementing Suggestions
         
-        const { dispose } = monacoRef.current.languages.registerCompletionItemProvider('yaml', {
+        const itemCompletionProvider = monacoRef.current.languages.registerCompletionItemProvider('yaml', {
             provideCompletionItems: function (model, position) {
                 const word = model.getWordAtPosition(position)
                 if(!word) return {
@@ -481,17 +505,40 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                     }
                 }
                 const lineContent = model.getLineContent(position.lineNumber)
-                const prefix = lineContent.substring(position.column - word.word.length-4, position.column - word.word.length-1)
-                const suffix = lineContent.substring(position.column-1, position.column+2)
+                
+                let startColumn = position.column
+                let endColumn = position.column
+                let wordFound = false
 
-                const prefixMatch = prefix.match(/@{{/g)
-                const suffixMatch = suffix.match(/}}/g)
-
-                if (!prefixMatch || !suffixMatch) return {
-                    suggestions: [{
-                        label: "No Suggestions",
-                    }]
+                while(!wordFound){
+                    if(startColumn - 3 <= 0) break
+                    
+                    const lastThreeChars = lineContent.substring(startColumn - 3, startColumn)
+                    
+                    if(lastThreeChars === '@{{'){
+                        wordFound = true
+                        break
+                    }
+                    startColumn--
                 }
+
+                if(!wordFound) return null
+
+                wordFound = false
+
+                while(!wordFound){
+                    if(endColumn + 1 > lineContent.length) break
+                    const nextTwoChars = lineContent.substring(endColumn-1, endColumn + 1)
+                    
+                    if(nextTwoChars === '}}'){
+                        wordFound = true
+                        break
+                    }
+                    endColumn++
+                }
+
+                if (!wordFound) return null
+
                 if (word) {
                     const similarNames = newVariables?.filter((variable) => {
                         return variable.name.includes(word.word)
@@ -527,7 +574,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             editor.modifiedEditor?.deltaDecorations(modifiedDiffDecorationIds, [])
             editor.originalEditor?.deltaDecorations(originalDiffDecorationIds, [])
 
-            dispose()
+            itemCompletionProvider.dispose()
         })
 
     },[originlaYaml, state.code, oldVariables, newVariables, state.diffMode])
