@@ -493,17 +493,11 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             provideCompletionItems: function (model, position) {
                 const word = model.getWordAtPosition(position)
                 if(!word) return {
-                    suggestions: [{
-                        label: "No Suggestions",
-                    }]
+                    suggestions: []
                 }
-                if(position.column - word.word.length-4<0){
-                    return {
-                        suggestions: [{
-                            label: "No Suggestions",
-                        }]
-                    }
-                }
+
+                if(position.column - word.word.length-4<0) return {}
+
                 const lineContent = model.getLineContent(position.lineNumber)
                 
                 let startColumn = position.column
@@ -522,7 +516,9 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                     startColumn--
                 }
 
-                if(!wordFound) return null
+                if(!wordFound) return {
+                    suggestions: []
+                }
 
                 wordFound = false
 
@@ -537,7 +533,9 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                     endColumn++
                 }
 
-                if (!wordFound) return null
+                if (!wordFound) return {
+                    suggestions: []
+                }
 
                 if (word) {
                     const similarNames = newVariables?.filter((variable) => {
@@ -550,16 +548,20 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             }]
                         } 
                     }
+                    // FIXME: There are some bugs with current version of monaco, need to update, on initial render its not showing label
                     return {
                         suggestions: similarNames?.map((variable) => {
                             return {
-                                label: `${variable.name}: Scoped Variable`,
+                                label: variable.name,
                                 kind: monaco.languages.CompletionItemKind.Variable,
                                 insertText: `${variable.name}`,
                                 documentation: variable.value,
                             }
                         }),
                     }
+                }
+                return {
+                    suggestions: []
                 }
             },
         })

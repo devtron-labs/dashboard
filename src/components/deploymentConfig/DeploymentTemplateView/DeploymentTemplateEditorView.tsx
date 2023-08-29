@@ -205,6 +205,20 @@ export default function DeploymentTemplateEditorView({
                             value: 'ambassador',
                         }
                     ]}
+                    oldVariables={[
+                        {
+                            name: 'var1',
+                            value: 'VAR',
+                        },
+                        {
+                            name: 'var2',
+                            value: 12,
+                        },
+                        {
+                            name: 'AmbassdorHostname',
+                            value: 'ambassador',
+                        }
+                    ]}
                 >
                     {isUnSet && !state.openComparison && !state.showReadme && (
                         <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
