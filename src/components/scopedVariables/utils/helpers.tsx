@@ -84,6 +84,18 @@ export const manipulateVariables = (manipulator, variablesObj) => {
     return mutatedVariablesObj
 }
 
+export const sortVariables = (variablesObj: object): object => {
+    /*
+        Approach:
+        Sorting is going to happen on multiple levels:
+        a) Variable name is going to be unique so we will first sort, variablesObj.variables.definition.varName
+        b) After that we will sort based on attributeType, variables.attributeValue.attributeType
+        c) If the attributeType is same, we sorting will be on different cases:
+            i) if attributeType is ApplicationEnv then we will first variables.attributeValue.attributeType.attributeParams.ApplicationName, then variables.attributeValue.attributeType.attributeParams.EnvName,
+    */
+    return {}
+}
+
 // Services
 export const getScopedVariablesJSON = () => {
     return get(ROUTES.GET_SCOPED_VARIABLES_JSON)

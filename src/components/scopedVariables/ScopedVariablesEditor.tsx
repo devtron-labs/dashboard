@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
-import { postScopedVariables, parseYAMLStringToObj } from './utils/helpers'
+import { postScopedVariables, getScopedVariablesJSON, parseYAMLStringToObj, parseIntoYAMLString } from './utils/helpers'
 import { ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE, SAVE_SUCCESS_TOAST_MESSAGE } from './constants'
+import {
+    PARSE_ERROR_TOAST_MESSAGE,
+    SAVE_ERROR_TOAST_MESSAGE,
+    SAVE_SUCCESS_TOAST_MESSAGE,
+    GET_SCOPED_VARIABLES_ERROR,
+} from './constants'
 
 const ScopedVariablesEditor = ({
     variablesData,
@@ -15,9 +21,13 @@ const ScopedVariablesEditor = ({
     reloadScopedVariables,
     jsonSchema,
     setShowEditView,
+    setScopedVariables,
 }: ScopedVariablesEditorI) => {
-    const [isLoading, setIsLoading] = useState(false)
     const [editorData, setEditorData] = useState(variablesData)
+    const [savedScopedVariables, setSavedScopedVariables] = useState(null)
+    const [showSaveView, setShowSaveView] = useState<boolean>(false)
+    const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
+    const [isSaving, setIsSaving] = useState<boolean>(false)
 
     const handleSave = async () => {
         let variablesObj: { variables: any[] }
@@ -32,7 +42,7 @@ const ScopedVariablesEditor = ({
             return
         }
         try {
-            setIsLoading(true)
+            setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
             if (+res?.code === 200) {
                 if (setShowEditView) {
@@ -41,6 +51,7 @@ const ScopedVariablesEditor = ({
                     abortRead()
                 }
                 toast.success(SAVE_SUCCESS_TOAST_MESSAGE)
+                setScopedVariables(null)
                 reloadScopedVariables()
             } else {
                 toast.error(SAVE_ERROR_TOAST_MESSAGE)
@@ -48,7 +59,42 @@ const ScopedVariablesEditor = ({
         } catch (e) {
             toast.error(SAVE_ERROR_TOAST_MESSAGE)
         } finally {
-            setIsLoading(false)
+            setIsSaving(false)
+        }
+    }
+
+    const handleReview = async () => {
+        let variablesObj: { variables: any[] }
+        try {
+            variablesObj = parseYAMLStringToObj(editorData)
+            if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
+                toast.error(PARSE_ERROR_TOAST_MESSAGE)
+                return
+            }
+        } catch (e) {
+            toast.error(PARSE_ERROR_TOAST_MESSAGE)
+            return
+        }
+
+        try {
+            setLoadingSavedScopedVariables(true)
+            const res = await getScopedVariablesJSON()
+            if (+res?.code === 200) {
+                setShowSaveView(true)
+                if (res?.result?.payload) {
+                    setSavedScopedVariables(parseIntoYAMLString(res?.result?.payload))
+                } else {
+                    setSavedScopedVariables(null)
+                }
+            } else {
+                toast.error(GET_SCOPED_VARIABLES_ERROR)
+                setShowSaveView(false)
+            }
+        } catch (e) {
+            toast.error(GET_SCOPED_VARIABLES_ERROR)
+            setShowSaveView(false)
+        } finally {
+            setLoadingSavedScopedVariables(false)
         }
     }
 
@@ -57,6 +103,9 @@ const ScopedVariablesEditor = ({
     }
 
     const handleAbort = () => {
+        if (showSaveView) {
+            setScopedVariables(savedScopedVariables ? parseYAMLStringToObj(savedScopedVariables) : null)
+        }
         if (setShowEditView) {
             setShowEditView(false)
             return
@@ -72,7 +121,7 @@ const ScopedVariablesEditor = ({
                     <div className="uploaded-variables-editor-infobar">
                         {setShowEditView ? (
                             <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
-                                Edit <span style={{ fontWeight: 700 }}>Variables</span>
+                                {showSaveView ? 'Review' : 'Edit'} <span style={{ fontWeight: 700 }}>Variables</span>
                             </p>
                         ) : (
                             <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
@@ -80,15 +129,29 @@ const ScopedVariablesEditor = ({
                                 <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
                             </p>
                         )}
-                        <button className="uploaded-variables-editor-infobar__abort-read-btn" onClick={handleAbort}>
-                            <Close width="20px" height="20px" />
-                        </button>
+
+                        <Tippy
+                            className="default-tt"
+                            arrow
+                            placement="top"
+                            content={
+                                <div>
+                                    <div className="flex column left">Close</div>
+                                </div>
+                            }
+                        >
+                            <button className="uploaded-variables-editor-infobar__abort-read-btn" onClick={handleAbort}>
+                                <Close width="20px" height="20px" />
+                            </button>
+                        </Tippy>
                     </div>
 
                     <CodeEditor
                         mode="yaml"
                         value={editorData}
                         noParsing={false}
+                        diffView={showSaveView}
+                        defaultValue={savedScopedVariables || ''}
                         height="100%"
                         onChange={handleEditorChange}
                         validatorSchema={jsonSchema}
@@ -101,12 +164,12 @@ const ScopedVariablesEditor = ({
 
                         <ButtonWithLoader
                             rootClassName="uploaded-variables-editor-footer__save-button cta"
-                            onClick={handleSave}
+                            onClick={showSaveView ? handleSave : handleReview}
                             loaderColor="white"
-                            isLoading={isLoading}
-                            disabled={isLoading}
+                            isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}
+                            disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >
-                            Save
+                            {showSaveView ? 'Save' : 'Review'}
                         </ButtonWithLoader>
                     </div>
                 </div>

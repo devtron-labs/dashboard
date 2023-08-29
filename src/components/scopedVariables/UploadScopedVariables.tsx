@@ -49,7 +49,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
     )
 }
 
-const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema }: UploadScopedVariablesI) => {
+const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVariables }: UploadScopedVariablesI) => {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +64,7 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema }: UploadScop
             abortRead={abortRead}
             reloadScopedVariables={reloadScopedVariables}
             jsonSchema={jsonSchema}
+            setScopedVariables={setScopedVariables}
         />
     ) : (
         <div className="flex column center default-bg-color h-100">

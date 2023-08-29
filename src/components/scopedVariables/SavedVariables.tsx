@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
 import { LoadScopedVariables } from './UploadScopedVariables'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import { TableList, TableItem } from './Table'
@@ -17,7 +18,12 @@ import {
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
-const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVariables }: SavedVariablesViewI) => {
+const SavedVariablesView = ({
+    scopedVariablesData,
+    jsonSchema,
+    reloadScopedVariables,
+    setScopedVariables,
+}: SavedVariablesViewI) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableListItemI[]>(null)
@@ -25,6 +31,8 @@ const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVaria
     const dropdownRef = useRef(null)
     // No need to make it a state since editor here is read only and we don't need to update it
     let scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
+
+    console.log(scopedVariablesData, scopedVariablesYAML)
 
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
@@ -72,6 +80,7 @@ const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVaria
                 reloadScopedVariables={reloadScopedVariables}
                 jsonSchema={jsonSchema}
                 setShowEditView={setShowEditView}
+                setScopedVariables={setScopedVariables}
             />
         )
     }
@@ -84,6 +93,7 @@ const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVaria
                 abortRead={abortRead}
                 reloadScopedVariables={reloadScopedVariables}
                 jsonSchema={jsonSchema}
+                setScopedVariables={setScopedVariables}
             />
         )
     }
@@ -122,16 +132,38 @@ const SavedVariablesView = ({ scopedVariablesData, jsonSchema, reloadScopedVaria
                         <div className="scoped-variables-editor-infobar">
                             <p className="scoped-variables-editor-infobar__typography">Last saved file</p>
 
-                            <button
-                                className="scoped-variables-editor-infobar__btn"
-                                onClick={() => setShowEditView(true)}
+                            <Tippy
+                                className="default-tt"
+                                arrow
+                                placement="top"
+                                content={
+                                    <div>
+                                        <div className="flex column left">Edit</div>
+                                    </div>
+                                }
                             >
-                                <ICPencil width={20} height={20} />
-                            </button>
+                                <button
+                                    className="scoped-variables-editor-infobar__btn"
+                                    onClick={() => setShowEditView(true)}
+                                >
+                                    <ICPencil width={20} height={20} />
+                                </button>
+                            </Tippy>
 
-                            <button className="scoped-variables-editor-infobar__btn" onClick={handleDropdownClick}>
-                                <ICFileDownload width={20} height={20} />
-                            </button>
+                            <Tippy
+                                className="default-tt"
+                                arrow
+                                placement="top"
+                                content={
+                                    <div>
+                                        <div className="flex column left">Download File/Template</div>
+                                    </div>
+                                }
+                            >
+                                <button className="scoped-variables-editor-infobar__btn" onClick={handleDropdownClick}>
+                                    <ICFileDownload width={20} height={20} />
+                                </button>
+                            </Tippy>
                             {showDropdown && (
                                 <div className="scoped-variables-editor-infobar__dropdown" ref={dropdownRef}>
                                     {DROPDOWN_ITEMS.map((item) => (

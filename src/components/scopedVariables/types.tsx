@@ -14,6 +14,7 @@ export interface SavedVariablesViewI {
     scopedVariablesData: any
     jsonSchema: object
     reloadScopedVariables: () => void
+    setScopedVariables: (data: any) => void
 }
 
 export interface FileReaderStatusI {
@@ -49,11 +50,13 @@ export interface ScopedVariablesEditorI {
     abortRead: () => void
     setShowEditView?: (show: boolean) => void
     reloadScopedVariables: () => void
+    setScopedVariables: (data: any) => void
 }
 
 export interface UploadScopedVariablesI {
     reloadScopedVariables: () => void
     jsonSchema: object
+    setScopedVariables: (data: any) => void
 }
 
 export interface DescriptorI {

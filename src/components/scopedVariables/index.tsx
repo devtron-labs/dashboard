@@ -38,10 +38,17 @@ const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
                 scopedVariablesData={scopedVariables}
                 reloadScopedVariables={reloadScopedVariables}
                 jsonSchema={jsonSchema}
+                setScopedVariables={setScopedVariables}
             />
         )
 
-    return <UploadScopedVariables reloadScopedVariables={reloadScopedVariables} jsonSchema={jsonSchema} />
+    return (
+        <UploadScopedVariables
+            reloadScopedVariables={reloadScopedVariables}
+            jsonSchema={jsonSchema}
+            setScopedVariables={setScopedVariables}
+        />
+    )
 }
 
 export default ScopedVariables
