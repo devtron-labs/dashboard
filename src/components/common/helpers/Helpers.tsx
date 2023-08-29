@@ -1159,7 +1159,7 @@ export const handleOnBlur = (e): void => {
 }
 
 export const parsePassword = (password: string): string => {
-    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
 export const reloadLocation = () => {
