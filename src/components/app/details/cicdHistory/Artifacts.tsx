@@ -112,10 +112,10 @@ export default function Artifacts({
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
                     classname="dc__h-fit-content"
                 />
-                <div className="br-4 w-250 en-2 bw-1">
+                <div className="br-4 w-300 en-2 bw-1">
                     <InfoColourBar
                         message="Desired image tag already exists "
-                        classname="warn"
+                        classname="warn dc__no-border"
                         Icon={Warn}
                         iconClass="warning-icon"
                     />

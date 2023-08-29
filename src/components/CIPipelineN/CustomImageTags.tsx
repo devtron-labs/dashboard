@@ -148,6 +148,7 @@ function CustomImageTags({ imageTagValue, setImageTagValue }) {
                             autoComplete={'off'}
                             value={formData.customTag?.counterX}
                             onChange={onChangeCustomImageCounter}
+                            min="0"
                         />
                         <div></div>
                     </div>
