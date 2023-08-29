@@ -19,17 +19,17 @@ import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-dow
 const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariablesViewI) => {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
-    const [variablesList, setVariablesList] = useState<VariableListItemI[]>(null)
+    const [variablesList, setVariablesList] = useState<VariableListItemI[]>([])
     const dropdownRef = useRef(null)
 
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
     useEffect(() => {
         if (status?.status == null) {
-            const variables = SAMPLE_DATA?.Variables?.map((item) => {
+            const variables = SAMPLE_DATA?.Variables?.map((varaibleSpec) => {
                 return {
-                    name: item.definition?.varName,
-                    description: item.definition?.description,
+                    name: varaibleSpec.definition?.varName,
+                    description: varaibleSpec.definition?.description,
                 }
             })
             if (variables) setVariablesList([...variables])

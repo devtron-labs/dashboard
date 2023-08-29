@@ -3,7 +3,7 @@ import { TableItemI, TableListI } from './types'
 
 export const TableList = ({ children, width, headings }: TableListI) => {
     return (
-        <div className={`scoped-variables-list-container`}>
+        <div className="scoped-variables-list-container">
             <div className="scoped-variables-list-header">
                 {headings?.map((heading, index) => (
                     <div style={{ width: width[index] }} key={heading}>
