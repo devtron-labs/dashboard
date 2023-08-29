@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { showError, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, GenericEmptyState, ImageTagsContainer, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
@@ -17,6 +17,8 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 
 let ApprovalInfoTippy = null
 
@@ -95,10 +97,35 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
         return (
-            <GenericEmptyState
-                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
-            />
+            <>
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+                />
+                <div className="br-4 w-250 en-2 bw-1">
+                    <InfoColourBar
+                        message="Desired image tag already exists "
+                        classname="warn"
+                        Icon={Warn}
+                        iconClass="warning-icon"
+                    />
+                    <div className="p-12">
+                        <div className="pb-10 dc__border-bottom">
+                            <span className="fw-6 fs-12 ">Desired Image tag:</span>
+                            <div className="br-4 dc__bg-n50 p-4 fs-12 flex">
+                                <Docker />
+                                version-1
+                            </div>
+                        </div>
+                        <div className="pb-10">
+                            <span className="fw-6 fs-12 ">Pattern used to generate tag:</span>
+                            <div className="br-4  p-4 fs-12 flex">
+                                version-1 <span className="dc__bg-n50 pl-4 pr-4">{`{x}`}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>
         )
     } else {
         return (
