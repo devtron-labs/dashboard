@@ -317,7 +317,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
     /* Use Effect to introduce the variables in the code editor, it is intended to bring following feature:
         1. Show Variable Value on hover
-        2. Show Suggestions when user is inside the pattern -> {{ variable }}, it can also be  {{ variable1 + variable2 }}
+        2. Show Suggestions when user is inside the pattern -> @{{ variable }}, it can also be  @{{ variable1 + variable2 }}
         3. Show error icon in case of invalid variable in glyph margin
 
         While implementation we have to handle following cases:
@@ -329,95 +329,116 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     /*
         Points of discussion:
         1. Should we use Glyph Margin for wrong variable and success?
-        2. How to use variables like {{ variable1 + variable2 }}?, or should we restrict to only {{ variable }}? or {{ variable1 }} + {{ variable2 }}?
+        2. How to use variables like @{{ variable1 + variable2 }}?, or should we restrict to only @{{ variable }}? or @{{ variable1 }} + {@{ variable2 }}?
         3. When to trigger suggestions
         4. Optimisation concerns
         5. How to handle multiple variables in the same line
         6. Can we have json in the code editor?
     */
-    useEffect(() => {
-        if (editorRef.current) {
-            const editor = editorRef.current
-            const originalModel = monaco.editor.createModel(originlaYaml, 'yaml')
-            const modifiedModel = monaco.editor.createModel(state.code, 'yaml')
+    // TODO: Handle type checks 
+    useEffect(()=>{
+        if(!editorRef.current) return
+        if(!newVariables) return
 
-            const hoverProvider = {
-                provideHover: (model, position) => {
-                    const lineContent = model.getLineContent(position.lineNumber)
-                    const variables = model === originalModel ? oldVariables : newVariables
-                    const regex = /{{\s*[\w\.]+\s*}}/g
-                    const matches = lineContent.match(regex)
-                    if (!matches) return null
-                    const variableNames = matches.map((match) => match.replace(/{{|}}/g, '').trim())
+        const editor = editorRef.current
+        const originalModel = monaco.editor.createModel(originlaYaml, 'yaml')
+        const modifiedModel = monaco.editor.createModel(state.code, 'yaml')
 
-                    const matchedVariables = variables?.filter((variable) => variableNames.includes(variable.name))
-                    if (matchedVariables?.length) {
-                        const contents = matchedVariables.map((variable) => {
-                            return { value: `Variable Value: ${JSON.stringify(variable.value)}` }
-                        })
-                        return {
-                            range: new monaco.Range(
-                                position.lineNumber,
-                                1,
-                                position.lineNumber,
-                                lineContent.length + 1,
-                            ),
-                            contents,
-                        }
-                    }
-                    return null
-                },
-            }
-
-            const registration = monaco.languages.registerHoverProvider('yaml', hoverProvider)
-
-            const { dispose } = monacoRef.current.languages.registerCompletionItemProvider('yaml', {
-                provideCompletionItems: function (model, position) {
-                    const word = model.getWordAtPosition(position)                
-                    if (word) {
-                        const similarNames = newVariables?.filter((variable) => {
-                            return variable.name.includes(word.word)
-                        })
-                        if(similarNames.length === 0){
-                            return {
-                                suggestions: [{
-                                    label: "No Suggestions",
-                                }]
-                            } 
-                        }
-                        return {
-                            suggestions: similarNames?.map((variable) => {
-                                return {
-                                    label: variable.name,
-                                    kind: monaco.languages.CompletionItemKind.Variable,
-                                    insertText: `${variable.name}`,
-                                    detail: "Variable",
-                                    documentation: variable.value,
-                                }
-                            }),
-                        }
-                    }
-                },
+        const extractVariables = (line: string): string[] => {
+            const variables: string[] = []
+            // expression will start with @{{ and end with }}
+            const regex = /@{{.*?}}/g
+            const expressions = line.match(regex)
+            if(!expressions) return variables
+            expressions.forEach((expression)=>{
+                const expressionWithoutBraces = expression.replace(/@{{|}}/g, '')
+                variables.push(expressionWithoutBraces)
             })
+            return variables
+        }
 
-            // if variable does not exist in the glyph margin, then show error icon
-            const errorClass = 'error-icon'
-            const successClass = 'success-icon'
-            // get the line numbers of the variables and if variable is not present then add errorClass to glyph margin
-            
-            const modifiedDecorations = []
-            const originalDecorations = []
+        // Implementing hover values
+        const hoverProvider = {
+            provideHover: (model, position) => {
+                const lineContent = model.getLineContent(position.lineNumber)
+                const variables = model === originalModel ? oldVariables : newVariables
+                // get current word
+                const word = model.getWordAtPosition(position)
+                if(!word) return null
 
-            for (let i = 1; i <= modifiedModel.getLineCount(); i++) {
-                const lineContent = modifiedModel.getLineContent(i)
-                const matches = lineContent.match(/{{\s*[\w\.]+\s*}}/g)
-                if (matches) {
-                    const variableNames = matches.map((match) => match.replace(/{{|}}/g, '').trim())
-                    const matchedVariables = newVariables?.filter((variable) =>
-                        variableNames.includes(variable.name),
-                    )
-                    if (!matchedVariables?.length) {
-                        modifiedDecorations.push({
+                // check prefix and suffix to ensure its a variable, minding word can be greater than current cursor position
+                const prefix = lineContent.substring(word.endColumn - word.word.length - 4, word.endColumn - word.word.length - 1)
+                const suffix = lineContent.substring(word.endColumn-1, word.endColumn+2)
+                
+                const prefixMatch = prefix.match(/@{{/g)
+                const suffixMatch = suffix.match(/}}/g)
+                if (!prefixMatch || !suffixMatch) return null
+
+                if (word) {
+                    const matchedVariables = variables?.filter((variable) => variable.name === word.word)
+                    if(matchedVariables?.length){
+                        return {
+                            range: new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn),
+                            contents: [
+                                { value: `**${word.word}**: ${matchedVariables[0].value}` },
+                            ],
+                        }
+                    }
+                }
+                return null
+            },
+        }
+
+        const registration = monaco.languages.registerHoverProvider('yaml', hoverProvider)
+
+        // Implementing Glyph Margin
+        const errorClass = 'error-icon'
+        const successClass = 'success-icon'
+
+        const modifiedDecorations = []
+        const originalDecorations = []
+
+        // TODO: This can be optimized by only changing the lines which are being changed
+        for (let i = 1; i <= modifiedModel.getLineCount(); i++) {
+            const lineContent = modifiedModel.getLineContent(i)
+            const variableNames = extractVariables(lineContent)
+            if (variableNames.length) {
+                const invalidVariables = variableNames.filter((variableName) => {
+                    const matchedVariables = newVariables?.filter((variable) => variable.name === variableName)
+                    return !matchedVariables?.length
+                })
+                if (invalidVariables?.length) {
+                    modifiedDecorations.push({
+                        range: new monaco.Range(i, 1, i, 1),
+                        options: {
+                            isWholeLine: true,
+                            glyphMarginClassName: errorClass,
+                        },
+                    })
+                }
+                else{
+                    modifiedDecorations.push({
+                        range: new monaco.Range(i, 1, i, 1),
+                        options: {
+                            isWholeLine: true,
+                            glyphMarginClassName: successClass,
+                        },
+                    })
+                }
+            }
+        }
+
+        if(editor.originalEditor){
+            for (let i = 1; i <= originalModel.getLineCount(); i++) {
+                const lineContent = originalModel.getLineContent(i)
+                const variableNames = extractVariables(lineContent)
+                if (variableNames.length) {
+                    const invalidVariables = variableNames.filter((variableName) => {
+                        const matchedVariables = oldVariables?.filter((variable) => variable.name === variableName)
+                        return !matchedVariables?.length
+                    })
+                    if (invalidVariables?.length) {
+                        originalDecorations.push({
                             range: new monaco.Range(i, 1, i, 1),
                             options: {
                                 isWholeLine: true,
@@ -426,7 +447,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                         })
                     }
                     else{
-                        modifiedDecorations.push({
+                        originalDecorations.push({
                             range: new monaco.Range(i, 1, i, 1),
                             options: {
                                 isWholeLine: true,
@@ -435,34 +456,82 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                         })
                     }
                 }
-                // else{
-                //     modifiedDecorations.push({
-                //         range: new monaco.Range(i, 1, i, 1),
-                //         options: {
-                //             isWholeLine: true,
-                //             glyphMarginClassName: 'background-none',
-                //         },
-                //     })
-                // }
-            }
-            
-            const modifiedDecorationIds =  (!state.diffMode) && editor.deltaDecorations([], modifiedDecorations)
-            const modifiedDiffDecorationIds = editor.modifiedEditor?.deltaDecorations([], modifiedDecorations) 
-            const originalDiffDecorationIds = editor.originalEditor?.deltaDecorations([], originalDecorations)
-
-
-            
-            return () => {
-                registration.dispose()
-                originalModel.dispose()
-                modifiedModel.dispose()
-                dispose()
-                modifiedDecorationIds && editor.deltaDecorations(modifiedDecorationIds, [])
-                editor.modifiedEditor?.deltaDecorations(modifiedDiffDecorationIds, [])
-                editor.originalEditor?.deltaDecorations(originalDiffDecorationIds, [])
             }
         }
-    }, [originlaYaml, state.code, oldVariables, newVariables, state.diffMode])
+        
+        const modifiedDecorationIds =  (!state.diffMode) && editor.deltaDecorations([], modifiedDecorations)
+        const modifiedDiffDecorationIds = editor.modifiedEditor?.deltaDecorations([], modifiedDecorations) 
+        const originalDiffDecorationIds = editor.originalEditor?.deltaDecorations([], originalDecorations)
+
+        // Implementing Suggestions
+        
+        const { dispose } = monacoRef.current.languages.registerCompletionItemProvider('yaml', {
+            provideCompletionItems: function (model, position) {
+                const word = model.getWordAtPosition(position)
+                if(!word) return {
+                    suggestions: [{
+                        label: "No Suggestions",
+                    }]
+                }
+                if(position.column - word.word.length-4<0){
+                    return {
+                        suggestions: [{
+                            label: "No Suggestions",
+                        }]
+                    }
+                }
+                const lineContent = model.getLineContent(position.lineNumber)
+                const prefix = lineContent.substring(position.column - word.word.length-4, position.column - word.word.length-1)
+                const suffix = lineContent.substring(position.column-1, position.column+2)
+
+                const prefixMatch = prefix.match(/@{{/g)
+                const suffixMatch = suffix.match(/}}/g)
+
+                if (!prefixMatch || !suffixMatch) return {
+                    suggestions: [{
+                        label: "No Suggestions",
+                    }]
+                }
+                if (word) {
+                    const similarNames = newVariables?.filter((variable) => {
+                        return variable.name.includes(word.word)
+                    })
+                    if(similarNames.length === 0){
+                        return {
+                            suggestions: [{
+                                label: "No Suggestions",
+                            }]
+                        } 
+                    }
+                    return {
+                        suggestions: similarNames?.map((variable) => {
+                            return {
+                                label: `${variable.name}: Scoped Variable`,
+                                kind: monaco.languages.CompletionItemKind.Variable,
+                                insertText: `${variable.name}`,
+                                documentation: variable.value,
+                            }
+                        }),
+                    }
+                }
+            },
+        })
+
+        return (()=>{
+            originalModel.dispose()
+            modifiedModel.dispose()
+
+            registration.dispose()
+
+            modifiedDecorationIds && editor.deltaDecorations(modifiedDecorationIds, [])
+            editor.modifiedEditor?.deltaDecorations(modifiedDiffDecorationIds, [])
+            editor.originalEditor?.deltaDecorations(originalDiffDecorationIds, [])
+
+            dispose()
+        })
+
+    },[originlaYaml, state.code, oldVariables, newVariables, state.diffMode])
+
 
     function handleOnChange(newValue, e) {
         dispatch({ type: 'setCode', value: newValue })
