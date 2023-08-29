@@ -88,12 +88,63 @@ export const sortVariables = (variablesObj: object): object => {
     /*
         Approach:
         Sorting is going to happen on multiple levels:
-        a) Variable name is going to be unique so we will first sort, variablesObj.variables.definition.varName
-        b) After that we will sort based on attributeType, variables.attributeValue.attributeType
-        c) If the attributeType is same, we sorting will be on different cases:
-            i) if attributeType is ApplicationEnv then we will first variables.attributeValue.attributeType.attributeParams.ApplicationName, then variables.attributeValue.attributeType.attributeParams.EnvName,
+        1) First we are going to sort the spec array based on the name of the variable
+        2) Then we are going to sort the selectors array based on the key of the selector
+        3) Then we are going to sort based on the values array based on the category of the variable, The precendence is as follows:
+            i) ApplicationEnv
+            ii) Application
+            iii) Env
+            iv) Cluster
+            v) Global
+           If the values array has multiple values with the same category, then we are going to sort them based on the selectors array
+
+           Minding the key in case of Cluster is ClusterName, global has selectors as null
     */
-    return {}
+    const mutatedVariablesObj = JSON.parse(JSON.stringify(variablesObj))
+
+    // sorting on the basis of name
+    mutatedVariablesObj.spec.sort((a, b) => {
+        if (a.name < b.name) {
+            return -1
+        }
+        if (a.name > b.name) {
+            return 1
+        }
+        return 0
+    })
+
+    // sorting the attributeSelectors minding attributeSelectors may or may not be null
+    mutatedVariablesObj.spec.forEach((variable) => {
+        variable.values.forEach((value) => {
+            if (value.selectors) {
+                value.selectors.attributeSelectors.sort((a, b) => {
+                    if (a.key < b.key) {
+                        return -1
+                    }
+                    if (a.key > b.key) {
+                        return 1
+                    }
+                    return 0
+                })
+            }
+        })
+    })
+
+    // sorting the values array based on the category of the variable
+    mutatedVariablesObj.spec.forEach((variable) => {
+        variable.values.sort((a, b) => {
+            const categoryOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
+            if (categoryOrder.indexOf(a.category) < categoryOrder.indexOf(b.category)) {
+                return -1
+            }
+            if (categoryOrder.indexOf(a.category) > categoryOrder.indexOf(b.category)) {
+                return 1
+            }
+            return 0
+        })
+    })
+
+    return mutatedVariablesObj
 }
 
 // Services
