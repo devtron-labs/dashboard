@@ -32,8 +32,6 @@ const SavedVariablesView = ({
     // No need to make it a state since editor here is read only and we don't need to update it
     let scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
 
-    console.log(scopedVariablesData, scopedVariablesYAML)
-
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
     useEffect(() => {
