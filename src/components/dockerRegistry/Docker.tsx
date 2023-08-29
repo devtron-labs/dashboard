@@ -464,7 +464,7 @@ function DockerForm({
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
-                      awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value)?.trim(),
+                      awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion: awsRegion,
                   }
                 : {}),
@@ -473,8 +473,8 @@ function DockerForm({
                       username: trimmedUsername,
                       password:
                           customState.password.value === DEFAULT_SECRET_PLACEHOLDER
-                              ? parsePassword(customState.password.value)?.trim()
-                              : `'${parsePassword(customState.password.value)?.trim()}'`,
+                              ? parsePassword(customState.password.value)
+                              : `'${parsePassword(customState.password.value)}'`,
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'docker-hub' ||
@@ -482,13 +482,13 @@ function DockerForm({
             selectedDockerRegistryType.value === 'quay'
                 ? {
                       username: trimmedUsername,
-                      password: parsePassword(customState.password.value)?.trim(),
+                      password: parsePassword(customState.password.value),
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'other'
                 ? {
                       username: trimmedUsername,
-                      password: parsePassword(customState.password.value)?.trim(),
+                      password: parsePassword(customState.password.value),
                       connection: state.advanceSelect.value,
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }
