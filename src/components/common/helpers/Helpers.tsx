@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { showError, useThrottledEffect, OptionType, noop, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib';
+import {
+    showError,
+    useThrottledEffect,
+    OptionType,
+    noop,
+    DeploymentAppTypes,
+    getLoginInfo,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { Link } from 'react-router-dom'
@@ -1152,7 +1159,7 @@ export const handleOnBlur = (e): void => {
 }
 
 export const parsePassword = (password: string): string => {
-    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
 export const reloadLocation = () => {
@@ -1198,17 +1205,29 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
 export const getDeploymentAppType = (
     allowedDeploymentTypes: DeploymentAppTypes[],
     selectedDeploymentAppType: string,
-    isVirtualEnvironment: boolean
+    isVirtualEnvironment: boolean,
 ): string => {
-  if (isVirtualEnvironment) {
-      return DeploymentAppTypes.MANIFEST_DOWNLOAD
-  } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
-      return ''
-  } else if (
-      selectedDeploymentAppType &&
-      allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
-  ) {
-      return selectedDeploymentAppType
-  }
-  return allowedDeploymentTypes[0]
+    if (isVirtualEnvironment) {
+        return DeploymentAppTypes.MANIFEST_DOWNLOAD
+    } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+        return ''
+    } else if (
+        selectedDeploymentAppType &&
+        allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
+    ) {
+        return selectedDeploymentAppType
+    }
+    return allowedDeploymentTypes[0]
+}
+
+export const hasApproverAccess = (approverList: string[]): boolean => {
+    const loginInfo = getLoginInfo()
+    let hasAccess = false
+    for (const approver of approverList) {
+        if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
+            hasAccess = true
+            break
+        }
+    }
+    return hasAccess
 }

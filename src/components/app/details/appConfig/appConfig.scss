@@ -12,28 +12,40 @@
         height: 100%;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 110px repeat(6, 36px) 54px 1fr auto;
+        grid-template-rows: 110px repeat(6, 32px) 54px 1fr auto;
         overflow: hidden;
 
         &.hide-app-config-help {
-            grid-template-rows: repeat(6, 36px) 54px 1fr auto;
+            grid-template-rows: repeat(6, 32px) 54px 1fr auto;
 
             &.hide-external-links {
-                grid-template-rows: repeat(6, 36px) 1fr auto;
+                grid-template-rows: repeat(6, 32px) 1fr auto;
             }
         }
 
         &:not(.hide-app-config-help) {
             &.hide-external-links {
-                grid-template-rows: 110px repeat(6, 36px) 1fr auto;
+                grid-template-rows: 110px repeat(6, 32px) 1fr auto;
             }
         }
 
         &.job-compose__side-nav {
-            grid-template-rows: 110px repeat(4, 36px) 1fr;
+            grid-template-rows: 110px repeat(4, 32px) 1fr;
 
             &.hide-app-config-help {
-                grid-template-rows: repeat(4, 36px) 1fr;
+                grid-template-rows: repeat(4, 32px) 1fr;
+            }
+        }
+
+        &.config-protection__side-nav {
+            grid-template-rows: 110px repeat(6, 32px) 54px 32px 1fr auto;
+
+            &.hide-app-config-help {
+                grid-template-rows: repeat(6, 32px) 54px 32px 1fr auto;
+
+                &.hide-external-links {
+                    grid-template-rows: repeat(6, 32px) 54px 1fr auto;
+                }
             }
         }
 
@@ -80,7 +92,7 @@
 
     .app-compose__nav-item {
         font-size: 13px;
-        line-height: 36px;
+        line-height: 32px;
         color: var(--N700);
         width: 100%;
         border-radius: 4px;
@@ -165,7 +177,7 @@
 
     .environment-routes {
         width: 100%;
-        margin-left: 8px;
+        margin-left: 24px;
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;
@@ -178,7 +190,7 @@
 
     .environment-routes-container {
         width: 100%;
-        height: calc(100% - 60px);
+        height: calc(100% - 48px);
         overflow: hidden;
 
         &>.app-compose__nav-item {

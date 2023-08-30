@@ -233,6 +233,7 @@ export const Details: React.FC<DetailsType> = ({
     const appDetailsRequestRef = useRef(null)
     const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
+    const pollResourceTreeRef = useRef(true)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -332,6 +333,13 @@ export const Details: React.FC<DetailsType> = ({
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, 25000)
             .then((response) => {
+                if (!response.result.appName && !response.result.environmentName) {
+                    setResourceTreeFetchTimeOut(false)
+                    setLoadingResourceTree(false)
+                    setAppDetails(null)
+                    pollResourceTreeRef.current = false
+                    return
+                }
                 appDetailsRef.current = {
                     ...appDetailsRef.current,
                     ...response.result,
@@ -344,11 +352,18 @@ export const Details: React.FC<DetailsType> = ({
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
                 }
+                pollResourceTreeRef.current = true
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
                 setLoadingDetails(false)
             })
+        if (pollResourceTreeRef.current) {
+            fetchResourceTree()
+        }
+    }
+
+    const fetchResourceTree = () => {
         fetchResourceTreeInTime(params.appId, params.envId, 25000)
             .then((response) => {
                 if (
@@ -576,6 +591,8 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     setRotateModal={isAppDeployment ? setRotateModal : null}
+                    loadingDetails={loadingDetails}
+                    loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
                 />
             </div>
