@@ -31,7 +31,7 @@ import {
 } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
-import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
 import {
     TERMINAL_STATUS,
@@ -58,7 +58,6 @@ export default function ClusterTerminal({
 }: ClusterTerminalType) {
     const location = useLocation()
     const history = useHistory()
-    const { path } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')

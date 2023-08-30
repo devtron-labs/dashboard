@@ -7,7 +7,6 @@ import { showError, Progressing, ConditionalWrap, ErrorScreenManager } from '@de
 import {
     ColumnMetadataType,
     TEXT_COLOR_CLASS,
-    ERROR_TYPE,
     NodeDetail,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -19,12 +18,12 @@ import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
-import './clusterNodes.scss'
 import * as queryString from 'query-string'
 import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import './clusterNodes.scss'
 
 export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions, renderCallBackSync, addTab, syncError}) {
     const match = useRouteMatch()
@@ -47,9 +46,9 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
-   
+
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    
+
     const pageSize = 15
 
     useEffect(() => {
@@ -68,7 +67,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
-  
+
     useEffect(() => {
         const qs=queryString.parse(location.search)
         const offset=Number(qs["offset"])
@@ -496,7 +495,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
         <>
             <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
             {typeof renderCallBackSync === 'function' && renderCallBackSync()}
-                <div 
+                <div
                     className={`bcn-0 pt-16 list-min-height ${ syncError ? 'sync-error' : ''} ${noResults ? 'no-result-container' : ''}`}
                 >
                     <div className="pl-20 pr-20">

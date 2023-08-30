@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import ReactSelect, { MultiValue } from 'react-select'
-import { OptionType } from '../app/types'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
@@ -54,7 +53,7 @@ export default function NodeListSearchFliter({
     const handleFocus = () => {
         document.removeEventListener('keydown', keyPressHandler);
       };
-  
+
       const handleBlur = () => {
         document.addEventListener('keydown', keyPressHandler);
       };
