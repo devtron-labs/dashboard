@@ -10,14 +10,15 @@ interface GridI {
     children: React.ReactNode
 }
 
-// This is meant to be a reusable component that will provide a grid like dynamic layout
-const Grid = ({ container, spacing=0, item, xs, containerClass='', itemClass='', children }: GridI) => {
+// This is meant to be a reusable component that will provide a grid like dynamic layout where xs is the number of columns out of 12 that the item will take up
+const Grid = ({ container, spacing = 0, item, xs, containerClass = '', itemClass = '', children }: GridI) => {
     const containerStyles = container ? { gap: spacing + 'px' } : {}
 
     if (item) {
         const getColumnWidth = () => {
             const percentageWidth = (xs / 12) * 100
-            return `${percentageWidth}%`
+            // DONT CHANGE IT FROM CALC SINCE CALC CONVERTS TO PX
+            return `calc(${percentageWidth}%)`
         }
 
         const itemStyles = {
