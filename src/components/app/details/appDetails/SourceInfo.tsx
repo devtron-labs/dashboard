@@ -100,9 +100,7 @@ export function SourceInfo({
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            isArgoCdApp
-                                ? DeploymentAppTypeNameMapping.GitOps
-                                : DeploymentAppTypeNameMapping.Helm
+                            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
                         <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />

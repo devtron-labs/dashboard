@@ -463,7 +463,7 @@ function DockerForm({
             registryUrl: customState.registryUrl.value,
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
-                      awsAccessKeyId: customState.awsAccessKeyId.value,
+                      awsAccessKeyId: customState.awsAccessKeyId.value?.trim(),
                       awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion: awsRegion,
                   }

@@ -70,7 +70,6 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
-    getSearchedItem?: (searchedItems?: any[]) => void
     isApplicationGroupTrigger?: boolean
 }
 
@@ -103,10 +102,6 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
-    searchString?: string
-    searchApplied?: boolean
-    loadingSearchedImage?: boolean
-    searchExpanded?: boolean
 }
 
 export interface MaterialInfo {
@@ -361,7 +356,6 @@ export interface TriggerViewState {
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
     isDefaultConfigPresent?: boolean
-    filterMaterials?: any[]
 }
 
 //-- begining of response type objects for trigger view
