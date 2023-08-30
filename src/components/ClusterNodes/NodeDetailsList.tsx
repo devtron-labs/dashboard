@@ -4,12 +4,7 @@ import { getNodeList } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Pagination } from '../common'
 import { showError, Progressing, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    ColumnMetadataType,
-    TEXT_COLOR_CLASS,
-    ERROR_TYPE,
-    NodeDetail,
-} from './types'
+import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
@@ -26,7 +21,14 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 
-export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersions, renderCallBackSync, addTab, syncError}) {
+export default function NodeDetailsList({
+    isSuperAdmin,
+    clusterId,
+    nodeK8sVersions,
+    renderCallBackSync,
+    addTab,
+    syncError,
+}) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -40,16 +42,18 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(new Map())
-    const [selectedVersion, setSelectedVersion] = useState<OptionType>(k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion)
+    const [selectedVersion, setSelectedVersion] = useState<OptionType>(
+        k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
+    )
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
-   
+
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    
+
     const pageSize = 15
 
     useEffect(() => {
@@ -68,11 +72,11 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
-  
+
     useEffect(() => {
-        const qs=queryString.parse(location.search)
-        const offset=Number(qs["offset"])
-        setNodeListOffset(offset||0)
+        const qs = queryString.parse(location.search)
+        const offset = Number(qs['offset'])
+        setNodeListOffset(offset || 0)
     }, [location.search])
 
     useEffect(() => {
@@ -165,7 +169,7 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {
-                if(error['code'] !== 403){
+                if (error['code'] !== 403) {
                     showError(error)
                 }
                 setErrorResponseCode(error.code)
@@ -281,16 +285,12 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
         }
     }
 
-    const renderSortDirection = (column: ColumnMetadataType) : JSX.Element => {
-        if(column.isSortingAllowed) {
-            if(sortByColumn.value === column.value) {
-                return (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
-                )
+    const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
+        if (column.isSortingAllowed) {
+            if (sortByColumn.value === column.value) {
+                return <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
             } else {
-                return (
-                    <span className="sort-column dc__opacity-0_5 ml-4"></span>
-                )
+                return <span className="sort-column dc__opacity-0_5 ml-4"></span>
             }
         }
     }
@@ -415,7 +415,10 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
                                         placement="right"
                                         content={nodeData[column.value]}
                                     >
-                                        <NavLink data-testid="cluster-node-link" to={`${match.url}/${nodeData[column.value]}`} >
+                                        <NavLink
+                                            data-testid="cluster-node-link"
+                                            to={`${match.url}/${nodeData[column.value]}`}
+                                        >
                                             {nodeData[column.value]}
                                         </NavLink>
                                     </Tippy>
@@ -444,20 +447,20 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
             </div>
         )
     }
-      const changePage = (pageNo: number): void => {
-          let offset = pageSize * (pageNo - 1)
-          setNodeListOffset(offset)
-          let qs = queryString.parse(location.search)
-          let keys = Object.keys(qs)
-          let query = {}
-          keys.forEach((key) => {
-              query[key] = qs[key]
-          })
-          query['offset'] = offset
-          let queryStr = queryString.stringify(query)
-          let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
-          history.push(url)
-      }
+    const changePage = (pageNo: number): void => {
+        let offset = pageSize * (pageNo - 1)
+        setNodeListOffset(offset)
+        let qs = queryString.parse(location.search)
+        let keys = Object.keys(qs)
+        let query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
+        query['offset'] = offset
+        let queryStr = queryString.stringify(query)
+        let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+        history.push(url)
+    }
     const renderPagination = (): JSX.Element => {
         return (
             filteredFlattenNodeList.length > pageSize && (
@@ -479,25 +482,33 @@ export default function NodeDetailsList({ isSuperAdmin, clusterId, nodeK8sVersio
         history.push(`${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}?${queryParams.toString()}`)
     }
 
-
     if (errorResponseCode) {
         return (
             <div className="dc__border-left flex">
-                <ErrorScreenManager code={errorResponseCode} subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())} />
+                <ErrorScreenManager
+                    code={errorResponseCode}
+                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                />
             </div>
         )
     }
 
     if (clusterDetailsLoader) {
-        return <div className="dc__border-left"><Progressing pageLoader /></div>
+        return (
+            <div className="dc__border-left">
+                <Progressing pageLoader />
+            </div>
+        )
     }
 
     return (
         <>
             <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
-            {typeof renderCallBackSync === 'function' && renderCallBackSync()}
-                <div 
-                    className={`bcn-0 pt-16 list-min-height ${ syncError ? 'sync-error' : ''} ${noResults ? 'no-result-container' : ''}`}
+                {typeof renderCallBackSync === 'function' && renderCallBackSync()}
+                <div
+                    className={`bcn-0 pt-16 list-min-height ${syncError ? 'sync-error' : ''} ${
+                        noResults ? 'no-result-container' : ''
+                    }`}
                 >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter

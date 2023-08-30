@@ -20,7 +20,7 @@ export default function ClusterSelectionList({
     onChangeCluster,
     isSuperAdmin,
     clusterListLoader,
-    refreshData
+    refreshData,
 }: ClusterSelectionType) {
     const location = useLocation()
     const history = useHistory()
@@ -32,7 +32,6 @@ export default function ClusterSelectionList({
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
-
 
     useEffect(() => {
         setClusterList([])
@@ -114,7 +113,7 @@ export default function ClusterSelectionList({
     }
 
     const hideDataOnLoad = (value) => {
-        if(clusterListLoader)return
+        if (clusterListLoader) return
         return value
     }
 
@@ -162,17 +161,20 @@ export default function ClusterSelectionList({
                 </div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
                 <div className="child-shimmer-loading">
-                    {errorCount > 0 && hideDataOnLoad(
-                        <>
-                            <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                            <span className="cr-5">{errorCount}</span>
-                        </>
-                    )}
+                    {errorCount > 0 &&
+                        hideDataOnLoad(
+                            <>
+                                <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                                <span className="cr-5">{errorCount}</span>
+                            </>,
+                        )}
                 </div>
                 <div className="dc__ellipsis-right child-shimmer-loading">
-                {hideDataOnLoad(<Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
-                        <span>{clusterData.serverVersion}</span>
-                    </Tippy>)}
+                    {hideDataOnLoad(
+                        <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
+                            <span>{clusterData.serverVersion}</span>
+                        </Tippy>,
+                    )}
                 </div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.cpu?.capacity)}</div>
                 <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.memory?.capacity)}</div>
