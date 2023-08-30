@@ -10,10 +10,10 @@ import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
-import './clusterNodes.scss'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import './clusterNodes.scss'
 
 export default function ClusterSelectionList({
     clusterOptions,

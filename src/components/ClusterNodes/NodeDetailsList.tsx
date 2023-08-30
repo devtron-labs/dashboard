@@ -14,12 +14,12 @@ import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
-import './clusterNodes.scss'
 import * as queryString from 'query-string'
 import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import './clusterNodes.scss'
 
 export default function NodeDetailsList({
     isSuperAdmin,

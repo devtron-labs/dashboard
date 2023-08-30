@@ -39,7 +39,6 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
@@ -62,7 +61,6 @@ export default function NavigationRoutes() {
     )
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
-    const [expiryDate, setExpiryDate] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
@@ -80,7 +78,6 @@ export default function NavigationRoutes() {
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
         const _expDate = localStorage.getItem('clickedOkay')
-        setExpiryDate(!!_expDate ? +_expDate : 0)
         try {
             const [userRole, appList, loginData] = await Promise.all([
                 getUserRole(),
@@ -358,9 +355,6 @@ export default function NavigationRoutes() {
                                             path={URLS.GLOBAL_CONFIG}
                                             render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                         />
-                                        <Route path={URLS.CLUSTER_LIST}>
-                                            <ClusterNodeContainer />
-                                        </Route>
                                         {!window._env_.K8S_CLIENT && [
                                             <Route
                                                 key={URLS.APP}
