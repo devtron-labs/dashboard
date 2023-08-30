@@ -24,7 +24,6 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType } from './globalConfiguration.type'
-import ScopedVariables from '../scopedVariables'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -37,6 +36,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const ScopedVariables = lazy(() => import('../scopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 
@@ -383,13 +383,15 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    <NavLink
-                        to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                        key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">Scoped Variables</div>
-                    </NavLink>
+                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Scoped Variables</div>
+                        </NavLink>
+                    )}
 
                     {PluginsPolicy && (
                         <NavLink
@@ -550,14 +552,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                    path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                    render={() => {
-                        return <ScopedVariables isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
             ]}
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                    <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
