@@ -12,7 +12,7 @@ import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
     DEFAULT_TITLE,
-    VARIABLES_TEMPLATE,
+    SCOPED_VARIABLES_TEMPLATE_DATA,
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
     DOWNLOAD_TEMPLATE_NAME,
@@ -97,7 +97,9 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
 
                 <button
                     className="p-0 dc__no-background dc__no-border default-download-template-typography"
-                    onClick={() => downloadData(VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')}
+                    onClick={() =>
+                        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
+                    }
                 >
                     {DOWNLOAD_TEMPLATE}
                 </button>

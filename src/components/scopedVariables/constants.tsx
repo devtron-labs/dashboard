@@ -60,7 +60,7 @@ export const EMPTY_FILE_STATUS = {
     status: false,
 }
 
-export const VARIABLES_TEMPLATE = `# Example:
+export const SCOPED_VARIABLES_TEMPLATE_DATA = `# Example:
 # variables:
 #   - definition:
 #       varName: variable1

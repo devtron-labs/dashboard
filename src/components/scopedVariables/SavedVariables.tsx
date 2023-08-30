@@ -12,7 +12,7 @@ import {
     DOWNLOAD_FILE_NAME,
     DOWNLOAD_TEMPLATE_NAME,
     DROPDOWN_ITEMS,
-    VARIABLES_TEMPLATE,
+    SCOPED_VARIABLES_TEMPLATE_DATA,
     TABLE_LIST_HEADINGS,
 } from './constants'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
@@ -63,7 +63,7 @@ const SavedVariablesView = ({
                 setShowDropdown(false)
                 break
             case DROPDOWN_ITEMS[1]:
-                downloadData(VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
+                downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
                 setShowDropdown(false)
                 break
         }
