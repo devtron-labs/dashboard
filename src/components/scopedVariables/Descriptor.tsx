@@ -4,7 +4,7 @@ import { validator } from './utils/helpers'
 import { DescriptorI, ReadFileAs } from './types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload.svg'
+import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
 
