@@ -79,8 +79,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         if (envList?.result) {
             const environment = envList.result.envList?.find((env) => env.id === +envId)
             setIsVirtualEnv(environment?.isVirtualEnvironment)
-            setEnvName(environment.environment_name)
-            setShowEmpty(!environment.appCount)
+            setEnvName(environment?.environment_name)
+            setShowEmpty(!environment?.appCount)
         }
     }, [envList, envId])
 
@@ -356,7 +356,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <EnvCDDetails filteredAppIds={_filteredAppsIds} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
-                                <EnvConfig filteredAppIds={_filteredAppsIds} />
+                                <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                         </Switch>
@@ -495,17 +495,30 @@ export function EnvHeader({
         [envId, envName],
     )
 
-    const handleOverViewClick = (): void => {
-        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
+    const onClickTabPreventDefault = (event: React.MouseEvent<Element, MouseEvent>, className: string) => {
+        const linkDisabled = (event.target as Element)?.classList.contains(className)
+        if (linkDisabled) {
+            event.preventDefault()
+        }
     }
 
-    const handleBuildClick = (): void => {
-        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
+    const handleEventRegistration = (event: React.MouseEvent<Element, MouseEvent>, eventType?: string) => {
+        switch (eventType) {
+            case ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action:
+                ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
+                break
+            case ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action:
+                ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
+                break
+            case ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action:
+                ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
+                break
+            default:
+                break
+        }
+        onClickTabPreventDefault(event, 'active')
     }
 
-    const handleConfigClick = (): void => {
-        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
-    }
 
     const renderEnvDetailsTabs = () => {
         return (
@@ -515,7 +528,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={handleOverViewClick}
+                        onClick={(event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action)}
                     >
                         Overview
                     </NavLink>
@@ -526,7 +539,7 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
                         data-testid="group-build-deploy"
-                        onClick={handleBuildClick}
+                        onClick={(event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action)}
                     >
                         Build & Deploy
                     </NavLink>
@@ -537,6 +550,7 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                         data-testid="app-group-build-history"
+                        onClick={handleEventRegistration}
                     >
                         Build history
                     </NavLink>
@@ -546,6 +560,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
+                        onClick={handleEventRegistration}
                     >
                         Deployment history
                     </NavLink>
@@ -556,7 +571,7 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
                         data-testid="group-configuration"
-                        onClick={handleConfigClick}
+                        onClick={(event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action)}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         Configurations

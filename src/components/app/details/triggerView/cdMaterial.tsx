@@ -19,9 +19,6 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
-import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -42,7 +39,6 @@ import {
     ImageTagButton,
     ImageTagsContainer,
     GenericEmptyState,
-    getCDMaterials,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -59,13 +55,10 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS, EMPTY_STATE, NO_VULNERABILITY_TEXT } from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
-import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import noapprovedimages from '../../../../assets/img/empty-noresult@2x.png'
-import { getConfigs } from '../../../notifications/notifications.service'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -78,7 +71,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     constructor(props: CDMaterialProps) {
         super(props)
         this.state = {
-            loadingSearchedImage: false,
             isSecurityModuleInstalled: false,
             checkingDiff: false,
             diffFound: false,
@@ -97,10 +89,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
-            materialInEditModeMap: new Map<number,boolean>(),
-            searchString: '',
-            searchApplied: false,
-            searchExpanded: false,
+            materialInEditModeMap: new Map<number, boolean>(),
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -111,7 +100,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     static getDerivedStateFromProps(props, state) {
-        return { ...state, selectedMaterial: props.material.find((_mat) => _mat.isSelected)}
+        return { ...state, selectedMaterial: props.material.find((_mat) => _mat.isSelected) }
     }
 
     componentDidMount() {
@@ -329,7 +318,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
                             mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
                             this.renderFailedCD(mat)}
-                        {mat.index == 0 && (
+                        {mat.index == 0 && this.props.materialType !== MATERIAL_TYPE.rollbackMaterialList && (
                             <div className="">
                                 <ImageTagButton
                                     text="Latest"
@@ -797,11 +786,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     viewAllImages = (e) => {
         e.stopPropagation()
-        if(!this.props.isApplicationGroupTrigger) {
+        if (!this.props.isApplicationGroupTrigger) {
             this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
         }
         this.props.history.push({
-            search: `approval-node=${this.props.pipelineId}`
+            search: `approval-node=${this.props.pipelineId}`,
         })
     }
 
@@ -826,7 +815,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (isApprovalConfigured) {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
-
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
         } else {
@@ -835,71 +823,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ? [this.props.material[0]]
                     : this.props.material
         }
-
-        // reset the selection for some cases
-        for (const mat of materialList) {
-            if (this.state.selectedMaterial?.id === mat.id) {
-                mat.isSelected = true
-                break
-            }
-        }
-
         return {
             consumedImage: _consumedImage,
             materialList,
         }
-    }
-
-    onChangeSearchString = (event) => {
-        let str = event.target.value || ''
-        str = str.toLowerCase()
-        this.setState({searchString: str})
-        if(str === ''){
-            this.clearSearch()
-        }
-    }
-
-    searchImageTag = (event) => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter' && event.target.value !== "") {
-            this.setState({ searchApplied: true })
-            let abortController = new AbortController()
-            this.setState({loadingSearchedImage: true})
-            getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal,  true, event.target.value)
-                .then((res) => {
-                    this.setState({loadingSearchedImage: false})
-                    this.props.getSearchedItem(res.materials)
-                })
-        }
-    }
-
-    clearSearch = () => {
-        this.setState({ searchApplied: false })
-        this.setState({ searchString: '' })
-        let abortController = new AbortController()
-        this.setState({loadingSearchedImage: true})
-        getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal, true, '')
-            .then((res) => {
-                this.setState({ loadingSearchedImage: false })
-                this.props.getSearchedItem(res.materials)
-            })
-    }
-
-    refreshData = () => {
-        if(this.state.searchApplied){
-            this.clearSearch()
-        }
-        let abortController = new AbortController()
-        this.setState({loadingSearchedImage: true})
-        getCDMaterials(this.props.pipelineId, DeploymentNodeType.CD, abortController.signal, true, '')
-            .then((res) => {
-                this.setState({loadingSearchedImage: false})
-                this.props.getSearchedItem(res.materials)
-            })
-    }
-
-    expandSearch = () => {
-        this.setState({searchExpanded : true})
     }
 
     renderMaterialList = (isApprovalConfigured: boolean) => {
@@ -908,51 +835,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
-        console.log(this.state.searchExpanded)
 
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
-                {(!this.props.isFromBulkCD ) && (
+                {!this.props.isFromBulkCD && (
                     <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                        <span className="flex dc__align-start">
-                            {titleText}
-                        </span>
-                        {isApprovalConfigured && <div className="h-32 flex dc__content-end dc__align-center dc__column-gap-8">
-                            <div className={`flex dc__align-center dc__position-rel margin-right-0 ${this.state.searchExpanded ? "w-250 bw-1 br-4 en-2" : "w-28 mt-4"} h-32 cursor-text mr-8`}>
-                                <span className="cursor" onClick={this.expandSearch}><Search className={`search__icon icon-dim-18 ${!this.state.searchExpanded ? "icon-color-n6" : ""}`} /></span>
-                                {this.state.searchExpanded && (<input
-                                    autoFocus
-                                    data-testid="Search-by-approver-name"
-                                    type="text"
-                                    name="app_search_input"
-                                    autoComplete="off"
-                                    value={this.state.searchString}
-                                    placeholder="Search image tag"
-                                    className="search__input bcn-1 fw-4"
-                                    onChange={this.onChangeSearchString}
-                                    onKeyDown={this.searchImageTag}
-                                />)}
-                                {this.state.searchApplied && (
-                                    <button className="search__clear-button flex" type="button" onClick={this.clearSearch}>
-                                        <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                                    </button>)}
-                            </div>
-                            <div className="pt-8 dc__content-end dc__align-center">
-                                <RefreshIcon
-                                    className="icon-dim-16 scn-6 cursor"
-                                    onClick={this.refreshData}
-                                />
-                            </div>
-                        </div>}
+                        <span className="flex dc__align-start">{titleText}</span>
                     </div>
                 )}
-                {this.state.loadingSearchedImage ? (
-                    <Progressing />
-                ) :
-                    isApprovalConfigured && materialList.length <= 0
-                        ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
-                        : this.renderMaterial(materialList, false, isApprovalConfigured)}
+                {isApprovalConfigured && materialList.length <= 0
+                    ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
+                    : this.renderMaterial(materialList, false, isApprovalConfigured)}
             </>
         )
     }
@@ -1371,20 +1265,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 ) : (
                     <>
                         {this.renderMaterialList(isApprovalConfigured)}
-                        {this.state.isRollbackTrigger &&
-                            !this.state.noMoreImages &&
-                            this.props.material.length !== 1 && (
-                                <button
-                                    className="show-older-images-cta cta ghosted flex h-32"
-                                    onClick={this.loadOlderImages}
-                                >
-                                    {this.state.loadingMore ? (
-                                        <Progressing styles={{ height: '32px' }} />
-                                    ) : (
-                                        'Show older images'
-                                    )}
-                                </button>
-                            )}
+                        {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
+                            <button
+                                className="show-older-images-cta cta ghosted flex h-32"
+                                onClick={this.loadOlderImages}
+                            >
+                                {this.state.loadingMore ? (
+                                    <Progressing styles={{ height: '32px' }} />
+                                ) : (
+                                    'Show older images'
+                                )}
+                            </button>
+                        )}
                     </>
                 )}
             </div>
@@ -1436,28 +1328,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderClearSearchButton = () => {
-        return (
-            <button onClick={this.clearSearch} className="add-link cta flex">
-                Clear search
-            </button>
-        )
-    }
-
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
-        if (this.state.searchApplied) {
-            return (
-                <GenericEmptyState
-                    image={noapprovedimages}
-                    title={EMPTY_STATE.title}
-                    subTitle={EMPTY_STATE.subtitle}
-                    isButtonAvailable={true}
-                    renderButton={this.renderClearSearchButton}
-                    classname='dc__position-rel-imp'
-                />
-            )
-        }
-
         if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
@@ -1478,7 +1349,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 subTitle={
                     this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'
-                        : 'Please Trigger CI Pipeline and find the image here for deployment.'}
+                        : 'Please Trigger CI Pipeline and find the image here for deployment.'
+                }
             />
         )
     }

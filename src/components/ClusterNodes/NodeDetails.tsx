@@ -7,6 +7,7 @@ import {
     useBreadcrumb,
     toastAccessDenied,
     ServerErrors,
+    Reload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -1067,6 +1068,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
 
     if (loader) {
         return <Progressing pageLoader />
+    }
+
+    if (!loader && !nodeDetail) {
+        return <Reload />
     }
 
     return (

@@ -179,7 +179,9 @@ export default function UserForm({
                     )
                     .map((permission) => ({
                         ...permission,
-                        action: permission.action.value,
+                        action: permission.action.configApprover
+                            ? `${permission.action.value},configApprover`
+                            : permission.action.value,
                         team: permission.team.value,
                         environment: getSelectedEnvironments(permission),
                         entityName: permission.entityName.find((entity) => entity.value === '*')
