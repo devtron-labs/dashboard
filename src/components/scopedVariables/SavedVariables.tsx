@@ -36,10 +36,10 @@ const SavedVariablesView = ({
 
     useEffect(() => {
         if (status?.status == null) {
-            const variables = scopedVariablesData?.variables?.map((item) => {
+            const variables = scopedVariablesData?.spec?.map((variable) => {
                 return {
-                    name: item.definition?.varName,
-                    description: item.definition?.description,
+                    name: variable.name,
+                    description: variable.description,
                 }
             })
             if (variables) setVariablesList([...variables])
@@ -154,7 +154,7 @@ const SavedVariablesView = ({
                                 placement="top"
                                 content={
                                     <div>
-                                        <div className="flex column left">Download File/Template</div>
+                                        <div className="flex column left">Download file/template</div>
                                     </div>
                                 }
                             >

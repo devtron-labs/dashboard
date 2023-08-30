@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
-import { ValidatorT } from '../types'
+import { ScopedVariablesDataI, ValidatorT } from '../types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -73,36 +73,23 @@ export const parseYAMLStringToObj = (data: string) => {
     return yaml.safeLoad(data)
 }
 
-// WARNING: This function intends to be used inside a try-catch block as variablesObj can have any type
-export const manipulateVariables = (manipulator, variablesObj) => {
-    const mutatedVariablesObj = JSON.parse(JSON.stringify(variablesObj))
-    mutatedVariablesObj.variables.forEach((variable) => {
-        variable.attributeValue.forEach((attributes) => {
-            attributes.variableValue.value = manipulator(attributes.variableValue.value)
-        })
-    })
-    return mutatedVariablesObj
-}
-
-export const sortVariables = (variablesObj: object): object => {
+export const sortVariables = (variablesObj: ScopedVariablesDataI): ScopedVariablesDataI => {
     /*
         Approach:
         Sorting is going to happen on multiple levels:
         1) First we are going to sort the spec array based on the name of the variable
-        2) Then we are going to sort the selectors array based on the key of the selector
-        3) Then we are going to sort based on the values array based on the category of the variable, The precendence is as follows:
+        2) Then we are going to sort based on the values array based on the category of the variable, The precendence is as follows:
             i) ApplicationEnv
             ii) Application
             iii) Env
             iv) Cluster
             v) Global
-           If the values array has multiple values with the same category, then we are going to sort them based on the selectors array
-
-           Minding the key in case of Cluster is ClusterName, global has selectors as null
+           If the values array has multiple values with the same category, then we are going to sort them based on the attributeSelectors key
+           In case of Global there are no selectors but that won't be trouble since only one global will be there
     */
     const mutatedVariablesObj = JSON.parse(JSON.stringify(variablesObj))
 
-    // sorting on the basis of name
+    // Sorting on the basis of name
     mutatedVariablesObj.spec.sort((a, b) => {
         if (a.name < b.name) {
             return -1
@@ -113,32 +100,29 @@ export const sortVariables = (variablesObj: object): object => {
         return 0
     })
 
-    // sorting the attributeSelectors minding attributeSelectors may or may not be null
-    mutatedVariablesObj.spec.forEach((variable) => {
-        variable.values.forEach((value) => {
-            if (value.selectors) {
-                value.selectors.attributeSelectors.sort((a, b) => {
-                    if (a.key < b.key) {
-                        return -1
-                    }
-                    if (a.key > b.key) {
-                        return 1
-                    }
-                    return 0
-                })
-            }
-        })
-    })
-
-    // sorting the values array based on the category of the variable
-    mutatedVariablesObj.spec.forEach((variable) => {
-        variable.values.sort((a, b) => {
-            const categoryOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
-            if (categoryOrder.indexOf(a.category) < categoryOrder.indexOf(b.category)) {
+    // Soring on the basis of category
+    const precedingOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
+    mutatedVariablesObj.spec.forEach((variablesObj) => {
+        variablesObj.values.sort((a, b) => {
+            if (precedingOrder.indexOf(a.category) < precedingOrder.indexOf(b.category)) {
                 return -1
             }
-            if (categoryOrder.indexOf(a.category) > categoryOrder.indexOf(b.category)) {
+            if (precedingOrder.indexOf(a.category) > precedingOrder.indexOf(b.category)) {
                 return 1
+            }
+            if (a.category === b.category) {
+                if (a.selectors.attributeSelectors && b.selectors.attributeSelectors) {
+                    const keys = Object.keys(a.selectors.attributeSelectors)
+                    for (let i = 0; i < keys.length; i++) {
+                        const key = keys[i]
+                        if (a.selectors.attributeSelectors[key] < b.selectors.attributeSelectors[key]) {
+                            return -1
+                        }
+                        if (a.selectors.attributeSelectors[key] > b.selectors.attributeSelectors[key]) {
+                            return 1
+                        }
+                    }
+                }
             }
             return 0
         })
@@ -153,5 +137,8 @@ export const getScopedVariablesJSON = () => {
 }
 
 export const postScopedVariables = (data: any) => {
-    return post(ROUTES.SCOPED_VARIABLES, data)
+    const payload = {
+        manifest: data,
+    }
+    return post(ROUTES.SCOPED_VARIABLES, payload)
 }

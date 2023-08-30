@@ -10,11 +10,19 @@ export enum FileView {
     SAVED = 'saved',
 }
 
+export enum VariableCategories {
+    APPLICATION_ENV = 'ApplicationEnv',
+    APPLICATION = 'Application',
+    ENVIRONMENT = 'Env',
+    CLUSTER = 'Cluster',
+    GLOBAL = 'Global',
+}
+
 export interface SavedVariablesViewI {
-    scopedVariablesData: any
+    scopedVariablesData: ScopedVariablesDataI
     jsonSchema: object
     reloadScopedVariables: () => void
-    setScopedVariables: (data: any) => void
+    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataI>>
 }
 
 export interface FileReaderStatusI {
@@ -44,19 +52,19 @@ export interface ScopedVariablesInputI {
 }
 
 export interface ScopedVariablesEditorI {
-    variablesData: any
+    variablesData: string
     name: string
     jsonSchema: object
     abortRead: () => void
-    setShowEditView?: (show: boolean) => void
+    setShowEditView?: React.Dispatch<React.SetStateAction<boolean>>
     reloadScopedVariables: () => void
-    setScopedVariables: (data: any) => void
+    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataI>>
 }
 
 export interface UploadScopedVariablesI {
     reloadScopedVariables: () => void
     jsonSchema: object
-    setScopedVariables: (data: any) => void
+    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataI>>
 }
 
 export interface DescriptorI {
@@ -83,6 +91,24 @@ export interface TableItemI {
 
 export interface ScopedVariablesI {
     isSuperAdmin: boolean
+}
+
+export interface ScopedVariablesDataI {
+    apiVersion: 'devtron.ai/v1beta1'
+    kind: 'Variable'
+    spec: VariableSpecI[]
+}
+
+export interface VariableSpecI {
+    description?: string
+    name: string
+    values: ValueI[]
+}
+
+export interface ValueI {
+    category: VariableCategories
+    value: any
+    selectors?: object
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI

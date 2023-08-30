@@ -4,7 +4,13 @@ import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
-import { postScopedVariables, getScopedVariablesJSON, parseYAMLStringToObj, parseIntoYAMLString } from './utils/helpers'
+import {
+    postScopedVariables,
+    getScopedVariablesJSON,
+    parseYAMLStringToObj,
+    parseIntoYAMLString,
+    sortVariables,
+} from './utils/helpers'
 import { ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import {
@@ -81,8 +87,9 @@ const ScopedVariablesEditor = ({
             const res = await getScopedVariablesJSON()
             if (+res?.code === 200) {
                 setShowSaveView(true)
-                if (res?.result?.payload) {
-                    setSavedScopedVariables(parseIntoYAMLString(res?.result?.payload))
+                if (res?.result?.manifest) {
+                    const latestVariables = sortVariables(res?.result?.manifest)
+                    setSavedScopedVariables(parseIntoYAMLString(latestVariables))
                 } else {
                     setSavedScopedVariables(null)
                 }

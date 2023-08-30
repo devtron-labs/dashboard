@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { ErrorScreenNotAuthorized, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import SavedVariablesView from './SavedVariables'
 import UploadScopedVariables from './UploadScopedVariables'
-import { getScopedVariablesJSON } from './utils/helpers'
+import { getScopedVariablesJSON, sortVariables } from './utils/helpers'
 import { useAsync } from '../common'
-import { ScopedVariablesI } from './types'
+import { ScopedVariablesDataI, ScopedVariablesI } from './types'
 import './styles.scss'
 
 const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
-    const [scopedVariables, setScopedVariables] = useState<object>(null)
+    const [scopedVariables, setScopedVariables] = useState<ScopedVariablesDataI>(null)
     const [schemaError, setSchemaError] = useState<boolean>(false)
     const [jsonSchema, setJsonSchema] = useState<object>(null)
     const [loadingScopedVariables, scopedVariablesData, scopedVariablesError, reloadScopedVariables] = useAsync(
@@ -21,7 +21,8 @@ const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
             if (scopedVariablesData?.result) {
                 const parsedSchema = JSON.parse(scopedVariablesData.result.jsonSchema)
                 setJsonSchema(parsedSchema)
-                setScopedVariables(scopedVariablesData.result.payload)
+                if (scopedVariablesData.result.manifest)
+                    setScopedVariables(sortVariables(scopedVariablesData.result.manifest))
             }
         } catch (e) {
             setSchemaError(true)
