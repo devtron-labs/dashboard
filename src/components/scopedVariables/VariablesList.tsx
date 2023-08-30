@@ -3,6 +3,14 @@ import Tippy from '@tippyjs/react'
 import { VariableListItemI } from './types'
 import { TABLE_LIST_HEADINGS } from './constants'
 
+const VariablesListItem = ({data, className}: {data: string, className: string}) => (
+    <div className={className}>
+        <Tippy content={data} className="default-tt" placement="top">
+            <p className="scoped-variables-list-item__data">{data}</p>
+        </Tippy>
+    </div>
+)
+
 const VariablesList = ({ variablesList }: { variablesList: VariableListItemI[] }) => {
     return (
         <div className="scoped-variables-list-container">
@@ -17,17 +25,8 @@ const VariablesList = ({ variablesList }: { variablesList: VariableListItemI[] }
 
             {variablesList?.map((variable) => (
                 <div className="scoped-variables-list-item" key={variable.name}>
-                    <div key={variable.name} className="variable-item-sm">
-                        <Tippy content={variable.name} className="default-tt" placement="top">
-                            <p className="scoped-variables-list-item__data">{variable.name}</p>
-                        </Tippy>
-                    </div>
-
-                    <div key={variable.description} className="variable-item-lg">
-                        <Tippy content={variable.name} className="default-tt" placement="top">
-                            <p className="scoped-variables-list-item__data">{variable.description}</p>
-                        </Tippy>
-                    </div>
+                    <VariablesListItem data={variable.name} className="variable-item-sm" />
+                    <VariablesListItem data={variable.description} className="variable-item-lg" />
                 </div>
             ))}
         </div>
