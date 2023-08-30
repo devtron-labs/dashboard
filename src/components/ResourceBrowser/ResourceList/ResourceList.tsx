@@ -135,7 +135,7 @@ export default function ResourceList() {
     const isTerminal = nodeType === AppDetailsTabs.terminal
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
-    const hideSyncWarning: boolean = loader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader) 
+    const hideSyncWarning: boolean = loader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -174,8 +174,8 @@ export default function ResourceList() {
             resourceListAbortController.abort()
             abortReqAndUpdateSideDataController()
         }
-    }, [])   
-    
+    }, [])
+
     useEffect(() => {
         getDetailsClusterList()
     },[toggleSync])
@@ -375,7 +375,6 @@ export default function ResourceList() {
                 if (response.result) {
                     const sortedResult = response.result
                         .sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
-    
                     setTerminalCluster(sortedResult)
                     setClusterList(sortedResult)
                 }
@@ -841,24 +840,33 @@ export default function ResourceList() {
 
     const renderResourceBrowser = (): JSX.Element => {
         if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() && node) {
-            return <NodeDetails
-                isSuperAdmin={isSuperAdmin}
-                markTabActiveByIdentifier={markTabActiveByIdentifier}
-                addTab={addTab} />
+            return (
+                <NodeDetails
+                    isSuperAdmin={isSuperAdmin}
+                    markTabActiveByIdentifier={markTabActiveByIdentifier}
+                    addTab={addTab}
+                />
+            )
         }
         if (nodeType === AppDetailsTabs.terminal) {
             const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
-            if(terminalLoader) {
-                return <div className="h-100 node-data-container bcn-0"><Progressing pageLoader/></div>
-            }else if (!selectedTerminal) return null
-            return <ClusterTerminal
-                clusterId={+clusterId}
-                nodeGroups={createGroupSelectList(selectedTerminal?.nodeDetails, 'nodeName')}
-                taints={createTaintsList(selectedTerminal?.nodeDetails, 'nodeName')}
-                clusterImageList={_imageList}
-                namespaceList={namespaceDefaultList[selectedTerminal.name]}
-                isNodeDetailsPage={true}
-            />
+            if (terminalLoader) {
+                return (
+                    <div className="h-100 node-data-container bcn-0">
+                        <Progressing pageLoader />
+                    </div>
+                )
+            } else if (!selectedTerminal) return null
+            return (
+                <ClusterTerminal
+                    clusterId={+clusterId}
+                    nodeGroups={createGroupSelectList(selectedTerminal?.nodeDetails, 'nodeName')}
+                    taints={createTaintsList(selectedTerminal?.nodeDetails, 'nodeName')}
+                    clusterImageList={_imageList}
+                    namespaceList={namespaceDefaultList[selectedTerminal.name]}
+                    isNodeDetailsPage={true}
+                />
+            )
         } else if (node) {
             return (
                 <div className="resource-details-container">

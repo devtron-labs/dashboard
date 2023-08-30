@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { copyToClipboard, handleUTCTime, ToastBodyWithButton } from '../common'
+import { copyToClipboard, ToastBodyWithButton } from '../common'
 import {
     showError,
     Progressing,
     toastAccessDenied,
     ServerErrors,
-    Reload,
+    ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -50,9 +50,10 @@ import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './c
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
-import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { useRouteMatch } from 'react-router-dom'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 
 
 export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, addTab }: ClusterListType) {
@@ -70,8 +71,6 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const [sortedPodList, setSortedPodList] = useState<PodType[]>(null)
     const [sortByColumnName, setSortByColumnName] = useState<string>('name')
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
     const toastId = useRef(null)
@@ -83,6 +82,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
+    const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
     const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
@@ -90,14 +90,14 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
+        setErrorResponseCode(null)
         getNodeCapacity(clusterId, node)
             .then((response: NodeDetailResponse) => {
-                setLastDataSync(!lastDataSync)
                 if (response.result) {
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
                     const resourceList = response.result.resources
-                    for (let index = 0; index < resourceList.length;) {
+                    for (let index = 0; index < resourceList.length; ) {
                         if (resourceList[index].name === 'cpu') {
                             setCpuData(resourceList[index])
                             resourceList.splice(index, 1)
@@ -121,7 +121,8 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 setLoader(false)
             })
             .catch((error) => {
-                showError(error)
+                setErrorResponseCode(error.code)
+                showError(error, true, true)
                 setLoader(false)
             })
     }
@@ -156,17 +157,6 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         getData(patchData)
         handleSelectedTab(node)
     }, [node])
-
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -1038,6 +1028,17 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         if (refreshData) {
             getData([])
         }
+    }
+
+    if (errorResponseCode) {
+        return (
+            <div className="bcn-0 node-data-container flex">
+                <ErrorScreenManager
+                    code={errorResponseCode}
+                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                />
+            </div>
+        )
     }
 
     return (

@@ -97,79 +97,88 @@ function NodeDetailComponent({
     }
 
     const getContainersFromManifest = async () => {
-        try {
-            const { result } = await getManifestResource(
-                appDetails,
-                params.podName,
-                params.nodeType,
-                isResourceBrowserView,
-                selectedResource,
-            )
-            const _resourceContainers = []
-            if (result?.manifest?.spec) {
-                if (Array.isArray(result.manifest.spec.containers)) {
-                    _resourceContainers.push(
-                        ...result.manifest.spec.containers.map((_container) => ({
-                            name: _container.name,
-                            isInitContainer: false,
-                            isEphemeralContainer: false,
-                        })),
-                    )
-                }
+      const _selectedResource = { ...selectedResource }
+      if (isResourceBrowserView && !_selectedResource.name && params) {
+          _selectedResource.name = params.node
+          _selectedResource.namespace = params.namespace
+          _selectedResource.group = params['group']
+      }
+      try {
+          const { result } = await getManifestResource(
+              appDetails,
+              params.podName,
+              params.nodeType,
+              isResourceBrowserView,
+              selectedResource,
+          )
+          const _resourceContainers = []
+          if (result?.manifest?.spec) {
+              if (Array.isArray(result.manifest.spec.containers)) {
+                  _resourceContainers.push(
+                      ...result.manifest.spec.containers.map((_container) => ({
+                          name: _container.name,
+                          isInitContainer: false,
+                          isEphemeralContainer: false,
+                      })),
+                  )
+              }
 
-                if (Array.isArray(result.manifest.spec.initContainers)) {
-                    _resourceContainers.push(
-                        ...result.manifest.spec.initContainers.map((_container) => ({
-                            name: _container.name,
-                            isInitContainer: true,
-                            isEphemeralContainer: false,
-                        })),
-                    )
-                }
+              if (Array.isArray(result.manifest.spec.initContainers)) {
+                  _resourceContainers.push(
+                      ...result.manifest.spec.initContainers.map((_container) => ({
+                          name: _container.name,
+                          isInitContainer: true,
+                          isEphemeralContainer: false,
+                      })),
+                  )
+              }
 
-                if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
-                    const ephemeralContainerStatusMap = new Map<string,string[]>()
-                    result.manifest.spec.ephemeralContainers.forEach((con) => {
-                        ephemeralContainerStatusMap.set(con.name,con.command as string[])
-                    })
-                    let ephemeralContainers = []
-                    result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
-                        //con.state contains three states running,waiting and terminated
-                        // at any point of time only one state will be there
-                        if (_container.state.running) {
-                            ephemeralContainers.push({
-                                name: _container.name,
-                                isInitContainer: false,
-                                isEphemeralContainer: true,
-                                isExternal: isExternalEphemeralContainer(ephemeralContainerStatusMap.get(_container.name),_container.name)
-                            })
-                        }
-                    })
-                    _resourceContainers.push(...ephemeralContainers)
-                }
-            }
-            setResourceContainers(_resourceContainers)
-            if (isResourceBrowserView) {
-                setContainers(_resourceContainers)
-            }
-            // Clear out error on node change
-            if (isResourceDeleted) {
-                setResourceDeleted(false)
-            }
-        } catch (err) {
-            if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
-                setResourceDeleted(true)
-            } else {
-                showError(err)
+              if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
+                  const ephemeralContainerStatusMap = new Map<string, string[]>()
+                  result.manifest.spec.ephemeralContainers.forEach((con) => {
+                      ephemeralContainerStatusMap.set(con.name, con.command as string[])
+                  })
+                  let ephemeralContainers = []
+                  result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
+                      //con.state contains three states running,waiting and terminated
+                      // at any point of time only one state will be there
+                      if (_container.state.running) {
+                          ephemeralContainers.push({
+                              name: _container.name,
+                              isInitContainer: false,
+                              isEphemeralContainer: true,
+                              isExternal: isExternalEphemeralContainer(
+                                  ephemeralContainerStatusMap.get(_container.name),
+                                  _container.name,
+                              ),
+                          })
+                      }
+                  })
+                  _resourceContainers.push(...ephemeralContainers)
+              }
+          }
+          setResourceContainers(_resourceContainers)
+          if (isResourceBrowserView) {
+              setContainers(_resourceContainers)
+          }
+          // Clear out error on node change
+          if (isResourceDeleted) {
+              setResourceDeleted(false)
+          }
+      } catch (err) {
+          if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
+              setResourceDeleted(true)
+          } else {
+              showError(err)
 
-                // Clear out error on node change
-                if (isResourceDeleted) {
-                    setResourceDeleted(false)
-                }
-            }
-        } finally {
-            setFetchingResource(false)
-        }
+              // Clear out error on node change
+              if (isResourceDeleted) {
+                  setResourceDeleted(false)
+              }
+          }
+      } finally {
+          setFetchingResource(false)
+      }
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
