@@ -46,7 +46,7 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
                         <button className="descriptor-container__upload-button bcb-5 p-0 flex center">
                             <ScopedVariablesInput handleFileUpload={handleReUpload}>
                                 <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
-                                    <ICUpload width={14} height={14} />
+                                    <ICUpload width={14} height={14} className='scn-0'/>
                                     <p>Upload new file to replace</p>
                                 </div>
                             </ScopedVariablesInput>
