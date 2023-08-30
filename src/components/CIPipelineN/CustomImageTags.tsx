@@ -11,6 +11,7 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import '../ciPipeline/ciPipeline.scss'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg'
 
 function CustomImageTags({ imageTagValue, setImageTagValue }) {
     const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
@@ -119,12 +120,14 @@ function CustomImageTags({ imageTagValue, setImageTagValue }) {
                         ) : (
                             <div className="flexbox">
                                 Tag Preview:
-                                <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
-                                    <div className={'dc__registry-icon mr-5 '}></div>
-                                    {formData.customTag?.tagPattern.replace(
-                                        '{x}',
+                                <div className="flex left ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
+                                    <Docker className="icon-dim-16" />
+                                    <span className="pl-4">
+                                        {formData.customTag?.tagPattern.replace(
+                                       /{x}|{X}/g,
                                         formData.customTag?.counterX.toString(),
                                     )}
+                                    </span>
                                 </div>
                             </div>
                         )}
