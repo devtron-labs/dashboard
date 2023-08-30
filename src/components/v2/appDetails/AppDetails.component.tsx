@@ -21,6 +21,7 @@ import {
 } from '../../app/details/appDetails/appDetails.type'
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { useSharedState } from '../utils/useSharedState'
+import ReleaseStatusEmptyState from './ReleaseStatusEmptyState'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
@@ -149,6 +150,23 @@ const AppDetailsComponent = ({
     const renderHelmAppDetails = (): JSX.Element => {
         if (isVirtualEnv.current && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={appDetails.environmentName} />
+        }
+        if (
+            appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
+            appDetails?.helmReleaseStatus &&
+            (appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
+                appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN)
+        ) {
+            return (
+                <ReleaseStatusEmptyState
+                    message={appDetails.helmReleaseStatus.message}
+                    description={
+                        appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN
+                            ? ''
+                            : appDetails.helmReleaseStatus.description
+                    }
+                />
+            )
         }
         return (
             <NodeTreeDetailTab

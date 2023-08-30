@@ -692,6 +692,7 @@ export const DEPLOYMENT_STATUS = {
     INPROGRESS: 'inprogress',
     PROGRESSING: 'inprogress',
     SUPERSEDED: 'superseded',
+    UNKNOWN: 'unknown',
 }
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
