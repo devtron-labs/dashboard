@@ -205,8 +205,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                 <>
                     {node?.port.map((val) => {
                         return (
-                            <div className="flex pb-5 pt-5">
-                                <div className="mr-10 ml-15" key={node.name}>
+                            <div className="flex left cn-9 m-0 dc__no-decore">
+                                <div className="" key={node.name}>
                                     {node.name}:{val}
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
@@ -230,19 +230,19 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 {node.name}.{node.namespace}:{node.port[0]}
                             </span>
                         </div>
-                        {/* <span>
+                        <span>
                             <Clipboard
                                 className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                 onClick={(event) => {
-                                    toggleClipBoard(event, node.port)
+                                    toggleClipBoardPort(event, node.name.concat(":", node.port))
                                 }}
                             />
-                        </span> */}
+                        </span>
                         <TippyCustomized
                             hideHeading={true}
                             noHeadingBorder={true}
                             theme={TippyTheme.white}
-                            className="default-tt"
+                            className="default-tt p-12"
                             arrow={false}
                             placement="bottom"
                             trigger="click"
@@ -250,10 +250,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             interactive={true}
                         >
                             <div>
-                                <span
-                                    className="dc__link dc__link-over cursor"
-                                    data-key={node.name}
-                                >
+                                <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
                                     +{node.port.length - 1} more
                                 </span>
                             </div>
@@ -288,7 +285,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     <Clipboard
                         className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                         onClick={(event) => {
-                            toggleClipBoard(event, nodeName)
+                            toggleClipBoard(event, nodeName.split(" ").join(""))
                         }}
                     />
                 </span>
@@ -438,9 +435,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         </div>
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
-                            <div className={'col-5 pt-9 pb-9 flex left dc__hover-icon'}>
+                            <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                 {portNumberPlaceHolder(node)}
-                                {renderClipboardInteraction(nodeName, node.port)}
+                                {node.port > 1 ? renderClipboardInteraction(nodeName, node.port) : null}
                             </div>
                         )}
 
