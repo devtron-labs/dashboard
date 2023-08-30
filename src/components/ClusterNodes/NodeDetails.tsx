@@ -40,7 +40,7 @@ import {
 } from './types'
 import { toast } from 'react-toastify'
 import { OrderBy } from '../app/list/types'
-import { MODES } from '../../config'
+import { MODES, URLS } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
@@ -338,7 +338,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                         <div>Effect</div>
                     </div>
                     {(showAllTaints ? nodeDetail.taints : nodeDetail.taints.slice(0, 10)).map((taint) => (
-                        <div className="subtab-grid">
+                        <div className="subtab-grid" key={taint.key}>
                             {renderKeyValueLabel(taint.key, taint.value)}
                             {renderWithCopy(taint['effect'])}
                         </div>
@@ -566,7 +566,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div key={resource.name} className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -618,10 +618,8 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
     const handleResourceClick = (e) => {
-        const { name } = e.currentTarget.dataset
-        const url = location.pathname
-        const _url = `${url.split('/').slice(0, -3).join('/')}/pod/${K8S_EMPTY_GROUP}/${name}`
-        push(_url)
+        const { name, namespace } = e.currentTarget.dataset
+        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`)
     }
     const renderPodHeaderCell = (
         columnName: string,
@@ -675,7 +673,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                         </header>
                         <main>
                             {sortedPodList.map((pod) => (
-                                <div className="row-wrapper">
+                                <div className="row-wrapper" key={pod.name}>
                                     <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
                                         {pod.namespace}
                                     </div>

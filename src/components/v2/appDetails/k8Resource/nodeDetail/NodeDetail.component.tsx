@@ -101,7 +101,6 @@ function NodeDetailComponent({
       if (isResourceBrowserView && !_selectedResource.name && params) {
           _selectedResource.name = params.node
           _selectedResource.namespace = params.namespace
-          _selectedResource.group = params['group']
       }
       try {
           const { result } = await getManifestResource(
@@ -109,7 +108,7 @@ function NodeDetailComponent({
               params.podName,
               params.nodeType,
               isResourceBrowserView,
-              selectedResource,
+              _selectedResource,
           )
           const _resourceContainers = []
           if (result?.manifest?.spec) {
