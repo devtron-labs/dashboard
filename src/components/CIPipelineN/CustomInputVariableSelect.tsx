@@ -200,7 +200,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             )
         }
     }
-     
     const ValueContainer = (props) => {
         let value = props.getValue()[0]?.label
         const flag = !props.selectProps.menuIsOpen
@@ -289,6 +288,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 return 'No matching options'
             }}
             onBlur={handleCreatableBlur}
+            isClearable
+            isSearchable
             isValidNewOption={() => false}
             onKeyDown={handleKeyDown}
             menuPlacement="auto"
