@@ -21,8 +21,8 @@ import {
 
 export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
     return (
-        <div className="load-scoped-variables-container">
-            <div className="load-scoped-variables-container__header">
+        <div className="load-scoped-variables-container flex column dc__align-start dc__content-start dc__gap-8">
+            <div className="flex dc__align-start dc__gap-8 dc__align-self-stretch dc__content-start">
                 <p className="dc__ellipsis-right load-scoped-variables-container__typography">{fileData?.name}</p>
 
                 <button className="load-scoped-variables-container__abort-read-btn" onClick={abortRead}>
@@ -41,7 +41,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
             />
 
             {!status?.status && (
-                <div className="load-scoped-variables-container__error-container">
+                <div className="flex dc__align-start dc__align-self-stretch dc__gap-4 dc__content-start">
                     <ICError width={'20px'} height={'20px'} />
                     <p className="load-scoped-variables-container__error-typography">Upload failed</p>
                 </div>
@@ -61,11 +61,11 @@ export const ScopedVariablesEditor = ({
         abortRead()
     }
     return (
-        <div className="flex column dc__content-space h-100 default-bg-color">
+        <div className="flex column dc__content-space h-100 bcn-0">
             <Descriptor />
-            <div className="uploaded-variables-editor-background">
-                <div className="uploaded-variables-editor-container">
-                    <div className="uploaded-variables-editor-infobar">
+            <div className="uploaded-variables-editor-background p-8 flex column dc__align-self-stretch dc__gap-16 dc__align-start">
+                <div className="uploaded-variables-editor-container flex column dc__content-space dc__align-start dc__align-self-stretch">
+                    <div className="uploaded-variables-editor-infobar pt-8 pb-8 pl-12 pr-12 bcn-0 flex dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
                         <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
                             Upload <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
                         </p>
@@ -77,12 +77,18 @@ export const ScopedVariablesEditor = ({
 
                     <CodeEditor mode="yaml" value={variablesData} noParsing={false} height={'100%'} />
 
-                    <div className="uploaded-variables-editor-footer">
-                        <button className="uploaded-variables-editor-footer__cancel-button" onClick={abortRead}>
+                    <div className="uploaded-variables-editor-footer bcn-0 pt-13 pb-13 pl-12 pr-12 flex dc__content-end dc__align-items-center dc__gap-12 dc__align-self-stretch">
+                        <button
+                            className="uploaded-variables-editor-footer__cancel-button pt-8 pb-8 pl-16 pr-16 bcn-0 dc__gap-8 flex center"
+                            onClick={abortRead}
+                        >
                             Cancel
                         </button>
 
-                        <button className="uploaded-variables-editor-footer__save-button" onClick={handleSave}>
+                        <button
+                            className="uploaded-variables-editor-footer__save-button bcb-5 pt-8 pb-8 pl-16 pr-16 flex center dc__gap-8 dc__gap-6"
+                            onClick={handleSave}
+                        >
                             Save
                         </button>
                     </div>
@@ -108,17 +114,17 @@ const UploadScopedVariables = ({ setScopedVariables }: UploadScopedVariablesI) =
             setScopedVariables={setScopedVariables}
         />
     ) : (
-        <div className="flex column center default-bg-color h-100">
+        <div className="flex column center bcn-0 h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
                     <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
                     <p className="default-view-description-typography">{DEFAULT_DESCRIPTION}</p>
                 </div>
 
-                <div className="upload-scoped-variables-card">
+                <div className="upload-scoped-variables-card flex column center dc__gap-8">
                     {status === null ? (
                         <ScopedVariablesInput handleFileUpload={handleFileUpload}>
-                            <div className="flex center upload-scoped-variables-button__icon">
+                            <div className="flex center upload-scoped-variables-button__icon p-8 dc__gap-4">
                                 <ICUpload width={20} height={20} />
                             </div>
                             <div className="flex column center">

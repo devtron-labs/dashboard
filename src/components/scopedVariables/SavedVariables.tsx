@@ -70,15 +70,15 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
 
     return status?.status == null ? (
         <div
-            className="flex column h-100 dc__content-space default-bg-color"
+            className="flex column h-100 dc__content-space bcn-0"
             style={{
                 overflowY: 'hidden',
             }}
         >
             <Descriptor showUploadButton readFile={readFile}>
-                <div className="scoped-variables-tab-container">
+                <div className="scoped-variables-tab-container bcn-0 pt-0 pb-0 pl-20 pr-20 flex center dc__align-self-stretch dc__content-start">
                     <button
-                        className={`scoped-variables-tab ${
+                        className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 flex column dc__content-center dc__align-start ${
                             currentView === FileView.YAML ? 'scoped-variables-active-tab' : ''
                         }`}
                         onClick={() => setCurrentView(FileView.YAML)}
@@ -86,7 +86,7 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
                         <div>YAML</div>
                     </button>
                     <button
-                        className={`scoped-variables-tab ${
+                        className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 flex column dc__content-center dc__align-start ${
                             currentView === FileView.SAVED ? 'scoped-variables-active-tab' : ''
                         }`}
                         onClick={() => setCurrentView(FileView.SAVED)}
@@ -97,19 +97,22 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
             </Descriptor>
 
             {currentView === FileView.YAML ? (
-                <div className="saved-variables-editor-background">
-                    <div className="saved-variables-editor-container">
-                        <div className="scoped-variables-editor-infobar">
+                <div className="saved-variables-editor-background p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
+                    <div className="saved-variables-editor-container flex column dc__content-space dc__align-self-stretch dc__align-start">
+                        <div className="scoped-variables-editor-infobar flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
                             <p className="scoped-variables-editor-infobar__typography">Last saved file</p>
                             <button className="scoped-variables-editor-infobar__btn" onClick={handleDropdownClick}>
                                 <ICFileDownload width={20} height={20} />
                             </button>
                             {showDropdown && (
-                                <div className="scoped-variables-editor-infobar__dropdown" ref={dropdownRef}>
+                                <div
+                                    className="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start"
+                                    ref={dropdownRef}
+                                >
                                     {DROPDOWN_ITEMS.map((item) => (
                                         <div
                                             key={item}
-                                            className="scoped-variables-editor-infobar__dropdown-item"
+                                            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start"
                                             onClick={() => handleDownload(item)}
                                         >
                                             {item}
@@ -131,7 +134,7 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
             <Descriptor />
             <div className="flex center flex-grow-1">
                 <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
-                    <div className="upload-scoped-variables-card">
+                    <div className="upload-scoped-variables-card flex column center dc__gap-8">
                         <LoadScopedVariables
                             status={status}
                             progress={progress}
