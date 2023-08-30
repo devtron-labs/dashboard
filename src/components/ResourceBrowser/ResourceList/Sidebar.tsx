@@ -15,7 +15,6 @@ import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 
 function Sidebar({
@@ -350,7 +349,7 @@ function Sidebar({
             </div>
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
             <div className="pb-8">
-                    <div 
+                    <div
                         key={SIDEBAR_KEYS.overviewGVK.Kind}
                         ref={updateRef}
                         onClick={selectNode}
@@ -367,7 +366,7 @@ function Sidebar({
                         {SIDEBAR_KEYS.overview}
                         {isClusterError && <Error className="mt-2 mb-2 icon-dim-16" />}
                     </div>
-                    <div 
+                    <div
                         key={SIDEBAR_KEYS.nodeGVK.Kind}
                         ref={updateRef}
                         onClick={selectNode}

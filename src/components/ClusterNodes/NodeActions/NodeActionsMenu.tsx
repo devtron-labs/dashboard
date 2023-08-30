@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
 import { ReactComponent as UncordonIcon } from '../../../assets/icons/ic-play-medium.svg'

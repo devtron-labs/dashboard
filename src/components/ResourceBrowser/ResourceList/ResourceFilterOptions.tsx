@@ -5,7 +5,7 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
+import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import {
     ALL_NAMESPACE_OPTION,
     FILTER_SELECT_COMMON_STYLES,

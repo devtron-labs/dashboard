@@ -353,16 +353,14 @@ export default function NodeDetailsList({
                     <span className="cr-5"> SchedulingDisabled</span>
                 </span>
             )
+        } else if (column.value === 'k8sVersion') {
+            return (
+                <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
+                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
+                </Tippy>
+            )
         } else {
-            if (column.value === 'k8sVersion') {
-                return (
-                    <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
-                        <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
-                    </Tippy>
-                )
-            } else {
-                return nodeData[column.value]
-            }
+            return nodeData[column.value]
         }
     }
 

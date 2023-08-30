@@ -618,7 +618,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
     const handleResourceClick = (e) => {
-        const { name, namespace } = e.currentTarget.dataset
+        const { name } = e.currentTarget.dataset
         const url = location.pathname
         const _url = `${url.split('/').slice(0, -3).join('/')}/pod/${K8S_EMPTY_GROUP}/${name}`
         push(_url)
@@ -893,15 +893,22 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         }
     }
 
+    const getCodeEditorHeight = (): string=>{
+      if (!isReviewState) {
+          return 'calc( 100vh - 116px)'
+      } else if (isShowWarning) {
+          return `calc( 100vh - '180px'})`
+      }
+      return `calc( 100vh - '148px')`
+    }
+
     const renderYAMLEditor = (): JSX.Element => {
         return (
             <div className="node-details-container">
                 <CodeEditor
                     value={modifiedManifest}
                     defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
-                    height={
-                        isReviewState ? `calc( 100vh - ${isShowWarning ? '180px' : '148px'})` : 'calc( 100vh - 116px)'
-                    }
+                    height={getCodeEditorHeight()}
                     readOnly={!isEdit}
                     theme="vs-dark--dt"
                     diffView={isReviewState}

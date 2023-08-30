@@ -2,7 +2,7 @@ import React from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
-import { ClusterDetail, ClusterImageList } from '../ClusterNodes/types'
+import { ClusterDetail } from '../ClusterNodes/types'
 
 export interface ResourceDetailType {
     headers: string[]

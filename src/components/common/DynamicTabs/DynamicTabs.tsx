@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { NavLink, useHistory, useParams } from 'react-router-dom'
+import { NavLink, useHistory } from 'react-router-dom'
 import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
@@ -12,7 +12,6 @@ import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
 import Select from 'react-select/dist/declarations/src/Select'
 import './DynamicTabs.scss'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -50,7 +49,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }
         const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
         const _showNameOnSelect = showNameOnSelect ? !!url.split('?')[1] : true
         let tabName = dynamicTitle || name
-        
+
         return (
             <NavLink
                 to={url}
@@ -105,7 +104,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }
 
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1] ) && isFixed && tab.showNameOnSelect
-        
+
         return (
             <Fragment key={`${idx}-tab`}>
                 <li
