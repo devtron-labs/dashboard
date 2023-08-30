@@ -113,15 +113,14 @@ export const sortVariables = (variablesObj: ScopedVariablesDataI): ScopedVariabl
             if (a.category === b.category) {
                 if (a.selectors.attributeSelectors && b.selectors.attributeSelectors) {
                     const keys = Object.keys(a.selectors.attributeSelectors)
-                    for (let i = 0; i < keys.length; i++) {
-                        const key = keys[i]
+                    keys.forEach((key) => {
                         if (a.selectors.attributeSelectors[key] < b.selectors.attributeSelectors[key]) {
                             return -1
                         }
                         if (a.selectors.attributeSelectors[key] > b.selectors.attributeSelectors[key]) {
                             return 1
                         }
-                    }
+                    })
                 }
             }
             return 0
