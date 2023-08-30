@@ -43,7 +43,6 @@ import { OrderBy } from '../app/list/types'
 import { MODES, URLS } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import './clusterNodes.scss'
 import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
@@ -54,6 +53,7 @@ import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { useRouteMatch } from 'react-router-dom'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
+import './clusterNodes.scss'
 
 
 export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, addTab }: ClusterListType) {
@@ -893,11 +893,11 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
 
     const getCodeEditorHeight = (): string=>{
       if (!isReviewState) {
-          return 'calc( 100vh - 116px)'
+          return 'calc(100vh - 116px)'
       } else if (isShowWarning) {
-          return `calc( 100vh - '180px'})`
+          return `calc(100vh - 180px)`
       }
-      return `calc( 100vh - '148px')`
+      return `calc(100vh - 148px)`
     }
 
     const renderYAMLEditor = (): JSX.Element => {
