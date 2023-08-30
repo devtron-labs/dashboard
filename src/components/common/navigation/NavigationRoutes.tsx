@@ -39,6 +39,7 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
+const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
@@ -355,6 +356,9 @@ export default function NavigationRoutes() {
                                             path={URLS.GLOBAL_CONFIG}
                                             render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                         />
+                                        <Route path={URLS.CLUSTER_LIST}>
+                                            <ClusterNodeContainer />
+                                        </Route>
                                         {!window._env_.K8S_CLIENT && [
                                             <Route
                                                 key={URLS.APP}
