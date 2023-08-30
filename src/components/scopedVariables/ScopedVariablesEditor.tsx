@@ -13,6 +13,7 @@ import {
 } from './utils/helpers'
 import { ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import {
     PARSE_ERROR_TOAST_MESSAGE,
     SAVE_ERROR_TOAST_MESSAGE,
@@ -152,6 +153,13 @@ const ScopedVariablesEditor = ({
                             </button>
                         </Tippy>
                     </div>
+                    
+                    {showSaveView && (
+                        <div className="bcn-1 flexbox dc__content-space w-100 p-8 h-32 dc__align-items-center">
+                            <div className='w-50 dc__border-right fs-12 fw-6 cn-7'>Last Saved File</div>
+                            <div className='w-50 fs-12 fw-6 cn-7'>Edit File</div>
+                        </div>
+                    )}
 
                     <CodeEditor
                         mode="yaml"
@@ -176,7 +184,15 @@ const ScopedVariablesEditor = ({
                             isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >
-                            {showSaveView ? 'Save' : 'Review'}
+                            {showSaveView ? (
+                                'Save'
+                            ) : (
+                                <div className="flex dc__gap-4">
+                                    <div>Review Changes</div>
+
+                                    <ICArrowRight />
+                                </div>
+                            )}
                         </ButtonWithLoader>
                     </div>
                 </div>
