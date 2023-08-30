@@ -77,18 +77,6 @@ export interface VariableListItemI {
     name: string
     description: string
 }
-
-export interface TableListI {
-    children?: React.ReactNode
-    width?: string[]
-    headings?: string[]
-}
-
-export interface TableItemI {
-    columnsData?: string[]
-    width?: string[]
-}
-
 export interface ScopedVariablesI {
     isSuperAdmin: boolean
 }

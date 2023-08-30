@@ -4,7 +4,7 @@ import { validator } from './utils/helpers'
 import { DescriptorI, ReadFileAs } from './types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload.svg'
+import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
 
@@ -19,7 +19,7 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
     return (
         <>
             <div
-                className="descriptor-container"
+                className="descriptor-container pt-16 pb-16 pl-20 pr-20 flex column dc__align-self-stretch bcn-0 dc__content-space dc__align-start"
                 style={children ? { padding: '16px 20px 8px 20px', borderBottom: 'none' } : {}}
             >
                 <div className="flex dc__gap-8 w-100 dc__content-space">
@@ -43,14 +43,9 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
                         </TippyCustomized>
                     </div>
                     {showUploadButton && (
-                        <button className="descriptor-container__upload-button">
+                        <button className="descriptor-container__upload-button bcb-5 p-0 flex center">
                             <ScopedVariablesInput handleFileUpload={handleReUpload}>
-                                <div
-                                    style={{
-                                        padding: '6px 10px 6px 8px',
-                                    }}
-                                    className="flex dc__gap-6 center"
-                                >
+                                <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
                                     <ICUpload width={14} height={14} />
                                     <p>Upload new file to replace</p>
                                 </div>

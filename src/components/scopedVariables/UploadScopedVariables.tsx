@@ -20,8 +20,8 @@ import {
 
 export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
     return (
-        <div className="load-scoped-variables-container">
-            <div className="load-scoped-variables-container__header">
+        <div className="load-scoped-variables-container flex column dc__align-start dc__content-start dc__gap-8">
+            <div className="flex dc__align-start dc__gap-8 dc__align-self-stretch dc__content-start">
                 <p className="dc__ellipsis-right load-scoped-variables-container__typography">{fileData?.name}</p>
 
                 <button className="load-scoped-variables-container__abort-read-btn" onClick={abortRead}>
@@ -40,7 +40,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
             />
 
             {!status?.status && (
-                <div className="load-scoped-variables-container__error-container">
+                <div className="flex dc__align-start dc__align-self-stretch dc__gap-4 dc__content-start">
                     <ICError width="20px" height="20px" />
                     <p className="load-scoped-variables-container__error-typography">Upload failed</p>
                 </div>
@@ -67,17 +67,17 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
             setScopedVariables={setScopedVariables}
         />
     ) : (
-        <div className="flex column center default-bg-color h-100">
+        <div className="flex column center bcn-0 h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
                     <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
                     <p className="default-view-description-typography">{DEFAULT_DESCRIPTION}</p>
                 </div>
 
-                <div className="upload-scoped-variables-card">
+                <div className="upload-scoped-variables-card flex column center dc__gap-8">
                     {status === null ? (
                         <ScopedVariablesInput handleFileUpload={handleFileUpload}>
-                            <div className="flex center upload-scoped-variables-button__icon">
+                            <div className="flex center upload-scoped-variables-button__icon p-8 dc__gap-4">
                                 <ICUpload width={20} height={20} />
                             </div>
                             <div className="flex column center">
