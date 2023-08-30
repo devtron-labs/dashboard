@@ -680,6 +680,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const onClickCIMaterial = (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {
         setCILoading(true)
         setShowCIModal(true)
+        setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current = new AbortController()
         let _appID
@@ -768,7 +769,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                         return node
                     })
-                    
+
                     workflow.appReleaseTags = data.appReleaseTagNames
                     workflow.tagsEditable = data.tagsEditable
                     workflow.nodes = nodes
