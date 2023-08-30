@@ -432,6 +432,7 @@
     font-weight: 600;
     line-height: 20px;
     text-transform: uppercase;
+    margin: 0px;
 }
 
 .scoped-variables-list-item {
@@ -448,12 +449,25 @@
 }
 
 .scoped-variables-list-item__data {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     color: var(--N900);
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: 13px;
     font-style: normal;
     font-weight: 400;
     line-height: 20px;
+    margin: 0px;
+}
+
+.variable-item-sm {
+    display: flex;
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+.variable-item-lg {
+    display: flex;
+    flex-grow: 1;
 }

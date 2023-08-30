@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { LoadScopedVariables, ScopedVariablesEditor } from './UploadScopedVariables'
-import { TableList, TableItem } from './Table'
+import VariablesList from './VariablesList'
 import { useFileReader, useClickOutside } from './utils/hooks'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
@@ -12,7 +12,6 @@ import {
     DROPDOWN_ITEMS,
     VARIABLES_TEMPLATE,
     SAMPLE_DATA,
-    TABLE_LIST_HEADINGS,
 } from './constants'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
@@ -124,15 +123,7 @@ const SavedVariablesView = ({ scopedVariables, setScopedVariables }: SavedVariab
                     </div>
                 </div>
             ) : (
-                <TableList width={['200px', '429px']} headings={TABLE_LIST_HEADINGS}>
-                    {variablesList?.map((item) => (
-                        <TableItem
-                            key={item.name}
-                            columnsData={[item.name, item.description]}
-                            width={['200px', '429px']}
-                        />
-                    ))}
-                </TableList>
+                <VariablesList variablesList={variablesList} />
             )}
         </div>
     ) : (
