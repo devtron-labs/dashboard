@@ -300,11 +300,9 @@ export function getCDMaterialList(
                 approvalUsers: response.result.approvalUsers,
                 materials: cdMaterialListModal(
                     response.result.ci_artifacts,
-                    true,
+                    1,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
-                    response.result.appReleaseTagNames,
-                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
@@ -317,11 +315,9 @@ export function getCDMaterialList(
                 approvalUsers: [],
                 materials: cdMaterialListModal(
                     response.result.ci_artifacts,
-                    true,
+                    1,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
-                    response.result.appReleaseTagNames,
-                    response.result.tagsEditable,
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
@@ -347,7 +343,7 @@ export function getRollbackMaterialList(
             code: response.code,
             status: response.status,
             result: {
-                materials: cdMaterialListModal(response.result?.ci_artifacts, offset === 1 ? true : false),
+                materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
                 requestedUserId: response.result?.requestedUserId,
             },
         }
@@ -360,14 +356,13 @@ export function extractImage(image: string): string {
 
 function cdMaterialListModal(
     artifacts: any[],
-    markFirstSelected: boolean,
+    offset: number,
     artifactId?: number,
     artifactStatus?: string,
-    appReleaseTagNames?: string[],
-    tagsEditable?: boolean,
 ) {
     if (!artifacts || !artifacts.length) return []
-
+    const markFirstSelected = offset===1
+    const startIndex = offset-1
     const materials = artifacts.map((material, index) => {
         let artifactStatusValue = ''
         if (artifactId && artifactStatus && material.id === artifactId) {
@@ -375,7 +370,7 @@ function cdMaterialListModal(
         }
 
         return {
-            index,
+            index: startIndex+index,
             id: material.id,
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
