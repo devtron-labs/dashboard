@@ -304,7 +304,6 @@ export default function ResourceList() {
                         }/${_selectedResourceParam}/${childNode.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP}`,
                     })
                 }
-
                 const defaultSelected = groupedChild ??
                     processedData.selectedResource ?? {
                         namespaced: childNode.namespaced,
