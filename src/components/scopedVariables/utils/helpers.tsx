@@ -77,7 +77,7 @@ export const sortVariables = (variablesObj: ScopedVariablesDataI): ScopedVariabl
     /*
         Approach:
         Sorting is going to happen on multiple levels:
-        1) First we are going to sort the spec array based on the name of the variable
+        1) First we are going to sort the spec array based on the name of the variable, the order is ensured to be unique since the name is unique
         2) Then we are going to sort based on the values array based on the category of the variable, The precendence is as follows:
             i) ApplicationEnv
             ii) Application
@@ -114,7 +114,6 @@ export const sortVariables = (variablesObj: ScopedVariablesDataI): ScopedVariabl
                 if (a.selectors.attributeSelectors && b.selectors.attributeSelectors) {
                     const keys = Object.keys(a.selectors.attributeSelectors)
                     let flag = 0
-                    
                     keys.forEach((key) => {
                         if (a.selectors.attributeSelectors[key] < b.selectors.attributeSelectors[key]) {
                             flag = -1
@@ -138,9 +137,9 @@ export const getScopedVariablesJSON = () => {
     return get(ROUTES.GET_SCOPED_VARIABLES_JSON)
 }
 
-export const postScopedVariables = (data: any) => {
+export const postScopedVariables = (scopedVariables: ScopedVariablesDataI) => {
     const payload = {
-        manifest: data,
+        manifest: scopedVariables,
     }
     return post(ROUTES.SCOPED_VARIABLES, payload)
 }

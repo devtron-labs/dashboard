@@ -11,7 +11,7 @@ import {
     parseIntoYAMLString,
     sortVariables,
 } from './utils/helpers'
-import { ScopedVariablesEditorI } from './types'
+import { ScopedVariablesDataI, ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
@@ -38,7 +38,7 @@ const ScopedVariablesEditor = ({
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
     const handleSave = async () => {
-        let variablesObj: { variables: any[] }
+        let variablesObj: ScopedVariablesDataI
         try {
             variablesObj = parseYAMLStringToObj(editorData)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
@@ -72,7 +72,7 @@ const ScopedVariablesEditor = ({
     }
 
     const handleReview = async () => {
-        let variablesObj: { variables: any[] }
+        let variablesObj: ScopedVariablesDataI
         try {
             variablesObj = parseYAMLStringToObj(editorData)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
@@ -127,7 +127,7 @@ const ScopedVariablesEditor = ({
             <Descriptor />
             <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
-                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-left-radius">
+                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
                                 {showSaveView ? 'Review' : 'Edit'} <span style={{ fontWeight: 700 }}>Variables</span>

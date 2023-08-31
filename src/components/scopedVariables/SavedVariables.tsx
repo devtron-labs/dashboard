@@ -9,10 +9,11 @@ import Descriptor from './Descriptor'
 import { downloadData, parseIntoYAMLString } from './utils/helpers'
 import { FileView, SavedVariablesViewI, VariableListItemI } from './types'
 import {
+    DOWNLOAD_FILES_AS,
     DOWNLOAD_FILE_NAME,
     DOWNLOAD_TEMPLATE_NAME,
     DROPDOWN_ITEMS,
-    SCOPED_VARIABLES_TEMPLATE_DATA
+    SCOPED_VARIABLES_TEMPLATE_DATA,
 } from './constants'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
@@ -58,11 +59,11 @@ const SavedVariablesView = ({
         if (!scopedVariablesYAML) return
         switch (item) {
             case DROPDOWN_ITEMS[0]:
-                downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, 'application/x-yaml')
+                downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
                 setShowDropdown(false)
                 break
             case DROPDOWN_ITEMS[1]:
-                downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
+                downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
                 setShowDropdown(false)
                 break
         }
@@ -103,32 +104,31 @@ const SavedVariablesView = ({
             }}
         >
             <Descriptor showUploadButton readFile={readFile}>
-                <div className="scoped-variables-tab-container bcn-0 pt-0 pb-0 pl-20 pr-20 flex center dc__align-self-stretch dc__content-start">
+                <div className="dc__border-bottom bcn-0 pt-0 pb-0 pl-20 pr-20 flexbox dc__align-self-stretch dc__align-items-center">
                     <button
-                        className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 flex column dc__content-center dc__align-start ${
+                        className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 fs-13 fw-4 lh-20 dc__capitalize cn-9 dc__no-background flex column dc__content-center dc__align-start dc__no-border dc__outline-none-imp ${
                             currentView === FileView.YAML ? 'scoped-variables-active-tab' : ''
                         }`}
                         onClick={() => setCurrentView(FileView.YAML)}
                     >
-                        <div>YAML</div>
+                        <div className="pb-6">YAML</div>
                     </button>
                     <button
-                        className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 flex column dc__content-center dc__align-start ${
+                        className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 fs-13 fw-4 lh-20 dc__capitalize cn-9 dc__no-background flex column dc__content-center dc__align-start dc__no-border dc__outline-none-imp ${
                             currentView === FileView.SAVED ? 'scoped-variables-active-tab' : ''
                         }`}
                         onClick={() => setCurrentView(FileView.SAVED)}
                     >
-                        <div>Variable List</div>
+                        <div className="pb-6">Variable List</div>
                     </button>
                 </div>
             </Descriptor>
 
             {currentView === FileView.YAML ? (
-                <div className="saved-variables-editor-background p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
-                    <div className="saved-variables-editor-container flex column dc__content-space dc__align-self-stretch dc__align-start">
-                        <div className="scoped-variables-editor-infobar flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
-                            <p className="scoped-variables-editor-infobar__typography">Last saved file</p>
-
+                <div className="dc__window-bg flex-grow-1 dc__no-shrink p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
+                    <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start">
+                        <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
+                            <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0">Last saved file</p>
                             <Tippy
                                 className="default-tt"
                                 arrow
@@ -140,7 +140,7 @@ const SavedVariablesView = ({
                                 }
                             >
                                 <button
-                                    className="scoped-variables-editor-infobar__btn"
+                                    className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
                                     onClick={() => setShowEditView(true)}
                                 >
                                     <ICPencil width={20} height={20} />
@@ -157,7 +157,10 @@ const SavedVariablesView = ({
                                     </div>
                                 }
                             >
-                                <button className="scoped-variables-editor-infobar__btn" onClick={handleDropdownClick}>
+                                <button
+                                    className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
+                                    onClick={handleDropdownClick}
+                                >
                                     <ICFileDownload width={20} height={20} />
                                 </button>
                             </Tippy>
@@ -191,7 +194,7 @@ const SavedVariablesView = ({
             <Descriptor />
             <div className="flex center flex-grow-1">
                 <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
-                    <div className="upload-scoped-variables-card flex column center dc__gap-8">
+                    <div className="flex column center dc__gap-8">
                         <LoadScopedVariables
                             status={status}
                             progress={progress}

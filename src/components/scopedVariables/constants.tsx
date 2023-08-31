@@ -6,6 +6,7 @@ export const UPLOAD_DESCRIPTION_L2 = '.JSON or .YAML'
 export const DOWNLOAD_TEMPLATE = 'Download template'
 export const DOWNLOAD_FILE_NAME = 'variables.yaml'
 export const DOWNLOAD_TEMPLATE_NAME = 'variables-template.yaml'
+export const DOWNLOAD_FILES_AS = 'application/x-yaml'
 export const DROPDOWN_ITEMS = ['Download saved file', 'Download template']
 export const TABLE_LIST_HEADINGS = ['VARIABLE NAMES', 'DESCRIPTION']
 
