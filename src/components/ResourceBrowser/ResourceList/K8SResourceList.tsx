@@ -89,7 +89,7 @@ export function K8SResourceList({
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
             const _selectedResource = getEventObjectTypeGVK(k8SObjectMap, _kind)
-            _group = _selectedResource.Group.toLowerCase() || K8S_EMPTY_GROUP
+            _group = _selectedResource?.Group.toLowerCase() || K8S_EMPTY_GROUP
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
