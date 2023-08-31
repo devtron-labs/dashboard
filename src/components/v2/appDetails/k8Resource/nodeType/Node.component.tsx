@@ -265,7 +265,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         }
 
         let _currentNodeHeader = ''
-        const renderClipboardInteraction = (nodeName: string, node?:any): JSX.Element => {
+        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
             return copiedNodeName === nodeName ? (
                 <Tippy
                     className="default-tt"
@@ -368,7 +368,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {renderClipboardInteraction(node.name, node.port)}
+                                                {renderClipboardInteraction(node.name)}
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -437,7 +437,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
                             <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                 {portNumberPlaceHolder(node)}
-                                {node.port > 1 ? renderClipboardInteraction(nodeName, node.port) : null}
+                                {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
                             </div>
                         )}
 
