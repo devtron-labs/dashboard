@@ -106,7 +106,7 @@ function NodeDetailComponent({
           }
           if (selectedResource) {
               _selectedResource = { ...selectedResource, containers: containers }
-              if (!_selectedResource.name) {
+              if (!_selectedResource.name || !_selectedResource.kind) {
                   _selectedResource.name = params.node
                   _selectedResource.namespace = params.namespace
                   _selectedResource.kind = params.nodeType

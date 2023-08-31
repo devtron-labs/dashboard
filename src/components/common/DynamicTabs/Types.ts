@@ -38,5 +38,5 @@ export interface MoreButtonWrapperProps {
     readonly isMenuOpen: boolean
     readonly onClose: () => void
     readonly toggleMenu: () => void
-    tabPopupMenuRef: React.MutableRefObject<HTMLElement>
+    tabPopupMenuRef: React.MutableRefObject<HTMLButtonElement>
 }
