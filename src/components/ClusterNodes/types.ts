@@ -172,7 +172,14 @@ export interface ColumnMetadataType {
 export interface ClusterListType {
     isSuperAdmin: boolean
     markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
-    addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
+    addTab?: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -238,7 +245,16 @@ interface NodeDataPropType {
 export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
     isSuperAdmin: boolean
-    addTab: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string, dynamicTitle?: string, showNameOnSelect?: boolean) => boolean
+    addTab: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+        dynamicTitle?: string,
+        showNameOnSelect?: boolean,
+    ) => boolean
 }
 
 export interface NodeActionRequest {
@@ -347,3 +363,23 @@ export interface ManifestPopuptype {
 export type MDEditorSelectedTabType = 'write' | 'preview'
 
 export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS
+
+export interface DescriptionDataType {
+    descriptionId: number
+    descriptionText: string
+    descriptionUpdatedBy: string
+    descriptionUpdatedOn: string
+}
+
+export interface ClusterErrorType {
+    errorText: string
+    errorType: ERROR_TYPE
+    filterText: string[]
+}
+export interface ClusterOverviewProps {
+    isSuperAdmin: boolean
+    clusterCapacityData: ClusterCapacityType
+    clusterErrorList: ClusterErrorType[]
+    clusterErrorTitle: string
+    errorStatusCode: number
+}

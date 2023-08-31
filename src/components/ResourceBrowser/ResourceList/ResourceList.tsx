@@ -59,7 +59,7 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
-import { ClusterCapacityType, ClusterDetail, ClusterImageList, ERROR_TYPE } from '../../ClusterNodes/types'
+import { ClusterCapacityType, ClusterDetail, ClusterErrorType, ClusterImageList, ERROR_TYPE } from '../../ClusterNodes/types'
 import { getHostURLConfiguration } from '../../../services/service'
 import { clusterNamespaceList, getClusterCapacity, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
@@ -115,9 +115,7 @@ export default function ResourceList() {
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
     const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
-    const [clusterErrorList, setClusterErrorList] = useState<
-        { errorText: string; errorType: ERROR_TYPE; filterText: string[] }[]
-    >([])
+    const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
     const [terminalLoader, setTerminalLoader] = useState(false)
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
@@ -503,15 +501,12 @@ export default function ResourceList() {
             setLoader(false)
         } catch (err) {
             if (err['code'] > 0) {
-                if (err['code'] === 403) {
-                    // setErrorStatusCode(err['code'])
-                } else if (err['code'] === 404) {
+                if (err['code'] === 404) {
                     setSelectedCluster(null)
                     replace({
                         pathname: URLS.RESOURCE_BROWSER,
                     })
                 }
-                // setShowErrorState(true)
                 replace({
                     pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
                         }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}/${location.search}`,
@@ -776,35 +771,53 @@ export default function ResourceList() {
 
     const renderListBar = () => {
         if (isOverview) {
-            return <ClusterOverview isSuperAdmin={isSuperAdmin} clusterCapacityData={clusterCapacityData} clusterErrorList={clusterErrorList} clusterErrorTitle={clusterErrorTitle} errorStatusCode={errorStatusCode} />
+            return (
+                <ClusterOverview
+                    isSuperAdmin={isSuperAdmin}
+                    clusterCapacityData={clusterCapacityData}
+                    clusterErrorList={clusterErrorList}
+                    clusterErrorTitle={clusterErrorTitle}
+                    errorStatusCode={errorStatusCode}
+                />
+            )
         } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
-            return <NodeDetailsList clusterId={clusterId} isSuperAdmin={isSuperAdmin} nodeK8sVersions={clusterCapacityData?.nodeK8sVersions} renderCallBackSync={renderRefreshBar}
-                addTab={addTab} syncError={!hideSyncWarning} />
+            return (
+                <NodeDetailsList
+                    clusterId={clusterId}
+                    isSuperAdmin={isSuperAdmin}
+                    nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                    renderCallBackSync={renderRefreshBar}
+                    addTab={addTab}
+                    syncError={!hideSyncWarning}
+                />
+            )
         } else {
-            return <K8SResourceList
-                selectedResource={selectedResource}
-                resourceList={resourceList}
-                filteredResourceList={filteredResourceList}
-                noResults={noResults}
-                selectedCluster={selectedCluster}
-                namespaceOptions={namespaceOptions}
-                selectedNamespace={selectedNamespace}
-                setSelectedNamespace={setSelectedNamespace}
-                resourceListLoader={resourceListLoader}
-                getResourceListData={getResourceListData}
-                updateNodeSelectionData={updateNodeSelectionData}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                searchApplied={searchApplied}
-                setSearchApplied={setSearchApplied}
-                handleFilterChanges={handleFilterChanges}
-                clearSearch={clearSearch}
-                isCreateModalOpen={showCreateResourceModal}
-                addTab={addTab}
-                renderCallBackSync={renderRefreshBar}
-                syncError={!hideSyncWarning}
-                k8SObjectMap={k8SObjectMap}
-            />
+            return (
+                <K8SResourceList
+                    selectedResource={selectedResource}
+                    resourceList={resourceList}
+                    filteredResourceList={filteredResourceList}
+                    noResults={noResults}
+                    selectedCluster={selectedCluster}
+                    namespaceOptions={namespaceOptions}
+                    selectedNamespace={selectedNamespace}
+                    setSelectedNamespace={setSelectedNamespace}
+                    resourceListLoader={resourceListLoader}
+                    getResourceListData={getResourceListData}
+                    updateNodeSelectionData={updateNodeSelectionData}
+                    searchText={searchText}
+                    setSearchText={setSearchText}
+                    searchApplied={searchApplied}
+                    setSearchApplied={setSearchApplied}
+                    handleFilterChanges={handleFilterChanges}
+                    clearSearch={clearSearch}
+                    isCreateModalOpen={showCreateResourceModal}
+                    addTab={addTab}
+                    renderCallBackSync={renderRefreshBar}
+                    syncError={!hideSyncWarning}
+                    k8SObjectMap={k8SObjectMap}
+                />
+            )
         }
     }
 

@@ -976,7 +976,9 @@ export default function ClusterTerminal({
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
-                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${isNodeDetailsPage ? '' : 'dc__border-top'}`}
+                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${
+                    isNodeDetailsPage ? '' : 'dc__border-top'
+                }`}
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu

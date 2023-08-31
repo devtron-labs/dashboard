@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ERROR_TYPE } from './types'
+import { ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterNote } from './clusterNodes.service'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -11,25 +11,18 @@ import { ErrorScreenManager, Progressing, showError } from '@devtron-labs/devtro
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 
-interface DescriptionDataType {
-    descriptionId: number
-    descriptionText: string
-    descriptionUpdatedBy: string
-    descriptionUpdatedOn: string
-}
-
 export default function ClusterOverview({
     isSuperAdmin,
     clusterCapacityData,
     clusterErrorList,
     clusterErrorTitle,
     errorStatusCode,
-}) {
+}: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
     }>()
-    const [descriptionData, setDiscriptionData] = useState<DescriptionDataType>({
+    const [descriptionData, setDescriptionData] = useState<DescriptionDataType>({
         descriptionId: 0,
         descriptionText: defaultClusterNote,
         descriptionUpdatedBy: defaultClusterNote,
@@ -62,7 +55,7 @@ export default function ClusterOverview({
                         _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : _clusterNote.updatedOn
                         data.descriptionUpdatedOn = _date
                     }
-                    setDiscriptionData(data)
+                    setDescriptionData(data)
                 }
             })
             .catch((err) => {
@@ -104,11 +97,11 @@ export default function ClusterOverview({
                 </div>
                 <div className="pl-16 pr-16 pt-8">
                     {clusterErrorList.map((error, index) => (
-                        <div className="flex left">
+                        <div className="flex left" key={`${error.errorType}-${index}`}>
                             <div className="w-250">
                                 {error.errorType === ERROR_TYPE.OTHER ? 'Memory pressure' : `${clusterErrorTitle}`}
                             </div>
-                            <div key={`error-${index}`} className="fw-4 fs-13 cn-9">
+                            <div className="fw-4 fs-13 cn-9">
                                 {error.errorText}
                                 {error.errorType === ERROR_TYPE.OTHER ? (
                                     <span
