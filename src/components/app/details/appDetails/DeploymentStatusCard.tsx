@@ -88,7 +88,7 @@ function DeploymentStatusCard({
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
-            className={`source-info-container flex left bcn-0 p-16 br-8 mw-382 ${
+            className={`source-info-container flex left bcn-0 p-16 br-8 ${
                 hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
             } mr-12`}
         >
@@ -112,7 +112,7 @@ function DeploymentStatusCard({
                 </div>
 
                 {hideDeploymentStatusLeftInfo ? (
-                    triggeredBy
+                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">by {triggeredBy || '-'}</div>
                 ) : (
                     <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
                         by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
