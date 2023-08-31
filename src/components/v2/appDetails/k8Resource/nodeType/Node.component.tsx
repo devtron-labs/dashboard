@@ -20,7 +20,7 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
-import { TippyCustomized, TippyTheme, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
