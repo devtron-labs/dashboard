@@ -28,7 +28,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
                 </p>
 
                 <button
-                    className="dc__no-background p-0 dc__no-border pointer dc__outline-none-imp h-20"
+                    className="dc__no-background p-0 dc__no-border cursor dc__outline-none-imp h-20"
                     onClick={abortRead}
                 >
                     <Close width="20px" height="20px" />

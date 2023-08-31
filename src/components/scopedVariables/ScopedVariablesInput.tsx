@@ -14,11 +14,7 @@ const ScopedVariablesInput = ({ handleFileUpload, children }: ScopedVariablesInp
                 onChange={handleFileUpload}
             />
 
-            <label
-                htmlFor="scoped-variables-input"
-                className="flex column center"
-                style={{ cursor: 'pointer', width: '100%', height: '100%', margin: '0px' }}
-            >
+            <label htmlFor="scoped-variables-input" className="flex column center cursor m-0 h-100 w-100">
                 {children}
             </label>
         </>
