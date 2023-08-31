@@ -196,7 +196,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 <div className='flex left w-100'>
                     <ul role="tablist" className="tab-list pt-6">
                         <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
-                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
+                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 0 ? ' fw-6 active' : ' fw-4'}`}>
                                 {NODE_DETAILS_TABS.summary}
                             </div>
                             {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
@@ -206,13 +206,13 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                                 <Edit className="icon-dim-14 mr-4 mt-2 edit-yaml-icon" />
                                 {NODE_DETAILS_TABS.yaml}
                             </div>
-                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                            {selectedTabIndex === 1 && <div className="node-details__active-tab" />}
                         </li>
                         <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
                             <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 2 ? ' fw-6 active' : ' fw-4'}`}>
                                 {NODE_DETAILS_TABS.nodeConditions}
                             </div>
-                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                            {selectedTabIndex === 2 && <div className="node-details__active-tab" />}
                         </li>
                     </ul>
                     {nodeControls()}
