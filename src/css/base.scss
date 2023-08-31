@@ -527,14 +527,6 @@ a:focus {
     -webkit-box-orient: vertical;
 }
 
-.dc__ellipsis-line-clamp{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 1;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-}
-
 .dc__ellipsis-left {
     overflow: hidden;
     text-overflow: ellipsis;
