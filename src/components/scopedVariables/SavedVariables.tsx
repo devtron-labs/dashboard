@@ -184,7 +184,7 @@ const SavedVariablesView = ({
                             )}
                         </div>
 
-                        <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly />
+                        <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly noParsing />
                     </div>
                 </div>
             ) : (

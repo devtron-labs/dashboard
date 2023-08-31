@@ -177,7 +177,7 @@ const ScopedVariablesEditor = ({
                     <CodeEditor
                         mode="yaml"
                         value={editorData}
-                        noParsing={false}
+                        noParsing
                         diffView={showSaveView}
                         defaultValue={savedScopedVariables || ''}
                         height="100%"
