@@ -1,9 +1,10 @@
 import React from 'react'
 import { fireEvent, render, act } from '@testing-library/react'
+import { toast } from 'react-toastify'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
-import { PARSE_ERROR_TOAST_MESSAGE, SAVE_ERROR_TOAST_MESSAGE } from '../constants'
-import { toast } from 'react-toastify'
+import { GET_SCOPED_VARIABLES_ERROR, PARSE_ERROR_TOAST_MESSAGE } from '../constants'
+import { parseIntoYAMLString } from '../utils/helpers'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))
 
@@ -21,9 +22,10 @@ describe('ScopedVariablesEditor', () => {
 
     it('should redirect back to SavedVariablesView when close button is clicked if setShowEditView is present', () => {
         const setShowEditView = jest.fn()
-        const { container } = render(
+        const { getByTestId } = render(
             <ScopedVariablesEditor
-                variablesData={validScopedVariablesData.result.payload}
+                variablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 name="test"
                 abortRead={() => {}}
                 reloadScopedVariables={() => {}}
@@ -31,7 +33,7 @@ describe('ScopedVariablesEditor', () => {
                 setShowEditView={setShowEditView}
             />,
         )
-        const closeButton = container.querySelector('.uploaded-variables-editor-infobar__abort-read-btn')
+        const closeButton = getByTestId('close-btn')
         expect(closeButton).toBeTruthy()
         expect(setShowEditView).not.toHaveBeenCalled()
         fireEvent.click(closeButton as Element)
@@ -40,35 +42,37 @@ describe('ScopedVariablesEditor', () => {
 
     it('should abort read when close button is clicked if setShowEditView is not present', () => {
         const abortRead = jest.fn()
-        const { container } = render(
+        const { getByTestId } = render(
             <ScopedVariablesEditor
-                variablesData={validScopedVariablesData.result.payload}
+                variablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 name="test"
                 abortRead={abortRead}
                 reloadScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
             />,
         )
-        const closeButton = container.querySelector('.uploaded-variables-editor-infobar__abort-read-btn')
+        const closeButton = getByTestId('close-btn')
         expect(closeButton).toBeTruthy()
         expect(abortRead).not.toHaveBeenCalled()
         fireEvent.click(closeButton as Element)
         expect(abortRead).toHaveBeenCalled()
     })
 
-    it('should show error toast when save button is clicked and yaml is not parsable', () => {
-        const { container } = render(
+    it('should show error toast when review button is clicked and yaml is not parsable', () => {
+        const { getByText } = render(
             <ScopedVariablesEditor
                 variablesData={''}
+                setScopedVariables={() => {}}
                 name="test"
                 abortRead={() => {}}
                 reloadScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
             />,
         )
-        const saveButton = container.querySelector('.uploaded-variables-editor-footer__save-button')
-        expect(saveButton).toBeTruthy()
-        fireEvent.click(saveButton as Element)
+        const reviewButton = getByText('Review Changes')
+        expect(reviewButton).toBeTruthy()
+        fireEvent.click(reviewButton as Element)
         expect(toast.error).toHaveBeenCalledWith(PARSE_ERROR_TOAST_MESSAGE)
     })
 
@@ -87,20 +91,21 @@ describe('ScopedVariablesEditor', () => {
         )
 
         await act(async () => {
-            const { container } = render(
+            const { getByText } = render(
                 <ScopedVariablesEditor
-                    variablesData={JSON.stringify(validScopedVariablesData.result.payload)}
+                    variablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                    setScopedVariables={() => {}}
                     name="test"
                     abortRead={() => {}}
                     reloadScopedVariables={() => {}}
                     jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 />,
             )
-            const saveButton = container.querySelector('.uploaded-variables-editor-footer__save-button')
-            expect(saveButton).toBeTruthy()
-            fireEvent.click(saveButton as Element)
+            const reviewButton = getByText('Review Changes')
+            expect(reviewButton).toBeTruthy()
+            fireEvent.click(reviewButton as Element)
             await Promise.resolve()
         })
-        expect(toast.error).toHaveBeenCalledWith(SAVE_ERROR_TOAST_MESSAGE)
+        expect(toast.error).toHaveBeenCalledWith(GET_SCOPED_VARIABLES_ERROR)
     })
 })

@@ -152,6 +152,7 @@ const ScopedVariablesEditor = ({
                             <button
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
                                 onClick={handleAbort}
+                                data-testid="close-btn"
                             >
                                 <Close width="20px" height="20px" />
                             </button>

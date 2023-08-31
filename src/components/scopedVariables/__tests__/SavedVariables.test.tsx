@@ -2,7 +2,7 @@ import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import SavedVariablesView from '../SavedVariables'
 import { validScopedVariablesData } from '../mocks'
-import { downloadData } from '../utils/helpers'
+import { downloadData, parseIntoYAMLString } from '../utils/helpers'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))
 jest.mock('../utils/helpers', () => ({
@@ -18,7 +18,8 @@ describe('SavedVariables', () => {
     it('should render YAML view by default', () => {
         const { container } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.payload}
+                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
             />,
@@ -29,7 +30,8 @@ describe('SavedVariables', () => {
     it('should render Variable List view when Variable List tab is clicked', () => {
         const { container } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.payload}
+                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
             />,
@@ -43,14 +45,15 @@ describe('SavedVariables', () => {
     })
 
     it('should download saved file when download saved file button is clicked from dropdown', () => {
-        const { container } = render(
+        const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.payload}
+                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
             />,
         )
-        const dropdownButton = container.querySelector('.scoped-variables-editor-infobar__btn:nth-child(3)')
+        const dropdownButton = getByTestId('dropdown-btn')
         fireEvent.click(dropdownButton as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeTruthy()
         const downloadButton = container.querySelector('.scoped-variables-editor-infobar__dropdown-item:nth-child(1)')
@@ -61,14 +64,15 @@ describe('SavedVariables', () => {
     })
 
     it('should download template file when download template file button is clicked from dropdown', () => {
-        const { container } = render(
+        const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.payload}
+                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
             />,
         )
-        const dropdownButton = container.querySelector('.scoped-variables-editor-infobar__btn:nth-child(3)')
+        const dropdownButton = getByTestId('dropdown-btn')
         fireEvent.click(dropdownButton as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeTruthy()
         const downloadButton = container.querySelector('.scoped-variables-editor-infobar__dropdown-item:nth-child(2)')
@@ -79,31 +83,32 @@ describe('SavedVariables', () => {
     })
 
     it('should close dropdown when dropdown is open and somewhere outside is clicked', () => {
-        const { container } = render(
+        const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.payload}
+                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
             />,
         )
-        const dropdownButton = container.querySelector('.scoped-variables-editor-infobar__btn:nth-child(3)')
+        const dropdownButton = getByTestId('dropdown-btn')
         fireEvent.click(dropdownButton as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeTruthy()
-        fireEvent.click(container.querySelector('.scoped-variables-tab-container') as Element)
+        fireEvent.click(container.querySelector('input') as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeFalsy()
     })
 
     it('should show ScopedVariablesEditor when edit button is clicked', () => {
-        const { container } = render(
+        const { getByTestId, getByText } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.payload}
+                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
             />,
         )
-        const editButton = container.querySelector('.scoped-variables-editor-infobar__btn:nth-child(2)')
+        const editButton = getByTestId('edit-variables-btn')
         fireEvent.click(editButton as Element)
-        expect(container.querySelector('.scoped-variables-editor-infobar__btn:nth-child(2)')).toBeFalsy()
-        expect(container.querySelector('.uploaded-variables-editor-background')).toBeTruthy()
+        expect(getByText('Edit')).toBeTruthy()
     })
 })

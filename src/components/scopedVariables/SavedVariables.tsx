@@ -142,6 +142,7 @@ const SavedVariablesView = ({
                                 <button
                                     className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
                                     onClick={() => setShowEditView(true)}
+                                    data-testid="edit-variables-btn"
                                 >
                                     <ICPencil width={20} height={20} />
                                 </button>
@@ -160,6 +161,7 @@ const SavedVariablesView = ({
                                 <button
                                     className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
                                     onClick={handleDropdownClick}
+                                    data-testid="dropdown-btn"
                                 >
                                     <ICFileDownload width={20} height={20} />
                                 </button>

@@ -11,8 +11,9 @@ describe('Descriptor', () => {
 
     it('should show customized tippy showing the description', () => {
         const { container } = render(<Descriptor />)
-        const enableTippy = container.querySelector('.descriptor-help-button')
-        fireEvent.click(enableTippy!)
+        // only one button is present in the component since showUploadButton is false
+        const button = container.querySelector('button')
+        fireEvent.click(button!)
         expect(container.querySelector('.tippy-box')).toBeTruthy()
         expect(container.querySelector('.tippy-box .tippy-content')).toBeTruthy()
     })

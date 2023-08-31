@@ -2,7 +2,7 @@ import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import UploadScopedVariables, { LoadScopedVariables } from '../UploadScopedVariables'
 import { downloadData } from '../utils/helpers'
-import { VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME } from '../constants'
+import { SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS } from '../constants'
 
 jest.mock('../utils/helpers', () => ({
     validator: jest.fn(),
@@ -36,27 +36,41 @@ describe('UploadScopedVariables', () => {
 
     describe('UploadScopedVariables', () => {
         it('should download template when download template button is clicked', () => {
-            const { container } = render(<UploadScopedVariables reloadScopedVariables={() => {}} jsonSchema={{}} />)
-            fireEvent.click(container.querySelector('.default-download-template-typography')!)
-            expect(downloadData).toHaveBeenCalledWith(VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
+            const { container } = render(
+                <UploadScopedVariables
+                    reloadScopedVariables={() => {}}
+                    jsonSchema={{}}
+                    setScopedVariables={() => {}}
+                />,
+            )
+            fireEvent.click(container.querySelector('button')!)
+            expect(downloadData).toHaveBeenCalledWith(
+                SCOPED_VARIABLES_TEMPLATE_DATA,
+                DOWNLOAD_TEMPLATE_NAME,
+                DOWNLOAD_FILES_AS,
+            )
         })
 
         it('should read file when file is uploaded', () => {
             const reloadScopedVariables = jest.fn()
             const { container } = render(
-                <UploadScopedVariables reloadScopedVariables={reloadScopedVariables} jsonSchema={{}} />,
+                <UploadScopedVariables
+                    reloadScopedVariables={reloadScopedVariables}
+                    jsonSchema={{}}
+                    setScopedVariables={() => {}}
+                />,
             )
             fireEvent.change(container.querySelector('input')!, {
                 target: {
                     files: [
                         {
-                            name: 'test',
+                            name: 'test.yaml',
                             type: 'application/x-yaml',
                         },
                     ],
                 },
             })
-            expect(container.querySelector('.load-scoped-variables-container')).toBeTruthy()
+            expect(container.querySelector('.dc__ellipsis-right')!.textContent).toBe('test.yaml')
         })
     })
 })

@@ -125,3 +125,14 @@ export const noScopedVariablesData = {
     },
     code: 200,
 }
+
+export const validVariablesList = [
+    {
+        name: 'newVariable',
+        description: 'newVariableDescription',
+    },
+    {
+        name: 'newVariable1',
+        description: 'newVariable1Description',
+    },
+]
