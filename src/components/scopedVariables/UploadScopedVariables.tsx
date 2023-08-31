@@ -16,6 +16,7 @@ import {
     UPLOAD_DESCRIPTION_L1,
     UPLOAD_DESCRIPTION_L2,
     DOWNLOAD_TEMPLATE_NAME,
+    DOWNLOAD_FILES_AS,
 } from './constants'
 
 export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
@@ -105,7 +106,7 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
                 <button
                     className="p-0 dc__no-background dc__no-border cb-5 fs-13 fw-400 lh-20"
                     onClick={() =>
-                        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
+                        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
                     }
                 >
                     {DOWNLOAD_TEMPLATE}
