@@ -20,14 +20,14 @@ const VariablesList = ({ variablesList }: { variablesList: VariableListItemI[] }
     return (
         <div className="scoped-variables-list-container flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch">
             <Grid container spacing={0} containerClass="w-100">
-                <Grid item xs={2}>
+                <Grid item xs={3} itemClass="dc__ellipsis-right">
                     <VariablesListItem
                         data={TABLE_LIST_HEADINGS[0]}
                         classes="pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center"
                     />
                 </Grid>
 
-                <Grid item xs={9}>
+                <Grid item xs={9} itemClass="dc__ellipsis-right">
                     <VariablesListItem
                         data={TABLE_LIST_HEADINGS[1]}
                         classes="pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center"

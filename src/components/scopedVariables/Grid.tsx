@@ -17,7 +17,7 @@ const Grid = ({ container, spacing = 0, item, xs, containerClass = '', itemClass
     if (item) {
         const getColumnWidth = () => {
             const percentageWidth = (xs / 12) * 100
-            // DONT CHANGE IT FROM CALC SINCE CALC CONVERTS TO PX
+            // DONT CHANGE IT FROM CALC SINCE CALC CONVERTS TO PX which is needed to handle text overflow
             return `calc(${percentageWidth}%)`
         }
 

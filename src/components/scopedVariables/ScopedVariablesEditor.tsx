@@ -14,6 +14,7 @@ import {
 import { ScopedVariablesEditorI } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
+import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import {
     PARSE_ERROR_TOAST_MESSAGE,
     SAVE_ERROR_TOAST_MESSAGE,
@@ -153,11 +154,19 @@ const ScopedVariablesEditor = ({
                             </button>
                         </Tippy>
                     </div>
-                    
+
                     {showSaveView && (
-                        <div className="bcn-1 flexbox dc__content-space w-100 p-8 h-32 dc__align-items-center">
-                            <div className='w-50 dc__border-right fs-12 fw-6 cn-7'>Last Saved File</div>
-                            <div className='w-50 fs-12 fw-6 cn-7'>Edit File</div>
+                        <div className="bcn-1 flexbox dc__content-space w-100 h-32 dc__align-items-center">
+                            <div
+                                className="dc__border-right fs-12 fw-6 cn-7 pt-8 pb-8 pl-12 pr-12 flexbox"
+                                style={{ width: '48.5%' }}
+                            >
+                                Last Saved File
+                            </div>
+                            <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
+                                <ICPencil height={20} width={20} />
+                                Edit File
+                            </div>
                         </div>
                     )}
 
