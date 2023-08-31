@@ -109,6 +109,7 @@ function NodeDetailComponent({
               if (!_selectedResource.name) {
                   _selectedResource.name = params.node
                   _selectedResource.namespace = params.namespace
+                  _selectedResource.kind = params.nodeType
               }
           } else {
               _selectedResource.clusterId = +params.clusterId
