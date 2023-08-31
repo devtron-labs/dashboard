@@ -964,7 +964,7 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} />
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal}/>
                     </div>
                 </div>
                 {renderResourceBrowser()}

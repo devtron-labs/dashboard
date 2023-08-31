@@ -14,11 +14,12 @@ export const TabsMenu = (props: MenuProps<any, false, any>) => {
     )
 }
 
-export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }: MoreButtonWrapperProps) => (
+export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu, tabPopupMenuRef }: MoreButtonWrapperProps) => (
     <div className="more-tabs-wrapper dc__position-rel ml-auto">
         <button
             className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center ml-8 bcn-0 dc__border br-4"
             onClick={toggleMenu}
+            ref={tabPopupMenuRef}
         >
             <DropDown
                 className={`rotate icon-dim-20 ml-2 mr-2 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}

@@ -25,6 +25,7 @@ export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     removeTabByIdentifier: (title: string) => string
     stopTabByIdentifier: (title: string) => string
+    enableShortCut?: boolean
 }
 
 export interface TabsDataType {
@@ -37,4 +38,5 @@ export interface MoreButtonWrapperProps {
     readonly isMenuOpen: boolean
     readonly onClose: () => void
     readonly toggleMenu: () => void
+    tabPopupMenuRef: React.MutableRefObject<HTMLElement>
 }

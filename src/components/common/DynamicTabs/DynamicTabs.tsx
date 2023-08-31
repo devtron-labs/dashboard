@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
+import { withShortcut, IWithShortcut } from 'react-keybind'
 import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
@@ -22,7 +23,7 @@ import './DynamicTabs.scss'
  *
  * Note: To be used with useTabs hook
  */
-export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }: DynamicTabsProps) {
+function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableShortCut, shortcut }: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
@@ -33,10 +34,30 @@ export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }
     const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const tabPopupMenuRef = useRef(null)
 
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
     }, [tabs])
+
+    useEffect(() => {
+      if (enableShortCut) {
+          shortcut.registerShortcut(handleInputShortcut, ['t'], 'TabSearchFocus', 'Focus tab search')
+      }
+
+      return (): void => {
+          shortcut.unregisterShortcut(['t'])
+      }
+  }, [enableShortCut])
+
+  const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
+      const _key = e.key
+      if (_key === 't') {
+        tabPopupMenuRef.current.click()
+      } else if (_key === 'Escape' || _key === 'Esc') {
+        moreButtonRef.current?.blur()
+      }
+  }
 
     const updateRef = (_node: HTMLAnchorElement) => {
         if (_node?.dataset?.selected === 'true' && _node !== tabRef.current) {
@@ -269,7 +290,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }
                             {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                         </ul>
                     </div>
-                    <MoreButtonWrapper isMenuOpen={isMenuOpen} onClose={closeMenu} toggleMenu={toggleMenu}>
+                    <MoreButtonWrapper tabPopupMenuRef={tabPopupMenuRef} isMenuOpen={isMenuOpen} onClose={closeMenu} toggleMenu={toggleMenu}>
                         <div className="more-tabs__search-icon icon-dim-16 cursor-text" onClick={focusSearchTabInput}>
                             <SearchIcon className="icon-dim-16" />
                         </div>
@@ -309,3 +330,5 @@ export function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier }
         </div>
     )
 }
+
+export default withShortcut(DynamicTabs)
