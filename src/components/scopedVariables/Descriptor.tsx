@@ -19,12 +19,12 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
     return (
         <>
             <div
-                className="descriptor-container pt-16 pb-16 pl-20 pr-20 flex column dc__align-self-stretch bcn-0 dc__content-space dc__align-start"
+                className="pt-16 pb-16 pl-20 pr-20 flex column dc__align-self-stretch bcn-0 dc__content-space dc__align-start dc__border-bottom"
                 style={children ? { padding: '16px 20px 8px 20px', borderBottom: 'none' } : {}}
             >
                 <div className="flex dc__gap-8 w-100 dc__content-space">
                     <div className="flex dc__gap-8">
-                        <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
+                        <p className="cn-9 fs-16 fw-6 m-0">{DEFAULT_TITLE}</p>
 
                         <TippyCustomized
                             theme={TippyTheme.white}
@@ -37,17 +37,17 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
                             trigger="click"
                             interactive={true}
                         >
-                            <button className="descriptor-help-button">
+                            <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
                                 <ICHelpOutline width={20} height={20} />
                             </button>
                         </TippyCustomized>
                     </div>
                     {showUploadButton && (
-                        <button className="descriptor-container__upload-button bcb-5 p-0 flex center">
+                        <button className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56">
                             <ScopedVariablesInput handleFileUpload={handleReUpload}>
                                 <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
-                                    <ICUpload width={14} height={14} className='scn-0'/>
-                                    <p>Upload new file to replace</p>
+                                    <ICUpload width={14} height={14} className="scn-0" />
+                                    <p className="fs-13 fw-6 lh-20 m-0">Upload new file to replace</p>
                                 </div>
                             </ScopedVariablesInput>
                         </button>

@@ -2209,10 +2209,6 @@ button.anchor {
     border-radius: 0 !important;
 }
 
-.dc__border-radius-4{
-    border-radius: 4px;
-}
-
 .dc__border-radius-24 {
     border-radius: 24px;
 }
@@ -2504,6 +2500,10 @@ textarea,
 
 .mw-48 {
     min-width: 48px;
+}
+
+.mw-56 {
+    min-width: 56px;
 }
 
 .mw-116 {

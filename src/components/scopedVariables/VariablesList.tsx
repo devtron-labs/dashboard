@@ -8,17 +8,17 @@ const VariablesListItem = ({ data, classes, tooltip }: { data: string; classes: 
     <div className={classes}>
         {tooltip ? (
             <Tippy content={data} className="default-tt" placement="top">
-                <p className="dc__ellipsis-right cn-9 ">{data}</p>
+                <p className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">{data}</p>
             </Tippy>
         ) : (
-            <p className="dc__ellipsis-right cn-7">{data}</p>
+            <p className="dc__ellipsis-right cn-7 fs-12 fw-6 lh-20 m-0 dc__uppercase">{data}</p>
         )}
     </div>
 )
 
 const VariablesList = ({ variablesList }: { variablesList: VariableListItemI[] }) => {
     return (
-        <div className="scoped-variables-list-container flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch">
+        <div className="dc__overflow-scroll flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">
             <Grid container spacing={0} containerClass="w-100">
                 <Grid item xs={3} itemClass="dc__ellipsis-right">
                     <VariablesListItem

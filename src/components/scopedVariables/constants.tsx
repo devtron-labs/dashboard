@@ -60,54 +60,69 @@ export const EMPTY_FILE_STATUS = {
     status: false,
 }
 
-export const SCOPED_VARIABLES_TEMPLATE_DATA = `# Example:
-# variables:
-#   - definition:
-#       varName: variable1
-#       dataType: primitive
-#       varType: private
-#       description: This is variable 1
-#     attributeValue:
-#       - variableValue:
-#           value: value1
-#         attributeType: ApplicationEnv
-#         attributeParams:
-#           ApplicationName: app1
-#           EnvName: dev
-#       - variableValue:
-#           value: value1
-#         attributeType: Env
-#         attributeParams:
-#           EnvName: prod
-#   - definition:
-#       varName: variable2
-#       dataType: primitive
-#       varType: public
-#       description: This is variable 2
-#     attributeValue:
-#       - variableValue:
-#           value: value2
-#         attributeType: Application
-#         attributeParams:
-#           ApplicationName: app2
-variables:
-  - definition:
-      varName: 
-      dataType: 
-      varType: 
-      description: 
-    attributeValue:
-      - variableValue:
-          value: 
-        attributeType: 
-        attributeParams:
-          ApplicationName: 
-          EnvName: 
-      - variableValue:
-          value: 
-        attributeType: 
-        attributeParams:
-          EnvName: 
+export const SCOPED_VARIABLES_TEMPLATE_DATA = `apiVersion: devtron.ai/v1beta1
+kind: Variable
+spec:
+  - description: Sample Variable 1
+    name: variableNew1
+    values:
+      - category: ApplicationEnv
+        value: test-app-env
+        selectors:
+          attributeSelectors:
+            ApplicationName: dev-test
+            EnvName: dev
+      - category: Env
+        value: 'null'
+        selectors:
+          attributeSelectors:
+            EnvName: dev
+      - category: Env
+        value: 'null'
+        selectors:
+          attributeSelectors:
+            EnvName: virtual-env-1
+      - category: Cluster
+        value: test-cluster
+        selectors:
+          attributeSelectors:
+            ClusterName: default_cluster
+      - category: Global
+        value: test-global
+        selectors: null
+  - description: 'Sample Variable 2'
+    name: variableNew2
+    values:
+      - category: ApplicationEnv
+        value: test-app-env
+        selectors:
+          attributeSelectors:
+            ApplicationName: dev-test
+            EnvName: dev
+      - category: ApplicationEnv
+        value: test-app-env
+        selectors:
+          attributeSelectors:
+            ApplicationName: dev-test
+            EnvName: virtual-env-1
+      - category: Application
+        value: test-app
+        selectors:
+          attributeSelectors:
+            ApplicationName: dev-test
+      - category: Env
+        value: test-env
+        selectors:
+          attributeSelectors:
+            EnvName: dev
+      - category: Cluster
+        value: test-cluster
+        selectors:
+          attributeSelectors:
+            ClusterName: default_cluster
+      - category: Global
+        value: test-global
+        selectors: null
 `
 
 export const ROUTES = {

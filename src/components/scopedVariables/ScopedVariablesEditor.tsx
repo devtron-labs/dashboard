@@ -125,15 +125,15 @@ const ScopedVariablesEditor = ({
     return (
         <div className="flex column dc__content-space h-100 bcn-0">
             <Descriptor />
-            <div className="uploaded-variables-editor-background">
-                <div className="uploaded-variables-editor-container">
-                    <div className="uploaded-variables-editor-infobar">
+            <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
+                <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
+                    <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-left-radius">
                         {setShowEditView ? (
-                            <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
+                            <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
                                 {showSaveView ? 'Review' : 'Edit'} <span style={{ fontWeight: 700 }}>Variables</span>
                             </p>
                         ) : (
-                            <p className="uploaded-variables-editor-infobar__typography dc__ellipsis-right">
+                            <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
                                 Upload{' '}
                                 <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
                             </p>
@@ -149,7 +149,10 @@ const ScopedVariablesEditor = ({
                                 </div>
                             }
                         >
-                            <button className="uploaded-variables-editor-infobar__abort-read-btn" onClick={handleAbort}>
+                            <button
+                                className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
+                                onClick={handleAbort}
+                            >
                                 <Close width="20px" height="20px" />
                             </button>
                         </Tippy>
@@ -181,13 +184,16 @@ const ScopedVariablesEditor = ({
                         validatorSchema={jsonSchema}
                     />
 
-                    <div className="uploaded-variables-editor-footer">
-                        <button className="uploaded-variables-editor-footer__cancel-button" onClick={handleAbort}>
+                    <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
+                        <button
+                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp"
+                            onClick={handleAbort}
+                        >
                             Cancel
                         </button>
 
                         <ButtonWithLoader
-                            rootClassName="uploaded-variables-editor-footer__save-button cta"
+                            rootClassName="flex mw-56 pt-8 pb-8 pl-16 pr-16 dc__outline-none-imp dc__gap-8 dc__border-radius-4-imp bcb-5 cn-0 fs-13 fw-6 lh-20 dc__no-border cta"
                             onClick={showSaveView ? handleSave : handleReview}
                             loaderColor="white"
                             isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}
