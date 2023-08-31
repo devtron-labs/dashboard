@@ -333,21 +333,25 @@ export default function ChartValuesEditor({
         }
     }
 
-    const getDynamicHeight = (): string => {
-        if (isDeployChartView && (!showInfoText || showEditorHeader)) {
-            return 'calc(100vh - 130px)'
-        } else if (isDeployChartView || (!isDeployChartView && (!showInfoText || showEditorHeader))) {
-            return (manifestView && !comparisonView) ? 'calc(100vh - 208px)' : 'calc(100vh - 162px)'
-        } else {
-            return 'calc(100vh - 196px)'
+    const getDynamicClassName = (): string => {
+        if (isDeployChartView) {
+            if (!showInfoText || showEditorHeader) return 'sub130-vh'
+            return manifestView ? 'sub193-vh' : 'sub160-vh'
         }
+
+        if (comparisonView) {
+            if (manifestView) return 'sub193-vh'
+            return 'sub160-vh'
+        }
+
+        if (manifestView) return 'sub222-vh'
+        if (showEditorHeader) return 'sub160-vh'
+        return 'sub189-vh'
     }
 
     return (
         <div
-            className={`code-editor-container manifest-view ${
-                showInfoText && (hasChartChanged || manifestView) ? 'code-editor__info-enabled' : ''
-            }`}
+            className={`code-editor-container manifest-view ${getDynamicClassName()}`}
             data-testid="code-editor-container"
         >
             <CodeEditor
@@ -373,7 +377,6 @@ export default function ChartValuesEditor({
                         )}
                     </DetailsProgressing>
                 }
-                height={getDynamicHeight()}
                 readOnly={manifestView}
             >
                 {showEditorHeader && (
@@ -391,10 +394,7 @@ export default function ChartValuesEditor({
                     />
                 )}
                 {manifestView && (
-                    <CodeEditor.Information
-                        className="dc__ellipsis-right"  
-                        text={MANIFEST_OUTPUT_INFO_TEXT}
-                    >
+                    <CodeEditor.Information className="dc__ellipsis-right" text={MANIFEST_OUTPUT_INFO_TEXT}>
                         <Tippy
                             className="default-tt w-250"
                             arrow={false}
@@ -406,38 +406,38 @@ export default function ChartValuesEditor({
                     </CodeEditor.Information>
                 )}
                 {comparisonView && (
-                <div className="code-editor__header chart-values-view__diff-view-header">
-                    <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
-                        <span style={{ width: '90px' }} data-testid="compare-with-heading">
-                            Compare with: 
-                        </span>
-                        <CompareWithDropdown
-                            deployedChartValues={valuesForDiffState.deployedChartValues}
-                            defaultChartValues={valuesForDiffState.defaultChartValues}
-                            presetChartValues={valuesForDiffState.presetChartValues}
-                            deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
-                            selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
-                            handleSelectedVersionForDiff={handleSelectedVersionForDiff}
-                            manifestView={manifestView}
-                        />
+                    <div className="code-editor__header chart-values-view__diff-view-header">
+                        <div className="chart-values-view__diff-view-default flex left fs-12 fw-6 cn-7">
+                            <span style={{ width: '90px' }} data-testid="compare-with-heading">
+                                Compare with:
+                            </span>
+                            <CompareWithDropdown
+                                deployedChartValues={valuesForDiffState.deployedChartValues}
+                                defaultChartValues={valuesForDiffState.defaultChartValues}
+                                presetChartValues={valuesForDiffState.presetChartValues}
+                                deploymentHistoryOptionsList={valuesForDiffState.deploymentHistoryOptionsList}
+                                selectedVersionForDiff={valuesForDiffState.selectedVersionForDiff}
+                                handleSelectedVersionForDiff={handleSelectedVersionForDiff}
+                                manifestView={manifestView}
+                            />
+                        </div>
+                        <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
+                            {manifestView ? (
+                                <>
+                                    <Lock className="icon-dim-16 mr-8" />
+                                    <span>Manifest output for current YAML</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Edit className="icon-dim-16 mr-10" />
+                                    values.yaml&nbsp;
+                                    {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
+                                        `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
+                                </>
+                            )}
+                        </div>
                     </div>
-                    <div className="chart-values-view__diff-view-current flex left fs-12 fw-6 cn-7 pl-12">
-                        {manifestView ? (
-                            <>
-                                <Lock className="icon-dim-16 mr-8" />
-                                <span>Manifest output for current YAML</span>
-                            </>
-                        ) : (
-                            <>
-                                <Edit className="icon-dim-16 mr-10" />
-                                values.yaml&nbsp;
-                                {(selectedChartValues?.chartVersion || repoChartValue?.version) &&
-                                    `(${selectedChartValues?.chartVersion || repoChartValue?.version})`}
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
+                )}
             </CodeEditor>
         </div>
     )
