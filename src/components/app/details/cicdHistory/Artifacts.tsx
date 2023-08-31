@@ -106,32 +106,32 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
         return (
-            <div className={`${customTag ? "flex column pt-20" : "h-100"}`}>
+            <div className={`${customTag ? "flex column pt-20 pb-20" : "h-100"}`}>
                 <GenericEmptyState
                     title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
                     classname={`${customTag ? "dc__h-fit-content" : ""}`}
                 />
                 {customTag && (
-                    <div className="br-4 w-300 en-2 bw-1">
+                    <div className="custom-image-tag__warning-wrapper br-4 w-300 en-2 bw-1">
                         <InfoColourBar
-                            message="Desired image tag already exists "
+                            message="Desired image tag already exists"
                             classname="warn dc__no-border"
                             Icon={Warn}
                             iconClass="warning-icon"
                         />
-                        <div className="p-12 bcn-0">
+                        <div className="p-12 bcn-0 fs-12">
                             <div className="pb-10 dc__border-bottom">
-                                <span className="fw-6 fs-12 ">Desired Image tag:</span>
-                                <span className="br-4 dc__bg-n50 p-4 fs-12 flex left">
-                                    <Docker className="icon-dim-16 mr-8" />
+                                <span className="fw-6">Desired Image tag:</span><br/>
+                                <div className="br-4 dc__bg-n50 pl-4 pr-4 flex left dc__w-fit-content dc__ff-monospace cn-7">
+                                    <Docker className="icon-dim-16 mr-8 m-auto" />
                                     {customTag.tagPattern.replace('{x}', customTag.counterX.toString())}
-                                </span>
+                                </div>
                             </div>
                             <div className="pt-10">
                                 <span className="fw-6 fs-12 ">Pattern used to generate tag:</span>
-                                <div className="br-4  p-4 fs-12 flex left">{customTag.tagPattern}</div>
-                                <div onClick={redirectToBuildPipeline} className="cb-5 cursor">
+                                <div className="br-4  p-4 fs-12 flex left dc__ff-monospace">{customTag.tagPattern}</div>
+                                <div onClick={redirectToBuildPipeline} className="cb-5 cursor fs-13">
                                     Modify Pattern
                                 </div>
                             </div>

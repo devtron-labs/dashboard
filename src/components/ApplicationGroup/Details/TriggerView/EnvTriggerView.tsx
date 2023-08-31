@@ -1399,6 +1399,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }
 
+    const getResponseListMessage = (err) => {
+        if(err instanceof ServerErrors && Array.isArray(err.errors)){
+            return err.errors[0]?.internalMessage
+        }
+    }
+
     const handleBulkTrigger = (
         promiseList: any[],
         triggeredAppList: { appId: number; envId?: number; appName: string }[],
@@ -1421,7 +1427,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             statusText: statusType,
                             status: BulkResponseStatus.PASS,
                             envId: triggeredAppList[index].envId,
-                            message: '',
+                            message: '-',
                         })
                     } else {
                         const errorReason = response.reason
@@ -1437,7 +1443,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 appName: triggeredAppList[index].appName,
                                 statusText: statusType,
                                 status: BulkResponseStatus.UNAUTHORIZE,
-                                message: errorReason.errors[0].userMessage,
+                                message: getResponseListMessage(errorReason.errors),
+                            })
+                        }  else if (errorReason.code === 409) {
+                            const statusType = filterStatusType(
+                                type,
+                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL],
+                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                            )
+                            _responseList.push({
+                                appId: triggeredAppList[index].appId,
+                                appName: triggeredAppList[index].appName,
+                                statusText: statusType,
+                                status: BulkResponseStatus.FAIL,
+                                message: errorReason.errors[0].internalMessage,
                             })
                         } else {
                             const statusType = filterStatusType(

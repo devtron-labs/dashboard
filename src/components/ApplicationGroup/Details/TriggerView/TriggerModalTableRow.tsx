@@ -7,10 +7,12 @@ import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-lock
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkResponseStatus } from '../../Constants'
 import { importComponentFromFELibrary } from '../../../common'
+import { useHistory } from 'react-router-dom'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
 export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDownloadPopupOpen }: TriggerModalRowType) {
+    const history = useHistory()
     const [downloader, setDownLoader] = useState(false)
     const [isDownloaded, setIsDownLoad] = useState(false)
     const params = {
@@ -43,6 +45,9 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
         }
     }, [downloader])
 
+    const redirectToBuildHistoryArtifact = () => {
+        history.push(`/app/${rowData.appId}/builds/ci-details/${39}/${177}/artifacts`)
+    }
     return (
         <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual': ''}`} key={`response-${rowData.appId}`}>
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
@@ -50,7 +55,9 @@ export function TriggerModalRow({ rowData, index, isVirtualEnv, envName, setDown
                 {renderStatusIcon(rowData)}
                 <span data-testid={`response-status-text-${index}`}>{rowData.statusText}</span>
             </div>
-            <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
+            <div className="fs-13 fw-4 cn-9 flex left">
+                {rowData.message} {rowData.message === "[{Desired image tag already exists}]" && <div className="cb-5 ml-4 cursor" onClick={redirectToBuildHistoryArtifact}>View Details</div>}
+                </div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
                 <div className="flex right cursor" data-testid={`bulk-cd-manifest-download-button-${index}`} onClick={downloadPackage}>
                     {downloader ? (
