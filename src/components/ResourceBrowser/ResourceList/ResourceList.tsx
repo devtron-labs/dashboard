@@ -338,7 +338,7 @@ export default function ResourceList() {
                 resourceListAbortController.abort()
             }
         } else if (isNodes) {
-            getPodListData()
+            setResourceListLoader(false)
         }
     }, [selectedResource])
 
@@ -480,9 +480,10 @@ export default function ResourceList() {
 
                 if (!isResourceGroupPresent) {
                     parentNode.isExpanded = true
+                    const searchParam =location.search? `/${location.search}`:''
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${currentNodeType}/${K8S_EMPTY_GROUP}/${location.search}`,
+                            }/${currentNodeType}/${K8S_EMPTY_GROUP}${searchParam}`,
                     })
                 }
 
@@ -584,32 +585,6 @@ export default function ResourceList() {
                 <span className='cb-5 ml-4 fw-6 cursor' onClick={refreshData}>Sync now</span>
             </div>
         </div>
-    }
-
-    const getPodListData = async () => {
-        try {
-            const selectedGVK = k8SObjectMap.get("Workloads").child.get("Pod").data[0]
-            updateResourceSelectionData(selectedGVK)
-            setResourceListLoader(true)
-            const resourceListPayload: ResourceListPayloadType = {
-                clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedGVK.gvk,
-                    },
-                },
-            }
-            if (selectedResource.namespaced) {
-                resourceListPayload.k8sRequest.resourceIdentifier.namespace =
-                    namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
-            }
-            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
-            setResourceList(result)
-            setFilteredResourceList(result.data)
-            setResourceListLoader(false)
-        } catch (error) {
-
-        }
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
@@ -726,22 +701,17 @@ export default function ResourceList() {
         }
     }
 
-    const updateNodeSelectionData = (_selected: Record<string, any>) => {
+    const updateNodeSelectionData = (_selected: Record<string, any>, _group?: string) => {
         if (_selected) {
-            if (_selected.isFromEvent) {
-                setNodeSelectionData((prevData) =>
-                    getUpdatedNodeSelectionData(
-                        prevData,
-                        _selected,
-                        `${_selected.name}_${group}`,
-                        _selected.name.split('_')[1],
-                    ),
-                )
-            } else {
-                setNodeSelectionData((prevData) =>
-                    getUpdatedNodeSelectionData(prevData, _selected, `${nodeType}_${_selected.name}_${group}`),
-                )
-            }
+            const _nodeType = _selected.isFromEvent ? '' : nodeType + '_'
+            setNodeSelectionData((prevData) =>
+                getUpdatedNodeSelectionData(
+                    prevData,
+                    _selected,
+                    `${_nodeType}${_selected.name}_${_group ?? group}`,
+                    _selected.isFromEvent ? _selected.name.split('_')[1] : null,
+                ),
+            )
         }
     }
 
@@ -770,7 +740,6 @@ export default function ResourceList() {
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
-
         return {
             clusterId: Number(clusterId),
             group: _selectedResource?.Group || '',
@@ -834,6 +803,7 @@ export default function ResourceList() {
                 addTab={addTab}
                 renderCallBackSync={renderRefreshBar}
                 syncError={!hideSyncWarning}
+                k8SObjectMap={k8SObjectMap}
             />
         }
     }

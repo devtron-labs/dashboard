@@ -140,7 +140,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     noResults: boolean
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
-    updateNodeSelectionData: (_selected: Record<string, any>) => void
+    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
     isCreateModalOpen: boolean
     addTab: (
         idPrefix: string,
@@ -150,6 +150,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
+    k8SObjectMap: Map<string, K8SObjectMapType>
 }
 
 export interface ResourceBrowserActionMenuType {

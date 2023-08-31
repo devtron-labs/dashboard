@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import { getEventObjectTypeGVK } from '../Utils'
 
 export function K8SResourceList({
     selectedResource,
@@ -40,7 +41,8 @@ export function K8SResourceList({
     isCreateModalOpen,
     addTab,
     renderCallBackSync,
-    syncError
+    syncError,
+    k8SObjectMap
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -82,13 +84,13 @@ export function K8SResourceList({
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam, kind, resourceName, _nodeSelectionData
+        let resourceParam, kind, resourceName, _nodeSelectionData, _group
 
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            resourceParam = `${_kind}/${
-                selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
-            }/${_resourceName}`
+            const _selectedResource = getEventObjectTypeGVK(k8SObjectMap, _kind)
+            _group = _selectedResource.Group.toLowerCase() || K8S_EMPTY_GROUP
+            resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
             _nodeSelectionData = { name: kind + '_' + resourceName, namespace, isFromEvent: true }
@@ -97,6 +99,7 @@ export function K8SResourceList({
             kind = nodeType
             resourceName = name
             _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
+            _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
         const _url = `${url
@@ -104,10 +107,10 @@ export function K8SResourceList({
             .slice(0, group ? -2 : -1)
             .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
 
-        const isAdded = addTab(selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP, kind, resourceName, _url)
+        const isAdded = addTab(_group, kind, resourceName, _url)
 
         if (isAdded) {
-            updateNodeSelectionData(_nodeSelectionData)
+            updateNodeSelectionData(_nodeSelectionData, _group)
             push(_url)
         } else {
             toast.error(

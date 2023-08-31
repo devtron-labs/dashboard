@@ -182,6 +182,13 @@ export const SIDEBAR_KEYS = {
     }
 }
 
+export const FIXED_GVK_Keys = {
+    'cluster overview': 'overviewGVK',
+    node: 'nodeGVK',
+    event: 'eventGVK',
+    namespace: 'namespaceGVK',
+}
+
 export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
 export const ERROR_SCREEN_SUBTITLE =

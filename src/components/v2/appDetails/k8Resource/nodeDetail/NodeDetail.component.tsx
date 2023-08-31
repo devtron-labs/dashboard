@@ -16,7 +16,7 @@ import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/d
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
-import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../../../../ResourceBrowser/Constants'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
@@ -105,7 +105,7 @@ function NodeDetailComponent({
               namespace: '',
           }
           if (selectedResource) {
-              _selectedResource = { ...selectedResource }
+              _selectedResource = { ...selectedResource, containers: containers }
               if (!_selectedResource.name) {
                   _selectedResource.name = params.node
                   _selectedResource.namespace = params.namespace
@@ -201,40 +201,41 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = isResourceBrowserView
-            ? markTabActiveByIdentifier(
-                  selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
-                  params.node,
-                  params.nodeType,
-                  _url,
-              )
-            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+      let isTabFound = false
+      if (isResourceBrowserView) {
+          const _idPrefix =
+              isResourceBrowserView && selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
+                  ? K8S_EMPTY_GROUP
+                  : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
+          isTabFound = markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
+      } else {
+          isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+      }
+      if (!isTabFound) {
+          setTimeout(() => {
+              let _urlToCreate = url + '/' + _tabName.toLowerCase()
 
-        if (!isTabFound) {
-            setTimeout(() => {
-                let _urlToCreate = url + '/' + _tabName.toLowerCase()
+              const query = new URLSearchParams(window.location.search)
 
-                const query = new URLSearchParams(window.location.search)
+              if (query.get('container')) {
+                  _urlToCreate = _urlToCreate + '?container=' + query.get('container')
+              }
 
-                if (query.get('container')) {
-                    _urlToCreate = _urlToCreate + '?container=' + query.get('container')
-                }
-
-                if (isResourceBrowserView) {
-                    addTab(
-                        selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
-                        params.nodeType,
-                        params.node,
-                        _urlToCreate,
-                    )
-                } else {
-                    AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-                }
-                setSelectedTabName(_tabName)
-            }, 500)
-        } else if (selectedTabName !== _tabName) {
-            setSelectedTabName(_tabName)
-        }
+              if (isResourceBrowserView) {
+                  addTab(
+                      selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                      params.nodeType,
+                      params.node,
+                      _urlToCreate,
+                  )
+              } else {
+                  AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
+              }
+              setSelectedTabName(_tabName)
+          }, 500)
+      } else if (selectedTabName !== _tabName) {
+          setSelectedTabName(_tabName)
+      }
     }
 
     const currentTab = applicationObjectTabs.filter((tab) => {
@@ -350,7 +351,7 @@ function NodeDetailComponent({
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
+                            selectedResource={getSelectedResource()}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -358,7 +359,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
+                            selectedResource={getSelectedResource()}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
@@ -374,7 +375,7 @@ function NodeDetailComponent({
                                 logSearchTerms={logSearchTerms}
                                 setLogSearchTerms={setLogSearchTerms}
                                 isResourceBrowserView={isResourceBrowserView}
-                                selectedResource={selectedResource}
+                                selectedResource={getSelectedResource()}
                                 ephemeralContainerType={ephemeralContainerType}
                                 targetContainerOption={targetContainerOption}
                                 imageListOption={imageListOption}
@@ -391,7 +392,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
+                            selectedResource={getSelectedResource()}
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
                             containers={containers}
@@ -420,7 +421,7 @@ function NodeDetailComponent({
                     containers={containers}
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
-                    selectedNamespaceByClickingPod={selectedResource?.namespace}
+                    selectedNamespaceByClickingPod={selectedResource?.namespace ?? params.namespace}
                 />
             )}
         </React.Fragment>

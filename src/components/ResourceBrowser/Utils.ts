@@ -4,7 +4,7 @@ import { Nodes } from '../app/types'
 import { eventAgeComparator } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
-import { K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
+import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType } from './Types'
 
 const updatePersistedTabsData = (key: string, value: any) => {
@@ -143,22 +143,22 @@ export const sortEventListData = (eventList: Record<string, any>[]): Record<stri
 
 export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType: string, group: string) => {
     const parentNode = _k8SObjectList[0]
-    const childNode =  parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
+    const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
     let isResourceGroupPresent = false
     let groupedChild = null
 
-    if (SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() === nodeType || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType || nodeType === AppDetailsTabs.terminal) {
-        isResourceGroupPresent = nodeType === AppDetailsTabs.terminal || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType
+    if (nodeType === AppDetailsTabs.terminal || FIXED_GVK_Keys[nodeType]) {
+        isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType //nodeType === AppDetailsTabs.terminal || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType
         groupedChild = {
-            namespaced: false,
-            gvk: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS.overviewGVK,
+            namespaced: SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() === nodeType,
+            gvk: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
             isGrouped: false,
         }
     } else if (nodeType) {
         for (const _parentNode of _k8SObjectList) {
             for (const _childNode of _parentNode.child) {
                 if (
-                    (_childNode.gvk.Kind.toLowerCase() === nodeType) &&
+                    _childNode.gvk.Kind.toLowerCase() === nodeType &&
                     (_childNode.gvk.Group.toLowerCase() === group ||
                         SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
                         K8S_EMPTY_GROUP === group)

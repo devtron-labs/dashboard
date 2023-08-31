@@ -619,7 +619,11 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     }
     const handleResourceClick = (e) => {
         const { name, namespace } = e.currentTarget.dataset
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`)
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
+        const isAdded = addTab(K8S_EMPTY_GROUP, 'pod', name, _url)
+        if (isAdded) {
+            push(_url)
+        }
     }
     const renderPodHeaderCell = (
         columnName: string,
