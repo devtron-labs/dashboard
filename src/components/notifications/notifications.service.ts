@@ -2,7 +2,7 @@ import { Routes } from '../../config/constants'
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
-import { SMTPConfigResponseType } from './types'
+import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -120,6 +120,15 @@ export function getChannelConfigs(): Promise<ResponseType> {
     return get(URL)
 }
 
+export function getDefaultConfig(): Promise<ResponseType> {
+    const URL = `${Routes.NOTIFIER}/channel/config`
+    return get(URL)
+}
+
+export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
+    return get(`${Routes.NOTIFIER}/variables`)
+}
+
 export function getConfigs(): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
         let slackConfigs = response.result?.slackConfigs || []
@@ -163,12 +172,24 @@ export function getConfigs(): Promise<ResponseType> {
                 isDefault: smtpConfig.default || false,
             }
         })
+        let webhookConfigs = response.result?.webhookConfigs || []
+        webhookConfigs.sort((a, b) => {
+            return sortCallback('configName', a, b)
+        })
+        webhookConfigs = webhookConfigs.map((webhookConfig) => {
+            return {
+                id: webhookConfig.id,
+                name: webhookConfig.configName || '',
+                webhookUrl: webhookConfig.webhookUrl || '',
+            }
+        })
         return {
             ...response,
             result: {
                 slackConfigurationList: slackConfigs,
                 sesConfigurationList: sesConfigs,
                 smtpConfigurationList: smtpConfigs,
+                webhookConfigurationList: webhookConfigs,
             },
         }
     })
@@ -258,7 +279,7 @@ export function updateNotificationRecipients(
             if (r.configId) {
                 return {
                     configId: r.configId,
-                    dest: r.dest === 'slack' ? r.dest : emailChannel,
+                    dest: r.dest === 'slack' || r.dest === "webhook" ? r.dest : emailChannel,
                     recipient: '',
                 }
             } else
@@ -336,6 +357,34 @@ export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?:
     })
 }
 
+export function getWebhookConfiguration(webhookConfigId: number): Promise<ResponseType> {
+    return get(`${Routes.NOTIFIER}/channel/webhook/${webhookConfigId}`)
+}
+
+export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
+    const headerObj = {};
+    const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
+    data.header.forEach((element) => {
+        if (element.key != '') {
+            headerObj[element.key] = element.value
+        }
+    });
+
+    let payload = {
+        channel: 'webhook',
+        configs: [
+            {
+                id: (Number)(data.id),
+                configName: data.configName,
+                webhookUrl: data.webhookUrl,
+                header: headerObj,
+                payload: headerPayload,
+            },
+        ],
+    }
+    return post(`${Routes.NOTIFIER}/channel`, payload)
+}
+
 export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
     let payload = {
@@ -395,27 +444,27 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
         let parsedResult = response.result?.map((row) => {
             let projects = row.team
                 ? row.team.map((team) => {
-                      return {
-                          type: 'project',
-                          ...team,
-                      }
-                  })
+                    return {
+                        type: 'project',
+                        ...team,
+                    }
+                })
                 : []
             let app = row.app
                 ? row.app.map((team) => {
-                      return {
-                          type: 'application',
-                          ...team,
-                      }
-                  })
+                    return {
+                        type: 'application',
+                        ...team,
+                    }
+                })
                 : []
             let environment = row.environment
                 ? row.environment?.map((team) => {
-                      return {
-                          type: 'environment',
-                          ...team,
-                      }
-                  })
+                    return {
+                        type: 'environment',
+                        ...team,
+                    }
+                })
                 : []
             return {
                 appliedFilters: projects.concat(app, environment),

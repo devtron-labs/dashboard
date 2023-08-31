@@ -44,6 +44,7 @@ export default function JobsList() {
     const [masterFilters, setMasterFilters] = useState({
         appStatus: [],
         projects: [],
+        environments: [],
     })
     const [jobCount, setJobCount] = useState(0)
     //  const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
@@ -156,6 +157,7 @@ export default function JobsList() {
         query['offset'] = 0
         delete query['team']
         delete query['appStatus']
+        delete query['environment']
         delete query['search']
 
         //delete search string
@@ -247,6 +249,19 @@ export default function JobsList() {
                         onShowHideFilterContent={onShowHideFilterContent}
                         dataTestId="job-projects-filter"
                     />
+                    <span className="filter-divider" />
+                    <Filter
+                        list={masterFilters.environments}
+                        labelKey="label"
+                        buttonText={JobsFilterTypeText.EnvironmentText}
+                        placeholder={JobsFilterTypeText.SearchEnvironment}
+                        searchable
+                        multi
+                        type={JobsFilterTypeText.ENVIRONMENT}
+                        applyFilter={applyFilter}
+                        onShowHideFilterContent={onShowHideFilterContent}
+                        dataTestId="job-environments-filter"
+                    />
                     {showExportCsvButton && (
                         <>
                             <span className="filter-divider" />
@@ -272,6 +287,9 @@ export default function JobsList() {
         } else if (key == JobsStatusConstants.APP_STATUS.noSpaceLower) {
             filterType = JobsFilterTypeText.APP_STATUS
             _filterKey = JobsStatusConstants.APP_STATUS.normalText
+        } else {
+            filterType = JobsFilterTypeText.ENVIRONMENT
+            _filterKey = JobsStatusConstants.ENVIRONMENT.lowerCase
         }
 
         return masterFilters[key].map((filter) => {

@@ -63,6 +63,7 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                                         action: 'Values Clicked',
                                     })
                                 }}
+                                data-testid="helm-configure-link"
                             >
                                 <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
                                 Configure

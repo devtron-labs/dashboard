@@ -8,9 +8,9 @@ export function ScannedByToolModal({ scanToolId }: { scanToolId: number }) {
     const isTrivy = scanToolId === SCAN_TOOL_ID_TRIVY
     return (
         <>
-            <span className="dc__italic-font-style fw-4 dc__devtron-breadcrumb">
-                Scanned by{' '}
-                <span className="fw-6" data-testid="scanned-by-tool">
+            <span className="dc__italic-font-style fs-13">
+                Scanned by
+                <span className="fw-6 ml-4" data-testid="scanned-by-tool">
                     {isTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
                 </span>
             </span>

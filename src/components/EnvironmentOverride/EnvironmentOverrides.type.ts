@@ -32,14 +32,17 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
 }
 
 export interface EnvironmentOverrideComponentProps {
-    environments: AppEnvironment[]
     appList?: ConfigAppList[]
-    setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
+    isJobView?: boolean
+    environments?: any
+    reloadEnvironments: () => void
+    envName?: string
 }
 
 export interface CommonEnvironmentOverridesProps {
     parentState: ComponentStates
     setParentState: React.Dispatch<React.SetStateAction<ComponentStates>>
+    isJobView?: boolean
 }
 
 export interface ConfigMapOverridesProps extends CommonEnvironmentOverridesProps {}
@@ -49,10 +52,13 @@ export interface SecretOverridesProps extends CommonEnvironmentOverridesProps {}
 export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
     environments: AppEnvironment[]
     environmentName: string
+    isProtected: boolean
+    reloadEnvironments: () => void
 }
 export interface ListComponentType {
     name: string
     type: string
     label: string
     appChartRef: { id: number; version: string; name: string }
+    isJobView?: boolean
 }

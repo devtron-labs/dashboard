@@ -1,36 +1,53 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { useAsync } from '../../../common'
+import { Progressing, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary, useAsync } from '../../../common'
 import EnvironmentOverride from '../../../EnvironmentOverride/EnvironmentOverride'
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
-export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType) {
+const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtections', null, 'function')
+
+export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDefaultType) {
     const { envId, appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
-    const [environments, setEnvironments] = useState([])
     const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
-    const [loading, appList] = useAsync(() => getConfigAppList(+envId, filteredAppIds), [envId, filteredAppIds])
+    const [loading, initDataResults] = useAsync(
+        () =>
+            Promise.allSettled([
+                getConfigAppList(+envId, filteredAppIds),
+                typeof getEnvConfigProtections === 'function'
+                    ? getEnvConfigProtections(Number(envId))
+                    : { result: null },
+            ]),
+        [envId, filteredAppIds],
+    )
 
     useEffect(() => {
-        if (appList?.result) {
-            const appIdExist = appList.result.some((app) => app.id === +appId)
-            appList.result.sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(appList.result)
+        if (initDataResults?.[0]?.['value']?.['result']?.length) {
+            const configProtectionMap = initDataResults[1]?.['value']?.['result'] ?? {}
+            let appIdExist = false
+            const _appList = (initDataResults[0]?.['value']?.['result'] ?? []).map((appData) => {
+                if (appData.id === +appId) {
+                    appIdExist = true
+                }
+                return { ...appData, isProtected: configProtectionMap[appData.id] ?? false }
+            })
+            _appList.sort((a, b) => a.name.localeCompare(b.name))
+            setEnvAppList(_appList)
             if (!appId) {
-                history.replace(`${url}/${appList.result[0].id}`)
+                history.replace(`${url}/${_appList[0].id}`)
             } else if (!appIdExist) {
                 const oldUrlSubstring = `/edit/${appId}`
-                const newUrlSubstring = `/edit/${appList.result[0].id}`
+                const newUrlSubstring = `/edit/${_appList[0].id}`
                 history.push(`${url.replace(oldUrlSubstring, newUrlSubstring)}`)
             }
         }
-    }, [appList])
+    }, [initDataResults])
 
-    if (loading) {
+    if (loading || !appId) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />
@@ -54,11 +71,7 @@ export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType)
                 </div>
             </div>
             <div className="env-compose__main">
-                <EnvironmentOverride
-                    appList={envAppList}
-                    environments={environments}
-                    setEnvironments={setEnvironments}
-                />
+                <EnvironmentOverride appList={envAppList} environments={[]} reloadEnvironments={noop} envName={envName}/>
             </div>
         </div>
     )

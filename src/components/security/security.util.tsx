@@ -21,7 +21,6 @@ export const styles = {
             fontSize: '14px',
             fontWeight: 'normal',
             color: 'var(--N900)',
-            textTransform: 'capitalize',
             cursor: 'pointer',
         })
     },
@@ -33,7 +32,6 @@ export const styles = {
         return ({
             ...base,
             color: 'var(--N900)',
-            textTransform: 'capitalize',
             backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
         })
     },
@@ -48,7 +46,7 @@ export const portalStyles = {
         return ({
             ...base,
             padding: '0px',
-            textTransform: 'capitalize',
+            textTransform: 'none',
             cursor: 'pointer',
         })
     },

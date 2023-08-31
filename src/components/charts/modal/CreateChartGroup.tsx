@@ -74,7 +74,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             return false
         }
 
-        const isNameUsed = this.state.charts.some((chart) => chart.name === this.state.name.value)
+        const isNameUsed = this.state.charts.some((chart) => chart.name === this.state.name.value && chart.id !== this.props.chartGroupId)
         if (isNameUsed) {
             toast.error(`A chart group with name ${this.state.name.value} already exists!`)
             return false

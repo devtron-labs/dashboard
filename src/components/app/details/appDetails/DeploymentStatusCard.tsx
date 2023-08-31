@@ -1,6 +1,5 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import moment from 'moment'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
@@ -9,6 +8,7 @@ import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../co
 import { useHistory } from 'react-router'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { validateMomentDate } from './utils'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
@@ -17,7 +17,8 @@ function DeploymentStatusCard({
     hideDetails,
     deploymentTriggerTime,
     triggeredBy,
-    isVirtualEnvironment
+    isVirtualEnvironment,
+    refetchDeploymentStatus
 }: DeploymentStatusCardType) {
     const history = useHistory()
 
@@ -74,6 +75,9 @@ function DeploymentStatusCard({
     }
 
     const onClickLastDeploymentStatus = (e) => {
+        if (!hideDetails) {
+            refetchDeploymentStatus(true)
+        }
         if (loadingResourceTree) noop()
         if (!hideDetails && !hideDeploymentStatusLeftInfo) {
             showDeploymentDetailedStatus(e)
@@ -84,7 +88,7 @@ function DeploymentStatusCard({
         <div
             data-testid="deployment-status-card"
             onClick={onClickLastDeploymentStatus}
-            className={`source-info-container flex left bcn-0 p-16 br-8 mw-382 ${
+            className={`source-info-container flex left bcn-0 p-16 br-8 ${
                 hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
             } mr-12`}
         >
@@ -95,12 +99,12 @@ function DeploymentStatusCard({
                 </div>
                 <div className="flexbox" data-testid="last-updated-time">
                     <span className="fs-13 mr-5 fw-6 cn-9">
-                        {moment(
+                        {validateMomentDate(
                             hideDeploymentStatusLeftInfo
                                 ? deploymentTriggerTime
                                 : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
                             'YYYY-MM-DDTHH:mm:ssZ',
-                        ).fromNow()}
+                        )}
                     </span>
                     {deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
                         <Timer className="icon-dim-16 mt-4" />
@@ -108,7 +112,7 @@ function DeploymentStatusCard({
                 </div>
 
                 {hideDeploymentStatusLeftInfo ? (
-                    triggeredBy
+                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">by {triggeredBy || '-'}</div>
                 ) : (
                     <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
                         by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}

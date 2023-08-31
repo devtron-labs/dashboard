@@ -4,12 +4,12 @@ import ReactSelect, { components } from 'react-select'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { REGISTRY_TYPE_MAP, Routes, URLS } from '../../config'
+import { Routes, URLS } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, REGISTRY_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function CIContainerRegistryConfig({
     appId,

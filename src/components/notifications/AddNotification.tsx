@@ -17,6 +17,7 @@ import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { Link } from 'react-router-dom'
@@ -30,6 +31,8 @@ import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { EMAIL_AGENT } from './types'
+import { WebhookConfigModal } from './WebhookConfigModal'
+import { channel } from 'diagnostics_channel'
 
 interface AddNotificationsProps extends RouteComponentProps<{}> {}
 
@@ -82,17 +85,17 @@ interface AddNotificationState {
         __isNew__?: boolean
         label: string
         value
-        data: { dest: 'slack' | 'ses' | 'smtp' | ''; configId: number; recipient: string }
+        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
     }[]
-    sesConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | ''; recipient: string }[]
-    smtpConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | ''; recipient: string }[]
+    sesConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | 'webhook' |''; recipient: string }[]
+    smtpConfigOptions: { id: number; configName: string; dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; recipient: string }[]
     isLoading: boolean
     appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
     selectedChannels: {
         __isNew__?: boolean
         label: string
         value
-        data: { dest: 'slack' | 'ses' | 'smtp' | ''; configId: number; recipient: string }
+        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
     }[]
     openSelectPipeline: boolean
     pipelineList: PipelineType[]
@@ -101,6 +104,7 @@ interface AddNotificationState {
     options: Options
     isApplistLoading: boolean
     selectedEmailAgent: string
+    showWebhookConfigModal: boolean 
 }
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
@@ -131,6 +135,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             emailAgentConfigId: 0,
             options: { environment: [], application: [], project: [] },
             selectedEmailAgent: EMAIL_AGENT.SES,
+            showWebhookConfigModal: false,
         }
         this.handleFilterInput = this.handleFilterInput.bind(this)
         this.selectFilterType = this.selectFilterType.bind(this)
@@ -142,6 +147,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.selectEmailAgentConfigIdFromChild = this.selectEmailAgentConfigIdFromChild.bind(this)
         this.openAddEmailConfigPopup = this.openAddEmailConfigPopup.bind(this)
         this.changeEmailAgent = this.changeEmailAgent.bind(this)
+        this.onSaveWebhookConfig = this.onSaveWebhookConfig.bind(this)
     }
 
     componentDidMount() {
@@ -154,7 +160,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             this.setState({
                 sesConfigOptions: result.sesConfigOptions,
                 smtpConfigOptions: result.smtpConfigOptions,
-                channelOptions: result.channelOptions,
+                channelOptions: result.channelOptions?.map(channel=>{
+                    channel.value = channel.value + "-" + channel.data.dest
+                    return channel
+                }),
                 view: ViewType.FORM,
             })
         })
@@ -754,21 +763,31 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         MultiValueRemove: MultiValueRemove,
                         IndicatorSeparator: null,
                         DropdownIndicator: DropdownIndicator,
-                        // MultiValueContainer: MultiValueContainer,
                         ClearIndicator: ClearIndicator,
                         Option: Option,
                         MenuList: (props) => {
                             return (
                                 <components.MenuList {...props}>
                                     {props.children}
-                                    <div
-                                        className="pipeline-filter__sticky-bottom cursor"
-                                        onClick={(e) => {
-                                            this.setState({ showSlackConfigModal: true })
-                                        }}
-                                    >
-                                        <Slack className="icon-dim-24 mr-12" />
-                                        Configure Slack Channel
+                                    <div className="pipeline-filter__sticky-bottom cursor">
+                                        <div
+                                            className="pipeline-filter__sticky-bottom cursor"
+                                            onClick={(e) => {
+                                                this.setState({ showSlackConfigModal: true })
+                                            }}
+                                        >
+                                            <Slack className="icon-dim-24 mr-12" />
+                                            Configure Slack Channel
+                                        </div>
+                                        <div
+                                            className="pipeline-filter__sticky-bottom cursor"
+                                            onClick={(e) => {
+                                                this.setState({ showWebhookConfigModal: true })
+                                            }}
+                                        >
+                                            <Webhook className="icon-dim-24 mr-12" />
+                                            Configure Webhook
+                                        </div>
                                     </div>
                                 </components.MenuList>
                             )
@@ -899,6 +918,25 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         }
     }
 
+    renderShowWebhookConfigModal() {
+        if (this.state.showWebhookConfigModal) {
+            return (
+                <WebhookConfigModal
+                    webhookConfigId={0}
+                    onSaveSuccess={this.onSaveWebhookConfig}
+                    closeWebhookConfigModal={() => {
+                        this.setState({ showWebhookConfigModal: false })
+                    }}
+                />
+            )
+        }
+    }
+
+    onSaveWebhookConfig() {
+        this.setState({ showWebhookConfigModal: false })
+        this.getInitialData()
+    }
+
     render() {
         return (
             <ErrorBoundary>
@@ -908,6 +946,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     {this.renderShowSlackConfigModal()}
                     {this.renderSESConfigModal()}
                     {this.renderSMTPConfigModal()}
+                    {this.renderShowWebhookConfigModal()}
                 </div>
             </ErrorBoundary>
         )

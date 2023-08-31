@@ -1,8 +1,9 @@
 import * as jsonpatch from 'fast-json-patch'
 import { getValueByPointer, applyPatch } from 'fast-json-patch'
 import { BASIC_FIELDS, BASIC_FIELD_MAPPING, BASIC_FIELD_PARENT_PATH } from './constants'
-import { BasicFieldErrorObj } from './types'
+import { BasicFieldErrorObj, DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
 import { ValidationRules } from './validationRules'
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
 let templateFromBasicValue
@@ -89,4 +90,22 @@ export const patchBasicData = (_template, basicFieldValues: Record<string, any>)
         })
     }
     return applyPatch(_template, basicFieldPatchData).newDocument
+}
+
+export const handleConfigProtectionError = (
+    action: number,
+    err: any,
+    dispatch: (value: DeploymentConfigStateAction) => void,
+    reloadEnvironments: () => void,
+): void => {
+    if (err?.code === 423) {
+        if (action === 3) {
+            dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
+        } else {
+            dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
+        }
+        reloadEnvironments()
+        return
+    }
+    showError(err)
 }

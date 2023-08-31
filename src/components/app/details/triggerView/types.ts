@@ -10,9 +10,14 @@ import {
     UserApprovalConfigType,
     CIBuildConfigType,
     DockerConfigOverrideType,
+    ReleaseTag,
+    ImageComment,
+    DeploymentAppTypes,
+    TaskErrorObj,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-export interface CDMaterialProps {
+export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -36,6 +41,7 @@ export interface CDMaterialProps {
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
+        appId?:number,
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeCDModal: (e) => void
@@ -57,6 +63,14 @@ export interface CDMaterialProps {
     triggerType?: string
     isVirtualEnvironment?: boolean
     isSaveLoading?: boolean
+    ciPipelineId?: number
+    appReleaseTagNames?: string[]
+    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
+    setTagsEditable?: (tagsEditable: boolean) => void
+    updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
+    isApplicationGroupTrigger?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -87,6 +101,7 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
+    materialInEditModeMap: Map<number,boolean>
 }
 
 export interface MaterialInfo {
@@ -141,6 +156,9 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
         action: any,
         metadataField: string
     }
+    selectedEnv?: Environment
+    setSelectedEnv?: (selectedEnv: Environment) => void;
+    environmentLists?: any[]
 }
 
 export interface RegexValueType {
@@ -155,7 +173,9 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr extends CommonNodeAttr {}
+export interface NodeAttr extends CommonNodeAttr {
+    cipipelineId?: number
+}
 
 export interface DownStreams {
     id: string
@@ -236,6 +256,8 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     handleSelectionChange?: (_appId: number) => void
     isJobView?: boolean
     index?: number
+    environmentLists?: any[]
+    filteredCIPipelines?: any[]
 }
 
 export interface TriggerViewContextType {
@@ -260,7 +282,10 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
+export interface TriggerViewProps extends RouteComponentProps<{
+    appId: string
+    envId: string
+}> {
     isJobView?: boolean
 }
 
@@ -279,6 +304,10 @@ export interface WorkflowType {
     appId?: number
     isSelected?: boolean
     approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
+    imageReleaseTags: string[]
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -320,6 +349,13 @@ export interface TriggerViewState {
     isChangeBranchClicked: boolean
     loader: boolean
     isSaveLoading?: boolean
+    selectedEnv?: Environment
+    environmentLists?: any[]
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    hideImageTaggingHardDelete?: boolean
+    configs?: boolean
+    isDefaultConfigPresent?: boolean
 }
 
 //-- begining of response type objects for trigger view
@@ -508,6 +544,14 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
+export interface PrePostDeployStageType {  
+    isValid: boolean;
+    steps: TaskErrorObj[];
+    triggerType: string
+    name: string
+    status: string
+}
+
 export interface CdPipeline {
     id: number
     environmentId: number
@@ -533,7 +577,10 @@ export interface CdPipeline {
     deploymentAppCreated?: boolean
     userApprovalConfig?: UserApprovalConfigType
     isVirtualEnvironment?: boolean
+    deploymentAppType: DeploymentAppTypes
     helmPackageName?: string
+    preDeployStage?: PrePostDeployStageType
+    postDeployStage?: PrePostDeployStageType
 }
 
 export interface CdPipelineResult {
