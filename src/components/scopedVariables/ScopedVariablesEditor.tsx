@@ -123,7 +123,7 @@ const ScopedVariablesEditor = ({
     }
 
     return (
-        <div className="flex column dc__content-space h-100 default-bg-color">
+        <div className="flex column dc__content-space h-100 bcn-0">
             <Descriptor />
             <div className="uploaded-variables-editor-background">
                 <div className="uploaded-variables-editor-container">

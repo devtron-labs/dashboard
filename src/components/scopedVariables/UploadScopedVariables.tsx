@@ -20,11 +20,16 @@ import {
 
 export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
     return (
-        <div className="load-scoped-variables-container flex column dc__align-start dc__content-start dc__gap-8">
+        <div className="cursor-default w-200 flex column dc__align-start dc__content-start dc__gap-8">
             <div className="flex dc__align-start dc__gap-8 dc__align-self-stretch dc__content-start">
-                <p className="dc__ellipsis-right load-scoped-variables-container__typography">{fileData?.name}</p>
+                <p className="dc__ellipsis-right dc__no-shrink flex-grow-1 m-0 cn-6 fs-13 fw-4 lh-20 dc__align-left">
+                    {fileData?.name}
+                </p>
 
-                <button className="load-scoped-variables-container__abort-read-btn" onClick={abortRead}>
+                <button
+                    className="dc__no-background p-0 dc__no-border pointer dc__outline-none-imp h-20"
+                    onClick={abortRead}
+                >
                     <Close width="20px" height="20px" />
                 </button>
             </div>
@@ -42,7 +47,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
             {!status?.status && (
                 <div className="flex dc__align-start dc__align-self-stretch dc__gap-4 dc__content-start">
                     <ICError width="20px" height="20px" />
-                    <p className="load-scoped-variables-container__error-typography">Upload failed</p>
+                    <p className="cr-5 fs-13 fw-4 lh-20 dc__align-left">Upload failed</p>
                 </div>
             )}
         </div>
@@ -70,19 +75,21 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
         <div className="flex column center bcn-0 h-100">
             <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                 <div className="flex column center dc__gap-8">
-                    <p className="default-view-title-typography">{DEFAULT_TITLE}</p>
-                    <p className="default-view-description-typography">{DEFAULT_DESCRIPTION}</p>
+                    <p className="cn-9 fs-16 m-0 fw-6">{DEFAULT_TITLE}</p>
+                    <p className="cn-7 fs-13 m-0 fw-4 lh-20 dc__align-center dc__align-self-stretch">
+                        {DEFAULT_DESCRIPTION}
+                    </p>
                 </div>
 
-                <div className="upload-scoped-variables-card flex column center dc__gap-8">
+                <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
                     {status === null ? (
                         <ScopedVariablesInput handleFileUpload={handleFileUpload}>
-                            <div className="flex center upload-scoped-variables-button__icon p-8 dc__gap-4">
+                            <div className="flex center p-8 dc__gap-4 dc__border-radius-50-per bcb-1">
                                 <ICUpload width={20} height={20} />
                             </div>
                             <div className="flex column center">
-                                <p className="upload-description-l1-typography">{UPLOAD_DESCRIPTION_L1}</p>
-                                <p className="upload-description-l2-typography">{UPLOAD_DESCRIPTION_L2}</p>
+                                <p className="cb-5 fs-13 fw-6 lh-20 m-0">{UPLOAD_DESCRIPTION_L1}</p>
+                                <p className="cn-6 fs-10 fw-4 lh-16 m-0">{UPLOAD_DESCRIPTION_L2}</p>
                             </div>
                         </ScopedVariablesInput>
                     ) : (
@@ -96,7 +103,7 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
                 </div>
 
                 <button
-                    className="p-0 dc__no-background dc__no-border default-download-template-typography"
+                    className="p-0 dc__no-background dc__no-border cb-5 fs-13 fw-400 lh-20"
                     onClick={() =>
                         downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, 'application/x-yaml')
                     }
