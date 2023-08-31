@@ -288,8 +288,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 return 'No matching options'
             }}
             onBlur={handleCreatableBlur}
-            isClearable
-            isSearchable
             isValidNewOption={() => false}
             onKeyDown={handleKeyDown}
             menuPlacement="auto"
