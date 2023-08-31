@@ -57,12 +57,13 @@ export const getUpdatedNodeSelectionData = (
 export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
     const _resourceGroupType = getAggregator(nodeType as NodeType)
     const _selectedGroup = k8SObjectMap.get(_resourceGroupType)
-    for (const [key, value] of _selectedGroup.child) {
-        if (key.toLowerCase() === nodeType) {
-            return value.data[0].gvk
+    if (_selectedGroup) {
+        for (const [key, value] of _selectedGroup.child) {
+            if (key.toLowerCase() === nodeType) {
+                return value.data[0].gvk
+            }
         }
     }
-
     return null
 }
 
@@ -155,7 +156,7 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
         }
     } else if (nodeType) {
         for (const _parentNode of _k8SObjectList) {
-            for (const _childNode of _parentNode.child) {    
+            for (const _childNode of _parentNode.child) {
                 if (
                     (_childNode.gvk.Kind.toLowerCase() === nodeType) &&
                     (_childNode.gvk.Group.toLowerCase() === group ||
