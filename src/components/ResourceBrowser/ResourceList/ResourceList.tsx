@@ -289,13 +289,12 @@ export default function ResourceList() {
                     }
                 }
 
-                const { parentNode, childNode, isResourceGroupPresent, groupedChild } = getParentAndChildNodes(
+                const { parentNode, childNode, isResourceGroupPresent, groupedChild, isEventValue } = getParentAndChildNodes(
                     _k8SObjectList,
                     nodeType,
                     group,
                 )
-
-                if (!isResourceGroupPresent) {
+                if (!isResourceGroupPresent && !isEventValue) {
                     parentNode.isExpanded = true
                     const _selectedResourceParam = childNode.gvk.Kind.toLowerCase()
                     replace({
@@ -304,6 +303,7 @@ export default function ResourceList() {
                         }/${_selectedResourceParam}/${childNode.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP}`,
                     })
                 }
+
                 const defaultSelected = groupedChild ??
                     processedData.selectedResource ?? {
                         namespaced: childNode.namespaced,
