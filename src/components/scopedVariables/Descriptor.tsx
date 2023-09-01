@@ -19,8 +19,9 @@ export default function Descriptor({ children, showUploadButton, readFile }: Des
     return (
         <>
             <div
-                className="pt-16 pb-16 pl-20 pr-20 flex column dc__align-self-stretch bcn-0 dc__content-space dc__align-start dc__border-bottom"
-                style={children ? { padding: '16px 20px 8px 20px', borderBottom: 'none' } : {}}
+                className={`flex column dc__align-self-stretch bcn-0 dc__content-space dc__align-start pl-20 pr-20 pt-16 ${
+                    children ? ' dc__no-bottom-border pb-8' : ' dc__border-bottom pb-16 '
+                }}`}
             >
                 <div className="flex dc__gap-8 w-100 dc__content-space">
                     <div className="flex dc__gap-8">
