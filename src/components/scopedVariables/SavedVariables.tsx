@@ -168,13 +168,13 @@ export default function SavedVariablesView({
                             </Tippy>
                             {showDropdown && (
                                 <div
-                                    className="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start"
+                                    className="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp"
                                     ref={dropdownRef}
                                 >
                                     {DROPDOWN_ITEMS.map((item) => (
                                         <div
                                             key={item}
-                                            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start"
+                                            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4"
                                             onClick={() => handleDownload(item)}
                                         >
                                             {item}
