@@ -460,7 +460,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.postStageConfigMapSecretNames.configMaps.map((configmap) => {
                       return {
                           label: configmap,
-                          value: configmap,
+                          value:`${configmap}-cm`,
                           type: 'configmaps',
                       }
                   })
@@ -469,7 +469,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets.map((secret) => {
                       return {
                           label: secret,
-                          value: secret,
+                          value: `${secret}-cs`,
                           type: 'secrets',
                       }
                   })
