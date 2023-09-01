@@ -10,7 +10,7 @@ import {
     NodeDetailTab,
     ParamsType,
 } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import { NodeDetailPropsType, NodeType, Options, OptionsBase, SelectedResourceType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -43,6 +43,8 @@ function NodeDetailComponent({
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState<OptionsBase[]>([])
+    const [selectedResourceWithContainers, setSelectedResourceWithContainers] =
+    useState<SelectedResourceType>(selectedResource)
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
     const [hideManagedFields, setHideManagedFields] = useState(true)
@@ -88,7 +90,7 @@ function NodeDetailComponent({
         ) {
             getContainersFromManifest()
         }
-    }, [loadingResources, params.node])
+    }, [loadingResources])
 
     const isExternalEphemeralContainer = (cmds: string[], name: string):boolean => {
         const matchingCmd = `sh ${name}-devtron.sh`
@@ -98,6 +100,7 @@ function NodeDetailComponent({
 
     const getContainersFromManifest = async () => {
         try {
+            setFetchingResource(true)
             const { result } = await getManifestResource(
                 appDetails,
                 params.podName,
@@ -148,7 +151,10 @@ function NodeDetailComponent({
                     _resourceContainers.push(...ephemeralContainers)
                 }
             }
-            setResourceContainers(_resourceContainers)
+            setSelectedResourceWithContainers({
+                ...selectedResource,
+                containers: _resourceContainers,
+            })
             if (isResourceBrowserView) {
                 setContainers(_resourceContainers)
             }
@@ -175,7 +181,7 @@ function NodeDetailComponent({
     const handleSelectedTab = (_tabName: string, _url: string) => {
         const isTabFound = isResourceBrowserView
             ? markTabActiveByIdentifier(
-                  selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                selectedResourceWithContainers?.group?.toLowerCase() || K8S_EMPTY_GROUP,
                   params.node,
                   params.nodeType,
                   _url,
@@ -194,7 +200,7 @@ function NodeDetailComponent({
 
                 if (isResourceBrowserView) {
                     addTab(
-                        selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                        selectedResourceWithContainers?.group?.toLowerCase() || K8S_EMPTY_GROUP,
                         params.nodeType,
                         params.node,
                         _urlToCreate,
@@ -226,9 +232,9 @@ function NodeDetailComponent({
                 : true))
 
     // Assign extracted containers to selected resource before passing further
-    if (selectedResource) {
-        selectedResource.containers = resourceContainers
-    }
+    // if (selectedResource) {
+    //     selectedResource.containers = resourceContainers
+    // }
 
     const handleChanges = (): void => {
         setHideManagedFields(!hideManagedFields)
@@ -318,7 +324,7 @@ function NodeDetailComponent({
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
+                            selectedResource={selectedResourceWithContainers}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -326,7 +332,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
+                            selectedResource={selectedResourceWithContainers}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
@@ -342,7 +348,7 @@ function NodeDetailComponent({
                                 logSearchTerms={logSearchTerms}
                                 setLogSearchTerms={setLogSearchTerms}
                                 isResourceBrowserView={isResourceBrowserView}
-                                selectedResource={selectedResource}
+                                selectedResource={selectedResourceWithContainers}
                                 ephemeralContainerType={ephemeralContainerType}
                                 targetContainerOption={targetContainerOption}
                                 imageListOption={imageListOption}
@@ -359,7 +365,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResource}
+                            selectedResource={selectedResourceWithContainers}
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
                             containers={containers}
