@@ -73,7 +73,7 @@ export interface DescriptorI {
     readFile?: (file: File, validator: ValidatorT, readAs: ReadFileAs) => void
 }
 
-export interface VariableListItemI {
+export interface VariablesListInterface {
     name: string
     description: string
 }
@@ -107,6 +107,12 @@ export interface GridI {
     containerClass?: string
     itemClass?: string
     children: React.ReactNode
+}
+
+export interface VariablesListItemInterface {
+    data: string
+    classes: string
+    tooltip?: boolean
 }
 
 export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI

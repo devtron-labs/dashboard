@@ -1,11 +1,15 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import Grid from './Grid'
-import { VariableListItemI } from './types'
+import { VariablesListInterface, VariablesListItemInterface  } from './types'
 import { TABLE_LIST_HEADINGS } from './constants'
 
-export default function VariablesList({ variablesList }: { variablesList: VariableListItemI[] }) {
-    const VariablesListItem = ({ data, classes, tooltip }: { data: string; classes: string; tooltip?: boolean }) => (
+export default function VariablesList({ variablesList }: { variablesList: VariablesListInterface[] }) {
+    const renderVariablesListItem = ({
+        data,
+        classes,
+        tooltip,
+    }: VariablesListItemInterface) => (
         <div className={classes}>
             {tooltip ? (
                 <Tippy content={data} className="default-tt" placement="top">
@@ -21,17 +25,17 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
         <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">
             <Grid container spacing={0} containerClass="w-100">
                 <Grid item xs={3} itemClass="dc__ellipsis-right">
-                    <VariablesListItem
-                        data={TABLE_LIST_HEADINGS[0]}
-                        classes="pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center"
-                    />
+                    {renderVariablesListItem({
+                        data: TABLE_LIST_HEADINGS[0],
+                        classes: 'pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center',
+                    })}
                 </Grid>
 
                 <Grid item xs={9} itemClass="dc__ellipsis-right">
-                    <VariablesListItem
-                        data={TABLE_LIST_HEADINGS[1]}
-                        classes="pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center"
-                    />
+                    {renderVariablesListItem({
+                        data: TABLE_LIST_HEADINGS[1],
+                        classes: 'pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center',
+                    })}
                 </Grid>
 
                 {variablesList?.map((variable) => (
@@ -42,19 +46,19 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                         key={variable.name}
                     >
                         <Grid item xs={3} itemClass="dc__ellipsis-right">
-                            <VariablesListItem
-                                data={variable.name}
-                                classes="pt-12 pb-12 pl-20 pr-20 flexbox dc__align-items-center dc__border-bottom-n1"
-                                tooltip
-                            />
+                            {renderVariablesListItem({
+                                data: variable.name,
+                                classes: 'pt-12 pb-12 pl-20 pr-20 flexbox dc__align-items-center dc__border-bottom-n1',
+                                tooltip: true,
+                            })}
                         </Grid>
 
                         <Grid item xs={9} itemClass="dc__ellipsis-right">
-                            <VariablesListItem
-                                data={variable.description}
-                                classes="pt-12 pb-12 pl-20 pr-20 flexbox dc__align-items-center dc__border-bottom-n1"
-                                tooltip
-                            />
+                            {renderVariablesListItem({
+                                data: variable.description,
+                                classes: 'pt-12 pb-12 pl-20 pr-20 flexbox dc__align-items-center dc__border-bottom-n1',
+                                tooltip: true,
+                            })}
                         </Grid>
                     </Grid>
                 ))}
