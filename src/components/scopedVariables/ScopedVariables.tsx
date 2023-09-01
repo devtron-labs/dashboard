@@ -18,7 +18,7 @@ export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesInterfa
 
     useEffect(() => {
         try {
-            if (scopedVariablesData?.result) {
+            if (!loadingScopedVariables && scopedVariablesData?.result) {
                 const parsedSchema = JSON.parse(scopedVariablesData.result.jsonSchema)
                 setJsonSchema(parsedSchema)
                 if (scopedVariablesData.result.manifest)

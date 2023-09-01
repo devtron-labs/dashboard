@@ -152,6 +152,7 @@ export default function ScopedVariablesEditor({
                             <button
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
                                 onClick={handleAbort}
+                                disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                                 data-testid="close-btn"
                             >
                                 <Close className="icon-dim-20" />
@@ -189,6 +190,7 @@ export default function ScopedVariablesEditor({
                         <button
                             className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp"
                             onClick={handleAbort}
+                            disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >
                             Cancel
                         </button>
