@@ -136,3 +136,8 @@ export const SAVE_SUCCESS_TOAST_MESSAGE = 'File saved successfully'
 export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
 export const PARSE_ERROR_TOAST_MESSAGE = 'Error while parsing file'
 export const GET_SCOPED_VARIABLES_ERROR = 'Error while fetching scoped variables'
+
+export const NO_VARIABLES_MESSAGE = {
+    TITLE: 'No matching results found',
+    SUBTITLE: "We couldn't find any matching variable",
+}

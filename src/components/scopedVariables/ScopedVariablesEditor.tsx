@@ -182,7 +182,7 @@ export default function ScopedVariablesEditor({
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
-                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp"
+                            className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
                             onClick={handleAbort}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >
@@ -190,7 +190,7 @@ export default function ScopedVariablesEditor({
                         </button>
 
                         <ButtonWithLoader
-                            rootClassName="flex mw-56 pt-8 pb-8 pl-16 pr-16 dc__outline-none-imp dc__gap-8 dc__border-radius-4-imp bcb-5 cn-0 fs-13 fw-6 lh-20 dc__no-border cta"
+                            rootClassName="flex mw-56 pt-8 pb-8 pl-16 pr-16 dc__outline-none-imp dc__gap-8 dc__border-radius-4-imp bcb-5 cn-0 fs-13 fw-6 lh-20 dc__no-border h-32 cta"
                             onClick={showSaveView ? handleSave : handleReview}
                             loaderColor="white"
                             isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}

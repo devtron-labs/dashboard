@@ -1,15 +1,13 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import Grid from './Grid'
-import { VariablesListInterface, VariablesListItemInterface  } from './types'
-import { TABLE_LIST_HEADINGS } from './constants'
+import { VariablesListInterface, VariablesListItemInterface } from './types'
+import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE } from './constants'
+import NoResults from '../../assets/img/empty-noresult@2x.png'
 
 export default function VariablesList({ variablesList }: { variablesList: VariablesListInterface[] }) {
-    const renderVariablesListItem = ({
-        data,
-        classes,
-        tooltip,
-    }: VariablesListItemInterface) => (
+    const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemInterface) => (
         <div className={classes}>
             {tooltip ? (
                 <Tippy content={data} className="default-tt" placement="top">
@@ -20,6 +18,15 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
             )}
         </div>
     )
+
+    if (!variablesList?.length)
+        return (
+            <GenericEmptyState
+                image={NoResults}
+                title={NO_VARIABLES_MESSAGE.TITLE}
+                subTitle={NO_VARIABLES_MESSAGE.SUBTITLE}
+            />
+        )
 
     return (
         <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">

@@ -71,7 +71,10 @@ export default function SavedVariablesView({
 
     const onSearch = (query: string) => {
         const filteredVariables = scopedVariablesData?.spec?.filter((variable) => {
-            return variable.name.toLowerCase().includes(query.toLowerCase())
+            return (
+                variable.name.toLowerCase().includes(query.toLowerCase()) ||
+                variable.description.toLowerCase().includes(query.toLowerCase())
+            )
         })
 
         const variables = filteredVariables?.map((variable) => {

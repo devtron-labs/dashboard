@@ -12,6 +12,13 @@ export default function SearchBar({ onSearch }: SearchBarInterface) {
         }
     }
 
+    const handleSearchTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value === '') {
+            onSearch('')
+        }
+        setSearchText(e.target.value)
+    }
+
     return (
         <div className="dc__border-radius-4-imp flexbox pt-5 pr-10 pb-5 pl-8 dc__gap-8 w-250 dc__bg-n50 dc__align-items-center dc__border">
             <div
@@ -29,7 +36,7 @@ export default function SearchBar({ onSearch }: SearchBarInterface) {
                 className="flex-grow-1 dc__no-shrink dc__no-border dc__outline-none-imp fs-13 lh-20 fw-400 p-0 m-0"
                 placeholder="Search Variables"
                 value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={handleSearchTextChange}
                 onKeyDown={onEnter}
             />
         </div>
