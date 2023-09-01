@@ -53,11 +53,6 @@ export default function ScopedVariablesEditor({
             setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
             if (+res?.code === 200) {
-                if (setShowEditView) {
-                    setShowEditView(false)
-                } else {
-                    abortRead()
-                }
                 toast.success(SAVE_SUCCESS_TOAST_MESSAGE)
                 setScopedVariables(null)
                 reloadScopedVariables()
@@ -66,7 +61,6 @@ export default function ScopedVariablesEditor({
             }
         } catch (e) {
             toast.error(SAVE_ERROR_TOAST_MESSAGE)
-        } finally {
             setIsSaving(false)
         }
     }
