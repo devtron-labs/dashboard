@@ -4,8 +4,8 @@ import Grid from './Grid'
 import { VariableListItemI } from './types'
 import { TABLE_LIST_HEADINGS } from './constants'
 
-function VariablesListItem({ data, classes, tooltip }: { data: string; classes: string; tooltip?: boolean }) {
-    return (
+export default function VariablesList({ variablesList }: { variablesList: VariableListItemI[] }) {
+    const VariablesListItem = ({ data, classes, tooltip }: { data: string; classes: string; tooltip?: boolean }) => (
         <div className={classes}>
             {tooltip ? (
                 <Tippy content={data} className="default-tt" placement="top">
@@ -16,9 +16,7 @@ function VariablesListItem({ data, classes, tooltip }: { data: string; classes: 
             )}
         </div>
     )
-}
 
-export default function VariablesList({ variablesList }: { variablesList: VariableListItemI[] }) {
     return (
         <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">
             <Grid container spacing={0} containerClass="w-100">
