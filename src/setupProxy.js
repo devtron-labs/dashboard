@@ -4,7 +4,7 @@ module.exports = function (app) {
     app.use(
         '/orchestrator',
         createProxyMiddleware({
-            target: 'https://demo.devtron.info:32080/',
+            target: 'https://demo.devtron.info/',
             changeOrigin: true,
             logLevel: 'info',
             secure: false,
@@ -13,7 +13,7 @@ module.exports = function (app) {
     app.use(
         '/grafana',
         createProxyMiddleware({
-            target: 'https://demo.devtron.info:32080/',
+            target: 'https://demo.devtron.info/',
             changeOrigin: true,
             logLevel: 'info',
             secure: false,
