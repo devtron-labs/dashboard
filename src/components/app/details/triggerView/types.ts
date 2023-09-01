@@ -175,6 +175,7 @@ export interface CIMaterialState {
 
 export interface NodeAttr extends CommonNodeAttr {
     cipipelineId?: number
+    ciWorkflowId?: number
 }
 
 export interface DownStreams {

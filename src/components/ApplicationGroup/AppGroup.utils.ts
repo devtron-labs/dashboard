@@ -30,6 +30,8 @@ export const processWorkflowStatuses = (
             ciMap[pipeline.ciPipelineId] = {
                 status: pipeline.ciStatus,
                 storageConfigured: pipeline.storageConfigured || false,
+                ciWorkflowId: pipeline.ciWorkflowId,
+                ciPipelineId: pipeline.ciPipelineId,
             }
             if (!cicdInProgress && (pipeline.ciStatus === 'Starting' || pipeline.ciStatus === 'Running')) {
                 cicdInProgress = true
@@ -60,6 +62,8 @@ export const processWorkflowStatuses = (
                 case 'CI':
                     node['status'] = node.isLinkedCI ? ciMap[node.parentCiPipeline]?.status : ciMap[node.id]?.status
                     node['storageConfigured'] = ciMap[node.id]?.storageConfigured
+                    node['ciWorkflowId'] = ciMap[node.id]?.ciWorkflowId
+                    node['ciPipelineId'] = ciMap[node.id]?.ciPipelineId
                     break
                 case 'PRECD':
                     node['status'] = preCDMap[node.id]

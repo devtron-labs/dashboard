@@ -115,6 +115,7 @@ export interface CIWorkflowStatusType {
     ciPipelineName: string
     ciStatus: string
     storageConfigured: boolean
+    ciWorkflowId: number
 }
 
 export interface CDWorkflowStatusType {
