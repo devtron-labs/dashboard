@@ -154,7 +154,7 @@ const ScopedVariablesEditor = ({
                                 onClick={handleAbort}
                                 data-testid="close-btn"
                             >
-                                <Close width="20px" height="20px" />
+                                <Close className="icon-dim-20" />
                             </button>
                         </Tippy>
                     </div>
@@ -168,7 +168,7 @@ const ScopedVariablesEditor = ({
                                 Last Saved File
                             </div>
                             <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                <ICPencil height={20} width={20} />
+                                <ICPencil className="icon-dim-20" />
                                 Edit File
                             </div>
                         </div>

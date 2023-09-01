@@ -144,7 +144,7 @@ const SavedVariablesView = ({
                                     onClick={() => setShowEditView(true)}
                                     data-testid="edit-variables-btn"
                                 >
-                                    <ICPencil width={20} height={20} />
+                                    <ICPencil className="icon-dim-20" />
                                 </button>
                             </Tippy>
 
@@ -163,7 +163,7 @@ const SavedVariablesView = ({
                                     onClick={handleDropdownClick}
                                     data-testid="dropdown-btn"
                                 >
-                                    <ICFileDownload width={20} height={20} />
+                                    <ICFileDownload className="icon-dim-20" />
                                 </button>
                             </Tippy>
                             {showDropdown && (

@@ -31,7 +31,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
                     className="dc__no-background p-0 dc__no-border cursor dc__outline-none-imp h-20"
                     onClick={abortRead}
                 >
-                    <Close width="20px" height="20px" />
+                    <Close className="icon-dim-20" />
                 </button>
             </div>
 
@@ -47,7 +47,7 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
 
             {!status?.status && (
                 <div className="flex dc__align-start dc__align-self-stretch dc__gap-4 dc__content-start">
-                    <ICError width="20px" height="20px" />
+                    <ICError className="icon-dim-20" />
                     <p className="cr-5 fs-13 fw-4 lh-20 dc__align-left">Upload failed</p>
                 </div>
             )}
@@ -86,7 +86,7 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
                     {status === null ? (
                         <ScopedVariablesInput handleFileUpload={handleFileUpload}>
                             <div className="flex center p-8 dc__gap-4 dc__border-radius-50-per bcb-1">
-                                <ICUpload width={20} height={20} />
+                                <ICUpload className="icon-dim-20" />
                             </div>
                             <div className="flex column center">
                                 <p className="cb-5 fs-13 fw-6 lh-20 m-0">{UPLOAD_DESCRIPTION_L1}</p>

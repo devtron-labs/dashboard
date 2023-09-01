@@ -38,7 +38,7 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
                             interactive={true}
                         >
                             <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
-                                <ICHelpOutline width={20} height={20} />
+                                <ICHelpOutline className="icon-dim-20" />
                             </button>
                         </TippyCustomized>
                     </div>
