@@ -212,7 +212,7 @@ export default function ResourceList() {
             }
         }
 
-        if (nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()) {
+        if (nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() && !isSuperAdmin) {
             getGVKData(clusterId)
         }
     }, [location.pathname])
@@ -231,7 +231,7 @@ export default function ResourceList() {
                       _k8SObjectList.push(_k8SObjectMap.get(element))
                   }
               }
-              setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
+              setK8SObjectMapRaw(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
           }
       } catch (err) {}
   }
@@ -839,7 +839,7 @@ export default function ResourceList() {
                     addTab={addTab}
                     renderCallBackSync={renderRefreshBar}
                     syncError={!hideSyncWarning}
-                    k8SObjectMapRaw={k8SObjectMapRaw}
+                    k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
                 />
             )
         }

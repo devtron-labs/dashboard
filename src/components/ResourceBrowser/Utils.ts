@@ -56,7 +56,7 @@ export const getUpdatedNodeSelectionData = (
 
 export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
     const _resourceGroupType = getAggregator(nodeType as NodeType)
-    const _selectedGroup = k8SObjectMap.get(_resourceGroupType)
+    const _selectedGroup = k8SObjectMap?.get(_resourceGroupType)
     if (_selectedGroup) {
         for (const [key, value] of _selectedGroup.child) {
             if (key.toLowerCase() === nodeType) {
