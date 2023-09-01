@@ -99,9 +99,11 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     let searchStr = new URLSearchParams(this.props.location.search);
     let pageSize = searchStr.get('size');
     let offset = searchStr.get('offset');
+    let search = searchStr.get('search')
     let payload = {
       offset: Number(offset) || 0,
       size: Number(pageSize) || 20,
+      search: search || "", 
       cveName: "",
       appName: "",
       objectName: "",
@@ -191,7 +193,11 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     });
   }
 
-  search() {
+  search(e) {
+    const searchParams = new URLSearchParams(this.props.location.search)
+    searchParams.set('search', e.target.value)
+    searchParams.set('offset', '0')
+    this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
     this.setState({ searchApplied: true }, () => {
       this.callGetSecurityScanList();
     });
@@ -201,17 +207,14 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     let newOffset = (this.state.pageSize * (newPageNo - 1));
     let searchStr = new URLSearchParams(this.props.location.search);
     let pageSize = searchStr.get('size');
-    let newSearchStr = '';
+    let newSearchStr = ''
     if (newOffset) newSearchStr = `offset=${newOffset}`;
     if (pageSize) newSearchStr = `${newSearchStr}&&size=${pageSize}`;
     this.props.history.push(`${this.props.match.url}?${newSearchStr}`)
   }
 
   changePageSize(newPageSize: number): void {
-    let searchStr = new URLSearchParams(this.props.location.search);
-     let offset = searchStr.get('offset');
     let newSearchStr = `size=${newPageSize}`;
-    if (offset) newSearchStr = `offset=${offset}&&${newSearchStr}`;
     this.props.history.push(`${this.props.match.url}?${newSearchStr}`);
   }
 
@@ -246,7 +249,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
               <form
                   onSubmit={(e) => {
                       e.preventDefault()
-                      this.search()
+                      this.search(e)
                   }}
                   className="flex-1 flex mr-24"
               >
@@ -294,7 +297,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                           placeholder={`Search ${this.state.searchObject.label}`}
                           onKeyDown={(e) => {
                               if (e.keyCode === 13) {
-                                  this.search()
+                                  this.search(e)
                               }
                           }}
                           onChange={this.handleSearchChange}

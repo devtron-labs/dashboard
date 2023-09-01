@@ -1819,7 +1819,9 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
-
+    &.dc__link_over{
+        color: var(--N600);
+    }
     &:hover {
         color: var(--B500);
     }
