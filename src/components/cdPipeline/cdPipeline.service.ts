@@ -105,7 +105,7 @@ export function getConfigMapAndSecrets(appId: string, envId) {
             options:  configmaps.map((configmap) => {
                 return {
                     label: configmap.name,
-                    value: `${configmap.name}-configmap`,
+                    value: `${configmap.name}-cm`,
                     type: 'configmaps'
                 }
             })
@@ -114,7 +114,7 @@ export function getConfigMapAndSecrets(appId: string, envId) {
             options:  secrets.map((secret) => {
                 return {
                     label: secret.name,
-                    value: `${secret.name}-secret`,
+                    value: `${secret.name}-cs`,
                     type: 'secrets'
                 }
             })
