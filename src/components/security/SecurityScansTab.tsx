@@ -206,8 +206,11 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
   changePage(newPageNo: number): void {
     let newOffset = (this.state.pageSize * (newPageNo - 1));
     let searchStr = new URLSearchParams(this.props.location.search);
-    if (newOffset) searchStr.set('offset', newOffset.toString())
-    this.props.history.push(`${this.props.match.url}?${searchStr.toString()}`)
+    let pageSize = searchStr.get('size');
+    let newSearchStr = ''
+    if (newOffset) newSearchStr = `offset=${newOffset}`;
+    if (pageSize) newSearchStr = `${newSearchStr}&&size=${pageSize}`;
+    this.props.history.push(`${this.props.match.url}?${newSearchStr}`)
   }
 
   changePageSize(newPageSize: number): void {
