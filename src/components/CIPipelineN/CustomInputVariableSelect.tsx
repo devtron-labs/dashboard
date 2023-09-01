@@ -202,11 +202,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }
     const ValueContainer = (props) => {
         let value = props.getValue()[0]?.label
-        const flag = !props.selectProps.menuIsOpen
         return (
             <components.ValueContainer {...props}>
                 <>
-                    {value ? value : flag && (
+                    {value ? value : !props.selectProps.menuIsOpen && (
                         <span>Select source or input value</span>
                     )}
                     {React.cloneElement(props.children[1])}
