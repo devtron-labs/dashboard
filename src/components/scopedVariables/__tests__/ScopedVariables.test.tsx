@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import ScopedVariables from '../'
+import ScopedVariables from '../ScopedVariables'
 import { useAsync } from '../../common'
 import { validScopedVariablesData, noScopedVariablesData } from '../mocks'
 import { UPLOAD_DESCRIPTION_L1 } from '../constants'

@@ -36,7 +36,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
-const ScopedVariables = lazy(() => import('../scopedVariables'))
+const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 
