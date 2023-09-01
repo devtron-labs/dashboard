@@ -11,7 +11,7 @@ import {
     parseIntoYAMLString,
     sortVariables,
 } from './utils/helpers'
-import { ScopedVariablesDataI, ScopedVariablesEditorI } from './types'
+import { ScopedVariablesDataInterface, ScopedVariablesEditorInterface } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
@@ -30,7 +30,7 @@ export default function ScopedVariablesEditor({
     jsonSchema,
     setShowEditView,
     setScopedVariables,
-}: ScopedVariablesEditorI) {
+}: ScopedVariablesEditorInterface) {
     const [editorData, setEditorData] = useState(variablesData)
     const [savedScopedVariables, setSavedScopedVariables] = useState(null)
     const [showSaveView, setShowSaveView] = useState<boolean>(false)
@@ -38,7 +38,7 @@ export default function ScopedVariablesEditor({
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
     const handleSave = async () => {
-        let variablesObj: ScopedVariablesDataI
+        let variablesObj: ScopedVariablesDataInterface
         try {
             variablesObj = parseYAMLStringToObj(editorData)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
@@ -72,7 +72,7 @@ export default function ScopedVariablesEditor({
     }
 
     const handleReview = async () => {
-        let variablesObj: ScopedVariablesDataI
+        let variablesObj: ScopedVariablesDataInterface
         try {
             variablesObj = parseYAMLStringToObj(editorData)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {

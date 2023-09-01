@@ -18,14 +18,14 @@ export enum VariableCategories {
     GLOBAL = 'Global',
 }
 
-export interface SavedVariablesViewI {
-    scopedVariablesData: ScopedVariablesDataI
+export interface SavedVariablesViewInterface {
+    scopedVariablesData: ScopedVariablesDataInterface
     jsonSchema: object
     reloadScopedVariables: () => void
-    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataI>>
+    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataInterface>>
 }
 
-export interface FileReaderStatusI {
+export interface FileReaderStatusInterface {
     status: boolean | 'loading'
     message: {
         data: any
@@ -33,73 +33,73 @@ export interface FileReaderStatusI {
     }
 }
 
-export interface FileDataI {
+export interface FileDataInterface {
     data: any
     type: string
     name: string
 }
 
-export interface LoadScopedVariablesI {
-    status: FileReaderStatusI
+export interface LoadScopedVariablesInterface {
+    status: FileReaderStatusInterface
     progress: number
-    fileData: FileDataI
+    fileData: FileDataInterface
     abortRead: () => void
 }
 
-export interface ScopedVariablesInputI {
+export interface ScopedVariablesInputInterface {
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
     children?: React.ReactNode
 }
 
-export interface ScopedVariablesEditorI {
+export interface ScopedVariablesEditorInterface {
     variablesData: string
     name: string
     jsonSchema: object
     abortRead: () => void
     setShowEditView?: React.Dispatch<React.SetStateAction<boolean>>
     reloadScopedVariables: () => void
-    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataI>>
+    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataInterface>>
 }
 
-export interface UploadScopedVariablesI {
+export interface UploadScopedVariablesInterface {
     reloadScopedVariables: () => void
     jsonSchema: object
-    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataI>>
+    setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataInterface>>
 }
 
-export interface DescriptorI {
+export interface DescriptorInterface {
     children?: React.ReactNode
     showUploadButton?: boolean
-    readFile?: (file: File, validator: ValidatorT, readAs: ReadFileAs) => void
+    readFile?: (file: File, validator: ValidatorType, readAs: ReadFileAs) => void
 }
 
 export interface VariablesListInterface {
     name: string
     description: string
 }
-export interface ScopedVariablesI {
+export interface ScopedVariablesInterface {
     isSuperAdmin: boolean
 }
 
-export interface ScopedVariablesDataI {
+export interface ScopedVariablesDataInterface {
     apiVersion: 'devtron.ai/v1beta1'
     kind: 'Variable'
-    spec: VariableSpecI[]
+    spec: VariableSpecInterface[]
 }
 
-export interface VariableSpecI {
+export interface VariableSpecInterface {
     description?: string
     name: string
-    values: ValueI[]
+    values: ValueInterface[]
 }
 
-export interface ValueI {
+export interface ValueInterface {
     category: VariableCategories
     value: any
     selectors?: object
 }
 
-export interface GridI {
+export interface GridInterface {
     container?: boolean
     spacing?: number
     item?: boolean
@@ -115,4 +115,4 @@ export interface VariablesListItemInterface {
     tooltip?: boolean
 }
 
-export type ValidatorT = (fileData: FileDataI) => FileReaderStatusI
+export type ValidatorType = (fileData: FileDataInterface) => FileReaderStatusInterface

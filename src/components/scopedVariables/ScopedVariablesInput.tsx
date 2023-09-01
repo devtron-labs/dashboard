@@ -1,7 +1,7 @@
 import React from 'react'
-import { ScopedVariablesInputI } from './types'
+import { ScopedVariablesInputInterface } from './types'
 
-export default function ScopedVariablesInput({ handleFileUpload, children }: ScopedVariablesInputI) {
+export default function ScopedVariablesInput({ handleFileUpload, children }: ScopedVariablesInputInterface) {
     return (
         <>
             <input

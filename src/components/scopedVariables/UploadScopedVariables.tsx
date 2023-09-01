@@ -7,7 +7,7 @@ import { validator, downloadData } from './utils/helpers'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { ReadFileAs, LoadScopedVariablesI, UploadScopedVariablesI } from './types'
+import { ReadFileAs, LoadScopedVariablesInterface, UploadScopedVariablesInterface } from './types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
@@ -19,7 +19,7 @@ import {
     DOWNLOAD_FILES_AS,
 } from './constants'
 
-export function LoadScopedVariables({ status, progress, fileData, abortRead }: LoadScopedVariablesI) {
+export function LoadScopedVariables({ status, progress, fileData, abortRead }: LoadScopedVariablesInterface) {
     return (
         <div className="cursor-default w-200 flex column dc__align-start dc__content-start dc__gap-8">
             <div className="flex dc__align-start dc__gap-8 dc__align-self-stretch dc__content-start">
@@ -59,7 +59,7 @@ export default function UploadScopedVariables({
     reloadScopedVariables,
     jsonSchema,
     setScopedVariables,
-}: UploadScopedVariablesI) {
+}: UploadScopedVariablesInterface) {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

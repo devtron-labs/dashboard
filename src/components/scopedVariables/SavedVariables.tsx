@@ -7,7 +7,7 @@ import { useFileReader, useClickOutside } from './utils/hooks'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
 import { downloadData, parseIntoYAMLString } from './utils/helpers'
-import { FileView, SavedVariablesViewI, VariablesListInterface } from './types'
+import { FileView, SavedVariablesViewInterface, VariablesListInterface } from './types'
 import {
     DOWNLOAD_FILES_AS,
     DOWNLOAD_FILE_NAME,
@@ -23,7 +23,7 @@ export default function SavedVariablesView({
     jsonSchema,
     reloadScopedVariables,
     setScopedVariables,
-}: SavedVariablesViewI) {
+}: SavedVariablesViewInterface) {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariablesListInterface[]>([])

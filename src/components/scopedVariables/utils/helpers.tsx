@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
-import { ScopedVariablesDataI, ValidatorT } from '../types'
+import { ScopedVariablesDataInterface, ValidatorType } from '../types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -10,7 +10,7 @@ import {
     ROUTES,
 } from '../constants'
 
-export const validator: ValidatorT = ({ data, type }) => {
+export const validator: ValidatorType = ({ data, type }) => {
     if (!data) {
         return EMPTY_FILE_STATUS
     }
@@ -73,7 +73,7 @@ export const parseYAMLStringToObj = (data: string) => {
     return yaml.safeLoad(data)
 }
 
-export const sortVariables = (variablesObj: ScopedVariablesDataI): ScopedVariablesDataI => {
+export const sortVariables = (variablesObj: ScopedVariablesDataInterface): ScopedVariablesDataInterface => {
     /*
         Approach:
         Sorting is going to happen on multiple levels:
@@ -137,7 +137,7 @@ export const getScopedVariablesJSON = () => {
     return get(ROUTES.GET_SCOPED_VARIABLES_JSON)
 }
 
-export const postScopedVariables = (scopedVariables: ScopedVariablesDataI) => {
+export const postScopedVariables = (scopedVariables: ScopedVariablesDataInterface) => {
     const payload = {
         manifest: scopedVariables,
     }
