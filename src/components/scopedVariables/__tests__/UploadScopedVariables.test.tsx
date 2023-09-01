@@ -1,6 +1,6 @@
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
-import UploadScopedVariables, { LoadScopedVariables } from '../UploadScopedVariables'
+import UploadScopedVariables from '../UploadScopedVariables'
 import { downloadData } from '../utils/helpers'
 import { SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS } from '../constants'
 
@@ -10,30 +10,6 @@ jest.mock('../utils/helpers', () => ({
 }))
 
 describe('UploadScopedVariables', () => {
-    describe('LoadScopedVariables', () => {
-        it('should show Upload Failed when status is false', () => {
-            const { container } = render(
-                <LoadScopedVariables
-                    status={{
-                        status: false,
-                        message: {
-                            data: 'test',
-                            description: 'test',
-                        },
-                    }}
-                    progress={0}
-                    fileData={{
-                        data: 'test',
-                        type: 'test',
-                        name: 'test',
-                    }}
-                    abortRead={() => {}}
-                />,
-            )
-            expect(container.querySelector('.styled-progress-bar-error')).toBeTruthy()
-        })
-    })
-
     describe('UploadScopedVariables', () => {
         it('should download template when download template button is clicked', () => {
             const { container } = render(

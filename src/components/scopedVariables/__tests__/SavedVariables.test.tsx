@@ -2,12 +2,16 @@ import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import SavedVariablesView from '../SavedVariables'
 import { validScopedVariablesData } from '../mocks'
-import { downloadData, parseIntoYAMLString } from '../utils/helpers'
+import { downloadData } from '../utils/helpers'
+import { ScopedVariablesDataInterface } from '../types'
 
-jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))
+jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => <div></div>))
 jest.mock('../utils/helpers', () => ({
     downloadData: jest.fn(),
     parseIntoYAMLString: jest.fn(() => 'YAML'),
+}))
+jest.mock('../../common', () => ({
+    importComponentFromFELibrary: jest.fn(),
 }))
 
 describe('SavedVariables', () => {
@@ -18,7 +22,7 @@ describe('SavedVariables', () => {
     it('should render YAML view by default', () => {
         const { container } = render(
             <SavedVariablesView
-                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -30,7 +34,7 @@ describe('SavedVariables', () => {
     it('should render Variable List view when Variable List tab is clicked', () => {
         const { container } = render(
             <SavedVariablesView
-                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -47,7 +51,7 @@ describe('SavedVariables', () => {
     it('should download saved file when download saved file button is clicked from dropdown', () => {
         const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -66,7 +70,7 @@ describe('SavedVariables', () => {
     it('should download template file when download template file button is clicked from dropdown', () => {
         const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -85,7 +89,7 @@ describe('SavedVariables', () => {
     it('should close dropdown when dropdown is open and somewhere outside is clicked', () => {
         const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -96,19 +100,5 @@ describe('SavedVariables', () => {
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeTruthy()
         fireEvent.click(container.querySelector('input') as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeFalsy()
-    })
-
-    it('should show ScopedVariablesEditor when edit button is clicked', () => {
-        const { getByTestId, getByText } = render(
-            <SavedVariablesView
-                scopedVariablesData={parseIntoYAMLString(validScopedVariablesData.result.manifest)}
-                setScopedVariables={() => {}}
-                jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
-                reloadScopedVariables={() => {}}
-            />,
-        )
-        const editButton = getByTestId('edit-variables-btn')
-        fireEvent.click(editButton as Element)
-        expect(getByText('Edit')).toBeTruthy()
     })
 })

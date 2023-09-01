@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
-import { LoadScopedVariables } from './UploadScopedVariables'
+import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import VariablesList from './VariablesList'
 import { useFileReader, useClickOutside } from './utils/hooks'
@@ -219,7 +219,7 @@ export default function SavedVariablesView({
             <div className="flex center flex-grow-1">
                 <div className="flex column center dc__gap-20 w-320 dc__no-shrink">
                     <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
-                        <LoadScopedVariables
+                        <ScopedVariablesLoader
                             status={status}
                             progress={progress}
                             fileData={fileData}

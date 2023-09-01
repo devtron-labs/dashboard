@@ -95,7 +95,7 @@ export interface VariableSpecInterface {
 }
 
 export interface ValueInterface {
-    category: VariableCategories
+    category: 'ApplicationEnv' | 'Application' | 'Env' | 'Cluster' | 'Global'
     value: any
     selectors?: object
 }
