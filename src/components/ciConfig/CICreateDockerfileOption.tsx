@@ -4,7 +4,7 @@ import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { copyToClipboard } from '../common'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     Option,
@@ -14,9 +14,13 @@ import {
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
-import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
-import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
+import {
+    checkoutPathOption,
+    renderOptionIcon,
+    repositoryControls,
+    repositoryOption
+} from './CIBuildpackBuildOptions'
 import { _customStyles, _multiSelectStyles } from './CIConfig.utils'
 
 export default function CICreateDockerfileOption({
@@ -29,7 +33,7 @@ export default function CICreateDockerfileOption({
     handleFileLocationChange,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
-    setInProgress,
+    setLoadingState,
     selectedBuildContextGitMaterial,
     handleBuildContextPathChange,
     currentBuildContextGitMaterial,
@@ -37,7 +41,11 @@ export default function CICreateDockerfileOption({
     formState,
     handleOnChangeConfig,
     renderInfoCard,
-    isDefaultBuildContext
+    isDefaultBuildContext,
+    getCheckoutPathValue,
+    handleBuildContextCheckoutPathChange,
+    useRootBuildContextFlag,
+    checkoutPathOptions,
 }: CICreateDockerfileOptionProps) {
     const [languages, setLanguages] = useState<LanguageOptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
@@ -143,7 +151,10 @@ export default function CICreateDockerfileOption({
             })
             setEditorValue(_currentData.data)
         } else if (_selectedFramework?.templateUrl) {
-            setInProgress(true)
+            setLoadingState((prevState) => ({
+                ...prevState,
+                loading: true
+            }))
             setTemplateData({
                 ...templateData,
                 [templateKey]: {
@@ -178,7 +189,10 @@ export default function CICreateDockerfileOption({
                         languageFramework: _selectedFramework.value,
                     },
                 })
-                setInProgress(false)
+                setLoadingState((prevState) => ({
+                    ...prevState,
+                    loading: false
+                }))
             } catch (err) {
                 // Don't show error toast or log the error as user aborted the request
                 if (!signal.aborted) {
@@ -192,7 +206,10 @@ export default function CICreateDockerfileOption({
                     },
                 })
                 setEditorValue('')
-                setInProgress(false)
+                setLoadingState((prevState) => ({
+                    ...prevState,
+                    loading: false
+                }))
             }
         } else {
             setTemplateData({
@@ -367,6 +384,9 @@ export default function CICreateDockerfileOption({
             })
         }
     }
+    const getSelectedBuildContextGitMaterial = ():any => {
+        return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+    }
     const toggleCollapse = (e) => {
         setIsCollapsed(!isCollapsed)
     }
@@ -460,7 +480,7 @@ export default function CICreateDockerfileOption({
                                 value={
                                     configOverrideView && !allowOverride
                                         ? currentBuildContextGitMaterial
-                                        : selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+                                        : getSelectedBuildContextGitMaterial()
                                 }
                                 styles={{
                                     ..._multiSelectStyles,
@@ -488,22 +508,58 @@ export default function CICreateDockerfileOption({
                         </label>
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
-                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${
-                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
-                                }`.replace('//', '/')}
+                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext}`.replace(
+                                    '//',
+                                    '/',
+                                )}
                             </span>
                         ) : (
                             <div className="docker-file-container">
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="top"
-                                    content={selectedBuildContextGitMaterial?.checkoutPath}
-                                >
-                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                        {selectedBuildContextGitMaterial?.checkoutPath}
-                                    </span>
-                                </Tippy>
+                                <ReactSelect
+                                    className="m-0"
+                                    classNamePrefix="build-config__select-checkout-path-for-build-context"
+                                    tabIndex={4}
+                                    isMulti={false}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    options={checkoutPathOptions}
+                                    getOptionLabel={(option) => `${option.label}`}
+                                    getOptionValue={(option) => `${option.value}`}
+                                    value={getCheckoutPathValue(
+                                        selectedMaterial,
+                                        currentMaterial,
+                                        useRootBuildContextFlag,
+                                    )}
+                                    styles={{
+                                        ..._multiSelectStyles,
+                                        menu: (base) => ({
+                                            ...base,
+                                            marginTop: '0',
+                                            paddingBottom: '4px',
+                                            width:
+                                                checkoutPathOptions?.length === 2 &&
+                                                checkoutPathOptions[1].value.length > 3
+                                                    ? '120px'
+                                                    : '100%',
+                                        }),
+                                        control: (base) => ({
+                                            ...base,
+                                            borderTopRightRadius: '0px',
+                                            borderBottomRightRadius: '0px',
+                                            borderRight: '0px',
+                                        }),
+                                        dropdownIndicator: (base) => ({
+                                            ...base,
+                                            paddingLeft: '0px',
+                                        }),
+                                    }}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        Option: checkoutPathOption,
+                                    }}
+                                    onChange={handleBuildContextCheckoutPathChange}
+                                    isDisabled={configOverrideView && !allowOverride}
+                                />
                                 <input
                                     tabIndex={4}
                                     type="text"

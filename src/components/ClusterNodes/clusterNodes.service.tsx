@@ -14,6 +14,7 @@ import {
     ClusteNotePatchRequest,
     ClusterDescriptionResponse,
     ClusterNoteResponse,
+    ClusterEditManifestType,
 } from './types'
 
 export const getClusterNote = (clusterId: string): Promise<ClusterDescriptionResponse> => {
@@ -21,6 +22,10 @@ export const getClusterNote = (clusterId: string): Promise<ClusterDescriptionRes
 }
 export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
     return put(Routes.CLUSTER_NOTE, requestPayload)
+}
+
+export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
+    return put(Routes.APPLICATION_NOTE, requestPayload)
 }
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -101,4 +106,8 @@ export const getClusterEvents = (terminalAccessId: number): Promise<ResponseType
 
 export const updateTaints = (taintData: EditTaintsRequest): Promise<ResponseType> => {
     return put(Routes.TAINTS_EDIT, taintData)
+}
+
+export const clusterManifestEdit = (data: ClusterEditManifestType, option: APIOptions): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.EDIT}`, data, option)
 }

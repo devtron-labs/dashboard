@@ -113,7 +113,6 @@ export default function ResourceList() {
         new: new AbortController(),
     })
     const searchWorkerRef = useRef(null)
-
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -232,8 +231,9 @@ export default function ResourceList() {
             setClusterLoader(true)
             const { result } = await getClusterList()
             if (result) {
+                const _clusterList = result.filter((resource) => !resource?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
-                    sortObjectArrayAlphabetically(result, 'cluster_name'),
+                    sortObjectArrayAlphabetically(_clusterList, 'cluster_name'),
                     'cluster_name',
                     'id',
                     'errorInConnecting',
@@ -519,10 +519,10 @@ export default function ResourceList() {
         const _selectedResource = selectedNode?.isFromEvent
             ? getEventObjectTypeGVK(k8SObjectMap, nodeType)
             : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
-
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
+
 
         return {
             clusterId: Number(clusterId),

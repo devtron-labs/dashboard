@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { ActionResponse } from '../../external-apps/ExternalAppService'
-import React from "react";
+import React from 'react'
 
 export enum ModuleStatus {
     HEALTHY = 'healthy',
@@ -34,6 +34,24 @@ export interface StackDetailsType {
     installedModulesList: ModuleDetails[]
     releaseNotes: ReleaseNotes[]
     errorStatusCode: number
+}
+export interface ModuleEnableType {
+    moduleDetails: ModuleDetails
+    setDialog?: React.Dispatch<React.SetStateAction<boolean>>
+    retryState?: boolean
+    setRetryState?: React.Dispatch<React.SetStateAction<boolean>>
+    setToggled?: React.Dispatch<React.SetStateAction<boolean>>
+    setSuccessState?: React.Dispatch<React.SetStateAction<boolean>>
+    moduleNotEnabledState?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface SuccessModalType {
+    moduleDetails: ModuleDetails
+    setSuccessState: React.Dispatch<React.SetStateAction<boolean>>
+    setSelectedModule?: React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?: React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?: StackDetailsType
+    setToggled?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface StackManagerNavItemType {
@@ -74,6 +92,8 @@ export interface ModuleDetails {
     isModuleConfigurable?: boolean
     isModuleConfigured?: boolean
     moduleResourcesStatus?: ModuleResourceStatus[]
+    enabled?: boolean
+    moduleType?: string
 }
 
 export interface ModuleResourceStatus {
@@ -104,6 +124,18 @@ export interface ModuleDetailsViewType {
     history: RouteComponentProps['history']
     location: RouteComponentProps['location']
     setShowResourceStatusModal: React.Dispatch<React.SetStateAction<boolean>>
+    isSuperAdmin?: boolean
+    setSelectedModule?: React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?: React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?: StackDetailsType
+    dialog?: boolean
+    setDialog?: React.Dispatch<React.SetStateAction<boolean>>
+    retryState?: boolean
+    setRetryState?: React.Dispatch<React.SetStateAction<boolean>>
+    successState?: boolean
+    setSuccessState?: React.Dispatch<React.SetStateAction<boolean>>
+    toggled?: boolean
+    setToggled?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleInstallationStatusType {
@@ -116,6 +148,18 @@ export interface ModuleInstallationStatusType {
     isCICDModule?: boolean
     moduleDetails?: ModuleDetails
     setShowResourceStatusModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isSuperAdmin?: boolean
+    setSelectedModule?: React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?: React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?: StackDetailsType
+    dialog?: boolean
+    setDialog?: React.Dispatch<React.SetStateAction<boolean>>
+    toggled?: boolean
+    setToggled?: React.Dispatch<React.SetStateAction<boolean>>
+    retryState?: boolean
+    setRetryState?: React.Dispatch<React.SetStateAction<boolean>>
+    successState?: boolean
+    setSuccessState?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface InstallationWrapperType {
@@ -137,6 +181,18 @@ export interface InstallationWrapperType {
     preRequisiteChecked?: boolean
     setPreRequisiteChecked?: React.Dispatch<React.SetStateAction<boolean>>
     setShowResourceStatusModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isSuperAdmin?: boolean
+    setSelectedModule?: React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?: React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?: StackDetailsType
+    dialog?: boolean
+    setDialog?: React.Dispatch<React.SetStateAction<boolean>>
+    toggled?: boolean
+    setToggled?: React.Dispatch<React.SetStateAction<boolean>>
+    retryState?: boolean
+    setRetryState?: React.Dispatch<React.SetStateAction<boolean>>
+    successState?: boolean
+    setSuccessState?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleDetailsInfo {
@@ -150,6 +206,7 @@ export interface ModuleDetailsCardType {
     className?: string
     handleModuleCardClick?: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
     fromDiscoverModules?: boolean
+    dataTestId?: string
 }
 
 export interface AboutDevtronViewType {
@@ -173,10 +230,18 @@ export interface ModuleInfo {
     name: string
     status: ModuleStatus
     moduleResourcesStatus?: ModuleResourceStatus[]
+    enabled?: boolean
+    moduleType?: string
+}
+export interface ModuleInfoInstalled {
+    status: ModuleStatus
 }
 
 export interface ModuleInfoResponse extends ResponseType {
     result?: ModuleInfo
+}
+export interface ModuleInfoInstalledResponse extends ResponseType {
+    result?: ModuleInfoInstalled
 }
 
 export interface AllModuleInfoResponse extends ResponseType {
@@ -201,6 +266,7 @@ export interface ServerInfoResponse extends ResponseType {
 export interface ModuleActionRequest {
     action: ModuleActions
     version: string
+    moduleType: string
 }
 
 export interface ReleaseNotes {

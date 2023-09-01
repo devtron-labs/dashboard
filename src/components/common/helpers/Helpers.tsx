@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { showError, noop, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    useThrottledEffect,
+    OptionType,
+    noop,
+    DeploymentAppTypes,
+    getLoginInfo,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
-import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { OptionType } from '../../app/types'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
@@ -827,32 +832,6 @@ export function FragmentHOC({ children, ...props }) {
     )
 }
 
-interface UseSearchString {
-    queryParams: URLSearchParams
-    searchParams: {
-        [key: string]: string
-    }
-}
-
-export function useSearchString(): UseSearchString {
-    const location = useLocation()
-    const queryParams: URLSearchParams = useMemo(() => {
-        const queryParams = new URLSearchParams(location.search)
-        return queryParams
-    }, [location])
-
-    // const searchParams={}
-    // for (let [key, value] of queryParams.entries()){
-    //     searchParams[key]=value
-    // }
-    const searchParams = Array.from(queryParams.entries()).reduce((agg, curr, idx) => {
-        agg[curr[0]] = curr[1]
-        return agg
-    }, {})
-
-    return { queryParams, searchParams }
-}
-
 export const sortOptionsByLabel = (optionA, optionB) => {
     if (optionA.label < optionB.label) {
         return -1
@@ -965,9 +944,12 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
         const module = require('@devtron-labs/devtron-fe-lib')
+        if (type === 'function') {
+            return module[componentName] || defaultComponent || null
+        }
         return module[componentName]?.default || defaultComponent || null
     } catch (e) {
         if (e['code'] !== 'MODULE_NOT_FOUND') {
@@ -1062,24 +1044,34 @@ export const processK8SObjects = (
 export function createClusterEnvGroup<T>(
     list: T[],
     propKey: string,
-    isOptionType?: boolean,
-    optionName?: string,
-): { label: string; options: T[] }[] {
+    optionLabel?: string,
+    optionValue?: string,
+): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
         acc[key].push(
-            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+            optionLabel
+                ? {
+                      label: obj[optionLabel],
+                      value: obj[optionValue ? optionValue : optionLabel],
+                      description: obj['description'],
+                      isVirtualEnvironment: obj['isVirtualEnvironment'],
+                  }
+                : obj,
         )
         return acc
     }, {})
 
-    return Object.entries(objList).map(([key, value]) => ({
-        label: key,
-        options: value,
-    }))
+    return Object.entries(objList)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, value]) => ({
+            label: key,
+            options: value,
+            isVirtualEnvironment: value[0]['isVirtualEnvironment'], // All the values will be having similar isVirtualEnvironment
+        }))
 }
 
 export const k8sStyledAgeToSeconds = (duration: string): number => {
@@ -1121,6 +1113,16 @@ export const handleOnFocus = (e): void => {
     }
 }
 
+export const highlightSearchedText = (searchText: string, matchString: string): string => {
+    if (!searchText) {
+        return matchString
+    }
+    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+
+    const regex = new RegExp(searchText, 'gi')
+    return matchString.replace(regex, highlightText)
+}
+
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
         category: category,
@@ -1157,7 +1159,7 @@ export const handleOnBlur = (e): void => {
 }
 
 export const parsePassword = (password: string): string => {
-    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
 export const reloadLocation = () => {
@@ -1198,4 +1200,34 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
     }, [handleHeightChange, ref])
 
     return [ref]
+}
+
+export const getDeploymentAppType = (
+    allowedDeploymentTypes: DeploymentAppTypes[],
+    selectedDeploymentAppType: string,
+    isVirtualEnvironment: boolean,
+): string => {
+    if (isVirtualEnvironment) {
+        return DeploymentAppTypes.MANIFEST_DOWNLOAD
+    } else if (window._env_.HIDE_GITOPS_OR_HELM_OPTION) {
+        return ''
+    } else if (
+        selectedDeploymentAppType &&
+        allowedDeploymentTypes.indexOf(selectedDeploymentAppType as DeploymentAppTypes) >= 0
+    ) {
+        return selectedDeploymentAppType
+    }
+    return allowedDeploymentTypes[0]
+}
+
+export const hasApproverAccess = (approverList: string[]): boolean => {
+    const loginInfo = getLoginInfo()
+    let hasAccess = false
+    for (const approver of approverList) {
+        if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
+            hasAccess = true
+            break
+        }
+    }
+    return hasAccess
 }

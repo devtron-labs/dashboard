@@ -1,7 +1,9 @@
+@import './ChartValuesViewUtils.scss';
+
 .chart-values-view__container {
     position: relative;
     min-width: 920px;
-    height: calc(100vh - 81px);
+    height: calc(100vh - 77px);
 
     &.chart-values-view__deploy-chart {
         height: calc(100vh - 48px);
@@ -20,25 +22,22 @@
             .chart-values-view__editor {
                 &.chart-values-view__full-mode {
                     .code-editor-container {
+                        height: auto;
                         .react-monaco-editor-container,
                         .details-loader-height {
                             height: calc(100vh - 130px) !important;
                         }
+                        @include sub-vh;
                     }
                 }
 
                 .code-editor-container {
+                    height: auto;
                     .react-monaco-editor-container,
                     .details-loader-height {
                         height: calc(100vh - 162px) !important;
                     }
-
-                    &.code-editor__info-enabled {
-                        .react-monaco-editor-container,
-                        .details-loader-height {
-                            height: calc(100vh - 196px) !important;
-                        }
-                    }
+                    @include sub-vh;
                 }
             }
         }
@@ -339,10 +338,20 @@
         .chart-values-view__editor {
             &.chart-values-view__full-mode {
                 .code-editor-container {
+                    height: auto;
                     .react-monaco-editor-container,
                     .details-loader-height {
                         height: calc(100vh - 162px) !important;
                     }
+                    @include sub-vh;
+                }
+                .code-editor-container.manifest-view {
+                    height: auto;
+                    .react-monaco-editor-container,
+                    .details-loader-height {
+                        height: calc(100vh - 192px) !important;
+                    }
+                    @include sub-vh;
                 }
 
                 .empty-state {
@@ -358,7 +367,12 @@
             .code-editor-container {
                 border: none;
                 border-bottom: 1px solid var(--N100);
-
+                height: auto;
+                .monaco-editor{
+                    .monaco-editor-background, .margin {
+                      background-color: var(--N000) !important;
+                    }
+                }
                 .code-editor__warning {
                     color: var(--N900);
                     background-color: var(--Y100);
@@ -373,6 +387,7 @@
                     height: 32px;
                     padding: 0 12px;
                     border-bottom: none;
+                    background: var(--N100) !important;
                 }
 
                 .chart-values-view__diff-view-header {
@@ -390,13 +405,7 @@
                     min-height: 345px;
                     height: calc(100vh - 196px) !important;
                 }
-
-                &.code-editor__info-enabled {
-                    .react-monaco-editor-container,
-                    .details-loader-height {
-                        height: calc(100vh - 228px) !important;
-                    }
-                }
+                @include sub-vh;
             }
         }
 
@@ -419,7 +428,7 @@
 
     .chart-values-view__vr-divider {
         width: 1px;
-        height: calc(100vh - 130px);
+        height: calc(100vh - 125px);
     }
 }
 

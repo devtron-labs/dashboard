@@ -9,6 +9,7 @@ import {
     OpaqueModal,
     ConfirmationDialog,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect } from 'react';
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg';
@@ -24,6 +25,7 @@ import {
     getDeploymentGroupDetails,
 } from './service'
 import { useMemo } from 'react';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 
 export function BulkActionEdit() {
     const { id } = useParams<{id: string}>();
@@ -262,13 +264,12 @@ export function BulkActionEdit() {
                             <>
                                 {state.pipelines.map(p => <PipelineSelect key={p.ciPipelineId} {...p} isActive={p.ciPipelineId === state.ciPipelineId} select={Number(id) === 0 ? e => dispatch({ type: 'selectPipeline', value: p.ciPipelineId }) : () => { }} />)}
                                 {state.pipelines.length === 0 &&
-                                <EmptyState>
-                                    <div style={{height:'400px'}} className="flex column empty-pipelines">
-                                        <EmptyState.Image><Error style={{width:'32px', height:'32px'}}/></EmptyState.Image>
-                                        <EmptyState.Title><h3>No Linked pipelines created</h3></EmptyState.Title>
-                                        <EmptyState.Subtitle>Deployment groups can only be created for applications and environments using Linked CI Pipelines.</EmptyState.Subtitle>
-                                    </div>
-                                </EmptyState>}
+                                <GenericEmptyState
+                                    SvgImage={Error}
+                                    title={EMPTY_STATE_STATUS.BULK_ACTION_EDITS.TITLE}
+                                    heightToDeduct={500}
+                                    subTitle={EMPTY_STATE_STATUS.BULK_ACTION_EDITS.SUBTITLE}
+                            />}
                             </>}
                         </div>}
 
@@ -402,7 +403,7 @@ function TitledCard({ number, completed = false, title, next, onClick, children 
         <div className="white-card--titled" onClick={onClick}>
             <div className={`title-container ${completed ? 'active' : ''}`}>
                 <div className="index flex">{number}</div>
-                <div className="title flex left">{title}</div>
+                <div className="title flex left cn-9">{title}</div>
                 <div className="next flex">{completed && typeof next === 'function' && <button className="cta" onClick={next} type="button">Next</button>}</div>
             </div>
             {children}

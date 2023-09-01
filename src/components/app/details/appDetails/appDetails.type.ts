@@ -1,5 +1,6 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
+import { SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -98,15 +99,17 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     nonDeploymentError: string
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
-        GIT_COMMIT: DeploymentStatusDetailRow
-        KUBECTL_APPLY: DeploymentStatusDetailRow
-        APP_HEALTH: DeploymentStatusDetailRow
+        GIT_COMMIT?: DeploymentStatusDetailRow
+        KUBECTL_APPLY?: DeploymentStatusDetailRow
+        APP_HEALTH?: DeploymentStatusDetailRow
+        HELM_PACKAGE_GENERATED?: DeploymentStatusDetailRow
     }
 }
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     streamData?: AppStreamData
+    isVirtualEnvironment?: boolean
 }
 
 export interface DeploymentStatusDetailModalType{
@@ -114,12 +117,26 @@ export interface DeploymentStatusDetailModalType{
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
   streamData: AppStreamData
+  isVirtualEnvironment: boolean
 }
 
 export interface ModuleConfigResponse extends ResponseType {
   result?: {
     enabled: boolean
   }
+}
+
+export interface ClusterConnectionResponse extends ResponseType {
+  result?: {
+    clusterReachable: boolean
+    clusterName: string,
+  }
+}
+
+export type DeleteResponseType = {
+    clusterName: string,
+    clusterReachable: boolean,
+    deleteInitiated: boolean,
 }
 
 export interface DeploymentStatusDetailRowType {
@@ -133,6 +150,8 @@ export interface ErrorInfoStatusBarType {
     nonDeploymentError: string
     type: string
     errorMessage: string
+    hideVerticalConnector?: boolean
+    hideErrorIcon?: boolean
 }
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
@@ -173,6 +192,11 @@ export interface DetailsType {
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    isVirtualEnvRef?: React.MutableRefObject<boolean>
+}
+
+export interface DeletedAppComponentType extends SyncErrorType {
+    resourceTreeFetchTimeOut: boolean,
 }
 
 export interface DeploymentStatusCardType {
@@ -182,4 +206,6 @@ export interface DeploymentStatusCardType {
   hideDetails?: boolean
   deploymentTriggerTime?: string
   triggeredBy?: string
+  isVirtualEnvironment?: boolean
+  refetchDeploymentStatus: (showTimeline?: boolean)=> void
 }

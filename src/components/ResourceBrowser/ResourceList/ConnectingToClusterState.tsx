@@ -6,7 +6,7 @@ import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gi
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { useParams } from 'react-router-dom'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ConnectingToClusterState({
     loader,
@@ -104,17 +104,12 @@ export default function ConnectingToClusterState({
 
     const renderNoClusterSelected = () => {
         return (
-            <div style={{ height: 'calc(100vh - 150px)' }}>
-                <EmptyState>
-                    <img
-                        src={NoClusterSelectImage}
-                        width="250"
-                        height="200"
-                        alt={SELECTE_CLUSTER_STATE_MESSAGING.altText}
-                    />
-                    <h2 className="dc__text-center fs-16 fw-4 c-9">{SELECTE_CLUSTER_STATE_MESSAGING.heading}</h2>
-                    <p className="dc__text-center w-300">{SELECTE_CLUSTER_STATE_MESSAGING.infoText}</p>
-                </EmptyState>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+                <GenericEmptyState
+                    image={NoClusterSelectImage}
+                    title={SELECTE_CLUSTER_STATE_MESSAGING.heading}
+                    subTitle={SELECTE_CLUSTER_STATE_MESSAGING.infoText}
+                />
             </div>
         )
     }

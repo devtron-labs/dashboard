@@ -1,9 +1,18 @@
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    MaterialType,
+    Githost,
+    ScriptType,
+    PluginType,
+    RefVariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
-import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
+import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
+import { PipelineBuildStageType } from '../workflowEditor/types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -353,7 +362,7 @@ function migrateOldData(
         isCollapsed: boolean
         index: number
     }[],
-): BuildStageType {
+): PipelineBuildStageType {
     const commonFields = {
         value: '',
         format: 'STRING',
@@ -475,6 +484,8 @@ function parseCIResponse(
                 postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,
                 dockerConfigOverride: ciPipeline.isDockerConfigOverridden ? ciPipeline.dockerConfigOverride : {},
+                isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
+                isOffendingMandatoryPlugin: ciPipeline.isOffendingMandatoryPlugin
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
@@ -528,14 +539,19 @@ function createCurlRequest(externalCiConfig): string {
     return curl
 }
 
-export function getPluginsData(appId: number): Promise<any> {
-    return get(`${Routes.PLUGIN_LIST}?appId=${appId}`)
+export function getPluginsData(appId: number,isCD: boolean = false): Promise<any> {
+    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : '' }`)
 }
 
 export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
     return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
 }
 
-export function getGlobalVariable(appId: number): Promise<any> {
-    return get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`)
+export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
+    let variableList = []
+    await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
+        variableList = response.result?.filter((item) => isCD ? item.stageType !== 'ci' : item.stageType === 'ci')
+    })
+
+    return { result: variableList }
 }

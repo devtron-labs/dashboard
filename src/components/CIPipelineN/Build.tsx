@@ -3,18 +3,12 @@ import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
-import { ciPipelineContext } from './CIPipeline'
-import {
-    BuildType,
-    CiPipelineSourceTypeOption,
-    FormErrorObjectType,
-    FormType,
-    WebhookCIProps,
-} from '../ciPipeline/types'
+import { Progressing, Toggle, CiPipelineSourceTypeOption } from '@devtron-labs/devtron-fe-common-lib'
+import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export function Build({
     showFormError,
@@ -23,21 +17,17 @@ export function Build({
     pageState,
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
-    isJobView
+    isJobView,
+    getPluginData
 }: BuildType) {
     const {
         formData,
         setFormData,
         formDataErrorObj,
-        setLoadingData,
-        setFormDataErrorObj
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        formDataErrorObj: FormErrorObjectType
-        setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
-        setFormDataErrorObj:React.Dispatch<React.SetStateAction<FormErrorObjectType>>        
-    } = useContext(ciPipelineContext)
+        loadingState,
+        setLoadingState,
+        setFormDataErrorObj,
+    } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
@@ -63,6 +53,11 @@ export function Build({
         _formData.materials = allMaterials
         setFormData(_formData)
     }
+
+    const handleOnBlur = (event): void => {
+      getPluginData()
+    }
+
 
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
@@ -90,7 +85,7 @@ export function Build({
                 isSelected: sourceTypeOption.label === selectedSource.label,
             }
         })
-       
+
         _formData.ciPipelineSourceTypeOptions = _ciPipelineSourceTypeOptions
 
         // if selected source is of type webhook, then set eventId in value, assume single git material, set condition list
@@ -114,6 +109,7 @@ export function Build({
             _formData.webhookConditionList = createWebhookConditionList(_material.value)
         }
         setFormData(_formData)
+        getPluginData(_formData)
     }
     const getSelectedWebhookEvent = (material) => {
         const _materialValue = JSON.parse(material.value)
@@ -191,6 +187,7 @@ export function Build({
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
                     isAdvanced={isAdvanced}
+                    handleOnBlur={handleOnBlur}
                 />
             </>
         )
@@ -273,7 +270,8 @@ export function Build({
                         formData={formData}
                         setFormData={setFormData}
                         setDockerConfigOverridden={setDockerConfigOverridden}
-                        setLoadingData={setLoadingData}
+                        loadingState={loadingState}
+                        setLoadingState={setLoadingState}
                     />
                 </>
             )}

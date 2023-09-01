@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
 import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
@@ -7,6 +7,7 @@ import { ReactComponent as Download } from '../../../../assets/icons/ic-download
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -17,7 +18,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
-const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
+let ApprovalInfoTippy = null
 
 export default function Artifacts({
     status,
@@ -25,10 +26,20 @@ export default function Artifacts({
     blobStorageEnabled,
     isArtifactUploaded,
     getArtifactPromise,
+    ciPipelineId,
+    artifactId,
     isJobView,
+    imageComment,
+    imageReleaseTags,
     type,
+    appReleaseTagNames,
+    tagsEditable,
+    hideImageTaggingHardDelete,
 }: ArtifactType) {
-    const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
+    const { triggerId, buildId } = useParams<{
+        triggerId: string
+        buildId: string
+    }>()
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
@@ -61,7 +72,9 @@ export default function Artifacts({
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
                     <Question className="icon-dim-20 fcv-5" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">{EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
+                    <span className="fs-13 fw-4 mr-8 ml-8">
+                        {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
+                    </span>
                     <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
@@ -90,8 +103,17 @@ export default function Artifacts({
     } else {
         return (
             <div className="flex left column p-16">
-                {!isJobView && (
-                    <CIListItem type="artifact">
+                {!isJobView && type !== HistoryComponentType.CD && (
+                    <CIListItem
+                        type="artifact"
+                        ciPipelineId={ciPipelineId}
+                        artifactId={artifactId}
+                        imageComment={imageComment}
+                        imageReleaseTags={imageReleaseTags}
+                        appReleaseTagNames={appReleaseTagNames}
+                        tagsEditable={tagsEditable}
+                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                    >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
                                 <CopyTippyWithText
@@ -107,7 +129,7 @@ export default function Artifacts({
                     </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem type="report">
+                    <CIListItem type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
                         <div className="flex column left">
                             <div className="cn-9 fs-14">Reports.zip</div>
                             <button
@@ -152,39 +174,73 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 }
 
 const CIProgressView = (): JSX.Element => {
-   {/* TO replace with genericemptystate after incoporating png support */}
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <MechanicalOperation />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Building artifacts</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Generated artifact(s) will be available here after the pipeline is executed.
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            SvgImage={MechanicalOperation}
+            title={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.TITLE}
+            subTitle={EMPTY_STATE_STATUS.CI_PROGRESS_VIEW.SUBTITLE}
+        />
     )
 }
 
-export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
-    if (type === 'approved-artifact') {
-        return ApprovedArtifact ? (
-            <ApprovedArtifact
-                userApprovalMetadata={userApprovalMetadata}
-                triggeredBy={triggeredBy}
-                children={children}
-            />
-        ) : null
-    }
-
+export const CIListItem = ({
+    type,
+    userApprovalMetadata,
+    triggeredBy,
+    children,
+    ciPipelineId,
+    artifactId,
+    imageComment,
+    imageReleaseTags,
+    appReleaseTagNames,
+    tagsEditable,
+    hideImageTaggingHardDelete,
+}: CIListItemType) => {
+    if(!ApprovalInfoTippy) ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
     return (
-        <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
-            <div className="bcn-1 flex br-4">
-                <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
+        <>
+            {type === 'deployed-artifact' && (
+                <div className="flex mb-12 dc__width-inherit">
+                    <div className="w-50 text-underline-dashed-300" />
+                    <Down className="icon-dim-16 ml-8 mr-8" />
+                    <div className="w-50 text-underline-dashed-300" />
+                </div>
+            )}
+            {ApprovalInfoTippy && userApprovalMetadata && (
+                <div className="dc__width-inherit bcn-0 dc__border dc__top-radius-4">
+                    <div className="pt-8 pr-16 pb-8 pl-16 lh-20">
+                        <ApprovalInfoTippy
+                            showCount={true}
+                            userApprovalMetadata={userApprovalMetadata}
+                            triggeredBy={triggeredBy}
+                        />
+                    </div>
+                </div>
+            )}
+            <div
+                className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card bcn-0 br-4 dc__border p-12 w-100 dc__mxw-800 ${
+                    ApprovalInfoTippy && userApprovalMetadata ? 'dc__no-top-radius dc__no-top-border' : ''
+                }`}
+                data-testid="hover-on-report-artifact"
+            >
+                <div className="ci-artifacts-grid flex left">
+                    <div className="bcn-1 flex br-4 icon-dim-40">
+                        <img src={type === 'report' ? folder : docker} className="icon-dim-20" />
+                    </div>
+                    {children}
+                </div>
+                {type !== 'report' && (
+                    <ImageTagsContainer
+                        ciPipelineId={ciPipelineId}
+                        artifactId={artifactId}
+                        imageComment={imageComment}
+                        imageReleaseTags={imageReleaseTags}
+                        appReleaseTagNames={appReleaseTagNames}
+                        tagsEditable={tagsEditable}
+                        hideHardDelete={hideImageTaggingHardDelete}
+                    />
+                )}
             </div>
-            {children}
-        </div>
+        </>
     )
 }

@@ -1,17 +1,22 @@
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerError,
+    CIBuildConfigType,
+    CIBuildType,
+    DockerConfigOverrideType,
+    MandatoryPluginDataType,
+    PluginDetailType,
+    VariableType,
+    MandatoryPluginDetailType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import {
-    CIBuildConfigType,
-    CIBuildType,
-    CIPipelineDataType,
-    DockerConfigOverrideType,
-    FormType,
-} from '../ciPipeline/types'
+import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { PipelineFormType } from '../workflowEditor/types'
+import { Environment } from '../cdPipeline/cdPipeline.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]
@@ -70,6 +75,11 @@ export interface CIConfigParentState {
     currentCIBuildType?: CIBuildType
 }
 
+export interface LoadingState {
+    loading: boolean
+    failed: boolean
+}
+
 export interface CIConfigProps {
     respondOnSuccess: () => void
     configOverrideView?: boolean
@@ -80,7 +90,8 @@ export interface CIConfigProps {
     isCDPipeline?: boolean
     isCiPipeline?: boolean
     navItems?: CustomNavItemsType[]
-    setLoadingData?: React.Dispatch<React.SetStateAction<boolean>>
+    loadingStateFromParent?: LoadingState
+    setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 export interface CIConfigDiffViewProps {
@@ -111,15 +122,17 @@ export interface CIConfigFormProps {
     navItems: CustomNavItemsType[]
     parentState: CIConfigParentState
     setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
-    setLoadingData?: React.Dispatch<React.SetStateAction<boolean>>
+    loadingStateFromParent?: LoadingState
+    setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 export interface AdvancedConfigOptionsProps {
     ciPipeline: CIPipelineDataType
-    formData: FormType
-    setFormData: React.Dispatch<React.SetStateAction<FormType>>
+    formData: PipelineFormType
+    setFormData: React.Dispatch<React.SetStateAction<PipelineFormType>>
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
-    setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
+    loadingState?: LoadingState
+    setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 interface LanguageBuilderType {
@@ -243,7 +256,7 @@ export interface CIDockerFileConfigProps {
     setShowCustomPlatformWarning: any
     currentCIBuildConfig: CIBuildConfigType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
-    setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
 }
 
 export interface CICreateDockerfileOptionProps {
@@ -257,7 +270,7 @@ export interface CICreateDockerfileOptionProps {
     handleFileLocationChange: (selectedMaterial) => void
     repository?: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
-    setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
     currentBuildContextGitMaterial: any
     selectedBuildContextGitMaterial: any
     handleBuildContextPathChange: (selectedBuildContextGitMaterial) => void
@@ -266,6 +279,14 @@ export interface CICreateDockerfileOptionProps {
     handleOnChangeConfig: (e) => void
     renderInfoCard: () => JSX.Element
     isDefaultBuildContext: () => boolean
+    handleBuildContextCheckoutPathChange: (checkoutPath: any) => void
+    getCheckoutPathValue: (
+        selectedBuildContextGitMaterial: any,
+        currentMaterial: any,
+        useRootBuildContextFlag: boolean,
+    ) => OptionType
+    useRootBuildContextFlag: boolean
+    checkoutPathOptions: OptionType[]
 }
 
 export interface CIBuildpackBuildOptionsProps {
@@ -310,15 +331,15 @@ export interface CIBuildConfigDiffProps {
 }
 
 export interface TargetPlatformSelectorType {
-  allowOverride?: boolean
-  selectedTargetPlatforms: OptionType[]
-  setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
-  showCustomPlatformWarning: boolean
-  setShowCustomPlatformWarning: (value: boolean) => void
-  targetPlatformMap: Map<string, boolean>
-  targetPlatform?: string
-  configOverrideView?: boolean
-  updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
+    allowOverride?: boolean
+    selectedTargetPlatforms: OptionType[]
+    setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
+    showCustomPlatformWarning: boolean
+    setShowCustomPlatformWarning: (value: boolean) => void
+    targetPlatformMap: Map<string, boolean>
+    targetPlatform?: string
+    configOverrideView?: boolean
+    updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }
 
 export interface BuildContextProps {
@@ -327,6 +348,34 @@ export interface BuildContextProps {
     formState: any
     configOverrideView: boolean
     allowOverride: boolean
-    ciConfig:  CiPipelineResult
+    ciConfig: CiPipelineResult
     handleOnChangeConfig: (e) => void
+}
+
+export interface CIPipelineSidebarType {
+    isJobView?: boolean
+    mandatoryPluginData?: MandatoryPluginDataType
+    pluginList: PluginDetailType[]
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    setInputVariablesListFromPrevStep: React.Dispatch<
+        React.SetStateAction<{
+            preBuildStage: Map<string, VariableType>[]
+            postBuildStage: Map<string, VariableType>[]
+        }>
+    >
+    environments?: any[]
+    selectedEnv?: Environment
+    setSelectedEnv?: React.Dispatch<React.SetStateAction<Environment>>
+}
+
+export interface TaskListType {
+    withWarning: boolean
+    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+    setInputVariablesListFromPrevStep: React.Dispatch<
+        React.SetStateAction<{
+            preBuildStage: Map<string, VariableType>[]
+            postBuildStage: Map<string, VariableType>[]
+        }>
+    >
+    isJobView: boolean
 }

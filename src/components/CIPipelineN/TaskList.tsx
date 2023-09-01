@@ -2,16 +2,33 @@ import React, { useState, useContext, Fragment } from 'react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
+import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ciPipelineContext } from './CIPipeline'
-import { FormErrorObjectType, FormType, StepType, TaskErrorObj, VariableType } from '../ciPipeline/types'
-import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
+import {
+    PopupMenu,
+    BuildStageVariable,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { TaskListType } from '../ciConfig/types'
+import { importComponentFromFELibrary } from '../common'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { PipelineFormType } from '../workflowEditor/types'
 
-export function TaskList() {
+const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
+const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
+export function TaskList({
+    withWarning,
+    mandatoryPluginsMap,
+    setInputVariablesListFromPrevStep,
+    isJobView,
+}: TaskListType) {
     const {
         formData,
         setFormData,
+        isCdPipeline,
         addNewTask,
         activeStageName,
         selectedTaskIndex,
@@ -20,26 +37,8 @@ export function TaskList() {
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        addNewTask: () => void
-        activeStageName: string
-        selectedTaskIndex: number
-        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+        validateStage,
+    } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
@@ -81,23 +80,192 @@ export function TaskList() {
         setDragItemStartIndex(index)
     }
 
-    const deleteTask = (index: number): void => {
+    const deleteTask = (e): void => {
+        const taskIndex = +e.currentTarget.dataset.index
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        newList.splice(index, 1)
+        const _taskDetail = newList.splice(taskIndex, 1)
+        let isMandatoryMissing = false
+        if (_taskDetail[0].isMandatory) {
+            isMandatoryMissing = true
+            for (const task of newList) {
+                if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                    task.isMandatory = true
+                    isMandatoryMissing = false
+                    break
+                }
+            }
+        }
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
-        const newTaskIndex = index >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : index
-        calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
+        const newListIndex = newListLength > 1 ? newListLength - 1 : 0
+        const newTaskIndex = taskIndex >= newListLength ? newListIndex : taskIndex
+        calculateLastStepDetail(
+            false,
+            _formData,
+            activeStageName,
+            newTaskIndex,
+        )
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
         }, 0)
-        setFormData(_formData)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, taskIndex, _formDataErrorObj)
+        } else {
+            setFormData(_formData)
+        }
+        const newErrorList = [...formDataErrorObj[activeStageName].steps]
+        newErrorList.splice(taskIndex, 1)
+        _formDataErrorObj[activeStageName].steps = newErrorList
+
+        if (isMandatoryMissing) {
+            validateStage(activeStageName, _formData, _formDataErrorObj)
+        } else {
+            setFormDataErrorObj(_formDataErrorObj)
+        }
+    }
+
+    const moveTaskToOtherStage = (e): void => {
+        const taskIndex = +e.currentTarget.dataset.index
+        const moveToStage =
+            activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
+        const _formData = { ...formData }
+        const newList = [..._formData[activeStageName].steps]
+        const _taskDetail = newList.splice(taskIndex, 1)
+        let isMandatoryMissing = false
+        if (_taskDetail[0].pluginRefStepDetail) {
+            const isPluginRequired =
+                !isJobView &&
+                isRequired && 
+                !isCdPipeline &&
+                isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
+            if (_taskDetail[0].isMandatory && !isPluginRequired) {
+                isMandatoryMissing = true
+                for (const task of newList) {
+                    if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                        task.isMandatory = true
+                        isMandatoryMissing = false
+                        break
+                    }
+                }
+                _taskDetail[0].isMandatory = false
+            } else {
+                _taskDetail[0].isMandatory = isPluginRequired
+            }
+
+            _taskDetail[0].pluginRefStepDetail = {
+                id: 0,
+                pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
+                conditionDetails: [],
+                inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables ?? [],
+                outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables ?? [],
+            }
+        }
+
+        _formData[moveToStage].steps.push(_taskDetail[0])
+        _formData[activeStageName].steps = newList
+        const newListLength = newList.length
+        const newTaskIndex = taskIndex >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : taskIndex
+        reCalculatePrevStepVar(_formData, newTaskIndex)
+        setTimeout(() => {
+            setSelectedTaskIndex(newTaskIndex)
+        }, 0)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
-        newErrorList.splice(index, 1)
+        newErrorList.splice(taskIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
-        setFormDataErrorObj(_formDataErrorObj)
+        _formDataErrorObj[moveToStage].steps.push({
+            name: { isValid: true, message: null },
+            isValid: true,
+            [_taskDetail[0].stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail']: {
+                inputVariables: [],
+                outputVariables: [],
+            },
+        })
+        if (activeStageName === BuildStageVariable.PreBuild && _formData[BuildStageVariable.PostBuild].steps?.length) {
+            clearDependentPostVariables(_formData, taskIndex, _formDataErrorObj)
+        } else {
+            setFormData(_formData)
+        }
+        if (isMandatoryMissing) {
+            validateStage(activeStageName, _formData, _formDataErrorObj)
+        } else {
+            validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
+            setFormDataErrorObj(_formDataErrorObj)
+        }
+    }
+
+    const clearDependentPostVariables = (_formData: PipelineFormType, deletedTaskIndex: number, _formDataErrorObj): void => {
+        const stepsLength = _formData[BuildStageVariable.PostBuild].steps?.length
+        let reValidateStage = false
+        for (let i = 0; i < stepsLength; i++) {
+            if (!_formData[BuildStageVariable.PostBuild].steps[i].stepType) {
+                continue
+            }
+            const currentStepTypeVariable =
+                _formData[BuildStageVariable.PostBuild].steps[i].stepType === PluginType.INLINE
+                    ? 'inlineStepDetail'
+                    : 'pluginRefStepDetail'
+            if (_formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable].inputVariables) {
+                for (const key in _formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable]
+                    .inputVariables) {
+                    const variableDetail =
+                        _formData[BuildStageVariable.PostBuild].steps[i][currentStepTypeVariable].inputVariables[key]
+                    if (
+                        variableDetail.refVariableStage === RefVariableStageType.PRE_CI &&
+                        variableDetail.refVariableStepIndex === deletedTaskIndex + 1
+                    ) {
+                        variableDetail.refVariableStepIndex = 0
+                        variableDetail.refVariableName = ''
+                        variableDetail.variableType = RefVariableType.NEW
+                        delete variableDetail.refVariableStage
+                        reValidateStage = true
+                    }
+                }
+            }
+        }
+        if (reValidateStage) {
+            validateStage(BuildStageVariable.PostBuild, _formData, _formDataErrorObj)
+        }
+        setFormData(_formData)
+    }
+
+    const reCalculatePrevStepVar = (_formData: PipelineFormType, newTaskIndex: number): void => {
+        let preBuildVariable, postBuildVariable
+        if (activeStageName === BuildStageVariable.PreBuild) {
+            preBuildVariable = calculateLastStepDetail(
+                false,
+                _formData,
+                BuildStageVariable.PreBuild,
+                newTaskIndex,
+            ).calculatedStageVariables
+            postBuildVariable = calculateLastStepDetail(
+                true,
+                _formData,
+                BuildStageVariable.PostBuild,
+                0,
+            ).calculatedStageVariables
+        } else {
+            const preTaskLength = _formData[BuildStageVariable.PreBuild].steps.length
+            preBuildVariable = calculateLastStepDetail(
+                false,
+                _formData,
+                BuildStageVariable.PreBuild,
+                preTaskLength > 1 ? preTaskLength - 1 : 0,
+                true,
+            ).calculatedStageVariables
+            postBuildVariable = calculateLastStepDetail(
+                false,
+                _formData,
+                BuildStageVariable.PostBuild,
+                newTaskIndex,
+            ).calculatedStageVariables
+        }
+        setInputVariablesListFromPrevStep({
+            preBuildStage: preBuildVariable,
+            postBuildStage: postBuildVariable,
+        })
     }
 
     function validateCurrentTask(index?: number): void {
@@ -116,7 +284,7 @@ export function TaskList() {
 
     return (
         <>
-            <div className="task-container pr-20">
+            <div className={withWarning ? 'with-warning' : ''}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -130,11 +298,21 @@ export function TaskList() {
                             onDragOver={(e) => e.preventDefault()}
                             onClick={() => handleSelectedTaskChange(index)}
                         >
-                            <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            <span className="w-80 dc__ellipsis-right">{taskDetail.name}</span>
+                            <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
+                            <div
+                                className={`flex left ${
+                                    formDataErrorObj[activeStageName].steps[index] &&
+                                    !formDataErrorObj[activeStageName].steps[index].isValid
+                                        ? 'w-70'
+                                        : 'w-80'
+                                }`}
+                            >
+                                <span className="dc__ellipsis-right">{taskDetail.name}</span>
+                                {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
+                            </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
-                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
+                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2 mw-16" />
                                 )}
                             <PopupMenu autoClose>
                                 <PopupMenu.Button isKebab>
@@ -144,10 +322,41 @@ export function TaskList() {
                                     />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <div className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
+                                    <div
+                                        className="flex left p-8 pointer dc__hover-n50"
+                                        data-index={index}
+                                        onClick={deleteTask}
+                                    >
                                         <Trash className="icon-dim-16 mr-10" />
-                                        Delete
+                                        Remove
                                     </div>
+                                    {!isJobView && taskDetail.stepType && (
+                                        <div
+                                            className="flex left p-8 pointer dc__hover-n50"
+                                            data-index={index}
+                                            onClick={moveTaskToOtherStage}
+                                        >
+                                            {activeStageName === BuildStageVariable.PreBuild ? (
+                                                <>
+                                                    <MoveToPre
+                                                        className="rotate icon-dim-16 mr-10"
+                                                        style={{ ['--rotateBy' as any]: '180deg' }}
+                                                    />
+                                                    Move to post-build stage
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <MoveToPre className="icon-dim-16 mr-10" />
+                                                    Move to pre-build stage
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                    {!isJobView && !isCdPipeline && taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
+                                        <MandatoryPluginMenuOptionTippy
+                                            pluginDetail={mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]}
+                                        />
+                                    )}
                                 </PopupMenu.Body>
                             </PopupMenu>
                         </div>
@@ -155,7 +364,11 @@ export function TaskList() {
                     </Fragment>
                 ))}
             </div>
-            <div data-testid="sidebar-add-task-button" className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
+            <div
+                data-testid="sidebar-add-task-button"
+                className="task-item add-task-container cb-5 fw-6 fs-13 flexbox"
+                onClick={addNewTask}
+            >
                 <Add className="add-icon" /> Add task
             </div>
         </>

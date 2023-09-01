@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { elementDidMount, useHeightObserver } from '../../../../../../common'
+import React, { useEffect, useState} from 'react'
+import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { SocketConnectionType } from '../node.type'
-import IndexStore from '../../../../index.store'
-import { AppType } from '../../../../appDetails.type'
 import moment from 'moment'
-import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
+import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 
-let socket 
-let terminal 
-let fitAddon 
+let socket
+let terminal
+let fitAddon
 let clusterTimeOut
 
 export default function TerminalView({
@@ -33,7 +30,6 @@ export default function TerminalView({
 }: TerminalViewType) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
-    const appDetails = IndexStore.getAppDetails()
     const [popupText, setPopupText] = useState<boolean>(false)
 
     function resizeSocket() {
@@ -63,7 +59,7 @@ export default function TerminalView({
     }, [sessionId])
 
     useEffect(() => {
-        if (popupText){
+        if (popupText) {
             setTimeout(() => setPopupText(false), 2000)
         }
     }, [popupText])
@@ -116,11 +112,7 @@ export default function TerminalView({
 
     const generateSocketURL = () => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
-        if (appDetails.appType !== AppType.EXTERNAL_HELM_CHART) {
-            socketURL += '/api/vi/pod/exec/ws/'
-        } else {
-            socketURL += '/k8s/pod/exec/sockjs/ws/'
-        }
+        socketURL += '/k8s/pod/exec/sockjs/ws/'
         return socketURL
     }
 
@@ -234,7 +226,7 @@ export default function TerminalView({
     }, [])
 
     useEffect(() => {
-        if(terminal){
+        if (terminal) {
             terminal.clear()
             terminal.focus()
         }

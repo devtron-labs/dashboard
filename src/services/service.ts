@@ -1,4 +1,4 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import moment from 'moment'
 import {
@@ -127,11 +127,8 @@ export function getAvailableCharts(
     })
 }
 
-export function getEnvironmentListMin(isNamespaceReq = false): Promise<any> {
-    let url = `${Routes.ENVIRONMENT_LIST_MIN}`
-    if (isNamespaceReq) {
-        url = `${url}`
-    }
+export function getEnvironmentListMin(includeAllowedDeploymentTypes?:boolean): Promise<any> {
+    const url = `${Routes.ENVIRONMENT_LIST_MIN}${includeAllowedDeploymentTypes ? '?showDeploymentOptions=true' : ''}`
     return get(url)
 }
 
@@ -139,8 +136,10 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
-export function getEnvironmentListMinPublic() {
-    return get(`${Routes.ENVIRONMENT_LIST_MIN}?auth=false`)
+export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?:boolean) {
+    return get(
+        `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
+    )
 }
 
 export function getClusterListMin() {
@@ -148,8 +147,8 @@ export function getClusterListMin() {
     return get(URL)
 }
 
-export function getDockerRegistryStatus(): Promise<ResponseType> {
-    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status`
+export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
+    const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`
     return get(URL)
 }
 
@@ -161,6 +160,29 @@ export function getDockerRegistryList(): Promise<ResponseType> {
 export function getAppOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
     const URL = `${Routes.APP_OTHER_ENVIRONMENT_MIN}?app-id=${appId}`
     return get(URL)
+}
+
+export function getJobOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
+    const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}/${appId}`
+    return get(URL)
+}
+
+export function addJobEnvironment(data): Promise<ResponseType> {
+    const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}`
+    const payload = {
+        envId: (Number)(data.envId),
+        appId: (Number)(data.appId)
+    }
+    return post(URL, payload)
+}
+
+export function deleteJobEnvironment(data): Promise<ResponseType> {
+    const URL = `${Routes.JOB_CONFIG_ENVIRONMENTS}`
+    const payload = {
+        envId: (Number)(data.envId),
+        appId: (Number)(data.appId)
+    }
+    return trash(URL, payload)
 }
 
 export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {
@@ -178,14 +200,6 @@ export function getEnvironmentConfigs(appId, envId) {
 
 export function getEnvironmentSecrets(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
-}
-//TODO:move to configmap and secret component
-export function getConfigMapList(appId: string) {
-    return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`)
-}
-
-export function getSecretList(appId: string) {
-    return get(`${Routes.APP_CREATE_SECRET}/${appId}`)
 }
 
 export function getWorkflowList(appId) {
@@ -242,6 +256,7 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
                     policy: cve.permission,
                 }
             }),
+            scanToolId: response.result.scanToolId,
         },
     }
 }
@@ -391,12 +406,15 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
     })
 }
 
-export function getChartReferencesForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
-    const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`
-    return get(URL)
+export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
+  let envParam = ''
+  if (envId) {
+      envParam = `/${envId}`
+  }
+  return get(`${Routes.CHART_REFERENCES_MIN}/${appId}${envParam}`)
 }
 
-export function getAppChartRefForAppAndEnv(appId: number, envId: number): Promise<ResponseType> {
+export function getAppChartRefForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
     return getChartReferencesForAppAndEnv(appId, envId).then((response) => {
         const {
             result: { chartRefs, latestEnvChartRef, latestAppChartRef },

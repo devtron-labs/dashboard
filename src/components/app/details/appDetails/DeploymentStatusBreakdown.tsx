@@ -11,10 +11,14 @@ import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
     streamData,
+    isVirtualEnvironment,
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
     const { url } = useRouteMatch()
-
+    const isHelmManifestPushed =
+        deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[
+            TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO
+        ]?.showHelmManifest
     return (
         <>
             {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
@@ -26,30 +30,56 @@ export default function DeploymentStatusDetailBreakdown({
                     type={TIMELINE_STATUS.DEPLOYMENT_INITIATED}
                     deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                 />
-                <ErrorInfoStatusBar
-                    type={TIMELINE_STATUS.GIT_COMMIT}
-                    nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
-                    errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
-                />
-                <DeploymentStatusDetailRow
-                    type={TIMELINE_STATUS.GIT_COMMIT}
-                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                />
-                <ErrorInfoStatusBar
-                    type={TIMELINE_STATUS.KUBECTL_APPLY}
-                    nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
-                    errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
-                />
-                <DeploymentStatusDetailRow
-                    type={TIMELINE_STATUS.KUBECTL_APPLY}
-                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                />
-                <DeploymentStatusDetailRow
-                    type={TIMELINE_STATUS.APP_HEALTH}
-                    hideVerticalConnector={true}
-                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                    streamData={streamData}
-                />
+                {!(
+                    isVirtualEnvironment &&
+                    deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown[
+                        TIMELINE_STATUS.HELM_PACKAGE_GENERATED
+                    ]
+                ) ? (
+                    <>
+                        <ErrorInfoStatusBar
+                            type={TIMELINE_STATUS.GIT_COMMIT}
+                            nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
+                            errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
+                        />
+                        <DeploymentStatusDetailRow
+                            type={TIMELINE_STATUS.GIT_COMMIT}
+                            deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                        />
+                        <ErrorInfoStatusBar
+                            type={TIMELINE_STATUS.KUBECTL_APPLY}
+                            nonDeploymentError={deploymentStatusDetailsBreakdownData.nonDeploymentError}
+                            errorMessage={deploymentStatusDetailsBreakdownData.deploymentError}
+                        />
+                        <DeploymentStatusDetailRow
+                            type={TIMELINE_STATUS.KUBECTL_APPLY}
+                            deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                        />
+                        <DeploymentStatusDetailRow
+                            type={TIMELINE_STATUS.APP_HEALTH}
+                            hideVerticalConnector={true}
+                            deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                            streamData={streamData}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <DeploymentStatusDetailRow
+                            type={TIMELINE_STATUS.HELM_PACKAGE_GENERATED}
+                            hideVerticalConnector={!isHelmManifestPushed}
+                            deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                        />
+                        {isHelmManifestPushed && (
+                            <>
+                                <DeploymentStatusDetailRow
+                                    type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
+                                    hideVerticalConnector={true}
+                                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                                />
+                            </>
+                        )}
+                    </>
+                )}
             </div>
         </>
     )

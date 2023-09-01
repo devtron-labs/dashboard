@@ -10,7 +10,8 @@ import {
     InfoColourBar,
     VisibleModal,
     multiSelectStyles,
-    useEffectAfterMount
+    useEffectAfterMount,
+    stopPropagation
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
@@ -98,7 +99,11 @@ export default function GitProvider({ ...props }) {
         }
     }, [])
     if (!props.isSuperAdmin) {
-        return <ErrorScreenNotAuthorized />
+        return (
+            <div className="dc__align-reload-center">
+                <ErrorScreenNotAuthorized />
+            </div>
+        )
     }
     if (isPageLoading) {
         return <Progressing pageLoader />;
@@ -197,13 +202,12 @@ function CollapsedList({
     ...props
 }) {
     const [collapsed, toggleCollapse] = useState(true)
-    const [enabled, toggleEnabled] = useState(active)
+    const [enabled, toggleEnabled] = useState<boolean>(active)
     const [loading, setLoading] = useState(false)
     let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
 
     useEffectAfterMount(() => {
-        if (!collapsed) return
         async function update() {
             let payload = {
                 id: id || 0,
@@ -211,7 +215,7 @@ function CollapsedList({
                 url,
                 authMode,
                 active: enabled,
-                gitHostId,
+                gitHostId: +gitHostId,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
                 ...(authMode === 'SSH' ? { sshPrivateKey: sshPrivateKey } : {}),
@@ -280,11 +284,11 @@ function CollapsedList({
                             placement="bottom"
                             content={enabled ? 'Disable git account' : 'Enable git account'}
                         >
-                            <span style={{ marginLeft: 'auto' }} data-testid={`${name}-toggle-button`}>
+                            <span onClick={stopPropagation} style={{ marginLeft: 'auto' }} data-testid={`${name}-toggle-button`}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
+                                    <List.Toggle onSelect={toggleEnabled} enabled={enabled} />
                                 )}
                             </span>
                         </Tippy>
@@ -303,7 +307,7 @@ function CollapsedList({
                     {...{
                         id,
                         name,
-                        active,
+                        active:enabled,
                         url,
                         authMode,
                         gitHostId,

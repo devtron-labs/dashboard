@@ -31,6 +31,11 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     filteredCIPipelines: any
 }
 
+export interface BulkCDDetailTypeResponse{
+    bulkCDDetailType: BulkCDDetailType[],
+    uniqueReleaseTags: string[],
+}
+
 export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
@@ -43,14 +48,20 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     approvalUsers?: string[]
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    ciPipelineId?: number
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface ResponseRowType {
-    appId: string
+    appId: number
     appName: string
     status: BulkResponseStatus
     statusText: string
     message: string
+    isVirtual?: boolean
+    envId?: number
 }
 
 export interface BulkCITriggerType {
@@ -90,6 +101,8 @@ export interface BulkCDTriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    isVirtualEnv?: boolean
+    uniqueReleaseTags: string[]
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -122,6 +135,17 @@ export interface TriggerResponseModalType {
     responseList: ResponseRowType[]
     isLoading: boolean
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+    isVirtualEnv?: boolean
+    envName?: string
+    setDownloadPopupOpen?: (e) => void
+}
+
+export interface TriggerModalRowType {
+    rowData: ResponseRowType
+    index: number
+    isVirtualEnv?: boolean
+    envName?: string
+    setDownloadPopupOpen?: (e) => void
 }
 
 export interface WorkflowNodeSelectionType {
@@ -139,6 +163,7 @@ export interface WorkflowAppSelectionType {
 export interface ConfigAppList {
     id: number
     name: string
+    isProtected?: boolean
 }
 
 export interface EnvApp {
@@ -162,6 +187,7 @@ export interface EnvAppList {
     isClusterCdActive: boolean
     environmentIdentifier: string
     appCount: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface EmptyEnvState {
@@ -232,6 +258,8 @@ export interface AppGroupAdminType {
 export interface AppGroupDetailDefaultType {
     filteredAppIds: string
     appGroupListData?: AppGroupListType
+    isVirtualEnv?: boolean
+    envName?: string
 }
 
 interface CIPipeline {
@@ -258,8 +286,8 @@ export interface AppGroupAppFilterContextType {
     groupFilterOptions: GroupOptionType[]
     selectedGroupFilter: MultiValue<GroupOptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
-    openCreateGroup: (e, groupId?: string) => void
-    openDeleteGroup: (e, groupId: string) => void
+    openCreateGroup: (e, groupId?: string, _edit?: boolean) => void
+    openDeleteGroup: (e, groupId: string, _delete?: boolean) => void
     isSuperAdmin: boolean
 }
 
@@ -269,9 +297,15 @@ export interface CreateGroupAppListType {
     isSelected: boolean
 }
 
+export interface CreateTypeOfAppListType{
+    id: number
+    appName: string
+}
+
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
+    unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
 }
 
@@ -311,12 +345,25 @@ export interface EnvGroupListType {
     description: string
 }
 
+export interface CheckPermissionType{
+    id?: number
+    appIds: number[]
+    name?: string
+    description?: string
+    envId?: number
+    active?: boolean
+}
+
 export interface EnvGroupListResponse extends ResponseType {
     result?: EnvGroupListType[]
 }
 
 export interface EnvGroupResponse extends ResponseType {
     result?: EnvGroupListType
+}
+
+export interface CheckPermissionResponse extends ResponseType {
+    result?: boolean
 }
 
 export interface GroupOptionType extends OptionType {

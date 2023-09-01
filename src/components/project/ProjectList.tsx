@@ -60,7 +60,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     handleChange(event, index: number, key: 'name'): void {
         const { projects, isValid, errorMessage } = { ...this.state }
-        if (event.target.value && event.target.value.length > 2) {
+        if(event.target.value.includes(' ')){
+            isValid[key] = false
+            errorMessage[key] = `Do not use 'spaces' in name`
+
+        }else if (event.target.value && event.target.value.length > 2) {
             isValid[key] = true
             errorMessage[key] = ''
         } else {
@@ -96,21 +100,20 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     saveProject(index: number, key: 'name'): void {
         let { projects, isValid, errorMessage } = { ...this.state };
         let project = this.state.projects[index];
-        if (!project.name) {
-            isValid[key] = false;
-            errorMessage[key] = REQUIRED_FIELD_MSG
-            this.setState({ isValid });
+        if (!isValid?.[key]) {
             return
-        }
-        else if (this.isProjectNameExists(index, project.name)) {
-            isValid[key] = false;
-            errorMessage[key] = PROJECT_EXIST_MSG
-            this.setState({ isValid });
-            return
-        }
-        else {
-            isValid[key] = true;
-            errorMessage[key]= ""
+        } else {
+            if (!project.name) {
+                isValid[key] = false
+                errorMessage[key] = REQUIRED_FIELD_MSG
+                this.setState({ isValid })
+                return
+            } else if (this.isProjectNameExists(index, project.name)) {
+                isValid[key] = false
+                errorMessage[key] = PROJECT_EXIST_MSG
+                this.setState({ isValid })
+                return
+            }
         }
         this.setState({ loadingData: true, isValid });
         createProject(project).then((response) => {
@@ -180,7 +183,11 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     render() {
         if (!this.props.isSuperAdmin) {
-            return <ErrorScreenNotAuthorized />
+            return (
+                <div className="dc__align-reload-center">
+                    <ErrorScreenNotAuthorized />
+                </div>
+            )
         }
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) {

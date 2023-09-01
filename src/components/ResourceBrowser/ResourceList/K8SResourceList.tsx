@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {  useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
@@ -118,6 +119,13 @@ export function K8SResourceList({
         }
     }
 
+    const handleNodeClick = (e) => {
+        const {name} = e.currentTarget.dataset
+        const beginpart = window.location.href.split('/resource-browser')[0]
+        const _url = `${beginpart}/clusters/${clusterId}/${name}`
+        window.open(_url, 'blank')
+    }
+
     const getStatusClass = (status: string) => {
         let statusPostfix = status?.toLowerCase()
 
@@ -152,11 +160,15 @@ export function K8SResourceList({
                                             content={resourceData.name}
                                         >
                                             <a
-                                                className="dc__link dc__ellipsis-right dc__block cursor"
+                                                className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
                                                 onClick={handleResourceClick}
                                             >
-                                                {resourceData.name}
+                                                <span
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: highlightSearchedText(searchText, resourceData.name),
+                                                    }}
+                                                ></span>
                                             </a>
                                         </Tippy>
                                     </div>
@@ -173,13 +185,28 @@ export function K8SResourceList({
                     ) : (
                         <div
                             key={`${resourceData.name}-${idx}`}
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
                             }`}
                         >
-                            {resourceData[columnName]}
+                            <ConditionalWrap
+                                condition={columnName === 'node'}
+                                wrap={(children) => (
+                                    <a
+                                        className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
+                                        data-name={resourceData[columnName]}
+                                        onClick={handleNodeClick}
+                                    >{children}</a>
+                                )}
+                            >
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
+                                    }}
+                                ></span>
+                            </ConditionalWrap>
                         </div>
                     ),
                 )}
@@ -229,7 +256,7 @@ export function K8SResourceList({
                 ref={resourceListRef}
                 className={`scrollable-resource-list ${showPaginatedView ? 'paginated-list-view' : ''}`}
             >
-                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
+                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
@@ -288,7 +315,7 @@ export function K8SResourceList({
 
     return (
         <div
-            className={`resource-list-container dc__border-left ${
+            className={`resource-list-container dc__border-left dc__postion-rel ${
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >

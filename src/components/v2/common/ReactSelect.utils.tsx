@@ -2,8 +2,9 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
+import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -76,7 +77,7 @@ export const styles = {
         return {
             ...base,
             top: `0px`,
-            backgroundColor: state.Selected ? 'white' : 'white',
+            backgroundColor: 'white',
         }
     },
     singleValue: (base, state) => {
@@ -185,6 +186,17 @@ export const CustomValueContainer = (props): JSX.Element => {
     )
 }
 
+export const menuComponentForImage = (props) => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
+                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
+            </div>
+            {props.children}
+        </components.MenuList>
+    )
+}
+
 export const menuComponent = (props, text) => {
     return (
         <components.MenuList {...props}>
@@ -205,8 +217,11 @@ export function GroupHeading(props) {
     if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">
-                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
+                <span className="dc__truncate-text">
+                    {!hideClusterName && (data?.isVirtualEnvironment ? 'Virtual Cluster : ' : 'Cluster : ')}
+                    {data.label}
+                </span>
             </div>
         </components.GroupHeading>
     )
@@ -228,14 +243,7 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
                     __html: option[environmentfieldName].replace(regex, highLightText),
                 }}
             />
-            {option.clusterName && option.namespace && (
-                <small
-                    className="cn-6"
-                    dangerouslySetInnerHTML={{
-                        __html: (option.clusterName + '/' + option.namespace).replace(regex, highLightText),
-                    }}
-                ></small>
-            )}
+            <small className="w-100 dc__truncate-text fs-12 cn-7">{option.description}</small>
         </div>
     )
 }
@@ -263,3 +271,46 @@ export function formatHighlightedTextDescription(option: Environment, inputValue
     )
 }
 
+export const groupHeaderStyle = {
+    group: (base) => ({
+        ...base,
+        paddingTop: 0,
+        paddingBottom: 0,
+    }),
+    groupHeading: (base) => ({
+        ...base,
+        fontWeight: 600,
+        fontSize: '12px',
+        textTransform: 'lowercase',
+        height: '28px',
+        color: 'var(--N900)',
+        backgroundColor: 'var(--N100)',
+        marginBottom: 0,
+    }),
+}
+
+export const groupStyle = () => {
+  return {
+      ...multiSelectStyles,
+      menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+      control: (base) => ({ ...base, border: '1px solid #d6dbdf', width: '450px' }),
+      group: (base) => ({
+          ...base,
+          paddingTop: 0,
+          paddingBottom: 0,
+      }),
+      groupHeading: (base) => ({
+          ...base,
+          fontWeight: 600,
+          fontSize: '12px',
+          height: '28px',
+          color: 'var(--N900)',
+          backgroundColor: 'var(--N100)',
+          marginBottom: 0,
+      }),
+      indicatorsContainer: (provided, state) => ({
+          ...provided,
+      }),
+      option: getCustomOptionSelectionStyle(),
+  }
+}
