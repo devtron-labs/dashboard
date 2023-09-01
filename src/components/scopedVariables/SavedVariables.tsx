@@ -7,7 +7,7 @@ import { useFileReader, useClickOutside } from './utils/hooks'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
 import { downloadData, parseIntoYAMLString } from './utils/helpers'
-import { FileView, SavedVariablesViewI, VariableListItemI } from './types'
+import { FileView, SavedVariablesViewI, VariablesListInterface } from './types'
 import {
     DOWNLOAD_FILES_AS,
     DOWNLOAD_FILE_NAME,
@@ -26,7 +26,7 @@ export default function SavedVariablesView({
 }: SavedVariablesViewI) {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
-    const [variablesList, setVariablesList] = useState<VariableListItemI[]>([])
+    const [variablesList, setVariablesList] = useState<VariablesListInterface[]>([])
     const [showEditView, setShowEditView] = useState<boolean>(false)
     const dropdownRef = useRef(null)
     // No need to make it a state since editor here is read only and we don't need to update it
