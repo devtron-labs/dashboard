@@ -1,6 +1,6 @@
 import React from 'react'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import SearchBar from './SearchBar'
+import SearchBar from './DescriptorSearchBar'
 import { validator } from './utils/helpers'
 import { DescriptorInterface, ReadFileAs } from './types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
