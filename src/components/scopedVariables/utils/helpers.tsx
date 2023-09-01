@@ -1,5 +1,4 @@
 import yaml from 'js-yaml'
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataInterface, ValidatorType } from '../types'
 import {
     EMPTY_FILE_STATUS,
@@ -7,7 +6,6 @@ import {
     PARSE_ERROR_STATUS,
     JSON_PARSE_ERROR_STATUS,
     YAML_PARSE_ERROR_STATUS,
-    ROUTES,
 } from '../constants'
 
 export const validator: ValidatorType = ({ data, type }) => {
@@ -130,16 +128,4 @@ export const sortVariables = (variablesObj: ScopedVariablesDataInterface): Scope
     })
 
     return mutatedVariablesObj
-}
-
-// Services
-export const getScopedVariablesJSON = () => {
-    return get(ROUTES.GET_SCOPED_VARIABLES_JSON)
-}
-
-export const postScopedVariables = (scopedVariables: ScopedVariablesDataInterface) => {
-    const payload = {
-        manifest: scopedVariables,
-    }
-    return post(ROUTES.SCOPED_VARIABLES, payload)
 }

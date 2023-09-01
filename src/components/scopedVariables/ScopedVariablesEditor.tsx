@@ -4,13 +4,8 @@ import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
-import {
-    postScopedVariables,
-    getScopedVariablesJSON,
-    parseYAMLStringToObj,
-    parseIntoYAMLString,
-    sortVariables,
-} from './utils/helpers'
+import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils/helpers'
+import { postScopedVariables, getScopedVariablesJSON } from './utils/service'
 import { ScopedVariablesDataInterface, ScopedVariablesEditorInterface } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'

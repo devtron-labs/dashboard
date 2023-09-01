@@ -126,11 +126,6 @@ spec:
         selectors: null
 `
 
-export const ROUTES = {
-    GET_SCOPED_VARIABLES_JSON: 'global/variables/detail',
-    SCOPED_VARIABLES: 'global/variables',
-}
-
 // TOAST Messages while saving file
 export const SAVE_SUCCESS_TOAST_MESSAGE = 'File saved successfully'
 export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
