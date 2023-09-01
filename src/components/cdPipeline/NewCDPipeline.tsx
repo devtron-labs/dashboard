@@ -335,7 +335,6 @@ export default function NewCDPipeline({
     const getConfigMapSecrets = () => {
         getConfigMapAndSecrets(appId, formData.environmentId)
             .then((response) => {
-                console.log(response.list)
                 setConfigMapAndSecrets(response.list)
             })
             .catch((error: ServerErrors) => {
@@ -701,7 +700,6 @@ export default function NewCDPipeline({
             .then((response) => {
                 if (response.result) {
                     let pipelineConfigFromRes = response.result.pipelines[0]
-                    console.log(pipelineConfigFromRes)
                     updateStateFromResponse(pipelineConfigFromRes, _form.environments, _form, dockerRegistries)
                     let envName = pipelineConfigFromRes.environmentName
                     if (!envName) {
