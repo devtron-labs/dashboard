@@ -13,7 +13,7 @@ module.exports = function (app) {
     app.use(
         '/grafana',
         createProxyMiddleware({
-            target: 'http://demo.devtron.info:32080/',
+            target: 'https://demo.devtron.info:32080/',
             changeOrigin: true,
             logLevel: 'info',
             secure: false,
