@@ -22,7 +22,7 @@ import {
     GET_SCOPED_VARIABLES_ERROR,
 } from './constants'
 
-const ScopedVariablesEditor = ({
+export default function ScopedVariablesEditor({
     variablesData,
     name,
     abortRead,
@@ -30,7 +30,7 @@ const ScopedVariablesEditor = ({
     jsonSchema,
     setShowEditView,
     setScopedVariables,
-}: ScopedVariablesEditorI) => {
+}: ScopedVariablesEditorI) {
     const [editorData, setEditorData] = useState(variablesData)
     const [savedScopedVariables, setSavedScopedVariables] = useState(null)
     const [showSaveView, setShowSaveView] = useState<boolean>(false)
@@ -216,5 +216,3 @@ const ScopedVariablesEditor = ({
         </div>
     )
 }
-
-export default ScopedVariablesEditor

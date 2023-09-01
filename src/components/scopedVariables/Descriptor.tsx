@@ -8,7 +8,7 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
 
-const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
+export default function Descriptor({ children, showUploadButton, readFile }: DescriptorI) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         if (readFile) {
@@ -58,5 +58,3 @@ const Descriptor = ({ children, showUploadButton, readFile }: DescriptorI) => {
         </>
     )
 }
-
-export default Descriptor

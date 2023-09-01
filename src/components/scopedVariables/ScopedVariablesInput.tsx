@@ -1,7 +1,7 @@
 import React from 'react'
 import { ScopedVariablesInputI } from './types'
 
-const ScopedVariablesInput = ({ handleFileUpload, children }: ScopedVariablesInputI) => {
+export default function ScopedVariablesInput({ handleFileUpload, children }: ScopedVariablesInputI) {
     return (
         <>
             <input
@@ -20,5 +20,3 @@ const ScopedVariablesInput = ({ handleFileUpload, children }: ScopedVariablesInp
         </>
     )
 }
-
-export default ScopedVariablesInput

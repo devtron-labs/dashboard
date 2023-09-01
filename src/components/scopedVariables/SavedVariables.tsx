@@ -18,12 +18,12 @@ import {
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 
-const SavedVariablesView = ({
+export default function SavedVariablesView({
     scopedVariablesData,
     jsonSchema,
     reloadScopedVariables,
     setScopedVariables,
-}: SavedVariablesViewI) => {
+}: SavedVariablesViewI) {
     const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableListItemI[]>([])
@@ -209,5 +209,3 @@ const SavedVariablesView = ({
         </div>
     )
 }
-
-export default SavedVariablesView

@@ -7,7 +7,7 @@ import { useAsync } from '../common'
 import { ScopedVariablesDataI, ScopedVariablesI } from './types'
 import './styles.scss'
 
-const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
+export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesI) {
     const [scopedVariables, setScopedVariables] = useState<ScopedVariablesDataI>(null)
     const [schemaError, setSchemaError] = useState<boolean>(false)
     const [jsonSchema, setJsonSchema] = useState<object>(null)
@@ -51,5 +51,3 @@ const ScopedVariables = ({ isSuperAdmin }: ScopedVariablesI) => {
         />
     )
 }
-
-export default ScopedVariables

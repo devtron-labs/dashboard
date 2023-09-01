@@ -19,7 +19,7 @@ import {
     DOWNLOAD_FILES_AS,
 } from './constants'
 
-export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: LoadScopedVariablesI) => {
+export function LoadScopedVariables({ status, progress, fileData, abortRead }: LoadScopedVariablesI) {
     return (
         <div className="cursor-default w-200 flex column dc__align-start dc__content-start dc__gap-8">
             <div className="flex dc__align-start dc__gap-8 dc__align-self-stretch dc__content-start">
@@ -55,7 +55,11 @@ export const LoadScopedVariables = ({ status, progress, fileData, abortRead }: L
     )
 }
 
-const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVariables }: UploadScopedVariablesI) => {
+export default function UploadScopedVariables({
+    reloadScopedVariables,
+    jsonSchema,
+    setScopedVariables,
+}: UploadScopedVariablesI) {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,5 +119,3 @@ const UploadScopedVariables = ({ reloadScopedVariables, jsonSchema, setScopedVar
         </div>
     )
 }
-
-export default UploadScopedVariables

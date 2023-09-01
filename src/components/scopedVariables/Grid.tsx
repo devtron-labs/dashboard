@@ -2,7 +2,15 @@ import React from 'react'
 import { GridI } from './types'
 
 // This is meant to be a reusable component that will provide a grid like dynamic layout where xs is the number of columns out of 12 that the item will take up
-const Grid = ({ container, spacing = 0, item, xs, containerClass = '', itemClass = '', children }: GridI) => {
+export default function Grid({
+    container,
+    spacing = 0,
+    item,
+    xs,
+    containerClass = '',
+    itemClass = '',
+    children,
+}: GridI) {
     const containerStyles = container ? { gap: spacing + 'px' } : {}
 
     if (item) {
@@ -29,5 +37,3 @@ const Grid = ({ container, spacing = 0, item, xs, containerClass = '', itemClass
         </div>
     )
 }
-
-export default Grid
