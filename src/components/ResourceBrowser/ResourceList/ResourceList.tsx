@@ -20,6 +20,7 @@ import {
 } from '../Types'
 import {
     getResourceGroupList,
+    getResourceGroupListRaw,
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
@@ -90,6 +91,7 @@ export default function ResourceList() {
     const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
     const [k8SObjectMap, setK8SObjectMap] = useState<Map<string, K8SObjectMapType>>()
+    const [k8SObjectMapRaw, setK8SObjectMapRaw] = useState<Map<string, K8SObjectMapType>>()
     const [resourceList, setResourceList] = useState<ResourceDetailType>()
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [searchText, setSearchText] = useState('')
@@ -209,8 +211,30 @@ export default function ResourceList() {
                 )
             }
         }
+
+        if (nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()) {
+            getGVKData(clusterId)
+        }
     }, [location.pathname])
 
+    const getGVKData = async (_clusterId): Promise<void> => {
+      if (!_clusterId) return
+      try {
+          setK8SObjectMapRaw(null)
+          const { result } = await getResourceGroupListRaw(_clusterId)
+          if (result) {
+              const processedData = processK8SObjects(result.apiResources, nodeType)
+              const _k8SObjectMap = processedData.k8SObjectMap
+              const _k8SObjectList: K8SObjectType[] = []
+              for (const element of ORDERED_AGGREGATORS) {
+                  if (_k8SObjectMap.get(element)) {
+                      _k8SObjectList.push(_k8SObjectMap.get(element))
+                  }
+              }
+              setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
+          }
+      } catch (err) {}
+  }
 
     const updateOnClusterChange = async (clusterId) => {
         try {
@@ -730,7 +754,7 @@ export default function ResourceList() {
             nodeSelectionData?.[`${nodeType}_${node}_${group}`] ??
             resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = selectedNode?.isFromEvent
-            ? getEventObjectTypeGVK(k8SObjectMap, nodeType)
+            ? getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
             : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
@@ -815,7 +839,7 @@ export default function ResourceList() {
                     addTab={addTab}
                     renderCallBackSync={renderRefreshBar}
                     syncError={!hideSyncWarning}
-                    k8SObjectMap={k8SObjectMap}
+                    k8SObjectMapRaw={k8SObjectMapRaw}
                 />
             )
         }

@@ -150,7 +150,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
-    k8SObjectMap: Map<string, K8SObjectMapType>
+    k8SObjectMapRaw: Map<string, K8SObjectMapType>
 }
 
 export interface ResourceBrowserActionMenuType {

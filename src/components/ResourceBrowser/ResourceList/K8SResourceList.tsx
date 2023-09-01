@@ -42,7 +42,7 @@ export function K8SResourceList({
     addTab,
     renderCallBackSync,
     syncError,
-    k8SObjectMap
+    k8SObjectMapRaw
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -88,7 +88,7 @@ export function K8SResourceList({
 
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            const _selectedResource = getEventObjectTypeGVK(k8SObjectMap, _kind)
+            const _selectedResource = getEventObjectTypeGVK(k8SObjectMapRaw, _kind)
             _group = _selectedResource?.Group.toLowerCase() || K8S_EMPTY_GROUP
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind

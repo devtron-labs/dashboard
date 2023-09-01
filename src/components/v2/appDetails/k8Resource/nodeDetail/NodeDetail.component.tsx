@@ -106,9 +106,11 @@ function NodeDetailComponent({
           }
           if (selectedResource) {
               _selectedResource = { ...selectedResource, containers: containers }
-              if (!_selectedResource.name || !_selectedResource.kind) {
+              if (!_selectedResource.name) {
                   _selectedResource.name = params.node
                   _selectedResource.namespace = params.namespace
+              }
+              if (!_selectedResource.kind) {
                   _selectedResource.kind = params.nodeType
               }
           } else {

@@ -422,7 +422,7 @@ function Sidebar({
                     )}
             </div>
                 {k8SObjectMap?.size && [...k8SObjectMap.values()].map((k8sObject) =>
-                    k8sObject.name === AggregationKeys.Events ? null : (
+                    k8sObject.name === AggregationKeys.Events || k8sObject.name === AggregationKeys.Namespaces ? null : (
                         <Fragment key={`${k8sObject.name}-parent`}>
                             <div
                                 className="flex pointer"
