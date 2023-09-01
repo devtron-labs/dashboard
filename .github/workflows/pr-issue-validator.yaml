@@ -67,7 +67,7 @@ jobs:
             issue_num=$(echo "$PR_BODY" | grep -iE "$pattern2" | head -n1 | awk -F '/' '{print $NF}')
             echo "issue_num is : $issue_num"
         elif echo "$PR_BODY" | grep -iEq "$pattern3"; then
-            issue_num=$(echo "$PR_BODY" | grep -iE "$pattern2" | head -n1 | awk -F '#' '{print $NF}')
+            issue_num=$(echo "$PR_BODY" | grep -iE "$pattern3" | head -n1 | awk -F '#' '{print $NF}')
         else
             echo "No Issue number detected hence failing the PR Validation check."
             gh pr edit $PRNUM --add-label "PR:Issue-verification-failed"
