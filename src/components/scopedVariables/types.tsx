@@ -71,6 +71,7 @@ export interface DescriptorInterface {
     children?: React.ReactNode
     showUploadButton?: boolean
     readFile?: (file: File, validator: ValidatorType, readAs: ReadFileAs) => void
+    onSearch?: (query: string) => void
 }
 
 export interface VariablesListInterface {
@@ -113,6 +114,10 @@ export interface VariablesListItemInterface {
     data: string
     classes: string
     tooltip?: boolean
+}
+
+export interface SearchBarInterface {
+    onSearch: (query: string) => void
 }
 
 export type ValidatorType = (fileData: FileDataInterface) => FileReaderStatusInterface

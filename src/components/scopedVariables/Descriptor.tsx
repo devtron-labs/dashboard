@@ -1,5 +1,6 @@
 import React from 'react'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import SearchBar from './SearchBar'
 import { validator } from './utils/helpers'
 import { DescriptorInterface, ReadFileAs } from './types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
@@ -8,7 +9,7 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
 
-export default function Descriptor({ children, showUploadButton, readFile }: DescriptorInterface) {
+export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorInterface) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         if (readFile) {
@@ -43,16 +44,21 @@ export default function Descriptor({ children, showUploadButton, readFile }: Des
                             </button>
                         </TippyCustomized>
                     </div>
-                    {showUploadButton && (
-                        <button className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56">
-                            <ScopedVariablesInput handleFileUpload={handleReUpload}>
-                                <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
-                                    <ICUpload width={14} height={14} className="scn-0" />
-                                    <p className="fs-13 fw-6 lh-20 m-0">Upload new file to replace</p>
-                                </div>
-                            </ScopedVariablesInput>
-                        </button>
-                    )}
+
+                    <div className="flex dc__gap-12">
+                        {onSearch && <SearchBar onSearch={onSearch} />}
+
+                        {showUploadButton && (
+                            <button className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56">
+                                <ScopedVariablesInput handleFileUpload={handleReUpload}>
+                                    <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
+                                        <ICUpload width={14} height={14} className="scn-0" />
+                                        <p className="fs-13 fw-6 lh-20 m-0">Upload new file to replace</p>
+                                    </div>
+                                </ScopedVariablesInput>
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
             {children}

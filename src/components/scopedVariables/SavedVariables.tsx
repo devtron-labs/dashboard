@@ -69,6 +69,20 @@ export default function SavedVariablesView({
         }
     }
 
+    const onSearch = (query: string) => {
+        const filteredVariables = scopedVariablesData?.spec?.filter((variable) => {
+            return variable.name.toLowerCase().includes(query.toLowerCase())
+        })
+
+        const variables = filteredVariables?.map((variable) => {
+            return {
+                name: variable.name,
+                description: variable.description,
+            }
+        })
+        setVariablesList(variables)
+    }
+
     if (showEditView) {
         return (
             <ScopedVariablesEditor
@@ -103,7 +117,11 @@ export default function SavedVariablesView({
                 overflowY: 'hidden',
             }}
         >
-            <Descriptor showUploadButton readFile={readFile}>
+            <Descriptor
+                showUploadButton
+                onSearch={currentView === FileView.SAVED ? onSearch : null}
+                readFile={readFile}
+            >
                 <div className="dc__border-bottom bcn-0 pt-0 pb-0 pl-20 pr-20 flexbox dc__align-self-stretch dc__align-items-center">
                     <button
                         className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 fs-13 fw-4 lh-20 dc__capitalize cn-9 dc__no-background flex column dc__content-center dc__align-start dc__no-border dc__outline-none-imp ${
@@ -113,6 +131,7 @@ export default function SavedVariablesView({
                     >
                         <div className="pb-6">YAML</div>
                     </button>
+
                     <button
                         className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 fs-13 fw-4 lh-20 dc__capitalize cn-9 dc__no-background flex column dc__content-center dc__align-start dc__no-border dc__outline-none-imp ${
                             currentView === FileView.SAVED ? 'scoped-variables-active-tab' : ''
