@@ -5,6 +5,7 @@ import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JOB_STATUS } from './Constants'
 import { JobCIPipeline } from './Types'
+import { getEnvironmentListMinPublic } from '../../services/service'
 
 export const getJobs = (request, options?: APIOptions) => {
     return post(Routes.JOB_LIST, request, options)
@@ -19,7 +20,7 @@ export const getJobCIPipelines = (jobId: number) => {
 }
 
 export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Promise<any> => {
-    return getProjectList().then((projectsRes) => {
+    return Promise.all([getProjectList(), getEnvironmentListMinPublic()]).then(([projectsRes, environmentsRes]) => {
         const filterApplied = {
             teams: new Set(payloadParsedFromUrl.teams),
             appStatus: new Set(payloadParsedFromUrl.appStatuses),
@@ -27,6 +28,7 @@ export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Prom
         const filters = {
             projects: [],
             appStatus: [],
+            environments: [],
         }
 
         // set filter projects starts
@@ -55,8 +57,25 @@ export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Prom
             }
         })
 
+        filters.environments = (
+            environmentsRes.result
+                ? environmentsRes.result.map((team) => {
+                      return {
+                          key: team.id,
+                          label: team.environment_name.toLocaleLowerCase(),
+                          isSaved: true,
+                          isChecked: filterApplied.teams.has(team.id),
+                      }
+                  })
+                : []
+        ).sort((a, b) => {
+            return sortOptionsByLabel(a, b)
+        })
+
+
         return {
             projectsRes: projectsRes,
+            environmentsRes: environmentsRes,
             filters: filters,
         }
     })

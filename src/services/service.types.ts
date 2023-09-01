@@ -1,5 +1,4 @@
-import { ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
-import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
+import { DeploymentAppTypes, ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
 
 export interface RootObject {
     code: number;
@@ -42,7 +41,7 @@ export interface CDPipeline {
     runPreStageInEnv: boolean;
     runPostStageInEnv: boolean;
     isClusterCdActive: boolean;
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
 }
 
 export interface AppListMin extends ResponseType {
@@ -70,6 +69,8 @@ export interface AppEnvironment {
     lastDeployed?: string
     appStatus?: string
     deploymentAppDeleteRequest?: boolean
+    isVirtualEnvironment?: boolean
+    isProtected?: boolean
 }
 
 export interface AppOtherEnvironment extends ResponseType {
@@ -98,6 +99,7 @@ export interface LastExecutionResponseType {
             low: number;
         },
         vulnerabilities: VulnerabilityType[];
+        scanToolId ?:number
     }
 }
 
@@ -154,6 +156,8 @@ export interface EnvironmentHelmResult {
     environmentName: string,
     namespace: string,
     environmentIdentifier: string
+    isVirtualEnvironment?: boolean // Need to confirm for not full mode
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ClusterListResponse extends ResponseType {
@@ -165,6 +169,7 @@ export interface Cluster {
     cluster_name: string
     active: boolean
     errorInConnecting?: string
+    isVirtualCluster?: boolean
 }
 export interface LoginCountType extends ResponseType {
   result?: LoginCount

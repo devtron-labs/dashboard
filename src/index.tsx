@@ -39,6 +39,8 @@ interface customEnv {
     ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
     HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
     ENABLE_BUILD_CONTEXT?: boolean
+    CLAIR_TOOL_VERSION?: string
+    ENABLE_RESTART_WORKLOAD?: boolean
 }
 declare global {
     interface Window {
@@ -135,7 +137,9 @@ if (!window || !window._env_) {
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
-        ENABLE_BUILD_CONTEXT: false
+        ENABLE_BUILD_CONTEXT: false,
+        CLAIR_TOOL_VERSION:'V4',
+        ENABLE_RESTART_WORKLOAD: false
     }
 }
 

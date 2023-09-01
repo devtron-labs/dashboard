@@ -7,8 +7,8 @@ import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { noop, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { CIBuildConfigType, CIBuildType, noop, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { OptionType } from '../app/types'
@@ -18,7 +18,8 @@ export default function AdvancedConfigOptions({
     formData,
     setFormData,
     setDockerConfigOverridden,
-    setLoadingData,
+    loadingState,
+    setLoadingState,
 }: AdvancedConfigOptionsProps) {
     const [collapsedSection, setCollapsedSection] = useState<boolean>(false)
     const [allowOverride, setAllowOverride] = useState<boolean>(ciPipeline?.isDockerConfigOverridden ?? false)
@@ -249,7 +250,8 @@ export default function AdvancedConfigOptions({
                     parentState={parentState}
                     setParentState={setParentState}
                     updateDockerConfigOverride={updateDockerConfigOverride}
-                    setLoadingData={setLoadingData}
+                    loadingStateFromParent={loadingState}
+                    setLoadingStateFromParent={setLoadingState}
                 />
 
                 {parentState?.loadingState === ComponentStates.loaded &&

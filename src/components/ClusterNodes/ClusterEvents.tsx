@@ -12,35 +12,42 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
     const [errorValue, setErrorValue] = useState<PodEventsType>()
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
+    let timeoutId
+
+    const fetchEvents = async () => {
+        try {
+            const response = await getClusterEvents(terminalAccessId)
+            setErrorValue(response.result)
+            setEvents(response.result?.eventsResponse?.events.items || [])
+        } catch (error) {
+            showError(error)
+            setEvents([])
+        } finally {
+            setLoading(false)
+            if (!isResourceMissing && terminalAccessId) {
+                timeoutId = setTimeout(fetchEvents, 5000)
+            }
+        }
+    }
 
     useEffect(() => {
-        if (terminalAccessId) {
-            getClusterEvents(terminalAccessId)
-                .then((response) => {
-                    setLoading(false)
-                    setEvents(response.result?.eventsResponse?.events.items)
-                    setErrorValue(response.result)
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-                .finally(() => {
-                    setLoading(false)
-                })
+        if (!isResourceMissing && terminalAccessId) {
+            setLoading(true)
+            fetchEvents()
         } else {
             setResourceMissing(true)
             setLoading(false)
         }
-    }, [])
+        return () => {
+            if (timeoutId) {
+                clearTimeout(timeoutId)
+            }
+        }
+    }, [isResourceMissing, terminalAccessId])
 
     return isResourceMissing ? (
         <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
     ) : (
-        <EventsTable
-            loading={loading}
-            eventsList={events}
-            errorValue={errorValue}
-            reconnect={reconnectStart}
-        />
+        <EventsTable loading={loading} eventsList={events} errorValue={errorValue} reconnect={reconnectStart} />
     )
 }

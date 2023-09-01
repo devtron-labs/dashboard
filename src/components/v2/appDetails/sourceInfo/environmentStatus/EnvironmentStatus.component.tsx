@@ -6,23 +6,28 @@ import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
-import { AppType, DeploymentAppType } from '../../../appDetails/appDetails.type'
+import { AppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { Link } from 'react-router-dom'
 import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { useAsync } from '../../../../common'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary, useAsync } from '../../../../common'
+import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { EnvironmentStatusComponentType } from '../environment.type'
+
+const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 function EnvironmentStatusComponent({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
-    deploymentStatusDetailsBreakdownData
+    deploymentStatusDetailsBreakdownData,
+    isVirtualEnvironment,
+    isHelmApp,
+    refetchDeploymentStatus
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -34,7 +39,7 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const hideDeploymentStatusLeftInfo = appDetails?.deploymentAppType === DeploymentAppTypes.HELM // Todo test for helm/gitops app details
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -148,16 +153,29 @@ function EnvironmentStatusComponent({
         )
     }
 
+    const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        if (AppDetailsDownloadCard) {
+            const deploymentManifestParams = {
+                appId: +params.appId,
+                envId: +params.envId,
+                appName: appDetails?.helmPackageName,
+                isHelmApp: true,
+            }
+            return <AppDetailsDownloadCard params={deploymentManifestParams} />
+        }
+    }
 
     const renderLastUpdatedBlock = () => {
         return (
-            appDetails?.lastDeployedTime && (
-              <DeploymentStatusCard
-              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-              hideDeploymentStatusLeftInfo={!isGitops}
-              deploymentTriggerTime = {appDetails?.lastDeployedTime}
-              triggeredBy ={appDetails?.lastDeployedBy}
-          />
+            appDetails?.lastDeployedTime && appDetails?.appType !== "external_helm_chart" && (
+                <DeploymentStatusCard
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
+                    deploymentTriggerTime={appDetails?.lastDeployedTime}
+                    triggeredBy={appDetails?.lastDeployedBy}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                    refetchDeploymentStatus={refetchDeploymentStatus}
+                />
             )
         )
     }
@@ -232,7 +250,7 @@ function EnvironmentStatusComponent({
                 shimmerLoaderBlocks()
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
-                    {renderStatusBlock()}
+                    {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}

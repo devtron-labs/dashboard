@@ -459,13 +459,13 @@ function DiscoverChartList() {
                             >
                                 {state.advanceVisited && (
                                     <div>
-                                        <label className="dc__required-field">Project</label>
+                                        <label className="dc__required-field" data-testid="advanced-option-project-heading">Project</label>
                                         <Select
                                             rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                             value={project.id}
                                             onChange={(e) => setProject({ id: e.target.value, error: '' })}
                                         >
-                                            <Select.Button>
+                                            <Select.Button dataTestIdDropdown="advanced-option-project-list">
                                                 {project.id && projectsMap.has(project.id)
                                                     ? projectsMap.get(project.id).name
                                                     : 'Select project'}
@@ -503,6 +503,7 @@ function DiscoverChartList() {
                                             disabled={state.charts.length === 0}
                                             onClick={handleAdvancedButtonClick}
                                             className="cta cancel dc__ellipsis-right"
+                                            data-testid="advanced-option-button"
                                         >
                                             Advanced Options
                                         </button>

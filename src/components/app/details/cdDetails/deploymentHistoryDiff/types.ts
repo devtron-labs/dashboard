@@ -1,4 +1,3 @@
-import { DeploymentAppType } from "../../../../v2/appDetails/appDetails.type"
 import { DeploymentHistoryDetail, DeploymentTemplateList } from "../cd.type"
 
 export interface DeploymentHistorySingleValue {
@@ -10,6 +9,9 @@ export interface DeploymentTemplateHistoryType {
     currentConfiguration: DeploymentHistoryDetail
     baseTemplateConfiguration: DeploymentHistoryDetail
     previousConfigAvailable: boolean
+    isUnpublished?: boolean
+    isDeleteDraft?: boolean
+    rootClassName?: string
 }
 
 export interface DeploymentTemplateOptions {

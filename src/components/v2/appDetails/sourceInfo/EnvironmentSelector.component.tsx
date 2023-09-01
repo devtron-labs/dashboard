@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { showError, PopupMenu, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, PopupMenu, multiSelectStyles, ForceDeleteDialog, ServerErrors, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { useSharedState } from '../../utils/useSharedState'
-import { AppType, DeploymentAppType } from '../appDetails.type'
+import { AppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
-import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
 import Tippy from '@tippyjs/react'
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
@@ -20,19 +18,23 @@ import { deleteInstalledChart } from '../../../charts/charts.service'
 import { toast } from 'react-toastify'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
-import { checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
+import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
     _init,
     loadingResourceTree,
+    isVirtualEnvironment,
 }: {
     isExternalApp: boolean
     _init?: () => void
     loadingResourceTree: boolean
+    isVirtualEnvironment?: boolean
 }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -42,7 +44,12 @@ function EnvironmentSelectorComponent({
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
+    const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState<string>('')
+    const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState<string>('')
+    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
+    const [clusterName, setClusterName] = useState<string>('')
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
 
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
@@ -92,28 +99,62 @@ function EnvironmentSelectorComponent({
             </div>
         )
     }
+    const setForceDeleteDialogData = (serverError) => {
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                setForceDeleteDialogTitle(userMessage)
+                setForceDeleteDialogMessage( internalMessage)
+            })
+        }
+    }
 
-    const getDeleteApplicationApi = (): Promise<any> => {
+    const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
-            return deleteInstalledChart(params.appId, isGitops)
+            return deleteInstalledChart(params.appId, isGitops, deleteAction)
         }
     }
 
-    const toggleShowDeleteConfirmation = () => {
-        setShowDeleteConfirmation(!showDeleteConfirmation)
+    const onClickHideNonCascadeDeletePopup = () => {
+        showNonCascadeDeleteDialog(false)
+    }
+    
+    const onClickNonCascadeDelete = async() => {
+        await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
-    async function deleteResourceAction() {
+    async function deleteResourceAction(deleteAction: DELETE_ACTION) {
         try {
-            await getDeleteApplicationApi()
-            setShowDeleteConfirmation(false)
-            toast.success('Deletion initiated successfully.')
-            _init()
-        } catch (error) {
+            const response = await getDeleteApplicationApi(deleteAction)
+            if (response.result.deleteResponse?.deleteInitiated) {
+                setShowDeleteConfirmation(false)
+                showNonCascadeDeleteDialog(false)
+                showForceDeleteDialog(false)
+                toast.success('Deletion initiated successfully.')
+                _init()
+            } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                setClusterName(response.result.deleteResponse?.clusterName)
+                setShowDeleteConfirmation(false)
+                showNonCascadeDeleteDialog(true)
+            }
+        } catch (error: any) {
+            if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) { 
+                setShowDeleteConfirmation(false)
+                showNonCascadeDeleteDialog(false)
+                setForceDeleteDialogData(error)
+                showForceDeleteDialog(true)
+            }
             showError(error)
         }
+    }
+
+    const handleForceDelete = async () => {
+        await deleteResourceAction(DELETE_ACTION.FORCE_DELETE)
+    }
+    const handleDelete = async () => {
+        setShowDeleteConfirmation(true)
+        await deleteResourceAction(DELETE_ACTION.DELETE)
     }
 
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
@@ -203,22 +244,19 @@ function EnvironmentSelectorComponent({
                         <Tippy
                             className="default-tt"
                             arrow={false}
+                            disabled={isVirtualEnvironment}
                             placement="top"
                             content={`Deployed using ${
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            {isGitops ? (
-                                <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
-                            ) : (
-                                <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                            )}
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
                             <BinWithDots className="icon-dim-16 mr-8 ml-12" />
-                            <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="cr-5 fw-6" data-testid = "delete-progress">{DELETE_DEPLOYMENT_PIPELINE}</span>
                             <span className="dc__loading-dots cr-5" />
                         </>
                     )}
@@ -227,13 +265,17 @@ function EnvironmentSelectorComponent({
 
             {!loadingResourceTree && (
                 <div className="flex">
-                    {!appDetails.deploymentAppDeleteRequest && (
-                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl} data-testid="url-button-app-details">
+                    {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
+                        <button
+                            className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                            onClick={showInfoUrl}
+                            data-testid="url-button-app-details"
+                        >
                             <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                             Urls
                         </button>
                     )}
-                    {!showWorkloadsModal && (
+                    {!showWorkloadsModal && !isVirtualEnvironment && (
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={() => setWorkloadsModal(true)}
@@ -251,24 +293,41 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div data-testid="dot-button-app-details">
+                        <div data-testid="dot-button-app-details" className="helm-delete-wrapper flex ml-8 mw-none cta cancel small">
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
-                                    <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
+                                    <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <Popup />
+                                   <div className="helm-delete-pop-up bcn-0 br-4"> <Popup /></div>
                                 </PopupMenu.Body>
                             </PopupMenu>
                             {showDeleteConfirmation && (
                                 <DeleteChartDialog
                                     appName={appDetails.appName}
-                                    handleDelete={deleteResourceAction}
-                                    toggleConfirmation={toggleShowDeleteConfirmation}
+                                    handleDelete={handleDelete}
+                                    toggleConfirmation={setShowDeleteConfirmation}
                                     isCreateValueView={false}
                                 />
                             )}
                         </div>
+                    )}
+                    {forceDeleteDialog && (
+                        <ForceDeleteDialog
+                            forceDeleteDialogTitle={forceDeleteDialogTitle}
+                            onClickDelete={handleForceDelete}
+                            closeDeleteModal={() => {
+                                showForceDeleteDialog(false)
+                            }}
+                            forceDeleteDialogMessage={forceDeleteDialogMessage}
+                        />
+                    )}
+                    {nonCascadeDeleteDialog && (
+                        <ClusterNotReachableDailog
+                            clusterName={clusterName}
+                            onClickCancel={onClickHideNonCascadeDeletePopup}
+                            onClickDelete={onClickNonCascadeDelete}
+                        />
                     )}
                 </div>
             )}

@@ -1,9 +1,9 @@
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import {ChartValuesType, ChartVersionType} from '../../../charts/charts.types'
 import {
     ChartValuesViewAction,
     ChartValuesViewActionTypes,
     ChartValuesViewState,
-    DeploymentAppType
 } from './ChartValuesView.type'
 
 
@@ -55,6 +55,10 @@ export const initState = (
             title: '',
             message: '',
         },
+        nonCascadeDeleteData: {
+            nonCascade: false,
+            clusterName: '',
+        },
         errorResponseCode: 0,
         invalidAppName: false,
         invalidAppNameMessage: '',
@@ -64,7 +68,7 @@ export const initState = (
         invalidProject: false,
         formValidationError: {},
         showNoGitOpsWarning: false,
-        deploymentAppType: DeploymentAppType.Helm
+        deploymentAppType: DeploymentAppTypes.HELM
     }
 }
 
@@ -142,6 +146,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, environments: action.payload }
         case ChartValuesViewActionTypes.forceDeleteData:
             return { ...state, forceDeleteData: action.payload }
+        case ChartValuesViewActionTypes.nonCascadeDeleteData:
+            return { ...state, nonCascadeDeleteData: action.payload }
         case ChartValuesViewActionTypes.errorResponseCode:
             return { ...state, errorResponseCode: action.payload }
         case ChartValuesViewActionTypes.invalidValueName:

@@ -37,6 +37,7 @@ const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
+const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -171,11 +172,11 @@ function NavItem({ serverMode }) {
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container Registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
     ]
 
     const ConfigOptional = [
-        { name: 'Chart Repositories',href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
+        { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
             name: 'Custom Charts',
             href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
@@ -380,6 +381,15 @@ function NavItem({ serverMode }) {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
+                    {PluginsPolicy && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_PLUGINS}
+                            key={URLS.GLOBAL_CONFIG_PLUGINS}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Plugins</div>
+                        </NavLink>
+                    )}
                     {TagListContainer && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_TAGS}
@@ -531,6 +541,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
+            {PluginsPolicy && (
+                <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
+                    <PluginsPolicy />
+                </Route>
+            )}
             {TagListContainer && (
                 <Route path={URLS.GLOBAL_CONFIG_TAGS}>
                     <TagListContainer />
@@ -561,8 +576,13 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
+function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
+    const handleToggle = () => {
+        if (!isButtonDisabled) {
+            onSelect(!enabled);
+        }
+    };
+    return <Toggle dataTestId="toggle-button" {...props} onSelect={handleToggle} selected={enabled} disabled={isButtonDisabled} />
 }
 
 function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {

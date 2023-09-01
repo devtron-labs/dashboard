@@ -1,6 +1,7 @@
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import emptyCustomChart from '../../assets/img/empty-noresult@2x.png'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export default function ClusterNodeEmptyState({
     title,
@@ -20,8 +21,8 @@ export default function ClusterNodeEmptyState({
     return (
         <GenericEmptyState
             image={emptyCustomChart}
-            title={title || 'No matching clusters'}
-            subTitle="We couldn’t find any matching results"
+            title={title || EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.TITLE}
+            subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}
             isButtonAvailable={true}
             renderButton={renderClearSearchButton}
             classname='dc__position-rel-imp'

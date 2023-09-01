@@ -1,6 +1,6 @@
 import React from 'react'
+import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { useOnline } from '../../../../../../common'
-import { SocketConnectionType } from '../node.type'
 import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal'
 import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'
@@ -13,7 +13,6 @@ export default function TerminalWrapper({
     className,
     dataTestId,
 }: TerminalWrapperProps) {
-    
     const firstStrip = () => {
         return (
             <div className="flex left w-100">
@@ -81,7 +80,9 @@ export function RenderConnectionStrip({
 
     if (!isOnline) {
         return (
-            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">{TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}</div>
+            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
+                {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
+            </div>
         )
     }
 
@@ -93,7 +94,9 @@ export function RenderConnectionStrip({
                 <div
                     className={`dc__first-letter-capitalize ${
                         socketConnection !== SocketConnectionType.CONNECTED &&
-                        `${socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'} connection-status-strip pl-20`
+                        `${
+                            socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'
+                        } connection-status-strip pl-20`
                     } ${socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
                 >
                     {socketConnection !== SocketConnectionType.CONNECTED && (

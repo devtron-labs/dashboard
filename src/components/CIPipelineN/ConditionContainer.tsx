@@ -1,23 +1,21 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { ConditionContainerType } from '../ciPipeline/types'
 import {
-    ConditionContainerType,
+    RadioGroup,
+    RadioGroupItem,
     ConditionType,
-    FormErrorObjectType,
-    FormType,
     PluginType,
-    StepType,
-    TaskErrorObj,
-} from '../ciPipeline/types'
-import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'
-import { ciPipelineContext } from './CIPipeline'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { PipelineFormType } from '../workflowEditor/types'
 
 export function ConditionContainer({ type }: { type: ConditionContainerType }) {
     const {
@@ -28,15 +26,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+    } = useContext(pipelineContext)
 
     const operatorOptions: OptionType[] = [
         { value: '==', description: 'equal to' },
@@ -98,7 +88,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
         }
     }, [formDataErrorObj])
 
-    const validateCurrentTask = (_formData: FormType): void => {
+    const validateCurrentTask = (_formData: PipelineFormType): void => {
         const _formDataErrorObj = { ...formDataErrorObj }
         validateTask(
             _formData[activeStageName].steps[selectedTaskIndex],

@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ServerErrors, Checkbox, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader } from '../../../common'
+import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -14,6 +14,8 @@ import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
+import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
@@ -37,6 +39,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     componentDidMount() {
         this.getSecurityModuleStatus()
+        if(this.props.isJobView && this.props.environmentLists?.length > 0) {
+            let envId = this.state.selectedCIPipeline?.environmentId || 0
+            const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
+            this.props.setSelectedEnv(_selectedEnv)
+        }
     }
 
     async getSecurityModuleStatus(): Promise<void> {
@@ -112,35 +119,73 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         }
     }
 
+    renderEnvironments = () => {
+        return <EnvironmentList isBuildStage={false} environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
+    }
+
     handleStartBuildAction = (e) => {
         e.stopPropagation()
         this.context.onClickTriggerCINode()
     }
 
+    redirectToCIPipeline = () => {
+        this.props.history.push(
+            `/app/${this.props.appId}/edit/workflow/${this.props.workflowId}/ci-pipeline/${this.props.pipelineId}/build`,
+        )
+    }
+
+    renderCTAButton = (canTrigger) => {
+        if (AllowedWithWarningTippy && this.props.ciBlockState && !this.props.isJobView) {
+            return (
+                <AllowedWithWarningTippy
+                    consequence={this.props.ciBlockState}
+                    onConfigure={this.redirectToCIPipeline}
+                    onStart={this.handleStartBuildAction}
+                >
+                    <ButtonWithLoader
+                        rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                        dataTestId="ci-trigger-start-build-button"
+                        loaderColor="#ffffff"
+                        disabled={!canTrigger}
+                        isLoading={this.props.isLoading}
+                        onClick={noop}
+                    >
+                        <Play className="trigger-btn__icon" />
+                        Start Build
+                    </ButtonWithLoader>
+                </AllowedWithWarningTippy>
+            )
+        }
+
+        return (
+            <ButtonWithLoader
+                rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
+                dataTestId="ci-trigger-start-build-button"
+                loaderColor="#ffffff"
+                disabled={!canTrigger}
+                isLoading={this.props.isLoading}
+                onClick={this.handleStartBuildAction}
+            >
+                {this.props.isJobView ? (
+                    <>
+                        <RunIcon className="trigger-job-btn__icon" />
+                        Run Job
+                    </>
+                ) : (
+                    <>
+                        <Play className="trigger-btn__icon" />
+                        Start Build
+                    </>
+                )}
+            </ButtonWithLoader>
+        )
+    }
+
     renderMaterialStartBuild = (canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
-                {!this.props.isJobView && this.renderIgnoreCache()}
-                <ButtonWithLoader
-                    rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
-                    dataTestId="ci-trigger-start-build-button"
-                    loaderColor="#ffffff"
-                    disabled={!canTrigger}
-                    isLoading={this.props.isLoading}
-                    onClick={this.handleStartBuildAction}
-                >
-                    {this.props.isJobView ? (
-                        <>
-                            <RunIcon className="trigger-job-btn__icon" />
-                            Run Job
-                        </>
-                    ) : (
-                        <>
-                            <Play className="trigger-btn__icon" />
-                            Start Build
-                        </>
-                    )}
-                </ButtonWithLoader>
+                {!this.props.isJobView ? this.renderIgnoreCache() : this.renderEnvironments()}
+                {this.renderCTAButton(canTrigger)}
             </div>
         )
     }
@@ -151,9 +196,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         const canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =
-                (isValid &&
-                    !mat.isMaterialLoading &&
-                    !!mat.history.find((history) => history.isSelected)) ||
+                (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
                 (!mat.isDockerFileError && mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)
@@ -161,7 +204,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             return (
                 <>
                     <GitInfoMaterial
-                        dataTestId='edit-branch-name'
+                        dataTestId="edit-branch-name"
                         material={this.props.material}
                         title={this.props.title}
                         pipelineId={this.props.pipelineId}
@@ -179,8 +222,12 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
                         isJobView={this.props.isJobView}
+                        isCITriggerBlocked={this.props.isCITriggerBlocked}
+                        ciBlockState={this.props.ciBlockState}
                     />
-                    {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
+                    {this.props.isCITriggerBlocked || this.props.showWebhookModal
+                        ? null
+                        : this.renderMaterialStartBuild(canTrigger)}
                 </>
             )
         }

@@ -119,6 +119,7 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     fromAppGrouping={this.props.fromAppGrouping}
+                    isCITriggerBlocked={node.isCITriggerBlocked}
                 />
             )
         } else if (node.isExternalCI) {
@@ -172,6 +173,10 @@ export class Workflow extends Component<WorkflowProps> {
                     fromAppGrouping={this.props.fromAppGrouping}
                     isJobView={this.props.isJobView}
                     index={this.props.index}
+                    isCITriggerBlocked={node.isCITriggerBlocked}
+                    ciBlockState={node.ciBlockState}
+                    filteredCIPipelines={this.props.filteredCIPipelines}
+                    environmentLists={this.props.environmentLists}
                 />
             )
         }
@@ -206,6 +211,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentEnvironmentName={node.parentEnvironmentName}
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
+                isVirtualEnvironment={node.isVirtualEnvironment}
             />
         )
     }
@@ -242,10 +248,10 @@ export class Workflow extends Component<WorkflowProps> {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
                 let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
-                edgeList.push({
-                    startNode: node,
-                    endNode: endNode,
-                })
+                    edgeList.push({
+                        startNode: node,
+                        endNode: endNode,
+                    })
             })
             return edgeList
         }, [])
@@ -253,6 +259,9 @@ export class Workflow extends Component<WorkflowProps> {
 
     onClickNodeEdge = (nodeId: number) => {
         this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+        this.props.history.push({
+            search: `approval-node=${nodeId}`
+        })
     }
 
     renderEdgeList() {

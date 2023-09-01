@@ -6,10 +6,6 @@
     padding: 20px 24px;
     margin: 0 auto;
 
-    section:not(:first-child) {
-        margin-top: 24px;
-    }
-
     .form__title {
         font-size: 16px;
         font-weight: 600;
@@ -48,11 +44,6 @@
         cursor: not-allowed;
         opacity: 0.5;
     }
-}
-
-.white-card__config-map {
-    border: unset;
-    padding-bottom: 24px;
 }
 
 .white-card--list {
@@ -107,9 +98,13 @@ section.config-map-overrides {
     }
 }
 
-.override-config-map-form,
-.override-secrets-form {
-    padding-bottom: 24px;
+.configmap-secret-usage-radio {
+  .form__radio-item {
+      &.disabled {
+          opacity: 0.5;
+          background-color: transparent;
+      }
+  }
 }
 
 div.override-container {
@@ -117,15 +112,13 @@ div.override-container {
     grid-template-columns: 20px 1fr auto;
     align-items: flex-start;
     padding: 10px 16px;
-    margin-bottom: 16px;
     grid-column-gap: 10px;
     background: var(--B100);
-    border: 1px solid var(--B200);
-    border-radius: 4px;
+    border-bottom: 1px solid var(--B200);
 
     &.override-warning {
         background: var(--Y100);
-        border: 1px solid var(--Y200);
+        border-bottom: 1px solid var(--Y200);
     }
 
     .override-title,
@@ -194,6 +187,8 @@ div.override-container {
 }
 
 .deployment-template-override {
+    height: calc(100vh - 102px);
+
     .chart-version.popup-button {
         width: 100%;
     }

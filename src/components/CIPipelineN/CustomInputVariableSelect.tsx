@@ -3,20 +3,16 @@ import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
 import {
     RefVariableType,
     PluginType,
-    FormType,
-    VariableType,
     RefVariableStageType,
-    FormErrorObjectType,
-    StepType,
-    TaskErrorObj,
-} from '../ciPipeline/types'
-import { ciPipelineContext } from './CIPipeline'
+} from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
 import { OptionType } from '../app/types'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { excludeVariables } from './Constants'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -29,20 +25,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        selectedTaskIndex: number
-        activeStageName: string
-        inputVariablesListFromPrevStep: {
-            preBuildStage: Map<string, VariableType>[]
-            postBuildStage: Map<string, VariableType>[]
-        }
-        globalVariables: { label: string; value: string; format: string }[]
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    } = useContext(ciPipelineContext)
+        isCdPipeline
+    } = useContext(pipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
         value: '',
@@ -65,7 +49,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         if (activeStageName === BuildStageVariable.PostBuild) {
             const preBuildStageVariables = []
             const preBuildTaskLength = formData[BuildStageVariable.PreBuild]?.steps?.length
-            if (preBuildTaskLength >= 1) {
+            if (preBuildTaskLength >= 1 && !isCdPipeline) {
                 if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
                     inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
                         (element) => {
@@ -117,7 +101,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: globalVariables,
+                    options: globalVariables.filter((variable) => (isCdPipeline && variable.stageType !== 'post-cd') || (!excludeVariables.includes(variable.value))),
+                    
                 },
             ])
         }
