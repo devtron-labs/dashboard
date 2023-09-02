@@ -8,13 +8,13 @@ import {
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
-import { getDefaultDeploymentTemplate, getDeploymentTemplate } from '../service'
+import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplate, getDeploymentTemplateNew } from '../service'
 import { getDeploymentTemplate as getEnvDeploymentTemplate } from '../../EnvironmentOverride/service'
 import YAML from 'yaml'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { CompareWithDropdown, getCodeEditorHeight, renderEditorHeading } from './DeploymentTemplateView.component'
+import { CompareWithDropdown, RenderManifestEditorHeading, getCodeEditorHeight, renderEditorHeading } from './DeploymentTemplateView.component'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
@@ -29,6 +29,7 @@ export default function DeploymentTemplateEditorView({
     environmentName,
     editorOnChange,
     handleOverride,
+    isValues,
 }: DeploymentTemplateEditorViewProps) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -38,6 +39,33 @@ export default function DeploymentTemplateEditorView({
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+
+    const [showProposal, setShowProposal] = useState(false)
+    const [proposalData, setProposalData] = useState(null)
+
+    console.log('showProposal', showProposal)
+
+    const getLocalDaftManifest = async () => {
+        const request = {
+            "appId": +appId,
+            // "chartRefId": 33,
+            "getValues": false,
+            // "type": 1,
+            "values": state.draftValues
+        }
+        const response = await getDeploymentManisfest(request)
+        return response.result.data
+    }
+
+    useEffect(() => {
+        if(!showProposal) return
+        getLocalDaftManifest()
+        .then((data) => {
+            console.log('data', data)
+            setProposalData(data)
+        })
+    }, [showProposal])
+
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -103,7 +131,8 @@ export default function DeploymentTemplateEditorView({
                       isEnvOption ? state.selectedCompareOption.id : envId,
                       state.selectedCompareOption.value,
                   )
-                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value)
+                  // @ts-ignore // TODO: Fix noImplicitAny error here
+                : getDeploymentTemplateNew(+appId, +state.selectedCompareOption.chartRefId, isValues)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
@@ -139,6 +168,7 @@ export default function DeploymentTemplateEditorView({
     }
 
     const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
+        console.log('result', result)
         if (isChartVersionOption) {
             return result.defaultAppOverride
         } else if (_isEnvOption) {
@@ -148,11 +178,13 @@ export default function DeploymentTemplateEditorView({
             }))
             return result.environmentConfig?.envOverrideValues || result?.globalConfig
         } else {
-            return result.globalConfig.defaultAppOverride
+            return  isValues? YAML.parse(result.data) : result.data
         }
     }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
+
+        if(!isValues) return 
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValues,
             payload: fetchedValues,
@@ -170,6 +202,8 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
+    console.log(defaultValue, 'defaultValue')
+
     const renderCodeEditor = (): JSX.Element => {
         return (
             <div
@@ -179,11 +213,12 @@ export default function DeploymentTemplateEditorView({
             >
                 <CodeEditor
                     defaultValue={
-                        (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
+                       isValues?(state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
                             ? defaultValue
                             : state.fetchedValues[state.selectedCompareOption?.id]) || ''
+                        : defaultValue    
                     }
-                    value={value}
+                    value={(!isValues && state.selectedTabIndex!==3 && showProposal)?proposalData :value}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
@@ -191,6 +226,7 @@ export default function DeploymentTemplateEditorView({
                     height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                     diffView={state.openComparison}
                     readOnly={readOnly}
+                    noParsing
                 >
                     {isUnSet && !state.openComparison && !state.showReadme && (
                         <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
@@ -229,6 +265,7 @@ export default function DeploymentTemplateEditorView({
                                             selectedOption={state.selectedCompareOption}
                                             setSelectedOption={setSelectedOption}
                                             globalChartRef={globalChartRef}
+                                            isValues={isValues}
                                         />
                                         {!isDeleteDraftState &&
                                             isEnvOverride &&
@@ -244,7 +281,7 @@ export default function DeploymentTemplateEditorView({
                                             )}
                                     </div>
                                     <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
-                                        {renderEditorHeading(
+                                        { isValues ? renderEditorHeading(
                                             isEnvOverride,
                                             !!state.duplicate,
                                             readOnly,
@@ -254,7 +291,20 @@ export default function DeploymentTemplateEditorView({
                                             state.latestDraft,
                                             state.publishedState?.isOverride,
                                             isDeleteDraftState,
-                                        )}
+                                        )
+                                        : <RenderManifestEditorHeading
+                                            isEnvOverride={isEnvOverride}
+                                            overridden={!!state.duplicate}
+                                            readOnly={readOnly}
+                                            environmentName={environmentName}
+                                            selectedChart={state.selectedChart}
+                                            handleOverride={handleOverride}
+                                            latestDraft={state.latestDraft}
+                                            isPublishedOverriden={state.publishedState?.isOverride}
+                                            isDeleteDraftState={isDeleteDraftState}
+                                            setShowProposal={setShowProposal}
+                                        />
+                                        }
                                     </div>
                                 </div>
                                 {isDeleteDraftState && (

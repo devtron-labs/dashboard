@@ -23,6 +23,8 @@ import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import { handleConfigProtectionError } from '../DeploymentConfig.utils'
+import { useParams } from 'react-router-dom'
+import { getOptions } from '../service'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -91,11 +93,11 @@ export const ChartTypeVersionOptions = ({
     )
 }
 
-const formatOptionLabel = (option: DeploymentChartOptionType): JSX.Element => {
+const formatOptionLabel = (option): JSX.Element => {
     return (
         <div className="flex left column">
             <span className="w-100 dc__ellipsis-right">
-                {option.label}&nbsp;{option.version && `(v${option.version})`}
+                {option.environmentName && option.environmentName}&nbsp;{option.chartVersion && `(v${option.chartVersion})`} // TODO change this to product requirements
             </span>
         </div>
     )
@@ -113,6 +115,27 @@ const customValueContainer = (props): JSX.Element => {
     )
 }
 
+function groupDataByType(data) {
+    // Create a Map to store grouped objects by type
+    const groupedData = new Map();
+
+    // Iterate through the data and group objects by type
+    data.forEach(item => {
+        const type = item.type;
+
+        if (!groupedData.has(type)) {
+            groupedData.set(type, []);
+        }
+
+        groupedData.get(type).push(item);
+    });
+
+    // Convert the grouped data into an array of arrays
+    const result = [...groupedData.values()];
+
+    return result;
+}
+
 export const CompareWithDropdown = ({
     envId,
     isEnvOverride,
@@ -121,24 +144,33 @@ export const CompareWithDropdown = ({
     selectedOption,
     setSelectedOption,
     globalChartRef,
-}: CompareWithDropdownProps) => {
-    const [groupedOptions, setGroupedOptions] = useState<DeploymentChartGroupOptionType[]>([
+    isValues
+}) => {
+    const {appId} = useParams<{appId: string}>()
+    console.log(isValues,'isValues')
+    const [groupedOptions, setGroupedOptions] = useState([
         {
             label: '',
             options: [],
         },
     ])
     const baseTemplateOption = {
-        id: -1,
-        value: '',
+        id:-1,
         label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
-        version: globalChartRef?.version || '',
-        kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.key,
-    } as DeploymentChartOptionType
+        environmentName: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
+        chartVersion: globalChartRef?.version || '',
+    } 
+
+    const labelName = {
+        '1': 'Default values',
+        '2': 'Published on environments',
+        '3': 'Prev. Deployments on self env',
+        '4': 'Deplyed on environments',
+    }
 
     useEffect(() => {
         _initOptions()
-    }, [environments, charts])
+    }, [environments, charts,isValues])
 
     const getSelectedOption = () => {
         if (isEnvOverride) {
@@ -150,28 +182,56 @@ export const CompareWithDropdown = ({
         return baseTemplateOption
     }
 
-    const _initOptions = () => {
+    const _initOptions = async () => {
         const _groupOptions = []
-        _groupOptions.push({
-            label: '',
-            options: [baseTemplateOption],
-        })
+        if(isValues){
+            _groupOptions.push({
+                label: '',
+                options: [baseTemplateOption],
+            })
+        }
+        
+        const res = await getOptions(parseInt(appId), parseInt(envId)||-1)
 
+        const { result } = res;
+
+        const groupedData = groupDataByType(result);
+        let id = 0;
+        console.log(groupedData[0][0].type,'groupedData[0][0].type')
+        groupedData.forEach((group) => {
+            if(!isValues && group[0].type === 1) return;
+            if(isValues && group[0].type === 4) return;
+            _groupOptions.push({
+                label: labelName[group[0].type],
+                options: group.map((item) => {
+                    return {
+                        id: id++,
+                        label: item.environmentName?item.environmentName:item.chartVersion, // TODO: change this to product requirements
+                        ...item,
+                    }
+                }),
+             });
+        });
         // Push all environment & other version options
-        _groupOptions.push({
-            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.publishedLabel,
-            options: environments.length > 0 ? environments : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.noOptions],
-        })
-        _groupOptions.push({
-            label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.label,
-            options: charts.length > 0 ? charts : [DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.noOptions],
-        })
+        // _groupOptions.push({
+        //     label: labelName[groupDataByType[0][0].type],
+        //     options: groupedData[0]
+        // })
+
+
+        // _groupOptions.push({
+        //     label: labelName[groupDataByType[1][0].type],
+        //     options: groupedData[1]
+        // })
+
+      
 
         setGroupedOptions(_groupOptions)
-        setSelectedOption(getSelectedOption())
+        setSelectedOption(_groupOptions[0].options[0])
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
+        console.log(selected,'selected')
         setSelectedOption(selected)
     }
 
@@ -183,7 +243,7 @@ export const CompareWithDropdown = ({
             isOptionSelected={(option, selected) => option.id === selected[0].id}
             classNamePrefix="compare-template-values-select"
             formatOptionLabel={formatOptionLabel}
-            isOptionDisabled={(option) => option.value === 0}
+            // isOptionDisabled={(option) => option.value === 0}
             isSearchable={false}
             onChange={onChange}
             components={{
@@ -267,6 +327,157 @@ export const renderEditorHeading = (
                 {!!latestDraft ? (
                     <span className="fw-6 mr-4">
                         Last saved draft{selectedChart ? ` (v${selectedChart.version})` : ''}
+                    </span>
+                ) : (
+                    `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
+                        selectedChart ? `(v${selectedChart.version})` : ''
+                    }`
+                )}
+                {isEnvOverride && readOnly && (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
+                    >
+                        <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    </Tippy>
+                )}
+            </div>
+            <div className="flex right dc__gap-8">
+                {!isDeleteDraftState && isEnvOverride && (
+                    <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
+                        {overridden ? 'Overriden' : 'Inheriting from base'}
+                    </span>
+                )}
+                {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (
+                    <span
+                        data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
+                        className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
+                        onClick={handleOverride}
+                    >
+                        {overridden ? 'Delete override' : 'Allow override'}
+                    </span>
+                )}
+            </div>
+        </div>
+    )
+}
+
+interface renderManifestEditorHeadingProps {
+    isEnvOverride: boolean,
+    overridden: boolean,
+    readOnly: boolean,
+    environmentName: string,
+    selectedChart: DeploymentChartVersionType,
+    handleOverride: (e: any) => Promise<void>,
+    latestDraft: any,
+    isPublishedOverriden: boolean,
+    isDeleteDraftState: boolean,
+}
+
+
+export const RenderManifestEditorHeading = ({       // TODO: add clickawaylistner to close the dropdown
+    isEnvOverride,
+    overridden,
+    readOnly,
+    environmentName,
+    selectedChart,
+    handleOverride,
+    latestDraft,
+    isPublishedOverriden,
+    isDeleteDraftState,
+    setShowProposal
+}) => {
+
+    const [selectedOption, setSelectedOption] = useState({id:1,label:"Manifest from draft"})
+
+    const options = [
+        {
+            label: 'Manifest generated from',
+            options: [{id:0,label:"Approval Pending"}, {id:1,label:"Manifest from draft"}],
+        }
+      ]
+    
+    const onChange = (selected) => {
+        console.log(selected,'selected')
+        setSelectedOption(selected)
+        setShowProposal(selected.id === 0)
+    }  
+
+    const formatLabel = (option) => {
+        return (
+            <div className="flex left column">
+                <span className="w-100 dc__ellipsis-right">
+                    {option.label}
+                </span>
+            </div>
+        )
+    }
+
+
+    return (
+        <div className="flex dc__content-space w-100">
+            <div className="flex left">
+                {!readOnly && <Edit className="icon-dim-16 mr-10" />}
+                {!!latestDraft ? (
+                    <span className="fw-6 mr-4">
+                        <ReactSelect
+                            options={options}
+                            isMulti={false}
+                            value={selectedOption}
+                            // defaultValue={selectedOption.options[0]}
+                            isOptionSelected={(option, selected) => option === selected[0]}
+                            classNamePrefix="compare-template-values-select"
+                            formatOptionLabel={formatLabel}
+                            // isOptionDisabled={(option) => option.value === 0}
+                            isSearchable={false}
+                            onChange={onChange}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option,
+                                DropdownIndicator,
+                                ValueContainer: customValueContainer,
+                            }}
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    backgroundColor: 'var(--N100)',
+                                    border: 'none',
+                                    boxShadow: 'none',
+                                    minHeight: '32px',
+                                    cursor: 'pointer',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    color: 'var(--N900)',
+                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '2px',
+                                    minWidth: '240px',
+                                }),
+                                menuList: (base) => ({
+                                    ...base,
+                                    position: 'relative',
+                                    paddingBottom: 0,
+                                    paddingTop: 0,
+                                    maxHeight: '250px',
+                                }),
+                                dropdownIndicator: (base, state) => ({
+                                    ...base,
+                                    padding: 0,
+                                    color: 'var(--N400)',
+                                    transition: 'all .2s ease',
+                                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                }),
+                                noOptionsMessage: (base) => ({
+                                    ...base,
+                                    color: 'var(--N600)',
+                                }),
+                            }}
+                        />
                     </span>
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${

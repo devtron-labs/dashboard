@@ -108,6 +108,7 @@ export interface DeploymentConfigFormCTAProps {
     toggleAppMetrics: () => void
     isPublishedMode: boolean
     reload: () => void
+    isValues?: boolean
 }
 
 export interface CompareWithDropdownProps {
@@ -118,6 +119,7 @@ export interface CompareWithDropdownProps {
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
     setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    isValues: boolean
 }
 
 export interface ChartTypeVersionOptionsProps {
@@ -175,6 +177,7 @@ export interface DeploymentTemplateEditorViewProps {
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
+    isValues?: boolean
 }
 
 export interface DeploymentConfigContextType {
@@ -272,6 +275,8 @@ export interface DeploymentConfigToolbarProps {
     noReadme?: boolean
     showReadme: boolean
     handleReadMeClick: () => void
+    isValues: boolean
+    setIsValues: (isValues: boolean) => void
 }
 
 export interface DeploymentConfigStateType {
@@ -285,6 +290,7 @@ export interface DeploymentConfigStateType {
     chartConfig: any
     isAppMetricsEnabled: boolean
     tempFormData: string
+    manifestData: string
     chartConfigLoading: boolean
     showConfirmation: boolean
     showReadme: boolean
@@ -332,6 +338,7 @@ export enum DeploymentConfigStateActionTypes {
     chartConfig = 'chartConfig',
     isAppMetricsEnabled = 'isAppMetricsEnabled',
     tempFormData = 'tempFormData',
+    manifestData = 'manifestData',
     chartConfigLoading = 'chartConfigLoading',
     showConfirmation = 'showConfirmation',
     showReadme = 'showReadme',

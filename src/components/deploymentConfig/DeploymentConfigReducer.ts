@@ -12,6 +12,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     chartConfig: null,
     isAppMetricsEnabled: false,
     tempFormData: '',
+    manifestData: '',
     chartConfigLoading: false,
     showConfirmation: false,
     showReadme: false,

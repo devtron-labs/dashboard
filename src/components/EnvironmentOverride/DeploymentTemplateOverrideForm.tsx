@@ -43,6 +43,8 @@ export default function DeploymentTemplateOverrideForm({
     toggleDraftComments,
     isGrafanaModuleInstalled,
     isEnterpriseInstallation,
+    isValuesOverride,
+    setIsValuesOverride,
 }) {
     const [obj, json, yaml, error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -201,10 +203,20 @@ export default function DeploymentTemplateOverrideForm({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        dispatch({
-            type: DeploymentConfigStateActionTypes.tempFormData,
-            payload: str,
-        })
+        if(isValuesOverride){
+            console.log('here')
+            dispatch({
+                type: DeploymentConfigStateActionTypes.tempFormData,
+                payload: str,
+            })
+        }
+        else {
+            console.log('here-r')
+            dispatch({
+                type: DeploymentConfigStateActionTypes.manifestData,
+                payload: YAML.stringify({ number: 1, plain: 'values', block: '\nlines\n' })
+            })
+        }
         try {
             const parsedValues = YAML.parse(str)
             // Unset unableToParseYaml flag when yaml is successfully parsed
@@ -372,7 +384,7 @@ export default function DeploymentTemplateOverrideForm({
                     ? state.draftValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
         } else if (state.tempFormData) {
-            codeEditorValue = state.tempFormData
+            codeEditorValue = getValue(isValuesOverride)
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
@@ -389,6 +401,25 @@ export default function DeploymentTemplateOverrideForm({
             payload: true,
         })
         initialise(false, true, false)
+    }
+
+    const getValue = (isValues) =>{
+        console.log(isValues, 'isValues')
+        // console.log(state.tempFormData, 'state.tempFormData')
+       if(isValues){
+        console.log('1') 
+        return (isCompareAndApprovalState ? state.draftValues : state.tempFormData)
+        // return YAML.stringify({ number: 1, plain: 'values', block: '\nlines\n' })
+       }
+       else {
+        console.log('2')
+        // dispatch({
+        //     type: DeploymentConfigStateActionTypes.manifestData,
+        //     payload: YAML.stringify({ number: 1, plain: 'values', block: '\nlines\n' }),
+        // })
+        // return YAML.stringify({ number: 1, plain: 'values', block: '\nlines\n' })
+        return state.manifestData
+       }
     }
 
     const renderValuesView = () => {
@@ -438,6 +469,7 @@ export default function DeploymentTemplateOverrideForm({
                     toggleAppMetrics={handleAppMetrics}
                     isPublishedMode={readOnlyPublishedMode}
                     reload={reload}
+                    isValues={isValuesOverride}
                 />
             </form>
         )
@@ -474,6 +506,8 @@ export default function DeploymentTemplateOverrideForm({
                 approvalUsers={state.latestDraft?.approvers}
                 showValuesPostfix={true}
                 reload={reload}
+                isValues={isValuesOverride}
+                setIsValues={setIsValuesOverride}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}

@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, Reducer } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer, useState } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
@@ -44,6 +44,8 @@ export default function DeploymentTemplateOverride({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
+
+    const [isValuesOverride, setIsValuesOverride] = useState(true)
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
@@ -441,6 +443,8 @@ export default function DeploymentTemplateOverride({
                         isEnterpriseInstallation={
                             currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                         }
+                        isValuesOverride={isValuesOverride}
+                        setIsValuesOverride={setIsValuesOverride}
                     />
                 )}
             </div>

@@ -15,17 +15,21 @@ interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
     codeEditorValue: string
     disableVersionSelect?: boolean
+    isValues?:boolean
 }
 
 export default function DeploymentTemplateOptionsTab({
     isEnvOverride,
     codeEditorValue,
     disableVersionSelect,
+    isValues
 }: DeploymentTemplateOptionsTabProps) {
     const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
         state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
+
+    console.log("currentStateValues",currentStateValues)    
 
     if (state.openComparison || state.showReadme) return null
 
@@ -56,15 +60,19 @@ export default function DeploymentTemplateOptionsTab({
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
-            dispatch({
-                type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: _envValues,
-            })
+            if(isValues){     
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.tempFormData,
+                    payload: _envValues,
+                })
+            }
         } else {
-            dispatch({
-                type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: !!state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
-            })
+            if(isValues){
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.tempFormData,
+                    payload: !!state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
+                })
+            }
         }
     }
 

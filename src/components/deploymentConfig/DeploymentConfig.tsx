@@ -1,7 +1,7 @@
-import React, { Reducer, createContext, useContext, useEffect, useReducer } from 'react'
+import React, { Reducer, createContext, useContext, useEffect, useReducer, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
+import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, getDeploymentManisfest } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
 import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
@@ -35,7 +35,378 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
+import { stat } from 'fs'
 
+export const dummy = {
+    "ContainerPort": [
+      {
+        "envoyPort": 6969,
+        "idleTimeout": "1800s",
+        "name": "app",
+        "port": 69,
+        "servicePort":69,
+        "supportStreaming": false,
+        "useHTTP2": false
+      }
+    ],
+    "EnvVariables": [],
+    "GracePeriod": 30,
+    "LivenessProbe": {
+      "Path": "",
+      "command": [],
+      "failureThreshold": 3,
+      "httpHeaders": [],
+      "initialDelaySeconds": 20,
+      "periodSeconds": 10,
+      "port": 8080,
+      "scheme": "",
+      "successThreshold": 1,
+      "tcp": false,
+      "timeoutSeconds": 5
+    },
+    "MaxSurge": 1,
+    "MaxUnavailable": 0,
+    "MinReadySeconds": 60,
+    "ReadinessProbe": {
+      "Path": "",
+      "command": [],
+      "failureThreshold": 3,
+      "httpHeaders": [],
+      "initialDelaySeconds": 20,
+      "periodSeconds": 10,
+      "port": 8080,
+      "scheme": "",
+      "successThreshold": 1,
+      "tcp": false,
+      "timeoutSeconds": 5
+    },
+    "Spec": {
+      "Affinity": {
+        "Key": null,
+        "Values": ["nodes"],
+        "key": ""
+      }
+    },
+    "StartupProbe": {
+      "Path": "",
+      "command": [],
+      "failureThreshold": 3,
+      "httpHeaders": [],
+      "initialDelaySeconds": 20,
+      "periodSeconds": 10,
+      "port": 8080,
+      "successThreshold": 1,
+      "tcp": false,
+      "timeoutSeconds": 5
+    },
+    "ambassadorMapping": {
+      "ambassadorId": "",
+      "cors": {},
+      "enabled": false,
+      "hostname": "devtron.example.com",
+      "labels": {},
+      "prefix": "/",
+      "retryPolicy": {},
+      "rewrite": "",
+      "tls": {
+        "context": "",
+        "create": false,
+        "hosts": [],
+        "secretName": ""
+      }
+    },
+    "args": {
+      "enabled": false,
+      "value": ["/bin/sh", "-c", "touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600"]
+    },
+    "autoscaling": {
+      "MaxReplicas": 2,
+      "MinReplicas": 1,
+      "TargetCPUUtilizationPercentage": 90,
+      "TargetMemoryUtilizationPercentage": 80,
+      "annotations": {},
+      "behavior": {},
+      "enabled": false,
+      "extraMetrics": [],
+      "labels": {}
+    },
+    "command": {
+      "enabled": false,
+      "value": [],
+      "workingDir": {}
+    },
+    "containerSecurityContext": {},
+    "containerSpec": {
+      "lifecycle": {
+        "enabled": false,
+        "postStart": {
+          "httpGet": {
+            "host": "example.com",
+            "path": "/example",
+            "port": 90
+          }
+        },
+        "preStop": {
+          "exec": {
+            "command": ["sleep", "10"]
+          }
+        }
+      }
+    },
+    "containers": [],
+    "dbMigrationConfig": {
+      "enabled": false
+    },
+    "envoyproxy": {
+      "configMapName": "",
+      "image": "docker.io/envoyproxy/envoy:v1.16.0",
+      "lifecycle": {},
+      "resources": {
+        "limits": {
+          "cpu": "50m",
+          "memory": "50Mi"
+        },
+        "requests": {
+          "cpu": "50m",
+          "memory": "50Mi"
+        }
+      }
+    },
+    "flaggerCanary": {
+      "addOtherGateways": [],
+      "addOtherHosts": [],
+      "analysis": {
+        "interval": "15s",
+        "maxWeight": 50,
+        "stepWeight": 5,
+        "threshold": 5
+      },
+      "annotations": {},
+      "appProtocol": "http",
+      "corsPolicy": null,
+      "createIstioGateway": {
+        "annotations": {},
+        "enabled": false,
+        "host": null,
+        "labels": {},
+        "tls": {
+          "enabled": false,
+          "secretName": null
+        }
+      },
+      "enabled": false,
+      "gatewayRefs": null,
+      "headers": null,
+      "labels": {},
+      "loadtest": {
+        "enabled": true,
+        "url": "http://flagger-loadtester.istio-system/"
+      },
+      "match": [
+        {
+          "uri": {
+            "prefix": "/"
+          }
+        }
+      ],
+      "portDiscovery": true,
+      "retries": null,
+      "rewriteUri": "/",
+      "serviceport": 8080,
+      "targetPort": 8080,
+      "thresholds": {
+        "latency": 500,
+        "successRate": 90
+      },
+      "timeout": null
+    },
+    "hostAliases": [],
+    "image": {
+      "pullPolicy": "IfNotPresent"
+    },
+    "imagePullSecrets": [],
+    "ingress": {
+      "annotations": {},
+      "className": "",
+      "enabled": false,
+      "hosts": [
+        {
+          "host": "chart-example1.local",
+          "pathType": "ImplementationSpecific",
+          "paths": ["/example1"]
+        }
+      ],
+      "labels": {},
+      "tls": []
+    },
+    "ingressInternal": {
+      "annotations": {},
+      "className": "",
+      "enabled": false,
+      "hosts": [
+        {
+          "host": "chart-example1.internal",
+          "pathType": "ImplementationSpecific",
+          "paths": ["/example1"]
+        },
+        {
+          "host": "chart-example2.internal",
+          "pathType": "ImplementationSpecific",
+          "paths": ["/example2", "/example2/healthz"]
+        }
+      ],
+      "tls": []
+    },
+    "initContainers": [],
+    "istio": {
+      "authorizationPolicy": {
+        "action": null,
+        "annotations": {},
+        "enabled": false,
+        "labels": {},
+        "provider": {},
+        "rules": []
+      },
+      "destinationRule": {
+        "annotations": {},
+        "enabled": false,
+        "labels": {},
+        "subsets": [],
+        "trafficPolicy": {}
+      },
+      "enable": false,
+      "gateway": {
+        "annotations": {},
+        "enabled": false,
+        "host": "example.com",
+        "labels": {},
+        "tls": {
+          "enabled": false,
+          "secretName": "example-secret"
+        }
+      },
+      "peerAuthentication": {
+        "annotations": {},
+        "enabled": false,
+        "labels": {},
+        "mtls": ["mode"],
+        "portLevelMtls": {},
+        "selector": {
+          "enabled": false
+        }
+      },
+      "requestAuthentication": {
+        "annotations": {},
+        "enabled": false,
+        "jwtRules": [],
+        "labels": {},
+        "selector": {
+          "enabled": false
+        }
+      },
+      "virtualService": {
+        "annotations": {},
+        "enabled": false,
+        "gateways": [],
+        "hosts": [],
+        "http": [],
+        "labels": {}
+      }
+    },
+    "kedaAutoscaling": {
+      "advanced": {},
+      "authenticationRef": {},
+      "enabled": false,
+      "envSourceContainerName": "",
+      "maxReplicaCount": 2,
+      "minReplicaCount": 1,
+      "triggerAuthentication": {
+        "enabled": false,
+        "name": "",
+        "spec": {}
+      },
+      "triggers": []
+    },
+    "networkPolicy": {
+      "annotations": {},
+      "egress": [],
+      "enabled": false,
+      "ingress": [],
+      "labels": {},
+      "podSelector": {
+        "matchExpressions": [],
+        "matchLabels": {}
+      },
+      "policyTypes": []
+    },
+    "pauseForSecondsBeforeSwitchActive": 30,
+    "podAnnotations": {},
+    "podLabels": {},
+    "podSecurityContext": {},
+    "prometheus": {
+      "release": "monitoring"
+    },
+    "rawYaml": [],
+    "replicaCount": 1,
+    "resources": {
+      "limits": {
+        "cpu": "0.05",
+        "memory": "50Mi"
+      },
+      "requests": {
+        "cpu": "0.01",
+        "memory": "10Mi"
+      }
+    },
+    "restartPolicy": "Always",
+    "rolloutAnnotations": {},
+    "rolloutLabels": {},
+    "secret": {
+      "data": {},
+      "enabled": false
+    },
+    "server": {
+      "deployment": {
+        "image": "",
+        "image_tag": "1-95af053"
+      }
+    },
+    "service": {
+      "annotations": {},
+      "loadBalancerSourceRanges": [],
+      "type": "ClusterIP"
+    },
+    "serviceAccount": {
+      "annotations": {},
+      "create": false,
+      "name": ""
+    },
+    "servicemonitor": {
+      "additionalLabels": {}
+    },
+    "tolerations": [],
+    "topologySpreadConstraints": [],
+    "volumeMounts": [],
+    "volumes": [],
+    "waitForSecondsBeforeScalingDown": 30,
+    "winterSoldier": {
+      "action": "sleep",
+      "annotation": {},
+      "apiVersion": "pincher.devtron.ai/v1alpha1",
+      "enabled": false,
+      "fieldSelector": [
+        "AfterTime(AddTime(ParseTime({{metadata.creationTimestamp}}, '2006-01-02T15:04:05Z'), '5m'), Now())"
+      ],
+      "labels": {},
+      "targetReplicas": [],
+      "timeRangesWithZone": {
+        "timeRanges": [],
+        "timeZone": "Asia/Kolkata"
+      },
+      "type": "Deployment"
+    }
+  }
+  
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -59,14 +430,20 @@ export default function DeploymentConfig({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
+    // console.log(state.latestDraft,'state.latestDraft')
+    console.log(state.draftValues,'state.draftValues')
+    console.log(state.tempFormData,'state.tempFormData')
+    // console.log(state.allDrafts,'state.allDrafts')
+    const [isValues, setIsValues] = useState(true)
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
-
     useEffect(() => {
         reloadEnvironments()
         initialise()
     }, [])
+
+    
 
     useEffectAfterMount(() => {
         if (state.selectedChart) {
@@ -169,6 +546,7 @@ export default function DeploymentConfig({
             },
             isAppMetricsEnabled: isAppMetricsEnabled,
             tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
+            manifestData: YAML.stringify(dummy, { indent: 2 }),
             draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
             latestDraft: latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
@@ -299,6 +677,7 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
                 tempFormData: YAML.stringify(defaultAppOverride, { indent: 2 }),
+                manifestData: YAML.stringify(dummy, { indent: 2 }),
                 data: YAML.stringify(defaultAppOverride, { indent: 2 })
             }
 
@@ -410,10 +789,14 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-        dispatch({
-            type: DeploymentConfigStateActionTypes.tempFormData,
-            payload: str,
-        })
+
+        console.log('editorOnChange',str)
+        if(isValues){
+            dispatch({
+                type: DeploymentConfigStateActionTypes.tempFormData,
+                payload: str,
+            })
+        }
         try {
             const parsedValues = YAML.parse(str)
 
@@ -464,23 +847,31 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
+        console.log('changeEditorMode')
         if (readOnlyPublishedMode) {
+            console.log('readOnlyPublishedMode')
             if (state.publishedState && !state.publishedState.isBasicLocked) {
+                console.log('!state.publishedState.isBasicLocked')
                 toggleYamlMode(!state.yamlMode)
             }
             return
         } else if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
+            console.log('!state.basicFieldValuesErrorObj.isValid')
             toast.error('Some required fields are missing')
             toggleYamlMode(false)
             return
         } else if (state.isBasicLocked) {
+            console.log('state.isBasicLocked')
             return
         }
 
         try {
+            console.log('try-ritvik',isValues)
             const parsedCodeEditorValue = YAML.parse(state.tempFormData)
+           
             if (state.yamlMode) {
                 const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
+                console.log(_basicFieldValues, '_basicFieldValues')
                 dispatch({
                     type: DeploymentConfigStateActionTypes.multipleOptions,
                     payload: {
@@ -489,16 +880,23 @@ export default function DeploymentConfig({
                     },
                 })
             } else {
+                console.log('else')
                 const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
+                console.log('newTemplate')
                 updateTemplateFromBasicValue(newTemplate)
                 editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
             }
             toggleYamlMode(!state.yamlMode)
-        } catch (error) {}
+        } catch (error) {
+            console.log('catch')
+            console.log(error)
+        }
     }
 
     const handleTabSelection = (index: number) => {
         if (state.unableToParseYaml) return
+
+        console.log('handleTabSelection',index)
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -577,6 +975,68 @@ export default function DeploymentConfig({
         return requestData
     }
 
+    const [value,setValue] = useState(state.tempFormData)
+    const [valueLeft, setValueLeft] = useState(state.tempFormData)
+
+    useEffect(() => {
+        const values = Promise.all([getValue(isValues),getValuesLHS(isValues)]);
+        values.then((res) => {
+            console.log(res, 'res')
+            const [value, valueLeft] = res;
+            setValue(value)
+            setValueLeft(valueLeft)
+        })
+        .catch((err) => {
+            console.log(err, 'err')
+        })
+    
+    },[isValues])
+
+    useEffectAfterMount(() => {
+        if(!state.tempFormData) return
+        setValue(state.tempFormData)
+    },[state.tempFormData])
+
+    const getValue = async (isValues) =>{
+       if(isValues){
+        return isCompareAndApprovalState ? state.draftValues : state.tempFormData
+       }
+       else {
+        const request = {
+                "appId": 1,
+                "chartRefId": 33,
+                "getValues": false,
+                "type": 1,
+                "pipelineConfigOverrideId": 627,
+                "resourceName": "BaseDeploymentTemplate",
+                "resourceType": 3,
+                "values": state.tempFormData
+        }
+        const response = await getDeploymentManisfest(request)
+        return response.result.data
+       }
+    }
+    // set initial value on LHS
+    const getValuesLHS = async (isValues) => {
+        if(isValues){
+            return state.publishedState?.tempFormData ?? state.data
+        }
+        else {
+            const request = {
+                "appId": parseInt(appId),
+                "chartRefId": 33,
+                "getValues": false,
+                "type": 1,
+                "pipelineConfigOverrideId": 627,
+                "resourceName": "BaseDeploymentTemplate",
+                "resourceType": 3,
+                "values": state.publishedState?.tempFormData ?? state.data
+        }
+        const response = await getDeploymentManisfest(request)
+        return response.result.data
+    }
+}
+
     const renderValuesView = () => {
         return (
             <form
@@ -589,16 +1049,18 @@ export default function DeploymentConfig({
                 <DeploymentTemplateOptionsTab
                     codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                     disableVersionSelect={readOnlyPublishedMode}
+                    isValues={isValues}
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : (
                     <DeploymentTemplateEditorView
-                        defaultValue={state.publishedState?.tempFormData ?? state.data}
-                        value={isCompareAndApprovalState ? state.draftValues : state.tempFormData}
+                        defaultValue={valueLeft || (state.publishedState?.tempFormData??state.data)}
+                        value={value}
                         globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
-                        readOnly={isCompareAndApprovalState}
+                        readOnly={isCompareAndApprovalState || !isValues}
+                        isValues={isValues}
                     />
                 )}
                 <DeploymentConfigFormCTA
@@ -617,6 +1079,7 @@ export default function DeploymentConfig({
                     toggleAppMetrics={toggleAppMetrics}
                     isPublishedMode={readOnlyPublishedMode}
                     reload={initialise}
+                    isValues={isValues}
                 />
             </form>
         )
@@ -659,6 +1122,8 @@ export default function DeploymentConfig({
                         approvalUsers={state.latestDraft?.approvers}
                         showValuesPostfix={true}
                         reload={initialise}
+                        isValues={isValues}
+                        setIsValues={setIsValues}
                     />
                     {renderValuesView()}
                     {SaveChangesModal && state.showSaveChangsModal && (
