@@ -212,7 +212,11 @@ export default function ResourceList() {
             }
         }
 
-        if (nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() && !isSuperAdmin) {
+        if (
+            (nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ||
+                nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) &&
+            !isSuperAdmin
+        ) {
             getGVKData(clusterId)
         }
     }, [location.pathname])
@@ -263,6 +267,17 @@ export default function ResourceList() {
                             showNameOnSelect: true,
                         }
                     ])
+                } else{
+                  initTabs([
+                      {
+                          idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                          name: AppDetailsTabs.k8s_Resources,
+                          url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                          isSelected: true,
+                          positionFixed: true,
+                          iconPath: K8ResourceIcon,
+                      },
+                  ])
                 }
                 setClusterCapacityData(result)
                 let _errorTitle = '',
@@ -722,13 +737,13 @@ export default function ResourceList() {
 
     const updateNodeSelectionData = (_selected: Record<string, any>, _group?: string) => {
         if (_selected) {
-            const _nodeType = _selected.isFromEvent ? '' : nodeType + '_'
+            const _nodeType = _selected.isFromEvent || _selected.isFromNodeDetails ? '' : nodeType + '_'
             setNodeSelectionData((prevData) =>
                 getUpdatedNodeSelectionData(
                     prevData,
                     _selected,
                     `${_nodeType}${_selected.name}_${_group ?? group}`,
-                    _selected.isFromEvent ? _selected.name.split('_')[1] : null,
+                    _selected.isFromEvent || _selected.isFromNodeDetails ? _selected.name.split('_')[1] : null,
                 ),
             )
         }
@@ -753,9 +768,10 @@ export default function ResourceList() {
         const selectedNode =
             nodeSelectionData?.[`${nodeType}_${node}_${group}`] ??
             resourceList?.data?.find((_resource) => _resource.name === node)
-        const _selectedResource = selectedNode?.isFromEvent
-            ? getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
-            : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
+        const _selectedResource =
+            selectedNode?.isFromEvent || selectedNode?.isFromNodeDetails
+                ? getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
+                : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
@@ -852,6 +868,8 @@ export default function ResourceList() {
                     isSuperAdmin={isSuperAdmin}
                     markTabActiveByIdentifier={markTabActiveByIdentifier}
                     addTab={addTab}
+                    updateNodeSelectionData={updateNodeSelectionData}
+                    k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
                 />
             )
         }

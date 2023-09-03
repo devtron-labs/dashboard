@@ -66,6 +66,7 @@ export default function ResourceBrowserActionMenu({
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.manifest}
+                            data-namespace={resourceData.namespace}
                             className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                             data-testid="manifest-option-link"
@@ -76,6 +77,7 @@ export default function ResourceBrowserActionMenu({
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.Events}
+                            data-namespace={resourceData.namespace}
                             className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                             data-testid="events-option-link"
@@ -83,11 +85,12 @@ export default function ResourceBrowserActionMenu({
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
-                        {selectedResource?.gvk.Kind === Nodes.Pod && (
+                        {selectedResource?.gvk?.Kind === Nodes.Pod && (
                             <>
                                 <span
                                     data-name={resourceData.name}
                                     data-tab={RESOURCE_ACTION_MENU.logs}
+                                    data-namespace={resourceData.namespace}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                     data-testid="logs-option-link"
@@ -98,6 +101,7 @@ export default function ResourceBrowserActionMenu({
                                 <span
                                     data-name={resourceData.name}
                                     data-tab={RESOURCE_ACTION_MENU.terminal}
+                                    data-namespace={resourceData.namespace}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                     data-testid="terminal-option-link"
