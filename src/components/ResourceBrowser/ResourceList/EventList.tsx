@@ -2,8 +2,9 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
+import { getScrollableResourceClass } from '../Utils'
 
-export function EventList({ listRef, filteredData, handleResourceClick, paginatedView }: EventListType) {
+export function EventList({ listRef, filteredData, handleResourceClick, paginatedView, syncError }: EventListType) {
     return (
         <div>
             <div className="event-list-row fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-12 pb-12 dc__uppercase">
@@ -16,7 +17,7 @@ export function EventList({ listRef, filteredData, handleResourceClick, paginate
                 <div>{EVENT_LIST.headerKeys.age}</div>
                 <div>{EVENT_LIST.headerKeys.lastSeen}</div>
             </div>
-            <div ref={listRef} className={`scrollable-event-list ${paginatedView ? 'paginated-list-view' : ''}`}>
+            <div ref={listRef} className={getScrollableResourceClass('scrollable-event-list',paginatedView, syncError)}>
                 {filteredData?.map((eventData) => (
                     <div className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12">
                         <div className={` app-summary__status-name f-${eventData.type?.toLowerCase()}`}>

@@ -192,3 +192,15 @@ export const checkIfDataIsStale = (
         isStaleDataRef.current = true
     }
 }
+
+export const getScrollableResourceClass = (className: string, showPaginatedView: boolean, syncError: boolean):string=>{
+  let _className = className
+  if (showPaginatedView && syncError) {
+      _className += ' paginated-list-view-with-sync-error'
+  } else if (showPaginatedView) {
+      _className += ' paginated-list-view'
+  } else if (syncError) {
+      _className += ' sync-error'
+  }
+  return _className
+}

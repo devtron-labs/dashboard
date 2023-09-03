@@ -5,10 +5,8 @@
 
     .resource-browser-tab {
         .dynamic-tabs-section {
-
             .dynamic-tabs-container,
             .fixed-tabs-container {
-
                 .dynamic-tabs-wrapper,
                 .fixed-tabs-wrapper {
                     .dynamic-tab-selected {
@@ -116,19 +114,9 @@
                     }
                 }
             }
-
             .scrollable-resource-list {
-                height: calc(100vh - 180px);
                 overflow: auto;
                 width: calc(100vw - 277px);
-
-                &.paginated-list-view {
-                    height: calc(100vh - 201px);
-                }
-
-                &.sync-error {
-                    height: calc(100vh - 212px);
-                }
 
                 .list-header {
                     width: max-content;
@@ -139,11 +127,22 @@
             }
 
             .scrollable-event-list {
-                height: calc(100vh - 247.66px);
                 overflow: hidden auto;
+            }
 
+            .scrollable-resource-list,
+            .scrollable-event-list {
+                height: calc(100vh - 144px);
                 &.paginated-list-view {
-                    height: calc(100vh - 255.66px);
+                    height: calc(100vh - 201px);
+                }
+
+                &.sync-error {
+                    height: calc(100vh - 176px);
+                }
+
+                &.paginated-list-view-with-sync-error {
+                    height: calc(100vh - 233px);
                 }
             }
 
@@ -213,5 +212,5 @@
 }
 
 .resource-details-container {
-    height: calc(100vh - 84px)
+    height: calc(100vh - 84px);
 }

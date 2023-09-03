@@ -18,7 +18,7 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { getEventObjectTypeGVK } from '../Utils'
+import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
 
 export function K8SResourceList({
     selectedResource,
@@ -259,17 +259,17 @@ export function K8SResourceList({
         return (
             <div
                 ref={resourceListRef}
-                className={`scrollable-resource-list ${syncError ? 'sync-error' : '' } ${showPaginatedView ? 'paginated-list-view' : ''}`}
+                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
             >
-                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
-                            className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
                                     ? `${
                                           fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
                                               : ''
                                       } w-350 pl-20`
                                     : 'w-150'
@@ -298,6 +298,7 @@ export function K8SResourceList({
                             filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                             handleResourceClick={handleResourceClick}
                             paginatedView={showPaginatedView}
+                            syncError={syncError}
                         />
                     ) : (
                         renderResourceList()
@@ -320,7 +321,7 @@ export function K8SResourceList({
 
     return (
         <div
-            className={`resource-list-container dc__border-left dc__postion-rel ${
+            className={`resource-list-container dc__border-left dc__position-rel ${
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >

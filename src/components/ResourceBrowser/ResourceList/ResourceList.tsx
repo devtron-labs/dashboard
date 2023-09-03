@@ -535,7 +535,6 @@ export default function ResourceList() {
                 updateResourceSelectionData(defaultSelected, true)
                 setShowErrorState(false)
                 setErrorMsg('')
-                setLastDataSync(!lastDataSync)
             }
             setLoader(false)
         } catch (err) {
@@ -653,6 +652,7 @@ export default function ResourceList() {
             }
             setNoResults(result.data.length === 0)
             setShowErrorState(false)
+            setLastDataSync(!lastDataSync)
         } catch (err) {
             if (!resourceListAbortController.signal.aborted) {
                 showError(err)
