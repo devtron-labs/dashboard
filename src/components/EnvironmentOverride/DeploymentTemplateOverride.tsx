@@ -44,6 +44,7 @@ export default function DeploymentTemplateOverride({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
+    const baseDeploymentAbortController = new AbortController()
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
@@ -349,6 +350,7 @@ export default function DeploymentTemplateOverride({
                 } = await getBaseDeploymentTemplate(
                     +appId,
                     state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
+                    baseDeploymentAbortController.signal,
                     true,
                 )
                 _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)

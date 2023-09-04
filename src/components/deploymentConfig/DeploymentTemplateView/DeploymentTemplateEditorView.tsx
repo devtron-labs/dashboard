@@ -38,6 +38,7 @@ export default function DeploymentTemplateEditorView({
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+    const baseDeploymentAbortController = new AbortController()
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -103,7 +104,7 @@ export default function DeploymentTemplateEditorView({
                       isEnvOption ? state.selectedCompareOption.id : envId,
                       state.selectedCompareOption.value,
                   )
-                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value)
+                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value, baseDeploymentAbortController.signal)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
@@ -121,6 +122,9 @@ export default function DeploymentTemplateEditorView({
                 .catch((err) => {
                     showError(err)
                     setFetchingValues(false)
+                    if (!baseDeploymentAbortController.signal.aborted) {
+                        showError(err)
+                    }
                 })
         }
     }, [state.selectedCompareOption, state.chartConfigLoading])
