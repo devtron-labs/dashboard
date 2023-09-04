@@ -15,7 +15,16 @@ jest.mock('../utils', () => ({
 jest.mock('../../common', () => ({
     importComponentFromFELibrary: jest.fn(),
     useClickOutside: jest.fn(),
-    useFileReader: jest.fn(),
+    useFileReader: jest.fn().mockResolvedValue({
+        readFile: jest.fn(),
+        fileData: 'fileData',
+        progress: 100,
+        abortRead: jest.fn(),
+        status: {
+            status: true,
+            message: 'SUCCESS',
+        },
+    }),
 }))
 
 describe('SavedVariables', () => {
@@ -24,16 +33,6 @@ describe('SavedVariables', () => {
     })
 
     it('should render YAML view by default', () => {
-        ;(useFileReader as jest.Mock).mockResolvedValue({
-            readFile: jest.fn(),
-            fileData: 'fileData',
-            progress: 100,
-            abortRead: jest.fn(),
-            status: {
-                status: true,
-                message: 'SUCCESS',
-            },
-        })
         const { container } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -46,16 +45,6 @@ describe('SavedVariables', () => {
     })
 
     it('should render Variable List view when Variable List tab is clicked', () => {
-        ;(useFileReader as jest.Mock).mockResolvedValue({
-            readFile: jest.fn(),
-            fileData: 'fileData',
-            progress: 100,
-            abortRead: jest.fn(),
-            status: {
-                status: true,
-                message: 'SUCCESS',
-            },
-        })
         const { container } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -73,16 +62,6 @@ describe('SavedVariables', () => {
     })
 
     it('should download saved file when download saved file button is clicked from dropdown', () => {
-        ;(useFileReader as jest.Mock).mockResolvedValue({
-            readFile: jest.fn(),
-            fileData: 'fileData',
-            progress: 100,
-            abortRead: jest.fn(),
-            status: {
-                status: true,
-                message: 'SUCCESS',
-            },
-        })
         const { container, getByTestId } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -102,16 +81,6 @@ describe('SavedVariables', () => {
     })
 
     it('should download template file when download template file button is clicked from dropdown', () => {
-        ;(useFileReader as jest.Mock).mockResolvedValue({
-            readFile: jest.fn(),
-            fileData: 'fileData',
-            progress: 100,
-            abortRead: jest.fn(),
-            status: {
-                status: true,
-                message: 'SUCCESS',
-            },
-        })
         const { container, getByTestId } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -131,16 +100,6 @@ describe('SavedVariables', () => {
     })
 
     it('should close dropdown when dropdown is open and somewhere outside is clicked', () => {
-        ;(useFileReader as jest.Mock).mockResolvedValue({
-            readFile: jest.fn(),
-            fileData: 'fileData',
-            progress: 100,
-            abortRead: jest.fn(),
-            status: {
-                status: true,
-                message: 'SUCCESS',
-            },
-        })
         const { container, getByTestId } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
