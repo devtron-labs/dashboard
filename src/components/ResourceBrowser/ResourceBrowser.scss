@@ -132,17 +132,17 @@
 
             .scrollable-resource-list,
             .scrollable-event-list {
-                height: calc(100vh - 144px);
+                height: calc(100vh - 180px);
                 &.paginated-list-view {
-                    height: calc(100vh - 201px);
+                    height: calc(100vh - 237px);
                 }
 
                 &.sync-error {
-                    height: calc(100vh - 176px);
+                    height: calc(100vh - 212px);
                 }
 
                 &.paginated-list-view-with-sync-error {
-                    height: calc(100vh - 233px);
+                    height: calc(100vh - 269px);
                 }
             }
 

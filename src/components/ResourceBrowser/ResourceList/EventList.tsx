@@ -7,7 +7,7 @@ import { getScrollableResourceClass } from '../Utils'
 export function EventList({ listRef, filteredData, handleResourceClick, paginatedView, syncError }: EventListType) {
     return (
         <div>
-            <div className="event-list-row fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-12 pb-12 dc__uppercase">
+            <div className="event-list-row fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
                 <div>{EVENT_LIST.headerKeys.type}</div>
                 <div>{EVENT_LIST.headerKeys.message}</div>
                 <div>{EVENT_LIST.headerKeys.namespace}</div>
