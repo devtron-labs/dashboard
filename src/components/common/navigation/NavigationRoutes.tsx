@@ -376,7 +376,7 @@ export default function NavigationRoutes() {
                                             <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
                                                 <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                             </Route>,
-                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts />} />,
+                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts isSuperAdmin={isSuperAdmin} />} />,
                                             <Route
                                                 key={URLS.DEPLOYMENT_GROUPS}
                                                 path={URLS.DEPLOYMENT_GROUPS}
