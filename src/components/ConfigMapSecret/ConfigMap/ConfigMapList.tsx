@@ -11,6 +11,7 @@ import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride
 import { importComponentFromFELibrary } from '../../common'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
 import '../ConfigMapSecret.scss'
+import {FloatingVariablesSuggestions} from '../../common'
 
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -153,6 +154,9 @@ export default function ConfigMapList({
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].learnMoreLink}
                     />
                 </h1>
+
+                <FloatingVariablesSuggestions zIndex={1} />
+                
                 <div className="mt-20">
                     <ConfigMapSecretContainer
                         key="Add ConfigMap"
