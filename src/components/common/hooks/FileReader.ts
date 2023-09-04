@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FileDataInterface, FileReaderStatusInterface, ReadFileAs, ValidatorType } from './types'
 import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
 
@@ -112,18 +112,4 @@ export const useFileReader = () => {
     }
 
     return { fileData, progress, status, readFile, abortRead }
-}
-
-export const useClickOutside = (ref: any, callback: () => void) => {
-    useEffect(() => {
-        const handleClickOutside = (e: any) => {
-            if (ref?.current && !ref.current.contains(e.target)) {
-                callback()
-            }
-        }
-        document.addEventListener('click', handleClickOutside)
-        return () => {
-            document.removeEventListener('click', handleClickOutside)
-        }
-    }, [ref, callback])
 }

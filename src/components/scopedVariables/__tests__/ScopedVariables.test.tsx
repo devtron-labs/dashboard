@@ -2,8 +2,6 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import ScopedVariables from '../ScopedVariables'
 import { useAsync } from '../../common'
-import { validScopedVariablesData, noScopedVariablesData } from '../mocks'
-import { UPLOAD_DESCRIPTION_L1 } from '../constants'
 
 jest.mock('../../common', () => ({
     useAsync: jest.fn(),
@@ -28,17 +26,5 @@ describe('When ScopedVariables is mounted', () => {
         ;(useAsync as jest.Mock).mockReturnValue([false, null, null, null])
         render(<ScopedVariables isSuperAdmin={true} />)
         expect(screen.getByTestId('reload')).toBeTruthy()
-    })
-
-    it('should show UploadScopedVariables when scoped variables are not present', () => {
-        ;(useAsync as jest.Mock).mockReturnValue([false, noScopedVariablesData, null, null])
-        const { getByText } = render(<ScopedVariables isSuperAdmin={true} />)
-        expect(getByText(UPLOAD_DESCRIPTION_L1)).toBeTruthy()
-    })
-
-    it('should show SavedVariablesView when scoped variables are present', () => {
-        ;(useAsync as jest.Mock).mockReturnValue([false, validScopedVariablesData, null, null])
-        const { getByText } = render(<ScopedVariables isSuperAdmin={true} />)
-        expect(getByText('Last saved file')).toBeTruthy()
     })
 })

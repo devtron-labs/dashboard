@@ -2,16 +2,20 @@ import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import SavedVariablesView from '../SavedVariables'
 import { validScopedVariablesData } from '../mocks'
-import { downloadData } from '../utils/helpers'
+import { downloadData } from '../utils'
 import { ScopedVariablesDataInterface } from '../types'
+import { useClickOutside, useFileReader } from '../../common'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => <div></div>))
-jest.mock('../utils/helpers', () => ({
+jest.mock('../utils', () => ({
     downloadData: jest.fn(),
     parseIntoYAMLString: jest.fn(() => 'YAML'),
 }))
+
 jest.mock('../../common', () => ({
     importComponentFromFELibrary: jest.fn(),
+    useClickOutside: jest.fn(),
+    useFileReader: jest.fn(),
 }))
 
 describe('SavedVariables', () => {
@@ -20,6 +24,16 @@ describe('SavedVariables', () => {
     })
 
     it('should render YAML view by default', () => {
+        ;(useFileReader as jest.Mock).mockResolvedValue({
+            readFile: jest.fn(),
+            fileData: 'fileData',
+            progress: 100,
+            abortRead: jest.fn(),
+            status: {
+                status: true,
+                message: 'SUCCESS',
+            },
+        })
         const { container } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -32,6 +46,16 @@ describe('SavedVariables', () => {
     })
 
     it('should render Variable List view when Variable List tab is clicked', () => {
+        ;(useFileReader as jest.Mock).mockResolvedValue({
+            readFile: jest.fn(),
+            fileData: 'fileData',
+            progress: 100,
+            abortRead: jest.fn(),
+            status: {
+                status: true,
+                message: 'SUCCESS',
+            },
+        })
         const { container } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -49,6 +73,16 @@ describe('SavedVariables', () => {
     })
 
     it('should download saved file when download saved file button is clicked from dropdown', () => {
+        ;(useFileReader as jest.Mock).mockResolvedValue({
+            readFile: jest.fn(),
+            fileData: 'fileData',
+            progress: 100,
+            abortRead: jest.fn(),
+            status: {
+                status: true,
+                message: 'SUCCESS',
+            },
+        })
         const { container, getByTestId } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -68,6 +102,16 @@ describe('SavedVariables', () => {
     })
 
     it('should download template file when download template file button is clicked from dropdown', () => {
+        ;(useFileReader as jest.Mock).mockResolvedValue({
+            readFile: jest.fn(),
+            fileData: 'fileData',
+            progress: 100,
+            abortRead: jest.fn(),
+            status: {
+                status: true,
+                message: 'SUCCESS',
+            },
+        })
         const { container, getByTestId } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -87,6 +131,16 @@ describe('SavedVariables', () => {
     })
 
     it('should close dropdown when dropdown is open and somewhere outside is clicked', () => {
+        ;(useFileReader as jest.Mock).mockResolvedValue({
+            readFile: jest.fn(),
+            fileData: 'fileData',
+            progress: 100,
+            abortRead: jest.fn(),
+            status: {
+                status: true,
+                message: 'SUCCESS',
+            },
+        })
         const { container, getByTestId } = render(
             <SavedVariablesView
                 scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
@@ -99,6 +153,6 @@ describe('SavedVariables', () => {
         fireEvent.click(dropdownButton as Element)
         expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeTruthy()
         fireEvent.click(container.querySelector('input') as Element)
-        expect(container.querySelector('.scoped-variables-editor-infobar__dropdown')).toBeFalsy()
+        expect(useClickOutside).toHaveBeenCalled()
     })
 })

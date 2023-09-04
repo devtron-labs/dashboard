@@ -6,7 +6,7 @@ jest.mock('../../common', () => ({
     importComponentFromFELibrary: jest.fn(),
 }))
 
-jest.mock('../utils/helpers', () => ({
+jest.mock('../utils', () => ({
     validator: jest.fn(),
     downloadData: jest.fn(),
 }))
