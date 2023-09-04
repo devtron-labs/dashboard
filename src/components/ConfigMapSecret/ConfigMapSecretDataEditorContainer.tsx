@@ -20,6 +20,7 @@ import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import { CM_SECRET_STATE } from './Constants'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'
+import ConfigMapSecretFileReaderPopup from './ConfigMapSecretFileReaderPopup'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
     ({
@@ -30,6 +31,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         readonlyView,
         draftMode,
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
+        const [showFileReaderPopup, setFileReaderPopup] = React.useState(false)
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
             _currentData[index] = {
@@ -330,6 +332,11 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             ) {
                 return null
             }
+
+            const toggleFileReaderPopup = () => {
+                setFileReaderPopup(!showFileReaderPopup)
+            }
+
             return (
                 <>
                     <div className="flex left mb-16">
@@ -348,6 +355,14 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                 </RadioGroup.Radio>
                             </RadioGroup>
                         )}
+                      
+                        {
+                             
+                              <ConfigMapSecretFileReaderPopup
+                              toggleFileReaderPopup ={toggleFileReaderPopup}
+                              showFileReaderPopup={showFileReaderPopup}/>
+                            
+                        }
                         {renderSecretShowHide()}
                     </div>
                     {componentType !== 'secret' && !state.external && state.yamlMode && (
