@@ -147,7 +147,6 @@ export const CompareWithDropdown = ({
     isValues
 }) => {
     const {appId} = useParams<{appId: string}>()
-    console.log(isValues,'isValues')
     const [groupedOptions, setGroupedOptions] = useState([
         {
             label: '',
@@ -196,8 +195,9 @@ export const CompareWithDropdown = ({
         const { result } = res;
 
         const groupedData = groupDataByType(result);
+        console.log(groupedData,'groupedData')
         let id = 0;
-        console.log(groupedData[0][0].type,'groupedData[0][0].type')
+        // TODO: change label to product requirements
         groupedData.forEach((group) => {
             if(!isValues && group[0].type === 1) return;
             if(isValues && group[0].type === 4) return;
@@ -206,7 +206,8 @@ export const CompareWithDropdown = ({
                 options: group.map((item) => {
                     return {
                         id: id++,
-                        label: item.environmentName?item.environmentName:item.chartVersion, // TODO: change this to product requirements
+                        label: item.environmentName?item.environmentName:item.chartVersion,
+                        type: item.type,
                         ...item,
                     }
                 }),
@@ -231,7 +232,6 @@ export const CompareWithDropdown = ({
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
-        console.log(selected,'selected')
         setSelectedOption(selected)
     }
 
@@ -402,6 +402,7 @@ export const RenderManifestEditorHeading = ({       // TODO: add clickawaylistne
     const onChange = (selected) => {
         console.log(selected,'selected')
         setSelectedOption(selected)
+        console.log(selected.id === 0,'selected.id === 0')
         setShowProposal(selected.id === 0)
     }  
 

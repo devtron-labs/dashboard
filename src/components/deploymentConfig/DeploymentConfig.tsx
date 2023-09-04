@@ -430,10 +430,6 @@ export default function DeploymentConfig({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
-    // console.log(state.latestDraft,'state.latestDraft')
-    console.log(state.draftValues,'state.draftValues')
-    console.log(state.tempFormData,'state.tempFormData')
-    // console.log(state.allDrafts,'state.allDrafts')
     const [isValues, setIsValues] = useState(true)
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
@@ -789,8 +785,7 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-
-        console.log('editorOnChange',str)
+        
         if(isValues){
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -847,31 +842,24 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
-        console.log('changeEditorMode')
         if (readOnlyPublishedMode) {
-            console.log('readOnlyPublishedMode')
             if (state.publishedState && !state.publishedState.isBasicLocked) {
-                console.log('!state.publishedState.isBasicLocked')
                 toggleYamlMode(!state.yamlMode)
             }
             return
         } else if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
-            console.log('!state.basicFieldValuesErrorObj.isValid')
             toast.error('Some required fields are missing')
             toggleYamlMode(false)
             return
         } else if (state.isBasicLocked) {
-            console.log('state.isBasicLocked')
             return
         }
 
         try {
-            console.log('try-ritvik',isValues)
             const parsedCodeEditorValue = YAML.parse(state.tempFormData)
            
             if (state.yamlMode) {
                 const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-                console.log(_basicFieldValues, '_basicFieldValues')
                 dispatch({
                     type: DeploymentConfigStateActionTypes.multipleOptions,
                     payload: {
@@ -880,9 +868,7 @@ export default function DeploymentConfig({
                     },
                 })
             } else {
-                console.log('else')
                 const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
-                console.log('newTemplate')
                 updateTemplateFromBasicValue(newTemplate)
                 editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
             }
@@ -895,8 +881,6 @@ export default function DeploymentConfig({
 
     const handleTabSelection = (index: number) => {
         if (state.unableToParseYaml) return
-
-        console.log('handleTabSelection',index)
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -975,16 +959,16 @@ export default function DeploymentConfig({
         return requestData
     }
 
-    const [value,setValue] = useState(state.tempFormData)
+    const [valueData,setValueData] = useState(state.tempFormData)
     const [valueLeft, setValueLeft] = useState(state.tempFormData)
+    const [hasAssignedOnce, setHasAssignedOnce] = useState(false); 
 
     useEffect(() => {
         const values = Promise.all([getValue(isValues),getValuesLHS(isValues)]);
         values.then((res) => {
-            console.log(res, 'res')
-            const [value, valueLeft] = res;
-            setValue(value)
-            setValueLeft(valueLeft)
+            const [_value, _valueLeft] = res;
+            setValueData(_value)
+            setValueLeft(_valueLeft)
         })
         .catch((err) => {
             console.log(err, 'err')
@@ -992,14 +976,18 @@ export default function DeploymentConfig({
     
     },[isValues])
 
-    useEffectAfterMount(() => {
-        if(!state.tempFormData) return
-        setValue(state.tempFormData)
-    },[state.tempFormData])
-
+    useEffect(() => {
+        if(!state.tempFormData || hasAssignedOnce) return
+        console.log('setting value data')
+        setValueData(state.tempFormData)
+        setHasAssignedOnce(true)
+    },[state.tempFormData,hasAssignedOnce])
+    // not running once tab is changed
     const getValue = async (isValues) =>{
        if(isValues){
-        return isCompareAndApprovalState ? state.draftValues : state.tempFormData
+        const _v =   isCompareAndApprovalState ? state.draftValues :state.tempFormData
+        console.log(_v, 'v')
+        return _v;
        }
        else {
         const request = {
@@ -1056,7 +1044,7 @@ export default function DeploymentConfig({
                 ) : (
                     <DeploymentTemplateEditorView
                         defaultValue={valueLeft || (state.publishedState?.tempFormData??state.data)}
-                        value={value}
+                        value={valueData}
                         globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
                         readOnly={isCompareAndApprovalState || !isValues}

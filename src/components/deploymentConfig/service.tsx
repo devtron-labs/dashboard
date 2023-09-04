@@ -11,8 +11,8 @@ export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultT
     }
 }
 
-export function getDeploymentTemplateNew(appId: number, chartRefId: number, isValues?: boolean) {
-    return post(`${Routes.DEPLOYMENT_TEMPLATE_NEW}`, { appId, chartRefId, getValues: isValues, type:2 }); //TODO use dynamic type
+export function getDeploymentTemplateNew(appId: number, chartRefId: number, isValues: boolean, type: number) {
+    return post(`${Routes.DEPLOYMENT_TEMPLATE_NEW}`, { appId, chartRefId, getValues: isValues, type:type }); 
 }
 
 export function getDeploymentManisfest(request) {
@@ -20,7 +20,7 @@ export function getDeploymentManisfest(request) {
 }
 
 export function getOptions(appId: number, envId: number) {
-    return get(`${Routes.DEPLOYMENT_OPTIONS}?app-id=${appId}&env-id=${envId}`)
+    return get(`${Routes.DEPLOYMENT_OPTIONS}?appId=${appId}&envId=${envId}`)
 }
 
 export function getDefaultDeploymentTemplate(appId, chartId){

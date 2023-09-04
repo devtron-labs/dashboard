@@ -43,12 +43,12 @@ export default function DeploymentTemplateEditorView({
     const [showProposal, setShowProposal] = useState(false)
     const [proposalData, setProposalData] = useState(null)
 
-    console.log('showProposal', showProposal)
 
     const getLocalDaftManifest = async () => {
+        console.log(state.draftValues,'getLocalDaftManifest')
         const request = {
             "appId": +appId,
-            // "chartRefId": 33,
+            "chartRefId": globalChartRefId,
             "getValues": false,
             // "type": 1,
             "values": state.draftValues
@@ -61,7 +61,6 @@ export default function DeploymentTemplateEditorView({
         if(!showProposal) return
         getLocalDaftManifest()
         .then((data) => {
-            console.log('data', data)
             setProposalData(data)
         })
     }, [showProposal])
@@ -126,13 +125,16 @@ export default function DeploymentTemplateEditorView({
             const _getDeploymentTemplate = isChartVersionOption
                 ? getDefaultDeploymentTemplate(appId, state.selectedCompareOption.value)
                 : isEnvOverride || isEnvOption
-                ? getEnvDeploymentTemplate(
-                      appId,
-                      isEnvOption ? state.selectedCompareOption.id : envId,
-                      state.selectedCompareOption.value,
+                ? getDeploymentTemplateNew(         // FIXME: use same api for all cases
+                      +appId,
+                      //@ts-ignore
+                      +state.selectedCompareOption.chartRefId,
+                      isValues,
+                      //@ts-ignore
+                      state.selectedCompareOption.type,
                   )
                   // @ts-ignore // TODO: Fix noImplicitAny error here
-                : getDeploymentTemplateNew(+appId, +state.selectedCompareOption.chartRefId, isValues)
+                : getDeploymentTemplateNew(+appId, +state.selectedCompareOption.chartRefId, isValues, state.selectedCompareOption.type)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
@@ -168,7 +170,6 @@ export default function DeploymentTemplateEditorView({
     }
 
     const processFetchedValues = (result, isChartVersionOption, _isEnvOption) => {
-        console.log('result', result)
         if (isChartVersionOption) {
             return result.defaultAppOverride
         } else if (_isEnvOption) {
@@ -176,7 +177,7 @@ export default function DeploymentTemplateEditorView({
                 ...prevStatus,
                 [state.selectedCompareOption.id]: result.IsOverride,
             }))
-            return result.environmentConfig?.envOverrideValues || result?.globalConfig
+            return isValues? YAML.parse(result.data) : result.data
         } else {
             return  isValues? YAML.parse(result.data) : result.data
         }
@@ -202,7 +203,6 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
-    console.log(defaultValue, 'defaultValue')
 
     const renderCodeEditor = (): JSX.Element => {
         return (

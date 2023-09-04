@@ -27,9 +27,7 @@ export default function DeploymentTemplateOptionsTab({
     const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
-        state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
-
-    console.log("currentStateValues",currentStateValues)    
+        state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state 
 
     if (state.openComparison || state.showReadme) return null
 
