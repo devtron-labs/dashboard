@@ -713,7 +713,7 @@ export default function NodeDetails({
                         <main>
                             {sortedPodList.map((pod) => (
                                 <div className="row-wrapper" key={pod.name}>
-                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
                                         {pod.namespace}
                                     </div>
                                     <div className="hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">

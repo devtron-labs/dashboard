@@ -600,6 +600,9 @@ export default function ResourceList() {
                         'source',
                         'reason',
                         'type',
+                        'age',
+                        'node',
+                        'ip'
                     ],
                     origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
                 },

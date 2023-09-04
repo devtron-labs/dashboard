@@ -22,10 +22,10 @@ export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu, t
             ref={tabPopupMenuRef}
         >
             <DropDown
-                className={`rotate icon-dim-20 ml-2 mr-2 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
+                className={`rotate icon-dim-20 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
                 style={{ ['--rotateBy' as any]: isMenuOpen ? '90deg' : '-90deg' }}
             />
-            <span className='flex icon-dim-24 cn-7 fs-12 fw-6 dc__border-left bc-n50'>t</span>
+            {/* <span className='flex icon-dim-24 cn-7 fs-12 fw-6 dc__border-left bc-n50'>t</span> */}
         </button>
         {isMenuOpen && (
             <>

@@ -40,15 +40,15 @@ function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableS
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
     }, [tabs])
 
-    useEffect(() => {
-      if (enableShortCut) {
-          shortcut.registerShortcut(handleInputShortcut, ['t'], 'TabSearchFocus', 'Focus tab search')
-      }
+  //   useEffect(() => {
+  //     if (enableShortCut) {
+  //         shortcut.registerShortcut(handleInputShortcut, ['t'], 'TabSearchFocus', 'Focus tab search')
+  //     }
 
-      return (): void => {
-          shortcut.unregisterShortcut(['t'])
-      }
-  }, [enableShortCut])
+  //     return (): void => {
+  //         shortcut.unregisterShortcut(['t'])
+  //     }
+  // }, [enableShortCut])
 
   const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
       const _key = e.key
