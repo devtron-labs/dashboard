@@ -65,8 +65,14 @@ export default function DeploymentConfig({
     const baseDeploymentAbortController = new AbortController()
 
     useEffect(() => {
+       const abortController = new AbortController()
         reloadEnvironments()
         initialise()
+
+        return () => {
+            // if(baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted){
+           abortController.abort()
+        }
     }, [])
 
     useEffectAfterMount(() => {
@@ -223,8 +229,8 @@ export default function DeploymentConfig({
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
 
-        if(baseDeploymentAbortController){
-            baseDeploymentAbortController.signal.aborted && abortController.abort()
+        if(abortController && !abortController.signal.aborted){
+             abortController.abort()
         }
 
         const statesToUpdate = {}
@@ -275,7 +281,6 @@ export default function DeploymentConfig({
     }
 
     async function fetchDeploymentTemplate() {
-        let abortController = new AbortController()
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
@@ -296,7 +301,7 @@ export default function DeploymentConfig({
                         currentViewEditor,
                     },
                 },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, abortController.signal)
+            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
             const templateData = {
                 template: defaultAppOverride,
                 schema,
@@ -336,8 +341,8 @@ export default function DeploymentConfig({
             }
         } catch (err) {
             showError(err)
-            if(!baseDeploymentAbortController.signal.aborted){
-                abortController.abort()
+            if(baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted){
+                baseDeploymentAbortController.abort()
             }
         } finally {
             dispatch({
@@ -401,6 +406,7 @@ export default function DeploymentConfig({
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
             if (!baseDeploymentAbortController.signal.aborted) {
                 showError(err)
+                baseDeploymentAbortController.abort()
             }
         } finally {
             dispatch({

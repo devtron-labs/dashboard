@@ -26,7 +26,9 @@ export function getDefaultDeploymentTemplate(appId, chartId){
 
 export const updateDeploymentTemplate = (request, abortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE_UPDATE}`;
-    return post(URL, request);
+    return post(URL, request,{
+        signal: abortSignal,
+    });
 }
 
 export const saveDeploymentTemplate = (request, abortSignal) => {
