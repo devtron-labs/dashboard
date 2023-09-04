@@ -353,10 +353,23 @@ export default function ResourceList() {
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
-        if (!isSuperAdmin) return
+        if (!isSuperAdmin) {
+            return
+        }
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
-            updateTabUrl(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`, `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${nodeType === AppDetailsTabs.terminal ? location.search : (tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : '')}`, `${AppDetailsTabs.terminal} '${selectedCluster.label}'`)
+            updateTabUrl(
+                `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
+                `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                    selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
+                    nodeType === AppDetailsTabs.terminal
+                        ? location.search
+                        : tabs[1]?.url.split('?')[1]
+                        ? `?${tabs[1].url.split('?')[1]}`
+                        : ''
+                }`,
+                `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
+            )
         } else {
             removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
@@ -906,6 +919,7 @@ export default function ResourceList() {
                         addTab={addTab}
                         logSearchTerms={logSearchTerms}
                         setLogSearchTerms={setLogSearchTerms}
+                        removeTabByIdentifier={removeTabByIdentifier}
                     />
                 </div>
             )

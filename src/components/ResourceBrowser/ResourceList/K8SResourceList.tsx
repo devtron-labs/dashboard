@@ -42,7 +42,7 @@ export function K8SResourceList({
     addTab,
     renderCallBackSync,
     syncError,
-    k8SObjectMapRaw
+    k8SObjectMapRaw,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
