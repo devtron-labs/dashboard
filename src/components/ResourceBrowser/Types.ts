@@ -175,6 +175,7 @@ export interface EventListType {
     handleResourceClick: (e: any) => void
     paginatedView: boolean
     syncError: boolean
+    searchText: string
 }
 
 export interface ClusterOptionType extends OptionType {

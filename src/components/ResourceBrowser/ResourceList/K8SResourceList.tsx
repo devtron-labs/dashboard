@@ -299,6 +299,7 @@ export function K8SResourceList({
                             handleResourceClick={handleResourceClick}
                             paginatedView={showPaginatedView}
                             syncError={syncError}
+                            searchText={searchText}
                         />
                     ) : (
                         renderResourceList()

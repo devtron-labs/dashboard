@@ -939,7 +939,7 @@ export default function NodeDetails({
 
     const getCodeEditorHeight = (): string=>{
       if (!isReviewState) {
-          return 'calc(100vh - 116px)'
+          return 'calc(100vh - 115px)'
       } else if (isShowWarning) {
           return `calc(100vh - 180px)`
       }
