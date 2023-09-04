@@ -118,6 +118,12 @@ export interface VariablesListItemInterface {
 
 export interface SearchBarInterface {
     onSearch: (query: string) => void
+    icon?: string
+    placeholder?: string
+    inputClass?: string
+    containerClass?: string
+    iconClass?: string
+    children?: React.ReactNode
 }
 
 export type ValidatorType = (fileData: FileDataInterface) => FileReaderStatusInterface
