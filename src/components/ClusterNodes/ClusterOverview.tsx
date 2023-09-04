@@ -205,7 +205,6 @@ export default function ClusterOverview({
         } else {
             return (
                 <>
-                    {' '}
                     {renderCardDetails()}
                     {renderClusterError()}
                     <GenericDescription

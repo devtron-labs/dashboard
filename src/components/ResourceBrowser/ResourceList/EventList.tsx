@@ -19,7 +19,7 @@ export function EventList({ listRef, filteredData, handleResourceClick, paginate
             </div>
             <div ref={listRef} className={getScrollableResourceClass('scrollable-event-list',paginatedView, syncError)}>
                 {filteredData?.map((eventData) => (
-                    <div className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12">
+                    <div className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class">
                         <div className={` app-summary__status-name f-${eventData.type?.toLowerCase()}`}>
                             {eventData.type}
                         </div>
