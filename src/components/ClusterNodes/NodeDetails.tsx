@@ -460,13 +460,13 @@ export default function NodeDetails({
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+                <div className="flexbox bcy-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
                     </span>
                 </div>
-                <div className="pt-12 pr-20 pl-20">
+                <div className="pt-12 pr-16 pl-16">
                     {isCPUOverCommitted && (
                         <div>
                             <div className="fw-6 fs-13 cn-9">Resource overcommitted</div>
@@ -506,10 +506,10 @@ export default function NodeDetails({
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-10">
-                <div className="flexbox pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+                <div className="flexbox pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
-                <div className="pr-20 pl-20">
+                <div className="pr-16 pl-16">
                     <div>
                         <div className="fw-6 fs-13 cn-7">Name</div>
                         <p className="fw-4 fs-13 cn-9 mb-12">{nodeDetail.name}</p>
