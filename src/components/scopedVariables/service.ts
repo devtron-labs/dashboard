@@ -1,6 +1,6 @@
-import { ScopedVariablesDataInterface } from '../types'
+import { ScopedVariablesDataInterface } from './types'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../../config'
+import { Routes } from '../../config'
 
 // Services
 export const getScopedVariablesJSON = () => {

@@ -1,10 +1,10 @@
 import React, { useRef } from 'react'
 import { fireEvent, render } from '@testing-library/react'
-import { useFileReader, useClickOutside } from '../../utils/hooks'
-import { ReadFileAs } from '../../types'
-import { validator } from '../../utils/helpers'
+import { useFileReader, useClickOutside } from '../'
+import { ReadFileAs } from '../types'
+import { validator } from '../../../scopedVariables/utils'
 
-describe('ScopedVariables hooks', () => {
+describe('hooks', () => {
     describe('useFileReader', () => {
         it('should return fileData(as null), progress(as 0), status (as null), readFile and abortRead initially', () => {
             const DummyComponent = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { FileDataInterface, FileReaderStatusInterface, ReadFileAs, ValidatorType } from '../types'
-import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from '../constants'
+import { FileDataInterface, FileReaderStatusInterface, ReadFileAs, ValidatorType } from './types'
+import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
 
 export const useFileReader = () => {
     const [fileData, setFileData] = useState<FileDataInterface>(null)

@@ -3,10 +3,10 @@ import Tippy from '@tippyjs/react'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import VariablesList from './VariablesList'
-import { useFileReader, useClickOutside } from './utils/hooks'
+import { useFileReader, useClickOutside } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
-import { downloadData, parseIntoYAMLString } from './utils/helpers'
+import { downloadData, parseIntoYAMLString } from './utils'
 import { FileView, SavedVariablesViewInterface, VariablesListInterface } from './types'
 import {
     DOWNLOAD_FILES_AS,

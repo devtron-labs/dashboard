@@ -2,10 +2,11 @@ import React from 'react'
 import ScopedVariablesInput from './ScopedVariablesInput'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
-import { useFileReader } from './utils/hooks'
-import { validator, downloadData } from './utils/helpers'
+import { useFileReader } from '../common'
+import { validator, downloadData } from './utils'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { ReadFileAs, UploadScopedVariablesInterface } from './types'
+import { UploadScopedVariablesInterface } from './types'
+import { ReadFileAs } from '../common/hooks/types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,

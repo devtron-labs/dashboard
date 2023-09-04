@@ -1,9 +1,4 @@
-export enum ReadFileAs {
-    TEXT = 'text',
-    DATA_URL = 'dataUrl',
-    BINARY_STRING = 'binaryString',
-    ARRAY_BUFFER = 'arrayBuffer',
-}
+import { FileReaderStatusInterface, FileDataInterface, ReadFileAs, ValidatorType } from '../common/hooks/types'
 
 export enum FileView {
     YAML = 'yaml',
@@ -23,20 +18,6 @@ export interface SavedVariablesViewInterface {
     jsonSchema: object
     reloadScopedVariables: () => void
     setScopedVariables: React.Dispatch<React.SetStateAction<ScopedVariablesDataInterface>>
-}
-
-export interface FileReaderStatusInterface {
-    status: boolean | 'loading'
-    message: {
-        data: any
-        description: string
-    }
-}
-
-export interface FileDataInterface {
-    data: any
-    type: string
-    name: string
 }
 
 export interface LoadScopedVariablesInterface {
@@ -125,5 +106,3 @@ export interface SearchBarInterface {
     iconClass?: string
     children?: React.ReactNode
 }
-
-export type ValidatorType = (fileData: FileDataInterface) => FileReaderStatusInterface

@@ -1,12 +1,13 @@
 import yaml from 'js-yaml'
-import { ScopedVariablesDataInterface, ValidatorType } from '../types'
+import { ScopedVariablesDataInterface } from './types'
+import { ValidatorType } from '../common/hooks/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
     PARSE_ERROR_STATUS,
     JSON_PARSE_ERROR_STATUS,
     YAML_PARSE_ERROR_STATUS,
-} from '../constants'
+} from './constants'
 
 export const validator: ValidatorType = ({ data, type }) => {
     if (!data) {

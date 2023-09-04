@@ -1,10 +1,10 @@
-import { validator, downloadData } from '../../utils/helpers'
+import { validator, downloadData } from '../utils'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
     JSON_PARSE_ERROR_STATUS,
     YAML_PARSE_ERROR_STATUS,
-} from '../../constants'
+} from '../constants'
 
 describe('ScopedVariables helpers', () => {
     describe('validator', () => {
