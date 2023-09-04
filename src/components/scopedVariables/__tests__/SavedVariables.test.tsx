@@ -4,7 +4,7 @@ import SavedVariablesView from '../SavedVariables'
 import { validScopedVariablesData } from '../mocks'
 import { downloadData } from '../utils'
 import { ScopedVariablesDataInterface } from '../types'
-import { useClickOutside, useFileReader } from '../../common'
+import { useClickOutside } from '../../common'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => <div></div>))
 jest.mock('../utils', () => ({
