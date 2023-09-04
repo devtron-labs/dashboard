@@ -129,6 +129,7 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    let contextRequest = new AbortController()
     const getData = async () => {
         try {
             setLoader(true)
@@ -137,7 +138,7 @@ export function ConfigMapSecretContainer({
                     ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name)
                     : null,
                 !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId) : null,
-            ])
+            , { signal: contextRequest.signal }])
             let draftId, draftState
             if (
                 _draftData?.status === 'fulfilled' &&
@@ -199,6 +200,9 @@ export function ConfigMapSecretContainer({
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             }
         } catch (error) {
+            if(error === 'AbortError') {
+                console.log("Request was aborted", error)
+            }
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             setDraftData(null)
             showError(error)
@@ -208,6 +212,7 @@ export function ConfigMapSecretContainer({
     }
 
     const updateCollapsed = (_collapsed?: boolean): void => {
+        contextRequest.abort()
         if (_collapsed !== undefined) {
             toggleCollapse(_collapsed)
         } else {
@@ -397,10 +402,13 @@ export function ProtectedConfigMapSecretDetails({
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
 
+    
+
     const getBaseData = async () => {
+        let abortController = new AbortController()
         try {
             setLoader(true)
-            const { result } = await(componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
+            const { result } = await(componentType === 'secret' ? getSecretList(appId, {signal: abortController.signal}) : getConfigMapList(appId, {signal: abortController.signal}))
             let _baseData
             if (result?.configData?.length) {
                 _baseData = result.configData.find((config) => config.name === data.name)
@@ -408,7 +416,7 @@ export function ProtectedConfigMapSecretDetails({
                     _baseData.unAuthorized = data.unAuthorized
                 }
                 if (componentType === 'secret' && !data.unAuthorized) {
-                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
+                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name, {signal: abortController.signal})
                     if (secretResult?.configData?.length) {
                         _baseData = { ...secretResult.configData[0], unAuthorized: false }
                     }
@@ -416,6 +424,11 @@ export function ProtectedConfigMapSecretDetails({
             }
             setBaseData(_baseData)
         } catch (error) {
+            if(error === "AbortError") {
+                console.log("Request was aborted", error)
+            } else {
+                console.log(error)
+            }
         } finally {
             setLoader(false)
         }
@@ -423,7 +436,7 @@ export function ProtectedConfigMapSecretDetails({
 
     useEffect(() => {
         if (draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN) {
-            getBaseData()
+            getBaseData()   
         }
     }, [])
 
