@@ -212,11 +212,7 @@ export default function ResourceList() {
             }
         }
 
-        if (
-            (nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() ||
-                nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) &&
-            !isSuperAdmin
-        ) {
+        if (!isSuperAdmin && !k8SObjectMapRaw) {
             getGVKData(clusterId)
         }
     }, [location.pathname])
