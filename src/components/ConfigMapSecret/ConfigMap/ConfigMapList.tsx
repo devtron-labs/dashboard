@@ -35,7 +35,7 @@ export default function ConfigMapList({
     // Fetching here instead of component itself as we might need variables in other components as well
     const [loadingScopedVariables, scopedVariablesData, scopedVariablesError, reloadScopedVariables] = useAsync(
         () => getScopedVariables(appId, envId, null),
-        [],
+        [appId, envId],
     )
 
     useEffect(() => {
@@ -146,7 +146,7 @@ export default function ConfigMapList({
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
             <FloatingVariablesSuggestions
-                zIndex={1}
+                zIndex={100}
                 loading={loadingScopedVariables}
                 variables={scopedVariablesData}
                 reloadVariables={reloadScopedVariables}

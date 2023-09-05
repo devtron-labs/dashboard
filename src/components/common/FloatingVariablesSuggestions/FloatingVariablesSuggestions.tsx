@@ -7,7 +7,7 @@ import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
-import SearchSvg from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import { Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function FloatingVariablesSuggestions({
@@ -85,70 +85,74 @@ export default function FloatingVariablesSuggestions({
                         containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp"
                         inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-5 fw-4 p-0"
                         debounceTimeout={500}
-                        icon={SearchSvg}
-                        iconClass="icon-dim-16 scn-6"
+                        Icon={ICSearch}
+                        iconClass="icon-dim-16"
                     />
                 </div>
             )}
         </div>
     )
 
-    return (
-        <Draggable bounds="parent" handle=".handle-drag" nodeRef={nodeRef}>
-            {isActive ? (
-                <div
-                    ref={nodeRef}
-                    className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border-n7 dc__overflow-hidden"
-                    style={{
-                        zIndex,
-                        height: '504px',
-                        boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.25)',
-                    }}
-                >
-                    {loading ? (
-                        <>
-                            {renderHeader()}
-                            <Progressing pageLoader />
-                        </>
-                    ) : error || !suggestions?.length ? (
-                        <>
-                            {renderHeader()}
-                            <Reload reload={reloadVariables} />
-                        </>
-                    ) : (
-                        <>
-                            {renderHeader()}
-
-                            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
-                                {/* FIXME: May have to stringify the value */}
-                                {suggestions.map((variable) =>
-                                    renderVariableItem({
-                                        variableName: variable.variableName,
-                                        variableDescription: variable.variableDescription || 'No Defined Description',
-                                        variableValue: variable.variableValue.value,
-                                    }),
-                                )}
-                            </div>
-
-                            <div className="flexbox dc__align-self-stretch dc__align-items-center pt-12 pb-12 pl-10 pr-10 bcv-1 m-0 fs-13 fw-4 lh-20 cn-9">
-                                Type &nbsp;<span className="fw-6">{'{{}}'}</span>&nbsp; to use a variable instead of
-                                fixed value.
-                            </div>
-                        </>
-                    )}
-                </div>
-            ) : (
+    if (!isActive)
+        return (
+            <Draggable bounds="body" handle=".handle-drag" nodeRef={nodeRef}>
                 <button
                     className="bcn-7 dc__outline-none-imp dc__border-n0 br-48 flex h-40 pt-8 pb-8 pl-12 pr-12 dc__gap-8 dc__no-shrink"
                     style={{ zIndex, boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.20)' }}
-                    ref={nodeRef}
                     onClick={handleActivation}
+                    ref={nodeRef}
                 >
                     <ICDrag className="handle-drag scn-4 icon-dim-20" onClick={(e) => e.stopPropagation()} />
                     {/* DUMMY ICON */}
                     <ICGridView className="scn-0 icon-dim-20" />
                 </button>
-            )}
+            </Draggable>
+        )
+
+    return (
+        <Draggable bounds="body" handle=".handle-drag" nodeRef={nodeRef}>
+            <div
+                className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border-n7 dc__overflow-hidden"
+                style={{
+                    zIndex,
+                    height: '504px',
+                    boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.25)',
+                    position: 'absolute',
+                }}
+                ref={nodeRef}
+            >
+                {loading ? (
+                    <>
+                        {renderHeader()}
+                        <Progressing pageLoader />
+                    </>
+                ) : error || !suggestions?.length ? (
+                    <>
+                        {renderHeader()}
+                        <Reload reload={reloadVariables} />
+                    </>
+                ) : (
+                    <>
+                        {renderHeader()}
+
+                        <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
+                            {/* FIXME: May have to stringify the value */}
+                            {suggestions.map((variable) =>
+                                renderVariableItem({
+                                    variableName: variable.variableName,
+                                    variableDescription: variable.variableDescription || 'No Defined Description',
+                                    variableValue: variable.variableValue.value,
+                                }),
+                            )}
+                        </div>
+
+                        <div className="flexbox dc__align-self-stretch dc__align-items-center pt-12 pb-12 pl-10 pr-10 bcv-1 m-0 fs-13 fw-4 lh-20 cn-9">
+                            Type &nbsp;<span className="fw-6">{'{{}}'}</span>&nbsp; to use a variable instead of fixed
+                            value.
+                        </div>
+                    </>
+                )}
+            </div>
         </Draggable>
     )
 }

@@ -1,6 +1,6 @@
-export interface DebouncedSearchInterface {
+export interface DebouncedSearchProps {
     onSearch: (query: string) => void
-    icon?: string
+    Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     placeholder?: string
     inputClass?: string
     containerClass?: string

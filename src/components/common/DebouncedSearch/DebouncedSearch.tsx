@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import { useDebouncedEffect } from '../helpers/Helpers'
-import { DebouncedSearchInterface } from './types'
+import { DebouncedSearchProps } from './types'
 
 // TODO: AutoFocus, remove bg image
 export default function DebouncedSearch({
     onSearch,
-    icon,
+    Icon,
     children,
     placeholder,
     containerClass = '',
     iconClass = '',
     inputClass = '',
     debounceTimeout = 500,
-}: DebouncedSearchInterface) {
+}: DebouncedSearchProps) {
     const [searchText, setSearchText] = useState<string>('')
 
     const handleSearchTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,17 +23,7 @@ export default function DebouncedSearch({
 
     return (
         <div className={containerClass}>
-            {icon && (
-                <div
-                    className={iconClass}
-                    style={{
-                        backgroundImage: `url(${icon})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        backgroundSize: 'contain',
-                    }}
-                />
-            )}
+            {Icon && <Icon className={iconClass} />}
 
             <input
                 type="text"
