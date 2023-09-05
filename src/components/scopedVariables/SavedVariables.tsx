@@ -26,7 +26,6 @@ export default function SavedVariablesView({
     reloadScopedVariables,
     setScopedVariables,
 }: SavedVariablesViewProps) {
-    const [showDropdown, setShowDropdown] = useState<boolean>(false)
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableType[]>([])
     const [showEditView, setShowEditView] = useState<boolean>(false)
@@ -52,11 +51,9 @@ export default function SavedVariablesView({
         switch (item) {
             case DROPDOWN_ITEMS[0]:
                 downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
-                setShowDropdown(false)
                 break
             case DROPDOWN_ITEMS[1]:
                 downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
-                setShowDropdown(false)
                 break
         }
     }
@@ -164,9 +161,7 @@ export default function SavedVariablesView({
                                         placement="top"
                                         content="Download file/template"
                                     >
-                                        <div>
-                                            <ICFileDownload className="icon-dim-20" />
-                                        </div>
+                                        <ICFileDownload className="icon-dim-20" />
                                     </Tippy>
                                 </PopupMenu.Button>
 
