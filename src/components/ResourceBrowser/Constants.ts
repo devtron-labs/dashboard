@@ -1,4 +1,4 @@
-import { AggregationKeys, AggregationKeysType } from '../app/types'
+import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
 export const FILTER_SELECT_COMMON_STYLES = {
@@ -180,7 +180,7 @@ export const SIDEBAR_KEYS = {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: 'Cluster Overview',
+        Kind: Nodes.ClusterOverview,
     }
 }
 

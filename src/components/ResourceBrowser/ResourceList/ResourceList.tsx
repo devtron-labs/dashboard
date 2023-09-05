@@ -543,9 +543,9 @@ export default function ResourceList() {
 
                 const defaultSelected = groupedChild ??
                     processedData.selectedResource ?? {
-                    namespaced: childNode.namespaced,
-                    gvk: childNode.gvk,
-                }
+                        namespaced: false,
+                        gvk: SIDEBAR_KEYS.overviewGVK,
+                    }
 
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
                 setSelectedResource(defaultSelected)
