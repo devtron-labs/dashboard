@@ -1012,9 +1012,8 @@ export default function DeploymentConfig({
     const fetchManifestData = async (data) => {
         const request = {
             "appId": +appId,
-            "chartRefId": 33,
+            "chartRefId": state.selectedChartRefId,
             "getValues": false,
-            "type": 1,  // FIXME: use dynamic type
             "values": data
         }
         const response = await getDeploymentManisfest(request)
@@ -1063,12 +1062,8 @@ export default function DeploymentConfig({
         } else {
             const request = {
                 appId: parseInt(appId),
-                chartRefId: 33,
+                chartRefId: state.selectedChartRefId,
                 getValues: false,
-                type: 1,
-                pipelineConfigOverrideId: 627,
-                resourceName: 'BaseDeploymentTemplate',
-                resourceType: 3,
                 values: state.publishedState?.tempFormData ?? state.data,
             }
             const response = await getDeploymentManisfest(request)

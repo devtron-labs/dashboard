@@ -51,7 +51,7 @@ export default function DeploymentTemplateEditorView({
             console.log(state.tempFormData, 'getLocalDaftManifest')
             const request = {
                 appId: +appId,
-                chartRefId: 33,
+                chartRefId: state.selectedChartRefId,
                 getValues: false,
                 values: state.tempFormData,
             }
@@ -121,7 +121,8 @@ export default function DeploymentTemplateEditorView({
             state.selectedCompareOption &&
             state.selectedCompareOption.id !== -1 &&
             state.selectedCompareOption?.id !== Number(envId) &&
-            !state.fetchedValues[state.selectedCompareOption.id]&&
+            (isValues?!state.fetchedValues[state.selectedCompareOption.id]:
+            !state.fetchedValuesManifest[state.selectedCompareOption.id])&&
             !state.chartConfigLoading &&
             !fetchingValues
         ) {
@@ -147,6 +148,7 @@ export default function DeploymentTemplateEditorView({
             _getDeploymentTemplate
                 .then(({ result }) => {
                     if (result) {
+                        if(isValues){
                         const _fetchedValues = {
                             ...state.fetchedValues,
                             [state.selectedCompareOption.id]: YAML.stringify(
@@ -154,15 +156,16 @@ export default function DeploymentTemplateEditorView({
                             ),
                         }
                         setFetchedValues(_fetchedValues)
+                        }
+                        else {
+                            const _fetchedValuesManifest = {
+                                ...state.fetchedValuesManifest,
+                                [state.selectedCompareOption.id]: processFetchedValues(result, isChartVersionOption, isEnvOverride || isEnvOption),
+                            }
+                            setFetchedValuesManifest(_fetchedValuesManifest)
+                        }
                     }
-                    // else {
-                    //     const _fetchedValuesManifest = {
-                    //         ...state.fetchedValuesManifest,
-                    //         [state.selectedCompareOption.id]: processFetchedValues(result, isChartVersionOption, isEnvOverride || isEnvOption),
-                    //     }
-                    //     console.log(_fetchedValuesManifest, '_fetchedValuesManifest')
-                    //     // setFetchedValuesManifest(_fetchedValuesManifest)
-                    // }
+                    
 
                     setFetchingValues(false)
                 })
@@ -209,13 +212,13 @@ export default function DeploymentTemplateEditorView({
         })
     }
 
-    // const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
-    //     if(isValues) return
-    //     dispatch({
-    //         type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
-    //         payload: fetchedValuesManifest,
-    //     })
-    // }
+    const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
+        if(isValues) return
+        dispatch({
+            type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
+            payload: fetchedValuesManifest,
+        })
+    }
 
     const getOverrideClass = () => {
         if (isEnvOverride && state.latestDraft?.action !== 3) {
@@ -227,6 +230,10 @@ export default function DeploymentTemplateEditorView({
             return ''
         }
     }
+
+    console.log(state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
+    ? defaultValue
+    : state.fetchedValuesManifest[state.selectedCompareOption?.id]||"lol","ritvik")
 
 
     const renderCodeEditor = (): JSX.Element => {
@@ -241,7 +248,9 @@ export default function DeploymentTemplateEditorView({
                        isValues?(state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
                             ? defaultValue
                             : state.fetchedValues[state.selectedCompareOption?.id]) || ''
-                        : defaultValue
+                        : (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
+                            ? defaultValue
+                            : state.fetchedValuesManifest[state.selectedCompareOption?.id]) || 'lol'
                     }
                     value={(state.selectedTabIndex!==3 && showProposal)?proposalData :value}
                     onChange={editorOnChange}
