@@ -71,9 +71,6 @@ export const useFileReader = () => {
                 reader.removeEventListener('progress', handleFileProgress)
             })
             switch (readAs) {
-                case ReadFileAs.TEXT:
-                    reader.readAsText(file)
-                    break
                 case ReadFileAs.DATA_URL:
                     reader.readAsDataURL(file)
                     break
