@@ -140,6 +140,7 @@ export default function CustomChartList() {
                 <div className="mb-4 mxh-140 dc__overflow-scroll">
                     {chartData.versions.map((versionsList) => (
                         <div
+                            key={`custom-chart-version_${versionsList.version}`}
                             data-testid="chart-version-row"
                             data-versionid={versionsList.id}
                             data-version={versionsList.version}
@@ -177,7 +178,7 @@ export default function CustomChartList() {
 
     const renderChartList = (): JSX.Element => {
         return (
-            <div className="chart-list" data-testid="custom-charts-list" >
+            <div className="chart-list" data-testid="custom-charts-list">
                 <div className="flexbox dc__content-space cn-9 fw-6 fs-16 mb-20">
                     <div className="flex left">
                         {CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
@@ -218,7 +219,10 @@ export default function CustomChartList() {
                         <div>Description</div>
                     </div>
                     {chartList?.map((chartData) => (
-                        <div className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20">
+                        <div
+                            key={`custom-chart_${chartData.name}`}
+                            className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
+                        >
                             <div className="flexbox">
                                 <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
                                 {renderDevtronChipTag(chartData)}
@@ -255,7 +259,10 @@ export default function CustomChartList() {
                                     {downloadInProgress === chartData.name ? (
                                         <Progressing pageLoader size={16} />
                                     ) : (
-                                            <Download className="icon-dim-16 scn-6 dc__flip-180" data-testid={`download-${chartData.name}`} />
+                                        <Download
+                                            className="icon-dim-16 scn-6 dc__flip-180"
+                                            data-testid={`download-${chartData.name}`}
+                                        />
                                     )}
                                 </div>
                             </Tippy>
