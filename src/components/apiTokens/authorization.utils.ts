@@ -58,15 +58,15 @@ export const getSelectedEnvironments = (permission) => {
 }
 
 const getSelectedEntityName = (permission) => {
-    let entityName = ''
+    let entityName = []
     for (let _entityName of permission.entityName) {
         if (_entityName.value === '*') {
             break
         } else {
-            entityName = !entityName ? _entityName.value : `,${_entityName.value}`
+            entityName.push(_entityName.value)
         }
     }
-    return entityName
+    return entityName.join(',')
 }
 
 export const createUserPermissionPayload = (
