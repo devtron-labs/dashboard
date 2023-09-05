@@ -4,15 +4,18 @@ import {
     RefVariableType,
     PluginType,
     RefVariableStageType,
+    ClearIndicator,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { BuildStageVariable } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
 import { OptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
+import { Label } from 'recharts'
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -258,8 +261,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         <CreatableSelect
             tabIndex={1}
             value={selectedOutputVariable}
+            escapeClearsValue
             options={inputVariableOptions}
-            placeholder="Select source or input value"
             onChange={handleOutputVariableSelector}
             styles={
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -287,7 +290,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 return 'No matching options'
             }}
             onBlur={handleCreatableBlur}
-            isValidNewOption={() => false}
+            backspaceRemovesValue
+            isValidNewOption={() => true}
+            isSearchable={true}
             onKeyDown={handleKeyDown}
             menuPlacement="auto"
         />
