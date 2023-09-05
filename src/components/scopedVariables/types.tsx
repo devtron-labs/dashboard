@@ -76,7 +76,7 @@ export interface VariableSpecType {
 }
 
 export interface ValueType {
-    category: 'ApplicationEnv' | 'Application' | 'Env' | 'Cluster' | 'Global'
+    category: VariableCategories
     value: any
     selectors?: object
 }
