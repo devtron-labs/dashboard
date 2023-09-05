@@ -32,18 +32,24 @@ export default function ScopedVariablesEditor({
     const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
-    const handleSave = async () => {
+    const handleParsing = (data: string): ScopedVariablesDataInterface => {
         let variablesObj: ScopedVariablesDataInterface
         try {
-            variablesObj = parseYAMLStringToObj(editorData)
+            variablesObj = parseYAMLStringToObj(data)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
                 toast.error(PARSE_ERROR_TOAST_MESSAGE)
-                return
+                return null
             }
         } catch (e) {
             toast.error(PARSE_ERROR_TOAST_MESSAGE)
-            return
+            return null
         }
+        return variablesObj
+    }
+
+    const handleSave = async () => {
+        const variablesObj = handleParsing(editorData)
+        if (!variablesObj) return
         try {
             setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
@@ -61,18 +67,8 @@ export default function ScopedVariablesEditor({
     }
 
     const handleReview = async () => {
-        let variablesObj: ScopedVariablesDataInterface
-        try {
-            variablesObj = parseYAMLStringToObj(editorData)
-            if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
-                toast.error(PARSE_ERROR_TOAST_MESSAGE)
-                return
-            }
-        } catch (e) {
-            toast.error(PARSE_ERROR_TOAST_MESSAGE)
-            return
-        }
-
+        const variablesObj = handleParsing(editorData)
+        if (!variablesObj) return
         try {
             setLoadingSavedScopedVariables(true)
             const res = await getScopedVariablesJSON()
