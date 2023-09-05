@@ -162,7 +162,9 @@ export default function SavedVariablesView({
                                         placement="top"
                                         content="Download file/template"
                                     >
-                                        <ICFileDownload className="icon-dim-20"/>
+                                        <div>
+                                            <ICFileDownload className="icon-dim-20"/>
+                                        </div>
                                     </Tippy>
                                 </PopupMenu.Button>
 
