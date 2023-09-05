@@ -154,6 +154,7 @@ export default function SavedVariablesView({
                                 <PopupMenu.Button
                                     isKebab={true}
                                     rootClassName="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
+                                    dataTestId="dropdown-btn"
                                 >
                                     <Tippy
                                         className="default-tt"
@@ -161,7 +162,7 @@ export default function SavedVariablesView({
                                         placement="top"
                                         content="Download file/template"
                                     >
-                                        <ICFileDownload className="icon-dim-20" />
+                                        <ICFileDownload className="icon-dim-20"/>
                                     </Tippy>
                                 </PopupMenu.Button>
 
