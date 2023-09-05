@@ -93,16 +93,6 @@ export const ChartTypeVersionOptions = ({
     )
 }
 
-const formatOptionLabel = (option): JSX.Element => {
-    return (
-        <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">
-                {option.environmentName && option.environmentName}&nbsp;{option.chartVersion && `(v${option.chartVersion})`} // TODO change this to product requirements
-            </span>
-        </div>
-    )
-}
-
 const customValueContainer = (props): JSX.Element => {
     return (
         <components.ValueContainer {...props}>
@@ -117,23 +107,23 @@ const customValueContainer = (props): JSX.Element => {
 
 function groupDataByType(data) {
     // Create a Map to store grouped objects by type
-    const groupedData = new Map();
+    const groupedData = new Map()
 
     // Iterate through the data and group objects by type
-    data.forEach(item => {
-        const type = item.type;
+    data.forEach((item) => {
+        const type = item.type
 
         if (!groupedData.has(type)) {
-            groupedData.set(type, []);
+            groupedData.set(type, [])
         }
 
-        groupedData.get(type).push(item);
-    });
+        groupedData.get(type).push(item)
+    })
 
     // Convert the grouped data into an array of arrays
-    const result = [...groupedData.values()];
+    const result = [...groupedData.values()]
 
-    return result;
+    return result
 }
 
 export const CompareWithDropdown = ({
@@ -144,9 +134,9 @@ export const CompareWithDropdown = ({
     selectedOption,
     setSelectedOption,
     globalChartRef,
-    isValues
+    isValues,
 }) => {
-    const {appId} = useParams<{appId: string}>()
+    const { appId } = useParams<{ appId: string }>()
     const [groupedOptions, setGroupedOptions] = useState([
         {
             label: '',
@@ -154,11 +144,14 @@ export const CompareWithDropdown = ({
         },
     ])
     const baseTemplateOption = {
-        id:-1,
+        id: -1,
         label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
         environmentName: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
+        chartRefId: globalChartRef?.id || '',
         chartVersion: globalChartRef?.version || '',
-    } 
+    }
+
+    console.log(charts, 'charts')
 
     const labelName = {
         '1': 'Default values',
@@ -169,7 +162,40 @@ export const CompareWithDropdown = ({
 
     useEffect(() => {
         _initOptions()
-    }, [environments, charts,isValues])
+    }, [environments, charts, isValues])
+
+    const formatOptionLabel = (option): JSX.Element => {
+        // TODO change this to product requirements
+
+        if (option.type === 1) {
+            return (
+                <div className="flex left column">
+                    <span className="w-100 dc__ellipsis-right">{`(v${option.chartVersion})`}</span>
+                </div>
+            )
+        } else if (option.type === 2 || option.type === 4) {
+            const c = charts.find((chart) => chart.value === option.chartRefId)
+            console.log(c, 'c')
+            return (
+                <div className="flex left column">
+                    <span className="w-100 dc__ellipsis-right">
+                        {option.environmentName ? option.environmentName : 'lol'}&nbsp;
+                        {option.chartVersion ? `(v${option.chartVersion})` : `(${c?.label.split(' ')[0]})`}
+                    </span>
+                </div>
+            )
+        } else if (option.type === 3) {
+        }
+
+        return (
+            <div className="flex left column">
+                <span className="w-100 dc__ellipsis-right">
+                    {option.environmentName && option.environmentName}&nbsp;
+                    {option.chartVersion && `(v${option.chartVersion})`}
+                </span>
+            </div>
+        )
+    }
 
     const getSelectedOption = () => {
         if (isEnvOverride) {
@@ -183,55 +209,51 @@ export const CompareWithDropdown = ({
 
     const _initOptions = async () => {
         const _groupOptions = []
-        if(isValues){
             _groupOptions.push({
                 label: '',
                 options: [baseTemplateOption],
             })
-        }
-        
-        const res = await getOptions(parseInt(appId), parseInt(envId)||-1)
 
-        const { result } = res;
+        const res = await getOptions(parseInt(appId), parseInt(envId) || -1) //FIXME: uplift this api call to parent component
 
-        const groupedData = groupDataByType(result);
-        console.log(groupedData,'groupedData')
-        let id = 0;
+        const { result } = res
+
+        const groupedData = groupDataByType(result)
+        let id = 0
         // TODO: change label to product requirements
         groupedData.forEach((group) => {
-            if(!isValues && group[0].type === 1) return;
-            if(isValues && group[0].type === 4) return;
+            if (!isValues && group[0].type === 1) return
+            if (isValues && group[0].type === 4) return
+            if(isEnvOverride && group[0].type === 3) return // TODO: check if this works
             _groupOptions.push({
                 label: labelName[group[0].type],
                 options: group.map((item) => {
                     return {
                         id: id++,
-                        label: item.environmentName?item.environmentName:item.chartVersion,
-                        type: item.type,
+                        label: item.environmentName ? item.environmentName : item.chartVersion, // FIXME: change this to product requirements
+                        // type: item.type,
                         ...item,
                     }
                 }),
-             });
-        });
+            })
+        })
         // Push all environment & other version options
         // _groupOptions.push({
         //     label: labelName[groupDataByType[0][0].type],
         //     options: groupedData[0]
         // })
 
-
         // _groupOptions.push({
         //     label: labelName[groupDataByType[1][0].type],
         //     options: groupedData[1]
         // })
 
-      
-
         setGroupedOptions(_groupOptions)
-        setSelectedOption(_groupOptions[0].options[0])
+        setSelectedOption(getSelectedOption())
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
+        console.log(selected, 'selected')
         setSelectedOption(selected)
     }
 
@@ -365,19 +387,19 @@ export const renderEditorHeading = (
 }
 
 interface renderManifestEditorHeadingProps {
-    isEnvOverride: boolean,
-    overridden: boolean,
-    readOnly: boolean,
-    environmentName: string,
-    selectedChart: DeploymentChartVersionType,
-    handleOverride: (e: any) => Promise<void>,
-    latestDraft: any,
-    isPublishedOverriden: boolean,
-    isDeleteDraftState: boolean,
+    isEnvOverride: boolean
+    overridden: boolean
+    readOnly: boolean
+    environmentName: string
+    selectedChart: DeploymentChartVersionType
+    handleOverride: (e: any) => Promise<void>
+    latestDraft: any
+    isPublishedOverriden: boolean
+    isDeleteDraftState: boolean
 }
 
-
-export const RenderManifestEditorHeading = ({       // TODO: add clickawaylistner to close the dropdown
+export const RenderManifestEditorHeading = ({
+    // TODO: add clickawaylistner to close the dropdown
     isEnvOverride,
     overridden,
     readOnly,
@@ -387,35 +409,34 @@ export const RenderManifestEditorHeading = ({       // TODO: add clickawaylistne
     latestDraft,
     isPublishedOverriden,
     isDeleteDraftState,
-    setShowProposal
+    setShowProposal,
 }) => {
-
-    const [selectedOption, setSelectedOption] = useState({id:1,label:"Manifest from draft"})
+    const [selectedOption, setSelectedOption] = useState({ id: 0, label: 'Approval Pending' })
 
     const options = [
         {
             label: 'Manifest generated from',
-            options: [{id:0,label:"Approval Pending"}, {id:1,label:"Manifest from draft"}],
-        }
-      ]
-    
+            options: [
+                { id: 0, label: 'Approval Pending' },
+                { id: 1, label: 'Manifest from draft' },
+            ],
+        },
+    ]
+
     const onChange = (selected) => {
-        console.log(selected,'selected')
+        console.log(selected, 'selected')
         setSelectedOption(selected)
-        console.log(selected.id === 0,'selected.id === 0')
-        setShowProposal(selected.id === 0)
-    }  
+        console.log(selected.id === 1, 'selected.id === 0')
+        setShowProposal(selected.id === 1)
+    }
 
     const formatLabel = (option) => {
         return (
             <div className="flex left column">
-                <span className="w-100 dc__ellipsis-right">
-                    {option.label}
-                </span>
+                <span className="w-100 dc__ellipsis-right">{option.label}</span>
             </div>
         )
     }
-
 
     return (
         <div className="flex dc__content-space w-100">

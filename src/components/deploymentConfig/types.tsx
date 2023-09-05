@@ -298,6 +298,7 @@ export interface DeploymentConfigStateType {
     selectedTabIndex: number
     readme: string
     fetchedValues: Record<number | string, string>
+    fetchedValuesManifest: Record<number | string, string>
     yamlMode: boolean
     isBasicLocked: boolean
     isBasicLockedInBase: boolean
@@ -346,6 +347,7 @@ export enum DeploymentConfigStateActionTypes {
     selectedTabIndex = 'selectedTabIndex',
     readme = 'readme',
     fetchedValues = 'fetchedValues',
+    fetchedValuesManifest = 'fetchedValuesManifest',
     yamlMode = 'yamlMode',
     isBasicLocked = 'isBasicLocked',
     isBasicLockedInBase = 'isBasicLockedInBase',

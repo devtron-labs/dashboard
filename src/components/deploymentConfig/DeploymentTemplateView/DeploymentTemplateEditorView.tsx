@@ -45,22 +45,26 @@ export default function DeploymentTemplateEditorView({
 
 
     const getLocalDaftManifest = async () => {
-        console.log(state.draftValues,'getLocalDaftManifest')
-        const request = {
-            "appId": +appId,
-            "chartRefId": globalChartRefId,
-            "getValues": false,
-            // "type": 1,
-            "values": state.draftValues
+        console.log(isValues, 'isValues-getLocalDaftManifest')
+        if(isValues) return state.tempFormData
+        else{
+            console.log(state.tempFormData, 'getLocalDaftManifest')
+            const request = {
+                appId: +appId,
+                chartRefId: 33,
+                getValues: false,
+                values: state.tempFormData,
+            }
+            const response = await getDeploymentManisfest(request)
+            return response.result.data
         }
-        const response = await getDeploymentManisfest(request)
-        return response.result.data
     }
 
     useEffect(() => {
         if(!showProposal) return
         getLocalDaftManifest()
         .then((data) => {
+            console.log(data,'data')
             setProposalData(data)
         })
     }, [showProposal])
@@ -108,17 +112,21 @@ export default function DeploymentTemplateEditorView({
         }
     }, [state.selectedChart, state.charts])
 
+    const isCompareAndApprovalState =
+        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
+
     useEffect(() => {
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
             state.selectedCompareOption.id !== -1 &&
             state.selectedCompareOption?.id !== Number(envId) &&
-            !state.fetchedValues[state.selectedCompareOption.id] &&
+            !state.fetchedValues[state.selectedCompareOption.id]&&
             !state.chartConfigLoading &&
             !fetchingValues
         ) {
             setFetchingValues(true)
+            console.log(state.selectedCompareOption, 'fetching-state.selectedCompareOption')
             const isEnvOption = state.selectedCompareOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
             const isChartVersionOption =
                 state.selectedCompareOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
@@ -147,6 +155,15 @@ export default function DeploymentTemplateEditorView({
                         }
                         setFetchedValues(_fetchedValues)
                     }
+                    // else {
+                    //     const _fetchedValuesManifest = {
+                    //         ...state.fetchedValuesManifest,
+                    //         [state.selectedCompareOption.id]: processFetchedValues(result, isChartVersionOption, isEnvOverride || isEnvOption),
+                    //     }
+                    //     console.log(_fetchedValuesManifest, '_fetchedValuesManifest')
+                    //     // setFetchedValuesManifest(_fetchedValuesManifest)
+                    // }
+
                     setFetchingValues(false)
                 })
                 .catch((err) => {
@@ -192,6 +209,14 @@ export default function DeploymentTemplateEditorView({
         })
     }
 
+    // const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
+    //     if(isValues) return
+    //     dispatch({
+    //         type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
+    //         payload: fetchedValuesManifest,
+    //     })
+    // }
+
     const getOverrideClass = () => {
         if (isEnvOverride && state.latestDraft?.action !== 3) {
             if (!!state.duplicate) {
@@ -216,9 +241,9 @@ export default function DeploymentTemplateEditorView({
                        isValues?(state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
                             ? defaultValue
                             : state.fetchedValues[state.selectedCompareOption?.id]) || ''
-                        : defaultValue    
+                        : defaultValue
                     }
-                    value={(!isValues && state.selectedTabIndex!==3 && showProposal)?proposalData :value}
+                    value={(state.selectedTabIndex!==3 && showProposal)?proposalData :value}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
@@ -281,7 +306,7 @@ export default function DeploymentTemplateEditorView({
                                             )}
                                     </div>
                                     <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
-                                        { isValues ? renderEditorHeading(
+                                        {!isCompareAndApprovalState ? renderEditorHeading(
                                             isEnvOverride,
                                             !!state.duplicate,
                                             readOnly,
@@ -292,7 +317,7 @@ export default function DeploymentTemplateEditorView({
                                             state.publishedState?.isOverride,
                                             isDeleteDraftState,
                                         )
-                                        : <RenderManifestEditorHeading
+                                        :<RenderManifestEditorHeading
                                             isEnvOverride={isEnvOverride}
                                             overridden={!!state.duplicate}
                                             readOnly={readOnly}

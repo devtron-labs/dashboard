@@ -20,6 +20,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     selectedTabIndex: 1,
     readme: '',
     fetchedValues: {},
+    fetchedValuesManifest:{},
     yamlMode: true,
     isBasicLocked: false,
     isBasicLockedInBase: false,
@@ -85,6 +86,8 @@ export const deploymentConfigReducer = (
             return { ...state, readme: action.payload }
         case DeploymentConfigStateActionTypes.fetchedValues:
             return { ...state, fetchedValues: action.payload }
+        case DeploymentConfigStateActionTypes.fetchedValuesManifest:
+            return { ...state, fetchedValuesManifest: action.payload }    
         case DeploymentConfigStateActionTypes.yamlMode:
             return { ...state, yamlMode: action.payload }
         case DeploymentConfigStateActionTypes.isBasicLocked:

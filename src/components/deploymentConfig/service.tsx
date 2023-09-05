@@ -10,8 +10,8 @@ export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultT
       return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`)
     }
 }
-
-export function getDeploymentTemplateNew(appId: number, chartRefId: number, isValues: boolean, type: number) {
+// 
+export function getDeploymentTemplateNew(appId: number, chartRefId: number, isValues: boolean, type?: number) {
     return post(`${Routes.DEPLOYMENT_TEMPLATE_NEW}`, { appId, chartRefId, getValues: isValues, type:type }); 
 }
 

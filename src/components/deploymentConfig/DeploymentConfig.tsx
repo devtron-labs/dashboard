@@ -1,7 +1,13 @@
 import React, { Reducer, createContext, useContext, useEffect, useReducer, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate, getDeploymentManisfest } from './service'
+import {
+    getDeploymentTemplate,
+    updateDeploymentTemplate,
+    saveDeploymentTemplate,
+    getDeploymentManisfest,
+    getDeploymentTemplateNew,
+} from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
 import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
@@ -36,377 +42,378 @@ import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateVi
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import { stat } from 'fs'
+import { Spinner } from 'patternfly-react';
 
 export const dummy = {
-    "ContainerPort": [
-      {
-        "envoyPort": 6969,
-        "idleTimeout": "1800s",
-        "name": "app",
-        "port": 69,
-        "servicePort":69,
-        "supportStreaming": false,
-        "useHTTP2": false
-      }
+    ContainerPort: [
+        {
+            envoyPort: 6969,
+            idleTimeout: '1800s',
+            name: 'app',
+            port: 69,
+            servicePort: 69,
+            supportStreaming: false,
+            useHTTP2: false,
+        },
     ],
-    "EnvVariables": [],
-    "GracePeriod": 30,
-    "LivenessProbe": {
-      "Path": "",
-      "command": [],
-      "failureThreshold": 3,
-      "httpHeaders": [],
-      "initialDelaySeconds": 20,
-      "periodSeconds": 10,
-      "port": 8080,
-      "scheme": "",
-      "successThreshold": 1,
-      "tcp": false,
-      "timeoutSeconds": 5
+    EnvVariables: [],
+    GracePeriod: 30,
+    LivenessProbe: {
+        Path: '',
+        command: [],
+        failureThreshold: 3,
+        httpHeaders: [],
+        initialDelaySeconds: 20,
+        periodSeconds: 10,
+        port: 8080,
+        scheme: '',
+        successThreshold: 1,
+        tcp: false,
+        timeoutSeconds: 5,
     },
-    "MaxSurge": 1,
-    "MaxUnavailable": 0,
-    "MinReadySeconds": 60,
-    "ReadinessProbe": {
-      "Path": "",
-      "command": [],
-      "failureThreshold": 3,
-      "httpHeaders": [],
-      "initialDelaySeconds": 20,
-      "periodSeconds": 10,
-      "port": 8080,
-      "scheme": "",
-      "successThreshold": 1,
-      "tcp": false,
-      "timeoutSeconds": 5
+    MaxSurge: 1,
+    MaxUnavailable: 0,
+    MinReadySeconds: 60,
+    ReadinessProbe: {
+        Path: '',
+        command: [],
+        failureThreshold: 3,
+        httpHeaders: [],
+        initialDelaySeconds: 20,
+        periodSeconds: 10,
+        port: 8080,
+        scheme: '',
+        successThreshold: 1,
+        tcp: false,
+        timeoutSeconds: 5,
     },
-    "Spec": {
-      "Affinity": {
-        "Key": null,
-        "Values": ["nodes"],
-        "key": ""
-      }
-    },
-    "StartupProbe": {
-      "Path": "",
-      "command": [],
-      "failureThreshold": 3,
-      "httpHeaders": [],
-      "initialDelaySeconds": 20,
-      "periodSeconds": 10,
-      "port": 8080,
-      "successThreshold": 1,
-      "tcp": false,
-      "timeoutSeconds": 5
-    },
-    "ambassadorMapping": {
-      "ambassadorId": "",
-      "cors": {},
-      "enabled": false,
-      "hostname": "devtron.example.com",
-      "labels": {},
-      "prefix": "/",
-      "retryPolicy": {},
-      "rewrite": "",
-      "tls": {
-        "context": "",
-        "create": false,
-        "hosts": [],
-        "secretName": ""
-      }
-    },
-    "args": {
-      "enabled": false,
-      "value": ["/bin/sh", "-c", "touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600"]
-    },
-    "autoscaling": {
-      "MaxReplicas": 2,
-      "MinReplicas": 1,
-      "TargetCPUUtilizationPercentage": 90,
-      "TargetMemoryUtilizationPercentage": 80,
-      "annotations": {},
-      "behavior": {},
-      "enabled": false,
-      "extraMetrics": [],
-      "labels": {}
-    },
-    "command": {
-      "enabled": false,
-      "value": [],
-      "workingDir": {}
-    },
-    "containerSecurityContext": {},
-    "containerSpec": {
-      "lifecycle": {
-        "enabled": false,
-        "postStart": {
-          "httpGet": {
-            "host": "example.com",
-            "path": "/example",
-            "port": 90
-          }
+    Spec: {
+        Affinity: {
+            Key: null,
+            Values: ['nodes'],
+            key: '',
         },
-        "preStop": {
-          "exec": {
-            "command": ["sleep", "10"]
-          }
-        }
-      }
     },
-    "containers": [],
-    "dbMigrationConfig": {
-      "enabled": false
+    StartupProbe: {
+        Path: '',
+        command: [],
+        failureThreshold: 3,
+        httpHeaders: [],
+        initialDelaySeconds: 20,
+        periodSeconds: 10,
+        port: 8080,
+        successThreshold: 1,
+        tcp: false,
+        timeoutSeconds: 5,
     },
-    "envoyproxy": {
-      "configMapName": "",
-      "image": "docker.io/envoyproxy/envoy:v1.16.0",
-      "lifecycle": {},
-      "resources": {
-        "limits": {
-          "cpu": "50m",
-          "memory": "50Mi"
+    ambassadorMapping: {
+        ambassadorId: '',
+        cors: {},
+        enabled: false,
+        hostname: 'devtron.example.com',
+        labels: {},
+        prefix: '/',
+        retryPolicy: {},
+        rewrite: '',
+        tls: {
+            context: '',
+            create: false,
+            hosts: [],
+            secretName: '',
         },
-        "requests": {
-          "cpu": "50m",
-          "memory": "50Mi"
-        }
-      }
     },
-    "flaggerCanary": {
-      "addOtherGateways": [],
-      "addOtherHosts": [],
-      "analysis": {
-        "interval": "15s",
-        "maxWeight": 50,
-        "stepWeight": 5,
-        "threshold": 5
-      },
-      "annotations": {},
-      "appProtocol": "http",
-      "corsPolicy": null,
-      "createIstioGateway": {
-        "annotations": {},
-        "enabled": false,
-        "host": null,
-        "labels": {},
-        "tls": {
-          "enabled": false,
-          "secretName": null
-        }
-      },
-      "enabled": false,
-      "gatewayRefs": null,
-      "headers": null,
-      "labels": {},
-      "loadtest": {
-        "enabled": true,
-        "url": "http://flagger-loadtester.istio-system/"
-      },
-      "match": [
-        {
-          "uri": {
-            "prefix": "/"
-          }
-        }
-      ],
-      "portDiscovery": true,
-      "retries": null,
-      "rewriteUri": "/",
-      "serviceport": 8080,
-      "targetPort": 8080,
-      "thresholds": {
-        "latency": 500,
-        "successRate": 90
-      },
-      "timeout": null
+    args: {
+        enabled: false,
+        value: ['/bin/sh', '-c', 'touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600'],
     },
-    "hostAliases": [],
-    "image": {
-      "pullPolicy": "IfNotPresent"
+    autoscaling: {
+        MaxReplicas: 2,
+        MinReplicas: 1,
+        TargetCPUUtilizationPercentage: 90,
+        TargetMemoryUtilizationPercentage: 80,
+        annotations: {},
+        behavior: {},
+        enabled: false,
+        extraMetrics: [],
+        labels: {},
     },
-    "imagePullSecrets": [],
-    "ingress": {
-      "annotations": {},
-      "className": "",
-      "enabled": false,
-      "hosts": [
-        {
-          "host": "chart-example1.local",
-          "pathType": "ImplementationSpecific",
-          "paths": ["/example1"]
-        }
-      ],
-      "labels": {},
-      "tls": []
+    command: {
+        enabled: false,
+        value: [],
+        workingDir: {},
     },
-    "ingressInternal": {
-      "annotations": {},
-      "className": "",
-      "enabled": false,
-      "hosts": [
-        {
-          "host": "chart-example1.internal",
-          "pathType": "ImplementationSpecific",
-          "paths": ["/example1"]
+    containerSecurityContext: {},
+    containerSpec: {
+        lifecycle: {
+            enabled: false,
+            postStart: {
+                httpGet: {
+                    host: 'example.com',
+                    path: '/example',
+                    port: 90,
+                },
+            },
+            preStop: {
+                exec: {
+                    command: ['sleep', '10'],
+                },
+            },
         },
-        {
-          "host": "chart-example2.internal",
-          "pathType": "ImplementationSpecific",
-          "paths": ["/example2", "/example2/healthz"]
-        }
-      ],
-      "tls": []
     },
-    "initContainers": [],
-    "istio": {
-      "authorizationPolicy": {
-        "action": null,
-        "annotations": {},
-        "enabled": false,
-        "labels": {},
-        "provider": {},
-        "rules": []
-      },
-      "destinationRule": {
-        "annotations": {},
-        "enabled": false,
-        "labels": {},
-        "subsets": [],
-        "trafficPolicy": {}
-      },
-      "enable": false,
-      "gateway": {
-        "annotations": {},
-        "enabled": false,
-        "host": "example.com",
-        "labels": {},
-        "tls": {
-          "enabled": false,
-          "secretName": "example-secret"
-        }
-      },
-      "peerAuthentication": {
-        "annotations": {},
-        "enabled": false,
-        "labels": {},
-        "mtls": ["mode"],
-        "portLevelMtls": {},
-        "selector": {
-          "enabled": false
-        }
-      },
-      "requestAuthentication": {
-        "annotations": {},
-        "enabled": false,
-        "jwtRules": [],
-        "labels": {},
-        "selector": {
-          "enabled": false
-        }
-      },
-      "virtualService": {
-        "annotations": {},
-        "enabled": false,
-        "gateways": [],
-        "hosts": [],
-        "http": [],
-        "labels": {}
-      }
+    containers: [],
+    dbMigrationConfig: {
+        enabled: false,
     },
-    "kedaAutoscaling": {
-      "advanced": {},
-      "authenticationRef": {},
-      "enabled": false,
-      "envSourceContainerName": "",
-      "maxReplicaCount": 2,
-      "minReplicaCount": 1,
-      "triggerAuthentication": {
-        "enabled": false,
-        "name": "",
-        "spec": {}
-      },
-      "triggers": []
+    envoyproxy: {
+        configMapName: '',
+        image: 'docker.io/envoyproxy/envoy:v1.16.0',
+        lifecycle: {},
+        resources: {
+            limits: {
+                cpu: '50m',
+                memory: '50Mi',
+            },
+            requests: {
+                cpu: '50m',
+                memory: '50Mi',
+            },
+        },
     },
-    "networkPolicy": {
-      "annotations": {},
-      "egress": [],
-      "enabled": false,
-      "ingress": [],
-      "labels": {},
-      "podSelector": {
-        "matchExpressions": [],
-        "matchLabels": {}
-      },
-      "policyTypes": []
+    flaggerCanary: {
+        addOtherGateways: [],
+        addOtherHosts: [],
+        analysis: {
+            interval: '15s',
+            maxWeight: 50,
+            stepWeight: 5,
+            threshold: 5,
+        },
+        annotations: {},
+        appProtocol: 'http',
+        corsPolicy: null,
+        createIstioGateway: {
+            annotations: {},
+            enabled: false,
+            host: null,
+            labels: {},
+            tls: {
+                enabled: false,
+                secretName: null,
+            },
+        },
+        enabled: false,
+        gatewayRefs: null,
+        headers: null,
+        labels: {},
+        loadtest: {
+            enabled: true,
+            url: 'http://flagger-loadtester.istio-system/',
+        },
+        match: [
+            {
+                uri: {
+                    prefix: '/',
+                },
+            },
+        ],
+        portDiscovery: true,
+        retries: null,
+        rewriteUri: '/',
+        serviceport: 8080,
+        targetPort: 8080,
+        thresholds: {
+            latency: 500,
+            successRate: 90,
+        },
+        timeout: null,
     },
-    "pauseForSecondsBeforeSwitchActive": 30,
-    "podAnnotations": {},
-    "podLabels": {},
-    "podSecurityContext": {},
-    "prometheus": {
-      "release": "monitoring"
+    hostAliases: [],
+    image: {
+        pullPolicy: 'IfNotPresent',
     },
-    "rawYaml": [],
-    "replicaCount": 1,
-    "resources": {
-      "limits": {
-        "cpu": "0.05",
-        "memory": "50Mi"
-      },
-      "requests": {
-        "cpu": "0.01",
-        "memory": "10Mi"
-      }
+    imagePullSecrets: [],
+    ingress: {
+        annotations: {},
+        className: '',
+        enabled: false,
+        hosts: [
+            {
+                host: 'chart-example1.local',
+                pathType: 'ImplementationSpecific',
+                paths: ['/example1'],
+            },
+        ],
+        labels: {},
+        tls: [],
     },
-    "restartPolicy": "Always",
-    "rolloutAnnotations": {},
-    "rolloutLabels": {},
-    "secret": {
-      "data": {},
-      "enabled": false
+    ingressInternal: {
+        annotations: {},
+        className: '',
+        enabled: false,
+        hosts: [
+            {
+                host: 'chart-example1.internal',
+                pathType: 'ImplementationSpecific',
+                paths: ['/example1'],
+            },
+            {
+                host: 'chart-example2.internal',
+                pathType: 'ImplementationSpecific',
+                paths: ['/example2', '/example2/healthz'],
+            },
+        ],
+        tls: [],
     },
-    "server": {
-      "deployment": {
-        "image": "",
-        "image_tag": "1-95af053"
-      }
+    initContainers: [],
+    istio: {
+        authorizationPolicy: {
+            action: null,
+            annotations: {},
+            enabled: false,
+            labels: {},
+            provider: {},
+            rules: [],
+        },
+        destinationRule: {
+            annotations: {},
+            enabled: false,
+            labels: {},
+            subsets: [],
+            trafficPolicy: {},
+        },
+        enable: false,
+        gateway: {
+            annotations: {},
+            enabled: false,
+            host: 'example.com',
+            labels: {},
+            tls: {
+                enabled: false,
+                secretName: 'example-secret',
+            },
+        },
+        peerAuthentication: {
+            annotations: {},
+            enabled: false,
+            labels: {},
+            mtls: ['mode'],
+            portLevelMtls: {},
+            selector: {
+                enabled: false,
+            },
+        },
+        requestAuthentication: {
+            annotations: {},
+            enabled: false,
+            jwtRules: [],
+            labels: {},
+            selector: {
+                enabled: false,
+            },
+        },
+        virtualService: {
+            annotations: {},
+            enabled: false,
+            gateways: [],
+            hosts: [],
+            http: [],
+            labels: {},
+        },
     },
-    "service": {
-      "annotations": {},
-      "loadBalancerSourceRanges": [],
-      "type": "ClusterIP"
+    kedaAutoscaling: {
+        advanced: {},
+        authenticationRef: {},
+        enabled: false,
+        envSourceContainerName: '',
+        maxReplicaCount: 2,
+        minReplicaCount: 1,
+        triggerAuthentication: {
+            enabled: false,
+            name: '',
+            spec: {},
+        },
+        triggers: [],
     },
-    "serviceAccount": {
-      "annotations": {},
-      "create": false,
-      "name": ""
+    networkPolicy: {
+        annotations: {},
+        egress: [],
+        enabled: false,
+        ingress: [],
+        labels: {},
+        podSelector: {
+            matchExpressions: [],
+            matchLabels: {},
+        },
+        policyTypes: [],
     },
-    "servicemonitor": {
-      "additionalLabels": {}
+    pauseForSecondsBeforeSwitchActive: 30,
+    podAnnotations: {},
+    podLabels: {},
+    podSecurityContext: {},
+    prometheus: {
+        release: 'monitoring',
     },
-    "tolerations": [],
-    "topologySpreadConstraints": [],
-    "volumeMounts": [],
-    "volumes": [],
-    "waitForSecondsBeforeScalingDown": 30,
-    "winterSoldier": {
-      "action": "sleep",
-      "annotation": {},
-      "apiVersion": "pincher.devtron.ai/v1alpha1",
-      "enabled": false,
-      "fieldSelector": [
-        "AfterTime(AddTime(ParseTime({{metadata.creationTimestamp}}, '2006-01-02T15:04:05Z'), '5m'), Now())"
-      ],
-      "labels": {},
-      "targetReplicas": [],
-      "timeRangesWithZone": {
-        "timeRanges": [],
-        "timeZone": "Asia/Kolkata"
-      },
-      "type": "Deployment"
-    }
-  }
-  
+    rawYaml: [],
+    replicaCount: 1,
+    resources: {
+        limits: {
+            cpu: '0.05',
+            memory: '50Mi',
+        },
+        requests: {
+            cpu: '0.01',
+            memory: '10Mi',
+        },
+    },
+    restartPolicy: 'Always',
+    rolloutAnnotations: {},
+    rolloutLabels: {},
+    secret: {
+        data: {},
+        enabled: false,
+    },
+    server: {
+        deployment: {
+            image: '',
+            image_tag: '1-95af053',
+        },
+    },
+    service: {
+        annotations: {},
+        loadBalancerSourceRanges: [],
+        type: 'ClusterIP',
+    },
+    serviceAccount: {
+        annotations: {},
+        create: false,
+        name: '',
+    },
+    servicemonitor: {
+        additionalLabels: {},
+    },
+    tolerations: [],
+    topologySpreadConstraints: [],
+    volumeMounts: [],
+    volumes: [],
+    waitForSecondsBeforeScalingDown: 30,
+    winterSoldier: {
+        action: 'sleep',
+        annotation: {},
+        apiVersion: 'pincher.devtron.ai/v1alpha1',
+        enabled: false,
+        fieldSelector: [
+            "AfterTime(AddTime(ParseTime({{metadata.creationTimestamp}}, '2006-01-02T15:04:05Z'), '5m'), Now())",
+        ],
+        labels: {},
+        targetReplicas: [],
+        timeRangesWithZone: {
+            timeRanges: [],
+            timeZone: 'Asia/Kolkata',
+        },
+        type: 'Deployment',
+    },
+}
+
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -439,8 +446,6 @@ export default function DeploymentConfig({
         initialise()
     }, [])
 
-    
-
     useEffectAfterMount(() => {
         if (state.selectedChart) {
             fetchDeploymentTemplate()
@@ -448,6 +453,7 @@ export default function DeploymentConfig({
     }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
+        console.log(chartRefsData,"chartRefsData")
         const payload = {
             ...chartRefsData,
             chartConfigLoading: false,
@@ -467,6 +473,7 @@ export default function DeploymentConfig({
     }
 
     async function initialise() {
+        console.log("initialise")
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
@@ -484,8 +491,10 @@ export default function DeploymentConfig({
                 }
 
                 if (isProtected && typeof getDraftByResourceName === 'function') {
+                    console.log('fetchAllDrafts')
                     fetchAllDrafts(chartRefsData)
                 } else {
+                    console.log('updateRefsData')
                     updateRefsData(chartRefsData)
                 }
             })
@@ -499,24 +508,36 @@ export default function DeploymentConfig({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
+        console.log('inside fetchAllDrafts')
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
+        setLoading(true)
+        console.log('setLoading - true')
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
             .then((draftsResp) => {
+                console.log('draftsResp',draftsResp)
+                
                 if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
+                    console.log('inside draftsResp')
                     processDraftData(draftsResp.result, chartRefsData)
+                    setLoading(false)
+                    console.log('setLoading - false')
                 } else {
+                    console.log('inside else draftsResp')
                     updateRefsData(chartRefsData, !!state.publishedState)
+                    setLoading(false)
                 }
             })
             .catch((e) => {
+                console.log('error',e)
                 updateRefsData(chartRefsData)
             })
     }
 
     const processDraftData = (latestDraft, chartRefsData) => {
+        console.log('inside processDraftData')
         const {
             valuesOverride,
             id,
@@ -530,6 +551,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
+        const _codeEditorStringifyData=YAML.stringify(valuesOverride, { indent: 2 })
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
             template: valuesOverride,
@@ -541,9 +563,9 @@ export default function DeploymentConfig({
                 readme,
             },
             isAppMetricsEnabled: isAppMetricsEnabled,
-            tempFormData: YAML.stringify(valuesOverride, { indent: 2 }),
+            tempFormData: _codeEditorStringifyData,
             manifestData: YAML.stringify(dummy, { indent: 2 }),
-            draftValues: YAML.stringify(valuesOverride, { indent: 2 }),
+            draftValues: _codeEditorStringifyData,
             latestDraft: latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
@@ -557,6 +579,9 @@ export default function DeploymentConfig({
             },
         }
 
+        console.log(_codeEditorStringifyData,"valuesOverride")
+
+        setValueData(_codeEditorStringifyData)
         if (chartRefsData) {
             payload['publishedState'] = chartRefsData
         } else if (!state.publishedState) {
@@ -664,7 +689,7 @@ export default function DeploymentConfig({
                     },
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id)
-
+            const _codeEditorStringifyData = YAML.stringify(defaultAppOverride, { indent: 2 })
             const templateData = {
                 template: defaultAppOverride,
                 schema,
@@ -672,11 +697,11 @@ export default function DeploymentConfig({
                 currentEditorView: currentViewEditor,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
-                tempFormData: YAML.stringify(defaultAppOverride, { indent: 2 }),
+                tempFormData: _codeEditorStringifyData,
                 manifestData: YAML.stringify(dummy, { indent: 2 }),
-                data: YAML.stringify(defaultAppOverride, { indent: 2 })
+                data: _codeEditorStringifyData,
             }
-
+            
             let payload = {}
             if (state.publishedState) {
                 payload['publishedState'] = {
@@ -693,7 +718,7 @@ export default function DeploymentConfig({
             } else {
                 payload = templateData
             }
-
+            setValueData(_codeEditorStringifyData)
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload,
@@ -757,6 +782,10 @@ export default function DeploymentConfig({
                 type: DeploymentConfigStateActionTypes.fetchedValues,
                 payload: {},
             })
+            dispatch({
+                type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
+                payload: {},
+            })
             toast.success(<SuccessToastBody chartConfig={state.chartConfig} />)
 
             if (!isCiPipeline) {
@@ -785,8 +814,8 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-        
-        if(isValues){
+        console.log("this is where its fucked")
+        if (isValues) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -857,7 +886,7 @@ export default function DeploymentConfig({
 
         try {
             const parsedCodeEditorValue = YAML.parse(state.tempFormData)
-           
+
             if (state.yamlMode) {
                 const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
                 dispatch({
@@ -959,71 +988,93 @@ export default function DeploymentConfig({
         return requestData
     }
 
-    const [valueData,setValueData] = useState(state.tempFormData)
-    const [valueLeft, setValueLeft] = useState(state.tempFormData)
-    const [hasAssignedOnce, setHasAssignedOnce] = useState(false); 
+    const [valueData, setValueData] = useState("")
+    const [valueLeft, setValueLeft] = useState("")
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        const values = Promise.all([getValue(isValues),getValuesLHS(isValues)]);
-        values.then((res) => {
-            const [_value, _valueLeft] = res;
-            setValueData(_value)
-            setValueLeft(_valueLeft)
-        })
-        .catch((err) => {
-            console.log(err, 'err')
-        })
-    
-    },[isValues])
+        console.log('useEffect')
+        setLoading(true)
+        const values = Promise.all([getValue(), getValuesLHS()])
+        values
+            .then((res) => {
+                setLoading(false)
+                console.log(res, 'res')
+                const [_value, _valueLeft] = res
+                setValueData(_value)
+                setValueLeft(_valueLeft)
+            })
+            .catch((err) => {
+                toast.error(err)
+            })
+    }, [isValues])
 
-    useEffect(() => {
-        if(!state.tempFormData || hasAssignedOnce) return
-        console.log('setting value data')
-        setValueData(state.tempFormData)
-        setHasAssignedOnce(true)
-    },[state.tempFormData,hasAssignedOnce])
-    // not running once tab is changed
-    const getValue = async (isValues) =>{
-       if(isValues){
-        const _v =   isCompareAndApprovalState ? state.draftValues :state.tempFormData
-        console.log(_v, 'v')
-        return _v;
-       }
-       else {
+    const fetchManifestData = async (data) => {
         const request = {
-                "appId": 1,
-                "chartRefId": 33,
-                "getValues": false,
-                "type": 1,
-                "pipelineConfigOverrideId": 627,
-                "resourceName": "BaseDeploymentTemplate",
-                "resourceType": 3,
-                "values": state.tempFormData
+            "appId": +appId,
+            "chartRefId": 33,
+            "getValues": false,
+            "type": 1,  // FIXME: use dynamic type
+            "values": data
         }
         const response = await getDeploymentManisfest(request)
         return response.result.data
-       }
     }
+
+    // not running once tab is changed
+    const getValue = async () => {
+        try {
+            let result = null;
+    
+            if (isCompareAndApprovalState) {
+              if (isValues) {
+                console.log('_here')
+                console.log(state.draftValues,"state.draftValues")
+                // Use state.draftValues
+                result = state.draftValues;
+              } else {
+                // Call the API with state.draftValues
+                result = await fetchManifestData(state.draftValues);
+              }
+            } else {
+              if (isValues) {
+                console.log('_rhere')
+                console.log(state.tempFormData,"state.tempFormData")
+                // Use state.tempFormData
+                result = state.tempFormData;
+              } else {
+                // Call the API with state.tempFormData
+                result = await fetchManifestData(state.tempFormData);
+              }
+            }
+            return result;
+
+          } catch (error) {
+            // Handle errors if needed
+            console.error(error);
+          }
+    }
+
+    // console.log(valueData, 'valueData')
     // set initial value on LHS
-    const getValuesLHS = async (isValues) => {
-        if(isValues){
+    const getValuesLHS = async () => {
+        if (isValues) {
             return state.publishedState?.tempFormData ?? state.data
-        }
-        else {
+        } else {
             const request = {
-                "appId": parseInt(appId),
-                "chartRefId": 33,
-                "getValues": false,
-                "type": 1,
-                "pipelineConfigOverrideId": 627,
-                "resourceName": "BaseDeploymentTemplate",
-                "resourceType": 3,
-                "values": state.publishedState?.tempFormData ?? state.data
+                appId: parseInt(appId),
+                chartRefId: 33,
+                getValues: false,
+                type: 1,
+                pipelineConfigOverrideId: 627,
+                resourceName: 'BaseDeploymentTemplate',
+                resourceType: 3,
+                values: state.publishedState?.tempFormData ?? state.data,
+            }
+            const response = await getDeploymentManisfest(request)
+            return response.result.data
         }
-        const response = await getDeploymentManisfest(request)
-        return response.result.data
     }
-}
 
     const renderValuesView = () => {
         return (
@@ -1041,16 +1092,23 @@ export default function DeploymentConfig({
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
+                ) : 
+                loading ? (
+                    <div style={{ width: '100%', textAlign: 'center' }}>
+                <Spinner loading></Spinner>
+                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+            </div>
                 ) : (
                     <DeploymentTemplateEditorView
-                        defaultValue={valueLeft || (state.publishedState?.tempFormData??state.data)}
-                        value={valueData}
+                        defaultValue={isValues?state.publishedState?.tempFormData ?? state.data: valueLeft}
+                        value={isValues?(isCompareAndApprovalState ? state.draftValues:state.tempFormData): valueData}
                         globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
                         readOnly={isCompareAndApprovalState || !isValues}
                         isValues={isValues}
                     />
-                )}
+                )
+                }
                 <DeploymentConfigFormCTA
                     loading={state.loading || state.chartConfigLoading}
                     showAppMetricsToggle={
