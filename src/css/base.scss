@@ -1947,6 +1947,10 @@ button.anchor {
     border: 1px solid var(--N0);
 }
 
+.dc__border-n7{
+    border: 1px solid var(--N700);
+}
+
 .dc__border-transparent {
     border: 1px solid transparent;
 }
@@ -2247,6 +2251,10 @@ input,
 textarea,
 .bc-n50 {
     background-color: var(--N50);
+}
+
+.c-n50{
+    color: var(--N50);
 }
 
 .dc__split-header {
@@ -2646,6 +2654,10 @@ textarea,
 
 .w-350 {
     width: 350px;
+}
+
+.w-356 {
+    width: 356px;
 }
 
 .w-400 {
@@ -3227,6 +3239,10 @@ textarea,
 
 .dc__column-gap-24 {
     column-gap: 24px;
+}
+
+.dc__gap-2 {
+    gap: 2px;
 }
 
 .dc__gap-4 {
