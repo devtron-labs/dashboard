@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
+import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import VariablesList from './VariablesList'
-import { useFileReader, useClickOutside } from '../common'
+import { useFileReader } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
 import { downloadData, parseIntoYAMLString } from './utils'
@@ -29,7 +30,6 @@ export default function SavedVariablesView({
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
     const [variablesList, setVariablesList] = useState<VariableType[]>([])
     const [showEditView, setShowEditView] = useState<boolean>(false)
-    const dropdownRef = useRef(null)
     // No need to make it a state since editor here is read only and we don't need to update it
     let scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
 
@@ -46,15 +46,6 @@ export default function SavedVariablesView({
             if (variables) setVariablesList([...variables])
         }
     }, [scopedVariablesData])
-
-    const handleDropdownClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.stopPropagation()
-        setShowDropdown(!showDropdown)
-    }
-
-    useClickOutside(dropdownRef, () => {
-        setShowDropdown(false)
-    })
 
     const handleDownload = (item: string) => {
         if (!scopedVariablesYAML) return
@@ -152,16 +143,7 @@ export default function SavedVariablesView({
                     <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start">
                         <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0">Last saved file</p>
-                            <Tippy
-                                className="default-tt"
-                                arrow
-                                placement="top"
-                                content={
-                                    <div>
-                                        <div className="flex column left">Edit</div>
-                                    </div>
-                                }
-                            >
+                            <Tippy className="default-tt" arrow placement="top" content="Edit">
                                 <button
                                     className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
                                     onClick={() => setShowEditView(true)}
@@ -171,29 +153,24 @@ export default function SavedVariablesView({
                                 </button>
                             </Tippy>
 
-                            <Tippy
-                                className="default-tt"
-                                arrow
-                                placement="top"
-                                content={
-                                    <div>
-                                        <div className="flex column left">Download file/template</div>
-                                    </div>
-                                }
-                            >
-                                <button
-                                    className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
-                                    onClick={handleDropdownClick}
-                                    data-testid="dropdown-btn"
+                            <PopupMenu autoClose>
+                                <PopupMenu.Button
+                                    isKebab={true}
+                                    rootClassName="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
                                 >
-                                    <ICFileDownload className="icon-dim-20" />
-                                </button>
-                            </Tippy>
-                            {showDropdown && (
-                                <div
-                                    className="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp"
-                                    ref={dropdownRef}
-                                >
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow
+                                        placement="top"
+                                        content="Download file/template"
+                                    >
+                                        <div>
+                                            <ICFileDownload className="icon-dim-20" />
+                                        </div>
+                                    </Tippy>
+                                </PopupMenu.Button>
+
+                                <PopupMenu.Body rootClassName="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp">
                                     {DROPDOWN_ITEMS.map((item) => (
                                         <div
                                             key={item}
@@ -203,8 +180,8 @@ export default function SavedVariablesView({
                                             {item}
                                         </div>
                                     ))}
-                                </div>
-                            )}
+                                </PopupMenu.Body>
+                            </PopupMenu>
                         </div>
 
                         <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly noParsing />
