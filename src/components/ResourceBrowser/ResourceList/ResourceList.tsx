@@ -113,9 +113,9 @@ export default function ResourceList() {
     const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(!!window._env_.K8S_CLIENT)
-    const [namespaceDefaultList, setNameSpaceList] = useState<string[]>([])
+    const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
-    const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>([])
+    const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
     const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterErrorTitle, setClusterErrorTitle] = useState('')
@@ -420,22 +420,23 @@ export default function ResourceList() {
 
     const getDetailsClusterList = async () => {
         setTerminalLoader(true)
-        getClusterList().then((response) => {
-            if(response.result){
+        getClusterList()
+            .then((response) => {
                 if (response.result) {
                     const sortedResult = response.result
-                        .sort((a, b) => a['name'].localeCompare(b['name'])).filter((item) => !item?.isVirtualCluster)
+                        .sort((a, b) => a['name'].localeCompare(b['name']))
+                        .filter((item) => !item?.isVirtualCluster)
                     setTerminalCluster(sortedResult)
                     setClusterList(sortedResult)
                 }
-            }
-            setTerminalLoader(false)
-        }).catch((err) => {
-            setTerminalLoader(false)
-            if (err['code'] !== 403) {
-                showError(err)
-            }
-        })
+                setTerminalLoader(false)
+            })
+            .catch((err) => {
+                setTerminalLoader(false)
+                if (err['code'] !== 403) {
+                    showError(err)
+                }
+            })
     }
 
     const getClusterData = async () => {
@@ -897,7 +898,9 @@ export default function ResourceList() {
                         <Progressing pageLoader />
                     </div>
                 )
-            } else if (!selectedTerminal) return null
+            } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
+                return null
+            }
             return (
                 <ClusterTerminal
                     clusterId={+clusterId}
