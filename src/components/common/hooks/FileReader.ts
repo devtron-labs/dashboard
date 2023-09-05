@@ -19,16 +19,10 @@ export const useFileReader = () => {
 
     useEffect(() => {
         // doing == since we want to check for null and undefined
-        if (!fileData || fileData.data == null) return
-        if (!validator) return
+        if (!fileData || fileData.data == null || !validator) return
         const { status, message } = validator(fileData)
-        setStatus(() => ({
-            message,
-            status,
-        }))
-        if (status) {
-            setProgress(() => 100)
-        }
+        setStatus({ message, status })
+        if (status) setProgress(100)
     }, [fileData, validator])
 
     const handleFileRead = (e: any) => {
@@ -40,17 +34,17 @@ export const useFileReader = () => {
     }
 
     const handleFileError = () => {
-        setStatus(() => FILE_READING_FAILED_STATUS)
+        setStatus(FILE_READING_FAILED_STATUS)
     }
 
     const handleFileProgress = (e: any) => {
         const progress = e.total ? Math.min(Math.round((e.loaded * 100) / e.total), 70) : 70
-        setProgress(() => progress)
+        setProgress(progress)
     }
 
     const readFile = (file: any, fileValidator: ValidatorType, readAs: string) => {
         if (!file) {
-            setStatus(() => NO_FILE_SELECTED_STATUS)
+            setStatus(NO_FILE_SELECTED_STATUS)
             return
         }
         setFileData({
@@ -59,14 +53,14 @@ export const useFileReader = () => {
             name: file.name,
         })
         setValidator(() => fileValidator)
-        setProgress(() => 0)
-        setStatus(() => ({
+        setProgress(0)
+        setStatus({
             status: 'loading',
             message: {
                 data: null,
                 description: 'File is being uploaded',
             },
-        }))
+        })
         try {
             reader.addEventListener('load', handleFileRead)
             reader.addEventListener('error', handleFileError)
@@ -97,15 +91,15 @@ export const useFileReader = () => {
             reader.removeEventListener('load', handleFileRead)
             reader.removeEventListener('error', handleFileError)
             reader.removeEventListener('progress', handleFileProgress)
-            setStatus(() => FILE_READING_FAILED_STATUS)
+            setStatus(FILE_READING_FAILED_STATUS)
         }
     }
 
     const abortRead = () => {
         reader.abort()
-        setStatus(() => null)
-        setProgress(() => 0)
-        setFileData(() => null)
+        setStatus(null)
+        setProgress(0)
+        setFileData(null)
         reader.removeEventListener('load', handleFileRead)
         reader.removeEventListener('error', handleFileError)
         reader.removeEventListener('progress', handleFileProgress)
