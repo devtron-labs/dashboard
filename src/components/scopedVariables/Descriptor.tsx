@@ -2,7 +2,7 @@ import React from 'react'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import SearchBar from './DescriptorSearchBar'
 import { validator } from './utils'
-import { DescriptorInterface } from './types'
+import { DescriptorProps } from './types'
 import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
@@ -10,7 +10,7 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
 
-export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorInterface) {
+export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorProps) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         if (readFile) {

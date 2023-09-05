@@ -11,7 +11,7 @@ export enum FileReaderStatus {
     FAILED = 'failed',
 }
 
-export interface FileReaderStatusInterface {
+export interface FileReaderStatusType {
     status: FileReaderStatus
     message: {
         data: any
@@ -19,10 +19,10 @@ export interface FileReaderStatusInterface {
     }
 }
 
-export interface FileDataInterface {
+export interface FileDataType {
     data: any
     type: string
     name: string
 }
 
-export type ValidatorType = (fileData: FileDataInterface) => FileReaderStatusInterface
+export type ValidatorType = (fileData: FileDataType) => FileReaderStatusType

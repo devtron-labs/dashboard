@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { SearchBarInterface } from './types'
+import { SearchBarProps } from './types'
 import searchSvg from '../../assets/icons/ic-search.svg'
 
 // NOTE: This is intended to be enter based search bar
@@ -11,7 +11,7 @@ export default function SearchBar({
     containerClass = '',
     iconClass = '',
     inputClass = '',
-}: SearchBarInterface) {
+}: SearchBarProps) {
     const [searchText, setSearchText] = useState<string>('')
 
     const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {

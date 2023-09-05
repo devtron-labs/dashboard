@@ -3,7 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 import SavedVariablesView from '../SavedVariables'
 import { validScopedVariablesData } from '../mocks'
 import { downloadData } from '../utils'
-import { ScopedVariablesDataInterface } from '../types'
+import { ScopedVariablesDataType } from '../types'
 import { useClickOutside } from '../../common'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => <div></div>))
@@ -35,7 +35,7 @@ describe('SavedVariables', () => {
     it('should render YAML view by default', () => {
         const { container } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataType}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -47,7 +47,7 @@ describe('SavedVariables', () => {
     it('should render Variable List view when Variable List tab is clicked', () => {
         const { container } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataType}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -64,7 +64,7 @@ describe('SavedVariables', () => {
     it('should download saved file when download saved file button is clicked from dropdown', () => {
         const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataType}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -83,7 +83,7 @@ describe('SavedVariables', () => {
     it('should download template file when download template file button is clicked from dropdown', () => {
         const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataType}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}
@@ -102,7 +102,7 @@ describe('SavedVariables', () => {
     it('should close dropdown when dropdown is open and somewhere outside is clicked', () => {
         const { container, getByTestId } = render(
             <SavedVariablesView
-                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataInterface}
+                scopedVariablesData={validScopedVariablesData.result.manifest as ScopedVariablesDataType}
                 setScopedVariables={() => {}}
                 jsonSchema={JSON.parse(validScopedVariablesData.result.jsonSchema)}
                 reloadScopedVariables={() => {}}

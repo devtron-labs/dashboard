@@ -5,7 +5,7 @@ import ScopedVariablesLoader from './ScopedVariablesLoader'
 import { useFileReader } from '../common'
 import { validator, downloadData } from './utils'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { UploadScopedVariablesInterface } from './types'
+import { UploadScopedVariablesProps } from './types'
 import { FileReaderStatus, ReadFileAs } from '../common/hooks/types'
 import {
     DEFAULT_DESCRIPTION,
@@ -22,7 +22,7 @@ export default function UploadScopedVariables({
     reloadScopedVariables,
     jsonSchema,
     setScopedVariables,
-}: UploadScopedVariablesInterface) {
+}: UploadScopedVariablesProps) {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

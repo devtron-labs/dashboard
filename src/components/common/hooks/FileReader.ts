@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { FileDataInterface, FileReaderStatus, FileReaderStatusInterface, ReadFileAs, ValidatorType } from './types'
+import { FileDataType, FileReaderStatus, FileReaderStatusType, ReadFileAs, ValidatorType } from './types'
 import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
 
 export const useFileReader = () => {
-    const [fileData, setFileData] = useState<FileDataInterface>(null)
+    const [fileData, setFileData] = useState<FileDataType>(null)
     const [progress, setProgress] = useState<number>(0)
-    const [status, setStatus] = useState<FileReaderStatusInterface>(null)
+    const [status, setStatus] = useState<FileReaderStatusType>(null)
     // Since its a function and not a value, we need to use a callback to set the value
     const [validator, setValidator] = useState<ValidatorType>(null)
     const reader = new FileReader()

@@ -1,5 +1,5 @@
 import yaml from 'js-yaml'
-import { ScopedVariablesDataInterface } from './types'
+import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import {
     EMPTY_FILE_STATUS,
@@ -72,7 +72,7 @@ export const parseYAMLStringToObj = (data: string) => {
     return yaml.safeLoad(data)
 }
 
-export const sortVariables = (variablesObj: ScopedVariablesDataInterface): ScopedVariablesDataInterface => {
+export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVariablesDataType => {
     /*
         Approach:
         Sorting is going to happen on multiple levels:
