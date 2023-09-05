@@ -1,7 +1,7 @@
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import { useFileReader } from '../FileReader'
-import { ReadFileAs } from '../types'
+import { FileReaderStatus, ReadFileAs } from '../types'
 import { validator } from '../../../scopedVariables/utils'
 
 describe('useFileReader', () => {
@@ -24,8 +24,8 @@ describe('useFileReader', () => {
                         onClick={() =>
                             readFile(
                                 'Some Text',
-                                (fileData) => ({
-                                    status: true,
+                                () => ({
+                                    status: FileReaderStatus.SUCCESS,
                                     message: {
                                         data: 'a: b\n',
                                         description: 'File uploaded successfully',

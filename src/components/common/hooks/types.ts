@@ -5,8 +5,14 @@ export enum ReadFileAs {
     ARRAY_BUFFER = 'arrayBuffer',
 }
 
+export enum FileReaderStatus {
+    LOADING = 'loading',
+    SUCCESS = 'success',
+    FAILED = 'failed',
+}
+
 export interface FileReaderStatusInterface {
-    status: boolean | 'loading'
+    status: FileReaderStatus
     message: {
         data: any
         description: string

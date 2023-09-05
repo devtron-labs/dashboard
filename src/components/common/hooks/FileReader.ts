@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FileDataInterface, FileReaderStatusInterface, ReadFileAs, ValidatorType } from './types'
+import { FileDataInterface, FileReaderStatus, FileReaderStatusInterface, ReadFileAs, ValidatorType } from './types'
 import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
 
 export const useFileReader = () => {
@@ -22,7 +22,7 @@ export const useFileReader = () => {
         if (!fileData || fileData.data == null || !validator) return
         const { status, message } = validator(fileData)
         setStatus({ message, status })
-        if (status) setProgress(100)
+        if (status === FileReaderStatus.SUCCESS) setProgress(100)
     }, [fileData, validator])
 
     const handleFileRead = (e: any) => {
@@ -55,7 +55,7 @@ export const useFileReader = () => {
         setValidator(() => fileValidator)
         setProgress(0)
         setStatus({
-            status: 'loading',
+            status: FileReaderStatus.LOADING,
             message: {
                 data: null,
                 description: 'File is being uploaded',

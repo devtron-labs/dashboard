@@ -1,9 +1,11 @@
+import { FileReaderStatus } from './types'
+
 export const NO_FILE_SELECTED_STATUS = {
     message: {
         data: null,
         description: 'No file selected',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }
 
 export const FILE_READING_FAILED_STATUS = {
@@ -11,5 +13,5 @@ export const FILE_READING_FAILED_STATUS = {
         data: null,
         description: 'File reading failed',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }

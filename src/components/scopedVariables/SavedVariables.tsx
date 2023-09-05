@@ -17,6 +17,7 @@ import {
 } from './constants'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
+import { FileReaderStatus } from '../common/hooks/types'
 
 export default function SavedVariablesView({
     scopedVariablesData,
@@ -100,7 +101,7 @@ export default function SavedVariablesView({
         )
     }
 
-    if (status?.status === true) {
+    if (status?.status === FileReaderStatus.SUCCESS) {
         return (
             <ScopedVariablesEditor
                 variablesData={status?.message?.data}
