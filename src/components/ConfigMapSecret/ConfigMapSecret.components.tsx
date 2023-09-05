@@ -138,9 +138,9 @@ export function ConfigMapSecretContainer({
             setLoader(true)
             const [_draftData, _cmSecretData] = await Promise.allSettled([
                 isProtected && getDraftByResourceName
-                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name, { signal: newAbortController.signal })
+                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name, newAbortController.signal )
                     : null,
-                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId, { signal: newAbortController.signal }) : null,
+                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId, newAbortController.signal ) : null,
             ])
             let draftId, draftState
             if (
@@ -205,6 +205,7 @@ export function ConfigMapSecretContainer({
         } catch (error) {
             if(error === 'AbortError') {
                 console.log("Request was aborted", error)
+                alert('hey')
             }
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             setDraftData(null)
