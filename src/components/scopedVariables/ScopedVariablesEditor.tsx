@@ -119,7 +119,7 @@ export default function ScopedVariablesEditor({
                             </p>
                         ) : (
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
-                                Upload
+                                Upload&nbsp;
                                 <span className="fw-7">{name?.split('.').slice(0, -1).join('.')}</span>
                             </p>
                         )}
