@@ -400,6 +400,12 @@ a:focus {
     grid-column-gap: 16px;
 }
 
+.form__row--one-third {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-column-gap: 16px;
+  }
+
 // ClassName of text area
 .dc__code-textarea {
     min-width: 100%;
@@ -2942,6 +2948,10 @@ textarea,
     min-height: 300px;
 }
 
+.mh-400 {
+  min-height: 400px;
+}
+
 .mh-600 {
     min-height: 600px;
 }
@@ -2960,6 +2970,10 @@ textarea,
 
 .mxh-300-imp {
     max-height: 300px !important;
+}
+
+.mxh-390-imp {
+    max-height: 390px!important;
 }
 
 // Height in percentage
