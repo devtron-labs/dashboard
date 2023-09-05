@@ -1489,6 +1489,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
+                                isOCICompliantChart={commonState.installedConfig.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
@@ -1496,7 +1497,7 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && (
+                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig.isOCICompliantChart &&(
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}

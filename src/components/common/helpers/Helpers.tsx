@@ -1159,7 +1159,7 @@ export const handleOnBlur = (e): void => {
 }
 
 export const parsePassword = (password: string): string => {
-    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
 export const reloadLocation = () => {
@@ -1230,4 +1230,8 @@ export const hasApproverAccess = (approverList: string[]): boolean => {
         }
     }
     return hasAccess
+}
+
+export const getNonEditableChartRepoText = (name: string): string => {
+   return `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`
 }

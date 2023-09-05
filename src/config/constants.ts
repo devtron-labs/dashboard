@@ -419,9 +419,10 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
     PUSH: 'PUSH',
     PULL_PUSH: 'PULL/PUSH',
 }
+
 export const RegistryStorageType = {
-    CONTAINER: 'CONTAINER',
     OCI_PRIVATE: 'OCI_PRIVATE',
+    OCI_PUBLIC: 'OCI_PUBLIC'
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -454,11 +455,23 @@ export interface RegistryPayloadType {
         ignoredClusterIdsCsv: string
     }
     ociRegistryConfig?: OCIRegistryStorageConfigType
+    repositoryList: string[]
+    isPublic: boolean
+}
+
+export const RegistryType = {
+   DOCKER_HUB: 'docker-hub',
+   ACR: 'acr',
+   QUAY: 'quay',
+   OTHER: 'other',
+   ECR: 'ecr',
+   ARTIFACT_REGISTRY: 'artifact-registry',
+   GCR: 'gcr'
 }
 
 export const RegistryTypeName = {
-    CONTAINER: 'Container registry',
-    OCI_PRIVATE: 'OCI Registry (Private)',
+    'OCI_PRIVATE': 'Private Registry',
+    'OCI_PUBLIC': 'Public Registry'
 }
 
 export const AppCreationType = {

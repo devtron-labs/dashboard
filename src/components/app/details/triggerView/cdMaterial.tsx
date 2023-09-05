@@ -19,9 +19,6 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
-import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -58,13 +55,10 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS, EMPTY_STATE, NO_VULNERABILITY_TEXT } from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
-import { EMPTY_LIST_MESSAGING } from '../../../ApplicationGroup/Constants'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import noapprovedimages from '../../../../assets/img/empty-noresult@2x.png'
-import { getConfigs } from '../../../notifications/notifications.service'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -324,7 +318,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
                             mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
                             this.renderFailedCD(mat)}
-                        {mat.index == 0 && (
+                        {mat.index == 0 && this.props.materialType !== MATERIAL_TYPE.rollbackMaterialList && (
                             <div className="">
                                 <ImageTagButton
                                     text="Latest"
@@ -821,7 +815,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (isApprovalConfigured) {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
-
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
         } else {
@@ -830,15 +823,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ? [this.props.material[0]]
                     : this.props.material
         }
-
-        // reset the selection for some cases
-        for (const mat of materialList) {
-            if (this.state.selectedMaterial?.id === mat.id) {
-                mat.isSelected = true
-                break
-            }
-        }
-
         return {
             consumedImage: _consumedImage,
             materialList,
