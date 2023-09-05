@@ -7,6 +7,7 @@ import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
+import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
 
@@ -47,7 +48,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                     </div>
 
                     <div className="flex dc__gap-12">
-                        {onSearch && <SearchBar onSearch={onSearch} placeholder="Search Variables" />}
+                        {onSearch && <SearchBar onSearch={onSearch} placeholder="Search Variables" Icon={ICSearch} />}
 
                         {showUploadButton && (
                             <button className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56">

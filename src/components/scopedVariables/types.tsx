@@ -99,10 +99,10 @@ export interface VariablesListItemProps {
 
 export interface SearchBarProps {
     onSearch: (query: string) => void
-    icon?: string
     placeholder?: string
     inputClass?: string
     containerClass?: string
-    iconClass?: string
     children?: React.ReactNode
+    Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    iconClass?: string
 }
