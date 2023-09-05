@@ -120,7 +120,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 : 'pluginRefStepDetail'
         const _formData = { ...formData }
         let _variableDetail
-        if (selectedValue['refVariableStepIndex']) {
+        if (selectedValue?.['refVariableStepIndex']) {
             _variableDetail = {
                 value: '',
                 variableType: RefVariableType.FROM_PREVIOUS_STEP,
@@ -129,7 +129,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 format: selectedValue['format'],
                 refVariableStage: selectedValue['refVariableStage'],
             }
-        } else if (selectedValue['variableType'] === RefVariableType.GLOBAL) {
+        } else if (selectedValue?.['variableType'] === RefVariableType.GLOBAL) {
             _variableDetail = {
                 variableType: RefVariableType.GLOBAL,
                 refVariableStepIndex: 0,
@@ -141,7 +141,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         } else {
             _variableDetail = {
                 variableType: RefVariableType.NEW,
-                value: selectedValue.label,
+                value: selectedValue?.label,
                 refVariableName: '',
                 refVariableStage: '',
             }
@@ -149,7 +149,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         let _inputVariables =
             _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
                 selectedVariableIndex
-            ]
+            ] ? _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
+                selectedVariableIndex
+            ] : ""
         if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
             _variableDetail.format = _inputVariables.format
         }
@@ -206,7 +208,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     const ValueContainer = (props) => {
         let value = props.getValue()[0]?.label
         return (
-            <components.ValueContainer {...props}>
+            <components.ValueContainer {...props} className='pb-1'>
                 <>
                     {value ? value : !props.selectProps.menuIsOpen && (
                         <span>Select source or input value</span>
@@ -263,6 +265,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             value={selectedOutputVariable}
             escapeClearsValue
             options={inputVariableOptions}
+            placeholder='Select source or input value'
             onChange={handleOutputVariableSelector}
             styles={
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -284,6 +287,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 Option,
                 ValueContainer,
+                DropdownIndicator:null,
                 IndicatorSeparator: null,
             }}
             noOptionsMessage={(): string => {
@@ -291,6 +295,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             }}
             onBlur={handleCreatableBlur}
             backspaceRemovesValue
+            isClearable
             isValidNewOption={() => true}
             isSearchable={true}
             onKeyDown={handleKeyDown}
