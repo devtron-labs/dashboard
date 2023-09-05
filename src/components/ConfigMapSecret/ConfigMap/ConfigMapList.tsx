@@ -8,10 +8,10 @@ import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
-import { importComponentFromFELibrary } from '../../common'
+import { importComponentFromFELibrary, useAsync, FloatingVariablesSuggestions } from '../../common'
+import { getScopedVariables } from './service'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
 import '../ConfigMapSecret.scss'
-import {FloatingVariablesSuggestions} from '../../common'
 
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -31,6 +31,12 @@ export default function ConfigMapList({
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [showComments, setShowComments] = useState(false)
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
+
+    // Fetching here instead of component itself as we might need variables in other components as well
+    const [loadingScopedVariables, scopedVariablesData, scopedVariablesError, reloadScopedVariables] = useAsync(
+        () => getScopedVariables(appId, envId, null),
+        [],
+    )
 
     useEffect(() => {
         setConfigMapLoading(true)
@@ -139,6 +145,13 @@ export default function ConfigMapList({
 
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
+            <FloatingVariablesSuggestions
+                zIndex={1}
+                loading={loadingScopedVariables}
+                variables={scopedVariablesData}
+                reloadVariables={reloadScopedVariables}
+                error={scopedVariablesError}
+            />
             <div className="main-content">
                 <h1 className="form__title flex left">
                     {parentName && (
@@ -155,8 +168,6 @@ export default function ConfigMapList({
                     />
                 </h1>
 
-                <FloatingVariablesSuggestions zIndex={1} />
-                
                 <div className="mt-20">
                     <ConfigMapSecretContainer
                         key="Add ConfigMap"

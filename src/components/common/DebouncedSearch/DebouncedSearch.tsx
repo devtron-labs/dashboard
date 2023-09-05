@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDebouncedEffect } from '../helpers/Helpers'
 import { DebouncedSearchInterface } from './types'
 
+// TODO: AutoFocus, remove bg image
 export default function DebouncedSearch({
     onSearch,
     icon,
