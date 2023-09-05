@@ -534,7 +534,7 @@ export default function ResourceList() {
                     const searchParam =location.search? `/${location.search}`:''
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                            }/${currentNodeType}/${K8S_EMPTY_GROUP}${searchParam}`,
+                            }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
                     })
                 }
 
