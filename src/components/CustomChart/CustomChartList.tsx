@@ -140,7 +140,7 @@ export default function CustomChartList() {
                 <div className="mb-4 mxh-140 dc__overflow-scroll">
                     {chartData.versions.map((versionsList) => (
                         <div
-                            key={`custom-chart-version_${versionsList.version}`}
+                            key={`custom-chart-version_${versionsList.id}`}
                             data-testid="chart-version-row"
                             data-versionid={versionsList.id}
                             data-version={versionsList.version}
