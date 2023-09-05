@@ -115,25 +115,16 @@ export default function ScopedVariablesEditor({
                     <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
-                                {showSaveView ? 'Review' : 'Edit'} <span style={{ fontWeight: 700 }}>Variables</span>
+                                {showSaveView ? 'Review' : 'Edit'} <span className="fw-7">Variables</span>
                             </p>
                         ) : (
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
-                                Upload{' '}
-                                <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
+                                Upload
+                                <span className="fw-7">{name?.split('.').slice(0, -1).join('.')}</span>
                             </p>
                         )}
 
-                        <Tippy
-                            className="default-tt"
-                            arrow
-                            placement="top"
-                            content={
-                                <div>
-                                    <div className="flex column left">Close</div>
-                                </div>
-                            }
-                        >
+                        <Tippy className="default-tt" arrow placement="top" content="Close">
                             <button
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
                                 onClick={handleAbort}
