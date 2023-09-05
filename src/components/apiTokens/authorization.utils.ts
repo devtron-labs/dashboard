@@ -32,7 +32,7 @@ export const getDateInMilliseconds = (days) => {
 
 export const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-       return getSelectedEntityName(permission.environment)
+       return getSelectedPermissionValues(permission.environment)
     } else {
         let allFutureCluster = {}
         let envList = ''
@@ -49,9 +49,9 @@ export const getSelectedEnvironments = (permission) => {
     }
 }
 
-const getSelectedEntityName = (permissionName: OptionType[]) => {
+const getSelectedPermissionValues = (permissionLabel: OptionType[]) => {
     let entityName = ''
-    for (let _entityName of permissionName) {
+    for (let _entityName of permissionLabel) {
         if (_entityName.value === '*') {
             break
         } else {
@@ -86,7 +86,7 @@ export const createUserPermissionPayload = (
                     action: permission.action.value,
                     team: permission.team.value,
                     environment: getSelectedEnvironments(permission),
-                    entityName: getSelectedEntityName(permission.entityName),
+                    entityName: getSelectedPermissionValues(permission.entityName),
                 })),
                 ...k8sPermission.map((permission) => ({
                     ...permission,
