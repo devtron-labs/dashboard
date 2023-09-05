@@ -529,7 +529,7 @@ export default function ResourceList() {
                     group,
                 )
 
-                if (!isResourceGroupPresent) {
+                if (!isResourceGroupPresent && !node) {
                     parentNode.isExpanded = true
                     const searchParam =location.search? `/${location.search}`:''
                     replace({
