@@ -15,6 +15,7 @@ import {
     SAVE_ERROR_TOAST_MESSAGE,
     SAVE_SUCCESS_TOAST_MESSAGE,
     GET_SCOPED_VARIABLES_ERROR,
+    UPLOAD_FAILED_STANDARD_MESSAGE,
 } from './constants'
 
 export default function ScopedVariablesEditor({
@@ -37,11 +38,11 @@ export default function ScopedVariablesEditor({
         try {
             variablesObj = parseYAMLStringToObj(data)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
-                toast.error(PARSE_ERROR_TOAST_MESSAGE)
+                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
                 return null
             }
         } catch (e) {
-            toast.error(PARSE_ERROR_TOAST_MESSAGE)
+            toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             return null
         }
         return variablesObj
