@@ -73,7 +73,7 @@ export default function EnvironmentOverride({
         if (appList?.length) {
             return appMap.get(+params.appId).name
         } else if (environments?.length) {
-            return environmentsMap.get(+params.envId).environmentName
+            return environmentsMap.get(+params.envId)?.environmentName || ''
         } else {
             return ''
         }
