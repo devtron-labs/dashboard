@@ -321,19 +321,16 @@ export default function ResourceList() {
             return
         }
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
-            updateTabUrl(
-                `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
-                `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                    selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
-                    nodeType === AppDetailsTabs.terminal
-                        ? location.search
-                        : tabs[1]?.url.split('?')[1]
-                        ? `?${tabs[1].url.split('?')[1]}`
-                        : ''
-                }`,
-                `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
-            )
+          const _searchParam = tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : ''
+          updateTabUrl(
+              `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
+              `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                  selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
+              }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
+                  nodeType === AppDetailsTabs.terminal ? location.search : _searchParam
+              }`,
+              `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
+          )
         } else {
             removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
@@ -387,11 +384,10 @@ export default function ResourceList() {
         getClusterList()
             .then((response) => {
                 if (response.result) {
-                    const sortedResult = response.result
-                        .sort((a, b) => a['name'].localeCompare(b['name']))
-                        .filter((item) => !item?.isVirtualCluster)
-                    setTerminalCluster(sortedResult)
-                    setClusterList(sortedResult)
+                  response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+                  const sortedResult = response.result.filter((item) => !item?.isVirtualCluster)
+                  setTerminalCluster(sortedResult)
+                  setClusterList(sortedResult)
                 }
                 setTerminalLoader(false)
             })
@@ -455,12 +451,13 @@ export default function ResourceList() {
     }
 
     const initTabsBasedOnRole = (_isSuperAdmin: boolean)=>{
+      const _nodeType = nodeType ? `/${nodeType}` : ''
       if (_isSuperAdmin) {
           initTabs([
               {
                   idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
                   name: AppDetailsTabs.k8s_Resources,
-                  url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                  url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${_nodeType}`,
                   isSelected: true,
                   positionFixed: true,
                   iconPath: K8ResourceIcon,
@@ -480,7 +477,7 @@ export default function ResourceList() {
               {
                   idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
                   name: AppDetailsTabs.k8s_Resources,
-                  url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                  url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${_nodeType}`,
                   isSelected: true,
                   positionFixed: true,
                   iconPath: K8ResourceIcon,

@@ -30,7 +30,7 @@ export function EventList({
                 className={getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)}
             >
                 {filteredData?.map((eventData) => (
-                    <div className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class">
+                    <div key={`${eventData.type}_${eventData[EVENT_LIST.dataKeys.involvedObject]}`} className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class">
                         <div className={` app-summary__status-name dc__highlight-text f-${eventData.type?.toLowerCase()}`}>
                             <span
                                 dangerouslySetInnerHTML={{
