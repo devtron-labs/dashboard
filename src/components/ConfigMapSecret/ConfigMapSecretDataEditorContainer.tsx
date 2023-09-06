@@ -1,5 +1,5 @@
 import React from 'react'
-import { Info, RadioGroup } from '../common'
+import { Info, RadioGroup, useFileReader } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
@@ -32,6 +32,8 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         draftMode,
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
         const [showFileReaderPopup, setFileReaderPopup] = React.useState(false)
+        const { status, progress, fileData, abortRead, readFile } = useFileReader()
+        
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
             _currentData[index] = {
@@ -360,7 +362,10 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                              
                               <ConfigMapSecretFileReaderPopup
                               toggleFileReaderPopup ={toggleFileReaderPopup}
-                              showFileReaderPopup={showFileReaderPopup}/>
+                              showFileReaderPopup={showFileReaderPopup}
+                              readFile={readFile}
+                              />
+                             
                             
                         }
                         {renderSecretShowHide()}
