@@ -28,6 +28,7 @@ import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/Devtro
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
+    groupDataByType,
     handleConfigProtectionError,
     isBasicValueChanged,
     patchBasicData,
@@ -42,8 +43,6 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
-import { stat } from 'fs'
-import { Spinner } from 'patternfly-react'
 
 export const dummy = {}
 
@@ -77,30 +76,11 @@ export default function DeploymentConfig({
 
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
 
-    function groupDataByType(data) {
-        // Create a Map to store grouped objects by type
-        const groupedData = new Map()
 
-        // Iterate through the data and group objects by type
-        data.forEach((item) => {
-            const type = item.type
-
-            if (!groupedData.has(type)) {
-                groupedData.set(type, [])
-            }
-
-            groupedData.get(type).push(item)
-        })
-
-        // Convert the grouped data into an array of arrays
-        const result = [...groupedData.values()]
-
-        return result
-    }
 
     useEffect(() => {
         const fetchOptionsList = async () => {
-            const res = await getOptions(+appId, -1) //FIXME: uplift this api call to parent component
+            const res = await getOptions(+appId, -1) // -1 is for base deployment template
             const { result } = res
             const _groupedData = groupDataByType(result)
             setGroupedOptionsData(_groupedData)
@@ -690,27 +670,25 @@ export default function DeploymentConfig({
         return response.result.data
     }
 
-    // not running once tab is changed
     const getValueRHS = async () => {
         try {
             let result = null
 
             if (isCompareAndApprovalState) {
-                // Call the API with state.draftValues
+              
                 result = await fetchManifestData(state.draftValues)
             } else {
-                // Call the API with state.tempFormData
+              
                 result = await fetchManifestData(state.tempFormData)
             }
             return result
         } catch (error) {
-            // Handle errors if needed
+            //TODO - handle error
             toast.error(error)
             console.error(error)
         }
     }
 
-    // set initial value on LHS
     const getValuesLHS = async () => {
         return fetchManifestData(state.publishedState?.tempFormData ?? state.data)
     }

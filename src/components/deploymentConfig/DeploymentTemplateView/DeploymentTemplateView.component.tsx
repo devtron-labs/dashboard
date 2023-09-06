@@ -22,8 +22,7 @@ import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
-import { handleConfigProtectionError } from '../DeploymentConfig.utils'
-import moment from 'moment'
+import { formatTimestamp, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -102,46 +101,6 @@ const customValueContainer = (props): JSX.Element => {
             })}
         </components.ValueContainer>
     )
-}
-
-function formatTimestamp(jsonTimestamp) {
-    // Parse the JSON timestamp using Moment.js
-    const timestamp = moment(jsonTimestamp)
-
-    // Define the desired output format
-    const formattedTimestamp = timestamp.format('ddd, MMM YYYY, hh:mm A')
-
-    return formattedTimestamp
-}
-
-function textDecider(option, charts) {
-    let text = ''
-
-    switch (option.type) {
-        case 1:
-            text = `(v${option.chartVersion})`
-            break
-
-        case 2:
-        case 4:
-            const c = charts.find((chart) => chart.value === option.chartRefId)
-            text = `${option.environmentName ? option.environmentName : ''} ${
-                option.chartVersion ? `(v${option.chartVersion})` : `(${c?.label.split(' ')[0]})`
-            }`
-            break
-
-        case 3:
-            const c3 = charts.find((chart) => chart.value === option.chartRefId)
-            text = `${formatTimestamp(option.startedOn)} ${
-                option.chartVersion ? `(v${option.chartVersion})` : `(${c3?.label.split(' ')[0]})`
-            }`
-            break
-
-        default:
-            text = ''
-            break
-    }
-    return text
 }
 
 const formatOptionLabel = (option): JSX.Element => {
@@ -407,9 +366,7 @@ export const RenderManifestEditorHeading = ({
     ]
 
     const onChange = (selected) => {
-        
         setSelectedOption(selected)
-        
         setShowProposal(selected.id === 1)
     }
 

@@ -4,6 +4,7 @@ import { BASIC_FIELDS, BASIC_FIELD_MAPPING, BASIC_FIELD_PARENT_PATH } from './co
 import { BasicFieldErrorObj, DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
 import { ValidationRules } from './validationRules'
 import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
 
 const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
 let templateFromBasicValue
@@ -108,4 +109,65 @@ export const handleConfigProtectionError = (
         return
     }
     showError(err)
+}
+
+export function groupDataByType(data) {
+    // Create a Map to store grouped objects by type
+    const groupedData = new Map()
+
+    // Iterate through the data and group objects by type
+    data.forEach((item) => {
+        const type = item.type
+
+        if (!groupedData.has(type)) {
+            groupedData.set(type, [])
+        }
+
+        groupedData.get(type).push(item)
+    })
+
+    // Convert the grouped data into an array of arrays
+    const result = [...groupedData.values()]
+
+    return result
+}
+
+export function formatTimestamp(jsonTimestamp) {
+    // Parse the JSON timestamp using Moment.js
+    const timestamp = moment(jsonTimestamp)
+
+    // Define the desired output format
+    const formattedTimestamp = timestamp.format('ddd, MMM YYYY, hh:mm A')
+
+    return formattedTimestamp
+}
+
+export function textDecider(option, charts) {
+    let text = ''
+
+    switch (option.type) {
+        case 1:
+            text = `(v${option.chartVersion})`
+            break
+
+        case 2:
+        case 4:
+            const c = charts.find((chart) => chart.value === option.chartRefId)
+            text = `${option.environmentName ? option.environmentName : ''} ${
+                option.chartVersion ? `(v${option.chartVersion})` : `(${c?.label.split(' ')[0]})`
+            }`
+            break
+
+        case 3:
+            const c3 = charts.find((chart) => chart.value === option.chartRefId)
+            text = `${formatTimestamp(option.startedOn)} ${
+                option.chartVersion ? `(v${option.chartVersion})` : `(${c3?.label.split(' ')[0]})`
+            }`
+            break
+
+        default:
+            text = ''
+            break
+    }
+    return text
 }
