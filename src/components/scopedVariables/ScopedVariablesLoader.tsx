@@ -1,10 +1,11 @@
 import React from 'react'
-import { LoadScopedVariablesInterface } from './types'
+import { LoadScopedVariablesProps } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
+import { FileReaderStatus } from '../common/hooks/types'
 
-export default function ScopedVariablesLoader({ status, progress, fileData, abortRead }: LoadScopedVariablesInterface) {
+export default function ScopedVariablesLoader({ status, progress, fileData, abortRead }: LoadScopedVariablesProps) {
     return (
         <div className="cursor-default w-200 flex column dc__align-start dc__content-start dc__gap-8">
             <div className="flex dc__align-start dc__gap-8 dc__align-self-stretch dc__content-start">
@@ -26,11 +27,11 @@ export default function ScopedVariablesLoader({ status, progress, fileData, abor
                     width: '100%',
                     borderRadius: '2px',
                 }}
-                classes={`${status?.status ? '' : 'styled-progress-bar-error'}`}
+                classes={`${status?.status !== FileReaderStatus.FAILED ? '' : 'styled-progress-bar-error'}`}
                 progress={progress}
             />
 
-            {!status?.status && (
+            {status?.status === FileReaderStatus.FAILED && (
                 <div className="flex dc__align-start dc__align-self-stretch dc__gap-4 dc__content-start">
                     <ICError className="icon-dim-20" />
                     <p className="cr-5 fs-13 fw-4 lh-20 dc__align-left">Upload failed</p>

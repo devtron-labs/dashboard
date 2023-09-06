@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
 import { GET_SCOPED_VARIABLES_ERROR, PARSE_ERROR_TOAST_MESSAGE } from '../constants'
-import { parseIntoYAMLString } from '../utils/helpers'
+import { parseIntoYAMLString } from '../utils'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))
 

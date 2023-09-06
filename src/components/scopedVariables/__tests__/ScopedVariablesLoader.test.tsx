@@ -1,12 +1,13 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import ScopedVariablesLoader from '../ScopedVariablesLoader'
+import { FileReaderStatus } from '../../common/hooks/types'
 
 jest.mock('../../common', () => ({
     importComponentFromFELibrary: jest.fn(),
 }))
 
-jest.mock('../utils/helpers', () => ({
+jest.mock('../utils', () => ({
     validator: jest.fn(),
     downloadData: jest.fn(),
 }))
@@ -16,7 +17,7 @@ describe('LoadScopedVariables', () => {
         const { container } = render(
             <ScopedVariablesLoader
                 status={{
-                    status: false,
+                    status: FileReaderStatus.FAILED,
                     message: {
                         data: 'test',
                         description: 'test',

@@ -1,3 +1,5 @@
+import { FileReaderStatus } from '../common/hooks/types'
+
 export const DEFAULT_TITLE = 'Scoped variables'
 export const DEFAULT_DESCRIPTION =
     'Scoped variable is a key-value pair. Value can be scoped and can be used dynamically across devtron.'
@@ -16,35 +18,35 @@ export const PARSE_ERROR_STATUS = {
         data: null,
         description: 'Parsed Data not valid',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }
 export const JSON_PARSE_ERROR_STATUS = {
     message: {
         data: null,
         description: 'Issue while parsing JSON',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }
 export const YAML_PARSE_ERROR_STATUS = {
     message: {
         data: null,
         description: 'Issue while parsing YAML',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }
 export const FILE_NOT_SUPPORTED_STATUS = {
     message: {
         data: null,
         description: 'File type is not supported',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }
 export const EMPTY_FILE_STATUS = {
     message: {
         data: null,
         description: 'File is empty',
     },
-    status: false,
+    status: FileReaderStatus.FAILED,
 }
 
 export const SCOPED_VARIABLES_TEMPLATE_DATA = `apiVersion: devtron.ai/v1beta1

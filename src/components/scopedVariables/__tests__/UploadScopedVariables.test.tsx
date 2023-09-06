@@ -1,10 +1,10 @@
 import React from 'react'
 import { fireEvent, render } from '@testing-library/react'
 import UploadScopedVariables from '../UploadScopedVariables'
-import { downloadData } from '../utils/helpers'
+import { downloadData } from '../utils'
 import { SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS } from '../constants'
 
-jest.mock('../utils/helpers', () => ({
+jest.mock('../utils', () => ({
     validator: jest.fn(),
     downloadData: jest.fn(),
 }))

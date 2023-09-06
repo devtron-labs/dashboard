@@ -5,11 +5,11 @@ import UploadScopedVariables from './UploadScopedVariables'
 import { sortVariables } from './utils'
 import { getScopedVariablesJSON } from './service'
 import { useAsync } from '../common'
-import { ScopedVariablesDataInterface, ScopedVariablesInterface } from './types'
+import { ScopedVariablesDataType, ScopedVariablesProps } from './types'
 import './styles.scss'
 
-export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesInterface) {
-    const [scopedVariables, setScopedVariables] = useState<ScopedVariablesDataInterface>(null)
+export default function ScopedVariables({ isSuperAdmin }: ScopedVariablesProps) {
+    const [scopedVariables, setScopedVariables] = useState<ScopedVariablesDataType>(null)
     const [schemaError, setSchemaError] = useState<boolean>(false)
     const [jsonSchema, setJsonSchema] = useState<object>(null)
     const [loadingScopedVariables, scopedVariablesData, scopedVariablesError, reloadScopedVariables] = useAsync(

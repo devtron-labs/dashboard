@@ -1,10 +1,17 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 export interface ChartDetailType {
+    id: number
     chartDescription: string
     name: string
     version: string
+    isUserUploaded: boolean
     count?: number
+    versions?: {
+        id: number
+        version: string
+    }[]
 }
+
 export interface ChartUploadType {
     chartName: string
     description: string

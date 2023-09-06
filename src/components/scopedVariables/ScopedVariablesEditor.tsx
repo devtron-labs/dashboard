@@ -6,7 +6,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
-import { ScopedVariablesDataInterface, ScopedVariablesEditorInterface } from './types'
+import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
@@ -25,25 +25,31 @@ export default function ScopedVariablesEditor({
     jsonSchema,
     setShowEditView,
     setScopedVariables,
-}: ScopedVariablesEditorInterface) {
+}: ScopedVariablesEditorProps) {
     const [editorData, setEditorData] = useState(variablesData)
     const [savedScopedVariables, setSavedScopedVariables] = useState(null)
     const [showSaveView, setShowSaveView] = useState<boolean>(false)
     const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
 
-    const handleSave = async () => {
-        let variablesObj: ScopedVariablesDataInterface
+    const handleParsing = (data: string): ScopedVariablesDataType => {
+        let variablesObj: ScopedVariablesDataType
         try {
-            variablesObj = parseYAMLStringToObj(editorData)
+            variablesObj = parseYAMLStringToObj(data)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
                 toast.error(PARSE_ERROR_TOAST_MESSAGE)
-                return
+                return null
             }
         } catch (e) {
             toast.error(PARSE_ERROR_TOAST_MESSAGE)
-            return
+            return null
         }
+        return variablesObj
+    }
+
+    const handleSave = async () => {
+        const variablesObj = handleParsing(editorData)
+        if (!variablesObj) return
         try {
             setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
@@ -61,18 +67,8 @@ export default function ScopedVariablesEditor({
     }
 
     const handleReview = async () => {
-        let variablesObj: ScopedVariablesDataInterface
-        try {
-            variablesObj = parseYAMLStringToObj(editorData)
-            if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
-                toast.error(PARSE_ERROR_TOAST_MESSAGE)
-                return
-            }
-        } catch (e) {
-            toast.error(PARSE_ERROR_TOAST_MESSAGE)
-            return
-        }
-
+        const variablesObj = handleParsing(editorData)
+        if (!variablesObj) return
         try {
             setLoadingSavedScopedVariables(true)
             const res = await getScopedVariablesJSON()
@@ -119,25 +115,16 @@ export default function ScopedVariablesEditor({
                     <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
-                                {showSaveView ? 'Review' : 'Edit'} <span style={{ fontWeight: 700 }}>Variables</span>
+                                {showSaveView ? 'Review' : 'Edit'} <span className="fw-7">Variables</span>
                             </p>
                         ) : (
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
-                                Upload{' '}
-                                <span style={{ fontWeight: 700 }}>{name?.split('.').slice(0, -1).join('.')}</span>
+                                Upload&nbsp;
+                                <span className="fw-7">{name?.split('.').slice(0, -1).join('.')}</span>
                             </p>
                         )}
 
-                        <Tippy
-                            className="default-tt"
-                            arrow
-                            placement="top"
-                            content={
-                                <div>
-                                    <div className="flex column left">Close</div>
-                                </div>
-                            }
-                        >
+                        <Tippy className="default-tt" arrow placement="top" content="Close">
                             <button
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
                                 onClick={handleAbort}
