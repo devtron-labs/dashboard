@@ -151,7 +151,7 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
         isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType
         groupedChild = {
             namespaced: SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() === nodeType,
-            gvk: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
+            gvk: nodeType === AppDetailsTabs.terminal? SIDEBAR_KEYS.overviewGVK: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
             isGrouped: false,
         }
     } else if (nodeType) {
