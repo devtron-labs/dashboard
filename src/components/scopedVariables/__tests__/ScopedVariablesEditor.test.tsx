@@ -3,7 +3,7 @@ import { fireEvent, render, act } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
-import { GET_SCOPED_VARIABLES_ERROR, PARSE_ERROR_TOAST_MESSAGE, UPLOAD_FAILED_STANDARD_MESSAGE } from '../constants'
+import { GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from '../constants'
 import { parseIntoYAMLString } from '../utils'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))
