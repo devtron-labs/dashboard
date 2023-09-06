@@ -125,7 +125,7 @@ function textDecider(option, charts) {
         case 2:
         case 4:
             const c = charts.find((chart) => chart.value === option.chartRefId)
-            text = `${option.environmentName ? option.environmentName : 'lol'} ${
+            text = `${option.environmentName ? option.environmentName : ''} ${
                 option.chartVersion ? `(v${option.chartVersion})` : `(${c?.label.split(' ')[0]})`
             }`
             break
@@ -163,6 +163,7 @@ export const CompareWithDropdown = ({
     isValues,
     groupedData,
 }) => {
+    console.log(groupedData, 'groupedData')
     const [groupedOptions, setGroupedOptions] = useState([
         {
             label: '',
@@ -212,7 +213,8 @@ export const CompareWithDropdown = ({
 
         let id = 0
 
-        groupedData.forEach((group) => {
+        // place all options under corresponding groups
+        groupedData.forEach((group) => { 
             if (!isValues && group[0].type === 1) return
             if (isValues && group[0].type === 4) return
             if (!envId && group[0].type === 3) return
@@ -228,12 +230,12 @@ export const CompareWithDropdown = ({
                 }),
             })
         })
+
         setGroupedOptions(_groupOptions)
         setSelectedOption(getSelectedOption())
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
-        console.log(selected, 'selected')
         setSelectedOption(selected)
     }
 

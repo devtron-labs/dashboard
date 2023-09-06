@@ -46,6 +46,8 @@ export default function DeploymentTemplateOverride({
     )
 
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
+    const [value, setValue] = useState('')
+    const [valueLeft, setValueLeft] = useState('')
 
     function groupDataByType(data) {
         // Create a Map to store grouped objects by type
@@ -221,6 +223,9 @@ export default function DeploymentTemplateOverride({
                 selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
             },
         }
+
+        setValue(YAML.stringify(envOverrideValues, { indent: 2 }))
+        
 
         if (chartRefsData) {
             payload['publishedState'] = {
@@ -480,6 +485,10 @@ export default function DeploymentTemplateOverride({
                         isValuesOverride={isValuesOverride}
                         setIsValuesOverride={setIsValuesOverride}
                         groupedData={groupedOptionsData}
+                        value={value}
+                        setValue={setValue}
+                        valueLeft={valueLeft}
+                        setValueLeft={setValueLeft}
                     />
                 )}
             </div>
