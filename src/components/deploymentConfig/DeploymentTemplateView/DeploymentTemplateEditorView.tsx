@@ -46,10 +46,10 @@ export default function DeploymentTemplateEditorView({
 
 
     const getLocalDaftManifest = async () => {
-        console.log(isValues, 'isValues-getLocalDaftManifest')
+        
         if(isValues) return state.tempFormData
         else{
-            console.log(state.tempFormData, 'getLocalDaftManifest')
+            
             const request = {
                 appId: +appId,
                 chartRefId: state.selectedChartRefId,
@@ -65,7 +65,7 @@ export default function DeploymentTemplateEditorView({
         if(!showProposal) return
         getLocalDaftManifest()
         .then((data) => {
-            console.log(data,'data')
+            
             setProposalData(data)
         })
     }, [showProposal])
@@ -128,7 +128,7 @@ export default function DeploymentTemplateEditorView({
             !fetchingValues
         ) {
             setFetchingValues(true)
-            console.log(state.selectedCompareOption, 'fetching-state.selectedCompareOption')
+            
             const isEnvOption = state.selectedCompareOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key
             const isChartVersionOption =
                 state.selectedCompareOption.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherVersion.key
@@ -173,7 +173,7 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
                 .catch((err) => {
-                    console.log(err, 'err')
+                    
                     showError(err)
                     setFetchingValues(false)
                 })
@@ -234,11 +234,6 @@ export default function DeploymentTemplateEditorView({
             return ''
         }
     }
-
-    console.log(state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
-    ? defaultValue
-    : state.fetchedValuesManifest[state.selectedCompareOption?.id]||"lol","ritvik")
-
 
     const renderCodeEditor = (): JSX.Element => {
         return (
@@ -342,6 +337,7 @@ export default function DeploymentTemplateEditorView({
                                             isPublishedOverriden={state.publishedState?.isOverride}
                                             isDeleteDraftState={isDeleteDraftState}
                                             setShowProposal={setShowProposal}
+                                            isValues={isValues}
                                         />
                                         }
                                     </div>

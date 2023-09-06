@@ -11,7 +11,7 @@ import {
 } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
-import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
     DeploymentConfigProps,
@@ -80,26 +80,25 @@ export default function DeploymentConfig({
     function groupDataByType(data) {
         // Create a Map to store grouped objects by type
         const groupedData = new Map()
-    
+
         // Iterate through the data and group objects by type
         data.forEach((item) => {
             const type = item.type
-    
+
             if (!groupedData.has(type)) {
                 groupedData.set(type, [])
             }
-    
+
             groupedData.get(type).push(item)
         })
-    
+
         // Convert the grouped data into an array of arrays
         const result = [...groupedData.values()]
-    
+
         return result
     }
 
     useEffect(() => {
-
         const fetchOptionsList = async () => {
             const res = await getOptions(+appId, -1) //FIXME: uplift this api call to parent component
             const { result } = res
@@ -108,7 +107,7 @@ export default function DeploymentConfig({
         }
 
         fetchOptionsList()
-    },[environments])
+    }, [environments])
 
     useEffect(() => {
         reloadEnvironments()
@@ -122,7 +121,7 @@ export default function DeploymentConfig({
     }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
-        console.log(chartRefsData, 'chartRefsData')
+        
         const payload = {
             ...chartRefsData,
             chartConfigLoading: false,
@@ -142,7 +141,7 @@ export default function DeploymentConfig({
     }
 
     async function initialise() {
-        console.log('initialise')
+        
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
@@ -160,10 +159,10 @@ export default function DeploymentConfig({
                 }
 
                 if (isProtected && typeof getDraftByResourceName === 'function') {
-                    console.log('fetchAllDrafts')
+                    
                     fetchAllDrafts(chartRefsData)
                 } else {
-                    console.log('updateRefsData')
+                    
                     updateRefsData(chartRefsData)
                 }
             })
@@ -177,36 +176,36 @@ export default function DeploymentConfig({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-        console.log('inside fetchAllDrafts')
+        
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
         setLoading(true)
-        console.log('setLoading - true')
+        
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
             .then((draftsResp) => {
-                console.log('draftsResp', draftsResp)
+                
 
                 if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
-                    console.log('inside draftsResp')
+                    
                     processDraftData(draftsResp.result, chartRefsData)
                     setLoading(false)
-                    console.log('setLoading - false')
+                    
                 } else {
-                    console.log('inside else draftsResp')
+                    
                     updateRefsData(chartRefsData, !!state.publishedState)
                     setLoading(false)
                 }
             })
             .catch((e) => {
-                console.log('error', e)
+                
                 updateRefsData(chartRefsData)
             })
     }
 
     const processDraftData = (latestDraft, chartRefsData) => {
-        console.log('inside processDraftData')
+        
         const {
             valuesOverride,
             id,
@@ -248,7 +247,7 @@ export default function DeploymentConfig({
             },
         }
 
-        console.log(_codeEditorStringifyData, 'valuesOverride')
+        
 
         setValueData(_codeEditorStringifyData)
         if (chartRefsData) {
@@ -483,7 +482,7 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-        console.log('this is where its fucked')
+        
         if (isValues) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -572,8 +571,8 @@ export default function DeploymentConfig({
             }
             toggleYamlMode(!state.yamlMode)
         } catch (error) {
-            console.log('catch')
-            console.log(error)
+            
+            
         }
     }
 
@@ -662,19 +661,19 @@ export default function DeploymentConfig({
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        console.log('useEffect')
+        
         setLoading(true)
         const values = Promise.all([getValueRHS(), getValuesLHS()])
         values
             .then((res) => {
                 setLoading(false)
-                console.log(res, 'res')
+                
                 const [_value, _valueLeft] = res
                 setValueData(_value)
                 setValueLeft(_valueLeft)
             })
             .catch((err) => {
-                console.log(err, 'err') //TODO - handle error
+                 //TODO - handle error
                 setLoading(false)
                 toast.error(err)
             })
@@ -711,7 +710,6 @@ export default function DeploymentConfig({
         }
     }
 
-
     // set initial value on LHS
     const getValuesLHS = async () => {
         return fetchManifestData(state.publishedState?.tempFormData ?? state.data)
@@ -734,9 +732,8 @@ export default function DeploymentConfig({
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : loading ? (
-                    <div style={{ width: '100%', textAlign: 'center' }}>
-                        <Spinner loading></Spinner>
-                        <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                    <div style={{height:'100vh'}}>
+                        <Progressing pageLoader />
                     </div>
                 ) : (
                     <DeploymentTemplateEditorView

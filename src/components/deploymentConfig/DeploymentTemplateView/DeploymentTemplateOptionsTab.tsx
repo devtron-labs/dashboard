@@ -50,8 +50,6 @@ export default function DeploymentTemplateOptionsTab({
     }
 
     const restoreLastSaved = () => {
-        console.log(isValues,"isValues")
-        console.log("restoreLastSaved")
         if (isEnvOverride) {
             const overriddenValues = !!state.latestDraft
                 ? state.draftValues
@@ -68,8 +66,7 @@ export default function DeploymentTemplateOptionsTab({
             }
         } else {
             if(isValues){
-                console.log("_state.draftValues",state.draftValues)
-                console.log("_state.template",YAML.stringify(state.template, { indent: 2 }))
+
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
                     payload: !!state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),

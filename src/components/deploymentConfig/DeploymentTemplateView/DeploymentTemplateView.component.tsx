@@ -163,7 +163,7 @@ export const CompareWithDropdown = ({
     isValues,
     groupedData,
 }) => {
-    console.log(groupedData, 'groupedData')
+    
     const [groupedOptions, setGroupedOptions] = useState([
         {
             label: '',
@@ -392,6 +392,7 @@ export const RenderManifestEditorHeading = ({
     isPublishedOverriden,
     isDeleteDraftState,
     setShowProposal,
+    isValues
 }) => {
     const [selectedOption, setSelectedOption] = useState({ id: 0, label: 'Approval Pending' })
 
@@ -400,15 +401,15 @@ export const RenderManifestEditorHeading = ({
             label: 'Manifest generated from',
             options: [
                 { id: 0, label: 'Approval Pending' },
-                { id: 1, label: 'Manifest from draft' },
+                { id: 1, label: `${isValues?'Values':'Manifest'} from draft` },
             ],
         },
     ]
 
     const onChange = (selected) => {
-        console.log(selected, 'selected')
+        
         setSelectedOption(selected)
-        console.log(selected.id === 1, 'selected.id === 0')
+        
         setShowProposal(selected.id === 1)
     }
 
