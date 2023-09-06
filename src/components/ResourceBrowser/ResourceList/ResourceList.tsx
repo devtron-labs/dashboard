@@ -900,11 +900,11 @@ export default function ResourceList() {
                     </div>
                 )
             } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
-                if (isSuperAdmin) {
-                    return <ErrorScreenManager code={403} />
-                } else {
-                    return <Reload />
-                }
+              return (
+                  <div className="bcn-0 node-data-container flex">
+                      {isSuperAdmin ? <ErrorScreenManager code={403} /> : <Reload />}
+                  </div>
+              )
             }
             return (
                 <ClusterTerminal
