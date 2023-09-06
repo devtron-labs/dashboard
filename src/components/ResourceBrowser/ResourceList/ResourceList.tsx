@@ -8,7 +8,7 @@ import {
     processK8SObjects,
     sortObjectArrayAlphabetically,
 } from '../../common'
-import { showError, Progressing, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ServerErrors, getUserRole, BreadCrumb, useBreadcrumb, ErrorScreenManager, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -900,7 +900,11 @@ export default function ResourceList() {
                     </div>
                 )
             } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
-                return null
+                if (isSuperAdmin) {
+                    return <ErrorScreenManager code={403} />
+                } else {
+                    return <Reload />
+                }
             }
             return (
                 <ClusterTerminal
