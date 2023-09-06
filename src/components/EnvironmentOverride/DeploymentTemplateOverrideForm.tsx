@@ -47,6 +47,7 @@ export default function DeploymentTemplateOverrideForm({
     isEnterpriseInstallation,
     isValuesOverride,
     setIsValuesOverride,
+    groupedData
 }) {
     const [obj, json, yaml, error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -502,6 +503,7 @@ export default function DeploymentTemplateOverrideForm({
                         globalChartRefId={state.data.globalChartRefId}
                         handleOverride={handleOverride}
                         isValues={isValuesOverride}
+                        groupedData={groupedData}
                     />
                 )}
                 <DeploymentConfigFormCTA

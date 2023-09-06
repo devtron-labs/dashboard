@@ -30,6 +30,7 @@ export default function DeploymentTemplateEditorView({
     editorOnChange,
     handleOverride,
     isValues,
+    groupedData,
 }: DeploymentTemplateEditorViewProps) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -141,9 +142,11 @@ export default function DeploymentTemplateEditorView({
                       isValues,
                       //@ts-ignore
                       state.selectedCompareOption.type,
+                        //@ts-ignore
+                      state.selectedCompareOption.pipelineConfigOverrideId,
                   )
                   // @ts-ignore // TODO: Fix noImplicitAny error here
-                : getDeploymentTemplateNew(+appId, +state.selectedCompareOption.chartRefId, isValues, state.selectedCompareOption.type)
+                : getDeploymentTemplateNew(+appId, +state.selectedCompareOption.chartRefId, isValues, state.selectedCompareOption.type, state.selectedCompareOption.pipelineConfigOverrideId)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
@@ -170,6 +173,7 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
                 .catch((err) => {
+                    console.log(err, 'err')
                     showError(err)
                     setFetchingValues(false)
                 })
@@ -300,6 +304,7 @@ export default function DeploymentTemplateEditorView({
                                             setSelectedOption={setSelectedOption}
                                             globalChartRef={globalChartRef}
                                             isValues={isValues}
+                                            groupedData={groupedData}
                                         />
                                         {!isDeleteDraftState &&
                                             isEnvOverride &&

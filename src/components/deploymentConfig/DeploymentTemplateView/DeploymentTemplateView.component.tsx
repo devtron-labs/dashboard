@@ -23,8 +23,7 @@ import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import { handleConfigProtectionError } from '../DeploymentConfig.utils'
-import { useParams } from 'react-router-dom'
-import { getOptions } from '../service'
+import moment from 'moment'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -105,25 +104,52 @@ const customValueContainer = (props): JSX.Element => {
     )
 }
 
-function groupDataByType(data) {
-    // Create a Map to store grouped objects by type
-    const groupedData = new Map()
+function formatTimestamp(jsonTimestamp) {
+    // Parse the JSON timestamp using Moment.js
+    const timestamp = moment(jsonTimestamp)
 
-    // Iterate through the data and group objects by type
-    data.forEach((item) => {
-        const type = item.type
+    // Define the desired output format
+    const formattedTimestamp = timestamp.format('ddd, MMM YYYY, hh:mm A')
 
-        if (!groupedData.has(type)) {
-            groupedData.set(type, [])
-        }
+    return formattedTimestamp
+}
 
-        groupedData.get(type).push(item)
-    })
+function textDecider(option, charts) {
+    let text = ''
 
-    // Convert the grouped data into an array of arrays
-    const result = [...groupedData.values()]
+    switch (option.type) {
+        case 1:
+            text = `(v${option.chartVersion})`
+            break
 
-    return result
+        case 2:
+        case 4:
+            const c = charts.find((chart) => chart.value === option.chartRefId)
+            text = `${option.environmentName ? option.environmentName : 'lol'} ${
+                option.chartVersion ? `(v${option.chartVersion})` : `(${c?.label.split(' ')[0]})`
+            }`
+            break
+
+        case 3:
+            const c3 = charts.find((chart) => chart.value === option.chartRefId)
+            text = `${formatTimestamp(option.startedOn)} ${
+                option.chartVersion ? `(v${option.chartVersion})` : `(${c3?.label.split(' ')[0]})`
+            }`
+            break
+
+        default:
+            text = ''
+            break
+    }
+    return text
+}
+
+const formatOptionLabel = (option): JSX.Element => {
+    return (
+        <div className="flex left column">
+            <span className="w-100 dc__ellipsis-right">{option.label}</span>
+        </div>
+    )
 }
 
 export const CompareWithDropdown = ({
@@ -135,8 +161,8 @@ export const CompareWithDropdown = ({
     setSelectedOption,
     globalChartRef,
     isValues,
+    groupedData,
 }) => {
-    const { appId } = useParams<{ appId: string }>()
     const [groupedOptions, setGroupedOptions] = useState([
         {
             label: '',
@@ -151,51 +177,18 @@ export const CompareWithDropdown = ({
         chartVersion: globalChartRef?.version || '',
     }
 
-    console.log(charts, 'charts')
+    const envName = environments.find((env) => env.id === +envId)?.label
 
     const labelName = {
         '1': 'Default values',
         '2': 'Published on environments',
-        '3': 'Prev. Deployments on self env',
-        '4': 'Deplyed on environments',
+        '3': `Prev. Deployments on ${envName}`,
+        '4': 'Deployed on environments',
     }
 
     useEffect(() => {
         _initOptions()
     }, [environments, charts, isValues])
-
-    const formatOptionLabel = (option): JSX.Element => {
-        // TODO change this to product requirements
-
-        if (option.type === 1) {
-            return (
-                <div className="flex left column">
-                    <span className="w-100 dc__ellipsis-right">{`(v${option.chartVersion})`}</span>
-                </div>
-            )
-        } else if (option.type === 2 || option.type === 4) {
-            const c = charts.find((chart) => chart.value === option.chartRefId)
-            console.log(c, 'c')
-            return (
-                <div className="flex left column">
-                    <span className="w-100 dc__ellipsis-right">
-                        {option.environmentName ? option.environmentName : 'lol'}&nbsp;
-                        {option.chartVersion ? `(v${option.chartVersion})` : `(${c?.label.split(' ')[0]})`}
-                    </span>
-                </div>
-            )
-        } else if (option.type === 3) {
-        }
-
-        return (
-            <div className="flex left column">
-                <span className="w-100 dc__ellipsis-right">
-                    {option.environmentName && option.environmentName}&nbsp;
-                    {option.chartVersion && `(v${option.chartVersion})`}
-                </span>
-            </div>
-        )
-    }
 
     const getSelectedOption = () => {
         if (isEnvOverride) {
@@ -209,45 +202,32 @@ export const CompareWithDropdown = ({
 
     const _initOptions = async () => {
         const _groupOptions = []
+
+        if (!envId) {
             _groupOptions.push({
                 label: '',
                 options: [baseTemplateOption],
             })
+        }
 
-        const res = await getOptions(parseInt(appId), parseInt(envId) || -1) //FIXME: uplift this api call to parent component
-
-        const { result } = res
-
-        const groupedData = groupDataByType(result)
         let id = 0
-        // TODO: change label to product requirements
+
         groupedData.forEach((group) => {
             if (!isValues && group[0].type === 1) return
             if (isValues && group[0].type === 4) return
-            if(isEnvOverride && group[0].type === 3) return // TODO: check if this works
+            if (!envId && group[0].type === 3) return
             _groupOptions.push({
                 label: labelName[group[0].type],
                 options: group.map((item) => {
                     return {
                         id: id++,
-                        label: item.environmentName ? item.environmentName : item.chartVersion, // FIXME: change this to product requirements
-                        // type: item.type,
+                        label: textDecider(item, charts),
+                        envId: envId,
                         ...item,
                     }
                 }),
             })
         })
-        // Push all environment & other version options
-        // _groupOptions.push({
-        //     label: labelName[groupDataByType[0][0].type],
-        //     options: groupedData[0]
-        // })
-
-        // _groupOptions.push({
-        //     label: labelName[groupDataByType[1][0].type],
-        //     options: groupedData[1]
-        // })
-
         setGroupedOptions(_groupOptions)
         setSelectedOption(getSelectedOption())
     }

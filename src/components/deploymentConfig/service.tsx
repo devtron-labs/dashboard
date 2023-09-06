@@ -11,8 +11,8 @@ export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultT
     }
 }
 // 
-export function getDeploymentTemplateNew(appId: number, chartRefId: number, isValues: boolean, type?: number) {
-    return post(`${Routes.DEPLOYMENT_TEMPLATE_NEW}`, { appId, chartRefId, getValues: isValues, type:type }); 
+export function getDeploymentTemplateNew(appId: number, chartRefId: number, isValues: boolean, type?: number, pipelineConfigOverrideId?: number) {
+    return post(`${Routes.DEPLOYMENT_TEMPLATE_NEW}`, { appId, chartRefId, valuesAndManifestFlag: isValues?1:2, type:type, pipelineConfigOverrideId:pipelineConfigOverrideId}); 
 }
 
 export function getDeploymentManisfest(request) {

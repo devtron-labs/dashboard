@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
-import { getDeploymentTemplate as getBaseDeploymentTemplate } from '../deploymentConfig/service'
+import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
 import { useAsync, importComponentFromFELibrary } from '../common'
 import '../deploymentConfig/deploymentConfig.scss'
 import {
@@ -44,6 +44,40 @@ export default function DeploymentTemplateOverride({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
+
+    const [groupedOptionsData, setGroupedOptionsData] = useState([])
+
+    function groupDataByType(data) {
+        // Create a Map to store grouped objects by type
+        const groupedData = new Map()
+    
+        // Iterate through the data and group objects by type
+        data.forEach((item) => {
+            const type = item.type
+    
+            if (!groupedData.has(type)) {
+                groupedData.set(type, [])
+            }
+    
+            groupedData.get(type).push(item)
+        })
+    
+        // Convert the grouped data into an array of arrays
+        const result = [...groupedData.values()]
+    
+        return result
+    }
+
+    useEffect(() => {
+
+        const fetchOptionsList = async () => {
+            const res = await getOptions(+appId, +envId) //FIXME: uplift this api call to parent component
+            const { result } = res
+            const _groupedData = groupDataByType(result)
+            setGroupedOptionsData(_groupedData)
+        }
+        fetchOptionsList()
+    },[environments])
 
     const [isValuesOverride, setIsValuesOverride] = useState(true)
 
@@ -445,6 +479,7 @@ export default function DeploymentTemplateOverride({
                         }
                         isValuesOverride={isValuesOverride}
                         setIsValuesOverride={setIsValuesOverride}
+                        groupedData={groupedOptionsData}
                     />
                 )}
             </div>

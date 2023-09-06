@@ -178,6 +178,7 @@ export interface DeploymentTemplateEditorViewProps {
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
     isValues?: boolean
+    groupedData?: any
 }
 
 export interface DeploymentConfigContextType {

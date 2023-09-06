@@ -7,6 +7,7 @@ import {
     saveDeploymentTemplate,
     getDeploymentManisfest,
     getDeploymentTemplateNew,
+    getOptions,
 } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
@@ -42,7 +43,7 @@ import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateVi
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import { stat } from 'fs'
-import { Spinner } from 'patternfly-react';
+import { Spinner } from 'patternfly-react'
 
 export const dummy = {
     ContainerPort: [
@@ -441,6 +442,42 @@ export default function DeploymentConfig({
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
+
+    const [groupedOptionsData, setGroupedOptionsData] = useState([])
+
+    function groupDataByType(data) {
+        // Create a Map to store grouped objects by type
+        const groupedData = new Map()
+    
+        // Iterate through the data and group objects by type
+        data.forEach((item) => {
+            const type = item.type
+    
+            if (!groupedData.has(type)) {
+                groupedData.set(type, [])
+            }
+    
+            groupedData.get(type).push(item)
+        })
+    
+        // Convert the grouped data into an array of arrays
+        const result = [...groupedData.values()]
+    
+        return result
+    }
+
+    useEffect(() => {
+
+        const fetchOptionsList = async () => {
+            const res = await getOptions(+appId, -1) //FIXME: uplift this api call to parent component
+            const { result } = res
+            const _groupedData = groupDataByType(result)
+            setGroupedOptionsData(_groupedData)
+        }
+
+        fetchOptionsList()
+    },[environments])
+
     useEffect(() => {
         reloadEnvironments()
         initialise()
@@ -453,7 +490,7 @@ export default function DeploymentConfig({
     }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
-        console.log(chartRefsData,"chartRefsData")
+        console.log(chartRefsData, 'chartRefsData')
         const payload = {
             ...chartRefsData,
             chartConfigLoading: false,
@@ -473,7 +510,7 @@ export default function DeploymentConfig({
     }
 
     async function initialise() {
-        console.log("initialise")
+        console.log('initialise')
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
@@ -517,8 +554,8 @@ export default function DeploymentConfig({
         console.log('setLoading - true')
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
             .then((draftsResp) => {
-                console.log('draftsResp',draftsResp)
-                
+                console.log('draftsResp', draftsResp)
+
                 if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
                     console.log('inside draftsResp')
                     processDraftData(draftsResp.result, chartRefsData)
@@ -531,7 +568,7 @@ export default function DeploymentConfig({
                 }
             })
             .catch((e) => {
-                console.log('error',e)
+                console.log('error', e)
                 updateRefsData(chartRefsData)
             })
     }
@@ -551,7 +588,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
-        const _codeEditorStringifyData=YAML.stringify(valuesOverride, { indent: 2 })
+        const _codeEditorStringifyData = YAML.stringify(valuesOverride, { indent: 2 })
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
             template: valuesOverride,
@@ -579,7 +616,7 @@ export default function DeploymentConfig({
             },
         }
 
-        console.log(_codeEditorStringifyData,"valuesOverride")
+        console.log(_codeEditorStringifyData, 'valuesOverride')
 
         setValueData(_codeEditorStringifyData)
         if (chartRefsData) {
@@ -701,7 +738,7 @@ export default function DeploymentConfig({
                 manifestData: YAML.stringify(dummy, { indent: 2 }),
                 data: _codeEditorStringifyData,
             }
-            
+
             let payload = {}
             if (state.publishedState) {
                 payload['publishedState'] = {
@@ -814,7 +851,7 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-        console.log("this is where its fucked")
+        console.log('this is where its fucked')
         if (isValues) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -988,14 +1025,14 @@ export default function DeploymentConfig({
         return requestData
     }
 
-    const [valueData, setValueData] = useState("")
-    const [valueLeft, setValueLeft] = useState("")
+    const [valueData, setValueData] = useState('')
+    const [valueLeft, setValueLeft] = useState('')
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         console.log('useEffect')
         setLoading(true)
-        const values = Promise.all([getValue(), getValuesLHS()])
+        const values = Promise.all([getValueRHS(), getValuesLHS()])
         values
             .then((res) => {
                 setLoading(false)
@@ -1005,70 +1042,47 @@ export default function DeploymentConfig({
                 setValueLeft(_valueLeft)
             })
             .catch((err) => {
+                console.log(err, 'err') //TODO - handle error
+                setLoading(false)
                 toast.error(err)
             })
     }, [isValues])
 
     const fetchManifestData = async (data) => {
         const request = {
-            "appId": +appId,
-            "chartRefId": state.selectedChartRefId,
-            "getValues": false,
-            "values": data
+            appId: +appId,
+            chartRefId: state.selectedChartRefId,
+            getValues: false,
+            values: data,
         }
         const response = await getDeploymentManisfest(request)
         return response.result.data
     }
 
     // not running once tab is changed
-    const getValue = async () => {
+    const getValueRHS = async () => {
         try {
-            let result = null;
-    
-            if (isCompareAndApprovalState) {
-              if (isValues) {
-                console.log('_here')
-                console.log(state.draftValues,"state.draftValues")
-                // Use state.draftValues
-                result = state.draftValues;
-              } else {
-                // Call the API with state.draftValues
-                result = await fetchManifestData(state.draftValues);
-              }
-            } else {
-              if (isValues) {
-                console.log('_rhere')
-                console.log(state.tempFormData,"state.tempFormData")
-                // Use state.tempFormData
-                result = state.tempFormData;
-              } else {
-                // Call the API with state.tempFormData
-                result = await fetchManifestData(state.tempFormData);
-              }
-            }
-            return result;
+            let result = null
 
-          } catch (error) {
+            if (isCompareAndApprovalState) {
+                // Call the API with state.draftValues
+                result = await fetchManifestData(state.draftValues)
+            } else {
+                // Call the API with state.tempFormData
+                result = await fetchManifestData(state.tempFormData)
+            }
+            return result
+        } catch (error) {
             // Handle errors if needed
-            console.error(error);
-          }
+            toast.error(error)
+            console.error(error)
+        }
     }
 
-    // console.log(valueData, 'valueData')
+
     // set initial value on LHS
     const getValuesLHS = async () => {
-        if (isValues) {
-            return state.publishedState?.tempFormData ?? state.data
-        } else {
-            const request = {
-                appId: parseInt(appId),
-                chartRefId: state.selectedChartRefId,
-                getValues: false,
-                values: state.publishedState?.tempFormData ?? state.data,
-            }
-            const response = await getDeploymentManisfest(request)
-            return response.result.data
-        }
+        return fetchManifestData(state.publishedState?.tempFormData ?? state.data)
     }
 
     const renderValuesView = () => {
@@ -1087,23 +1101,24 @@ export default function DeploymentConfig({
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
-                ) : 
-                loading ? (
+                ) : loading ? (
                     <div style={{ width: '100%', textAlign: 'center' }}>
-                <Spinner loading></Spinner>
-                <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
-            </div>
+                        <Spinner loading></Spinner>
+                        <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
+                    </div>
                 ) : (
                     <DeploymentTemplateEditorView
-                        defaultValue={isValues?state.publishedState?.tempFormData ?? state.data: valueLeft}
-                        value={isValues?(isCompareAndApprovalState ? state.draftValues:state.tempFormData): valueData}
+                        defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : valueLeft}
+                        value={
+                            isValues ? (isCompareAndApprovalState ? state.draftValues : state.tempFormData) : valueData
+                        }
                         globalChartRefId={state.selectedChartRefId}
                         editorOnChange={editorOnChange}
                         readOnly={isCompareAndApprovalState || !isValues}
                         isValues={isValues}
+                        groupedData={groupedOptionsData}
                     />
-                )
-                }
+                )}
                 <DeploymentConfigFormCTA
                     loading={state.loading || state.chartConfigLoading}
                     showAppMetricsToggle={
