@@ -144,16 +144,6 @@ export default function ResourceList() {
 
         // Get cluster data &  Initialize tabs on mount
         getClusterData()
-        initTabs([
-            {
-                idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-                name: AppDetailsTabs.k8s_Resources,
-                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
-                isSelected: true,
-                positionFixed: true,
-                iconPath: K8ResourceIcon,
-            }
-        ])
 
         // Retain selection data
         try {
@@ -445,6 +435,7 @@ export default function ResourceList() {
             } else {
                 showError(err)
             }
+            initTabsBasedOnRole(false)
         } finally {
             setClusterLoader(false)
         }
@@ -473,19 +464,19 @@ export default function ResourceList() {
               },
           ])
       } else {
-          initTabs([
-              {
-                  idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-                  name: AppDetailsTabs.k8s_Resources,
-                  url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${_nodeType}`,
-                  isSelected: true,
-                  positionFixed: true,
-                  iconPath: K8ResourceIcon,
-              },
-          ])
-          setTimeout(() => {
-              removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
-          }, 2000)
+          initTabs(
+              [
+                  {
+                      idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+                      name: AppDetailsTabs.k8s_Resources,
+                      url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${_nodeType}`,
+                      isSelected: true,
+                      positionFixed: true,
+                      iconPath: K8ResourceIcon,
+                  },
+              ],
+              [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`],
+          )
       }
     }
 
@@ -559,9 +550,17 @@ export default function ResourceList() {
                         pathname: URLS.RESOURCE_BROWSER,
                     })
                 }
-                replace({
-                    pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${namespace || ALL_NAMESPACE_OPTION.value
-                        }/${nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}/${location.search}`,
+                if (!node) {
+                    const searchParam = location.search ? `/${location.search}` : ''
+                    replace({
+                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
+                            namespace || ALL_NAMESPACE_OPTION.value
+                        }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
+                    })
+                }
+                setSelectedResource({
+                    namespaced: false,
+                    gvk: SIDEBAR_KEYS.overviewGVK,
                 })
                 setErrorMsg(
                     (err instanceof ServerErrors && Array.isArray(err.errors)

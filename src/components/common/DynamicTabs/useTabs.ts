@@ -55,7 +55,7 @@ export function useTabs(persistanceKey: string) {
         return populateTabData(_id, title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath, _initTab.dynamicTitle, _initTab.showNameOnSelect)
     }
 
-    const initTabs = (initTabsData: InitTabType[]) => {
+    const initTabs = (initTabsData: InitTabType[], tabsToRemove?:string[]) => {
         const persistedTabsData = localStorage.getItem('persisted-tabs-data')
         let parsedTabsData: Record<string, any> = {}
         let _tabs: DynamicTabType[]
@@ -67,12 +67,15 @@ export function useTabs(persistanceKey: string) {
         }
 
         if (_tabs.length > 0) {
-            const tabNames = _tabs.map((_tab) => _tab.name)
-            initTabsData.forEach((_initTab, idx) => {
-                if (!tabNames.includes(_initTab.name)) {
-                    _tabs.push(populateInitTab(_initTab, idx))
-                }
-            })
+          if (tabsToRemove?.length) {
+              _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
+          }
+          const tabNames = _tabs.map((_tab) => _tab.name)
+          initTabsData.forEach((_initTab, idx) => {
+              if (!tabNames.includes(_initTab.name)) {
+                  _tabs.push(populateInitTab(_initTab, idx))
+              }
+          })
         } else {
             initTabsData.forEach((_initTab, idx) => {
                 _tabs.push(populateInitTab(_initTab, idx))
@@ -118,9 +121,6 @@ export function useTabs(persistanceKey: string) {
     }
 
     const removeTabByIdentifier = (title: string): string => {
-      if (!tabs.length) {
-          return ''
-      }
       let pushURL = ''
       let selectedRemoved = false
       const _tabs = tabs.filter((tab) => {
