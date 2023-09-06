@@ -847,6 +847,8 @@ export default function ResourceList() {
                     renderCallBackSync={renderRefreshBar}
                     addTab={addTab}
                     syncError={!hideSyncWarning}
+                    lastDataSync={lastDataSync}
+                    setLastDataSync={setLastDataSync}
                 />
             )
         } else {
