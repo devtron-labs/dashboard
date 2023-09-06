@@ -8,7 +8,7 @@ import uploadingImage from '../../assets/gif/uploading.gif'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION } from '../../config'
+import { DOCUMENTATION, SERVER_ERROR_CODES } from '../../config'
 import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from './types'
 
 export default function UploadChartModal({ closeUploadPopup }: UploadChartModalType) {
@@ -32,8 +32,10 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
             .catch((error) => {
                 setUploadState(UPLOAD_STATE.ERROR)
                 if (Array.isArray(error.errors)) {
-                    if (error.errors[0].code === '5001') {
-                        setErrorData({ title: error.errors[0].userMessage, message: ['Try uploading another chart'] })
+                    if (error.errors[0].code === SERVER_ERROR_CODES.CHART_ALREADY_EXISTS) {
+                        setErrorData({ title: error.errors[0]?.userMessage || "", message: ['Try uploading another chart'] })
+                    } else if (error.errors[0].code === SERVER_ERROR_CODES.CHART_NAME_RESERVED) {
+                        setErrorData({ title: error.errors[0]?.userMessage || "", message: [error.errors[0]?.internalMessage || ""] })
                     } else {
                         setErrorData({
                             title: 'Unsupported chart template',
@@ -154,7 +156,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
         return (
             <div className="flex column" style={{ width: '100%', height: '310px' }}>
                 <img src={imgSrc} alt="image" style={{ height: '100px' }} className="mb-10" />
-                <h4 className="fw-6 fs-16">{title}</h4>
+                <h4 className="fw-6 fs-16 text-center">{title}</h4>
                 {descriptionList.map((description) => (
                     <p className="fs-13 fw-4 m-0">{description}</p>
                 ))}

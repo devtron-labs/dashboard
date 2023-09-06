@@ -248,3 +248,15 @@ export function deleteChartGroup(request) {
 export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise<ResponseType> {
     return put(Routes.UPDATE_HELM_APP_META_INFO, payload)
 }
+
+export function getChartProviderList(): Promise<ResponseType>{
+    return get('app-store/chart-provider/list')
+}
+
+export function updateChartProviderList(payload){
+    return post('app-store/chart-provider/update', payload)
+}
+
+export function updateSyncSpecificChart(payload){
+    return post('app-store/chart-provider/sync-chart ', payload)
+}
