@@ -5,7 +5,6 @@ import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { DeploymentConfigToolbarProps } from '../types'
-import ClickAwayListener from 'react-click-away-listener';
 
 
 export default function DeploymentConfigToolbar({
@@ -38,7 +37,7 @@ export default function DeploymentConfigToolbar({
         }
 
         return (
-          <ClickAwayListener onClickAway={onClose}>
+          // <ClickAwayListener onClickAway={onClose}>
             <div
               className="flex-col"
               style={{
@@ -56,7 +55,7 @@ export default function DeploymentConfigToolbar({
             >
               <div style={{ padding: '4px 0px' }}>{children}</div>
             </div>
-          </ClickAwayListener>
+          // </ClickAwayListener>
         );
       }
 

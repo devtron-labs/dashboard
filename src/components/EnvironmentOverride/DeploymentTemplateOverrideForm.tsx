@@ -427,9 +427,13 @@ export default function DeploymentTemplateOverrideForm({
                     ? state.draftValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
         } else if (state.tempFormData) {
+            // console.log(state.tempFormData, '_r_state.tempFormData')
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
+            // console.log(isOverridden, '_r_isOverridden')
+            // console.log(state.duplicate, '_r_state.duplicate')
+            // console.log(state.data.globalConfig, '_r_state.data.globalConfig')
             codeEditorValue = isOverridden
                 ? YAML.stringify(state.duplicate, { indent: 2 })
                 : YAML.stringify(state.data.globalConfig, { indent: 2 })
