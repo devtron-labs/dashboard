@@ -410,6 +410,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     isImageApprover = (userApprovalMetadata: UserApprovalMetadataType) => {
+        if (window._env_.CAN_APPROVER_DEPLOY) {
+            return false
+        }
         return (
             userApprovalMetadata?.approvedUsersData &&
             userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === this.props.requestedUserId)
