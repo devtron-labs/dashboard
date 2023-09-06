@@ -52,26 +52,25 @@ export default function DeploymentTemplateOverride({
     function groupDataByType(data) {
         // Create a Map to store grouped objects by type
         const groupedData = new Map()
-    
+
         // Iterate through the data and group objects by type
         data.forEach((item) => {
             const type = item.type
-    
+
             if (!groupedData.has(type)) {
                 groupedData.set(type, [])
             }
-    
+
             groupedData.get(type).push(item)
         })
-    
+
         // Convert the grouped data into an array of arrays
         const result = [...groupedData.values()]
-    
+
         return result
     }
 
     useEffect(() => {
-
         const fetchOptionsList = async () => {
             const res = await getOptions(+appId, +envId) //FIXME: uplift this api call to parent component
             const { result } = res
@@ -79,7 +78,7 @@ export default function DeploymentTemplateOverride({
             setGroupedOptionsData(_groupedData)
         }
         fetchOptionsList()
-    },[environments])
+    }, [environments])
 
     const [isValuesOverride, setIsValuesOverride] = useState(true)
 
@@ -180,7 +179,6 @@ export default function DeploymentTemplateOverride({
                 updateRefsData(chartRefsData)
             })
     }
-
     const processDraftData = (latestDraft, chartRefsData) => {
         const {
             envOverrideValues,
@@ -225,7 +223,6 @@ export default function DeploymentTemplateOverride({
         }
 
         setValue(YAML.stringify(envOverrideValues, { indent: 2 }))
-        
 
         if (chartRefsData) {
             payload['publishedState'] = {

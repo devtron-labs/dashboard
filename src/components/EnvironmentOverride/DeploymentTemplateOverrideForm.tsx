@@ -51,14 +51,13 @@ export default function DeploymentTemplateOverrideForm({
     value,
     setValue,
     valueLeft,
-    setValueLeft
+    setValueLeft,
 }) {
     const [obj, json, yaml, error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
 
-    
-    const [loading,setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -213,7 +212,7 @@ export default function DeploymentTemplateOverrideForm({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        if(isValuesOverride){
+        if (isValuesOverride) {
             console.log('here')
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -378,22 +377,22 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     useEffect(() => {
-        if(isValuesOverride) return
-        const values = Promise.all([_getCodeEditorValue(false), _getCodeEditorValue(true)]);
+        if (isValuesOverride) return
+        const values = Promise.all([_getCodeEditorValue(false), _getCodeEditorValue(true)])
         setLoading(true)
-        values.then((res) => {
-            console.log(res, 'res')
-            const [value, valueLeft] = res;
-            setValue(value)
-            setValueLeft(valueLeft)
-            setLoading(false)
-        })
-        .catch((err) => {
-            setLoading(false)
-            console.log(err, 'err')
-        })
-    
-    },[isValuesOverride])
+        values
+            .then((res) => {
+                console.log(res, 'res')
+                const [value, valueLeft] = res
+                setValue(value)
+                setValueLeft(valueLeft)
+                setLoading(false)
+            })
+            .catch((err) => {
+                setLoading(false)
+                console.log(err, 'err')
+            })
+    }, [isValuesOverride])
 
     const _getCodeEditorValue = async (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
@@ -403,15 +402,23 @@ export default function DeploymentTemplateOverrideForm({
         } else if (isCompareAndApprovalState) {
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
-                    ? (isValuesOverride ? state.draftValues : await fetchManifestData(state.draftValues))
-                    : (isValuesOverride ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 })))
+                    ? isValuesOverride
+                        ? state.draftValues
+                        : await fetchManifestData(state.draftValues)
+                    : isValuesOverride
+                    ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
         } else if (state.tempFormData) {
             codeEditorValue = isValuesOverride ? state.tempFormData : await fetchManifestData(state.tempFormData)
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? isValuesOverride ? YAML.stringify(state.duplicate, { indent: 2 }) : await fetchManifestData(YAML.stringify(state.duplicate, { indent: 2 }))
-                : isValuesOverride ? YAML.stringify(state.data.globalConfig, { indent: 2 }) : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
+                ? isValuesOverride
+                    ? YAML.stringify(state.duplicate, { indent: 2 })
+                    : await fetchManifestData(YAML.stringify(state.duplicate, { indent: 2 }))
+                : isValuesOverride
+                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
         }
 
         return codeEditorValue
@@ -447,21 +454,24 @@ export default function DeploymentTemplateOverrideForm({
             type: DeploymentConfigStateActionTypes.loading,
             payload: true,
         })
+        dispatch({
+            type: DeploymentConfigStateActionTypes.duplicate,
+            payload: '',
+        })
         initialise(false, true, false)
     }
 
     const fetchManifestData = async (data) => {
         const request = {
-            "appId": +appId,
-            "chartRefId": state.selectedChartRefId,
-            "valuesAndManifestFlag": 2,
-            "values": data
+            appId: +appId,
+            chartRefId: state.selectedChartRefId,
+            valuesAndManifestFlag: 2,
+            values: data,
         }
         const response = await getDeploymentManisfest(request)
         console.log(response.result.data, 'response')
         return response.result.data
     }
-
 
     const renderValuesView = () => {
         return (
@@ -474,16 +484,26 @@ export default function DeploymentTemplateOverrideForm({
                 <DeploymentTemplateOptionsTab
                     isEnvOverride={true}
                     disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-                    codeEditorValue={ isValuesOverride?getCodeEditorValue(readOnlyPublishedMode):value}
+                    codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : value}
                 />
                 {readOnlyPublishedMode && !state.showReadme ? (
-                    <DeploymentTemplateReadOnlyEditorView value={isValuesOverride? getCodeEditorValue(true):value} isEnvOverride={true} />
-                    ) : (
-                    loading ? <Progressing pageLoader /> :
+                    <DeploymentTemplateReadOnlyEditorView
+                        value={isValuesOverride ? getCodeEditorValue(true) : value}
+                        isEnvOverride={true}
+                    />
+                ) : loading ? (
+                    <Progressing pageLoader />
+                ) : (
                     <DeploymentTemplateEditorView
                         isEnvOverride={true}
-                        value={isValuesOverride? getCodeEditorValue(false):value}
-                        defaultValue={state.data && state.openComparison ? isValuesOverride ? getCodeEditorValue(true):valueLeft : ''}
+                        value={isValuesOverride ? getCodeEditorValue(false) : value}
+                        defaultValue={
+                            state.data && state.openComparison
+                                ? isValuesOverride
+                                    ? getCodeEditorValue(true)
+                                    : valueLeft
+                                : ''
+                        }
                         editorOnChange={editorOnChange}
                         environmentName={environmentName}
                         readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
