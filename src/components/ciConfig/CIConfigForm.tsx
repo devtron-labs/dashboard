@@ -82,6 +82,8 @@ export default function CIConfigForm({
             : ciConfig && ciConfig.dockerRegistry
             ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
             : dockerRegistries.find((reg) => reg.isDefault)
+            console.log(dockerRegistries)
+            console.log(selectedCIPipeline)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
         CI_CONFIG_FORM_VALIDATION,

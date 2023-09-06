@@ -27,7 +27,6 @@ export default function CIContainerRegistryConfig({
     isCDPipeline,
 }: CIContainerRegistryConfigProps) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
-
     const onClickRedirectLink = (e) => {
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('takeMeThereClicked', '1')
@@ -131,10 +130,11 @@ export default function CIContainerRegistryConfig({
                     <label htmlFor="" className="form__label dc__required-field">
                         Container Registry
                     </label>
+                   { console.log(ciConfig)}
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
                             <span className={`dc__registry-icon mr-8 ${currentRegistry?.registryType}`} />
-                            <span className="fs-14 fw-4 lh-20 cn-9">{currentRegistry?.id}</span>
+                            <span className="fs-14 fw-4 lh-20 cn-9">{ciConfig?.dockerRegistry}</span>
                         </div>
                     ) : (
                             <ReactSelect
