@@ -239,7 +239,7 @@ export default function ResourceList() {
     const updateOnClusterChange = async (clusterId) => {
         try {
             setErrorStatusCode(0)
-            setClusterLoader(true)
+            setResourceListLoader(true)
             setClusterCapacityData(null)
             const { result } = await getClusterCapacity(clusterId)
             if (result) {
@@ -297,7 +297,7 @@ export default function ResourceList() {
                 setErrorStatusCode(err['code'])
             }
         } finally {
-            setClusterLoader(false)
+          setResourceListLoader(false)
         }
     }
 
