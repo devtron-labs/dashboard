@@ -1,22 +1,18 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
-import {
-    PARSE_ERROR_TOAST_MESSAGE,
-    SAVE_ERROR_TOAST_MESSAGE,
-    SAVE_SUCCESS_TOAST_MESSAGE,
-    GET_SCOPED_VARIABLES_ERROR,
-    UPLOAD_FAILED_STANDARD_MESSAGE,
-} from './constants'
+import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
+import { SAVE_SUCCESS_TOAST_MESSAGE, GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 
 export default function ScopedVariablesEditor({
     variablesData,
@@ -32,6 +28,7 @@ export default function ScopedVariablesEditor({
     const [showSaveView, setShowSaveView] = useState<boolean>(false)
     const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
+    const [footerError, setFooterError] = useState<string>('')
 
     const handleParsing = (data: string): ScopedVariablesDataType => {
         let variablesObj: ScopedVariablesDataType
@@ -59,10 +56,15 @@ export default function ScopedVariablesEditor({
                 setScopedVariables(null)
                 reloadScopedVariables()
             } else {
-                toast.error(SAVE_ERROR_TOAST_MESSAGE)
+                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             }
         } catch (e) {
-            toast.error(SAVE_ERROR_TOAST_MESSAGE)
+            if (e instanceof ServerErrors && Array.isArray(e.errors) && e?.code === 406) {
+                setFooterError(e?.errors?.[0].userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+                setIsSaving(false)
+                return
+            }
+            toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             setIsSaving(false)
         }
     }
@@ -95,6 +97,10 @@ export default function ScopedVariablesEditor({
 
     const handleEditorChange = (value: string) => {
         setEditorData(value)
+    }
+
+    const handleClearError = () => {
+        setFooterError('')
     }
 
     const handleAbort = () => {
@@ -132,7 +138,7 @@ export default function ScopedVariablesEditor({
                                 disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                                 data-testid="close-btn"
                             >
-                                <Close className="icon-dim-20" />
+                                <ICClose className="icon-dim-20" />
                             </button>
                         </Tippy>
                     </div>
@@ -146,7 +152,9 @@ export default function ScopedVariablesEditor({
                                 Last Saved File
                             </div>
                             <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                <ICPencil className="icon-dim-20" />
+                                <div className="flex">
+                                    <ICPencil className="icon-dim-16" />
+                                </div>
                                 Edit File
                             </div>
                         </div>
@@ -162,6 +170,23 @@ export default function ScopedVariablesEditor({
                         onChange={handleEditorChange}
                         validatorSchema={jsonSchema}
                     />
+
+                    {footerError && (
+                        <div className="flexbox pt-8 pb-8 pl-12 pr-12 dc__gap-8 dc__align-self-stretch dc__border-radius-4-imp bcr-1 dc__content-space  dc__align-start">
+                            <div className="flexbox dc__align-start dc__gap-8">
+                                <ICError className="icon-dim-20 dc__no-shrink mt-2" />
+
+                                <p className="cn-9 fs-13 fw-4 lh-20 m-0 ">{footerError}</p>
+                            </div>
+
+                            <button
+                                className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1"
+                                onClick={handleClearError}
+                            >
+                                <ICClose className="icon-dim-20 mt-2" />
+                            </button>
+                        </div>
+                    )}
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
