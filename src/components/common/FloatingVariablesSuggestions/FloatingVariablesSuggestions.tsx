@@ -141,7 +141,7 @@ export default function FloatingVariablesSuggestions({
                                 renderVariableItem({
                                     variableName: variable.variableName,
                                     variableDescription: variable.variableDescription || 'No Defined Description',
-                                    variableValue: variable.variableValue.value,
+                                    variableValue: variable.variableValue.value || 'No Defined Value',
                                 }),
                             )}
                         </div>
