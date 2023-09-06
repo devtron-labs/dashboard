@@ -10,6 +10,7 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
+import { importComponentFromFELibrary } from '../common'
 
 export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorProps) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,6 +19,8 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
             readFile(e.target.files![0], validator, ReadFileAs.TEXT)
         }
     }
+
+    const additonalTippyContent = importComponentFromFELibrary('scopedVariablesHelpTippyText')
 
     return (
         <>
@@ -30,21 +33,39 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                     <div className="flex dc__gap-8">
                         <p className="cn-9 fs-16 fw-6 m-0">{DEFAULT_TITLE}</p>
 
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300 h-100 fcv-5"
-                            placement="right"
-                            Icon={QuestionFilled}
-                            heading={DEFAULT_TITLE}
-                            infoText={DEFAULT_DESCRIPTION}
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
-                                <ICHelpOutline className="icon-dim-20" />
-                            </button>
-                        </TippyCustomized>
+                        {additonalTippyContent ? (
+                            <TippyCustomized
+                                theme={TippyTheme.white}
+                                className="w-300 h-100 fcv-5"
+                                placement="right"
+                                Icon={QuestionFilled}
+                                heading={DEFAULT_TITLE}
+                                showCloseButton={true}
+                                trigger="click"
+                                interactive={true}
+                                additionalContent={additonalTippyContent()}
+                            >
+                                <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
+                                    <ICHelpOutline className="icon-dim-20" />
+                                </button>
+                            </TippyCustomized>
+                        ) : (
+                            <TippyCustomized
+                                theme={TippyTheme.white}
+                                className="w-300 h-100 fcv-5"
+                                placement="right"
+                                Icon={QuestionFilled}
+                                heading={DEFAULT_TITLE}
+                                infoText={DEFAULT_DESCRIPTION}
+                                showCloseButton={true}
+                                trigger="click"
+                                interactive={true}
+                            >
+                                <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
+                                    <ICHelpOutline className="icon-dim-20" />
+                                </button>
+                            </TippyCustomized>
+                        )}
                     </div>
 
                     <div className="flex dc__gap-12">
