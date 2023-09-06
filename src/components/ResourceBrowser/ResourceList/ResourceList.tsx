@@ -789,7 +789,6 @@ export default function ResourceList() {
             selectedNode?.isFromEvent || selectedNode?.isFromNodeDetails
                 ? getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
                 : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ??
-                  selectedResource?.gvk ??
                   getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
