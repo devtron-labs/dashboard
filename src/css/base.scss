@@ -2978,6 +2978,10 @@ textarea,
     max-height: 300px !important;
 }
 
+.mxh-504 {
+    max-height: 504px;
+}
+
 // Height in percentage
 .h-100 {
     height: 100%;
@@ -3637,4 +3641,18 @@ textarea::placeholder {
 
 .dc__disable-click {
     pointer-events: none;
+}
+
+.dc__grabbable {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+ /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+.dc__grabbable:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
 }

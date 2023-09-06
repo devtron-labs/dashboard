@@ -146,7 +146,7 @@ export default function ConfigMapList({
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
             <FloatingVariablesSuggestions
-                zIndex={100}
+                zIndex={20}
                 loading={loadingScopedVariables}
                 variables={scopedVariablesData}
                 reloadVariables={reloadScopedVariables}

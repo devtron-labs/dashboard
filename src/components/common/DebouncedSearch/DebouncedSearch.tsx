@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDebouncedEffect } from '../helpers/Helpers'
 import { DebouncedSearchProps } from './types'
 
@@ -12,8 +12,13 @@ export default function DebouncedSearch({
     iconClass = '',
     inputClass = '',
     debounceTimeout = 500,
+    clearSearch,
 }: DebouncedSearchProps) {
     const [searchText, setSearchText] = useState<string>('')
+
+    useEffect(() => {
+        setSearchText('')
+    }, [clearSearch])
 
     const handleSearchTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value)
