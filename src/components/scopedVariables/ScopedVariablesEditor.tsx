@@ -116,7 +116,7 @@ export default function ScopedVariablesEditor({
     }
 
     const renderInfoBarCloseButton = (): JSX.Element => (
-        <button className="p-0 h-20 dc__no-border dc__outline-none-imp" onClick={handleClearError}>
+        <button className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1" onClick={handleClearError}>
             <ICClose className="icon-dim-20 mt-2" />
         </button>
     )

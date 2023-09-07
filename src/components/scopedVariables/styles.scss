@@ -9,20 +9,20 @@
         font-weight: 600;
         margin-bottom: -1px;
     }
+}
 
-    .scoped-variables-editor-infobar__dropdown {
-        top: 37px;
-        right: 0;
-        width: 185px;
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
-        z-index: 1;
-    }
+.scoped-variables-editor-infobar__dropdown {
+    top: 37px;
+    right: 0;
+    width: 185px;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
 
-    .scoped-variables-editor-infobar__dropdown-item:active {
-        background: var(--B100);
-        color: var(--B500);
-        font-weight: 600;
-    }
+.scoped-variables-editor-infobar__dropdown-item:active {
+    background: var(--B100);
+    color: var(--B500);
+    font-weight: 600;
 }
 
 .saved-variables-editor {
