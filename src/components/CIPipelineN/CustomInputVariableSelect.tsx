@@ -200,12 +200,13 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             )
         }
     }
+    
     const ValueContainer = (props) => {
         let value = props.getValue()[0]?.label
         return (
             <components.ValueContainer {...props}>
                 <>
-                {!props.selectProps.menuIsOpen &&
+                    {!props.selectProps.menuIsOpen &&
                         (value ? `${value}` : <span className="cn-5">Select source or input value</span>)}
                 </>
             </components.ValueContainer>
