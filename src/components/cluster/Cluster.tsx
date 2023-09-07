@@ -265,7 +265,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 isTlsConnection={this.state.isTlsConnection}
                                 isClusterDetails={this.state.isClusterDetails}
                                 proxyUrl={this.state.proxyUrl}
+                                sshTunnelConfig={this.state.sshTunnelConfig}
                                 isConnectedViaProxy={this.state.isConnectedViaProxy}
+                                isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 setTlsConnectionFalse={this.setTlsConnectionFalse}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
@@ -296,6 +298,7 @@ function Cluster({
     reload,
     prometheus_url,
     proxyUrl,
+    sshTunnelConfig,
     serverMode,
     isTlsConnection,
     toggleShowAddCluster,
@@ -334,6 +337,10 @@ function Cluster({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: {value: proxyUrl, error: '' },
+            sshTunnelUser: { value: sshTunnelConfig?.user, error: '' },
+            sshTunnelPassword: { value: sshTunnelConfig?.password, error: '' },
+            sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
+            sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
             isConnectedViaProxy: proxyUrl?.length ? true : false,
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
@@ -359,6 +366,18 @@ function Cluster({
             proxyUrl: {
                 required: false,
                 validator: { error: 'Incorrect Url', regex: /^.*$/ },
+            },
+            sshTunnelUser: {
+                required: false,
+            },
+            sshTunnelPassword: {
+                required: false,
+            },
+            sshTunnelPrivateKey: {
+                required: false,
+            },
+            sshTunnelUrl: {
+                required: false,
             },
             isConnectedViaProxy: {
                 required: false,
@@ -511,6 +530,12 @@ function Cluster({
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
             proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
+            sshTunnelConfig: {
+                user: state.sshTunnelUser?.value,
+                password: state.sshTunnelPassword?.value,
+                authKey: state.sshTunnelPrivateKey?.value,
+                sshServerAddress: state.sshServerAddress?.value,
+            },
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
@@ -782,7 +807,9 @@ function Cluster({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={state.proxyUrl}
+                                sshTunnelConfig={state.sshTunnelConfig}
                                 isConnectedViaProxy={state.isConnectedViaProxy}
+                                isConnectedViaSSHTunnel={state.isConnectedViaSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
                                 toggleShowAddCluster={toggleShowAddCluster}

@@ -12,7 +12,7 @@ export const AuthenticationType = {
     IAM: 'IAM',
 }
 
-export interface UserDetails{
+export interface UserDetails {
     userName: string
     errorInConnecting: string,
     config: ConfigCluster
@@ -23,7 +23,7 @@ export interface UserNameList {
     value: string,
 }
 
-export interface DataListType{
+export interface DataListType {
     id: number;
     cluster_name: string
     userInfos: UserDetails[]
@@ -32,10 +32,11 @@ export interface DataListType{
     defaultClusterComponent: number
     insecureSkipTlsVerify: boolean
     proxyUrl: string
+    sshTunnelConfig: Record<string, string>
 }
 
 export interface SaveClusterPayloadType {
-    id : number,
+    id: number,
     cluster_name: string,
     insecureSkipTlsVerify: boolean,
     config: ConfigCluster,
@@ -44,6 +45,7 @@ export interface SaveClusterPayloadType {
     prometheusAuth: Record<string, string>,
     server_url: string,
     proxyUrl: string,
+    sshTunnelConfig: Record<string, string>,
 }
 
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
