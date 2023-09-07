@@ -104,7 +104,7 @@ export default function SavedVariablesView({
 
     return status?.status == null ? (
         <div
-            className="flex column h-100 dc__content-space bcn-0"
+            className="flex column h-100 dc__content-space bcn-0 saved-variables__default-view"
             style={{
                 overflowY: 'hidden',
             }}
@@ -163,7 +163,7 @@ export default function SavedVariablesView({
                                         content="Download file/template"
                                     >
                                         <div>
-                                            <ICFileDownload className="icon-dim-20"/>
+                                            <ICFileDownload className="icon-dim-20" />
                                         </div>
                                     </Tippy>
                                 </PopupMenu.Button>
@@ -172,7 +172,7 @@ export default function SavedVariablesView({
                                     {DROPDOWN_ITEMS.map((item) => (
                                         <div
                                             key={item}
-                                            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4"
+                                            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50"
                                             onClick={() => handleDownload(item)}
                                         >
                                             {item}

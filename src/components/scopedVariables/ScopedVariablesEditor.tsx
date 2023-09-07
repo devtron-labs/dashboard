@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
@@ -61,6 +61,7 @@ export default function ScopedVariablesEditor({
         } catch (e) {
             if (e instanceof ServerErrors && Array.isArray(e.errors) && e?.code === 406) {
                 setFooterError(e?.errors?.[0].userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
                 setIsSaving(false)
                 return
             }
@@ -114,8 +115,14 @@ export default function ScopedVariablesEditor({
         abortRead()
     }
 
+    const renderInfoBarCloseButton = (): JSX.Element => (
+        <button className="p-0 h-20 dc__no-border dc__outline-none-imp" onClick={handleClearError}>
+            <ICClose className="icon-dim-20 mt-2" />
+        </button>
+    )
+
     return (
-        <div className="flex column dc__content-space h-100 bcn-0">
+        <div className="flex column dc__content-space h-100 bcn-0 saved-variables-editor">
             <Descriptor />
             <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
@@ -172,20 +179,13 @@ export default function ScopedVariablesEditor({
                     />
 
                     {footerError && (
-                        <div className="flexbox pt-8 pb-8 pl-12 pr-12 dc__gap-8 dc__align-self-stretch dc__border-radius-4-imp bcr-1 dc__content-space  dc__align-start">
-                            <div className="flexbox dc__align-start dc__gap-8">
-                                <ICError className="icon-dim-20 dc__no-shrink mt-2" />
-
-                                <p className="cn-9 fs-13 fw-4 lh-20 m-0 ">{footerError}</p>
-                            </div>
-
-                            <button
-                                className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1"
-                                onClick={handleClearError}
-                            >
-                                <ICClose className="icon-dim-20 mt-2" />
-                            </button>
-                        </div>
+                        <InfoColourBar
+                            message={footerError}
+                            classname="w-100 bcr-1 mb-16 m-0"
+                            Icon={ICError}
+                            iconClass="icon-dim-20"
+                            renderActionButton={renderInfoBarCloseButton}
+                        />
                     )}
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
