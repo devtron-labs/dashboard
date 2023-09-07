@@ -208,6 +208,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 <>
                     {!props.selectProps.menuIsOpen &&
                         (value ? `${value}` : <span className="cn-5">Select source or input value</span>)}
+                    {React.cloneElement(props.children[1])}
                 </>
             </components.ValueContainer>
         )
