@@ -195,7 +195,9 @@ export function ConfigMapSecretContainer({
                     update(index, null)
                 }
             }
-            toggleCollapse(false)
+            if((_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) || (_draftData?.status === 'fulfilled' && _draftData?.value !== null)) {
+                toggleCollapse(false)
+            }
             if (
                 (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
                 (_draftData?.status === 'rejected' && _draftData?.reason?.code === 403)
@@ -205,7 +207,6 @@ export function ConfigMapSecretContainer({
         } catch (error) {
             if(error === 'AbortError') {
                 console.log("Request was aborted", error)
-                alert('hey')
             }
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             setDraftData(null)
