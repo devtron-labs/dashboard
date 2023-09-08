@@ -87,7 +87,6 @@ export default function DeploymentConfigToolbar({
                                 style={{ transform: openDropdown ? 'rotate(180deg)' : '' }}
                                 onClick={() => setOpenDropdown(true)}
                             />
-                            {/* {openDropdown && ( */}
                             <DropdownContainer isOpen={openDropdown} onClose={() => setOpenDropdown(false)}>
                                 <DropdownItem
                                     label="Compare values"
@@ -100,7 +99,6 @@ export default function DeploymentConfigToolbar({
                                     onClick={() => handleOptionClick(false)}
                                 />
                             </DropdownContainer>
-                            {/* )}  */}
                         </li>
                     </ol>
                 </div>

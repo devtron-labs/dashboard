@@ -72,7 +72,7 @@ export default function DeploymentTemplateOverride({
 
     useEffect(() => {
         const fetchOptionsList = async () => {
-            const res = await getOptions(+appId, +envId) //FIXME: uplift this api call to parent component
+            const res = await getOptions(+appId, +envId)
             const { result } = res
             const _groupedData = groupDataByType(result)
             setGroupedOptionsData(_groupedData)

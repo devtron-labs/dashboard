@@ -64,14 +64,11 @@ export default function DeploymentTemplateOptionsTab({
                     payload: _envValues,
                 })
             }
-        } else {
-            if (isValues){
-
+        } else if(isValues) {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
                     payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
                 })
-            }
         }
     }
 

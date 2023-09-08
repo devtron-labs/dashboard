@@ -8,12 +8,7 @@ import {
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
-import {
-    getDefaultDeploymentTemplate,
-    getDeploymentManisfest,
-    getDeploymentTemplate,
-    getDeploymentTemplateData,
-} from '../service'
+import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
 import YAML from 'yaml'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
@@ -234,6 +229,14 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
+    const LHSValue = isValues
+        ? (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
+              ? defaultValue
+              : state.fetchedValues[state.selectedCompareOption?.id]) || ''
+        : state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
+        ? defaultValue
+        : state.fetchedValuesManifest[state.selectedCompareOption?.id]
+
     const renderCodeEditor = (): JSX.Element => (
         <div
             className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
@@ -241,15 +244,7 @@ export default function DeploymentTemplateEditorView({
             }`}
         >
             <CodeEditor
-                defaultValue={
-                    isValues
-                        ? (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
-                              ? defaultValue
-                              : state.fetchedValues[state.selectedCompareOption?.id]) || ''
-                        : (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
-                              ? defaultValue
-                              : state.fetchedValuesManifest[state.selectedCompareOption?.id]) || 'lol'
-                }
+                defaultValue={LHSValue}
                 value={state.selectedTabIndex !== 3 && showProposal ? proposalData : value}
                 onChange={editorOnChange}
                 mode={MODES.YAML}
