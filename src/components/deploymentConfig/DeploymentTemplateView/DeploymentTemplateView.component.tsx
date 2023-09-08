@@ -329,7 +329,7 @@ export const CompareWithApprovalPendingAndDraft = ({
     latestDraft,
     isPublishedOverriden,
     isDeleteDraftState,
-    setShowProposal,
+    setShowDraftData,
     isValues
 }: CompareWithApprovalPendingAndDraftProps) => {
     const [selectedOption, setSelectedOption] = useState({ id: 0, label: 'Approval Pending' })
@@ -346,7 +346,7 @@ export const CompareWithApprovalPendingAndDraft = ({
 
     const onChange = (selected) => {
         setSelectedOption(selected)
-        setShowProposal(selected.id === 1)
+        setShowDraftData(selected.id === 1)
     }
 
     const formatLabel = (option) => (

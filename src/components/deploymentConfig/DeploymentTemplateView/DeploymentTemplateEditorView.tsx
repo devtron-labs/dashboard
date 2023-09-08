@@ -45,8 +45,9 @@ export default function DeploymentTemplateEditorView({
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
 
-    const [showProposal, setShowProposal] = useState(false)
-    const [proposalData, setProposalData] = useState(null)
+    const [showDraftData, setShowDraftData] = useState(false)
+    const [draftData, setDraftData] = useState(null)
+    const [draftLoading, setDraftLoading] = useState(false)
 
     const getLocalDaftManifest = async () => {
         if (isValues) return state.tempFormData
@@ -57,17 +58,19 @@ export default function DeploymentTemplateEditorView({
                 getValues: false,
                 values: state.tempFormData,
             }
+            setDraftLoading(true)
             const response = await getDeploymentManisfest(request)
+            setDraftLoading(false)
             return response.result.data
         }
     }
 
     useEffect(() => {
-        if (!showProposal) return
+        if (!showDraftData) return
         getLocalDaftManifest().then((data) => {
-            setProposalData(data)
+            setDraftData(data)
         })
-    }, [showProposal])
+    }, [showDraftData])
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -245,11 +248,11 @@ export default function DeploymentTemplateEditorView({
         >
             <CodeEditor
                 defaultValue={LHSValue}
-                value={state.selectedTabIndex !== 3 && showProposal ? proposalData : value}
+                value={state.selectedTabIndex !== 3 && showDraftData ? draftData : value}
                 onChange={editorOnChange}
                 mode={MODES.YAML}
                 validatorSchema={state.schema}
-                loading={state.chartConfigLoading || value === undefined || value === null || fetchingValues}
+                loading={state.chartConfigLoading || value === undefined || value === null || fetchingValues || draftLoading}
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
                 readOnly={readOnly}
@@ -332,7 +335,7 @@ export default function DeploymentTemplateEditorView({
                                             latestDraft={state.latestDraft}
                                             isPublishedOverriden={state.publishedState?.isOverride}
                                             isDeleteDraftState={isDeleteDraftState}
-                                            setShowProposal={setShowProposal}
+                                            setShowDraftData={setShowDraftData}
                                             isValues={isValues}
                                         />
                                     )}

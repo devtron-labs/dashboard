@@ -135,7 +135,7 @@ export interface CompareWithApprovalPendingAndDraftProps {
     latestDraft: any
     isPublishedOverriden: boolean
     isDeleteDraftState: boolean
-    setShowProposal: (show: boolean) => void
+    setShowDraftData: (show: boolean) => void
     isValues: boolean
 }
 
