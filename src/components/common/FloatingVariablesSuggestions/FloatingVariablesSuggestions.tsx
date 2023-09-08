@@ -3,7 +3,7 @@ import Draggable from 'react-draggable'
 import Tippy from '@tippyjs/react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
-import { FloatingVariablesSuggestionsProps, RenderSuggestionsItemProps } from './types'
+import { FloatingVariablesSuggestionsProps, RenderSuggestionsItemProps, Suggestion } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
@@ -11,7 +11,12 @@ import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 
-//TODO: Fix the case for no matching variable found
+// TODO: Fix the case for no matching variable found
+// TODO: Add Clear Search Icon
+// TODO: Add Copy to Clipboard functionality
+// TODO: Add Tooltip for Copy to Clipboard
+// TODO: Bounce the floating window when it is activated
+// TODO: Animate when toggles to adjust within the screen
 export default function FloatingVariablesSuggestions({
     zIndex,
     loading,
@@ -19,29 +24,33 @@ export default function FloatingVariablesSuggestions({
     reloadVariables,
     error,
 }: FloatingVariablesSuggestionsProps) {
-    const [isActive, setIsActive] = useState(false)
-    const [suggestions, setSuggestions] = useState([])
-    const [clearSearch, setClearSearch] = useState(false)
+    const [isActive, setIsActive] = useState<boolean>(false)
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+    const [clearSearch, setClearSearch] = useState<boolean>(false)
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
-    const enableSearch = !loading && !error && variables?.result?.length
+    const enableSearch = !loading && !error && variables?.length
 
     useEffect(() => {
-        setSuggestions(variables?.result || [])
-    }, [variables?.result, isActive])
+        setSuggestions(variables ?? [])
+    }, [variables, isActive])
+
+    const stopPropagation = (e: React.MouseEvent<HTMLOrSVGElement>) => {
+        e.stopPropagation()
+    }
 
     const handleActivation = () => {
         setIsActive(true)
     }
 
-    const handleDeActivation = (e: React.MouseEvent<HTMLOrSVGElement, MouseEvent>) => {
+    const handleDeActivation = (e: React.MouseEvent<HTMLOrSVGElement>) => {
         e.stopPropagation()
         setIsActive(false)
     }
 
     const onSearch = (text: string) => {
-        const filteredSuggestions = (variables?.result || []).filter((variable) =>
+        const filteredSuggestions = (variables ?? []).filter((variable) =>
             variable.variableName.toLowerCase().includes(text.toLowerCase()),
         )
         setSuggestions(filteredSuggestions)
@@ -66,7 +75,7 @@ export default function FloatingVariablesSuggestions({
                     </p>
 
                     <div className="icon-dim-16 ml-8">
-                        <Clipboard onClick={() => {}} className="icon-dim-16 cursor" />
+                        <Clipboard onClick={stopPropagation} className="icon-dim-16 cursor" />
                     </div>
                 </div>
 
@@ -108,44 +117,45 @@ export default function FloatingVariablesSuggestions({
         </div>
     )
 
-    const renderButton = (): JSX.Element => (
-        <button
-            className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-8-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center mb-12"
-            onClick={handleClearSearch}
-        >
-            Clear Search
-        </button>
-    )
-
-    const renderSuggestions = (): JSX.Element => {
+    // normal function since we need to pass it as a prop
+    function renderClearSearchButton(): JSX.Element {
         return (
-            <>
-                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
-                    {/* FIXME: May have to stringify the value */}
-                    {suggestions?.length ? (
-                        suggestions.map((variable) =>
-                            renderVariableItem({
-                                variableName: variable.variableName,
-                                variableDescription: variable.variableDescription || 'No Defined Description',
-                                variableValue: variable.variableValue.value || 'No Defined Value',
-                            }),
-                        )
-                    ) : (
-                        <GenericEmptyState
-                            title="No matching variable found"
-                            isButtonAvailable
-                            image={NoResults}
-                            renderButton={renderButton}
-                        />
-                    )}
-                </div>
-
-                <div className="flexbox dc__align-self-stretch dc__align-items-center pt-12 pb-12 pl-10 pr-10 bcv-1 m-0 fs-13 fw-4 lh-20 cn-9">
-                    Type &nbsp;<span className="fw-6">{'@{{}}'}</span>&nbsp; to use a variable instead of fixed value.
-                </div>
-            </>
+            <button
+                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-8-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center mb-12"
+                onClick={handleClearSearch}
+                type="button"
+            >
+                Clear Search
+            </button>
         )
     }
+
+    const renderSuggestions = (): JSX.Element => (
+        <>
+            <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
+                {suggestions.length ? (
+                    suggestions.map((variable: Suggestion) =>
+                        renderVariableItem({
+                            variableName: variable.variableName,
+                            variableDescription: variable.variableDescription ?? 'No Defined Description',
+                            variableValue: JSON.stringify(variable.variableValue.value) ?? 'No Defined Value',
+                        }),
+                    )
+                ) : (
+                    <GenericEmptyState
+                        title="No matching variable found"
+                        isButtonAvailable
+                        image={NoResults}
+                        renderButton={renderClearSearchButton}
+                    />
+                )}
+            </div>
+
+            <div className="flexbox dc__align-self-stretch dc__align-items-center pt-12 pb-12 pl-10 pr-10 bcv-1 m-0 fs-13 fw-4 lh-20 cn-9">
+                Type &nbsp;<span className="fw-6">{'@{{}}'}</span>&nbsp; to use a variable instead of fixed value.
+            </div>
+        </>
+    )
 
     const renderBody = (): JSX.Element => {
         if (loading)
@@ -168,12 +178,10 @@ export default function FloatingVariablesSuggestions({
                     style={{ zIndex, boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.20)' }}
                     onClick={handleActivation}
                     ref={nodeRef}
+                    type="button"
                 >
                     {/* TODO: move logic into function */}
-                    <ICDrag
-                        className="handle-drag dc__grabbable scn-4 icon-dim-20"
-                        onClick={(e) => e.stopPropagation()}
-                    />
+                    <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" onClick={stopPropagation} />
                     {/* DUMMY ICON */}
                     <ICGridView className="scn-0 icon-dim-20" />
                 </button>
@@ -190,10 +198,8 @@ export default function FloatingVariablesSuggestions({
                 }}
                 ref={nodeRef}
             >
-                <>
-                    {renderHeader()}
-                    {renderBody()}
-                </>
+                {renderHeader()}
+                {renderBody()}
             </div>
         </Draggable>
     )

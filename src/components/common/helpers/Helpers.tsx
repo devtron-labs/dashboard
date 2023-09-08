@@ -701,7 +701,7 @@ export function useEventSource(
     return eventSourceRef.current
 }
 
-export function useDebouncedEffect(callback, delay, deps = []) {
+export function useDebouncedEffect(callback, delay, deps: unknown[] = [] ) {
     // function will be executed only after the specified time once the user stops firing the event.
     const firstUpdate = useRef(true)
     useEffect(() => {

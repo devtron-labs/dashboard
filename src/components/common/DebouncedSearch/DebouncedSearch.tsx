@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useDebouncedEffect } from '../helpers/Helpers'
 import { DebouncedSearchProps } from './types'
 
-// TODO: AutoFocus, remove bg image
 export default function DebouncedSearch({
     onSearch,
     Icon,
@@ -33,9 +32,10 @@ export default function DebouncedSearch({
             <input
                 type="text"
                 className={inputClass}
-                placeholder={placeholder || 'Search'}
+                placeholder={placeholder ?? 'Search'}
                 value={searchText}
                 onChange={handleSearchTextChange}
+                autoFocus
             />
             {/* In case we want to add another button or something  */}
             {children}

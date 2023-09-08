@@ -1,10 +1,17 @@
+export interface Suggestion {
+    variableName: string
+    variableDescription: string
+    variableValue: {
+        value: string
+    }
+}
+
 export interface FloatingVariablesSuggestionsProps {
     zIndex: number
     loading: boolean
-    // FIXME: any is not a good type
-    variables: any
+    variables: Suggestion[]
     reloadVariables: () => void
-    error: any
+    error: boolean
 }
 
 export interface RenderSuggestionsItemProps {

@@ -148,9 +148,9 @@ export default function ConfigMapList({
             <FloatingVariablesSuggestions
                 zIndex={20}
                 loading={loadingScopedVariables}
-                variables={scopedVariablesData}
+                variables={scopedVariablesData?.result}
                 reloadVariables={reloadScopedVariables}
-                error={scopedVariablesError}
+                error={!!scopedVariablesError}
             />
             <div className="main-content">
                 <h1 className="form__title flex left">
