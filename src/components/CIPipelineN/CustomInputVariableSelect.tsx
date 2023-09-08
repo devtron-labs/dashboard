@@ -200,7 +200,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             )
         }
     }
-    
+
     const ValueContainer = (props) => {
         let value = props.getValue()[0]?.label
         return (
