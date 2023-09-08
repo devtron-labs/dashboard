@@ -64,13 +64,9 @@ export const downloadData = (data: string, filename: string, type: string) => {
     window.URL.revokeObjectURL(url)
 }
 
-export const parseIntoYAMLString = (data: any) => {
-    return yaml.safeDump(data)
-}
+export const parseIntoYAMLString = (data: any) => yaml.safeDump(data)
 
-export const parseYAMLStringToObj = (data: string) => {
-    return yaml.safeLoad(data)
-}
+export const parseYAMLStringToObj = (data: string) => yaml.safeLoad(data)
 
 export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVariablesDataType => {
     /*

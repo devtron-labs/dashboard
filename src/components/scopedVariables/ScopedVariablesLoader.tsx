@@ -15,6 +15,7 @@ export default function ScopedVariablesLoader({ status, progress, fileData, abor
                 </p>
 
                 <button
+                    type='button'
                     className="dc__no-background p-0 dc__no-border cursor dc__outline-none-imp h-20"
                     onClick={abortRead}
                 >

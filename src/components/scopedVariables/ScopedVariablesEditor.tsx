@@ -100,10 +100,6 @@ export default function ScopedVariablesEditor({
         setEditorData(value)
     }
 
-    const handleClearError = () => {
-        setFooterError('')
-    }
-
     const handleAbort = () => {
         if (showSaveView) {
             setScopedVariables(savedScopedVariables ? parseYAMLStringToObj(savedScopedVariables) : null)
@@ -115,11 +111,17 @@ export default function ScopedVariablesEditor({
         abortRead()
     }
 
-    const renderInfoBarCloseButton = (): JSX.Element => (
-        <button className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1" onClick={handleClearError}>
-            <ICClose className="icon-dim-20 mt-2" />
-        </button>
-    )
+    const renderInfoBarCloseButton = (): JSX.Element => {
+        const handleClearError = () => {
+            setFooterError('')
+        }
+        
+        return (
+            <button type="button" className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1" onClick={handleClearError}>
+                <ICClose className="icon-dim-20 mt-2" />
+            </button>
+        )
+    }
 
     return (
         <div className="flex column dc__content-space h-100 bcn-0 saved-variables-editor">
@@ -140,6 +142,7 @@ export default function ScopedVariablesEditor({
 
                         <Tippy className="default-tt" arrow placement="top" content="Close">
                             <button
+                                type="button"
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
                                 onClick={handleAbort}
                                 disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
@@ -190,6 +193,7 @@ export default function ScopedVariablesEditor({
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
+                            type="button"
                             className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
                             onClick={handleAbort}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}

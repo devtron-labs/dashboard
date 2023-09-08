@@ -41,7 +41,10 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                             trigger="click"
                             interactive={true}
                         >
-                            <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
+                            <button
+                                className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
+                                type="button"
+                            >
                                 <ICHelpOutline className="icon-dim-20" />
                             </button>
                         </TippyCustomized>
@@ -51,7 +54,10 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                         {onSearch && <SearchBar onSearch={onSearch} placeholder="Search Variables" Icon={ICSearch} />}
 
                         {showUploadButton && (
-                            <button className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56">
+                            <button
+                                className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56"
+                                type="button"
+                            >
                                 <ScopedVariablesInput handleFileUpload={handleReUpload}>
                                     <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
                                         <ICUpload width={14} height={14} className="scn-0" />
