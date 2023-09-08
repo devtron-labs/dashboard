@@ -32,7 +32,7 @@ export default function DeploymentConfigToolbar({
         }
 
         return (
-            <div className="flex-col bcn-0 w-200 h-72 dc__position-abs dc__top-22 dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
+            <div className="flex-col bcn-0 w-204 h-72 dc__position-abs dc__top-22 dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
                 <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
             </div>
         )
@@ -71,11 +71,10 @@ export default function DeploymentConfigToolbar({
                             Values
                         </li>
                         <li
-                            className={getTabClassName(2)}
+                            className={`${getTabClassName(2)} dc__position-rel`}
                             data-index={2}
                             data-testid="compare-values-tab"
                             onClick={changeTab}
-                            style={{ position: 'relative' }}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
                             Compare&nbsp;
@@ -94,7 +93,7 @@ export default function DeploymentConfigToolbar({
                                     onClick={() => handleOptionClick(true)}
                                 />
                                 <DropdownItem
-                                    label="Compare manifest"
+                                    label="Compare generated manifest"
                                     isValues={!isValues}
                                     onClick={() => handleOptionClick(false)}
                                 />

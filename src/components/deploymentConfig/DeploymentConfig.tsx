@@ -690,7 +690,7 @@ export default function DeploymentConfig({
                 {readOnlyPublishedMode && !state.showReadme ? (
                     <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
                 ) : loading ? (
-                    <div style={{height:'100vh'}}>
+                    <div className='h-100vh'>
                         <Progressing pageLoader />
                     </div>
                 ) : (

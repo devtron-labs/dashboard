@@ -474,7 +474,9 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride={true}
                 />
             ) : loading ? (
-                <Progressing pageLoader />
+                <div className="h-100vh">
+                    <Progressing pageLoader />
+                </div>
             ) : (
                 <DeploymentTemplateEditorView
                     isEnvOverride={true}
