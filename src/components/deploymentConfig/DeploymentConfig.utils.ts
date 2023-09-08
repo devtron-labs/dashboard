@@ -127,9 +127,7 @@ export function groupDataByType(data) {
     })
 
     // Convert the grouped data into an array of arrays
-    const result = [...groupedData.values()]
-
-    return result
+    return [...groupedData.values()]
 }
 
 export function formatTimestamp(jsonTimestamp) {
@@ -137,13 +135,11 @@ export function formatTimestamp(jsonTimestamp) {
     const timestamp = moment(jsonTimestamp)
 
     // Define the desired output format
-    const formattedTimestamp = timestamp.format('ddd, MMM YYYY, hh:mm A')
-
-    return formattedTimestamp
+    return  timestamp.format('ddd, MMM YYYY, hh:mm A')
 }
 
 export function textDecider(option, charts) {
-    let text = ''
+    let text
 
     switch (option.type) {
         case 1:

@@ -229,13 +229,13 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
+    const selectedOptionId = state.selectedCompareOption?.id;
+    const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId);
+    
     const LHSValue = isValues
-        ? (state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
-              ? defaultValue
-              : state.fetchedValues[state.selectedCompareOption?.id]) || ''
-        : state.selectedCompareOption?.id === -1 || state.selectedCompareOption?.id === Number(envId)
-        ? defaultValue
-        : state.fetchedValuesManifest[state.selectedCompareOption?.id]
+      ? (isIdMatch ? defaultValue : state.fetchedValues[selectedOptionId]) || ''
+      : (isIdMatch ? defaultValue : state.fetchedValuesManifest[selectedOptionId]) || '';
+    
 
     const renderCodeEditor = (): JSX.Element => (
         <div
