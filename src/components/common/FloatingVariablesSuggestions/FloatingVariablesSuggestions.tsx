@@ -13,8 +13,6 @@ import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
 
-// TODO: Bounce the floating window when it is activated
-// TODO: Animate when toggles to adjust within the screen
 // TODO: Split the file into multiple files for different components
 
 const Clipboard = ({ content }: { content: string }) => {
@@ -64,10 +62,20 @@ export default function FloatingVariablesSuggestions({
     const [suggestions, setSuggestions] = useState<Suggestion[]>([])
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [noVariablesFound, setNoVariablesFound] = useState<boolean>(null)
+    const [initialPosition, setInitialPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
+    const [buttonPosition, setButtonPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
     const enableSearch = !loading && !error && !!variables?.length
+
+    useEffect(() => {
+        // Since buttonPosition is relative to initialPosition, we need to find initialPosition with respect to the screen
+        const initialPosition = nodeRef.current.getBoundingClientRect()
+        setInitialPosition({ x: initialPosition.x, y: initialPosition.y })
+    }, [])
 
     useEffect(() => {
         setSuggestions(variables ?? [])
@@ -83,7 +91,32 @@ export default function FloatingVariablesSuggestions({
     }
 
     const handleActivation = () => {
+        const currentPosInScreen = {
+            x: initialPosition.x + buttonPosition.x,
+            y: initialPosition.y + buttonPosition.y,
+        }
+
+        if (currentPosInScreen.y > window.innerHeight - 504) {
+            setButtonPosition({ x: buttonPosition.x, y: window.innerHeight - 504 - initialPosition.y })
+        }
+
+        if (currentPosInScreen.x > window.innerWidth - 356) {
+            setButtonPosition({ x: window.innerWidth - 356 - initialPosition.x, y: buttonPosition.y })
+        }
+
+        if (currentPosInScreen.x > window.innerWidth - 356 && currentPosInScreen.y > window.innerHeight - 504) {
+            setButtonPosition({
+                x: window.innerWidth - 356 - initialPosition.x,
+                y: window.innerHeight - 504 - initialPosition.y,
+            })
+        }
+
         setIsActive(true)
+    }
+
+    // e will be unused, but we need to pass it as a parameter since Draggable expects it
+    const handleButtonDrag = (e, data: { x: number; y: number }) => {
+        setButtonPosition(data)
     }
 
     const handleDeActivation = (e: React.MouseEvent<HTMLOrSVGElement>) => {
@@ -213,7 +246,7 @@ export default function FloatingVariablesSuggestions({
 
     if (!isActive)
         return (
-            <Draggable bounds="body" handle=".handle-drag" nodeRef={nodeRef}>
+            <Draggable bounds="body" handle=".handle-drag" nodeRef={nodeRef} onDrag={handleButtonDrag}>
                 <button
                     className="bcn-7 dc__outline-none-imp dc__border-n0 br-48 flex h-40 pt-8 pb-8 pl-12 pr-12 dc__gap-8 dc__no-shrink dc__position-abs"
                     style={{ zIndex, boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.20)' }}
@@ -229,7 +262,13 @@ export default function FloatingVariablesSuggestions({
         )
 
     return (
-        <Draggable bounds="body" handle=".handle-drag" nodeRef={nodeRef}>
+        <Draggable
+            bounds="body"
+            handle=".handle-drag"
+            nodeRef={nodeRef}
+            position={buttonPosition}
+            onDrag={handleButtonDrag}
+        >
             <div
                 className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border-n7 dc__overflow-hidden dc__position-abs mxh-504"
                 style={{
