@@ -14,7 +14,7 @@ import YAML from 'yaml'
 import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { CompareWithDropdown, RenderManifestEditorHeading, getCodeEditorHeight, renderEditorHeading } from './DeploymentTemplateView.component'
+import { CompareWithDropdown, CompareWithApprovalPendingAndDraft, getCodeEditorHeight, renderEditorHeading } from './DeploymentTemplateView.component'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { useParams } from 'react-router-dom'
 import { DeploymentConfigContext } from '../DeploymentConfig'
@@ -47,8 +47,8 @@ export default function DeploymentTemplateEditorView({
 
     const getLocalDaftManifest = async () => {
         
-        if(isValues) return state.tempFormData
-        else{
+        if (isValues) return state.tempFormData
+        else { 
             
             const request = {
                 appId: +appId,
@@ -62,7 +62,7 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if(!showProposal) return
+        if (!showProposal) return
         getLocalDaftManifest()
         .then((data) => {
             
@@ -151,7 +151,7 @@ export default function DeploymentTemplateEditorView({
             _getDeploymentTemplate
                 .then(({ result }) => {
                     if (result) {
-                        if(isValues){
+                        if (isValues){
                         const _fetchedValues = {
                             ...state.fetchedValues,
                             [state.selectedCompareOption.id]: YAML.stringify(
@@ -180,11 +180,9 @@ export default function DeploymentTemplateEditorView({
         }
     }, [state.selectedCompareOption, state.chartConfigLoading])
 
-    useEffect(() => {
-        return (): void => {
+    useEffect(() => (): void => {
             setSelectedOption(null)
-        }
-    }, [state.openComparison])
+        }, [state.openComparison])
 
     const setSelectedOption = (selectedOption: DeploymentChartOptionType) => {
         dispatch({
@@ -209,7 +207,7 @@ export default function DeploymentTemplateEditorView({
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
 
-        if(!isValues) return 
+        if (!isValues) return 
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValues,
             payload: fetchedValues,
@@ -217,7 +215,7 @@ export default function DeploymentTemplateEditorView({
     }
 
     const setFetchedValuesManifest = (fetchedValuesManifest: Record<number | string, string>) => {
-        if(isValues) return
+        if (isValues) return
         dispatch({
             type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
             payload: fetchedValuesManifest,
@@ -226,7 +224,7 @@ export default function DeploymentTemplateEditorView({
 
     const getOverrideClass = () => {
         if (isEnvOverride && state.latestDraft?.action !== 3) {
-            if (!!state.duplicate) {
+            if (state.duplicate) {
                 return 'bcy-1'
             }
             return 'bcb-1'
@@ -235,8 +233,7 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
-    const renderCodeEditor = (): JSX.Element => {
-        return (
+    const renderCodeEditor = (): JSX.Element => (
             <div
                 className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
                     isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
@@ -326,7 +323,7 @@ export default function DeploymentTemplateEditorView({
                                             state.publishedState?.isOverride,
                                             isDeleteDraftState,
                                         )
-                                        :<RenderManifestEditorHeading
+                                        :<CompareWithApprovalPendingAndDraft
                                             isEnvOverride={isEnvOverride}
                                             overridden={!!state.duplicate}
                                             readOnly={readOnly}
@@ -360,7 +357,6 @@ export default function DeploymentTemplateEditorView({
                 </CodeEditor>
             </div>
         )
-    }
 
     const renderCodeEditorView = () => {
         if (state.showReadme) {

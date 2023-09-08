@@ -18,13 +18,9 @@ export default function DeploymentConfigToolbar({
 }: DeploymentConfigToolbarProps) {
     const [openDropdown, setOpenDropdown] = useState(false)
 
-    const getTabClassName = (index: number) => {
-        return `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
-    }
+    const getTabClassName = (index: number) => `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
 
-    const getTabIconClass = (index: number) => {
-        return `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
-    }
+    const getTabIconClass = (index: number) => `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
 
     const changeTab = (e) => {
         handleTabSelection(Number(e.currentTarget.dataset.index))

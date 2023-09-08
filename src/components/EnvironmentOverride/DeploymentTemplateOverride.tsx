@@ -175,7 +175,7 @@ export default function DeploymentTemplateOverride({
                     updateRefsData(chartRefsData, !!state.publishedState)
                 }
             })
-            .catch((e) => {
+            .catch(() => {
                 updateRefsData(chartRefsData)
             })
     }
@@ -272,7 +272,7 @@ export default function DeploymentTemplateOverride({
                     : null
             const payload = {
                 data: result,
-                duplicate: !!state.latestDraft ? state.duplicate : _duplicateFromResp,
+                duplicate: state.latestDraft ? state.duplicate : _duplicateFromResp,
                 readme: result.readme,
                 schema: result.schema,
                 isBasicLockedInBase:

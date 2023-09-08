@@ -3,7 +3,6 @@ import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import * as jsonpatch from 'fast-json-patch'
 
 export interface DeploymentObject {
     id: number | null
@@ -118,7 +117,22 @@ export interface CompareWithDropdownProps {
     charts: DeploymentChartOptionType[]
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
-    setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    setSelectedOption: any
+    isValues: boolean
+    groupedData: any
+}
+
+export interface CompareWithApprovalPendingAndDraftProps {
+    isEnvOverride: boolean
+    overridden: boolean
+    readOnly: boolean
+    environmentName: string
+    selectedChart: DeploymentChartVersionType
+    handleOverride: (e: any) => Promise<void>
+    latestDraft: any
+    isPublishedOverriden: boolean
+    isDeleteDraftState: boolean
+    setShowProposal: (show: boolean) => void
     isValues: boolean
 }
 

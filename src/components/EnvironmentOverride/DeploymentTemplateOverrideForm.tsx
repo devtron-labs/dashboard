@@ -26,7 +26,6 @@ import {
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
 import { getDeploymentManisfest } from '../deploymentConfig/service'
-import { get } from 'http'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -53,7 +52,7 @@ export default function DeploymentTemplateOverrideForm({
     valueLeft,
     setValueLeft,
 }) {
-    const [obj, json, yaml, error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
+    const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
 
@@ -87,7 +86,7 @@ export default function DeploymentTemplateOverrideForm({
             envOverrideValues: envOverrideValuesWithBasic || obj || state.duplicate,
             chartRefId: state.selectedChartRefId,
             IsOverride: true,
-            isAppMetricsEnabled: !!state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
+            isAppMetricsEnabled: state.latestDraft ? state.isAppMetricsEnabled : state.data.appMetrics,
             currentViewEditor: state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView,
             isBasicLocked: state.isBasicLocked,
             ...(state.data.environmentConfig.id > 0
@@ -203,7 +202,9 @@ export default function DeploymentTemplateOverrideForm({
                 type: DeploymentConfigStateActionTypes.yamlMode,
                 payload: true,
             })
-        } catch (err) {}
+        } catch (err) {
+            // TODO: handle error here
+        }
     }
 
     const isCompareAndApprovalState =
@@ -213,7 +214,6 @@ export default function DeploymentTemplateOverrideForm({
         if (isCompareAndApprovalState) return
 
         if (isValuesOverride) {
-            
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -319,34 +319,32 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
-    const renderOverrideInfoStrip = () => {
-        return (
-            <div
-                className={`flex dc__content-space fs-12 fw-6 lh-20 h-32 pl-16 pr-16 dc__border-bottom ${
-                    overridden ? 'bcy-1' : 'bcb-1'
-                }`}
-            >
-                <div className="flex left dc__gap-8">
-                    {overridden ? <WarningIcon className="icon-dim-16" /> : <InfoIcon className="icon-dim-16" />}
-                    <span data-testid="env-override-title">
-                        {overridden
-                            ? 'Base configurations are overridden for this file'
-                            : 'This file is inheriting base configurations'}
-                    </span>
-                </div>
-                {(!state.publishedState ||
-                    (state.selectedTabIndex !== 1 && !!state.latestDraft && state.publishedState.isOverride)) && (
-                    <span
-                        data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
-                        className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
-                        onClick={handleOverride}
-                    >
-                        {getOverrideActionState()}
-                    </span>
-                )}
+    const renderOverrideInfoStrip = () => (
+        <div
+            className={`flex dc__content-space fs-12 fw-6 lh-20 h-32 pl-16 pr-16 dc__border-bottom ${
+                overridden ? 'bcy-1' : 'bcb-1'
+            }`}
+        >
+            <div className="flex left dc__gap-8">
+                {overridden ? <WarningIcon className="icon-dim-16" /> : <InfoIcon className="icon-dim-16" />}
+                <span data-testid="env-override-title">
+                    {overridden
+                        ? 'Base configurations are overridden for this file'
+                        : 'This file is inheriting base configurations'}
+                </span>
             </div>
-        )
-    }
+            {(!state.publishedState ||
+                (state.selectedTabIndex !== 1 && !!state.latestDraft && state.publishedState.isOverride)) && (
+                <span
+                    data-testid={`action-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
+                    onClick={handleOverride}
+                >
+                    {getOverrideActionState()}
+                </span>
+            )}
+        </div>
+    )
 
     const prepareDataToSaveDraft = () => {
         const envOverrideValuesWithBasic =
@@ -354,9 +352,7 @@ export default function DeploymentTemplateOverrideForm({
         return prepareDataToSave(envOverrideValuesWithBasic, true)
     }
 
-    const prepareDataToDeleteOverrideDraft = () => {
-        return prepareDataToSave(state.data.globalConfig, true)
-    }
+    const prepareDataToDeleteOverrideDraft = () => prepareDataToSave(state.data.globalConfig, true)
 
     const getCodeEditorValueForReadOnly = () => {
         if (state.publishedState) {
@@ -378,49 +374,41 @@ export default function DeploymentTemplateOverrideForm({
 
     useEffect(() => {
         if (isValuesOverride) return
-        const values = Promise.all([_getCodeEditorValue(false), _getCodeEditorValue(true)])
+        const values = Promise.all([getCodeEditorManifestValue(false), getCodeEditorManifestValue(true)])
         setLoading(true)
         values
             .then((res) => {
-                
                 const [value, valueLeft] = res
                 setValue(value)
                 setValueLeft(valueLeft)
-                setLoading(false)
             })
             .catch((err) => {
+                toast.error('Failed to fetch manifest data')
+                setIsValuesOverride(true)
+            })
+            .finally(() => {
                 setLoading(false)
-                
             })
     }, [isValuesOverride])
 
-    const _getCodeEditorValue = async (readOnlyPublishedMode: boolean) => {
+    const getCodeEditorManifestValue = async (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             const readOnlyData = getCodeEditorValueForReadOnly()
-            codeEditorValue = isValuesOverride ? readOnlyData : await fetchManifestData(readOnlyData)
+            codeEditorValue = await fetchManifestData(readOnlyData)
         } else if (isCompareAndApprovalState) {
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
-                    ? isValuesOverride
-                        ? state.draftValues
-                        : await fetchManifestData(state.draftValues)
-                    : isValuesOverride
-                    ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    ? await fetchManifestData(state.draftValues)
                     : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
         } else if (state.tempFormData) {
-            codeEditorValue = isValuesOverride ? state.tempFormData : await fetchManifestData(state.tempFormData)
+            codeEditorValue = await fetchManifestData(state.tempFormData)
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? isValuesOverride
-                    ? YAML.stringify(state.duplicate, { indent: 2 })
-                    : await fetchManifestData(YAML.stringify(state.duplicate, { indent: 2 }))
-                : isValuesOverride
-                ? YAML.stringify(state.data.globalConfig, { indent: 2 })
+                ? await fetchManifestData(YAML.stringify(state.duplicate, { indent: 2 }))
                 : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
         }
-
         return codeEditorValue
     }
 
@@ -434,13 +422,9 @@ export default function DeploymentTemplateOverrideForm({
                     ? state.draftValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
         } else if (state.tempFormData) {
-            // 
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
-            // 
-            // 
-            // 
             codeEditorValue = isOverridden
                 ? YAML.stringify(state.duplicate, { indent: 2 })
                 : YAML.stringify(state.data.globalConfig, { indent: 2 })
@@ -468,88 +452,85 @@ export default function DeploymentTemplateOverrideForm({
             valuesAndManifestFlag: 2,
             values: data,
         }
+        setLoading(true)
         const response = await getDeploymentManisfest(request)
-        
+        setLoading(false)
         return response.result.data
     }
 
-    const renderValuesView = () => {
-        return (
-            <form
-                className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
-                    state.showReadme ? 'readme-view' : ''
-                }`}
-                onSubmit={handleSubmit}
-            >
-                <DeploymentTemplateOptionsTab
+    const renderValuesView = () => (
+        <form
+            className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
+                state.showReadme ? 'readme-view' : ''
+            }`}
+            onSubmit={handleSubmit}
+        >
+            <DeploymentTemplateOptionsTab
+                isEnvOverride={true}
+                disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
+                codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : value}
+            />
+            {readOnlyPublishedMode && !state.showReadme ? (
+                <DeploymentTemplateReadOnlyEditorView
+                    value={isValuesOverride ? getCodeEditorValue(true) : value}
                     isEnvOverride={true}
-                    disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-                    codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : value}
                 />
-                {readOnlyPublishedMode && !state.showReadme ? (
-                    <DeploymentTemplateReadOnlyEditorView
-                        value={isValuesOverride ? getCodeEditorValue(true) : value}
-                        isEnvOverride={true}
-                    />
-                ) : loading ? (
-                    <Progressing pageLoader />
-                ) : (
-                    <DeploymentTemplateEditorView
-                        isEnvOverride={true}
-                        value={isValuesOverride ? getCodeEditorValue(false) : value}
-                        defaultValue={
-                            state.data && state.openComparison
-                                ? isValuesOverride
-                                    ? getCodeEditorValue(true)
-                                    : valueLeft
-                                : ''
-                        }
-                        editorOnChange={editorOnChange}
-                        environmentName={environmentName}
-                        readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
-                        globalChartRefId={state.data.globalChartRefId}
-                        handleOverride={handleOverride}
-                        isValues={isValuesOverride}
-                        groupedData={groupedData}
-                    />
-                )}
-                <DeploymentConfigFormCTA
-                    loading={state.loading || state.chartConfigLoading}
+            ) : loading ? (
+                <Progressing pageLoader />
+            ) : (
+                <DeploymentTemplateEditorView
                     isEnvOverride={true}
-                    disableButton={!state.duplicate}
-                    disableCheckbox={!state.duplicate}
-                    showAppMetricsToggle={
-                        state.charts &&
-                        state.selectedChart &&
-                        window._env_?.APPLICATION_METRICS_ENABLED &&
-                        isGrafanaModuleInstalled &&
-                        state.yamlMode
+                    value={isValuesOverride ? getCodeEditorValue(false) : value}
+                    defaultValue={
+                        state.data && state.openComparison
+                            ? isValuesOverride
+                                ? getCodeEditorValue(true)
+                                : valueLeft
+                            : ''
                     }
-                    isAppMetricsEnabled={
-                        !!state.latestDraft && state.selectedTabIndex !== 1
-                            ? state.isAppMetricsEnabled
-                            : state.data.appMetrics
-                    }
-                    toggleAppMetrics={handleAppMetrics}
-                    isPublishedMode={readOnlyPublishedMode}
-                    reload={reload}
+                    editorOnChange={editorOnChange}
+                    environmentName={environmentName}
+                    readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
+                    globalChartRefId={state.data.globalChartRefId}
+                    handleOverride={handleOverride}
                     isValues={isValuesOverride}
+                    groupedData={groupedData}
                 />
-            </form>
-        )
-    }
+            )}
+            <DeploymentConfigFormCTA
+                loading={state.loading || state.chartConfigLoading}
+                isEnvOverride={true}
+                disableButton={!state.duplicate}
+                disableCheckbox={!state.duplicate}
+                showAppMetricsToggle={
+                    state.charts &&
+                    state.selectedChart &&
+                    window._env_?.APPLICATION_METRICS_ENABLED &&
+                    isGrafanaModuleInstalled &&
+                    state.yamlMode
+                }
+                isAppMetricsEnabled={
+                    !!state.latestDraft && state.selectedTabIndex !== 1
+                        ? state.isAppMetricsEnabled
+                        : state.data.appMetrics
+                }
+                toggleAppMetrics={handleAppMetrics}
+                isPublishedMode={readOnlyPublishedMode}
+                reload={reload}
+                isValues={isValuesOverride}
+            />
+        </form>
+    )
 
-    const getValueForContext = () => {
-        return {
-            isUnSet: false,
-            state,
-            dispatch,
-            isConfigProtectionEnabled,
-            environments: environments || [],
-            changeEditorMode: changeEditorMode,
-            reloadEnvironments: reloadEnvironments,
-        }
-    }
+    const getValueForContext = () => ({
+        isUnSet: false,
+        state,
+        dispatch,
+        isConfigProtectionEnabled,
+        environments: environments || [],
+        changeEditorMode: changeEditorMode,
+        reloadEnvironments: reloadEnvironments,
+    })
 
     return (
         <DeploymentConfigContext.Provider value={getValueForContext()}>

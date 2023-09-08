@@ -10,8 +10,8 @@ import infoIcon from '../../../assets/icons/ic-info-filled.svg'
 import warningIcon from '../../../assets/img/warning-medium.svg'
 import {
     ChartTypeVersionOptionsProps,
+    CompareWithApprovalPendingAndDraftProps,
     CompareWithDropdownProps,
-    DeploymentChartGroupOptionType,
     DeploymentChartOptionType,
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
@@ -22,7 +22,7 @@ import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
-import { formatTimestamp, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
+import {handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -91,8 +91,7 @@ export const ChartTypeVersionOptions = ({
     )
 }
 
-const customValueContainer = (props): JSX.Element => {
-    return (
+const customValueContainer = (props): JSX.Element => (
         <components.ValueContainer {...props}>
             {props.selectProps.value?.label}&nbsp;
             {props.selectProps.value?.version && `(v${props.selectProps.value.version})`}
@@ -101,15 +100,12 @@ const customValueContainer = (props): JSX.Element => {
             })}
         </components.ValueContainer>
     )
-}
 
-const formatOptionLabel = (option): JSX.Element => {
-    return (
+const formatOptionLabel = (option): JSX.Element => (
         <div className="flex left column">
             <span className="w-100 dc__ellipsis-right">{option.label}</span>
         </div>
     )
-}
 
 export const CompareWithDropdown = ({
     envId,
@@ -121,7 +117,7 @@ export const CompareWithDropdown = ({
     globalChartRef,
     isValues,
     groupedData,
-}) => {
+}:CompareWithDropdownProps) => {
     
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -179,14 +175,12 @@ export const CompareWithDropdown = ({
             if (!envId && group[0].type === 3) return
             _groupOptions.push({
                 label: labelName[group[0].type],
-                options: group.map((item) => {
-                    return {
+                options: group.map((item) => ({
                         id: id++,
                         label: textDecider(item, charts),
                         envId: envId,
                         ...item,
-                    }
-                }),
+                    })),
             })
         })
 
@@ -282,12 +276,11 @@ export const renderEditorHeading = (
     latestDraft: any,
     isPublishedOverriden: boolean,
     isDeleteDraftState: boolean,
-) => {
-    return (
+) => (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
                 {!readOnly && <Edit className="icon-dim-16 mr-10" />}
-                {!!latestDraft ? (
+                {latestDraft ? (
                     <span className="fw-6 mr-4">
                         Last saved draft{selectedChart ? ` (v${selectedChart.version})` : ''}
                     </span>
@@ -325,21 +318,8 @@ export const renderEditorHeading = (
             </div>
         </div>
     )
-}
 
-interface renderManifestEditorHeadingProps {
-    isEnvOverride: boolean
-    overridden: boolean
-    readOnly: boolean
-    environmentName: string
-    selectedChart: DeploymentChartVersionType
-    handleOverride: (e: any) => Promise<void>
-    latestDraft: any
-    isPublishedOverriden: boolean
-    isDeleteDraftState: boolean
-}
-
-export const RenderManifestEditorHeading = ({
+export const CompareWithApprovalPendingAndDraft = ({
     // TODO: add clickawaylistner to close the dropdown
     isEnvOverride,
     overridden,
@@ -352,7 +332,7 @@ export const RenderManifestEditorHeading = ({
     isDeleteDraftState,
     setShowProposal,
     isValues
-}) => {
+}: CompareWithApprovalPendingAndDraftProps) => {
     const [selectedOption, setSelectedOption] = useState({ id: 0, label: 'Approval Pending' })
 
     const options = [
@@ -370,19 +350,17 @@ export const RenderManifestEditorHeading = ({
         setShowProposal(selected.id === 1)
     }
 
-    const formatLabel = (option) => {
-        return (
+    const formatLabel = (option) => (
             <div className="flex left column">
                 <span className="w-100 dc__ellipsis-right">{option.label}</span>
             </div>
         )
-    }
 
     return (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
                 {!readOnly && <Edit className="icon-dim-16 mr-10" />}
-                {!!latestDraft ? (
+                {latestDraft ? (
                     <span className="fw-6 mr-4">
                         <ReactSelect
                             options={options}
@@ -477,8 +455,7 @@ export const RenderManifestEditorHeading = ({
     )
 }
 
-export const SuccessToastBody = ({ chartConfig }) => {
-    return (
+export const SuccessToastBody = ({ chartConfig }) => (
         <div className="toast">
             <div
                 className="toast__title"
@@ -491,7 +468,6 @@ export const SuccessToastBody = ({ chartConfig }) => {
             <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
         </div>
     )
-}
 
 export const SaveConfirmationDialog = ({ save }) => {
     const { state, dispatch } = useContext(DeploymentConfigContext)

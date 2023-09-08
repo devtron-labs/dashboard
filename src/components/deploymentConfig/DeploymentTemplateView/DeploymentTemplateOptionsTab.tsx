@@ -51,32 +51,31 @@ export default function DeploymentTemplateOptionsTab({
 
     const restoreLastSaved = () => {
         if (isEnvOverride) {
-            const overriddenValues = !!state.latestDraft
+            const overriddenValues = state.latestDraft
                 ? state.draftValues
                 : YAML.stringify(state.duplicate, { indent: 2 })
             const _envValues =
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
-            if(isValues){     
+            if (isValues){     
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
                     payload: _envValues,
                 })
             }
         } else {
-            if(isValues){
+            if (isValues){
 
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
-                    payload: !!state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
+                    payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
                 })
             }
         }
     }
 
-    const getRestoreLastSavedCTA = () => {
-        return (
+    const getRestoreLastSavedCTA = () => (
             <div
                 className="flex left fs-13 fw-6 cb-5 pb-12 pl-12 pr-12 cursor dc_width-max-content"
                 onClick={restoreLastSaved}
@@ -84,10 +83,8 @@ export default function DeploymentTemplateOptionsTab({
                 <RestoreIcon className="icon-dim-14 mr-4 scb-5" /> Restore last saved YAML
             </div>
         )
-    }
 
-    const invalidYamlTippyWrapper = (children) => {
-        return (
+    const invalidYamlTippyWrapper = (children) => (
             <TippyCustomized
                 theme={TippyTheme.white}
                 className="w-250"
@@ -103,7 +100,6 @@ export default function DeploymentTemplateOptionsTab({
                 <span>{children}</span>
             </TippyCustomized>
         )
-    }
 
     const _unableToParseYaml = state.unableToParseYaml && (!state.latestDraft || state.selectedTabIndex === 3)
 

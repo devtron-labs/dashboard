@@ -44,9 +44,7 @@ import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateVi
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 
-export const dummy = {}
-
-const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar-1', DeploymentConfigToolbar)
+const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
@@ -74,6 +72,10 @@ export default function DeploymentConfig({
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
 
+
+    const [valueData, setValueData] = useState('')
+    const [valueLeft, setValueLeft] = useState('')
+    const [loading, setLoading] = useState(false)
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
 
 
@@ -168,19 +170,16 @@ export default function DeploymentConfig({
                 
 
                 if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
-                    
                     processDraftData(draftsResp.result, chartRefsData)
-                    setLoading(false)
-                    
                 } else {
-                    
                     updateRefsData(chartRefsData, !!state.publishedState)
-                    setLoading(false)
                 }
             })
-            .catch((e) => {
-                
+            .catch(() => {
                 updateRefsData(chartRefsData)
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }
 
@@ -212,7 +211,6 @@ export default function DeploymentConfig({
             },
             isAppMetricsEnabled: isAppMetricsEnabled,
             tempFormData: _codeEditorStringifyData,
-            manifestData: YAML.stringify(dummy, { indent: 2 }),
             draftValues: _codeEditorStringifyData,
             latestDraft: latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
@@ -346,7 +344,6 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
-                manifestData: YAML.stringify(dummy, { indent: 2 }),
                 data: _codeEditorStringifyData,
             }
 
@@ -552,7 +549,7 @@ export default function DeploymentConfig({
             toggleYamlMode(!state.yamlMode)
         } catch (error) {
             
-            
+            // TODO: handle error, ask vivek
         }
     }
 
@@ -636,10 +633,6 @@ export default function DeploymentConfig({
         return requestData
     }
 
-    const [valueData, setValueData] = useState('')
-    const [valueLeft, setValueLeft] = useState('')
-    const [loading, setLoading] = useState(false)
-
     useEffect(() => {
         
         setLoading(true)
@@ -685,16 +678,12 @@ export default function DeploymentConfig({
         } catch (error) {
             //TODO - handle error
             toast.error(error)
-            console.error(error)
         }
     }
 
-    const getValuesLHS = async () => {
-        return fetchManifestData(state.publishedState?.tempFormData ?? state.data)
-    }
+    const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)
 
-    const renderValuesView = () => {
-        return (
+    const renderValuesView = () => (
             <form
                 action=""
                 className={`white-card__deployment-config p-0 bcn-0 ${state.openComparison ? 'comparison-view' : ''} ${
@@ -746,10 +735,8 @@ export default function DeploymentConfig({
                 />
             </form>
         )
-    }
 
-    const getValueForContext = () => {
-        return {
+    const getValueForContext = () => ({
             isUnSet: readOnlyPublishedMode ? false : isUnSet,
             state,
             dispatch,
@@ -757,8 +744,7 @@ export default function DeploymentConfig({
             environments: environments || [],
             changeEditorMode: changeEditorMode,
             reloadEnvironments: reloadEnvironments,
-        }
-    }
+        })
 
     return (
         <DeploymentConfigContext.Provider value={getValueForContext()}>
