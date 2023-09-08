@@ -66,7 +66,7 @@ function NodeDetailComponent({
         }
     }
     const [containers, setContainers] = useState<Options[]>(
-        (isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)) as Options[],
+        (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
@@ -181,7 +181,7 @@ function NodeDetailComponent({
             }
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
-                setContainers(_resourceContainers)
+                setContainers(_resourceContainers??[])
             }
             // Clear out error on node change
             if (isResourceDeleted) {
