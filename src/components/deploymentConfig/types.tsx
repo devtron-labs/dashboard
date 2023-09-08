@@ -308,7 +308,6 @@ export interface DeploymentConfigStateType {
     chartConfig: any
     isAppMetricsEnabled: boolean
     tempFormData: string
-    manifestData: string
     chartConfigLoading: boolean
     showConfirmation: boolean
     showReadme: boolean
@@ -357,7 +356,6 @@ export enum DeploymentConfigStateActionTypes {
     chartConfig = 'chartConfig',
     isAppMetricsEnabled = 'isAppMetricsEnabled',
     tempFormData = 'tempFormData',
-    manifestData = 'manifestData',
     chartConfigLoading = 'chartConfigLoading',
     showConfirmation = 'showConfirmation',
     showReadme = 'showReadme',
