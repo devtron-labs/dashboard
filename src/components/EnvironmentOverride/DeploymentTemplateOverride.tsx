@@ -17,6 +17,7 @@ import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getBasicFieldValue,
+    groupDataByType,
     isBasicValueChanged,
     updateTemplateFromBasicValue,
     validateBasicView,
@@ -48,27 +49,7 @@ export default function DeploymentTemplateOverride({
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
     const [value, setValue] = useState('')
     const [valueLeft, setValueLeft] = useState('')
-
-    function groupDataByType(data) {
-        // Create a Map to store grouped objects by type
-        const groupedData = new Map()
-
-        // Iterate through the data and group objects by type
-        data.forEach((item) => {
-            const type = item.type
-
-            if (!groupedData.has(type)) {
-                groupedData.set(type, [])
-            }
-
-            groupedData.get(type).push(item)
-        })
-
-        // Convert the grouped data into an array of arrays
-        const result = [...groupedData.values()]
-
-        return result
-    }
+    const [isValuesOverride, setIsValuesOverride] = useState(true)
 
     useEffect(() => {
         const fetchOptionsList = async () => {
@@ -80,7 +61,6 @@ export default function DeploymentTemplateOverride({
         fetchOptionsList()
     }, [environments])
 
-    const [isValuesOverride, setIsValuesOverride] = useState(true)
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
