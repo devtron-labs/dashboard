@@ -11,6 +11,7 @@ import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
+import NoVariables from '../../../assets/img/no-artifact@2x.png'
 
 // TODO: Bounce the floating window when it is activated
 // TODO: Animate when toggles to adjust within the screen
@@ -66,7 +67,7 @@ export default function FloatingVariablesSuggestions({
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
-    const enableSearch = !loading && !error && variables?.length
+    const enableSearch = !loading && !error && !!variables?.length
 
     useEffect(() => {
         setSuggestions(variables ?? [])
@@ -198,9 +199,15 @@ export default function FloatingVariablesSuggestions({
                 </div>
             )
 
+        if (noVariablesFound)
+            return (
+                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
+                    <GenericEmptyState title="No variables found" image={NoVariables} />
+                </div>
+            )
+
         if (!enableSearch) return <Reload reload={reloadVariables} className="bcn-0" />
-        // TODO: Change the image
-        if (noVariablesFound) return <GenericEmptyState title="No variables found" image={NoResults} />
+
         return renderSuggestions()
     }
 
@@ -214,7 +221,6 @@ export default function FloatingVariablesSuggestions({
                     ref={nodeRef}
                     type="button"
                 >
-                    {/* TODO: move logic into function */}
                     <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" onClick={stopPropagation} />
                     {/* DUMMY ICON */}
                     <ICGridView className="scn-0 icon-dim-20" />
