@@ -113,7 +113,6 @@ export default function ResourceList() {
     const [errorMsg, setErrorMsg] = useState('')
     const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
-    // const [isSuperAdmin, setSuperAdmin] = useState<boolean>(!!window._env_.K8S_CLIENT)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [terminalClusterData, setTerminalCluster] = useState<ClusterDetail[]>()
@@ -418,9 +417,6 @@ export default function ResourceList() {
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
                 if (_selectedCluster) {
                     onChangeCluster(_selectedCluster, false, true)
-                    // Will added this changes if we are not redirecting to cluster page
-                    // } else if (_clusterOptions.length === 1) {
-                    //     onChangeCluster(_clusterOptions[0], true)
                 }
             }
 
@@ -703,9 +699,9 @@ export default function ResourceList() {
         getNamespaceList(selected.value)
 
         if (!skipRedirection) {
-            const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}${
-                nodeType ? `/${nodeType}/${group || K8S_EMPTY_GROUP}` : ''
-            }`
+            const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${
+                ALL_NAMESPACE_OPTION.value
+            }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
             if (fromClusterSelect) {
                 replace({
                     pathname: path,
@@ -926,14 +922,6 @@ export default function ResourceList() {
                 />
             )
         } else if (node) {
-            //const selectedResourceData = getSelectedResourceData()
-            // if (!selectedResourceData || selectedResourceData.kind === SIDEBAR_KEYS.overviewGVK.Kind) {
-            //     return (
-            //         <div className="h-100 node-data-container bcn-0">
-            //             <Progressing pageLoader />
-            //         </div>
-            //     )
-            // }
             return (
                 <div className="resource-details-container">
                     <NodeDetailComponent

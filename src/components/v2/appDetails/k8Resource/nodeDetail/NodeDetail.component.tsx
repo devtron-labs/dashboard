@@ -178,15 +178,12 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
+        const _idPrefix =
+            selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
+                ? K8S_EMPTY_GROUP
+                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
         const isTabFound = isResourceBrowserView
-            ? markTabActiveByIdentifier(
-                  selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
-                      ? K8S_EMPTY_GROUP
-                      : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
-                  params.node,
-                  params.nodeType,
-                  _url,
-              )
+            ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
 
         if (!isTabFound) {
