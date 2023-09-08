@@ -43,7 +43,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                             showCloseButton={true}
                             trigger="click"
                             interactive={true}
-                            additionalContent={additonalTippyContent && additonalTippyContent()}
+                            additionalContent={additonalTippyContent?.()}
                         >
                             <button className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp">
                                 <ICHelpOutline className="icon-dim-20" />
