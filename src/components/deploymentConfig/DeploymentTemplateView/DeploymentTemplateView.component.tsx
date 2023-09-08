@@ -320,7 +320,6 @@ export const renderEditorHeading = (
     )
 
 export const CompareWithApprovalPendingAndDraft = ({
-    // TODO: add clickawaylistner to close the dropdown
     isEnvOverride,
     overridden,
     readOnly,
@@ -382,7 +381,7 @@ export const CompareWithApprovalPendingAndDraft = ({
                             styles={{
                                 control: (base) => ({
                                     ...base,
-                                    backgroundColor: 'var(--N100)',
+                                    backgroundColor: `${overridden ? 'var(--Y100)': 'var(--N100)'}`,
                                     border: 'none',
                                     boxShadow: 'none',
                                     minHeight: '32px',

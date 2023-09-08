@@ -78,6 +78,9 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
 export interface DeploymentChartVersionType {
     id: number | string
     version: string
+    chartRefId: number
+    type:number
+    pipelineConfigOverrideId: number
     name: string
     description?: string
     isAppMetricsSupported: boolean

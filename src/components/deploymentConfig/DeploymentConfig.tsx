@@ -6,7 +6,6 @@ import {
     updateDeploymentTemplate,
     saveDeploymentTemplate,
     getDeploymentManisfest,
-    getDeploymentTemplateNew,
     getOptions,
 } from './service'
 import { getChartReferences } from '../../services/service'
@@ -547,10 +546,7 @@ export default function DeploymentConfig({
                 editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
             }
             toggleYamlMode(!state.yamlMode)
-        } catch (error) {
-            
-            // TODO: handle error, ask vivek
-        }
+        } catch (error) {}
     }
 
     const handleTabSelection = (index: number) => {
@@ -634,7 +630,7 @@ export default function DeploymentConfig({
     }
 
     useEffect(() => {
-        
+        if(isValues) return 
         setLoading(true)
         const values = Promise.all([getValueRHS(), getValuesLHS()])
         values
@@ -645,10 +641,13 @@ export default function DeploymentConfig({
                 setValueData(_value)
                 setValueLeft(_valueLeft)
             })
-            .catch((err) => {
-                 //TODO - handle error
+            .catch(() => {
                 setLoading(false)
-                toast.error(err)
+                setIsValues(true)
+                toast.error('Unable to fetch manifest data')
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }, [isValues])
 
@@ -664,21 +663,13 @@ export default function DeploymentConfig({
     }
 
     const getValueRHS = async () => {
-        try {
             let result = null
-
             if (isCompareAndApprovalState) {
-              
                 result = await fetchManifestData(state.draftValues)
             } else {
-              
                 result = await fetchManifestData(state.tempFormData)
             }
             return result
-        } catch (error) {
-            //TODO - handle error
-            toast.error(error)
-        }
     }
 
     const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)

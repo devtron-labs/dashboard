@@ -202,9 +202,7 @@ export default function DeploymentTemplateOverrideForm({
                 type: DeploymentConfigStateActionTypes.yamlMode,
                 payload: true,
             })
-        } catch (err) {
-            // TODO: handle error here
-        }
+        } catch (err) {}
     }
 
     const isCompareAndApprovalState =
