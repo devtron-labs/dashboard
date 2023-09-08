@@ -23,6 +23,12 @@ export interface UserNameList {
     value: string,
 }
 
+export enum SSHAuthenticationType {
+    Password = "PASSWORD",
+    SSH_Private_Key = "SSH_PRIVATE_KEY",
+    Password_And_SSH_Private_Key = "PASSWORD_AND_SSH_PRIVATE_KEY"
+}
+
 export interface DataListType {
     id: number;
     cluster_name: string

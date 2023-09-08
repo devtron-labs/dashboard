@@ -33,6 +33,7 @@ import {
     UserDetails,
     SaveClusterPayloadType,
     DEFAULT_CLUSTER_ID,
+    SSHAuthenticationType,
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
@@ -132,6 +133,7 @@ export default function ClusterForm({
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
+    const [SSHConnectionType, setSSHConnectionType] = useState(SSHAuthenticationType.Password)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -205,11 +207,11 @@ export default function ClusterForm({
                 validator: { error: 'username or user identifier is required', regex: /^(?!\s*$).+/ },
             },
             sshTunnelPassword: {
-                required: isConnectedViaSSHTunnelTemp,
+                required: isConnectedViaSSHTunnelTemp && (SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
             sshTunnelPrivateKey: {
-                required: isConnectedViaSSHTunnelTemp,
+                required: isConnectedViaSSHTunnelTemp && (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
                 validator: { error: 'private key is required', regex: /^(?!\s*$).+/ },
             },
             sshTunnelUrl: {
@@ -626,6 +628,10 @@ export default function ClusterForm({
         setIsConnectedViaSSHTunnelTemp(viaSSHTunnel);
     };
 
+    const changeSSHAuthenticationType = (authType) => {
+        setSSHConnectionType(authType);
+    };
+
     const setKubectlConnectionFalse = () => {
         setIsConnectedViaProxyTemp(false)
         setIsConnectedViaSSHTunnelTemp(false)
@@ -701,6 +707,7 @@ export default function ClusterForm({
                                     toConnectViaProxyTemp={isConnectedViaProxyTemp}
                                     toConnectViaSSHTunnel={isConnectedViaSSHTunnelTemp}
                                     changeClusterConnectionType={changeKubectlConnectionType}
+                                    changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     proxyUrl={state.proxyUrl}
                                     sshTunnelUser={state.sshTunnelUser}
                                     sshTunnelPassword={state.sshTunnelPassword}
