@@ -205,9 +205,6 @@ export function ConfigMapSecretContainer({
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             }
         } catch (error) {
-            if(error === 'AbortError') {
-                console.log("Request was aborted", error)
-            }
             toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
             setDraftData(null)
             showError(error)
@@ -430,11 +427,6 @@ export function ProtectedConfigMapSecretDetails({
             }
             setBaseData(_baseData)
         } catch (error) {
-            if(error === "AbortError") {
-                console.log("Request was aborted", error)
-            } else {
-                console.log(error)
-            }
         } finally {
             setLoader(false)
         }
