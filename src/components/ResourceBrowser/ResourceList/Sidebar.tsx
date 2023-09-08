@@ -74,6 +74,7 @@ function Sidebar({
     }
 
     const covertK8sMapToOptionsList = () => {
+      let isNamespacesAvailable, isEventsAvailable
         const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
             return [...k8sObject.child.entries()].flatMap(([key, value]) => {
                 const keyLowerCased = key.toLowerCase()
@@ -82,6 +83,8 @@ function Sidebar({
                     keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
                     keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                 ) {
+                  isNamespacesAvailable= isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                  isEventsAvailable= isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                     return []
                 }
 
@@ -101,30 +104,35 @@ function Sidebar({
                 })
             })
         })
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.events as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.eventGVK.Group,
-                version: SIDEBAR_KEYS.eventGVK.Version,
-                kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
-                namespaced: 'true',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.namespaces as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.namespaceGVK.Group,
-                version: SIDEBAR_KEYS.namespaceGVK.Version,
-                kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
-                namespaced: 'false',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
+        if (isEventsAvailable) {
+            _k8sObjectOptionsList.push({
+                label: SIDEBAR_KEYS.events as Nodes,
+                value: K8S_EMPTY_GROUP,
+                dataset: {
+                    group: SIDEBAR_KEYS.eventGVK.Group,
+                    version: SIDEBAR_KEYS.eventGVK.Version,
+                    kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
+                    namespaced: 'true',
+                    grouped: 'false',
+                },
+                groupName: '',
+            })
+        }
+        if (isNamespacesAvailable) {
+            _k8sObjectOptionsList.push({
+                label: SIDEBAR_KEYS.namespaces as Nodes,
+                value: K8S_EMPTY_GROUP,
+                dataset: {
+                    group: SIDEBAR_KEYS.namespaceGVK.Group,
+                    version: SIDEBAR_KEYS.namespaceGVK.Version,
+                    kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
+                    namespaced: 'false',
+                    grouped: 'false',
+                },
+                groupName: '',
+            })
+        }
+
         _k8sObjectOptionsList.push({
             label: SIDEBAR_KEYS.overview as Nodes,
             value: K8S_EMPTY_GROUP,
@@ -382,7 +390,7 @@ function Sidebar({
                     >
                         {SIDEBAR_KEYS.nodes}
                     </div>
-                    {k8SObjectMap?.size && SIDEBAR_KEYS.eventGVK.Version && (
+                    {k8SObjectMap?.size && k8SObjectMap.get(AggregationKeys.Events) && (
                         <div
                             key={SIDEBAR_KEYS.eventGVK.Kind}
                             ref={updateRef}
@@ -401,7 +409,7 @@ function Sidebar({
                             {SIDEBAR_KEYS.events}
                         </div>
                     )}
-                    {k8SObjectMap?.size && SIDEBAR_KEYS.namespaceGVK.Version && (
+                    {k8SObjectMap?.size && k8SObjectMap.get(AggregationKeys.Namespaces) && (
                         <div
                             key={SIDEBAR_KEYS.namespaceGVK.Kind}
                             ref={updateRef}

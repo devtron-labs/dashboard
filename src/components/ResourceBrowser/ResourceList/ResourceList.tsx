@@ -714,7 +714,7 @@ export default function ResourceList() {
     }
 
     const onClusterChange = (value) => {
-        onChangeCluster(value, false, true)
+        onChangeCluster(value, false, false)
     }
 
     const { breadcrumbs } = useBreadcrumb(
@@ -758,7 +758,7 @@ export default function ResourceList() {
                 getUpdatedNodeSelectionData(
                     prevData,
                     _selected,
-                    `${_nodeType}${_selected.name}_${_group ?? group}`,
+                    `${_nodeType}${_selected.name}_${_selected.namespace ?? namespace}_${_group ?? group}`,
                     _selected.isFromEvent || _selected.isFromNodeDetails ? _selected.name.split('_')[1] : null,
                 ),
             )
@@ -782,14 +782,16 @@ export default function ResourceList() {
         }
 
         const selectedNode =
-            nodeSelectionData?.[`${nodeType}_${node}_${group}`] ??
-            resourceList?.data?.find((_resource) => _resource.name === node)
+            nodeSelectionData?.[`${nodeType}_${node}_${namespace}_${group}`] ??
+            resourceList?.data?.find(
+                (_resource) => _resource.name === node && (!_resource.namespace || _resource.namespace === namespace),
+            )
         const _selectedResource =
             selectedNode?.isFromEvent || selectedNode?.isFromNodeDetails
                 ? getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
                 : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ??
                   getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
-        if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
+        if (!nodeSelectionData?.[`${nodeType}_${node}_${namespace}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
         return {

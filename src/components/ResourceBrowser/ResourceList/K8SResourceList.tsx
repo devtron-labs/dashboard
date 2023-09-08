@@ -19,6 +19,7 @@ import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
+import { URLS } from '../../../config'
 
 export function K8SResourceList({
     selectedResource,
@@ -98,15 +99,17 @@ export function K8SResourceList({
             resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             kind = nodeType
             resourceName = name
-            _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
+            _nodeSelectionData = resourceList.data.find(
+                (resource) =>
+                    (resource.name === name || resource.name === node) &&
+                    (!resource.namespace || resource.namespace === namespace),
+            )
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
-        const _url = `${url
-            .split('/')
-            .slice(0, group ? -2 : -1)
-            .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
-
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
         const isAdded = addTab(_group, kind, resourceName, _url)
 
         if (isAdded) {
@@ -167,6 +170,7 @@ export function K8SResourceList({
                                             <a
                                                 className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
+                                                data-namespace={resourceData.namespace}
                                                 onClick={handleResourceClick}
                                             >
                                                 <span
