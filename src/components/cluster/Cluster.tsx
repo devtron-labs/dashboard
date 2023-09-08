@@ -53,6 +53,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isClusterDetails: false,
             showEditCluster: false,
             isConnectedViaProxy: false,
+            isConnectedViaSSHTunnel: false,
         }
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
@@ -128,11 +129,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             const { result } = await getClusterList()
             let clusters = result
                 ? result.map((c) => {
-                      return {
-                          ...c,
-                          environments: this.state.clusterEnvMap[c.id],
-                      }
-                  })
+                    return {
+                        ...c,
+                        environments: this.state.clusterEnvMap[c.id],
+                    }
+                })
                 : []
             clusters = clusters.concat({
                 id: null,
@@ -150,7 +151,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
             )
             if (!cluster) clearInterval(this.timerRef)
-        } catch (error) {}
+        } catch (error) { }
     }
 
     componentWillUnmount() {
@@ -257,7 +258,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 server_url={this.state.server_url}
                                 active={true}
                                 config={{}}
-                                toggleEditMode={() => { } }
+                                toggleEditMode={() => { }}
                                 reload={this.initialise}
                                 prometheus_url=""
                                 prometheusAuth={this.state.prometheus}
@@ -273,8 +274,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
-                                toggleClusterDetails={this.toggleClusterDetails} 
-                                isVirtualCluster={false}                                
+                                toggleClusterDetails={this.toggleClusterDetails}
+                                isVirtualCluster={false}
                             />
                         </Drawer>
                     )}
@@ -298,6 +299,7 @@ function Cluster({
     reload,
     prometheus_url,
     proxyUrl,
+    toConnectViaSSHTunnel,
     sshTunnelConfig,
     serverMode,
     isTlsConnection,
@@ -315,7 +317,7 @@ function Cluster({
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
-    
+
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
@@ -336,12 +338,13 @@ function Cluster({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            proxyUrl: {value: proxyUrl, error: '' },
+            proxyUrl: { value: proxyUrl, error: '' },
             sshTunnelUser: { value: sshTunnelConfig?.user, error: '' },
             sshTunnelPassword: { value: sshTunnelConfig?.password, error: '' },
             sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
             sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
             isConnectedViaProxy: proxyUrl?.length ? true : false,
+            isConnectedViaSSHTunnel: { value: toConnectViaSSHTunnel, error: '' },
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
@@ -366,6 +369,9 @@ function Cluster({
             proxyUrl: {
                 required: false,
                 validator: { error: 'Incorrect Url', regex: /^.*$/ },
+            },
+            toConnectViaSSHTunnel: {
+                required: false,
             },
             sshTunnelUser: {
                 required: false,
@@ -422,9 +428,9 @@ function Cluster({
                 isDefaultCluster() || id
                     ? {}
                     : {
-                          required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ },
-                      },
+                        required: true,
+                        validator: { error: 'token is required', regex: /[^]+/ },
+                    },
             endpoint: {
                 required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
@@ -437,7 +443,7 @@ function Cluster({
     const newEnvs = useMemo(() => {
         return clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
-    
+
     async function handleEdit(e) {
         try {
             const { result } = await getCluster(clusterId)
@@ -530,6 +536,7 @@ function Cluster({
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
             proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
+            toConnectViaSSHTunnel: state.isConnectedViaSSHTunnel?.value,
             sshTunnelConfig: {
                 user: state.sshTunnelUser?.value,
                 password: state.sshTunnelPassword?.value,
@@ -624,9 +631,8 @@ function Cluster({
     return (
         <>
             <article
-                className={`cluster-list ${
-                    clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
-                }`}
+                className={`cluster-list ${clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
+                    }`}
             >
                 <>
                     <List className="dc__border" key={clusterId} onClick={editModeToggle}>
@@ -682,9 +688,9 @@ function Cluster({
                         />
                     )}
                     {serverMode !== SERVER_MODE.EA_ONLY &&
-                    !window._env_.K8S_CLIENT &&
-                    Array.isArray(newEnvs) &&
-                    newEnvs.length > 1 ? (
+                        !window._env_.K8S_CLIENT &&
+                        Array.isArray(newEnvs) &&
+                        newEnvs.length > 1 ? (
                         <div className="pb-8">
                             <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                                 <div></div>
@@ -802,7 +808,7 @@ function Cluster({
                                 config={{}}
                                 reload={reload}
                                 prometheus_url={prometheus_url}
-                                prometheusAuth={state.prometheus} 
+                                prometheusAuth={state.prometheus}
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}

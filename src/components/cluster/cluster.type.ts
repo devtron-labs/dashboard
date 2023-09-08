@@ -32,6 +32,7 @@ export interface DataListType {
     defaultClusterComponent: number
     insecureSkipTlsVerify: boolean
     proxyUrl: string
+    isConnectedViaSSHTunnel: boolean
     sshTunnelConfig: Record<string, string>
 }
 
@@ -45,6 +46,7 @@ export interface SaveClusterPayloadType {
     prometheusAuth: Record<string, string>,
     server_url: string,
     proxyUrl: string,
+    isConnectedViaSSHTunnel: boolean
     sshTunnelConfig: Record<string, string>,
 }
 
