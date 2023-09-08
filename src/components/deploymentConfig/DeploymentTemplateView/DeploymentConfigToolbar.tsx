@@ -5,7 +5,7 @@ import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { DeploymentConfigToolbarProps } from '../types'
-
+import '../deploymentConfig.scss'
 
 export default function DeploymentConfigToolbar({
     selectedTabIndex,
@@ -16,7 +16,6 @@ export default function DeploymentConfigToolbar({
     isValues,
     setIsValues,
 }: DeploymentConfigToolbarProps) {
-
     const [openDropdown, setOpenDropdown] = useState(false)
 
     const getTabClassName = (index: number) => {
@@ -33,56 +32,33 @@ export default function DeploymentConfigToolbar({
 
     function DropdownContainer({ isOpen, onClose, children }) {
         if (!isOpen) {
-            return null;
+            return null
         }
 
         return (
-          // <ClickAwayListener onClickAway={onClose}>
-            <div
-              className="flex-col"
-              style={{
-                backgroundColor: 'white',
-                width: '200px',
-                height: '72px',
-                position: 'absolute',
-                top: '22px',
-                left: '0px',
-                borderRadius: '4px',
-                border: '1px solid #D0D4D9',
-                boxShadow: '0px 2px 4px 0px rgba(0, 0, 0, 0.20)',
-                zIndex: '100',
-              }}
-            >
-              <div style={{ padding: '4px 0px' }}>{children}</div>
+            <div className="flex-col bcn-0 w-200 h-72 dc__position-abs dc__top-22 dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
+                <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
             </div>
-          // </ClickAwayListener>
-        );
-      }
+        )
+    }
 
     function DropdownItem({ label, isValues, onClick }) {
         return (
-          <div
-            style={{
-              alignItems: 'flex-start',
-              padding: '6px 8px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: isValues ? '600' : 'normal',
-              background: isValues ? '#E5F2FF' : '',
-              color: isValues ? '' : 'black',
-            }}
-            onClick={onClick}
-          >
-            {label}
-          </div>
-        );
-      }
+            <div
+                className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${
+                    isValues ? 'fw-6 bcb-1' : 'fw-n cn-9'
+                }`}
+                onClick={onClick}
+            >
+                {label}
+            </div>
+        )
+    }
 
     const handleOptionClick = (newValue) => {
-        setIsValues(newValue);
-        setOpenDropdown(false);
-    };
-      
+        setIsValues(newValue)
+        setOpenDropdown(false)
+    }
 
     return (
         <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
@@ -103,16 +79,31 @@ export default function DeploymentConfigToolbar({
                             data-index={2}
                             data-testid="compare-values-tab"
                             onClick={changeTab}
-                            style={{position:'relative'}}
+                            style={{ position: 'relative' }}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
-                            Compare&nbsp;<span style={{color:'black'}} onClick={()=>setOpenDropdown(!openDropdown)}>{isValues? 'Values':'Manifest'}</span>
-                            <Dropdown className="icon-dim-16 ml-4 cursor" style={{transform:openDropdown?'rotate(180deg)':''}} onClick={()=>setOpenDropdown(true)}/>
+                            Compare&nbsp;
+                            <span style={{ color: 'black' }} onClick={() => setOpenDropdown(!openDropdown)}>
+                                {isValues ? 'Values' : 'Manifest'}
+                            </span>
+                            <Dropdown
+                                className="icon-dim-16 ml-4 cursor"
+                                style={{ transform: openDropdown ? 'rotate(180deg)' : '' }}
+                                onClick={() => setOpenDropdown(true)}
+                            />
                             {/* {openDropdown && ( */}
-                                <DropdownContainer isOpen={openDropdown} onClose={()=>setOpenDropdown(false) }>
-                                    <DropdownItem label="Compare values" isValues={isValues} onClick={()=>handleOptionClick(true)} />
-                                    <DropdownItem label="Compare manifest" isValues={!isValues} onClick={()=>handleOptionClick(false)} />
-                                </DropdownContainer>
+                            <DropdownContainer isOpen={openDropdown} onClose={() => setOpenDropdown(false)}>
+                                <DropdownItem
+                                    label="Compare values"
+                                    isValues={isValues}
+                                    onClick={() => handleOptionClick(true)}
+                                />
+                                <DropdownItem
+                                    label="Compare manifest"
+                                    isValues={!isValues}
+                                    onClick={() => handleOptionClick(false)}
+                                />
+                            </DropdownContainer>
                             {/* )}  */}
                         </li>
                     </ol>

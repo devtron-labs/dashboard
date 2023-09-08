@@ -46,7 +46,7 @@ import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/Deplo
 
 export const dummy = {}
 
-const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
+const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar-1', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
