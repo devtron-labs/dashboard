@@ -7,7 +7,7 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options, OptionsBase, SelectedResourceType } from '../../appDetails.type'
+import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -81,7 +81,13 @@ function NodeDetailComponent({
     }, [params.nodeType])
 
     useEffect(() => {
-        if (isResourceBrowserView && !loadingResources && params.node && params.nodeType === Nodes.Pod.toLowerCase()) {
+        if (
+            isResourceBrowserView &&
+            !loadingResources &&
+            selectedResource &&
+            params.node &&
+            params.nodeType === Nodes.Pod.toLowerCase()
+        ) {
             getContainersFromManifest()
         }
     }, [loadingResources, params.node])
@@ -92,46 +98,14 @@ function NodeDetailComponent({
         return !internal
     }
 
-    const getSelectedResource = (): SelectedResourceType => {
-        let _selectedResource: SelectedResourceType
-        if (isResourceBrowserView) {
-            _selectedResource = {
-                clusterId: 0,
-                containers: [],
-                group: '',
-                version: 'v1',
-                kind: '',
-                name: '',
-                namespace: '',
-            }
-            if (selectedResource) {
-                _selectedResource = { ...selectedResource, containers: containers }
-                if (!_selectedResource.name) {
-                    _selectedResource.name = params.node
-                    _selectedResource.namespace = params.namespace
-                }
-                if (!_selectedResource.kind) {
-                    _selectedResource.kind = params.nodeType
-                }
-            } else {
-                _selectedResource.clusterId = +params.clusterId
-                _selectedResource.kind = params.nodeType
-                _selectedResource.name = params.node
-                _selectedResource.namespace = params.namespace
-            }
-        }
-        return _selectedResource
-    }
-
     const getContainersFromManifest = async () => {
-        const _selectedResource = getSelectedResource()
         try {
             const { result } = await getManifestResource(
                 appDetails,
                 params.podName,
                 params.nodeType,
                 isResourceBrowserView,
-                _selectedResource,
+                selectedResource,
             )
             const _resourceContainers = []
             if (result?.manifest?.spec) {
@@ -181,7 +155,7 @@ function NodeDetailComponent({
             }
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
-                setContainers(_resourceContainers??[])
+                setContainers(_resourceContainers ?? [])
             }
             // Clear out error on node change
             if (isResourceDeleted) {
@@ -204,16 +178,17 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        let isTabFound = false
-        if (isResourceBrowserView) {
-            const _idPrefix =
-                isResourceBrowserView && selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
-                    ? K8S_EMPTY_GROUP
-                    : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
-            isTabFound = markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
-        } else {
-            isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
-        }
+        const isTabFound = isResourceBrowserView
+            ? markTabActiveByIdentifier(
+                  selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
+                      ? K8S_EMPTY_GROUP
+                      : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                  params.node,
+                  params.nodeType,
+                  _url,
+              )
+            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+
         if (!isTabFound) {
             setTimeout(() => {
                 let _urlToCreate = url + '/' + _tabName.toLowerCase()
@@ -282,11 +257,9 @@ function NodeDetailComponent({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
-    const selectedResourceData = getSelectedResource()
-
     return (
         <React.Fragment>
-            <div className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space`}>
+            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
                         {tabs &&
@@ -368,7 +341,7 @@ function NodeDetailComponent({
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResourceData}
+                            selectedResource={selectedResource}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -376,7 +349,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResourceData}
+                            selectedResource={selectedResource}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
@@ -392,7 +365,7 @@ function NodeDetailComponent({
                                 logSearchTerms={logSearchTerms}
                                 setLogSearchTerms={setLogSearchTerms}
                                 isResourceBrowserView={isResourceBrowserView}
-                                selectedResource={selectedResourceData}
+                                selectedResource={selectedResource}
                                 ephemeralContainerType={ephemeralContainerType}
                                 targetContainerOption={targetContainerOption}
                                 imageListOption={imageListOption}
@@ -409,7 +382,7 @@ function NodeDetailComponent({
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
-                            selectedResource={selectedResourceData}
+                            selectedResource={selectedResource}
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
                             containers={containers}
@@ -438,18 +411,18 @@ function NodeDetailComponent({
                     containers={containers}
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
-                    selectedNamespaceByClickingPod={selectedResource?.namespace ?? params.namespace}
+                    selectedNamespaceByClickingPod={selectedResource?.namespace}
                 />
             )}
             {isResourceBrowserView && showDeleteDialog && (
                 <DeleteResourcePopup
-                    clusterId={`${selectedResourceData.clusterId}`}
-                    resourceData={selectedResourceData}
+                    clusterId={`${selectedResource.clusterId}`}
+                    resourceData={selectedResource}
                     selectedResource={{
                         gvk: {
-                            Group: selectedResourceData.group,
-                            Version: selectedResourceData.version,
-                            Kind: selectedResourceData.kind as Nodes,
+                            Group: selectedResource.group,
+                            Version: selectedResource.version,
+                            Kind: selectedResource.kind as Nodes,
                         },
                         namespaced: false,
                     }}

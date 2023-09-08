@@ -23,7 +23,13 @@ import './DynamicTabs.scss'
  *
  * Note: To be used with useTabs hook
  */
-function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableShortCut, shortcut }: DynamicTabsProps & IWithShortcut) {
+function DynamicTabs({
+    tabs,
+    removeTabByIdentifier,
+    stopTabByIdentifier,
+    enableShortCut,
+    shortcut,
+}: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
@@ -39,25 +45,6 @@ function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableS
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
     }, [tabs])
-
-  //   useEffect(() => {
-  //     if (enableShortCut) {
-  //         shortcut.registerShortcut(handleInputShortcut, ['t'], 'TabSearchFocus', 'Focus tab search')
-  //     }
-
-  //     return (): void => {
-  //         shortcut.unregisterShortcut(['t'])
-  //     }
-  // }, [enableShortCut])
-
-  const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
-      const _key = e.key
-      if (_key === 't') {
-        tabPopupMenuRef.current.click()
-      } else if (_key === 'Escape' || _key === 'Esc') {
-        moreButtonRef.current?.blur()
-      }
-  }
 
     const updateRef = (_node: HTMLAnchorElement) => {
         if (_node?.dataset?.selected === 'true' && _node !== tabRef.current) {
@@ -84,9 +71,14 @@ function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableS
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
-                    {_showNameOnSelect && <span className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath?'ml-8': ''} `} data-testid={name}>
-                        {tabName}
-                    </span>}
+                    {_showNameOnSelect && (
+                        <span
+                            className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath ? 'ml-8' : ''} `}
+                            data-testid={name}
+                        >
+                            {tabName}
+                        </span>
+                    )}
                 </div>
             </NavLink>
         )
@@ -124,7 +116,7 @@ function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableS
     }
 
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
-        const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1] ) && isFixed && tab.showNameOnSelect
+        const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect
 
         return (
             <Fragment key={`${idx}-tab`}>
@@ -290,7 +282,12 @@ function DynamicTabs({ tabs, removeTabByIdentifier, stopTabByIdentifier, enableS
                             {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                         </ul>
                     </div>
-                    <MoreButtonWrapper tabPopupMenuRef={tabPopupMenuRef} isMenuOpen={isMenuOpen} onClose={closeMenu} toggleMenu={toggleMenu}>
+                    <MoreButtonWrapper
+                        tabPopupMenuRef={tabPopupMenuRef}
+                        isMenuOpen={isMenuOpen}
+                        onClose={closeMenu}
+                        toggleMenu={toggleMenu}
+                    >
                         <div className="more-tabs__search-icon icon-dim-16 cursor-text" onClick={focusSearchTabInput}>
                             <SearchIcon className="icon-dim-16" />
                         </div>
