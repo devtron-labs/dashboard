@@ -8,4 +8,5 @@ export interface DebouncedSearchProps {
     children?: React.ReactNode
     debounceTimeout?: number
     clearSearch?: boolean
+    showClearIcon?: boolean
 }

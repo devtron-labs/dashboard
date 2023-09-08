@@ -3,20 +3,55 @@ import Draggable from 'react-draggable'
 import Tippy from '@tippyjs/react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
+import { copyToClipboard } from '../helpers/Helpers'
 import { FloatingVariablesSuggestionsProps, RenderSuggestionsItemProps, Suggestion } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
+import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 
-// TODO: Fix the case for no matching variable found
-// TODO: Add Clear Search Icon
-// TODO: Add Copy to Clipboard functionality
-// TODO: Add Tooltip for Copy to Clipboard
 // TODO: Bounce the floating window when it is activated
 // TODO: Animate when toggles to adjust within the screen
+// TODO: Split the file into multiple files for different components
+
+const Clipboard = ({ content }: { content: string }) => {
+    const [copied, setCopied] = useState<boolean>(false)
+
+    const handleTextCopied = () => {
+        setCopied(true)
+    }
+
+    // TODO: ASK Is it even required to setCopied to false after 2 seconds?
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setCopied(false)
+        }, 2000)
+
+        return () => clearTimeout(timeout)
+    }, [copied])
+
+    const handleCopyContent = () => {
+        copyToClipboard(content, handleTextCopied)
+    }
+
+    return (
+        <div className="icon-dim-16 ml-8">
+            <Tippy
+                className="default-tt"
+                content={copied ? 'Copied!' : 'Copy to Clipboard'}
+                placement="right"
+                trigger="mouseenter click"
+            >
+                <div>
+                    <ICCopy onClick={handleCopyContent} className="icon-dim-16 cursor" />
+                </div>
+            </Tippy>
+        </div>
+    )
+}
+
 export default function FloatingVariablesSuggestions({
     zIndex,
     loading,
@@ -27,6 +62,7 @@ export default function FloatingVariablesSuggestions({
     const [isActive, setIsActive] = useState<boolean>(false)
     const [suggestions, setSuggestions] = useState<Suggestion[]>([])
     const [clearSearch, setClearSearch] = useState<boolean>(false)
+    const [noVariablesFound, setNoVariablesFound] = useState<boolean>(null)
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
@@ -34,6 +70,11 @@ export default function FloatingVariablesSuggestions({
 
     useEffect(() => {
         setSuggestions(variables ?? [])
+        if (variables?.length === 0) {
+            setNoVariablesFound(true)
+        } else {
+            setNoVariablesFound(false)
+        }
     }, [variables, isActive])
 
     const stopPropagation = (e: React.MouseEvent<HTMLOrSVGElement>) => {
@@ -66,17 +107,11 @@ export default function FloatingVariablesSuggestions({
         variableValue,
     }: RenderSuggestionsItemProps): JSX.Element => (
         <Tippy className="default-tt" content={variableValue} placement="left" key={variableName}>
-            <div className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1">
-                <div className="flexbox dc__align-items-center dc__gap-2">
-                    <p className="m-0 fs-13 fw-6 lh-20 cn-9">
-                        {'{{'}
-                        {variableName}
-                        {'}}'}
-                    </p>
+            <div className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50">
+                <div className="flexbox dc__align-items-center dc__gap-2 dc__content-space">
+                    <p className="m-0 fs-13 fw-6 lh-20 cn-9">{variableName}</p>
 
-                    <div className="icon-dim-16 ml-8">
-                        <Clipboard onClick={stopPropagation} className="icon-dim-16 cursor" />
-                    </div>
+                    <Clipboard content={variableName} />
                 </div>
 
                 <div className="flexbox dc__align-items-center">
@@ -109,9 +144,7 @@ export default function FloatingVariablesSuggestions({
                         Icon={ICSearch}
                         iconClass="icon-dim-16"
                         clearSearch={clearSearch}
-                    >
-                        {/* TODO: Implement Search Clear */}
-                    </DebouncedSearch>
+                    />
                 </div>
             )}
         </div>
@@ -166,7 +199,8 @@ export default function FloatingVariablesSuggestions({
             )
 
         if (!enableSearch) return <Reload reload={reloadVariables} className="bcn-0" />
-
+        // TODO: Change the image
+        if (noVariablesFound) return <GenericEmptyState title="No variables found" image={NoResults} />
         return renderSuggestions()
     }
 

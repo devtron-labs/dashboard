@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
+import { toast } from 'react-toastify'
 import {
     showError,
     useThrottledEffect,
@@ -773,15 +774,15 @@ export function copyToClipboard(str, callback = noop) {
     if (!str) {
         return
     }
-
-    const listener = function (ev) {
-        ev.preventDefault()
-        ev.clipboardData.setData('text/plain', str)
-    }
-    document.addEventListener('copy', listener)
-    document.execCommand('copy')
-    document.removeEventListener('copy', listener)
-    callback()
+    
+    navigator.clipboard
+        .writeText(str)
+        .then(() => {
+            callback()
+        })
+        .catch(() => {
+            toast.error('Failed to copy to clipboard')
+        })
 }
 
 export function getRandomString() {
