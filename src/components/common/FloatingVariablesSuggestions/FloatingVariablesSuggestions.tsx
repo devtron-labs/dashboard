@@ -43,9 +43,9 @@ const Clipboard = ({ content }: { content: string }) => {
                 placement="right"
                 trigger="mouseenter click"
             >
-                <div>
-                    <ICCopy onClick={handleCopyContent} className="icon-dim-16 cursor" />
-                </div>
+                <button type='button' className='dc__hover-n100 dc__outline-none-imp p-0 flex bcn-0 dc__no-border'>
+                    <ICCopy onClick={handleCopyContent} className="icon-dim-16" />
+                </button>
             </Tippy>
         </div>
     )

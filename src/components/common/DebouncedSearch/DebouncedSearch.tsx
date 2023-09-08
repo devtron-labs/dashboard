@@ -44,7 +44,7 @@ export default function DebouncedSearch({
                 autoFocus
             />
 
-            {showClearIcon && (
+            {showClearIcon && !!searchText && (
                 <button
                     type="button"
                     className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex"
