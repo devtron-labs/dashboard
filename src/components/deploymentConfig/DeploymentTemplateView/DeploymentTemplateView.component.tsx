@@ -344,9 +344,13 @@ export const CompareWithApprovalPendingAndDraft = ({
         },
     ]
 
+    useEffect(() => {
+        setShowDraftData(selectedOption.id === 1)
+    }, [selectedOption])
+
+
     const onChange = (selected) => {
         setSelectedOption(selected)
-        setShowDraftData(selected.id === 1)
     }
 
     const formatLabel = (option) => (

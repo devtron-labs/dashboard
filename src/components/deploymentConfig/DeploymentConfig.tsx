@@ -650,7 +650,9 @@ export default function DeploymentConfig({
             valuesAndManifestFlag: 2,
             values: data,
         }
+        setLoading(true)
         const response = await getDeploymentManisfest(request)
+        setLoading(false)
         return response.result.data
     }
 

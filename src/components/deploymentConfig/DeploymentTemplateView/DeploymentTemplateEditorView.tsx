@@ -46,30 +46,35 @@ export default function DeploymentTemplateEditorView({
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
 
     const [showDraftData, setShowDraftData] = useState(false)
-    const [draftData, setDraftData] = useState(null)
+    const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
 
     const getLocalDaftManifest = async () => {
-        if (isValues) return state.tempFormData
-        else {
-            const request = {
-                appId: +appId,
-                chartRefId: state.selectedChartRefId,
-                getValues: false,
-                values: state.tempFormData,
-            }
-            setDraftLoading(true)
-            const response = await getDeploymentManisfest(request)
-            setDraftLoading(false)
-            return response.result.data
+        const request = {
+            appId: +appId,
+            chartRefId: state.selectedChartRefId,
+            getValues: false,
+            values: state.tempFormData,
         }
+
+        const response = await getDeploymentManisfest(request)
+        
+        return response.result.data
     }
 
     useEffect(() => {
         if (!showDraftData) return
-        getLocalDaftManifest().then((data) => {
-            setDraftData(data)
-        })
+        setDraftLoading(true)
+        getLocalDaftManifest()
+            .then((data) => {
+                setDraftManifestData(data)
+            })
+            .catch((err) => {
+                showError(err)
+            })
+            .finally(() => {
+                setDraftLoading(false)
+            })
     }, [showDraftData])
 
     useEffect(() => {
@@ -232,13 +237,12 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
-    const selectedOptionId = state.selectedCompareOption?.id;
-    const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId);
-    
+    const selectedOptionId = state.selectedCompareOption?.id
+    const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId)
+
     const LHSValue = isValues
-      ? (isIdMatch ? defaultValue : state.fetchedValues[selectedOptionId]) || ''
-      : (isIdMatch ? defaultValue : state.fetchedValuesManifest[selectedOptionId]) || '';
-    
+        ? (isIdMatch ? defaultValue : state.fetchedValues[selectedOptionId]) || ''
+        : (isIdMatch ? defaultValue : state.fetchedValuesManifest[selectedOptionId]) || ''
 
     const renderCodeEditor = (): JSX.Element => (
         <div
@@ -248,11 +252,19 @@ export default function DeploymentTemplateEditorView({
         >
             <CodeEditor
                 defaultValue={LHSValue}
-                value={state.selectedTabIndex !== 3 && showDraftData ? draftData : value}
+                value={
+                    state.selectedTabIndex !== 3 && showDraftData
+                        ? isValues
+                            ? state.tempFormData
+                            : draftManifestData
+                        : value
+                }
                 onChange={editorOnChange}
                 mode={MODES.YAML}
                 validatorSchema={state.schema}
-                loading={state.chartConfigLoading || value === undefined || value === null || fetchingValues || draftLoading}
+                loading={
+                    state.chartConfigLoading || value === undefined || value === null || fetchingValues || draftLoading
+                }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
                 readOnly={readOnly}
