@@ -224,9 +224,6 @@ export default function DeploymentConfig({
             },
         }
 
-        
-
-        setValueData(_codeEditorStringifyData)
         if (chartRefsData) {
             payload['publishedState'] = chartRefsData
         } else if (!state.publishedState) {
@@ -362,7 +359,12 @@ export default function DeploymentConfig({
             } else {
                 payload = templateData
             }
-            setValueData(_codeEditorStringifyData)
+            
+            if(!isValues) {
+                const _manifestCodeEditorData = await fetchManifestData(_codeEditorStringifyData)
+                setValueData(_manifestCodeEditorData)
+            }
+
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload,
