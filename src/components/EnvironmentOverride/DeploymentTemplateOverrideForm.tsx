@@ -55,7 +55,6 @@ export default function DeploymentTemplateOverrideForm({
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
-
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -233,6 +232,7 @@ export default function DeploymentTemplateOverrideForm({
             }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
+            if (!isValuesOverride) return // Don't set unableToParseYaml flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -435,6 +435,10 @@ export default function DeploymentTemplateOverrideForm({
         dispatch({
             type: DeploymentConfigStateActionTypes.loading,
             payload: true,
+        })
+        dispatch({
+            type: DeploymentConfigStateActionTypes.tempFormData,
+            payload: '',
         })
         dispatch({
             type: DeploymentConfigStateActionTypes.duplicate,

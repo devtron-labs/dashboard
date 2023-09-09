@@ -61,7 +61,6 @@ export default function DeploymentTemplateOverride({
         fetchOptionsList()
     }, [environments])
 
-
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
         reloadEnvironments()
@@ -201,8 +200,6 @@ export default function DeploymentTemplateOverride({
                 selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
             },
         }
-
-        setValue(YAML.stringify(envOverrideValues, { indent: 2 }))
 
         if (chartRefsData) {
             payload['publishedState'] = {
