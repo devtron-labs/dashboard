@@ -71,13 +71,10 @@ export default function DeploymentConfig({
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
 
-
     const [valueData, setValueData] = useState('')
     const [valueLeft, setValueLeft] = useState('')
     const [loading, setLoading] = useState(false)
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
-
-
 
     useEffect(() => {
         const fetchOptionsList = async () => {
@@ -102,7 +99,6 @@ export default function DeploymentConfig({
     }, [state.selectedChart])
 
     const updateRefsData = (chartRefsData, clearPublishedState?) => {
-        
         const payload = {
             ...chartRefsData,
             chartConfigLoading: false,
@@ -122,7 +118,6 @@ export default function DeploymentConfig({
     }
 
     async function initialise() {
-        
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
@@ -140,10 +135,8 @@ export default function DeploymentConfig({
                 }
 
                 if (isProtected && typeof getDraftByResourceName === 'function') {
-                    
                     fetchAllDrafts(chartRefsData)
                 } else {
-                    
                     updateRefsData(chartRefsData)
                 }
             })
@@ -157,17 +150,14 @@ export default function DeploymentConfig({
     }
 
     const fetchAllDrafts = (chartRefsData) => {
-        
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
         setLoading(true)
-        
+
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
             .then((draftsResp) => {
-                
-
                 if (draftsResp.result && (draftsResp.result.draftState === 1 || draftsResp.result.draftState === 4)) {
                     processDraftData(draftsResp.result, chartRefsData)
                 } else {
@@ -183,7 +173,6 @@ export default function DeploymentConfig({
     }
 
     const processDraftData = (latestDraft, chartRefsData) => {
-        
         const {
             valuesOverride,
             id,
@@ -359,8 +348,8 @@ export default function DeploymentConfig({
             } else {
                 payload = templateData
             }
-            
-            if(!isValues) {
+
+            if (!isValues) {
                 const _manifestCodeEditorData = await fetchManifestData(_codeEditorStringifyData)
                 setValueData(_manifestCodeEditorData)
             }
@@ -460,7 +449,7 @@ export default function DeploymentConfig({
 
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
-        
+
         if (isValues) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -490,6 +479,7 @@ export default function DeploymentConfig({
             }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
+            if(!isValues) return // don't set flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -632,13 +622,13 @@ export default function DeploymentConfig({
     }
 
     useEffect(() => {
-        if(isValues) return 
+        if (isValues) return
         setLoading(true)
         const values = Promise.all([getValueRHS(), getValuesLHS()])
         values
             .then((res) => {
                 setLoading(false)
-                
+
                 const [_value, _valueLeft] = res
                 setValueData(_value)
                 setValueLeft(_valueLeft)
@@ -665,79 +655,77 @@ export default function DeploymentConfig({
     }
 
     const getValueRHS = async () => {
-            let result = null
-            if (isCompareAndApprovalState) {
-                result = await fetchManifestData(state.draftValues)
-            } else {
-                result = await fetchManifestData(state.tempFormData)
-            }
-            return result
+        let result = null
+        if (isCompareAndApprovalState) {
+            result = await fetchManifestData(state.draftValues)
+        } else {
+            result = await fetchManifestData(state.tempFormData)
+        }
+        return result
     }
 
     const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)
 
     const renderValuesView = () => (
-            <form
-                action=""
-                className={`white-card__deployment-config p-0 bcn-0 ${state.openComparison ? 'comparison-view' : ''} ${
-                    state.showReadme ? 'readme-view' : ''
-                }`}
-                onSubmit={handleSubmit}
-            >
-                <DeploymentTemplateOptionsTab
-                    codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
-                    disableVersionSelect={readOnlyPublishedMode}
+        <form
+            action=""
+            className={`white-card__deployment-config p-0 bcn-0 ${state.openComparison ? 'comparison-view' : ''} ${
+                state.showReadme ? 'readme-view' : ''
+            }`}
+            onSubmit={handleSubmit}
+        >
+            <DeploymentTemplateOptionsTab
+                codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
+                disableVersionSelect={readOnlyPublishedMode}
+                isValues={isValues}
+            />
+            {readOnlyPublishedMode && !state.showReadme ? (
+                <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
+            ) : loading ? (
+                <div className="h-100vh">
+                    <Progressing pageLoader />
+                </div>
+            ) : (
+                <DeploymentTemplateEditorView
+                    defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : valueLeft}
+                    value={isValues ? (isCompareAndApprovalState ? state.draftValues : state.tempFormData) : valueData}
+                    globalChartRefId={state.selectedChartRefId}
+                    editorOnChange={editorOnChange}
+                    readOnly={isCompareAndApprovalState || !isValues}
                     isValues={isValues}
+                    groupedData={groupedOptionsData}
                 />
-                {readOnlyPublishedMode && !state.showReadme ? (
-                    <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
-                ) : loading ? (
-                    <div className='h-100vh'>
-                        <Progressing pageLoader />
-                    </div>
-                ) : (
-                    <DeploymentTemplateEditorView
-                        defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : valueLeft}
-                        value={
-                            isValues ? (isCompareAndApprovalState ? state.draftValues : state.tempFormData) : valueData
-                        }
-                        globalChartRefId={state.selectedChartRefId}
-                        editorOnChange={editorOnChange}
-                        readOnly={isCompareAndApprovalState || !isValues}
-                        isValues={isValues}
-                        groupedData={groupedOptionsData}
-                    />
-                )}
-                <DeploymentConfigFormCTA
-                    loading={state.loading || state.chartConfigLoading}
-                    showAppMetricsToggle={
-                        state.charts &&
-                        state.selectedChart &&
-                        window._env_?.APPLICATION_METRICS_ENABLED &&
-                        grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-                        state.yamlMode
-                    }
-                    isAppMetricsEnabled={
-                        readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
-                    }
-                    isCiPipeline={isCiPipeline}
-                    toggleAppMetrics={toggleAppMetrics}
-                    isPublishedMode={readOnlyPublishedMode}
-                    reload={initialise}
-                    isValues={isValues}
-                />
-            </form>
-        )
+            )}
+            <DeploymentConfigFormCTA
+                loading={state.loading || state.chartConfigLoading}
+                showAppMetricsToggle={
+                    state.charts &&
+                    state.selectedChart &&
+                    window._env_?.APPLICATION_METRICS_ENABLED &&
+                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                    state.yamlMode
+                }
+                isAppMetricsEnabled={
+                    readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
+                }
+                isCiPipeline={isCiPipeline}
+                toggleAppMetrics={toggleAppMetrics}
+                isPublishedMode={readOnlyPublishedMode}
+                reload={initialise}
+                isValues={isValues}
+            />
+        </form>
+    )
 
     const getValueForContext = () => ({
-            isUnSet: readOnlyPublishedMode ? false : isUnSet,
-            state,
-            dispatch,
-            isConfigProtectionEnabled: isProtected,
-            environments: environments || [],
-            changeEditorMode: changeEditorMode,
-            reloadEnvironments: reloadEnvironments,
-        })
+        isUnSet: readOnlyPublishedMode ? false : isUnSet,
+        state,
+        dispatch,
+        isConfigProtectionEnabled: isProtected,
+        environments: environments || [],
+        changeEditorMode: changeEditorMode,
+        reloadEnvironments: reloadEnvironments,
+    })
 
     return (
         <DeploymentConfigContext.Provider value={getValueForContext()}>
