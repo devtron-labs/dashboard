@@ -576,3 +576,28 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
         </ConfirmationDialog>
     )
 }
+
+export function DropdownContainer({ isOpen, onClose, children }) {
+    if (!isOpen) {
+        return null
+    }
+
+    return (
+        <div className="flex-col bcn-0 w-204 h-72 dc__position-abs dc__top-22 dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
+            <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
+        </div>
+    )
+}
+
+export function DropdownItem({ label, isValues, onClick }) {
+    return (
+        <div
+            className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${
+                isValues ? 'fw-6 bcb-1' : 'fw-n cn-9'
+            }`}
+            onClick={onClick}
+        >
+            {label}
+        </div>
+    )
+}

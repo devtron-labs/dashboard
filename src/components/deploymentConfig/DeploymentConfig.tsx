@@ -71,8 +71,9 @@ export default function DeploymentConfig({
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
 
-    const [valueData, setValueData] = useState('')
-    const [valueLeft, setValueLeft] = useState('')
+
+    const [manifestDataRHS, setManifestDataRHS] = useState('')
+    const [ManifestDataLHS, setManifestDataLHS] = useState('')
     const [loading, setLoading] = useState(false)
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
 
@@ -351,7 +352,7 @@ export default function DeploymentConfig({
 
             if (!isValues) {
                 const _manifestCodeEditorData = await fetchManifestData(_codeEditorStringifyData)
-                setValueData(_manifestCodeEditorData)
+                setManifestDataRHS(_manifestCodeEditorData)
             }
 
             dispatch({
@@ -628,10 +629,10 @@ export default function DeploymentConfig({
         values
             .then((res) => {
                 setLoading(false)
-
-                const [_value, _valueLeft] = res
-                setValueData(_value)
-                setValueLeft(_valueLeft)
+                
+                const [_manifestDataRHS, _manifestDataLHS] = res
+                setManifestDataRHS(_manifestDataRHS)
+                setManifestDataLHS(_manifestDataLHS)
             })
             .catch(() => {
                 setLoading(false)
@@ -668,6 +669,37 @@ export default function DeploymentConfig({
 
     const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)
 
+const renderEditorComponent = () => {
+    if (readOnlyPublishedMode && !state.showReadme) {
+      return (
+        <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
+      );
+    }
+  
+    if (loading) {
+      return (
+        <div className='h-100vh'>
+          <Progressing pageLoader />
+        </div>
+      );
+    }
+
+    const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
+  
+    return (
+      <DeploymentTemplateEditorView
+        defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : ManifestDataLHS}
+        value={isValues ? valuesDataRHS : manifestDataRHS}
+        globalChartRefId={state.selectedChartRefId}
+        editorOnChange={editorOnChange}
+        readOnly={isCompareAndApprovalState || !isValues}
+        isValues={isValues}
+        groupedData={groupedOptionsData}
+      />
+    );
+  };
+
+
     const renderValuesView = () => (
         <form
             action=""
@@ -681,43 +713,27 @@ export default function DeploymentConfig({
                 disableVersionSelect={readOnlyPublishedMode}
                 isValues={isValues}
             />
-            {readOnlyPublishedMode && !state.showReadme ? (
-                <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
-            ) : loading ? (
-                <div className="h-100vh">
-                    <Progressing pageLoader />
-                </div>
-            ) : (
-                <DeploymentTemplateEditorView
-                    defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : valueLeft}
-                    value={isValues ? (isCompareAndApprovalState ? state.draftValues : state.tempFormData) : valueData}
-                    globalChartRefId={state.selectedChartRefId}
-                    editorOnChange={editorOnChange}
-                    readOnly={isCompareAndApprovalState || !isValues}
+                {renderEditorComponent()}
+                <DeploymentConfigFormCTA
+                    loading={state.loading || state.chartConfigLoading}
+                    showAppMetricsToggle={
+                        state.charts &&
+                        state.selectedChart &&
+                        window._env_?.APPLICATION_METRICS_ENABLED &&
+                        grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                        state.yamlMode
+                    }
+                    isAppMetricsEnabled={
+                        readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
+                    }
+                    isCiPipeline={isCiPipeline}
+                    toggleAppMetrics={toggleAppMetrics}
+                    isPublishedMode={readOnlyPublishedMode}
+                    reload={initialise}
                     isValues={isValues}
-                    groupedData={groupedOptionsData}
                 />
-            )}
-            <DeploymentConfigFormCTA
-                loading={state.loading || state.chartConfigLoading}
-                showAppMetricsToggle={
-                    state.charts &&
-                    state.selectedChart &&
-                    window._env_?.APPLICATION_METRICS_ENABLED &&
-                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-                    state.yamlMode
-                }
-                isAppMetricsEnabled={
-                    readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
-                }
-                isCiPipeline={isCiPipeline}
-                toggleAppMetrics={toggleAppMetrics}
-                isPublishedMode={readOnlyPublishedMode}
-                reload={initialise}
-                isValues={isValues}
-            />
-        </form>
-    )
+            </form>
+        )
 
     const getValueForContext = () => ({
         isUnSet: readOnlyPublishedMode ? false : isUnSet,

@@ -47,10 +47,10 @@ export default function DeploymentTemplateOverrideForm({
     isValuesOverride,
     setIsValuesOverride,
     groupedData,
-    value,
-    setValue,
-    valueLeft,
-    setValueLeft,
+    manifestDataRHS,
+    manifestDataLHS,
+    setManifestDataRHS,
+    setManifestDataLHS
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -376,9 +376,9 @@ export default function DeploymentTemplateOverrideForm({
         setLoading(true)
         values
             .then((res) => {
-                const [value, valueLeft] = res
-                setValue(value)
-                setValueLeft(valueLeft)
+                const [_manifestDataRHS, _manifestDataLHS] = res
+                setManifestDataRHS(_manifestDataRHS)
+                setManifestDataLHS(_manifestDataLHS)
             })
             .catch((err) => {
                 toast.error('Failed to fetch manifest data')
@@ -470,11 +470,11 @@ export default function DeploymentTemplateOverrideForm({
             <DeploymentTemplateOptionsTab
                 isEnvOverride={true}
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-                codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : value}
+                codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
             />
             {readOnlyPublishedMode && !state.showReadme ? (
                 <DeploymentTemplateReadOnlyEditorView
-                    value={isValuesOverride ? getCodeEditorValue(true) : value}
+                    value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
                     isEnvOverride={true}
                 />
             ) : loading ? (
@@ -484,12 +484,12 @@ export default function DeploymentTemplateOverrideForm({
             ) : (
                 <DeploymentTemplateEditorView
                     isEnvOverride={true}
-                    value={isValuesOverride ? getCodeEditorValue(false) : value}
+                    value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
                     defaultValue={
                         state.data && state.openComparison
                             ? isValuesOverride
                                 ? getCodeEditorValue(true)
-                                : valueLeft
+                                : manifestDataLHS
                             : ''
                     }
                     editorOnChange={editorOnChange}
