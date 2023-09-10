@@ -240,7 +240,7 @@ export default function DeploymentTemplateEditorView({
     const selectedOptionId = state.selectedCompareOption?.id
     const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId)
 
-    const LHSValue = isValues
+    const valueLHS = isValues
         ? (isIdMatch ? defaultValue : state.fetchedValues[selectedOptionId]) || ''
         : (isIdMatch ? defaultValue : state.fetchedValuesManifest[selectedOptionId]) || ''
 
@@ -251,7 +251,7 @@ export default function DeploymentTemplateEditorView({
             }`}
         >
             <CodeEditor
-                defaultValue={LHSValue}
+                defaultValue={valueLHS}
                 value={
                     state.selectedTabIndex !== 3 && showDraftData
                         ? isValues

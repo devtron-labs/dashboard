@@ -460,6 +460,44 @@ export default function DeploymentTemplateOverrideForm({
         return response.result.data
     }
 
+    function renderEditorComponent() {
+        if (readOnlyPublishedMode && !state.showReadme) {
+          return (
+            <DeploymentTemplateReadOnlyEditorView
+              value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
+              isEnvOverride={true}
+            />
+          );
+        } else if (loading) {
+          return (
+            <div className="h-100vh">
+              <Progressing pageLoader />
+            </div>
+          );
+        } else {
+          return (
+            <DeploymentTemplateEditorView
+              isEnvOverride={true}
+              value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
+              defaultValue={
+                state.data && state.openComparison
+                  ? isValuesOverride
+                    ? getCodeEditorValue(true)
+                    : manifestDataLHS
+                  : ''
+              }
+              editorOnChange={editorOnChange}
+              environmentName={environmentName}
+              readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
+              globalChartRefId={state.data.globalChartRefId}
+              handleOverride={handleOverride}
+              isValues={isValuesOverride}
+              groupedData={groupedData}
+            />
+          );
+        }
+      }
+
     const renderValuesView = () => (
         <form
             className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
@@ -472,35 +510,7 @@ export default function DeploymentTemplateOverrideForm({
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                 codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
             />
-            {readOnlyPublishedMode && !state.showReadme ? (
-                <DeploymentTemplateReadOnlyEditorView
-                    value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
-                    isEnvOverride={true}
-                />
-            ) : loading ? (
-                <div className="h-100vh">
-                    <Progressing pageLoader />
-                </div>
-            ) : (
-                <DeploymentTemplateEditorView
-                    isEnvOverride={true}
-                    value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
-                    defaultValue={
-                        state.data && state.openComparison
-                            ? isValuesOverride
-                                ? getCodeEditorValue(true)
-                                : manifestDataLHS
-                            : ''
-                    }
-                    editorOnChange={editorOnChange}
-                    environmentName={environmentName}
-                    readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
-                    globalChartRefId={state.data.globalChartRefId}
-                    handleOverride={handleOverride}
-                    isValues={isValuesOverride}
-                    groupedData={groupedData}
-                />
-            )}
+            {renderEditorComponent()}
             <DeploymentConfigFormCTA
                 loading={state.loading || state.chartConfigLoading}
                 isEnvOverride={true}
