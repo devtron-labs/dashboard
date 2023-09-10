@@ -47,8 +47,8 @@ export default function DeploymentTemplateOverride({
     )
 
     const [groupedOptionsData, setGroupedOptionsData] = useState([])
-    const [value, setValue] = useState('')
-    const [valueLeft, setValueLeft] = useState('')
+    const [manifestDataRHS, setManifestDataRHS] = useState('')
+    const [manifestDataLHS, setManifestDataLHS] = useState('')
     const [isValuesOverride, setIsValuesOverride] = useState(true)
 
     useEffect(() => {
@@ -459,10 +459,10 @@ export default function DeploymentTemplateOverride({
                         isValuesOverride={isValuesOverride}
                         setIsValuesOverride={setIsValuesOverride}
                         groupedData={groupedOptionsData}
-                        value={value}
-                        setValue={setValue}
-                        valueLeft={valueLeft}
-                        setValueLeft={setValueLeft}
+                        manifestDataRHS={manifestDataRHS}
+                        manifestDataLHS={manifestDataLHS}
+                        setManifestDataRHS={setManifestDataRHS}
+                        setManifestDataLHS={setManifestDataLHS}
                     />
                 )}
             </div>
