@@ -1,21 +1,18 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
+import { InfoColourBar, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { ButtonWithLoader } from '../common'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
-import {
-    PARSE_ERROR_TOAST_MESSAGE,
-    SAVE_ERROR_TOAST_MESSAGE,
-    SAVE_SUCCESS_TOAST_MESSAGE,
-    GET_SCOPED_VARIABLES_ERROR,
-} from './constants'
+import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
+import { SAVE_SUCCESS_TOAST_MESSAGE, GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 
 export default function ScopedVariablesEditor({
     variablesData,
@@ -31,17 +28,18 @@ export default function ScopedVariablesEditor({
     const [showSaveView, setShowSaveView] = useState<boolean>(false)
     const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
+    const [footerError, setFooterError] = useState<string>('')
 
     const handleParsing = (data: string): ScopedVariablesDataType => {
         let variablesObj: ScopedVariablesDataType
         try {
             variablesObj = parseYAMLStringToObj(data)
             if (!variablesObj || (variablesObj && typeof variablesObj !== 'object')) {
-                toast.error(PARSE_ERROR_TOAST_MESSAGE)
+                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
                 return null
             }
         } catch (e) {
-            toast.error(PARSE_ERROR_TOAST_MESSAGE)
+            toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             return null
         }
         return variablesObj
@@ -58,10 +56,13 @@ export default function ScopedVariablesEditor({
                 setScopedVariables(null)
                 reloadScopedVariables()
             } else {
-                toast.error(SAVE_ERROR_TOAST_MESSAGE)
+                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             }
         } catch (e) {
-            toast.error(SAVE_ERROR_TOAST_MESSAGE)
+            if (e instanceof ServerErrors && Array.isArray(e.errors) && e.code === 406) {
+                setFooterError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+            }
+            toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             setIsSaving(false)
         }
     }
@@ -107,8 +108,24 @@ export default function ScopedVariablesEditor({
         abortRead()
     }
 
+    const handleClearError = () => {
+        setFooterError('')
+    }
+
+    function renderInfoBarCloseButton(): JSX.Element {
+        return (
+            <button
+                type="button"
+                className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1"
+                onClick={handleClearError}
+            >
+                <ICClose className="icon-dim-20 mt-2" />
+            </button>
+        )
+    }
+
     return (
-        <div className="flex column dc__content-space h-100 bcn-0">
+        <div className="flex column dc__content-space h-100 bcn-0 saved-variables-editor">
             <Descriptor />
             <div className="flexbox-col p-8 dc__align-start dc__gap-16 dc__align-self-stretch dc__window-bg flex-grow-1 dc__no-shrink">
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
@@ -126,12 +143,13 @@ export default function ScopedVariablesEditor({
 
                         <Tippy className="default-tt" arrow placement="top" content="Close">
                             <button
+                                type="button"
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
                                 onClick={handleAbort}
                                 disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                                 data-testid="close-btn"
                             >
-                                <Close className="icon-dim-20" />
+                                <ICClose className="icon-dim-20" />
                             </button>
                         </Tippy>
                     </div>
@@ -145,7 +163,9 @@ export default function ScopedVariablesEditor({
                                 Last Saved File
                             </div>
                             <div className="fs-12 fw-6 cn-7 flex-grow-1 dc__gap-4 flexbox pt-8 pb-8 pl-12 pr-12">
-                                <ICPencil className="icon-dim-20" />
+                                <div className="flex">
+                                    <ICPencil className="icon-dim-16" />
+                                </div>
                                 Edit File
                             </div>
                         </div>
@@ -162,8 +182,19 @@ export default function ScopedVariablesEditor({
                         validatorSchema={jsonSchema}
                     />
 
+                    {footerError && (
+                        <InfoColourBar
+                            message={footerError}
+                            classname="w-100 bcr-1 mb-16 m-0"
+                            Icon={ICError}
+                            iconClass="icon-dim-20"
+                            renderActionButton={renderInfoBarCloseButton}
+                        />
+                    )}
+
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
+                            type="button"
                             className="flex pt-8 pb-8 pl-16 pr-16 dc__gap-8 dc__border-radius-4-imp dc__border bcn-0 cn-7 fs-13 fw-6 lh-20 mw-56 dc__outline-none-imp h-32"
                             onClick={handleAbort}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}

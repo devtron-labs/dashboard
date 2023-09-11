@@ -30,6 +30,10 @@ export default function UploadScopedVariables({
         readFile(e.target.files![0], validator, ReadFileAs.TEXT)
     }
 
+    const handleDownloadTemplate = () => {
+        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
+    }
+
     return status?.status === FileReaderStatus.SUCCESS ? (
         <ScopedVariablesEditor
             variablesData={status?.message?.data}
@@ -71,10 +75,9 @@ export default function UploadScopedVariables({
                 </div>
 
                 <button
+                    type="button"
                     className="p-0 dc__no-background dc__no-border cb-5 fs-13 fw-400 lh-20"
-                    onClick={() =>
-                        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
-                    }
+                    onClick={handleDownloadTemplate}
                 >
                     {DOWNLOAD_TEMPLATE}
                 </button>

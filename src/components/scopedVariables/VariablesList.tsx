@@ -49,7 +49,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                     <Grid
                         container
                         spacing={0}
-                        containerClass="w-100 scoped-variables-list-item dc__overflow-hidden"
+                        containerClass="w-100 dc__overflow-hidden dc__hover-n50"
                         key={variable.name}
                     >
                         <Grid item xs={3} itemClass="dc__ellipsis-right">
