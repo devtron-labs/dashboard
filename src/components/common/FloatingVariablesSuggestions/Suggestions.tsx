@@ -28,7 +28,7 @@ export default function Suggestions({
         const filteredSuggestions = variables.filter(
             (variable) =>
                 variable.variableName.toLowerCase().includes(text.toLowerCase()) ||
-                variable.description?.toLowerCase().includes(text.toLowerCase()),
+                variable.shortDescription?.toLowerCase().includes(text.toLowerCase()),
         )
         setSuggestions(filteredSuggestions)
         setHighlightText(text)
@@ -89,7 +89,7 @@ export default function Suggestions({
                         <SuggestionItem
                             key={variable.variableName}
                             variableName={variable.variableName}
-                            description={variable.description ?? NO_DEFINED_DESCRIPTION}
+                            description={variable.shortDescription ?? NO_DEFINED_DESCRIPTION}
                             variableValue={variable.variableValue?.value ?? NO_DEFINED_VALUE}
                             highlightText={highlightText}
                         />
