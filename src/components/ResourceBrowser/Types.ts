@@ -150,7 +150,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
-    k8SObjectMap: Map<string, K8SObjectMapType>
+    k8SObjectMapRaw: Map<string, K8SObjectMapType>
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -159,6 +159,16 @@ export interface ResourceBrowserActionMenuType {
     selectedResource: ApiResourceGroupType
     getResourceListData: (retainSearched?: boolean) => Promise<void>
     handleResourceClick: (e: any) => void
+    removeTabByIdentifier?: (title: string) => string
+}
+
+export interface DeleteResourcePopupType {
+    clusterId: string
+    resourceData: Record<string, any>
+    selectedResource: ApiResourceGroupType
+    getResourceListData: (retainSearched?: boolean) => Promise<void>
+    toggleDeleteDialog: () => void
+    removeTabByIdentifier?: (title: string) => string
 }
 
 export interface ResourceListEmptyStateType {
@@ -174,6 +184,8 @@ export interface EventListType {
     filteredData: Record<string, any>[]
     handleResourceClick: (e: any) => void
     paginatedView: boolean
+    syncError: boolean
+    searchText: string
 }
 
 export interface ClusterOptionType extends OptionType {

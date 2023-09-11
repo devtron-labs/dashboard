@@ -237,6 +237,7 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
+    GVK: 'gvk'
 }
 
 export const ViewType = {

@@ -1,4 +1,4 @@
-import { AggregationKeys, AggregationKeysType } from '../app/types'
+import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
 export const FILTER_SELECT_COMMON_STYLES = {
@@ -95,6 +95,8 @@ export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for th
 export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
+    AggregationKeys.Events,
+    AggregationKeys.Namespaces,
     AggregationKeys.Workloads,
     AggregationKeys['Config & Storage'],
     AggregationKeys.Networking,
@@ -178,7 +180,7 @@ export const SIDEBAR_KEYS = {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: 'Cluster Overview',
+        Kind: Nodes.ClusterOverview,
     }
 }
 

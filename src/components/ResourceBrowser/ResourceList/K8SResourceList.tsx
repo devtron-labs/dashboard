@@ -18,7 +18,8 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { getEventObjectTypeGVK } from '../Utils'
+import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
+import { URLS } from '../../../config'
 
 export function K8SResourceList({
     selectedResource,
@@ -42,7 +43,7 @@ export function K8SResourceList({
     addTab,
     renderCallBackSync,
     syncError,
-    k8SObjectMap
+    k8SObjectMapRaw,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -88,7 +89,7 @@ export function K8SResourceList({
 
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            const _selectedResource = getEventObjectTypeGVK(k8SObjectMap, _kind)
+            const _selectedResource = getEventObjectTypeGVK(k8SObjectMapRaw, _kind)
             _group = _selectedResource?.Group.toLowerCase() || K8S_EMPTY_GROUP
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
@@ -98,15 +99,17 @@ export function K8SResourceList({
             resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             kind = nodeType
             resourceName = name
-            _nodeSelectionData = resourceList.data.find((resource) => resource.name === name || resource.name === node)
+            _nodeSelectionData = resourceList.data.find(
+                (resource) =>
+                    (resource.name === name || resource.name === node) &&
+                    (!resource.namespace || resource.namespace === namespace),
+            )
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
-        const _url = `${url
-            .split('/')
-            .slice(0, group ? -2 : -1)
-            .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
-
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
         const isAdded = addTab(_group, kind, resourceName, _url)
 
         if (isAdded) {
@@ -152,7 +155,7 @@ export function K8SResourceList({
                         <div
                             key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? 'dc__position-sticky bcn-0 dc__hover-n50 sticky-column dc__border-right' : ''
+                                fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
                         >
                             <div className="w-100 flex left" data-testid="created-resource-name">
@@ -167,6 +170,7 @@ export function K8SResourceList({
                                             <a
                                                 className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
+                                                data-namespace={resourceData.namespace}
                                                 onClick={handleResourceClick}
                                             >
                                                 <span
@@ -259,17 +263,17 @@ export function K8SResourceList({
         return (
             <div
                 ref={resourceListRef}
-                className={`scrollable-resource-list ${syncError ? 'sync-error' : '' } ${showPaginatedView ? 'paginated-list-view' : ''}`}
+                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
             >
-                <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
                             key={columnName}
-                            className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
                                     ? `${
                                           fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
                                               : ''
                                       } w-350 pl-20`
                                     : 'w-150'
@@ -298,6 +302,8 @@ export function K8SResourceList({
                             filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                             handleResourceClick={handleResourceClick}
                             paginatedView={showPaginatedView}
+                            syncError={syncError}
+                            searchText={searchText}
                         />
                     ) : (
                         renderResourceList()
@@ -320,7 +326,7 @@ export function K8SResourceList({
 
     return (
         <div
-            className={`resource-list-container dc__border-left dc__postion-rel ${
+            className={`resource-list-container dc__border-left dc__position-rel ${
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >

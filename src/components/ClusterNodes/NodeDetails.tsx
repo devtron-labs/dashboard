@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { copyToClipboard, ToastBodyWithButton } from '../common'
 import {
     showError,
@@ -49,14 +49,23 @@ import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './c
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { useRouteMatch } from 'react-router-dom'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
+import { getEventObjectTypeGVK } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
+import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
+import { GVKType } from '../ResourceBrowser/Types'
+import { Nodes } from '../app/types'
 
-
-export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, addTab }: ClusterListType) {
+export default function NodeDetails({
+  isSuperAdmin,
+  markTabActiveByIdentifier,
+  addTab,
+  updateNodeSelectionData,
+  k8SObjectMapRaw,
+}: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -170,6 +179,13 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
             }
         }
     }, [location.search])
+
+    const selectedResource = useMemo(():{gvk: GVKType, namespaced: boolean} => {
+      if (!k8SObjectMapRaw) {
+          return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
+      }
+      return { gvk: getEventObjectTypeGVK(k8SObjectMapRaw, 'pod'), namespaced: true }
+  }, [k8SObjectMapRaw])
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
@@ -444,13 +460,13 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+                <div className="flexbox bcy-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
                     </span>
                 </div>
-                <div className="pt-12 pr-20 pl-20">
+                <div className="pt-12 pr-16 pl-16">
                     {isCPUOverCommitted && (
                         <div>
                             <div className="fw-6 fs-13 cn-9">Resource overcommitted</div>
@@ -490,10 +506,10 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
             <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-10">
-                <div className="flexbox pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+                <div className="flexbox pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
-                <div className="pr-20 pl-20">
+                <div className="pr-16 pl-16">
                     <div>
                         <div className="fw-6 fs-13 cn-7">Name</div>
                         <p className="fw-4 fs-13 cn-9 mb-12">{nodeDetail.name}</p>
@@ -617,14 +633,29 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                 }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
+
     const handleResourceClick = (e) => {
-        const { name, namespace } = e.currentTarget.dataset
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}/${name}`
-        const isAdded = addTab(K8S_EMPTY_GROUP, 'pod', name, _url)
-        if (isAdded) {
-            push(_url)
-        }
-    }
+      const { name, tab, namespace } = e.currentTarget.dataset
+      let _nodeSelectionData, _group
+      _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+      _nodeSelectionData = { name: 'pod' + '_' + name, namespace, isFromNodeDetails: true }
+      const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
+          tab ? `/${tab.toLowerCase()}` : ''
+      }`
+      const isAdded = addTab(_group, 'pod', name, _url)
+      if (isAdded) {
+          updateNodeSelectionData(_nodeSelectionData, _group)
+          push(_url)
+      } else {
+          toast.error(
+              <div>
+                  <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
+                  <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
+              </div>,
+          )
+      }
+  }
+
     const renderPodHeaderCell = (
         columnName: string,
         sortingFieldName: string,
@@ -655,6 +686,10 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
         )
     }
 
+    const getPodListData =async (): Promise<void>=>{
+      getData([])
+    }
+
     const renderPodList = (): JSX.Element | null => {
         if (!sortedPodList) return null
         return (
@@ -678,7 +713,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                         <main>
                             {sortedPodList.map((pod) => (
                                 <div className="row-wrapper" key={pod.name}>
-                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
+                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
                                         {pod.namespace}
                                     </div>
                                     <div className="hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
@@ -712,7 +747,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                                                 interactive={true}
                                             >
                                                 <Clipboard
-                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14"
+                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
                                                     onClick={() => {
                                                         copyToClipboard(pod.name, () => {
                                                             setCopied(true)
@@ -720,6 +755,13 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
                                                     }}
                                                 />
                                             </Tippy>
+                                            <ResourceBrowserActionMenu
+                                                clusterId={clusterId}
+                                                resourceData={pod}
+                                                selectedResource={selectedResource}
+                                                getResourceListData={getPodListData}
+                                                handleResourceClick={handleResourceClick}
+                                            />
                                         </>
                                     </div>
                                     <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
@@ -897,7 +939,7 @@ export default function NodeDetails({ isSuperAdmin, markTabActiveByIdentifier, a
 
     const getCodeEditorHeight = (): string=>{
       if (!isReviewState) {
-          return 'calc(100vh - 116px)'
+          return 'calc(100vh - 115px)'
       } else if (isShowWarning) {
           return `calc(100vh - 180px)`
       }

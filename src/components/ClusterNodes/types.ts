@@ -4,6 +4,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -180,6 +181,8 @@ export interface ClusterListType {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
+    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
+    k8SObjectMapRaw: Map<string, K8SObjectMapType>
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {

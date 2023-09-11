@@ -28,6 +28,8 @@ export default function NodeDetailsList({
     renderCallBackSync,
     addTab,
     syncError,
+    lastDataSync,
+    setLastDataSync
 }) {
     const match = useRouteMatch()
     const location = useLocation()
@@ -37,7 +39,6 @@ export default function NodeDetailsList({
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
@@ -152,7 +153,6 @@ export default function NodeDetailsList({
         setErrorResponseCode(null)
         getNodeList(clusterId)
             .then((response) => {
-                setLastDataSync(!lastDataSync)
                 if (response.result) {
                     const _flattenNodeList = response.result.map((data) => {
                         const _flattenNodeData = flattenObject(data)
@@ -166,6 +166,7 @@ export default function NodeDetailsList({
                     })
                     setFlattenNodeList(_flattenNodeList)
                 }
+                setLastDataSync(!lastDataSync)
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {

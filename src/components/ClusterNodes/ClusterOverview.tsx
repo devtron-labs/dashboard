@@ -31,6 +31,7 @@ export default function ClusterOverview({
     const [isLoading, setIsLoading] = useState(true)
     const history = useHistory()
     const { path } = useRouteMatch()
+    const [errorCode, setErrorCode] = useState(0)
 
     useEffect(() => {
         setIsLoading(true)
@@ -59,7 +60,11 @@ export default function ClusterOverview({
                 }
             })
             .catch((err) => {
-                showError(err)
+                if (err['code'] === 403) {
+                    setErrorCode(err['code'])
+                } else {
+                    showError(err)
+                }
             })
             .finally(() => {
                 setIsLoading(false)
@@ -193,10 +198,10 @@ export default function ClusterOverview({
     }
 
     const renderState = () => {
-        if (errorStatusCode) {
+        if (errorStatusCode || errorCode) {
             return (
                 <ErrorScreenManager
-                    code={errorStatusCode}
+                    code={errorStatusCode || errorCode}
                     subtitle={unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())}
                 />
             )
@@ -205,7 +210,6 @@ export default function ClusterOverview({
         } else {
             return (
                 <>
-                    {' '}
                     {renderCardDetails()}
                     {renderClusterError()}
                     <GenericDescription
@@ -227,7 +231,7 @@ export default function ClusterOverview({
         return (
             <div
                 className={`dc__border-left resource-details-container dc__overflow-scroll p-16 ${
-                    errorStatusCode ? 'flex' : ''
+                    errorStatusCode || errorCode ? 'flex' : ''
                 }`}
             >
                 {renderState()}

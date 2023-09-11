@@ -56,7 +56,7 @@ export const getUpdatedNodeSelectionData = (
 
 export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
     const _resourceGroupType = getAggregator(nodeType as NodeType)
-    const _selectedGroup = k8SObjectMap.get(_resourceGroupType)
+    const _selectedGroup = k8SObjectMap?.get(_resourceGroupType)
     if (_selectedGroup) {
         for (const [key, value] of _selectedGroup.child) {
             if (key.toLowerCase() === nodeType) {
@@ -142,16 +142,16 @@ export const sortEventListData = (eventList: Record<string, any>[]): Record<stri
 }
 
 export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType: string, group: string) => {
-    const parentNode = _k8SObjectList[0]
-    const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
+    const parentNode = _k8SObjectList?.[0]
+    const childNode = parentNode?.child?.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode?.child?.[0]
     let isResourceGroupPresent = false
     let groupedChild = null
 
     if (nodeType === AppDetailsTabs.terminal || FIXED_GVK_Keys[nodeType]) {
-        isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType //nodeType === AppDetailsTabs.terminal || SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() === nodeType
+        isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType
         groupedChild = {
             namespaced: SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() === nodeType,
-            gvk: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
+            gvk: nodeType === AppDetailsTabs.terminal? SIDEBAR_KEYS.overviewGVK: SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
             isGrouped: false,
         }
     } else if (nodeType) {
@@ -191,4 +191,16 @@ export const checkIfDataIsStale = (
     if (!isStaleDataRef.current && moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS) {
         isStaleDataRef.current = true
     }
+}
+
+export const getScrollableResourceClass = (className: string, showPaginatedView: boolean, syncError: boolean):string=>{
+  let _className = className
+  if (showPaginatedView && syncError) {
+      _className += ' paginated-list-view-with-sync-error'
+  } else if (showPaginatedView) {
+      _className += ' paginated-list-view'
+  } else if (syncError) {
+      _className += ' sync-error'
+  }
+  return _className
 }
