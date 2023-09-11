@@ -1381,7 +1381,7 @@
 
 "@devtron-labs/devtron-fe-lib@file:../devtron-fe-lib":
   "resolved" "file:../devtron-fe-lib"
-  "version" "0.0.28-beta-1"
+  "version" "0.0.27-beta-1"
   dependencies:
     "sass" "^1.56.2"
 
