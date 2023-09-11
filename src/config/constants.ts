@@ -773,6 +773,7 @@ export const ManifestMessaging = {
 }
 
 export const SERVER_ERROR_CODES = {
+    RELEASE_NOT_FOUND: "7001",
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }

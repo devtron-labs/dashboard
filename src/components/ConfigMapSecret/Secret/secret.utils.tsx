@@ -20,6 +20,7 @@ export const DATA_HEADER_MAP = { DEFAULT: 'default' }
 export const VIEW_MODE = {
     YAML: 'yaml',
     GUI: 'gui',
+    MANIFEST: 'manifest',
 }
 
 export const sampleJSONs = {
