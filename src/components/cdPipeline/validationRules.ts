@@ -36,6 +36,6 @@ export class ValidationRules {
 
     repository = (repository: string): { isValid: boolean; message: string } => {
         if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        else return { isValid: true, message: null }
+        return { isValid: true, message: null }
     }
 }
