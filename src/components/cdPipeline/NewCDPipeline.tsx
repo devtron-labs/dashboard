@@ -440,7 +440,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
                       return {
                           label: configmap,
-                          value: configmap,
+                          value: `${configmap}-cm`,
                           type: 'configmaps',
                       }
                   })
@@ -449,7 +449,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.secrets.map((secret) => {
                       return {
                           label: secret,
-                          value: secret,
+                          value: `${secret}-cs`,
                           type: 'secrets',
                       }
                   })
@@ -460,7 +460,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.postStageConfigMapSecretNames.configMaps.map((configmap) => {
                       return {
                           label: configmap,
-                          value: configmap,
+                          value:`${configmap}-cm`,
                           type: 'configmaps',
                       }
                   })
@@ -469,7 +469,7 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets.map((secret) => {
                       return {
                           label: secret,
-                          value: secret,
+                          value: `${secret}-cs`,
                           type: 'secrets',
                       }
                   })
@@ -489,19 +489,19 @@ export default function NewCDPipeline({
     const responseCode = () => {
         const _preStageConfigMapSecretNames = {
             configMaps: formData.preStageConfigMapSecretNames.configMaps.map((config) => {
-                return config['value']
+                return config['label']
             }),
             secrets: formData.preStageConfigMapSecretNames.secrets.map((secret) => {
-                return secret['value']
+                return secret['label']
             }),
         }
 
         const _postStageConfigMapSecretNames = {
             configMaps: formData.postStageConfigMapSecretNames.configMaps.map((config) => {
-                return config['value']
+                return config['label']
             }),
             secrets: formData.postStageConfigMapSecretNames.secrets.map((secret) => {
-                return secret['value']
+                return secret['label ']
             }),
         }
 
