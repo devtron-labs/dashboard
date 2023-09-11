@@ -4,6 +4,7 @@ import Suggestions from './Suggestions'
 import { FloatingVariablesSuggestionsProps } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
+import { SUGGESTIONS_SIZE } from './constants'
 
 export default function FloatingVariablesSuggestions({
     zIndex,
@@ -38,18 +39,27 @@ export default function FloatingVariablesSuggestions({
             y: initialPosition.y + collapsedPosition.y,
         }
 
-        if (currentPosInScreen.y > window.innerHeight - 504) {
-            setExpandedPosition({ x: collapsedPosition.x, y: window.innerHeight - 504 - initialPosition.y })
+        if (currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height) {
+            setExpandedPosition({
+                x: collapsedPosition.x,
+                y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
+            })
         }
 
-        if (currentPosInScreen.x > window.innerWidth - 356 - 16) {
-            setExpandedPosition({ x: window.innerWidth - 356 - 16 - initialPosition.x, y: collapsedPosition.y })
+        if (currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width - 16) {
+            setExpandedPosition({
+                x: window.innerWidth - SUGGESTIONS_SIZE.width - 16 - initialPosition.x,
+                y: collapsedPosition.y,
+            })
         }
 
-        if (currentPosInScreen.x > window.innerWidth - 356 - 16 && currentPosInScreen.y > window.innerHeight - 504) {
+        if (
+            currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width - 16 &&
+            currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height
+        ) {
             setExpandedPosition({
                 x: window.innerWidth - 356 - 16 - initialPosition.x,
-                y: window.innerHeight - 504 - initialPosition.y,
+                y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }
 

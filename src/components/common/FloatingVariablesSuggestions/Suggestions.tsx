@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
+import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
 import { SuggestionsProps, SuggestionType } from './types'
-import SuggestionItem from './SuggestionItem'
 
 export default function Suggestions({
     handleDeActivation,
@@ -83,8 +83,8 @@ export default function Suggestions({
                         <SuggestionItem
                             key={variable.variableName}
                             variableName={variable.variableName}
-                            description={variable.description}
-                            variableValue={JSON.stringify(variable.variableValue.value)}
+                            description={variable.description ?? 'No Defined Description'}
+                            variableValue={variable.variableValue.value ?? 'No Defined Value'}
                         />
                     ))
                 ) : (

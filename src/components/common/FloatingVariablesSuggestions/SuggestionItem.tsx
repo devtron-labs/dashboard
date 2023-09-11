@@ -7,11 +7,20 @@ export default function SuggestionItem({ variableName, description, variableValu
     const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
 
     const handleCopyTrigger = () => {
-        setTriggerCopy((prev) => !prev)
+        setTriggerCopy(true)
     }
 
     return (
-        <Tippy className="default-tt" content={variableValue} placement="left">
+        <Tippy
+            className="default-tt"
+            content={
+                <div className="mw-200 flex column dc__content-start dc__align-start">
+                    <div className="flex column dc__content-start dc__align-start">Value</div>
+                    <div className="flex column dc__content-start dc__align-start">{variableValue}</div>
+                </div>
+            }
+            placement="left"
+        >
             <div
                 className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50"
                 onClick={handleCopyTrigger}
@@ -24,6 +33,7 @@ export default function SuggestionItem({ variableName, description, variableValu
                         copiedTippyText={`Copied: @{{${variableName}}}`}
                         duration={1000}
                         trigger={triggerCopy}
+                        setTrigger={setTriggerCopy}
                     />
                 </div>
 

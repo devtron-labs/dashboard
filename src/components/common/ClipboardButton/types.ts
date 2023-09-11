@@ -3,4 +3,5 @@ export default interface ClipboardProps {
     copiedTippyText: string
     duration: number
     trigger: boolean
+    setTrigger: React.Dispatch<React.SetStateAction<boolean>>
 }

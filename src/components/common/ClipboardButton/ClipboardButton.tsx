@@ -4,8 +4,9 @@ import { copyToClipboard } from '../helpers/Helpers'
 import ClipboardProps from './types'
 import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 
-export default function ClipboardButton({ content, copiedTippyText, duration, trigger }: ClipboardProps) {
+export default function ClipboardButton({ content, copiedTippyText, duration, trigger, setTrigger }: ClipboardProps) {
     const [copied, setCopied] = useState<boolean>(false)
+    const [enableTippy, setEnableTippy] = useState<boolean>(false)
 
     const handleTextCopied = () => {
         setCopied(true)
@@ -15,15 +16,27 @@ export default function ClipboardButton({ content, copiedTippyText, duration, tr
         copyToClipboard(content, handleTextCopied)
     }
 
+    const handleEnableTippy = () => {
+        setEnableTippy(true)
+    }
+
+    const handleDisableTippy = () => {
+        setEnableTippy(false)
+    }
+
     useEffect(() => {
+        if (!copied) return
+
         const timeout = setTimeout(() => {
             setCopied(false)
+            setTrigger(false)
         }, duration)
 
         return () => clearTimeout(timeout)
     }, [copied])
 
     useEffect(() => {
+        if (!trigger) return
         setCopied(true)
         handleCopyContent()
     }, [trigger])
@@ -32,11 +45,16 @@ export default function ClipboardButton({ content, copiedTippyText, duration, tr
         <div className="icon-dim-16 ml-8">
             <Tippy
                 className="default-tt"
-                content={copied ? copiedTippyText : 'Copy to clipboard'}
+                content={copied ? copiedTippyText : 'Copy'}
                 placement="right"
-                trigger="mouseenter click"
+                visible={copied || enableTippy}
             >
-                <button type="button" className="dc__hover-n100 dc__outline-none-imp p-0 flex bcn-0 dc__no-border">
+                <button
+                    type="button"
+                    className="dc__hover-n100 dc__outline-none-imp p-0 flex bcn-0 dc__no-border"
+                    onMouseEnter={handleEnableTippy}
+                    onMouseLeave={handleDisableTippy}
+                >
                     <ICCopy onClick={handleCopyContent} className="icon-dim-16" />
                 </button>
             </Tippy>
