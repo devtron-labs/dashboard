@@ -8,6 +8,7 @@ import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
 import { SuggestionsProps, SuggestionType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
+import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
 export default function Suggestions({
     handleDeActivation,
@@ -88,8 +89,8 @@ export default function Suggestions({
                         <SuggestionItem
                             key={variable.variableName}
                             variableName={variable.variableName}
-                            description={variable.description ?? 'No Defined Description'}
-                            variableValue={variable.variableValue?.value ?? 'No Defined Value'}
+                            description={variable.description ?? NO_DEFINED_DESCRIPTION}
+                            variableValue={variable.variableValue?.value ?? NO_DEFINED_VALUE}
                             highlightText={highlightText}
                         />
                     ))

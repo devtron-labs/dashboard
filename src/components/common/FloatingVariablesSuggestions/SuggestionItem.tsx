@@ -3,6 +3,7 @@ import Tippy from '@tippyjs/react'
 import * as DOMPurify from 'dompurify'
 import ClipboardButton from '../ClipboardButton/ClipboardButton'
 import { SuggestionsItemProps } from './types'
+import { NO_DEFINED_DESCRIPTION } from './constants'
 
 export default function SuggestionItem({
     variableName,
@@ -16,11 +17,16 @@ export default function SuggestionItem({
         setTriggerCopy(true)
     }
 
+    const sanitiseVariableValue = (value): string => {
+        if (value === '') return '""'
+        return value
+    }
+
     const highlightedText = (text: string): string =>
         text.replace(new RegExp(highlightText, 'gi'), (match) => `<span class="bcy-2">${match}</span>`)
 
     const renderDescription = (): JSX.Element => {
-        if (description === 'No Defined Description')
+        if (description === NO_DEFINED_DESCRIPTION)
             return <p className="m-0 dc__ellipsis-right__2nd-line fs-12 fw-4 lh-18">{description}</p>
 
         return (
@@ -44,7 +50,9 @@ export default function SuggestionItem({
             content={
                 <div className="mw-200 flex column dc__content-start dc__align-start">
                     <div className="flex column dc__content-start dc__align-start">Value</div>
-                    <div className="flex column dc__content-start dc__align-start">{variableValue}</div>
+                    <div className="flex column dc__content-start dc__align-start">
+                        {sanitiseVariableValue(variableValue)}
+                    </div>
                 </div>
             }
             placement="left"

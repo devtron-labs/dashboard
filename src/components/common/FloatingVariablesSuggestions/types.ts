@@ -1,7 +1,7 @@
 export interface SuggestionType {
     variableName: string
     description: string | null
-    variableValue: {
+    variableValue?: {
         value: string
     } | null
 }
