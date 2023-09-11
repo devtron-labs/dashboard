@@ -583,8 +583,10 @@ export function DropdownContainer({ isOpen, onClose, children }) {
     }
 
     return (
-        <div className="flex-col bcn-0 w-204 h-72 dc__position-abs dc__top-22 dc__border-radius-4-imp dc__left-0 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
-            <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
+        <div className='dc__transparent-div' onClick={onClose}>
+            <div className="flex-col bcn-0 w-204 h-72 dc__position-abs dc__top-119 dc__border-radius-4-imp dc__left-405 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
+                <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
+            </div>
         </div>
     )
 }
