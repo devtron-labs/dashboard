@@ -10,6 +10,7 @@ import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.sv
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
 import ScopedVariablesInput from './ScopedVariablesInput'
+import { importComponentFromFELibrary } from '../common'
 
 export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorProps) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,6 +19,8 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
             readFile(e.target.files![0], validator, ReadFileAs.TEXT)
         }
     }
+
+    const additonalTippyContent = importComponentFromFELibrary('scopedVariablesHelpTippyText')
 
     return (
         <>
@@ -36,10 +39,11 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                             placement="right"
                             Icon={QuestionFilled}
                             heading={DEFAULT_TITLE}
-                            infoText={DEFAULT_DESCRIPTION}
+                            infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
                             showCloseButton={true}
                             trigger="click"
                             interactive={true}
+                            additionalContent={additonalTippyContent?.()}
                         >
                             <button
                                 className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
