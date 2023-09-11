@@ -59,11 +59,8 @@ export default function ScopedVariablesEditor({
                 toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             }
         } catch (e) {
-            if (e instanceof ServerErrors && Array.isArray(e.errors) && e?.code === 406) {
-                setFooterError(e?.errors?.[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
-                toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
-                setIsSaving(false)
-                return
+            if (e instanceof ServerErrors && Array.isArray(e.errors) && e.code === 406) {
+                setFooterError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
             }
             toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             setIsSaving(false)
@@ -111,13 +108,17 @@ export default function ScopedVariablesEditor({
         abortRead()
     }
 
-    const renderInfoBarCloseButton = (): JSX.Element => {
-        const handleClearError = () => {
-            setFooterError('')
-        }
-        
+    const handleClearError = () => {
+        setFooterError('')
+    }
+
+    function renderInfoBarCloseButton(): JSX.Element {
         return (
-            <button type="button" className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1" onClick={handleClearError}>
+            <button
+                type="button"
+                className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1"
+                onClick={handleClearError}
+            >
                 <ICClose className="icon-dim-20 mt-2" />
             </button>
         )

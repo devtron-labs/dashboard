@@ -35,12 +35,12 @@ export default function SavedVariablesView({
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
     useEffect(() => {
-        if (status?.status == null) {
-            const variables = scopedVariablesData?.spec?.map((variable) => ({
+        if (status?.status == null && scopedVariablesData?.spec?.length) {
+            const variables = scopedVariablesData.spec.map((variable) => ({
                 name: variable.name,
                 description: variable.description,
             }))
-            if (variables) setVariablesList([...variables])
+            setVariablesList([...variables])
         }
     }, [scopedVariablesData])
 
@@ -168,7 +168,7 @@ export default function SavedVariablesView({
 
                             <PopupMenu autoClose>
                                 <PopupMenu.Button
-                                    isKebab={true}
+                                    isKebab
                                     rootClassName="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
                                     dataTestId="dropdown-btn"
                                 >
