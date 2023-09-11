@@ -5,10 +5,10 @@ import {
     PluginType,
     RefVariableStageType,
     ClearIndicator,
+    TagLabelSelect,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
-import { components } from 'react-select'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import Select, { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import Tippy from '@tippyjs/react'
@@ -16,6 +16,12 @@ import { OptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
 import { Label } from 'recharts'
+import { MenuList } from 'react-select/dist/declarations/src/components/Menu'
+import AboutTagEditModal from '../app/details/AboutTagEditModal'
+import { importComponentFromFELibrary } from '../common/helpers/Helpers'
+import {TagLabelValueSelector} from '@devtron-labs/devtron-fe-common-lib'
+// import { Select } from '../common'
+
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const {
@@ -35,15 +41,15 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         value: '',
     })
 
-    const [inputVariableOptions, setInputVariableOptions] = useState<
-        {
-            label: string
-            options: any[]
-        }[]
-    >([])
+    const [inputVariableOptions, setInputVariableOptions] = useState<{
+        label: string,
+        options: any[]
+
+    }[]>([])
 
     useEffect(() => {
         const previousStepVariables = []
+
         if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
             inputVariablesListFromPrevStep[activeStageName][selectedTaskIndex].forEach((element) => {
                 previousStepVariables.push({ ...element, label: element.name, value: element.name })
@@ -83,18 +89,19 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 }
             }
             setInputVariableOptions([
-                {
-                    label: 'From Pre-build Stage',
-                    options: preBuildStageVariables,
-                },
-                {
-                    label: 'From Post-build Stage',
-                    options: previousStepVariables,
-                },
-                {
-                    label: 'System variables',
-                    options: globalVariables,
-                },
+            {
+                label: 'From Pre-build Stage',
+                options: preBuildStageVariables,
+            },
+            {
+                label: 'From Post-build Stage',
+                options: previousStepVariables,
+            },
+            {
+                label: 'System variables',
+                options: globalVariables,
+            },
+
             ])
         } else {
             setInputVariableOptions([
@@ -112,7 +119,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedVariableValue()
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
-    const handleOutputVariableSelector = (selectedValue: OptionType) => {
+    const handleOutputVariableSelector = (selectedValue) => {
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -258,14 +265,15 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             event.target.blur()
         }
     }
-
+    console.log(inputVariableOptions)
+    // console.log(selectedOutputVariable)
     return (
-        <CreatableSelect
+        
+        <Select
             tabIndex={1}
-            value={selectedOutputVariable}
-            escapeClearsValue
+            placeholder="Select source or input value"
             options={inputVariableOptions}
-            placeholder='Select source or input value'
+            value={selectedOutputVariable}
             onChange={handleOutputVariableSelector}
             styles={
                 formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -273,7 +281,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     : pluginSelectStyle
             }
             formatOptionLabel={formatOptionLabel}
-            classNamePrefix="select"
+            classNamePrefix='Select'
             components={{
                 MenuList: (props) => {
                     return (
@@ -291,16 +299,15 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 IndicatorSeparator: null,
             }}
             noOptionsMessage={(): string => {
-                return 'No matching options'
-            }}
+                        return 'No matching options'
+                    }}
             onBlur={handleCreatableBlur}
-            backspaceRemovesValue
             isClearable
-            isValidNewOption={() => true}
-            isSearchable={true}
+            isSearchable
             onKeyDown={handleKeyDown}
             menuPlacement="auto"
         />
+
     )
 }
 
