@@ -5,6 +5,7 @@ import { highlightSearchedText } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
+  ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
@@ -107,9 +108,9 @@ export function K8SResourceList({
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${resourceParam}${
-            tab ? `/${tab.toLowerCase()}` : ''
-        }`
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${
+            namespace ?? ALL_NAMESPACE_OPTION.value
+        }/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
         const isAdded = addTab(_group, kind, resourceName, _url)
 
         if (isAdded) {
