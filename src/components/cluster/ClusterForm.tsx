@@ -624,13 +624,13 @@ export default function ClusterForm({
     }
 
     const changeKubectlConnectionType = (viaProxy, viaSSHTunnel) => {
-        setIsConnectedViaProxyTemp(viaProxy);
-        setIsConnectedViaSSHTunnelTemp(viaSSHTunnel);
-    };
+        setIsConnectedViaProxyTemp(viaProxy)
+        setIsConnectedViaSSHTunnelTemp(viaSSHTunnel)
+    }
 
     const changeSSHAuthenticationType = (authType) => {
-        setSSHConnectionType(authType);
-    };
+        setSSHConnectionType(authType)
+    }
 
     const setKubectlConnectionFalse = () => {
         setIsConnectedViaProxyTemp(false)
