@@ -1,7 +1,7 @@
 import React from 'react'
 import HiddenInputProps from './types'
 
-export default function ScopedVariablesInput({ handleFileUpload, children, id }: HiddenInputProps) {
+export default function HiddenInput({ handleFileUpload, children, id }: HiddenInputProps) {
     return (
         <>
             <input
