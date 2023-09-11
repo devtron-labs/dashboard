@@ -25,6 +25,7 @@ jest.mock('../../common', () => ({
             message: 'SUCCESS',
         },
     }),
+    Grid: jest.fn(() => <div></div>),
 }))
 
 describe('SavedVariables', () => {

@@ -1,7 +1,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import Grid from './Grid'
+import { Grid } from '../common'
 import { VariableType, VariablesListItemProps } from './types'
 import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE } from './constants'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
