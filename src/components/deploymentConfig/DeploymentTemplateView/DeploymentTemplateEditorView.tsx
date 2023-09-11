@@ -54,7 +54,7 @@ export default function DeploymentTemplateEditorView({
             appId: +appId,
             chartRefId: state.selectedChartRefId,
             getValues: false,
-            values: state.tempFormData,
+            values: state.tempFormData? state.tempFormData:state.draftValues
         }
 
         const response = await getDeploymentManisfest(request)
@@ -255,7 +255,7 @@ export default function DeploymentTemplateEditorView({
                 value={
                     state.selectedTabIndex !== 3 && showDraftData
                         ? isValues
-                            ? state.tempFormData
+                            ? (state.tempFormData? state.tempFormData:state.draftValues)
                             : draftManifestData
                         : value
                 }
@@ -289,6 +289,7 @@ export default function DeploymentTemplateEditorView({
                                 state.latestDraft,
                                 state.publishedState?.isOverride,
                                 isDeleteDraftState,
+                                isValues
                             )}
                         </div>
                     </CodeEditor.Header>
@@ -335,6 +336,7 @@ export default function DeploymentTemplateEditorView({
                                             state.latestDraft,
                                             state.publishedState?.isOverride,
                                             isDeleteDraftState,
+                                            isValues,
                                         )
                                     ) : (
                                         <CompareWithApprovalPendingAndDraft

@@ -276,6 +276,7 @@ export const renderEditorHeading = (
     latestDraft: any,
     isPublishedOverriden: boolean,
     isDeleteDraftState: boolean,
+    isValues: boolean,
 ) => (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
@@ -312,7 +313,7 @@ export const renderEditorHeading = (
                         className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
                         onClick={handleOverride}
                     >
-                        {overridden ? 'Delete override' : 'Allow override'}
+                        {isValues?(overridden ? 'Delete override' : 'Allow override'):''}
                     </span>
                 )}
             </div>
@@ -450,7 +451,7 @@ export const CompareWithApprovalPendingAndDraft = ({
                         className={`cursor ${overridden ? 'cr-5' : 'cb-5'}`}
                         onClick={handleOverride}
                     >
-                        {overridden ? 'Delete override' : 'Allow override'}
+                        { isValues? (overridden ? 'Delete override' : 'Allow override'):''}
                     </span>
                 )}
             </div>
