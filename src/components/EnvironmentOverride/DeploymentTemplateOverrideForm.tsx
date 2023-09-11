@@ -275,6 +275,7 @@ export default function DeploymentTemplateOverrideForm({
         switch (index) {
             case 1:
             case 3:
+                setIsValuesOverride(true)
                 const _isBasicLocked =
                     state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
                 const defaultYamlMode =
@@ -488,7 +489,7 @@ export default function DeploymentTemplateOverrideForm({
               }
               editorOnChange={editorOnChange}
               environmentName={environmentName}
-              readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
+              readOnly={!state.duplicate || isCompareAndApprovalState || !overridden || !isValuesOverride}
               globalChartRefId={state.data.globalChartRefId}
               handleOverride={handleOverride}
               isValues={isValuesOverride}
