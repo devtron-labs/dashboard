@@ -356,7 +356,7 @@ export default function ResourceList() {
                 resourceListAbortController.abort()
             }
         }
-    }, [namespace])
+    }, [selectedNamespace])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
