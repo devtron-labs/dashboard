@@ -27,11 +27,6 @@ export interface LoadScopedVariablesProps {
     abortRead: () => void
 }
 
-export interface ScopedVariablesInputProps {
-    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
-    children?: React.ReactNode
-}
-
 export interface ScopedVariablesEditorProps {
     variablesData: string
     name: string

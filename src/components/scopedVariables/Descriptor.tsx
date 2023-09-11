@@ -3,14 +3,13 @@ import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib
 import SearchBar from './DescriptorSearchBar'
 import { validator } from './utils'
 import { DescriptorProps } from './types'
+import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
-import ScopedVariablesInput from './ScopedVariablesInput'
-import { importComponentFromFELibrary } from '../common'
 
 export default function Descriptor({ children, showUploadButton, readFile, onSearch }: DescriptorProps) {
     const handleReUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,9 +39,9 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                             Icon={QuestionFilled}
                             heading={DEFAULT_TITLE}
                             infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
-                            showCloseButton={true}
+                            showCloseButton
                             trigger="click"
-                            interactive={true}
+                            interactive
                             additionalContent={additonalTippyContent?.()}
                         >
                             <button
@@ -62,12 +61,12 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                                 className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56"
                                 type="button"
                             >
-                                <ScopedVariablesInput handleFileUpload={handleReUpload}>
+                                <HiddenInput handleFileUpload={handleReUpload} id="descriptor-variables-input">
                                     <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
                                         <ICUpload width={14} height={14} className="scn-0" />
                                         <p className="fs-13 fw-6 lh-20 m-0">Upload new file to replace</p>
                                     </div>
-                                </ScopedVariablesInput>
+                                </HiddenInput>
                             </button>
                         )}
                     </div>

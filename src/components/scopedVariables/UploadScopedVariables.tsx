@@ -1,8 +1,7 @@
 import React from 'react'
-import ScopedVariablesInput from './ScopedVariablesInput'
+import { useFileReader, HiddenInput } from '../common'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
-import { useFileReader } from '../common'
 import { validator, downloadData } from './utils'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { UploadScopedVariablesProps } from './types'
@@ -55,7 +54,7 @@ export default function UploadScopedVariables({
 
                 <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
                     {status === null ? (
-                        <ScopedVariablesInput handleFileUpload={handleFileUpload}>
+                        <HiddenInput handleFileUpload={handleFileUpload} id="upload-scoped-variables-input">
                             <div className="flex center p-8 dc__gap-4 dc__border-radius-50-per bcb-1">
                                 <ICUpload className="icon-dim-20" />
                             </div>
@@ -63,7 +62,7 @@ export default function UploadScopedVariables({
                                 <p className="cb-5 fs-13 fw-6 lh-20 m-0">{UPLOAD_DESCRIPTION_L1}</p>
                                 <p className="cn-6 fs-10 fw-4 lh-16 m-0">{UPLOAD_DESCRIPTION_L2}</p>
                             </div>
-                        </ScopedVariablesInput>
+                        </HiddenInput>
                     ) : (
                         <ScopedVariablesLoader
                             status={status}

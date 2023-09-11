@@ -26,6 +26,7 @@ jest.mock('../../common', () => ({
         },
     }),
     Grid: jest.fn(() => <div></div>),
+    HiddenInput: jest.fn(() => <input type="file" />),
 }))
 
 describe('SavedVariables', () => {
