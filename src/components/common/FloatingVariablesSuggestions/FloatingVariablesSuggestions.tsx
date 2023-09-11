@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import Draggable from 'react-draggable'
 import Suggestions from './Suggestions'
 import { FloatingVariablesSuggestionsProps } from './types'
@@ -15,8 +15,6 @@ export default function FloatingVariablesSuggestions({
     error,
 }: FloatingVariablesSuggestionsProps) {
     const [isActive, setIsActive] = useState<boolean>(false)
-    // Do we even need this state since initialPosition is constant?
-    const [initialPosition, setInitialPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
@@ -24,15 +22,13 @@ export default function FloatingVariablesSuggestions({
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
 
-    useEffect(() => {
-        // Since buttonPosition is relative to initialPosition, we need to find initialPosition with respect to the screen
-        const initialPosition = nodeRef.current.getBoundingClientRect()
-        setInitialPosition({ x: initialPosition.x, y: initialPosition.y })
-    }, [])
-
-    const handleStopPropagation = (e: React.MouseEvent<HTMLOrSVGElement>) => {
-        e.stopPropagation()
-    }
+    const initialPosition = useMemo(() => {
+        const initialPosition = nodeRef.current?.getBoundingClientRect() || {
+            x: 0,
+            y: 0,
+        }
+        return { x: initialPosition.x, y: initialPosition.y }
+    }, [nodeRef.current])
 
     const handleActivation = () => {
         const currentPosInScreen = {
@@ -52,19 +48,19 @@ export default function FloatingVariablesSuggestions({
             })
         }
 
-        if (currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width - 16) {
+        if (currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width) {
             setExpandedPosition({
-                x: window.innerWidth - SUGGESTIONS_SIZE.width - 16 - initialPosition.x,
+                x: window.innerWidth - SUGGESTIONS_SIZE.width - initialPosition.x,
                 y: collapsedPosition.y,
             })
         }
 
         if (
-            currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width - 16 &&
+            currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width &&
             currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height
         ) {
             setExpandedPosition({
-                x: window.innerWidth - SUGGESTIONS_SIZE.width - 16 - initialPosition.x,
+                x: window.innerWidth - SUGGESTIONS_SIZE.width - initialPosition.x,
                 y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }
@@ -72,10 +68,14 @@ export default function FloatingVariablesSuggestions({
         setIsActive(true)
     }
 
-    const handleDeActivation = (e: React.MouseEvent<HTMLOrSVGElement>) => {
-        e.stopPropagation()
-        setIsActive(false)
-    }
+    // Need to memoize this function since it is passed as a prop to Suggestions
+    const handleDeActivation = useMemo(
+        () => (e: React.MouseEvent<HTMLOrSVGElement>) => {
+            e.stopPropagation()
+            setIsActive(false)
+        },
+        [],
+    )
 
     // e will be unused, but we need to pass it as a parameter since Draggable expects it
     const handleCollapsedDrag = (e, data: { x: number; y: number }) => {
@@ -84,7 +84,7 @@ export default function FloatingVariablesSuggestions({
 
     const handleExpandedDrag = (e, data: { x: number; y: number }) => {
         setExpandedPosition(data)
-        // Need to retain the collapsed position only if the user has not dragged the suggestions
+        // Only Need to retain the collapsed position if the user has not dragged the suggestions, so need to update
         setCollapsedPosition(data)
     }
 
@@ -103,10 +103,7 @@ export default function FloatingVariablesSuggestions({
                     ref={nodeRef}
                 >
                     <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20">
-                        <ICDrag
-                            className="handle-drag dc__grabbable scn-4 icon-dim-20"
-                            onClick={handleStopPropagation}
-                        />
+                        <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" />
                     </button>
                     {/* DUMMY ICON */}
 

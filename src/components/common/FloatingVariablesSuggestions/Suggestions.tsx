@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, memo } from 'react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import SuggestionItem from './SuggestionItem'
@@ -10,13 +10,7 @@ import { SuggestionsProps, SuggestionType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
-export default function Suggestions({
-    handleDeActivation,
-    loading,
-    variables,
-    reloadVariables,
-    error,
-}: SuggestionsProps) {
+function Suggestions({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) {
     const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables ?? [])
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [highlightText, setHighlightText] = useState<string>('')
@@ -135,3 +129,5 @@ export default function Suggestions({
         </>
     )
 }
+
+export default memo(Suggestions)
