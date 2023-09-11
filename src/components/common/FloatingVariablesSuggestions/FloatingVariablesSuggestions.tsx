@@ -40,6 +40,11 @@ export default function FloatingVariablesSuggestions({
             y: initialPosition.y + collapsedPosition.y,
         }
 
+        setExpandedPosition({
+            x: collapsedPosition.x,
+            y: collapsedPosition.y,
+        })
+
         if (currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height) {
             setExpandedPosition({
                 x: collapsedPosition.x,
@@ -59,7 +64,7 @@ export default function FloatingVariablesSuggestions({
             currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height
         ) {
             setExpandedPosition({
-                x: window.innerWidth - 356 - 16 - initialPosition.x,
+                x: window.innerWidth - SUGGESTIONS_SIZE.width - 16 - initialPosition.x,
                 y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }

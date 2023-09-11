@@ -1,14 +1,42 @@
 import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
+import * as DOMPurify from 'dompurify'
 import ClipboardButton from '../ClipboardButton/ClipboardButton'
 import { SuggestionsItemProps } from './types'
 
-export default function SuggestionItem({ variableName, description, variableValue }: SuggestionsItemProps) {
+export default function SuggestionItem({
+    variableName,
+    description,
+    variableValue,
+    highlightText,
+}: SuggestionsItemProps) {
     const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
 
     const handleCopyTrigger = () => {
         setTriggerCopy(true)
     }
+
+    const highlightedText = (text: string): string =>
+        text.replace(new RegExp(highlightText, 'gi'), (match) => `<span class="bcy-2">${match}</span>`)
+
+    const renderDescription = (): JSX.Element => {
+        if (description === 'No Defined Description')
+            return <p className="m-0 dc__ellipsis-right__2nd-line fs-12 fw-4 lh-18">{description}</p>
+
+        return (
+            <p
+                className="m-0 dc__ellipsis-right__2nd-line fs-12 fw-4 lh-18"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedText(description)) }}
+            />
+        )
+    }
+
+    const renderVariableName = (): JSX.Element => (
+        <p
+            className="m-0 fs-13 fw-6 lh-20 cn-9"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedText(variableName)) }}
+        />
+    )
 
     return (
         <Tippy
@@ -26,7 +54,7 @@ export default function SuggestionItem({ variableName, description, variableValu
                 onClick={handleCopyTrigger}
             >
                 <div className="flexbox dc__align-items-center dc__gap-2 dc__content-space">
-                    <p className="m-0 fs-13 fw-6 lh-20 cn-9">{variableName}</p>
+                    {renderVariableName()}
 
                     <ClipboardButton
                         content={`@{{${variableName}}}`}
@@ -37,9 +65,7 @@ export default function SuggestionItem({ variableName, description, variableValu
                     />
                 </div>
 
-                <div className="flexbox dc__align-items-center">
-                    <p className="m-0 dc__ellipsis-right__2nd-line fs-12 fw-4 lh-18">{description}</p>
-                </div>
+                <div className="flexbox dc__align-items-center">{renderDescription()}</div>
             </div>
         </Tippy>
     )

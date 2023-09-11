@@ -18,6 +18,7 @@ export default function Suggestions({
 }: SuggestionsProps) {
     const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables ?? [])
     const [clearSearch, setClearSearch] = useState<boolean>(false)
+    const [highlightText, setHighlightText] = useState<string>('')
 
     const enableSearch = !loading && !error && !!variables?.length
 
@@ -29,6 +30,7 @@ export default function Suggestions({
                 variable.description?.toLowerCase().includes(text.toLowerCase()),
         )
         setSuggestions(filteredSuggestions)
+        setHighlightText(text)
     }
 
     const renderHeader = () => (
@@ -88,6 +90,7 @@ export default function Suggestions({
                             variableName={variable.variableName}
                             description={variable.description ?? 'No Defined Description'}
                             variableValue={variable.variableValue?.value ?? 'No Defined Value'}
+                            highlightText={highlightText}
                         />
                     ))
                 ) : (

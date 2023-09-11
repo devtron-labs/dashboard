@@ -18,6 +18,7 @@ export interface SuggestionsItemProps {
     variableName: string
     description: string
     variableValue: string
+    highlightText: string
 }
 
 export interface SuggestionsProps {

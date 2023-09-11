@@ -25,7 +25,7 @@ export default function SuggestionsInfo() {
                     className="dc__outline-none-imp dc__no-border p-0 bcv-1 flex center"
                     onClick={handleExpansion}
                 >
-                    {<ICDown className={`icon-dim-16 fcn-6 ${expanded ? 'dc__flip-180' : 'dc__flip-270'}`} />}
+                    {<ICDown className={`icon-dim-16 fcn-6 ${!expanded ? 'dc__flip-270' : ''}`} />}
                 </button>
             </div>
 
