@@ -4,16 +4,8 @@ import { copyToClipboard } from '../helpers/Helpers'
 import ClipboardProps from './types'
 import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 
-export default function ClipboardButton({ content }: ClipboardProps) {
+export default function ClipboardButton({ content, copiedTippyText, duration, trigger }: ClipboardProps) {
     const [copied, setCopied] = useState<boolean>(false)
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setCopied(false)
-        }, 2000)
-
-        return () => clearTimeout(timeout)
-    }, [copied])
 
     const handleTextCopied = () => {
         setCopied(true)
@@ -23,11 +15,24 @@ export default function ClipboardButton({ content }: ClipboardProps) {
         copyToClipboard(content, handleTextCopied)
     }
 
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setCopied(false)
+        }, duration)
+
+        return () => clearTimeout(timeout)
+    }, [copied])
+
+    useEffect(() => {
+        setCopied(true)
+        handleCopyContent()
+    }, [trigger])
+
     return (
         <div className="icon-dim-16 ml-8">
             <Tippy
                 className="default-tt"
-                content={copied ? 'Copied!' : 'Copy to clipboard'}
+                content={copied ? copiedTippyText : 'Copy to clipboard'}
                 placement="right"
                 trigger="mouseenter click"
             >

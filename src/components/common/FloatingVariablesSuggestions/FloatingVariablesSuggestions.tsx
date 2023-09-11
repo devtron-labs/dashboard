@@ -15,7 +15,8 @@ export default function FloatingVariablesSuggestions({
     const [isActive, setIsActive] = useState<boolean>(false)
     // Do we even need this state since initialPosition is constant?
     const [initialPosition, setInitialPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
-    const [buttonPosition, setButtonPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+    const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+    const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
@@ -33,21 +34,21 @@ export default function FloatingVariablesSuggestions({
 
     const handleActivation = () => {
         const currentPosInScreen = {
-            x: initialPosition.x + buttonPosition.x,
-            y: initialPosition.y + buttonPosition.y,
+            x: initialPosition.x + collapsedPosition.x,
+            y: initialPosition.y + collapsedPosition.y,
         }
 
         if (currentPosInScreen.y > window.innerHeight - 504) {
-            setButtonPosition({ x: buttonPosition.x, y: window.innerHeight - 504 - initialPosition.y })
+            setExpandedPosition({ x: collapsedPosition.x, y: window.innerHeight - 504 - initialPosition.y })
         }
 
-        if (currentPosInScreen.x > window.innerWidth - 356) {
-            setButtonPosition({ x: window.innerWidth - 356 - initialPosition.x, y: buttonPosition.y })
+        if (currentPosInScreen.x > window.innerWidth - 356 - 16) {
+            setExpandedPosition({ x: window.innerWidth - 356 - 16 - initialPosition.x, y: collapsedPosition.y })
         }
 
-        if (currentPosInScreen.x > window.innerWidth - 356 && currentPosInScreen.y > window.innerHeight - 504) {
-            setButtonPosition({
-                x: window.innerWidth - 356 - initialPosition.x,
+        if (currentPosInScreen.x > window.innerWidth - 356 - 16 && currentPosInScreen.y > window.innerHeight - 504) {
+            setExpandedPosition({
+                x: window.innerWidth - 356 - 16 - initialPosition.x,
                 y: window.innerHeight - 504 - initialPosition.y,
             })
         }
@@ -61,24 +62,45 @@ export default function FloatingVariablesSuggestions({
     }
 
     // e will be unused, but we need to pass it as a parameter since Draggable expects it
-    const handleButtonDrag = (e, data: { x: number; y: number }) => {
-        setButtonPosition(data)
+    const handleCollapsedDrag = (e, data: { x: number; y: number }) => {
+        setCollapsedPosition(data)
+    }
+
+    const handleExpandedDrag = (e, data: { x: number; y: number }) => {
+        setExpandedPosition(data)
+        // Need to retain the collapsed position only if the user has not dragged the suggestions
+        setCollapsedPosition(data)
     }
 
     if (!isActive)
         return (
-            <Draggable bounds="body" handle=".handle-drag" nodeRef={nodeRef} onDrag={handleButtonDrag}>
-                <button
+            <Draggable
+                bounds="body"
+                handle=".handle-drag"
+                nodeRef={nodeRef}
+                position={collapsedPosition}
+                onDrag={handleCollapsedDrag}
+            >
+                <div
                     className="bcn-7 dc__outline-none-imp dc__border-n0 br-48 flex h-40 pt-8 pb-8 pl-12 pr-12 dc__gap-8 dc__no-shrink dc__position-abs"
                     style={{ zIndex, boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.20)' }}
-                    onClick={handleActivation}
                     ref={nodeRef}
-                    type="button"
                 >
-                    <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" onClick={handleStopPropagation} />
+                    <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20">
+                        <ICDrag
+                            className="handle-drag dc__grabbable scn-4 icon-dim-20"
+                            onClick={handleStopPropagation}
+                        />
+                    </button>
                     {/* DUMMY ICON */}
-                    <ICGridView className="scn-0 icon-dim-20" />
-                </button>
+                    <button
+                        className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
+                        type="button"
+                        onClick={handleActivation}
+                    >
+                        <ICGridView className="scn-0 icon-dim-20" />
+                    </button>
+                </div>
             </Draggable>
         )
 
@@ -87,8 +109,8 @@ export default function FloatingVariablesSuggestions({
             bounds="body"
             handle=".handle-drag"
             nodeRef={nodeRef}
-            position={buttonPosition}
-            onDrag={handleButtonDrag}
+            position={expandedPosition}
+            onDrag={handleExpandedDrag}
         >
             <div
                 className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border-n7 dc__overflow-hidden dc__position-abs mxh-504"

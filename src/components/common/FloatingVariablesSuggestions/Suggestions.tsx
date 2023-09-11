@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
-import Tippy from '@tippyjs/react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
-import ClipboardButton from '../ClipboardButton/ClipboardButton'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
-import { SuggestionsProps, RenderSuggestionsItemProps, SuggestionType } from './types'
+import { SuggestionsProps, SuggestionType } from './types'
+import SuggestionItem from './SuggestionItem'
 
 export default function Suggestions({
     handleDeActivation,
@@ -29,26 +28,6 @@ export default function Suggestions({
         setSuggestions(filteredSuggestions)
     }
 
-    const renderVariableItem = ({
-        variableName,
-        variableDescription,
-        variableValue,
-    }: RenderSuggestionsItemProps): JSX.Element => (
-        <Tippy className="default-tt" content={variableValue} placement="left" key={variableName}>
-            <div className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50">
-                <div className="flexbox dc__align-items-center dc__gap-2 dc__content-space">
-                    <p className="m-0 fs-13 fw-6 lh-20 cn-9">{variableName}</p>
-
-                    <ClipboardButton content={variableName} />
-                </div>
-
-                <div className="flexbox dc__align-items-center">
-                    <p className="m-0 dc__ellipsis-right__2nd-line fs-12 fw-4 lh-18">{variableDescription}</p>
-                </div>
-            </div>
-        </Tippy>
-    )
-
     const renderHeader = () => (
         <div className="flexbox-col dc__align-self-stretch">
             <div className="handle-drag flexbox pt-8 pl-12 pr-12 dc__gap-16 dc__align-start dc__align-self-stretch bcn-7 dc__grabbable">
@@ -58,7 +37,9 @@ export default function Suggestions({
                     <p className="dc__align-self-stretch c-n50 fs-12 fw-4 lh-20">Use variable to set dynamic value</p>
                 </div>
 
-                <ICClose className="fcn-0 icon-dim-20 cursor" onClick={handleDeActivation} />
+                <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20">
+                    <ICClose className="fcn-0 icon-dim-20 cursor" onClick={handleDeActivation} />
+                </button>
             </div>
 
             {enableSearch && (
@@ -98,13 +79,14 @@ export default function Suggestions({
         <>
             <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
                 {suggestions.length ? (
-                    suggestions.map((variable: SuggestionType) =>
-                        renderVariableItem({
-                            variableName: variable.variableName,
-                            variableDescription: variable.variableDescription ?? 'No Defined Description',
-                            variableValue: JSON.stringify(variable.variableValue.value) ?? 'No Defined Value',
-                        }),
-                    )
+                    suggestions.map((variable: SuggestionType) => (
+                        <SuggestionItem
+                            key={variable.variableName}
+                            variableName={variable.variableName}
+                            description={variable.description}
+                            variableValue={JSON.stringify(variable.variableValue.value)}
+                        />
+                    ))
                 ) : (
                     <GenericEmptyState
                         title="No matching variable found"

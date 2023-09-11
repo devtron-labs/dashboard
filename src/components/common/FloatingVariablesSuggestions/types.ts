@@ -1,6 +1,6 @@
 export interface SuggestionType {
     variableName: string
-    variableDescription: string
+    description: string
     variableValue: {
         value: string
     }
@@ -14,9 +14,9 @@ export interface FloatingVariablesSuggestionsProps {
     error: boolean
 }
 
-export interface RenderSuggestionsItemProps {
+export interface SuggestionsItemProps {
     variableName: string
-    variableDescription: string
+    description: string
     variableValue: string
 }
 
