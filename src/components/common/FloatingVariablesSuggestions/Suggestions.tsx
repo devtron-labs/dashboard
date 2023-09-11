@@ -7,6 +7,7 @@ import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
 import { SuggestionsProps, SuggestionType } from './types'
+import SuggestionsInfo from './SuggestionsInfo'
 
 export default function Suggestions({
     handleDeActivation,
@@ -22,8 +23,10 @@ export default function Suggestions({
 
     const onSearch = (text: string) => {
         // No need to check for variables type since we are not even showing search bar if there are no variables
-        const filteredSuggestions = variables.filter((variable) =>
-            variable.variableName.toLowerCase().includes(text.toLowerCase()),
+        const filteredSuggestions = variables.filter(
+            (variable) =>
+                variable.variableName.toLowerCase().includes(text.toLowerCase()) ||
+                variable.description?.toLowerCase().includes(text.toLowerCase()),
         )
         setSuggestions(filteredSuggestions)
     }
@@ -84,7 +87,7 @@ export default function Suggestions({
                             key={variable.variableName}
                             variableName={variable.variableName}
                             description={variable.description ?? 'No Defined Description'}
-                            variableValue={variable.variableValue.value ?? 'No Defined Value'}
+                            variableValue={variable.variableValue?.value ?? 'No Defined Value'}
                         />
                     ))
                 ) : (
@@ -97,9 +100,7 @@ export default function Suggestions({
                 )}
             </div>
 
-            <div className="flexbox dc__align-self-stretch dc__align-items-center pt-12 pb-12 pl-10 pr-10 bcv-1 m-0 fs-13 fw-4 lh-20 cn-9">
-                Type &nbsp;<span className="fw-6">{'@{{}}'}</span>&nbsp; to use a variable instead of fixed value.
-            </div>
+            <SuggestionsInfo />
         </>
     )
 

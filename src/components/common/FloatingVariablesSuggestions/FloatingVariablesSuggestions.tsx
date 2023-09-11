@@ -5,6 +5,7 @@ import { FloatingVariablesSuggestionsProps } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
 import { SUGGESTIONS_SIZE } from './constants'
+import Tippy from '@tippyjs/react'
 
 export default function FloatingVariablesSuggestions({
     zIndex,
@@ -103,13 +104,16 @@ export default function FloatingVariablesSuggestions({
                         />
                     </button>
                     {/* DUMMY ICON */}
-                    <button
-                        className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
-                        type="button"
-                        onClick={handleActivation}
-                    >
-                        <ICGridView className="scn-0 icon-dim-20" />
-                    </button>
+
+                    <Tippy content="Scoped variables" placement="top" className="default-tt" arrow={false}>
+                        <button
+                            className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
+                            type="button"
+                            onClick={handleActivation}
+                        >
+                            <ICGridView className="scn-0 icon-dim-20" />
+                        </button>
+                    </Tippy>
                 </div>
             </Draggable>
         )

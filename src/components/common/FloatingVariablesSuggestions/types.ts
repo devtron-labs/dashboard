@@ -1,9 +1,9 @@
 export interface SuggestionType {
     variableName: string
-    description: string
+    description: string | null
     variableValue: {
         value: string
-    }
+    } | null
 }
 
 export interface FloatingVariablesSuggestionsProps {
