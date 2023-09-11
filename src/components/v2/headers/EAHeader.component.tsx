@@ -20,7 +20,7 @@ function EAHeaderComponent() {
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
                     className="dc__devtron-breadcrumb__item"
                 >
-                    <div className="cb-5">Helm apps</div>
+                    <div className="cb-5 cursor">Helm apps</div>
                 </Link>
                 <span className="ml-4 mr-4">/</span>
                 <span>{params.appName}</span>
