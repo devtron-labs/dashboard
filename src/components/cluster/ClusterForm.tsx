@@ -91,8 +91,11 @@ export default function ClusterForm({
     prometheus_url,
     prometheusAuth,
     defaultClusterComponent,
-    proxy_url,
-    sshTunnelConfig,
+    proxyUrl,
+    sshTunnelUser,
+    sshTunnelPassword,
+    sshTunnelPrivateKey,
+    sshTunnelUrl,
     isConnectedViaProxy,
     isConnectedViaSSHTunnel,
     isTlsConnection,
@@ -147,12 +150,12 @@ export default function ClusterForm({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            proxy_url: { value: proxy_url?  proxy_url : '', error: '' },
+            proxyUrl: { value: proxyUrl?.value ?  proxyUrl?.value : '', error: '' },
             isConnectedViaSSHTunnel: { value: isConnectedViaSSHTunnel?.value ? isConnectedViaSSHTunnel : '', error: '' },
-            sshTunnelUser: { value: sshTunnelConfig?.user || '', error: '' },
-            sshTunnelPassword: { value: sshTunnelConfig?.password || '', error: '' },
-            sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey || '', error: '' },
-            sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress || '', error: '' },
+            sshTunnelUser: { value: sshTunnelUser?.value ? sshTunnelUser?.value : '', error: '' },
+            sshTunnelPassword: { value: sshTunnelPassword?.value ? sshTunnelPassword?.value : '', error: '' },
+            sshTunnelPrivateKey: { value: sshTunnelPrivateKey?.value ? sshTunnelPrivateKey?.value : '', error: '' },
+            sshTunnelUrl: { value: sshTunnelUrl?.value ? sshTunnelUrl?.value : '', error: '' },
             tlsClientKey: { value: config?.tls_key, error: '' },
             tlsClientCert: { value: config?.cert_data, error: '' },
             certificateAuthorityData: { value: config?.cert_auth_data, error: '' },
@@ -198,13 +201,13 @@ export default function ClusterForm({
             prometheusTlsClientCert: {
                 required: false,
             },
-            proxy_url: {
+            proxyUrl: {
                 required: (id && KubectlConnectionRadio) && isConnectedViaProxyTemp,
                 validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             sshTunnelUser: {
                 required: isConnectedViaSSHTunnelTemp,
-                validator: { error: 'username or user identifier is required', regex: /^(?!\s*$).+/ },
+                validator: { error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -', regex: /^[A-Za-z0-9_-]+$/ },
             },
             sshTunnelPassword: {
                 required: isConnectedViaSSHTunnelTemp && (SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
@@ -257,7 +260,6 @@ export default function ClusterForm({
         const saveClusterPayload: SaveClusterPayloadType[] = []
         for (const _dataList of dataLists) {
             if (isClusterSelected[_dataList.cluster_name]) {
-                console.log('_datalist = ', _dataList)
                 const _clusterDetails: SaveClusterPayloadType = {
                     id: _dataList.id,
                     cluster_name: _dataList.cluster_name,
@@ -265,7 +267,7 @@ export default function ClusterForm({
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
                     active: true,
                     prometheus_url: '',
-                    proxy_url: _dataList.proxy_url,
+                    proxyUrl: _dataList.proxyUrl,
                     prometheusAuth: {
                         userName: '',
                         password: '',
@@ -277,7 +279,6 @@ export default function ClusterForm({
                     server_url: _dataList.server_url,
                 }
                 saveClusterPayload.push(_clusterDetails)
-                console.log('_clusterDetails = ', _clusterDetails)
             }
         }
 
@@ -357,8 +358,6 @@ export default function ClusterForm({
                         }
                         _clusterSelections[_cluster['cluster_name']] = false
 
-                        console.log('_cluster = ', _cluster)
-
                         return {
                             cluster_name: _cluster['cluster_name'],
                             userInfos: _userInfoList,
@@ -367,7 +366,7 @@ export default function ClusterForm({
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
                             id: _cluster['id'],
-                            proxy_url: _cluster['proxy_url'],
+                            proxyUrl: _cluster['proxyUrl'],
                             isConnectedViaSSHTunnel: _cluster['isConnectedViaSSHTunnel'],
                             sshTunnelConfig: _cluster['sshTunnelConfig']
                         }
@@ -412,7 +411,7 @@ export default function ClusterForm({
                 cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
-            proxy_url: state.proxy_url?.value,
+            proxyUrl: state.proxyUrl?.value,
             isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel?.value,
             sshTunnelConfig: {
                 user: state.sshTunnelUser?.value,
@@ -439,23 +438,23 @@ export default function ClusterForm({
             payload['server_url'] = urlValue
         }
         if (isConnectedViaProxyTemp) {
-            const proxyUrlValue = state.proxy_url?.value?.trim() ?? ''
+            const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
             if (proxyUrlValue.endsWith('/')) {
-                payload['proxy_url'] = proxyUrlValue.slice(0, -1)
+                payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
             } else {
-                payload['proxy_url'] = proxyUrlValue
+                payload['proxyUrl'] = proxyUrlValue
             }
         } else {
-            payload['proxy_url'] = ''
+            payload['proxyUrl'] = ''
         }
         if (isConnectedViaSSHTunnelTemp) {
-            payload['toConnectViaSSHTunnel'] = true
+            payload['toConnectWithSSHTunnel'] = true
             payload.sshTunnelConfig['user'] = state.sshTunnelUser?.value
             payload.sshTunnelConfig['password'] = state.sshTunnelPassword?.value
             payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
             payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
         } else {
-            payload['toConnectViaSSHTunnel'] = false
+            payload['toConnectWithSSHTunnel'] = false
             payload.sshTunnelConfig['user'] = ''
             payload.sshTunnelConfig['password'] = ''
             payload.sshTunnelConfig['authKey'] = ''
@@ -529,8 +528,8 @@ export default function ClusterForm({
             tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
-        proxy_url: state.proxy_url.value,
-        toConnectViaSSHTunnel: state.isConnectedViaSSHTunnel.value,
+        proxyUrl: state.proxyUrl.value,
+        toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel.value,
         sshTunnelConfig: {
             user: state.sshTunnelUser.value,
             password: state.sshTunnelPassword.value,
@@ -708,11 +707,11 @@ export default function ClusterForm({
                             <span className="form__input-header pb-20">How do you want Devtron to connect with this cluster?</span>
                             <span className="pb-20">
                                 <KubectlConnectionRadio
-                                    toConnectViaProxyTemp={isConnectedViaProxyTemp}
-                                    toConnectViaSSHTunnel={isConnectedViaSSHTunnelTemp}
+                                    toConnectViaProxy={isConnectedViaProxyTemp}
+                                    toConnectWithSSHTunnel={isConnectedViaSSHTunnelTemp.value}
                                     changeClusterConnectionType={changeKubectlConnectionType}
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
-                                    proxy_url={state.proxy_url}
+                                    proxyUrl={state.proxyUrl}
                                     sshTunnelUser={state.sshTunnelUser}
                                     sshTunnelPassword={state.sshTunnelPassword}
                                     sshTunnelPrivateKey={state.sshTunnelPrivateKey}
