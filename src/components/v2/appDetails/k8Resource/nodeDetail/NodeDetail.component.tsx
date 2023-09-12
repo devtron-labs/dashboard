@@ -90,7 +90,7 @@ function NodeDetailComponent({
         ) {
             getContainersFromManifest()
         }
-    }, [loadingResources, params.node])
+    }, [loadingResources, params.node, params.namespace])
 
     const isExternalEphemeralContainer = (cmds: string[], name: string): boolean => {
         const matchingCmd = `sh ${name}-devtron.sh`
