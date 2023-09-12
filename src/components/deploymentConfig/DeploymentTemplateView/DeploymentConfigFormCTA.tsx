@@ -190,32 +190,30 @@ export default function DeploymentConfigFormCTA({
         }
     }
 
-    return (
-        _selectedChart && (
-            <div
-                className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
-                    showAppMetricsToggle ? 'dc__content-space' : 'right'
-                } ${getHeightClass()} ${state.latestDraft?.canApprove ? 'tippy-over ' : ''}`}
-            >
-                {compareTab && !state.showReadme && <div className="w-50" />}
-                {renderApplicationMetrics()}
-                {!isPublishedMode && (
-                    <>
-                        {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
-                            <ApproveRequestTippy
-                                draftId={state.latestDraft.draftId}
-                                draftVersionId={state.latestDraft.draftVersionId}
-                                resourceName="deployment template"
-                                reload={reload}
-                            >
-                                {renderButton()}
-                            </ApproveRequestTippy>
-                        ) : (
-                            renderButton()
-                        )}
-                    </>
-                )}
-            </div>
-        )
-    )
+    return _selectedChart ? (
+        <div
+            className={`form-cta-section flex pt-16 pb-16 pr-20 pl-20 ${
+                showAppMetricsToggle ? 'dc__content-space' : 'right'
+            } ${getHeightClass()} ${state.latestDraft?.canApprove ? 'tippy-over ' : ''}`}
+        >
+            {compareTab && !state.showReadme && <div className="w-50" />}
+            {renderApplicationMetrics()}
+            {!isPublishedMode && (
+                <>
+                    {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
+                        <ApproveRequestTippy
+                            draftId={state.latestDraft.draftId}
+                            draftVersionId={state.latestDraft.draftVersionId}
+                            resourceName="deployment template"
+                            reload={reload}
+                        >
+                            {renderButton()}
+                        </ApproveRequestTippy>
+                    ) : (
+                        renderButton()
+                    )}
+                </>
+            )}
+        </div>
+    ) : null
 }

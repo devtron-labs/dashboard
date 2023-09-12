@@ -88,6 +88,7 @@ export interface Chart {
     appStoreApplicationVersionId?: number;
     deprecated: boolean;
     description?: string;
+    docker_artifact_store_id?: string
 }
 
 export interface ProjectType {
@@ -347,4 +348,22 @@ export interface HelmProjectUpdatePayload {
     appId: string
     appName: string
     teamId: number
+}
+
+export interface ChartListPopUpType{
+  onClose:(e) => void
+  chartList: ChartListType[]
+  filteredChartList: ChartListType[]
+  isLoading: boolean
+  setFilteredChartList: React.Dispatch<React.SetStateAction<ChartListType[]>>
+  setShowSourcePopoUp: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface ChartListType {
+    active: boolean
+    id: number
+    isEditable: boolean
+    name: string
+    registryProvider?: string
+    isOCIRegistry?: boolean
 }
