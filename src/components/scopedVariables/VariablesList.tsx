@@ -94,7 +94,10 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                                     className="default-tt"
                                     placement="left"
                                 >
-                                    <ICVisibilityOff className="icon-dim-20 icon-n6" />
+                                    {/* Some bug in tippy i have to wrap it in div otherwise outline comes */}
+                                    <div className="flex center dc__content-start">
+                                        <ICVisibilityOff className="icon-dim-20 icon-fill-n6" />
+                                    </div>
                                 </Tippy>
                             ) : (
                                 <Tippy
@@ -102,7 +105,9 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                                     className="default-tt"
                                     placement="left"
                                 >
-                                    <ICVisibilityOn className="icon-dim-20" />
+                                    <div className="flex center dc__content-start">
+                                        <ICVisibilityOn className="icon-dim-20" />
+                                    </div>
                                 </Tippy>
                             )}
                         </Grid>
