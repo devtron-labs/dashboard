@@ -49,6 +49,7 @@ export default function DebouncedSearch({
                     type="button"
                     className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex"
                     onClick={handleClearSearch}
+                    data-testid="clear-search"
                 >
                     <ICClear className="icon-dim-20 icon-n6" />
                 </button>
