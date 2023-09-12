@@ -4,6 +4,7 @@ export interface SuggestionType {
     variableValue?: {
         value: string
     } | null
+    isRedacted: boolean
 }
 
 export interface FloatingVariablesSuggestionsProps {
