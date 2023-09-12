@@ -22,7 +22,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
-import { OptionType } from '../../app/types'
+import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
     ERROR_SCREEN_LEARN_MORE,
@@ -62,6 +62,7 @@ import {
     getParentAndChildNodes,
     getUpdatedNodeSelectionData,
     getUpdatedResourceSelectionData,
+    removeDefaultForStorageClass,
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
@@ -409,6 +410,9 @@ export default function ResourceList() {
             setLastDataSync(!lastDataSync)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
+            }
+            if (selectedResource?.gvk.Kind === Nodes.StorageClass) {
+                result.data = removeDefaultForStorageClass(result.data)
             }
             setResourceList(result)
 
