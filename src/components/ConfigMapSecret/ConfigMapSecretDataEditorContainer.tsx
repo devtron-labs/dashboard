@@ -32,8 +32,8 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         draftMode,
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
         const [showFileReaderPopup, setFileReaderPopup] = React.useState(false)
-        const { status, progress, fileData, abortRead, readFile } = useFileReader()
-        
+        const { fileData, readFile } = useFileReader()
+
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
             _currentData[index] = {
@@ -253,7 +253,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             return (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={value}
+                        value={fileData?.data ?? value}
                         mode="yaml"
                         inline
                         height={350}
@@ -357,16 +357,13 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                 </RadioGroup.Radio>
                             </RadioGroup>
                         )}
-                      
+
                         {
-                             
-                              <ConfigMapSecretFileReaderPopup
-                              toggleFileReaderPopup ={toggleFileReaderPopup}
-                              showFileReaderPopup={showFileReaderPopup}
-                              readFile={readFile}
-                              />
-                             
-                            
+                            <ConfigMapSecretFileReaderPopup
+                                toggleFileReaderPopup={toggleFileReaderPopup}
+                                showFileReaderPopup={showFileReaderPopup}
+                                readFile={readFile}
+                            />
                         }
                         {renderSecretShowHide()}
                     </div>

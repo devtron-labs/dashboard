@@ -25,12 +25,16 @@ export const useFileReader = () => {
         if (status === FileReaderStatus.SUCCESS) setProgress(100)
     }, [fileData, validator])
 
-    const handleFileRead = (e: any) => {
+    const handleFileRead = (e: any, isFileNameAsKey?: boolean, fileName?: string) => {
         const content = e.target.result
-        setFileData((prev) => ({
-            ...prev,
-            data: content,
-        }))
+        if (isFileNameAsKey) {
+            setFileData((prev) => ({ ...prev, data: JSON.stringify({[fileName]: content}) }))
+        } else {
+            setFileData((prev) => ({
+                ...prev,
+                data: content,
+            }))
+        } 
     }
 
     const handleFileError = () => {
@@ -42,7 +46,7 @@ export const useFileReader = () => {
         setProgress(progress)
     }
 
-    const readFile = (file: any, fileValidator: ValidatorType, readAs: string) => {
+    const readFile = (file: any, fileValidator: ValidatorType, readAs: string, isFileNameAsKey: boolean = false) => {
         if (!file) {
             setStatus(NO_FILE_SELECTED_STATUS)
             return
@@ -62,11 +66,11 @@ export const useFileReader = () => {
             },
         })
         try {
-            reader.addEventListener('load', handleFileRead)
+            reader.addEventListener('load', (e) => handleFileRead(e, isFileNameAsKey, file.name))
             reader.addEventListener('error', handleFileError)
             reader.addEventListener('progress', handleFileProgress)
             reader.addEventListener('loadend', () => {
-                reader.removeEventListener('load', handleFileRead)
+                reader.removeEventListener('load', (e) => handleFileRead(e, isFileNameAsKey, file.name))
                 reader.removeEventListener('error', handleFileError)
                 reader.removeEventListener('progress', handleFileProgress)
             })

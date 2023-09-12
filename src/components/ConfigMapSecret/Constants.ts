@@ -30,3 +30,16 @@ export const SECRET_TOAST_INFO = {
   BOTH_STORE_UNAVAILABLE: 'Please provide secretStore or secretStoreRef',
   CHECK_KEY_NAME: 'Please check key and name'
 }
+
+export const importConfigSecretImportFileMessaging = [
+    {
+        title: '--from',
+        description: 'Use file name as key and file content as value (supports multi-line data)',
+        isFileNameAsKey: true,
+    },
+    {
+        title: '--from-env-file',
+        description: 'Create secret from an env-file. Uses file content as key:value',
+        isFileNameAsKey: false,
+    },
+]
