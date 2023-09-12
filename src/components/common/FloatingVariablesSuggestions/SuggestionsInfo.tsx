@@ -1,6 +1,7 @@
 import React, { memo, useState } from 'react'
 import { ReactComponent as ICHelp } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICDown } from '../../../assets/icons/ic-chevron-down.svg'
+import { SCOPED_VARIABLES_DOCUMENTATION } from './constants'
 
 function SuggestionsInfo() {
     const [expanded, setExpanded] = useState<boolean>(false)
@@ -31,9 +32,7 @@ function SuggestionsInfo() {
 
             {expanded && (
                 <div className="flex pl-24 dc__gap-4 flex-wrap dc__content-center">
-                    <p className="m-0 fs-13 fw-4 lh-20 cn-9">
-                        Description how variable can be used will be shown here.
-                    </p>
+                    <p className="m-0 fs-13 fw-4 lh-20 cn-9">{SCOPED_VARIABLES_DOCUMENTATION}</p>
                 </div>
             )}
         </div>
