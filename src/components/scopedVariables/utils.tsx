@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
-import { ScopedVariablesDataInterface } from './types'
-import { ValidatorType } from '../common/hooks/types'
+import { ScopedVariablesDataType } from './types'
+import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -19,7 +19,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                 const parsedData = JSON.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
                     return {
-                        status: true,
+                        status: FileReaderStatus.SUCCESS,
                         message: {
                             data: yaml.safeDump(parsedData),
                             description: 'File uploaded successfully',
@@ -38,7 +38,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                 const parsedData = yaml.safeLoad(data)
                 if (parsedData && typeof parsedData === 'object') {
                     return {
-                        status: true,
+                        status: FileReaderStatus.SUCCESS,
                         message: {
                             data: yaml.safeDump(parsedData),
                             description: 'File uploaded successfully',
@@ -64,15 +64,11 @@ export const downloadData = (data: string, filename: string, type: string) => {
     window.URL.revokeObjectURL(url)
 }
 
-export const parseIntoYAMLString = (data: any) => {
-    return yaml.safeDump(data)
-}
+export const parseIntoYAMLString = (data: any) => yaml.safeDump(data)
 
-export const parseYAMLStringToObj = (data: string) => {
-    return yaml.safeLoad(data)
-}
+export const parseYAMLStringToObj = (data: string) => yaml.safeLoad(data)
 
-export const sortVariables = (variablesObj: ScopedVariablesDataInterface): ScopedVariablesDataInterface => {
+export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVariablesDataType => {
     /*
         Approach:
         Sorting is going to happen on multiple levels:

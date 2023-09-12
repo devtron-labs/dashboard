@@ -5,18 +5,24 @@ export enum ReadFileAs {
     ARRAY_BUFFER = 'arrayBuffer',
 }
 
-export interface FileReaderStatusInterface {
-    status: boolean | 'loading'
+export enum FileReaderStatus {
+    LOADING = 'loading',
+    SUCCESS = 'success',
+    FAILED = 'failed',
+}
+
+export interface FileReaderStatusType {
+    status: FileReaderStatus
     message: {
         data: any
         description: string
     }
 }
 
-export interface FileDataInterface {
+export interface FileDataType {
     data: any
     type: string
     name: string
 }
 
-export type ValidatorType = (fileData: FileDataInterface) => FileReaderStatusInterface
+export type ValidatorType = (fileData: FileDataType) => FileReaderStatusType

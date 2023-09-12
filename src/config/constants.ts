@@ -187,6 +187,7 @@ export const Routes = {
     CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
+    DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
     CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
@@ -338,6 +339,7 @@ export const DOCUMENTATION = {
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/app-details/app-metrics`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets#external-secrets`,
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/job-and-cronjob`,
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
@@ -421,9 +423,10 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
     PUSH: 'PUSH',
     PULL_PUSH: 'PULL/PUSH',
 }
+
 export const RegistryStorageType = {
-    CONTAINER: 'CONTAINER',
     OCI_PRIVATE: 'OCI_PRIVATE',
+    OCI_PUBLIC: 'OCI_PUBLIC'
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -431,6 +434,14 @@ export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
     infoText:
         'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
     additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'Custom Charts',
+    infoText: 'Devtron provides charts that cover most use cases.',
+    additionalParagraphText:
+        'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
     documentationLinkText: 'View documentation',
 }
 
@@ -456,11 +467,23 @@ export interface RegistryPayloadType {
         ignoredClusterIdsCsv: string
     }
     ociRegistryConfig?: OCIRegistryStorageConfigType
+    repositoryList: string[]
+    isPublic: boolean
+}
+
+export const RegistryType = {
+   DOCKER_HUB: 'docker-hub',
+   ACR: 'acr',
+   QUAY: 'quay',
+   OTHER: 'other',
+   ECR: 'ecr',
+   ARTIFACT_REGISTRY: 'artifact-registry',
+   GCR: 'gcr'
 }
 
 export const RegistryTypeName = {
-    CONTAINER: 'Container registry',
-    OCI_PRIVATE: 'OCI Registry (Private)',
+    'OCI_PRIVATE': 'Private Registry',
+    'OCI_PUBLIC': 'Public Registry'
 }
 
 export const AppCreationType = {
@@ -747,4 +770,10 @@ export const ManifestMessaging = {
     SURE_WANT_TO_CONTINUE: 'Are you sure you want to continue?',
     CANCEL: 'Cancel',
     TERMINATE_EXISTING_POD: 'Terminate existing pod',
+}
+
+export const SERVER_ERROR_CODES = {
+    RELEASE_NOT_FOUND: "7001",
+    CHART_ALREADY_EXISTS: '5001',
+    CHART_NAME_RESERVED: '5002',
 }

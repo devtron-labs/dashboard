@@ -5,6 +5,7 @@ import {
     JSON_PARSE_ERROR_STATUS,
     YAML_PARSE_ERROR_STATUS,
 } from '../constants'
+import { FileReaderStatus } from '../../common/hooks/types'
 
 describe('ScopedVariables helpers', () => {
     describe('validator', () => {
@@ -32,7 +33,7 @@ describe('ScopedVariables helpers', () => {
 
         it('should return true status when file type is json and data is valid', () => {
             expect(validator({ data: '{"a": "b"}', type: 'application/json', name: 'sample-file' })).toEqual({
-                status: true,
+                status: FileReaderStatus.SUCCESS,
                 message: {
                     data: 'a: b\n',
                     description: 'File uploaded successfully',
@@ -42,7 +43,7 @@ describe('ScopedVariables helpers', () => {
 
         it('should return true status when file type is yaml and data is valid', () => {
             expect(validator({ data: 'a: b', type: 'application/x-yaml', name: 'sample-file' })).toEqual({
-                status: true,
+                status: FileReaderStatus.SUCCESS,
                 message: {
                     data: 'a: b\n',
                     description: 'File uploaded successfully',

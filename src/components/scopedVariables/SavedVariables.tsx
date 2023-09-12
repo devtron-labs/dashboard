@@ -1,13 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
+import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import VariablesList from './VariablesList'
-import { useFileReader, useClickOutside } from '../common'
+import { useFileReader } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
 import { downloadData, parseIntoYAMLString } from './utils'
-import { FileView, SavedVariablesViewInterface, VariablesListInterface } from './types'
+import { FileView, SavedVariablesViewProps, VariableType } from './types'
 import {
     DOWNLOAD_FILES_AS,
     DOWNLOAD_FILE_NAME,
@@ -17,73 +18,74 @@ import {
 } from './constants'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
+import { FileReaderStatus } from '../common/hooks/types'
 
 export default function SavedVariablesView({
     scopedVariablesData,
     jsonSchema,
     reloadScopedVariables,
     setScopedVariables,
-}: SavedVariablesViewInterface) {
-    const [showDropdown, setShowDropdown] = useState<boolean>(false)
+}: SavedVariablesViewProps) {
     const [currentView, setCurrentView] = useState<FileView>(FileView.YAML)
-    const [variablesList, setVariablesList] = useState<VariablesListInterface[]>([])
+    const [variablesList, setVariablesList] = useState<VariableType[]>([])
     const [showEditView, setShowEditView] = useState<boolean>(false)
-    const dropdownRef = useRef(null)
     // No need to make it a state since editor here is read only and we don't need to update it
-    let scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
+    const scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
 
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
 
     useEffect(() => {
-        if (status?.status == null) {
-            const variables = scopedVariablesData?.spec?.map((variable) => {
-                return {
-                    name: variable.name,
-                    description: variable.description,
-                }
-            })
-            if (variables) setVariablesList([...variables])
+        if (status?.status == null && scopedVariablesData?.spec?.length) {
+            const variables = scopedVariablesData.spec.map((variable) => ({
+                name: variable.name,
+                description: variable.description,
+            }))
+            setVariablesList([...variables])
         }
     }, [scopedVariablesData])
 
-    const handleDropdownClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.stopPropagation()
-        setShowDropdown(!showDropdown)
-    }
+    const handleActivateEditView = () => setShowEditView(true)
 
-    useClickOutside(dropdownRef, () => {
-        setShowDropdown(false)
-    })
+    const handleSetYAMLView = () => setCurrentView(FileView.YAML)
 
-    const handleDownload = (item: string) => {
-        if (!scopedVariablesYAML) return
-        switch (item) {
-            case DROPDOWN_ITEMS[0]:
-                downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
-                setShowDropdown(false)
-                break
-            case DROPDOWN_ITEMS[1]:
-                downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
-                setShowDropdown(false)
-                break
-        }
-    }
+    const handleSetSavedView = () => setCurrentView(FileView.SAVED)
 
     const onSearch = (query: string) => {
-        const filteredVariables = scopedVariablesData?.spec?.filter((variable) => {
-            return (
+        const filteredVariables = scopedVariablesData?.spec?.filter(
+            (variable) =>
                 variable.name.toLowerCase().includes(query.toLowerCase()) ||
-                variable.description.toLowerCase().includes(query.toLowerCase())
-            )
-        })
+                variable.description.toLowerCase().includes(query.toLowerCase()),
+        )
 
-        const variables = filteredVariables?.map((variable) => {
-            return {
-                name: variable.name,
-                description: variable.description,
-            }
-        })
+        const variables = filteredVariables?.map((variable) => ({
+            name: variable.name,
+            description: variable.description,
+        }))
         setVariablesList(variables)
+    }
+
+    const rendeDropdownItems = (item) => {
+        const handleDownloadFileClick = () => {
+            if (!scopedVariablesYAML) return
+            switch (item) {
+                case DROPDOWN_ITEMS[0]:
+                    downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
+                    break
+                case DROPDOWN_ITEMS[1]:
+                    downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
+                    break
+            }
+        }
+
+        return (
+            <div
+                key={item}
+                className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50"
+                onClick={handleDownloadFileClick}
+            >
+                {item}
+            </div>
+        )
     }
 
     if (showEditView) {
@@ -100,7 +102,7 @@ export default function SavedVariablesView({
         )
     }
 
-    if (status?.status === true) {
+    if (status?.status === FileReaderStatus.SUCCESS) {
         return (
             <ScopedVariablesEditor
                 variablesData={status?.message?.data}
@@ -115,7 +117,7 @@ export default function SavedVariablesView({
 
     return status?.status == null ? (
         <div
-            className="flex column h-100 dc__content-space bcn-0"
+            className="flex column h-100 dc__content-space bcn-0 saved-variables__default-view"
             style={{
                 overflowY: 'hidden',
             }}
@@ -130,7 +132,8 @@ export default function SavedVariablesView({
                         className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 fs-13 fw-4 lh-20 dc__capitalize cn-9 dc__no-background flex column dc__content-center dc__align-start dc__no-border dc__outline-none-imp ${
                             currentView === FileView.YAML ? 'scoped-variables-active-tab' : ''
                         }`}
-                        onClick={() => setCurrentView(FileView.YAML)}
+                        type="button"
+                        onClick={handleSetYAMLView}
                     >
                         <div className="pb-6">YAML</div>
                     </button>
@@ -139,7 +142,8 @@ export default function SavedVariablesView({
                         className={`scoped-variables-tab pt-8 pr-16 pb-0 pl-0 fs-13 fw-4 lh-20 dc__capitalize cn-9 dc__no-background flex column dc__content-center dc__align-start dc__no-border dc__outline-none-imp ${
                             currentView === FileView.SAVED ? 'scoped-variables-active-tab' : ''
                         }`}
-                        onClick={() => setCurrentView(FileView.SAVED)}
+                        type="button"
+                        onClick={handleSetSavedView}
                     >
                         <div className="pb-6">Variable List</div>
                     </button>
@@ -151,59 +155,39 @@ export default function SavedVariablesView({
                     <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start">
                         <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
                             <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0">Last saved file</p>
-                            <Tippy
-                                className="default-tt"
-                                arrow
-                                placement="top"
-                                content={
-                                    <div>
-                                        <div className="flex column left">Edit</div>
-                                    </div>
-                                }
-                            >
+                            <Tippy className="default-tt" arrow placement="top" content="Edit">
                                 <button
                                     className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
-                                    onClick={() => setShowEditView(true)}
+                                    type="button"
+                                    onClick={handleActivateEditView}
                                     data-testid="edit-variables-btn"
                                 >
                                     <ICPencil className="icon-dim-20" />
                                 </button>
                             </Tippy>
 
-                            <Tippy
-                                className="default-tt"
-                                arrow
-                                placement="top"
-                                content={
-                                    <div>
-                                        <div className="flex column left">Download file/template</div>
-                                    </div>
-                                }
-                            >
-                                <button
-                                    className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
-                                    onClick={handleDropdownClick}
-                                    data-testid="dropdown-btn"
+                            <PopupMenu autoClose>
+                                <PopupMenu.Button
+                                    isKebab
+                                    rootClassName="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
+                                    dataTestId="dropdown-btn"
                                 >
-                                    <ICFileDownload className="icon-dim-20" />
-                                </button>
-                            </Tippy>
-                            {showDropdown && (
-                                <div
-                                    className="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp"
-                                    ref={dropdownRef}
-                                >
-                                    {DROPDOWN_ITEMS.map((item) => (
-                                        <div
-                                            key={item}
-                                            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4"
-                                            onClick={() => handleDownload(item)}
-                                        >
-                                            {item}
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow
+                                        placement="top"
+                                        content="Download file/template"
+                                    >
+                                        <div>
+                                            <ICFileDownload className="icon-dim-20" />
                                         </div>
-                                    ))}
-                                </div>
-                            )}
+                                    </Tippy>
+                                </PopupMenu.Button>
+
+                                <PopupMenu.Body rootClassName="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp">
+                                    {DROPDOWN_ITEMS.map((item) => rendeDropdownItems(item))}
+                                </PopupMenu.Body>
+                            </PopupMenu>
                         </div>
 
                         <CodeEditor value={scopedVariablesYAML} mode="yaml" height="100%" readOnly noParsing />

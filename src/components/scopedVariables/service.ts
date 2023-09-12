@@ -1,4 +1,4 @@
-import { ScopedVariablesDataInterface } from './types'
+import { ScopedVariablesDataType } from './types'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
@@ -7,7 +7,7 @@ export const getScopedVariablesJSON = () => {
     return get(Routes.SCOPED_GLOBAL_VARIABLES_DETAIL)
 }
 
-export const postScopedVariables = (scopedVariables: ScopedVariablesDataInterface) => {
+export const postScopedVariables = (scopedVariables: ScopedVariablesDataType) => {
     const payload = {
         manifest: scopedVariables,
     }

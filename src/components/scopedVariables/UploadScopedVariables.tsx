@@ -1,12 +1,11 @@
 import React from 'react'
-import ScopedVariablesInput from './ScopedVariablesInput'
+import { useFileReader, HiddenInput } from '../common'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
-import { useFileReader } from '../common'
 import { validator, downloadData } from './utils'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { UploadScopedVariablesInterface } from './types'
-import { ReadFileAs } from '../common/hooks/types'
+import { UploadScopedVariablesProps } from './types'
+import { FileReaderStatus, ReadFileAs } from '../common/hooks/types'
 import {
     DEFAULT_DESCRIPTION,
     DOWNLOAD_TEMPLATE,
@@ -22,7 +21,7 @@ export default function UploadScopedVariables({
     reloadScopedVariables,
     jsonSchema,
     setScopedVariables,
-}: UploadScopedVariablesInterface) {
+}: UploadScopedVariablesProps) {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +29,11 @@ export default function UploadScopedVariables({
         readFile(e.target.files![0], validator, ReadFileAs.TEXT)
     }
 
-    return status?.status === true ? (
+    const handleDownloadTemplate = () => {
+        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
+    }
+
+    return status?.status === FileReaderStatus.SUCCESS ? (
         <ScopedVariablesEditor
             variablesData={status?.message?.data}
             name={fileData?.name}
@@ -51,7 +54,7 @@ export default function UploadScopedVariables({
 
                 <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
                     {status === null ? (
-                        <ScopedVariablesInput handleFileUpload={handleFileUpload}>
+                        <HiddenInput handleFileUpload={handleFileUpload} id="upload-scoped-variables-input">
                             <div className="flex center p-8 dc__gap-4 dc__border-radius-50-per bcb-1">
                                 <ICUpload className="icon-dim-20" />
                             </div>
@@ -59,7 +62,7 @@ export default function UploadScopedVariables({
                                 <p className="cb-5 fs-13 fw-6 lh-20 m-0">{UPLOAD_DESCRIPTION_L1}</p>
                                 <p className="cn-6 fs-10 fw-4 lh-16 m-0">{UPLOAD_DESCRIPTION_L2}</p>
                             </div>
-                        </ScopedVariablesInput>
+                        </HiddenInput>
                     ) : (
                         <ScopedVariablesLoader
                             status={status}
@@ -71,10 +74,9 @@ export default function UploadScopedVariables({
                 </div>
 
                 <button
+                    type="button"
                     className="p-0 dc__no-background dc__no-border cb-5 fs-13 fw-400 lh-20"
-                    onClick={() =>
-                        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
-                    }
+                    onClick={handleDownloadTemplate}
                 >
                     {DOWNLOAD_TEMPLATE}
                 </button>
