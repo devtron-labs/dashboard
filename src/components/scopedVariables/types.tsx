@@ -65,8 +65,10 @@ export interface ScopedVariablesDataType {
 }
 
 export interface VariableSpecType {
-    description?: string
+    notes?: string
+    shortDescription?: string
     name: string
+    isSensitive: boolean
     values: ValueType[]
 }
 
