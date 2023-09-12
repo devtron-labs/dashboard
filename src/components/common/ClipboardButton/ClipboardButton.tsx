@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Tippy from '@tippyjs/react'
 import { copyToClipboard } from '../helpers/Helpers'
 import ClipboardProps from './types'
@@ -8,21 +8,10 @@ export default function ClipboardButton({ content, copiedTippyText, duration, tr
     const [copied, setCopied] = useState<boolean>(false)
     const [enableTippy, setEnableTippy] = useState<boolean>(false)
 
-    const handleTextCopied = () => {
-        setCopied(true)
-    }
-
-    const handleCopyContent = () => {
-        copyToClipboard(content, handleTextCopied)
-    }
-
-    const handleEnableTippy = () => {
-        setEnableTippy(true)
-    }
-
-    const handleDisableTippy = () => {
-        setEnableTippy(false)
-    }
+    const handleTextCopied = () => setCopied(true)
+    const handleEnableTippy = () => setEnableTippy(true)
+    const handleDisableTippy = () => setEnableTippy(false)
+    const handleCopyContent = useCallback(() => copyToClipboard(content, handleTextCopied), [content])
 
     useEffect(() => {
         if (!copied) return
@@ -33,13 +22,14 @@ export default function ClipboardButton({ content, copiedTippyText, duration, tr
         }, duration)
 
         return () => clearTimeout(timeout)
-    }, [copied])
+    }, [copied, duration, setTrigger])
 
     useEffect(() => {
         if (!trigger) return
+
         setCopied(true)
         handleCopyContent()
-    }, [trigger])
+    }, [trigger, handleCopyContent])
 
     return (
         <div className="icon-dim-16 ml-8">

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import { ReactComponent as ICHelp } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICDown } from '../../../assets/icons/ic-chevron-down.svg'
 
-export default function SuggestionsInfo() {
+function SuggestionsInfo() {
     const [expanded, setExpanded] = useState<boolean>(false)
 
     const handleExpansion = () => {
@@ -39,3 +39,5 @@ export default function SuggestionsInfo() {
         </div>
     )
 }
+
+export default memo(SuggestionsInfo)

@@ -29,7 +29,7 @@ export default function DebouncedSearch({
         setSearchText('')
     }
 
-    useDebouncedEffect(() => onSearch(searchText), debounceTimeout, [searchText])
+    useDebouncedEffect(() => onSearch(searchText), debounceTimeout, [searchText, onSearch])
 
     return (
         <div className={containerClass}>

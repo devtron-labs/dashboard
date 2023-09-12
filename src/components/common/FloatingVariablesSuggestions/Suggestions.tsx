@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react'
+import React, { useState, memo, useCallback } from 'react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import SuggestionItem from './SuggestionItem'
@@ -17,18 +17,21 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
 
     const enableSearch = !loading && !error && !!variables?.length
 
-    const onSearch = (text: string) => {
-        // No need to check for variables type since we are not even showing search bar if there are no variables
-        const filteredSuggestions = variables.filter(
-            (variable) =>
-                variable.variableName.toLowerCase().includes(text.toLowerCase()) ||
-                variable.shortDescription?.toLowerCase().includes(text.toLowerCase()),
-        )
-        setSuggestions(filteredSuggestions)
-        setHighlightText(text)
-    }
+    const onSearch = useCallback(
+        (text: string) => {
+            // No need to check if variables exists since we are not even showing search bar if there are no variables
+            const filteredSuggestions = variables.filter(
+                (variable) =>
+                    variable.variableName.toLowerCase().includes(text.toLowerCase()) ||
+                    variable.shortDescription?.toLowerCase().includes(text.toLowerCase()),
+            )
+            setSuggestions(filteredSuggestions)
+            setHighlightText(text)
+        },
+        [variables],
+    )
 
-    const renderHeader = () => (
+    const renderHeader = (): JSX.Element => (
         <div className="flexbox-col dc__align-self-stretch">
             <div className="handle-drag flexbox pt-8 pl-12 pr-12 dc__gap-16 dc__align-start dc__align-self-stretch bcn-7 dc__grabbable">
                 <div className="flexbox-col dc__content-center dc__align-start flex-grow-1 dc__no-shrink">

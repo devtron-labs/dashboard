@@ -22,6 +22,8 @@ export default function FloatingVariablesSuggestions({
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
 
+    // nodeRef.current is dependency even though its a ref as initially its null and we need to get the
+    // first value that it gets and after that is not going to trigger again
     const initialPosition = useMemo(() => {
         const initialPosition = nodeRef.current?.getBoundingClientRect() || {
             x: 0,
