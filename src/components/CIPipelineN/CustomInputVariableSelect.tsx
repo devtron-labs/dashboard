@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
 import {
     RefVariableType,
@@ -20,10 +20,13 @@ import { MenuList } from 'react-select/dist/declarations/src/components/Menu'
 import AboutTagEditModal from '../app/details/AboutTagEditModal'
 import { importComponentFromFELibrary } from '../common/helpers/Helpers'
 import {TagLabelValueSelector} from '@devtron-labs/devtron-fe-common-lib'
+import { InputPluginSelection } from './InputPluginSelect'
 // import { Select } from '../common'
 
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
+    const refVar = useRef(null)
+    const dependentRef = useRef(null)
     const {
         formData,
         setFormData,
@@ -39,8 +42,9 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
         value: '',
+        format: '',
     })
-
+   
     const [inputVariableOptions, setInputVariableOptions] = useState<{
         label: string,
         options: any[]
@@ -117,6 +121,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             ])
         }
         setSelectedVariableValue()
+        
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue) => {
@@ -266,48 +271,17 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }
     }
     console.log(inputVariableOptions)
-    // console.log(selectedOutputVariable)
     return (
-        
-        <Select
-            tabIndex={1}
-            placeholder="Select source or input value"
-            options={inputVariableOptions}
-            value={selectedOutputVariable}
-            onChange={handleOutputVariableSelector}
-            styles={
-                formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-                    ? baseSelectStyles
-                    : pluginSelectStyle
-            }
-            formatOptionLabel={formatOptionLabel}
-            classNamePrefix='Select'
-            components={{
-                MenuList: (props) => {
-                    return (
-                        <components.MenuList {...props}>
-                            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                                Type to enter a custom value. Press Enter to accept.
-                            </div>
-                            {props.children}
-                        </components.MenuList>
-                    )
-                },
-                Option,
-                ValueContainer,
-                DropdownIndicator:null,
-                IndicatorSeparator: null,
-            }}
-            noOptionsMessage={(): string => {
-                        return 'No matching options'
-                    }}
-            onBlur={handleCreatableBlur}
-            isClearable
-            isSearchable
-            onKeyDown={handleKeyDown}
-            menuPlacement="auto"
+        <InputPluginSelection
+            placeholder='Select source or input value'
+            selectedOutputVariable={selectedOutputVariable}
+            setTagData={handleOutputVariableSelector}
+            tagData={selectedOutputVariable}
+            refVar={refVar}
+            dependentRef={dependentRef}
+            // tagOptions={inputVariableOptions}
+            variableType={selectedOutputVariable.format}
         />
-
     )
 }
 

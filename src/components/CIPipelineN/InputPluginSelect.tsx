@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
 import { InputPluginSelectionType, SuggestedTagOptionType } from '../ConfigMapSecret/Types'
 import { OptionType, PopupMenu, ResizableTagTextArea, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
-
-
 
 export const InputPluginSelection = ({
     selectedOutputVariable,
@@ -11,23 +10,27 @@ export const InputPluginSelection = ({
     setTagData,
     tagData,
     refVar,
+    dependentRef,
     noBackDrop,
+    variableType,
+    placeholder,
 
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
-    const refVal = useRef(null)
-    const dependentRef = useRef(null)
+    const [activeElement, setActiveElement] = useState('')
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
     }, [selectedOutputVariable])
 
+    const handleOnFocus = (e) => {
+        setTimeout(() => {
+            setActiveElement(`tag-${variableType}`)
+        }, 300)
+    }
+
     const handleInputChange = (e): void => {
         setSelectedValue(e.target.value)
-    }
-    
-    const handleBlue = () => {
-        
     }
 
     const onSelectValue = (e): void => {
@@ -35,6 +38,7 @@ export const InputPluginSelection = ({
         let _tagData = { ...tagData }
         _tagData = e.currentTarget.dataset.key
         setTagData(_tagData)
+        setActiveElement('')
     } 
 
     const option = (tag: SuggestedTagOptionType, index: number): JSX.Element => {
@@ -68,6 +72,15 @@ export const InputPluginSelection = ({
         )
     }
 
+    const handleOnBlur = (e) => {
+        if (!e.relatedTarget || !e.relatedTarget.classList.value) {
+            setActiveElement('')
+            let _tagData = { ...tagData }
+            _tagData.value = selectedValue
+            setTagData(_tagData)
+        }
+    }
+
     const renderSuggestions = (): JSX.Element => {
         if (tagOptions?.length) {
             const filteredTags = tagOptions.filter((tag) => tag.label.indexOf(selectedValue) >= 0)
@@ -75,43 +88,49 @@ export const InputPluginSelection = ({
                 return (
                     <div>
                         {filteredTags.map((tag, index) =>
-                            tag.description ? optionWithTippy(tag, index) : option(tag, index),
+                            tag.label ? optionWithTippy(tag, index) : option(tag, index),
                         )}
                     </div>
                 )
             }
         }
-        return null
     }
 
-    // let popupMenuBody = 
+    const handleCloseIcon = () => {
+        setSelectedValue('')
+    }
+    
+    const popupMenuBody = activeElement === `tag-${variableType}` ? renderSuggestions() : null
     return (
-    //     <PopupMenu autoClose autoPosition>
-    //     <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp">
-    //         <ResizableTagTextArea
-    //             minHeight={30}
-    //             maxHeight={80}
-    //             value={selectedValue}
-    //             onChange={handleInputChange}
-    //             onBlur={handleOnBlur}
-    //             onFocus={handleOnFocus}
-    //             placeholder={placeholder}
-    //             refVar={refVar}
-    //             dependentRef={dependentRef}
-    //         />
-    //     </PopupMenu.Button>
-    //         {popupMenuBody && (
-    //         <PopupMenu.Body
-    //             rootClassName={`mxh-210 dc__overflow-auto tag-class`}
-    //             autoWidth={true}
-    //             preventWheelDisable={true}
-    //             noBackDrop={noBackDrop}
-    //         >
-    //             {popupMenuBody}
-    //         </PopupMenu.Body>
-    //     )}
-    // </PopupMenu>
-    null
+        <PopupMenu autoClose autoPosition>
+            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp">
+                <ResizableTagTextArea
+                    className="form__input tag-input pt-4-imp pb-4-imp fs-13"
+                    minHeight={30}
+                    maxHeight={80}
+                    value={selectedValue}
+                    onChange={handleInputChange}
+                    onBlur={handleOnBlur}
+                    onFocus={handleOnFocus}
+                    placeholder={placeholder}
+                    refVar={refVar}
+                    dependentRef={dependentRef}
+                />
+                <button type="button" className="dc__transparent" onClick={handleCloseIcon}>
+                    <CloseIcon />
+                </button>
+            </PopupMenu.Button>
+            {popupMenuBody && (
+                <PopupMenu.Body
+                    rootClassName="mxh-210 dc__overflow-auto tag"
+                    autoWidth={true}
+                    preventWheelDisable={true}
+                    noBackDrop={noBackDrop}
+                >
+                    {popupMenuBody}
+                </PopupMenu.Body>
+            )}
+        </PopupMenu>
     )
     
 }

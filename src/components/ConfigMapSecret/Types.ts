@@ -16,9 +16,10 @@ export interface KeyValueInputInterface {
 }
 
 export interface SuggestedTagOptionType extends OptionType {
-    description: string
-    propagate: boolean
+    label: string
+    options: any[]
 }
+
 
 export interface InputPluginSelectionType {
     selectedOutputVariable: OptionType
@@ -27,6 +28,9 @@ export interface InputPluginSelectionType {
     setTagData?: (tagData:OptionType ) => void
     refVar?: React.MutableRefObject<HTMLTextAreaElement>
     noBackDrop?: boolean
+    placeholder: string
+    dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
+    variableType: string
 }
 
 export interface ResizableTextareaProps {
