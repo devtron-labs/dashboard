@@ -254,7 +254,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
                                     isTlsConnection={this.state.isTlsConnection}
                                     prometheus_url={cluster.prometheus_url}
-                                  
+
                                 />
                             ),
                     )}

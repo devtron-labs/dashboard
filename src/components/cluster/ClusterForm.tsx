@@ -150,7 +150,7 @@ export default function ClusterForm({
             password: { value: prometheusAuth?.password, error: '' },
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            proxyUrl: { value: proxyUrl?.value ?  proxyUrl?.value : '', error: '' },
+            proxyUrl: { value: proxyUrl?.value ? proxyUrl?.value : '', error: '' },
             isConnectedViaSSHTunnel: { value: isConnectedViaSSHTunnel?.value ? isConnectedViaSSHTunnel : '', error: '' },
             sshTunnelUser: { value: sshTunnelUser?.value ? sshTunnelUser?.value : '', error: '' },
             sshTunnelPassword: { value: sshTunnelPassword?.value ? sshTunnelPassword?.value : '', error: '' },
