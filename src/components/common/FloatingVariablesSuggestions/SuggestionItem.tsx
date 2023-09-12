@@ -58,6 +58,7 @@ export default function SuggestionItem({
             <div
                 className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50"
                 onClick={handleCopyTrigger}
+                data-testid="suggestion-item"
             >
                 <div className="flexbox dc__align-items-center dc__gap-2 dc__content-space">
                     {renderVariableName()}
