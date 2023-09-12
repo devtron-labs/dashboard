@@ -30,7 +30,6 @@ describe('When FloatingVariablesSuggestions mounts', () => {
     })
 
     it('should allow dragging collapsed state on drag of handle-drag', () => {
-        // get handle-drag class and drag it and then check if the position of collapsed-state is changed
         const { getByTestId, container } = render(
             <FloatingVariablesSuggestions
                 zIndex={20}
