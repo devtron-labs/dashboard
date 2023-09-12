@@ -19,7 +19,7 @@ function ConfigMapSecretFileReaderPopup({ toggleFileReaderPopup, showFileReaderP
             return (
                 <div className="" key={item.title}>
                     <ScopedVariablesInput handleFileUpload={(e) => onClickFileUpload(e, item.isFileNameAsKey)}>
-                        <div className="p-8">
+                        <div className="p-8 fw-4">
                             <div>{item.title}</div>
                             <div>{item.description}</div>
                         </div>
@@ -41,8 +41,9 @@ function ConfigMapSecretFileReaderPopup({ toggleFileReaderPopup, showFileReaderP
                 trigger="click"
                 additionalContent={renderFileContent()}
                 interactive={true}
+                visible={!!showFileReaderPopup}
             >
-                <div className="cb-5 ml-4 cursor" onClick={toggleFileReaderPopup}>
+                <div className="cb-5 ml-8 fw-6 cursor" onClick={toggleFileReaderPopup}>
                     Import from file...
                 </div>
             </TippyCustomized>
