@@ -23,7 +23,7 @@ import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import {getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
-import { text } from 'stream/consumers'
+import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -364,9 +364,8 @@ export const CompareWithApprovalPendingAndDraft = ({
     return (
         <div className="flex dc__content-space w-100">
             <div className="flex left">
-                {!readOnly && <Edit className="icon-dim-16 mr-10" />}
+                {!readOnly ? <Edit className="icon-dim-16 mr-10" />:<Eye/>}
                 {latestDraft ? (
-                    <span className="fw-6 mr-4">
                         <ReactSelect
                             options={options}
                             isMulti={false}
@@ -423,7 +422,6 @@ export const CompareWithApprovalPendingAndDraft = ({
                                 }),
                             }}
                         />
-                    </span>
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
                         selectedChart ? `(v${selectedChart.version})` : ''

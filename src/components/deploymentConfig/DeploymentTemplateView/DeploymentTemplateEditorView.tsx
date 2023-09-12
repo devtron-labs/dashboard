@@ -299,7 +299,7 @@ export default function DeploymentTemplateEditorView({
                         <div className="flex column">
                             <div className="code-editor__header flex left w-100 p-0-imp">
                                 <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
-                                    <span style={{ width: '85px' }}>Compare with: </span>
+                                    <span className='fw-n' style={{ width: '85px' }}>Compare with: </span>
                                     <CompareWithDropdown
                                         envId={envId}
                                         isEnvOverride={isEnvOverride}
