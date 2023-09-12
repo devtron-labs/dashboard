@@ -3,9 +3,16 @@ import Tippy from '@tippyjs/react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { Grid } from '../common'
 import { VariableType, VariablesListItemProps } from './types'
-import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE, NO_DESCRIPTION_MESSAGE } from './constants'
+import {
+    TABLE_LIST_HEADINGS,
+    NO_VARIABLES_MESSAGE,
+    NO_DESCRIPTION_MESSAGE,
+    SENSITIVE_VARIABLE_DESCRIPTION,
+    IN_SENSITIVE_VARIABLE_DESCRIPTION,
+} from './constants'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as ICVisibilityOn } from '../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as ICVisibilityOff } from '../../assets/icons/ic-visibility-off.svg'
 
 export default function VariablesList({ variablesList }: { variablesList: VariableType[] }) {
     const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemProps) => (
@@ -36,7 +43,6 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     return (
         <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">
             <Grid container spacing={0} containerClass="w-100">
-                <Grid item xs={0.5} />
                 <Grid item xs={3} itemClass="dc__ellipsis-right">
                     {renderVariablesListItem({
                         data: TABLE_LIST_HEADINGS[0],
@@ -51,6 +57,13 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                     })}
                 </Grid>
 
+                <Grid item xs={1} itemClass="dc__ellipsis-right dc__content-start">
+                    {renderVariablesListItem({
+                        data: TABLE_LIST_HEADINGS[2],
+                        classes: 'pt-8 pb-8 flexbox dc__align-items-center',
+                    })}
+                </Grid>
+
                 {variablesList?.map((variable) => (
                     <Grid
                         container
@@ -58,12 +71,6 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                         containerClass="w-100 dc__overflow-hidden dc__hover-n50"
                         key={variable.name}
                     >
-                        <Grid item xs={0.5} itemClass="flex center">
-                            {variable.isSensitive ? (
-                                <ICVisibilityOn className="cn-7 fs-12 fw-6 lh-20 m-0 dc__uppercase" />
-                            ) : null}
-                        </Grid>
-
                         <Grid item xs={3} itemClass="dc__ellipsis-right">
                             {renderVariablesListItem({
                                 data: variable.name,
@@ -78,6 +85,26 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                                 classes: 'pt-12 pb-12 pl-20 pr-20 flexbox dc__align-items-center dc__border-bottom-n1',
                                 tooltip: true,
                             })}
+                        </Grid>
+
+                        <Grid item xs={1} itemClass="flex center dc__border-bottom-n1 dc__content-start">
+                            {variable.isSensitive ? (
+                                <Tippy
+                                    content={<div className="dc__mxw-200">{SENSITIVE_VARIABLE_DESCRIPTION}</div>}
+                                    className="default-tt"
+                                    placement="left"
+                                >
+                                    <ICVisibilityOff className="icon-dim-20 icon-n6" />
+                                </Tippy>
+                            ) : (
+                                <Tippy
+                                    content={<div className="dc__mxw-200">{IN_SENSITIVE_VARIABLE_DESCRIPTION}</div>}
+                                    className="default-tt"
+                                    placement="left"
+                                >
+                                    <ICVisibilityOn className="icon-dim-20" />
+                                </Tippy>
+                            )}
                         </Grid>
                     </Grid>
                 ))}
