@@ -87,7 +87,7 @@ export function K8SResourceList({
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin } = e.currentTarget.dataset
         let resourceParam, kind, resourceName, _nodeSelectionData, _group
-
+        const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
             const _selectedResource = getEventObjectTypeGVK(k8SObjectMapRaw, _kind)
@@ -108,10 +108,10 @@ export function K8SResourceList({
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${
-            namespace ?? ALL_NAMESPACE_OPTION.value
-        }/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
-        const isAdded = addTab(_group, kind, resourceName, _url)
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
+            tab ? `/${tab.toLowerCase()}` : ''
+        }`
+        const isAdded = addTab(`${_group}_${_namespace}`, kind, resourceName, _url)
 
         if (isAdded) {
             updateNodeSelectionData(_nodeSelectionData, _group)

@@ -86,7 +86,7 @@ function DynamicTabs({
 
     const handleTabCloseAction = (e) => {
         e.stopPropagation()
-        const pushURL = removeTabByIdentifier(e.currentTarget.dataset.title)
+        const pushURL = removeTabByIdentifier(e.currentTarget.dataset.id)
         setTimeout(() => {
             if (pushURL) {
                 push(pushURL)
@@ -160,7 +160,7 @@ function DynamicTabs({
                                 {!isFixed && (
                                     <div
                                         className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
-                                        data-title={tab.title}
+                                        data-id={tab.id}
                                         onClick={handleTabCloseAction}
                                     >
                                         <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
@@ -208,7 +208,7 @@ function DynamicTabs({
                     </div>
                     <div
                         className="dynamic-tab__close icon-dim-20 flex br-5 ml-8"
-                        data-title={data.title}
+                        data-id={data.id}
                         onClick={handleTabCloseAction}
                     >
                         <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />

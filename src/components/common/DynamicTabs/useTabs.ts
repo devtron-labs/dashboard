@@ -121,11 +121,11 @@ export function useTabs(persistanceKey: string) {
         return true
     }
 
-    const removeTabByIdentifier = (title: string): string => {
+    const removeTabByIdentifier = (id: string): string => {
       let pushURL = ''
       let selectedRemoved = false
       const _tabs = tabs.filter((tab) => {
-          if (tab.title.toLowerCase() === title.toLowerCase()) {
+          if (tab.id === id) {
               selectedRemoved = tab.isSelected
               return false
           }

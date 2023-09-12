@@ -23,7 +23,7 @@ export interface DynamicTabType extends CommonTabArgsType {
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
-    removeTabByIdentifier: (title: string) => string
+    removeTabByIdentifier: (id: string) => string
     stopTabByIdentifier: (title: string) => string
     enableShortCut?: boolean
 }

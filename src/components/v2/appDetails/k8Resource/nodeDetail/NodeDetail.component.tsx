@@ -90,7 +90,7 @@ function NodeDetailComponent({
         ) {
             getContainersFromManifest()
         }
-    }, [loadingResources, params.node])
+    }, [loadingResources, params.node, params.namespace])
 
     const isExternalEphemeralContainer = (cmds: string[], name: string): boolean => {
         const matchingCmd = `sh ${name}-devtron.sh`
@@ -179,9 +179,9 @@ function NodeDetailComponent({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         const _idPrefix =
-            selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
+            `${(selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
                 ? K8S_EMPTY_GROUP
-                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
+                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP)}_${params.namespace}`
         const isTabFound = isResourceBrowserView
             ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
@@ -197,12 +197,7 @@ function NodeDetailComponent({
                 }
 
                 if (isResourceBrowserView) {
-                    addTab(
-                        selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
-                        params.nodeType,
-                        params.node,
-                        _urlToCreate,
-                    )
+                    addTab(_idPrefix, params.nodeType, params.node, _urlToCreate)
                 } else {
                     AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
                 }
