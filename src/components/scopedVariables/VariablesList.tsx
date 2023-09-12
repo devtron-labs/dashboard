@@ -5,6 +5,7 @@ import { Grid } from '../common'
 import { VariableType, VariablesListItemProps } from './types'
 import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE, NO_DESCRIPTION_MESSAGE } from './constants'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
+import { ReactComponent as ICVisibilityOn } from '../../assets/icons/ic-visibility-on.svg'
 
 export default function VariablesList({ variablesList }: { variablesList: VariableType[] }) {
     const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemProps) => (
@@ -35,6 +36,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     return (
         <div className="dc__overflow-scroll h-100 flex column dc__content-start dc__align-start bcn-0 dc__align-self-stretch flex-grow-1 dc__no-shrink">
             <Grid container spacing={0} containerClass="w-100">
+                <Grid item xs={0.5} />
                 <Grid item xs={3} itemClass="dc__ellipsis-right">
                     {renderVariablesListItem({
                         data: TABLE_LIST_HEADINGS[0],
@@ -42,7 +44,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                     })}
                 </Grid>
 
-                <Grid item xs={9} itemClass="dc__ellipsis-right">
+                <Grid item xs={8} itemClass="dc__ellipsis-right">
                     {renderVariablesListItem({
                         data: TABLE_LIST_HEADINGS[1],
                         classes: 'pt-8 pb-8 pl-20 pr-20 flexbox dc__align-items-center',
@@ -56,6 +58,12 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                         containerClass="w-100 dc__overflow-hidden dc__hover-n50"
                         key={variable.name}
                     >
+                        <Grid item xs={0.5} itemClass="flex center">
+                            {variable.isSensitive ? (
+                                <ICVisibilityOn className="cn-7 fs-12 fw-6 lh-20 m-0 dc__uppercase" />
+                            ) : null}
+                        </Grid>
+
                         <Grid item xs={3} itemClass="dc__ellipsis-right">
                             {renderVariablesListItem({
                                 data: variable.name,
@@ -64,7 +72,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                             })}
                         </Grid>
 
-                        <Grid item xs={9} itemClass="dc__ellipsis-right">
+                        <Grid item xs={8} itemClass="dc__ellipsis-right">
                             {renderVariablesListItem({
                                 data: variable.description,
                                 classes: 'pt-12 pb-12 pl-20 pr-20 flexbox dc__align-items-center dc__border-bottom-n1',

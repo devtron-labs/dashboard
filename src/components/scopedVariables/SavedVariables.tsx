@@ -39,6 +39,7 @@ export default function SavedVariablesView({
             const variables = scopedVariablesData.spec.map((variable) => ({
                 name: variable.name,
                 description: variable.shortDescription,
+                isSensitive: variable.isSensitive,
             }))
             setVariablesList([...variables])
         }
@@ -60,6 +61,7 @@ export default function SavedVariablesView({
         const variables = filteredVariables?.map((variable) => ({
             name: variable.name,
             description: variable.shortDescription,
+            isSensitive: variable.isSensitive,
         }))
         setVariablesList(variables)
     }
