@@ -103,6 +103,7 @@ export default function FloatingVariablesSuggestions({
                     className="bcn-7 dc__outline-none-imp dc__border-n0 br-48 flex h-40 pt-8 pb-8 pl-12 pr-12 dc__gap-8 dc__no-shrink dc__position-abs"
                     style={{ zIndex, boxShadow: '0px 4px 8px 0px rgba(0, 0, 0, 0.20)' }}
                     ref={nodeRef}
+                    data-testid="collapsed-state"
                 >
                     <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20">
                         <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" />
@@ -114,6 +115,7 @@ export default function FloatingVariablesSuggestions({
                             className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
                             type="button"
                             onClick={handleActivation}
+                            data-testid="activate-suggestions"
                         >
                             <ICGridView className="scn-0 icon-dim-20" />
                         </button>
