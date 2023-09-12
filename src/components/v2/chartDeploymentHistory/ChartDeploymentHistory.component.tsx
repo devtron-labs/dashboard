@@ -272,7 +272,7 @@ function ChartDeploymentHistory({
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
-                    const helmDeploymentStatus: string = deployment?.status ? deployment?.status.toLowerCase() : 'succeeded'
+                    const helmDeploymentStatus: string = deployment?.status ? deployment.status.toLowerCase() : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
