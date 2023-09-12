@@ -44,8 +44,9 @@ export default function ClipboardButton({ content, copiedTippyText, duration, tr
                     className="dc__hover-n100 dc__outline-none-imp p-0 flex bcn-0 dc__no-border"
                     onMouseEnter={handleEnableTippy}
                     onMouseLeave={handleDisableTippy}
+                    onClick={handleCopyContent}
                 >
-                    <ICCopy onClick={handleCopyContent} className="icon-dim-16" />
+                    <ICCopy className="icon-dim-16" />
                 </button>
             </Tippy>
         </div>
