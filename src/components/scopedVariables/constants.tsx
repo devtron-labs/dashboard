@@ -127,3 +127,5 @@ export const NO_VARIABLES_MESSAGE = {
     TITLE: 'No matching results found',
     SUBTITLE: "We couldn't find any matching variable",
 }
+
+export const NO_DESCRIPTION_MESSAGE = 'No description'

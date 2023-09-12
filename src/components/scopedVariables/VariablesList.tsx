@@ -3,18 +3,18 @@ import Tippy from '@tippyjs/react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { Grid } from '../common'
 import { VariableType, VariablesListItemProps } from './types'
-import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE } from './constants'
+import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE, NO_DESCRIPTION_MESSAGE } from './constants'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 
 export default function VariablesList({ variablesList }: { variablesList: VariableType[] }) {
     const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemProps) => (
         <div className={classes}>
             {tooltip ? (
-                <Tippy content={data?.length ? data : 'No defined description'} className="default-tt" placement="top">
+                <Tippy content={data?.length ? data : NO_DESCRIPTION_MESSAGE} className="default-tt" placement="top">
                     {data?.length ? (
                         <p className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">{data}</p>
                     ) : (
-                        <i className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">No defined description</i>
+                        <i className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">{NO_DESCRIPTION_MESSAGE}</i>
                     )}
                 </Tippy>
             ) : (
