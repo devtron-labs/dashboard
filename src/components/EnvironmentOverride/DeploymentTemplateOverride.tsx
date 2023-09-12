@@ -81,7 +81,7 @@ export default function DeploymentTemplateOverride({
 
         if (clearPublishedState) {
             payload.publishedState = null
-            payload.selectedTabIndex = 1
+            payload.selectedTabIndex = 2 // same behaviour as base deployment template, to redirect on tab 2 when discarded a draft
             payload.openComparison = false
             payload.showReadme = false
             payload.showComments = false

@@ -22,7 +22,8 @@ import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
-import {handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
+import {getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
+import { text } from 'stream/consumers'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -146,34 +147,23 @@ export const CompareWithDropdown = ({
         _initOptions()
     }, [environments, charts, isValues])
 
-    const getSelectedOption = () => {
-        if (isEnvOverride) {
-            const currentEnv = environments.find((env) => +envId === env.id)
-            if (currentEnv?.value) {
-                return currentEnv
-            }
-        }
-        return baseTemplateOption
-    }
-
     const _initOptions = async () => {
         const _groupOptions = []
 
-        if (!envId) {
             _groupOptions.push({
                 label: '',
                 options: [baseTemplateOption],
             })
-        }
 
         let id = 0
+        _groupOptions.length = 4;
 
         // place all options under corresponding groups
         groupedData.forEach((group) => { 
             if (!isValues && group[0].type === 1) return
             if (isValues && group[0].type === 4) return
             if (!envId && group[0].type === 3) return
-            _groupOptions.push({
+            _groupOptions[getPosition(isValues,isEnvOverride,group[0].type)] = ({
                 label: labelName[group[0].type],
                 options: group.map((item) => ({
                         id: id++,
@@ -183,6 +173,22 @@ export const CompareWithDropdown = ({
                     })),
             })
         })
+
+        const getSelectedOption = () => {
+            if (isEnvOverride) {
+                // const currentEnv = environments.find((env) => +envId === env.id)
+                // console.log('currentEnv', currentEnv)
+                // if (currentEnv?.value) {
+                //     return currentEnv
+                // }
+                // return the first option of type 3
+                const option = groupedData.find((group) => group[0].type === 3)?.[0]
+                option.label = textDecider(option, charts)
+                option.id = _groupOptions[getPosition(isValues,isEnvOverride,3)].options[0].id
+                return option
+            }
+            return baseTemplateOption
+        }
 
         setGroupedOptions(_groupOptions)
         setSelectedOption(getSelectedOption())
@@ -354,11 +360,6 @@ export const CompareWithApprovalPendingAndDraft = ({
         setSelectedOption(selected)
     }
 
-    const formatLabel = (option) => (
-            <div className="flex left column">
-                <span className="w-100 dc__ellipsis-right">{option.label}</span>
-            </div>
-        )
 
     return (
         <div className="flex dc__content-space w-100">
@@ -371,9 +372,9 @@ export const CompareWithApprovalPendingAndDraft = ({
                             isMulti={false}
                             value={selectedOption}
                             // defaultValue={selectedOption.options[0]}
-                            isOptionSelected={(option, selected) => option === selected[0]}
+                            isOptionSelected={(option, selected) => option.id === selected[0].id}
                             classNamePrefix="compare-template-values-select"
-                            formatOptionLabel={formatLabel}
+                            formatOptionLabel={formatOptionLabel}
                             // isOptionDisabled={(option) => option.value === 0}
                             isSearchable={false}
                             onChange={onChange}

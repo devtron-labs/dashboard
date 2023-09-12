@@ -135,7 +135,7 @@ export function formatTimestamp(jsonTimestamp) {
     const timestamp = moment(jsonTimestamp)
 
     // Define the desired output format
-    return  timestamp.format('ddd, MMM YYYY, hh:mm A')
+    return timestamp.format('ddd, MMM YYYY, hh:mm A')
 }
 
 export function textDecider(option, charts) {
@@ -143,7 +143,7 @@ export function textDecider(option, charts) {
 
     switch (option.type) {
         case 1:
-            text = `(v${option.chartVersion})`
+            text = `v${option.chartVersion} (Default)`
             break
 
         case 2:
@@ -166,4 +166,22 @@ export function textDecider(option, charts) {
             break
     }
     return text
+}
+
+export const getPosition = (isValues: boolean, isEnv: boolean, type: number) => {
+    if (isValues && isEnv) {
+        if (type === 3) return 1
+        if (type === 2) return 2
+        if (type === 1) return 3
+    } else if (isValues) {
+        if (type === 2) return 1
+        if (type === 1) return 2
+    } else if (isEnv) {
+        if (type === 3) return 1
+        if (type === 4) return 2
+        if (type === 2) return 3
+    } else {
+        if (type === 4) return 1
+        if (type === 2) return 2
+    }
 }
