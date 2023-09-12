@@ -372,6 +372,22 @@ export default function NewCDPipeline({
         }
     }
 
+    const getSecret = (secret: any) => {
+        return {
+            label: secret,
+            value: `${secret}-cs`,
+            type: 'secrets',
+        }
+    }
+
+    const filterOutEmptySecret = (secret: any) => {
+        if (secret['label'].length > 0) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
         sortObjectArrayAlphabetically(environments, 'name')
         environments = environments.map((env) => {
@@ -460,19 +476,15 @@ export default function NewCDPipeline({
                 ? pipelineConfigFromRes.postStageConfigMapSecretNames.configMaps.map((configmap) => {
                       return {
                           label: configmap,
-                          value:`${configmap}-cm`,
+                          value: `${configmap}-cm`,
                           type: 'configmaps',
                       }
                   })
                 : [],
             secrets: pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
-                ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets.map((secret) => {
-                      return {
-                          label: secret,
-                          value: `${secret}-cs`,
-                          type: 'secrets',
-                      }
-                  })
+                ? pipelineConfigFromRes.postStageConfigMapSecretNames.secrets
+                      .map(getSecret)
+                      .filter(filterOutEmptySecret)
                 : [],
         }
         form.runPreStageInEnv = getPrePostStageInEnv(isVirtualEnvironment, pipelineConfigFromRes.runPreStageInEnv)
@@ -501,7 +513,7 @@ export default function NewCDPipeline({
                 return config['label']
             }),
             secrets: formData.postStageConfigMapSecretNames.secrets.map((secret) => {
-                return secret['label ']
+                return secret['label']
             }),
         }
 

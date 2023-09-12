@@ -178,7 +178,7 @@ export function Sidebar({
         }
 
         const removeConfigSecret = (name) => {
-            const updatedList = valueList.filter((item) => item.value !== name)
+            const updatedList = valueList.filter((item) => item?.value !== name)
             addConfigSecrets(updatedList)
         }
 
@@ -223,12 +223,12 @@ export function Sidebar({
                         <div className="">
                             {valueList.map((item) => {
                                 return (
-                                    <div key={item.value} className="dc__hover-n50 pt-6 pb-6 flex left dc__visible-hover dc__visible-hover--parent">
-                                        {listIcon(item.type)}
-                                        {item.label}
+                                    <div key={item?.value} className="dc__hover-n50 pt-6 pb-6 flex left dc__visible-hover dc__visible-hover--parent">
+                                        {listIcon(item?.type)}
+                                        {item?.label}
                                         <Remove
                                             className="icon-dim-20 dc__align-right cursor fcn-6 dc__visible-hover--child"
-                                            onClick={() => removeConfigSecret(item.value)}
+                                            onClick={() => removeConfigSecret(item?.value)}
                                         />
                                     </div>
                                 )
