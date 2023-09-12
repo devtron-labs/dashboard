@@ -61,7 +61,7 @@ export default function DeploymentConfigToolbar({
                             </span>
                             <Dropdown
                                 className="icon-dim-16 ml-4 cursor"
-                                style={{ transform: openDropdown ? 'rotate(180deg)' : '' }}
+                                style={{ transform: openDropdown ? "rotate(180deg)" : '' }}
                                 onClick={() => setOpenDropdown(true)}
                             />
                             <DropdownContainer isOpen={openDropdown} onClose={() => setOpenDropdown(false)}>

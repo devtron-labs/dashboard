@@ -45,9 +45,8 @@ export const Routes = {
     DEPLOYMENT_TEMPLATE: 'app/template',
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
 
-    DEPLOYMENT_MANIFEST: 'app/template/data',
+    DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
     DEPLOYMENT_OPTIONS:'app/template/list',
-    DEPLOYMENT_TEMPLATE_NEW: 'app/template/data',
 
 
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',

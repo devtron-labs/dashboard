@@ -15,19 +15,19 @@ interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
     codeEditorValue: string
     disableVersionSelect?: boolean
-    isValues?:boolean
+    isValues?: boolean
 }
 
 export default function DeploymentTemplateOptionsTab({
     isEnvOverride,
     codeEditorValue,
     disableVersionSelect,
-    isValues
+    isValues,
 }: DeploymentTemplateOptionsTabProps) {
     const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
-        state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state 
+        state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
 
     if (state.openComparison || state.showReadme) return null
 
@@ -50,6 +50,7 @@ export default function DeploymentTemplateOptionsTab({
     }
 
     const restoreLastSaved = () => {
+        if (!isValues) return
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
@@ -58,45 +59,43 @@ export default function DeploymentTemplateOptionsTab({
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
                     : YAML.stringify(state.data.globalConfig, { indent: 2 })
-            if (isValues){     
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.tempFormData,
-                    payload: _envValues,
-                })
-            }
-        } else if(isValues) {
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.tempFormData,
-                    payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
-                })
-        }
+
+            dispatch({
+                type: DeploymentConfigStateActionTypes.tempFormData,
+                payload: _envValues,
+            })
+        } else
+            dispatch({
+                type: DeploymentConfigStateActionTypes.tempFormData,
+                payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
+            })
     }
 
     const getRestoreLastSavedCTA = () => (
-            <div
-                className="flex left fs-13 fw-6 cb-5 pb-12 pl-12 pr-12 cursor dc_width-max-content"
-                onClick={restoreLastSaved}
-            >
-                <RestoreIcon className="icon-dim-14 mr-4 scb-5" /> Restore last saved YAML
-            </div>
-        )
+        <div
+            className="flex left fs-13 fw-6 cb-5 pb-12 pl-12 pr-12 cursor dc_width-max-content"
+            onClick={restoreLastSaved}
+        >
+            <RestoreIcon className="icon-dim-14 mr-4 scb-5" /> Restore last saved YAML
+        </div>
+    )
 
     const invalidYamlTippyWrapper = (children) => (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-250"
-                placement="bottom"
-                Icon={ErrorIcon}
-                heading="Invalid YAML"
-                infoText="The provided YAML is invalid. Basic (GUI) view can only be generated for a valid YAML."
-                additionalContent={getRestoreLastSavedCTA()}
-                trigger="mouseenter click"
-                interactive={true}
-                showCloseButton={true}
-            >
-                <span>{children}</span>
-            </TippyCustomized>
-        )
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-250"
+            placement="bottom"
+            Icon={ErrorIcon}
+            heading="Invalid YAML"
+            infoText="The provided YAML is invalid. Basic (GUI) view can only be generated for a valid YAML."
+            additionalContent={getRestoreLastSavedCTA()}
+            trigger="mouseenter click"
+            interactive={true}
+            showCloseButton={true}
+        >
+            <span>{children}</span>
+        </TippyCustomized>
+    )
 
     const _unableToParseYaml = state.unableToParseYaml && (!state.latestDraft || state.selectedTabIndex === 3)
 

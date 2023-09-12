@@ -636,7 +636,6 @@ export default function DeploymentConfig({
                 setManifestDataLHS(_manifestDataLHS)
             })
             .catch(() => {
-                setLoading(false)
                 setIsValues(true)
                 toast.error('Unable to fetch manifest data')
             })

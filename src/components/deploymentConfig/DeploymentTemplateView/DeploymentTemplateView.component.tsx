@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { versionComparator } from '../../common'
@@ -16,7 +16,7 @@ import {
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
 } from '../types'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles } from '../constants'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles, getDeploymentConfigDropdownStyles } from '../constants'
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
@@ -134,7 +134,9 @@ export const CompareWithDropdown = ({
         chartVersion: globalChartRef?.version || '',
     }
 
-    const envName = environments.find((env) => env.id === +envId)?.label
+    const envName = useMemo(() => {
+        return environments.find((env) => env.id === +envId)?.label;
+      }, [environments, envId]);
 
     const labelName = {
         '1': 'Default values',
@@ -176,12 +178,6 @@ export const CompareWithDropdown = ({
 
         const getSelectedOption = () => {
             if (isEnvOverride) {
-                // const currentEnv = environments.find((env) => +envId === env.id)
-                // console.log('currentEnv', currentEnv)
-                // if (currentEnv?.value) {
-                //     return currentEnv
-                // }
-                // return the first option of type 3
                 const option = groupedData.find((group) => group[0].type === 3)?.[0]
                 option.label = textDecider(option, charts)
                 option.id = _groupOptions[getPosition(isValues,isEnvOverride,3)].options[0].id
@@ -206,7 +202,6 @@ export const CompareWithDropdown = ({
             isOptionSelected={(option, selected) => option.id === selected[0].id}
             classNamePrefix="compare-template-values-select"
             formatOptionLabel={formatOptionLabel}
-            // isOptionDisabled={(option) => option.value === 0}
             isSearchable={false}
             onChange={onChange}
             components={{
@@ -215,44 +210,7 @@ export const CompareWithDropdown = ({
                 DropdownIndicator,
                 ValueContainer: customValueContainer,
             }}
-            styles={{
-                control: (base) => ({
-                    ...base,
-                    backgroundColor: 'var(--N100)',
-                    border: 'none',
-                    boxShadow: 'none',
-                    minHeight: '32px',
-                    cursor: 'pointer',
-                }),
-                option: (base, state) => ({
-                    ...base,
-                    color: 'var(--N900)',
-                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                }),
-                menu: (base) => ({
-                    ...base,
-                    marginTop: '2px',
-                    minWidth: '240px',
-                }),
-                menuList: (base) => ({
-                    ...base,
-                    position: 'relative',
-                    paddingBottom: 0,
-                    paddingTop: 0,
-                    maxHeight: '250px',
-                }),
-                dropdownIndicator: (base, state) => ({
-                    ...base,
-                    padding: 0,
-                    color: 'var(--N400)',
-                    transition: 'all .2s ease',
-                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                }),
-                noOptionsMessage: (base) => ({
-                    ...base,
-                    color: 'var(--N600)',
-                }),
-            }}
+            styles={getDeploymentConfigDropdownStyles(false)}
         />
     )
 }
@@ -339,14 +297,18 @@ export const CompareWithApprovalPendingAndDraft = ({
     setShowDraftData,
     isValues
 }: CompareWithApprovalPendingAndDraftProps) => {
-    const [selectedOption, setSelectedOption] = useState({ id: 0, label: 'Approval Pending' })
+
+    const APPROVAL_PENDING_OPTION = { id: 0, label: 'Approval Pending' };
+    const DRAFT_OPTION = { id: 1, label: `${isValues?'Values':'Manifest'} from draft` }
+
+    const [selectedOption, setSelectedOption] = useState(APPROVAL_PENDING_OPTION)
 
     const options = [
         {
             label: 'Manifest generated from',
             options: [
-                { id: 0, label: 'Approval Pending' },
-                { id: 1, label: `${isValues?'Values':'Manifest'} from draft` },
+                APPROVAL_PENDING_OPTION,
+                DRAFT_OPTION,
             ],
         },
     ]
@@ -370,11 +332,9 @@ export const CompareWithApprovalPendingAndDraft = ({
                             options={options}
                             isMulti={false}
                             value={selectedOption}
-                            // defaultValue={selectedOption.options[0]}
                             isOptionSelected={(option, selected) => option.id === selected[0].id}
                             classNamePrefix="compare-template-values-select"
                             formatOptionLabel={formatOptionLabel}
-                            // isOptionDisabled={(option) => option.value === 0}
                             isSearchable={false}
                             onChange={onChange}
                             components={{
@@ -383,44 +343,7 @@ export const CompareWithApprovalPendingAndDraft = ({
                                 DropdownIndicator,
                                 ValueContainer: customValueContainer,
                             }}
-                            styles={{
-                                control: (base) => ({
-                                    ...base,
-                                    backgroundColor: `${overridden ? 'var(--Y100)': 'var(--N100)'}`,
-                                    border: 'none',
-                                    boxShadow: 'none',
-                                    minHeight: '32px',
-                                    cursor: 'pointer',
-                                }),
-                                option: (base, state) => ({
-                                    ...base,
-                                    color: 'var(--N900)',
-                                    backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '2px',
-                                    minWidth: '240px',
-                                }),
-                                menuList: (base) => ({
-                                    ...base,
-                                    position: 'relative',
-                                    paddingBottom: 0,
-                                    paddingTop: 0,
-                                    maxHeight: '250px',
-                                }),
-                                dropdownIndicator: (base, state) => ({
-                                    ...base,
-                                    padding: 0,
-                                    color: 'var(--N400)',
-                                    transition: 'all .2s ease',
-                                    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                                }),
-                                noOptionsMessage: (base) => ({
-                                    ...base,
-                                    color: 'var(--N600)',
-                                }),
-                            }}
+                            styles={getDeploymentConfigDropdownStyles(overridden)}
                         />
                 ) : (
                     `${isEnvOverride ? environmentName : DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${
@@ -583,7 +506,7 @@ export function DropdownContainer({ isOpen, onClose, children }) {
     }
 
     return (
-        <div className='dc__transparent-div' onClick={onClose}>
+        <div className="dc__transparent-div" onClick={onClose}>
             <div className="flex-col bcn-0 w-204 h-72 dc__position-abs dc__top-119 dc__border-radius-4-imp dc__left-405 dc__border dc__zi-20 config-toolbar-dropdown-shadow">
                 <div className="pt-4 pb-4 pl-0 pr-0">{children}</div>
             </div>
@@ -595,7 +518,7 @@ export function DropdownItem({ label, isValues, onClick }) {
     return (
         <div
             className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${
-                isValues ? 'fw-6 bcb-1' : 'fw-n cn-9'
+                isValues ? "fw-6 bcb-1" : "fw-n cn-9"
             }`}
             onClick={onClick}
         >

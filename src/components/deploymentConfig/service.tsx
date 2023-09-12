@@ -10,13 +10,14 @@ export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultT
       return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`)
     }
 }
-// 
+
 export function getDeploymentTemplateData(appId: number, chartRefId: number, isValues: boolean, type?: number, pipelineConfigOverrideId?: number) {
-    return post(`${Routes.DEPLOYMENT_TEMPLATE_NEW}`, { appId, chartRefId, valuesAndManifestFlag: isValues?1:2, type:type, pipelineConfigOverrideId:pipelineConfigOverrideId}); 
+    const valuesAndManifestFlag = isValues?1:2;
+    return post(`${Routes.DEPLOYMENT_VALUES_MANIFEST}`, { appId, chartRefId, valuesAndManifestFlag, type, pipelineConfigOverrideId}); 
 }
 
 export function getDeploymentManisfest(request) {
-    return post(`${Routes.DEPLOYMENT_MANIFEST}`, request)
+    return post(`${Routes.DEPLOYMENT_VALUES_MANIFEST}`, request)
 }
 
 export function getOptions(appId: number, envId: number) {
