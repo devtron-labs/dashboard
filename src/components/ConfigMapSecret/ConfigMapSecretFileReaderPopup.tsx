@@ -17,7 +17,7 @@ function ConfigMapSecretFileReaderPopup({ toggleFileReaderPopup, showFileReaderP
     const renderFileContent = () => {
       return  importConfigSecretImportFileMessaging.map((item, index) => {
             return (
-                <div className="" key={`${item.title}-${index}`}>
+                <div className="" key={item.title}>
                     <ScopedVariablesInput handleFileUpload={(e) => onClickFileUpload(e, item.isFileNameAsKey)}>
                         <div className="p-8">
                             <div>{item.title}</div>
