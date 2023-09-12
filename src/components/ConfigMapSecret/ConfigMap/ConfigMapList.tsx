@@ -8,7 +8,7 @@ import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
-import { importComponentFromFELibrary, useAsync, FloatingVariablesSuggestions } from '../../common'
+import { importComponentFromFELibrary } from '../../common'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
 import '../ConfigMapSecret.scss'
 
