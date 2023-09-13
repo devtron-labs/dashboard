@@ -25,6 +25,7 @@ import {
 } from '../../../../../../config/constantMessaging'
 import { MANIFEST_KEY_FIELDS } from '../../../../../../config/constants'
 import { MODES } from '../../../../../../config'
+import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 
 function ManifestComponent({
     selectedTab,
@@ -191,8 +192,13 @@ function ManifestComponent({
         let manifestString
         try {
             manifestString = JSON.stringify(YAML.parse(modifiedManifest))
+            if (!modifiedManifest) {
+                setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                // Handled for blocking API call
+                manifestString = ""
+            }
         } catch (err2) {
-            setErrorText(`Encountered data validation error while saving. “${err2}”`)
+            setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} “${err2}”`)
         }
         if (!manifestString) {
             setLoading(false)
