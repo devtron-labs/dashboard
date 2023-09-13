@@ -11,8 +11,8 @@ export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultT
     }
 }
 
-export function getDeploymentTemplateData(appId: number, chartRefId: number, isValues: boolean, type?: number, pipelineConfigOverrideId?: number) {
-    const valuesAndManifestFlag = isValues?1:2;
+export function getDeploymentTemplateData(appId: number, chartRefId: number, isValuesView: boolean, type?: number, pipelineConfigOverrideId?: number) {
+    const valuesAndManifestFlag = isValuesView?1:2;
     return post(`${Routes.DEPLOYMENT_VALUES_MANIFEST}`, { appId, chartRefId, valuesAndManifestFlag, type, pipelineConfigOverrideId}); 
 }
 

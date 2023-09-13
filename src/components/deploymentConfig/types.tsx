@@ -139,6 +139,11 @@ export interface CompareWithApprovalPendingAndDraftProps {
     isValues: boolean
 }
 
+export interface compareApprovalAndDraftSelectedOption {
+    id: number
+    label: string
+}
+
 export interface ChartTypeVersionOptionsProps {
     isUnSet: boolean
     disableVersionSelect?: boolean
@@ -409,4 +414,15 @@ export enum DeploymentConfigStateActionTypes {
 export interface DeploymentConfigStateAction {
     type: DeploymentConfigStateActionTypes
     payload?: any
+}
+
+export interface DropdownContainerProps {
+    isOpen: boolean
+    onClose: () => void
+    children: React.ReactNode
+}
+export interface DropdownItemProps {
+    label: string
+    isValues: boolean
+    onClick: () => void
 }

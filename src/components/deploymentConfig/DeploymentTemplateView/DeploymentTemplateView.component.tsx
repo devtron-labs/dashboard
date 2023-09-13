@@ -15,6 +15,9 @@ import {
     DeploymentChartOptionType,
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
+    DropdownContainerProps,
+    DropdownItemProps,
+    compareApprovalAndDraftSelectedOption,
 } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles, getDeploymentConfigDropdownStyles } from '../constants'
 import { SortingOrder } from '../../app/types'
@@ -291,9 +294,9 @@ export const CompareWithApprovalPendingAndDraft = ({
     const APPROVAL_PENDING_OPTION = { id: 0, label: 'Approval Pending' };
     const DRAFT_OPTION = { id: 1, label: `${isValues?'Values':'Manifest'} from draft` }
 
-    const [selectedOption, setSelectedOption] = useState(APPROVAL_PENDING_OPTION)
+    const [selectedOption, setSelectedOption] = useState<compareApprovalAndDraftSelectedOption>(APPROVAL_PENDING_OPTION)
 
-    const options = [
+    const compareWithApprovalAndDraftOptions = [
         {
             label: 'Manifest generated from',
             options: [
@@ -319,7 +322,7 @@ export const CompareWithApprovalPendingAndDraft = ({
                 {!readOnly ? <Edit className="icon-dim-16 mr-10" />:<Eye/>}
                 {latestDraft ? (
                         <ReactSelect
-                            options={options}
+                            options={compareWithApprovalAndDraftOptions}
                             isMulti={false}
                             value={selectedOption}
                             isOptionSelected={(option, selected) => option.id === selected[0].id}
@@ -490,7 +493,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
     )
 }
 
-export function DropdownContainer({ isOpen, onClose, children }) {
+export function DropdownContainer({ isOpen, onClose, children }:DropdownContainerProps) {
     if (!isOpen) {
         return null
     }
@@ -504,7 +507,7 @@ export function DropdownContainer({ isOpen, onClose, children }) {
     )
 }
 
-export function DropdownItem({ label, isValues, onClick }) {
+export function DropdownItem({ label, isValues, onClick }:DropdownItemProps) {
     return (
         <div
             className={`dc__content-start cursor pt-6 pb-6 pr-8 pl-8 fs-13 ${
