@@ -1,11 +1,13 @@
 import React from 'react'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config'
 import {
+    ActionTypes,
     ChartGroupPermissionsFilter,
     CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
     OptionType,
+    ViewChartGroupPermission,
 } from '../userGroups/userGroups.types'
 
 export function getOptions(customDate) {
@@ -110,6 +112,13 @@ export const createUserPermissionPayload = (
             environment: '',
             entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
         })
+        if (chartPermission.action != ActionTypes.VIEW) {
+            userPermissionPayload.roleFilters.push({
+                ...ViewChartGroupPermission,
+                team: '',
+                environment: '',
+            })
+        }
     }
 
     return userPermissionPayload
