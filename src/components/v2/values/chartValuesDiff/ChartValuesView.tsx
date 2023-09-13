@@ -110,6 +110,7 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -1126,15 +1127,23 @@ function ChartValuesView({
                         }
                         wrap={() => renderComparisonOption(isDeployChartView)}
                     >
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="bottom"
-                            content={getComparisonTippyContent()}
-                        >
-                            {renderComparisonOption(commonState.activeTab === 'manifest' ? !commonState.isComparisonAvailable ||  !commonState.deploymentHistoryArr || (commonState.deploymentHistoryArr.length === 0): !commonState.isComparisonAvailable)}
-                        </Tippy>
-                        {commonState.activeTab !== 'manifest' && renderReadMeOption()}
+                        {commonState.activeTab !== VIEW_MODE.GUI && (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="bottom"
+                                content={getComparisonTippyContent()}
+                            >
+                                {renderComparisonOption(
+                                    commonState.activeTab === VIEW_MODE.MANIFEST
+                                        ? !commonState.isComparisonAvailable ||
+                                              !commonState.deploymentHistoryArr ||
+                                              commonState.deploymentHistoryArr.length === 0
+                                        : !commonState.isComparisonAvailable,
+                                )}
+                            </Tippy>
+                        )}
+                        {commonState.activeTab !== VIEW_MODE.MANIFEST && renderReadMeOption()}
                     </ConditionalWrap>
                 </div>
             </div>
@@ -1480,7 +1489,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
-                                isOCICompliantChart={commonState.installedConfig.isOCICompliantChart}
+                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
@@ -1488,7 +1497,7 @@ function ChartValuesView({
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
                             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig.isOCICompliantChart &&(
+                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig?.isOCICompliantChart &&(
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}
