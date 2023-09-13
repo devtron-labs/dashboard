@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { SELECTE_CLUSTER_STATE_MESSAGING, TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
+import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
-import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { useHistory, useParams } from 'react-router-dom'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 
 export default function ConnectingToClusterState({
