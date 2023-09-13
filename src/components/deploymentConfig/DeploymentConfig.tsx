@@ -183,7 +183,6 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
-        setLoadingManifest(true)
 
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
             .then((draftsResp) => {
@@ -195,9 +194,6 @@ export default function DeploymentConfig({
             })
             .catch(() => {
                 updateRefsData(chartRefsData)
-            })
-            .finally(() => {
-                setLoadingManifest(false)
             })
     }
 
