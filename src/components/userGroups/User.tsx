@@ -22,12 +22,14 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
+    APIRoleFilter,
+    ViewChartGroupPermission,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext } from './UserGroup';
 import './UserGroup.scss';
 import AppPermissions from './AppPermissions';
-import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
+import { ACCESS_TYPE_MAP, SERVER_MODE, ViewType } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { PermissionType } from '../apiTokens/authorization.utils';
@@ -212,6 +214,13 @@ export default function UserForm({
                 environment: '',
                 entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
             });
+            if (chartPermission.action != ActionTypes.VIEW) {
+                payload.roleFilters.push({
+                    ...ViewChartGroupPermission,
+                    team: '',
+                    environment: '',
+                })
+            }
         }
         try {
             const { result } = await saveUser(payload);
