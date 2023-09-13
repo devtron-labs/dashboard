@@ -15,6 +15,10 @@ export const getScopedVariables = (appId, envId, clusterId) => {
     query += generateScope('envId', envId)
     query += generateScope('clusterId', clusterId)
 
+    if (query[query.length - 1] === ',') {
+        query = query.slice(0, -1)
+    }
+
     query += '}'
 
     return get(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`)

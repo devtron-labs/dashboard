@@ -14,7 +14,7 @@ describe('getScopedVariables', () => {
     it('should call get with correct params if only appId is sent', async () => {
         (get as jest.Mock).mockResolvedValueOnce({})
         const appId = 'appId'
-        const query = `?appId=${appId}&scope={"appId":${appId},}`
+        const query = `?appId=${appId}&scope={"appId":${appId}}`
         await getScopedVariables(appId, null, null)
         expect(get).toHaveBeenCalledWith(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`)
     })
@@ -24,7 +24,7 @@ describe('getScopedVariables', () => {
         const appId = 'appId'
         const envId = 'envId'
         const clusterId = 'clusterId'
-        const query = `?appId=${appId}&scope={"appId":${appId},"envId":${envId},"clusterId":${clusterId},}`
+        const query = `?appId=${appId}&scope={"appId":${appId},"envId":${envId},"clusterId":${clusterId}}`
         await getScopedVariables(appId, envId, clusterId)
         expect(get).toHaveBeenCalledWith(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`)
     })
