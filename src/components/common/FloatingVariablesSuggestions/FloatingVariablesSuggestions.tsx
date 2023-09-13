@@ -21,7 +21,7 @@ export default function FloatingVariablesSuggestions({
 
     const [loadingScopedVariables, variablesData, error, reloadScopedVariables] = useAsync(
         () => getScopedVariables(appId, envId, clusterId),
-        [],
+        [appId, envId, clusterId],
     )
 
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
