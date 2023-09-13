@@ -1953,7 +1953,7 @@ button.anchor {
     border: 1px solid var(--N0);
 }
 
-.dc__border-n7{
+.dc__border-n7 {
     border: 1px solid var(--N700);
 }
 
@@ -3677,4 +3677,16 @@ textarea::placeholder {
     cursor: grabbing;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
+}
+
+.focus-within-border-b5:focus-within {
+    border: 1px solid var(--B500);
+}
+
+.dc__hover-border-n300:hover {
+    border: 1px solid var(--N300);
+}
+
+.placeholder-cn5::placeholder {
+    color: var(--N500);
 }
