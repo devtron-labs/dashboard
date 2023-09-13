@@ -1,11 +1,11 @@
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { ReadFileAs } from '../common/hooks/types'
-import ScopedVariablesInput from '../scopedVariables/ScopedVariablesInput'
 import { validator } from '../scopedVariables/utils'
 import { importConfigSecretImportFileMessaging } from './Constants'
+import { HiddenInput } from '../common'
 
-function ConfigMapSecretFileReaderPopup({ toggleFileReaderPopup, showFileReaderPopup, readFile }) {
+function ConfigMapSecretFileReaderPopup({readFile }) {
 
     const onClickFileUpload = (e: React.ChangeEvent<HTMLInputElement>, isFileNameAsKey ) => {
         e.preventDefault()
@@ -18,12 +18,12 @@ function ConfigMapSecretFileReaderPopup({ toggleFileReaderPopup, showFileReaderP
       return  importConfigSecretImportFileMessaging.map((item, index) => {
             return (
                 <div className="" key={item.title}>
-                    <ScopedVariablesInput handleFileUpload={(e) => onClickFileUpload(e, item.isFileNameAsKey)}>
+                    <HiddenInput handleFileUpload={(e) => onClickFileUpload(e, item.isFileNameAsKey)} id={item.title}>
                         <div className="p-8 fw-4">
                             <div>{item.title}</div>
                             <div>{item.description}</div>
                         </div>
-                    </ScopedVariablesInput>
+                    </HiddenInput>
                 </div>
             )
         })
@@ -41,9 +41,8 @@ function ConfigMapSecretFileReaderPopup({ toggleFileReaderPopup, showFileReaderP
                 trigger="click"
                 additionalContent={renderFileContent()}
                 interactive={true}
-                visible={!!showFileReaderPopup}
             >
-                <div className="cb-5 ml-8 fw-6 cursor" onClick={toggleFileReaderPopup}>
+                <div className="cb-5 ml-8 fw-6 cursor">
                     Import from file...
                 </div>
             </TippyCustomized>

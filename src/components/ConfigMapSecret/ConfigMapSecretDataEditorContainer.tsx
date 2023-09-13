@@ -360,8 +360,6 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
                         {
                             <ConfigMapSecretFileReaderPopup
-                                toggleFileReaderPopup={toggleFileReaderPopup}
-                                showFileReaderPopup={showFileReaderPopup}
                                 readFile={readFile}
                             />
                         }
