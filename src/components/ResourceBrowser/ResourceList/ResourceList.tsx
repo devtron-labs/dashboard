@@ -474,9 +474,7 @@ export default function ResourceList() {
           initTabs(
               _tabs,
               false,
-              !(superAdminRef.current)
-                  ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`]
-                  : null,
+              !superAdminRef.current ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`] : null,
           )
       }
     }
@@ -703,6 +701,7 @@ export default function ResourceList() {
                 ALL_NAMESPACE_OPTION.value
             }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
             if (fromClusterSelect) {
+                initTabsBasedOnRole(true)
                 replace({
                     pathname: path,
                 })
@@ -715,8 +714,7 @@ export default function ResourceList() {
     }
 
     const onClusterChange = (value) => {
-      initTabsBasedOnRole(true)
-      onChangeCluster(value, false, false)
+      onChangeCluster(value, true, false)
     }
 
     const { breadcrumbs } = useBreadcrumb(
@@ -907,7 +905,7 @@ export default function ResourceList() {
             } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
               return (
                   <div className="bcn-0 node-data-container flex">
-                      {superAdminRef.current ? <ErrorScreenManager code={403} /> : <Reload />}
+                      {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
                   </div>
               )
             }
@@ -1024,7 +1022,15 @@ export default function ResourceList() {
                 </div>
             )
         } else if (!showSelectClusterState && !selectedCluster?.value) {
-            return <ClusterSelectionList clusterOptions={clusterList} onChangeCluster={onChangeCluster} isSuperAdmin={superAdminRef.current} clusterListLoader={terminalLoader} refreshData={refreshSync} />
+            return (
+                <ClusterSelectionList
+                    clusterOptions={clusterList}
+                    onChangeCluster={onChangeCluster}
+                    isSuperAdmin={superAdminRef.current}
+                    clusterListLoader={terminalLoader}
+                    refreshData={refreshSync}
+                />
+            )
         }
 
         return (
