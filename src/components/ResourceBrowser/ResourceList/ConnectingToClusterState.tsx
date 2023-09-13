@@ -5,8 +5,9 @@ import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '../../../config'
 
 export default function ConnectingToClusterState({
     loader,
@@ -16,12 +17,10 @@ export default function ConnectingToClusterState({
     sideDataAbortController,
     selectedResource,
     resourceList,
-    clusterOptions,
     selectedCluster,
     setSelectedCluster,
     showSelectClusterState,
     setShowSelectClusterState,
-    onChangeCluster,
     namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
@@ -32,6 +31,7 @@ export default function ConnectingToClusterState({
     handleFilterChanges,
     clearSearch,
 }: ConnectingToClusterStateProps) {
+    const { replace } = useHistory()
     const { clusterId } = useParams<{ clusterId: string }>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
@@ -93,7 +93,9 @@ export default function ConnectingToClusterState({
         sideDataAbortController.prev = sideDataAbortController.new
         resetStates()
         setSelectedCluster(null)
-        setShowSelectClusterState(true)
+        replace({
+            pathname: URLS.RESOURCE_BROWSER,
+        })
     }
 
     const handleRetryClick = (e) => {
@@ -164,9 +166,6 @@ export default function ConnectingToClusterState({
         >
             <ResourceFilterOptions
                 selectedResource={selectedResource}
-                clusterOptions={clusterOptions}
-                selectedCluster={selectedCluster}
-                onChangeCluster={onChangeCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}
