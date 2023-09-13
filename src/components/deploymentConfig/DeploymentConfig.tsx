@@ -442,14 +442,12 @@ export default function DeploymentConfig({
             reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
+
             dispatch({
-                type: DeploymentConfigStateActionTypes.fetchedValues,
-                payload: {},
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload: { fetchedValues: {}, fetchedValuesManifest: {} },
             })
-            dispatch({
-                type: DeploymentConfigStateActionTypes.fetchedValuesManifest,
-                payload: {},
-            })
+
             toast.success(<SuccessToastBody chartConfig={state.chartConfig} />)
 
             if (!isCiPipeline) {
@@ -706,7 +704,7 @@ const renderEditorComponent = () => {
   
     if (state.loadingManifest) {
       return (
-        <div className='h-100vh'>
+        <div className="h-100vh">
           <Progressing pageLoader />
         </div>
       );

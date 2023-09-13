@@ -440,16 +440,12 @@ export default function DeploymentTemplateOverrideForm({
 
     const reload = () => {
         dispatch({
-            type: DeploymentConfigStateActionTypes.loading,
-            payload: true,
-        })
-        dispatch({
-            type: DeploymentConfigStateActionTypes.tempFormData,
-            payload: '',
-        })
-        dispatch({
-            type: DeploymentConfigStateActionTypes.duplicate,
-            payload: '',
+            type: DeploymentConfigStateActionTypes.multipleOptions,
+            payload: {
+                loading: true,
+                tempFormData: '',
+                duplicate: '',
+            },
         })
         initialise(state.selectedChartRefId, true, false)
     }
