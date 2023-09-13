@@ -62,7 +62,6 @@ export default function NavigationRoutes() {
     )
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
-    const [expiryDate, setExpiryDate] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
@@ -80,7 +79,6 @@ export default function NavigationRoutes() {
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
         const _expDate = localStorage.getItem('clickedOkay')
-        setExpiryDate(!!_expDate ? +_expDate : 0)
         try {
             const [userRole, appList, loginData] = await Promise.all([
                 getUserRole(),

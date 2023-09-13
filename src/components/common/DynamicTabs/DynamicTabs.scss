@@ -1,4 +1,5 @@
 .dynamic-tabs-section {
+    z-index: 11;
     .dynamic-tabs-container {
         overflow-x: auto;
         -ms-overflow-style: none;
@@ -12,7 +13,7 @@
     .more-tabs-wrapper {
         .more-tabs__menu-wrapper {
             border-radius: 4px 4px 0 0;
-            left: 8px;
+            right: 0px;
             z-index: 10;
         }
 
