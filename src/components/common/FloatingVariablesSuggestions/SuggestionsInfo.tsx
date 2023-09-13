@@ -1,6 +1,9 @@
 import React, { memo, useState } from 'react'
 import { ReactComponent as ICHelp } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICDown } from '../../../assets/icons/ic-chevron-down.svg'
+import { SUGGESTIONS_INFO_TITLE } from './constants'
+import { Link } from 'react-router-dom'
+import { URLS } from '../../../config'
 
 function SuggestionsInfo() {
     const [expanded, setExpanded] = useState<boolean>(false)
@@ -17,7 +20,7 @@ function SuggestionsInfo() {
                         <ICHelp className="icon-dim-16 fcv-5" />
                     </div>
 
-                    <p className="m-0 fs-13 cn-9 fw-6 lh-20">How to use variable?</p>
+                    <p className="m-0 fs-13 cn-9 fw-6 lh-20">{SUGGESTIONS_INFO_TITLE}</p>
                 </div>
 
                 <button
@@ -32,7 +35,12 @@ function SuggestionsInfo() {
             {expanded && (
                 <div className="flex pl-24 dc__gap-4 flex-wrap dc__content-center">
                     <p className="m-0 fs-13 fw-4 lh-20 cn-9">
-                        Description how variable can be used will be shown here.
+                        Use a scoped variable for dynamic values, which are defined in the&nbsp;
+                        <Link className="cb-5 m-0" to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                            Global Configuration
+                        </Link>
+                        . To use a variable, type&nbsp;
+                        <i className="m-0">{'@{{variablename}}'}</i>.
                     </p>
                 </div>
             )}

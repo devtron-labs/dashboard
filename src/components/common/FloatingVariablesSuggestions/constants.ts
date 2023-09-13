@@ -5,3 +5,4 @@ export const SUGGESTIONS_SIZE = {
 
 export const NO_DEFINED_DESCRIPTION = 'No Defined Description'
 export const NO_DEFINED_VALUE = 'No Defined Value'
+export const SUGGESTIONS_INFO_TITLE = 'What is scoped variable?'
