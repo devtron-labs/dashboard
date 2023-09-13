@@ -291,8 +291,8 @@ export const CompareWithApprovalPendingAndDraft = ({
     isValues
 }: CompareWithApprovalPendingAndDraftProps) => {
 
-    const APPROVAL_PENDING_OPTION = { id: 0, label: 'Approval Pending' };
-    const DRAFT_OPTION = { id: 1, label: `${isValues?'Values':'Manifest'} from draft` }
+    const APPROVAL_PENDING_OPTION = { id: 0, label: `Approval Pending (v${selectedChart.version})` };
+    const DRAFT_OPTION = { id: 1, label: `${isValues?'Values':'Manifest'} from draft (v${selectedChart.version})` }
 
     const [selectedOption, setSelectedOption] = useState<compareApprovalAndDraftSelectedOption>(APPROVAL_PENDING_OPTION)
 
@@ -314,7 +314,6 @@ export const CompareWithApprovalPendingAndDraft = ({
     const onChange = (selected) => {
         setSelectedOption(selected)
     }
-
 
     return (
         <div className="flex dc__content-space w-100">
