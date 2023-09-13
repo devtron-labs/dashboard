@@ -4,6 +4,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as ICError } from '../../assets/icons/ic-error-exclamation.svg'
 import { StyledProgressBar } from '../common/formFields/Widgets/Widgets'
 import { FileReaderStatus } from '../common/hooks/types'
+import { UPLOAD_FAILED_FALLBACK_MESSAGE, UPLOAD_FAILED_STANDARD_MESSAGE } from './constants'
 
 export default function ScopedVariablesLoader({ status, progress, fileData, abortRead }: LoadScopedVariablesProps) {
     return (
@@ -14,6 +15,7 @@ export default function ScopedVariablesLoader({ status, progress, fileData, abor
                 </p>
 
                 <button
+                    type='button'
                     className="dc__no-background p-0 dc__no-border cursor dc__outline-none-imp h-20"
                     onClick={abortRead}
                 >
@@ -34,7 +36,9 @@ export default function ScopedVariablesLoader({ status, progress, fileData, abor
             {status?.status === FileReaderStatus.FAILED && (
                 <div className="flex dc__align-start dc__align-self-stretch dc__gap-4 dc__content-start">
                     <ICError className="icon-dim-20" />
-                    <p className="cr-5 fs-13 fw-4 lh-20 dc__align-left">Upload failed</p>
+                    <p className="cr-5 fs-13 fw-4 lh-20 dc__align-left">
+                        {status?.message?.description ? UPLOAD_FAILED_STANDARD_MESSAGE : UPLOAD_FAILED_FALLBACK_MESSAGE}
+                    </p>
                 </div>
             )}
         </div>

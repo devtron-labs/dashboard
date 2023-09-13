@@ -3,7 +3,7 @@ import { fireEvent, render, act } from '@testing-library/react'
 import { toast } from 'react-toastify'
 import ScopedVariablesEditor from '../ScopedVariablesEditor'
 import { validScopedVariablesData } from '../mocks'
-import { GET_SCOPED_VARIABLES_ERROR, PARSE_ERROR_TOAST_MESSAGE } from '../constants'
+import { GET_SCOPED_VARIABLES_ERROR, UPLOAD_FAILED_STANDARD_MESSAGE } from '../constants'
 import { parseIntoYAMLString } from '../utils'
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))
@@ -73,7 +73,7 @@ describe('ScopedVariablesEditor', () => {
         const reviewButton = getByText('Review Changes')
         expect(reviewButton).toBeTruthy()
         fireEvent.click(reviewButton as Element)
-        expect(toast.error).toHaveBeenCalledWith(PARSE_ERROR_TOAST_MESSAGE)
+        expect(toast.error).toHaveBeenCalledWith(UPLOAD_FAILED_STANDARD_MESSAGE)
     })
 
     it('should show error toast when save button is clicked and save fails', async () => {

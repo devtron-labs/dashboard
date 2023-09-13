@@ -49,6 +49,9 @@ export const EMPTY_FILE_STATUS = {
     status: FileReaderStatus.FAILED,
 }
 
+export const UPLOAD_FAILED_FALLBACK_MESSAGE = 'Upload Failed'
+export const UPLOAD_FAILED_STANDARD_MESSAGE = 'Invalid file content'
+
 export const SCOPED_VARIABLES_TEMPLATE_DATA = `apiVersion: devtron.ai/v1beta1
 kind: Variable
 spec:

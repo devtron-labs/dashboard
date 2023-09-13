@@ -27,11 +27,6 @@ export interface LoadScopedVariablesProps {
     abortRead: () => void
 }
 
-export interface ScopedVariablesInputProps {
-    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
-    children?: React.ReactNode
-}
-
 export interface ScopedVariablesEditorProps {
     variablesData: string
     name: string
@@ -79,16 +74,6 @@ export interface ValueType {
     category: VariableCategories
     value: any
     selectors?: object
-}
-
-export interface GridProps {
-    container?: boolean
-    spacing?: number
-    item?: boolean
-    xs?: number
-    containerClass?: string
-    itemClass?: string
-    children: React.ReactNode
 }
 
 export interface VariablesListItemProps {

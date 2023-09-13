@@ -1,12 +1,12 @@
 import React from 'react'
-import { ScopedVariablesInputProps } from './types'
+import HiddenInputProps from './types'
 
-export default function ScopedVariablesInput({ handleFileUpload, children }: ScopedVariablesInputProps) {
+export default function HiddenInput({ handleFileUpload, children, id }: HiddenInputProps) {
     return (
         <>
             <input
                 type="file"
-                id="scoped-variables-input"
+                id={id}
                 accept=".yaml, .yml, .json"
                 style={{
                     display: 'none',
@@ -14,7 +14,7 @@ export default function ScopedVariablesInput({ handleFileUpload, children }: Sco
                 onChange={handleFileUpload}
             />
 
-            <label htmlFor="scoped-variables-input" className="flex column center cursor m-0 h-100 w-100">
+            <label htmlFor={id} className="flex column center cursor m-0 h-100 w-100">
                 {children}
             </label>
         </>

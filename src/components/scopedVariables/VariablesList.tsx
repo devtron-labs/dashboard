@@ -1,7 +1,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import Grid from './Grid'
+import { Grid } from '../common'
 import { VariableType, VariablesListItemProps } from './types'
 import { TABLE_LIST_HEADINGS, NO_VARIABLES_MESSAGE } from './constants'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
@@ -49,7 +49,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                     <Grid
                         container
                         spacing={0}
-                        containerClass="w-100 scoped-variables-list-item dc__overflow-hidden"
+                        containerClass="w-100 dc__overflow-hidden dc__hover-n50"
                         key={variable.name}
                     >
                         <Grid item xs={3} itemClass="dc__ellipsis-right">
