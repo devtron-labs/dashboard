@@ -548,24 +548,26 @@ export default function ResourceList() {
                     replace({
                         pathname: URLS.RESOURCE_BROWSER,
                     })
-                }
-                if (!node) {
-                    const searchParam = location.search ? `/${location.search}` : ''
-                    replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
-                            namespace || ALL_NAMESPACE_OPTION.value
-                        }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
+                } else if (err['code'] === 403) {
+                    if (!node) {
+                        const searchParam = location.search ? `/${location.search}` : ''
+                        replace({
+                            pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
+                                namespace || ALL_NAMESPACE_OPTION.value
+                            }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
+                        })
+                    }
+                    setSelectedResource({
+                        namespaced: false,
+                        gvk: SIDEBAR_KEYS.overviewGVK,
                     })
+                } else {
+                    setErrorMsg(
+                        (err instanceof ServerErrors && Array.isArray(err.errors)
+                            ? err.errors[0]?.userMessage
+                            : err['message']) ?? SOME_ERROR_MSG,
+                    )
                 }
-                setSelectedResource({
-                    namespaced: false,
-                    gvk: SIDEBAR_KEYS.overviewGVK,
-                })
-                setErrorMsg(
-                    (err instanceof ServerErrors && Array.isArray(err.errors)
-                        ? err.errors[0]?.userMessage
-                        : err['message']) ?? SOME_ERROR_MSG,
-                )
                 setLoader(false)
             } else if (sideDataAbortController.current.prev?.signal.aborted) {
                 sideDataAbortController.current.prev = null
