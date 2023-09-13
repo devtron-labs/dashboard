@@ -46,4 +46,4 @@ export interface SSOLoginTabType {
     SSOName: string
 }
 
-export const OIDC:string = "oidc"
+export const OIDCtype:string = "oidc"
