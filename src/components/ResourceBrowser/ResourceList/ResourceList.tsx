@@ -111,7 +111,6 @@ export default function ResourceList() {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [accessDeniedCode, setAccessDeniedCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
-    const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
@@ -474,9 +473,7 @@ export default function ResourceList() {
           initTabs(
               _tabs,
               false,
-              !(superAdminRef.current)
-                  ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`]
-                  : null,
+              !superAdminRef.current ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`] : null,
           )
       }
     }
@@ -550,24 +547,26 @@ export default function ResourceList() {
                     replace({
                         pathname: URLS.RESOURCE_BROWSER,
                     })
-                }
-                if (!node) {
-                    const searchParam = location.search ? `/${location.search}` : ''
-                    replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
-                            namespace || ALL_NAMESPACE_OPTION.value
-                        }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
+                } else if (err['code'] === 403) {
+                    if (!node) {
+                        const searchParam = location.search ? `/${location.search}` : ''
+                        replace({
+                            pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
+                                namespace || ALL_NAMESPACE_OPTION.value
+                            }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
+                        })
+                    }
+                    setSelectedResource({
+                        namespaced: false,
+                        gvk: SIDEBAR_KEYS.overviewGVK,
                     })
+                } else {
+                    setErrorMsg(
+                        (err instanceof ServerErrors && Array.isArray(err.errors)
+                            ? err.errors[0]?.userMessage
+                            : err['message']) ?? SOME_ERROR_MSG,
+                    )
                 }
-                setSelectedResource({
-                    namespaced: false,
-                    gvk: SIDEBAR_KEYS.overviewGVK,
-                })
-                setErrorMsg(
-                    (err instanceof ServerErrors && Array.isArray(err.errors)
-                        ? err.errors[0]?.userMessage
-                        : err['message']) ?? SOME_ERROR_MSG,
-                )
                 setLoader(false)
             } else if (sideDataAbortController.current.prev?.signal.aborted) {
                 sideDataAbortController.current.prev = null
@@ -686,8 +685,6 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         if (selected.value === selectedCluster?.value) {
             return
-        } else if (showSelectClusterState) {
-            setShowSelectClusterState(false)
         }
         if (sideDataAbortController.current.prev?.signal.aborted) {
             sideDataAbortController.current.prev = null
@@ -703,6 +700,7 @@ export default function ResourceList() {
                 ALL_NAMESPACE_OPTION.value
             }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
             if (fromClusterSelect) {
+                initTabsBasedOnRole(true)
                 replace({
                     pathname: path,
                 })
@@ -715,8 +713,7 @@ export default function ResourceList() {
     }
 
     const onClusterChange = (value) => {
-      initTabsBasedOnRole(true)
-      onChangeCluster(value, false, false)
+      onChangeCluster(value, true, false)
     }
 
     const { breadcrumbs } = useBreadcrumb(
@@ -907,7 +904,7 @@ export default function ResourceList() {
             } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
               return (
                   <div className="bcn-0 node-data-container flex">
-                      {superAdminRef.current ? <ErrorScreenManager code={403} /> : <Reload />}
+                      {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
                   </div>
               )
             }
@@ -938,28 +935,15 @@ export default function ResourceList() {
             )
         }
 
-        return showSelectClusterState || loader || rawGVKLoader ? (
+        return loader || rawGVKLoader || errorMsg ? (
             <ConnectingToClusterState
                 loader={loader}
                 errorMsg={errorMsg}
                 setErrorMsg={setErrorMsg}
-                handleRetry={handleRetry}
-                sideDataAbortController={sideDataAbortController.current}
-                selectedResource={selectedResource}
-                resourceList={resourceList}
                 selectedCluster={selectedCluster}
                 setSelectedCluster={setSelectedCluster}
-                namespaceOptions={namespaceOptions}
-                selectedNamespace={selectedNamespace}
-                setSelectedNamespace={setSelectedNamespace}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                searchApplied={searchApplied}
-                setSearchApplied={setSearchApplied}
-                handleFilterChanges={handleFilterChanges}
-                clearSearch={clearSearch}
-                showSelectClusterState={showSelectClusterState}
-                setShowSelectClusterState={setShowSelectClusterState}
+                handleRetry={handleRetry}
+                sideDataAbortController={sideDataAbortController.current}
             />
         ) : (
             <div className="resource-browser bcn-0">
@@ -1017,14 +1001,22 @@ export default function ResourceList() {
                     <ErrorScreenManager code={accessDeniedCode} />
                 </div>
             )
-        } else if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
+        } else if ((loader && !selectedCluster?.value) || clusterLoader) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (!showSelectClusterState && !selectedCluster?.value) {
-            return <ClusterSelectionList clusterOptions={clusterList} onChangeCluster={onChangeCluster} isSuperAdmin={superAdminRef.current} clusterListLoader={terminalLoader} refreshData={refreshSync} />
+        } else if (!selectedCluster?.value) {
+            return (
+                <ClusterSelectionList
+                    clusterOptions={clusterList}
+                    onChangeCluster={onChangeCluster}
+                    isSuperAdmin={superAdminRef.current}
+                    clusterListLoader={terminalLoader}
+                    refreshData={refreshSync}
+                />
+            )
         }
 
         return (
