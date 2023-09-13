@@ -1,6 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import FloatingVariablesSuggestions from '../FloatingVariablesSuggestions'
+import { mockVariable } from '../mocks'
 
 // Mocking suggestions items since its already tested
 jest.mock(
@@ -21,7 +22,7 @@ describe('When FloatingVariablesSuggestions mounts', () => {
             <FloatingVariablesSuggestions
                 zIndex={20}
                 loading={false}
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,
@@ -34,7 +35,7 @@ describe('When FloatingVariablesSuggestions mounts', () => {
             <FloatingVariablesSuggestions
                 zIndex={20}
                 loading={false}
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,
@@ -53,7 +54,7 @@ describe('When FloatingVariablesSuggestions mounts', () => {
             <FloatingVariablesSuggestions
                 zIndex={20}
                 loading={false}
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,

@@ -1,6 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import Suggestions from '../Suggestions'
+import { mockVariable } from '../mocks'
 
 // Mocking suggestions items since its already tested
 jest.mock(
@@ -42,7 +43,7 @@ describe('When Suggestions mounts', () => {
             <Suggestions
                 handleDeActivation={null}
                 loading={false}
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,
@@ -56,7 +57,7 @@ describe('When Suggestions mounts', () => {
             <Suggestions
                 handleDeActivation={handleDeActivation}
                 loading={false}
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,
@@ -70,7 +71,7 @@ describe('When Suggestions mounts', () => {
             <Suggestions
                 handleDeActivation={null}
                 loading
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,
@@ -97,7 +98,7 @@ describe('When Suggestions mounts', () => {
             <Suggestions
                 handleDeActivation={null}
                 loading={false}
-                variables={[{ variableName: 'name', shortDescription: 'desc' }]}
+                variables={mockVariable}
                 reloadVariables={null}
                 error={false}
             />,

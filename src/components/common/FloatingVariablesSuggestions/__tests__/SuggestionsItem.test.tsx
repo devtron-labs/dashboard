@@ -25,6 +25,7 @@ describe('When SuggestionsItem mounts', () => {
                 description="description"
                 variableValue="variableValue"
                 highlightText=""
+                isRedacted
             />,
         )
         expect(screen.getByText('description')).toBeTruthy()
@@ -37,6 +38,7 @@ describe('When SuggestionsItem mounts', () => {
                 description="description"
                 variableValue="variableValue"
                 highlightText="desc"
+                isRedacted
             />,
         )
         // since desc would be in span and differentiated we only need to check if desc is present
@@ -51,6 +53,7 @@ describe('When SuggestionsItem mounts', () => {
                 description="description"
                 variableValue="variableValue"
                 highlightText="HighlightText"
+                isRedacted
             />,
         )
         getByTestId('suggestion-item').click()
@@ -64,6 +67,7 @@ describe('When SuggestionsItem mounts', () => {
                 description={NO_DEFINED_DESCRIPTION}
                 variableValue="variableValue"
                 highlightText="HighlightText"
+                isRedacted
             />,
         )
         expect(screen.getByText(NO_DEFINED_DESCRIPTION)).toBeTruthy()
