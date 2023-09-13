@@ -4,6 +4,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -170,13 +171,24 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType {
-    imageList: ClusterImageList[]
     isSuperAdmin: boolean
-    namespaceList: string[]
+    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    addTab?: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
+    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
+    k8SObjectMapRaw: Map<string, K8SObjectMapType>
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
     clusterId: string
+    namespaceList: string[]
+    imageList: ClusterImageList[]
 }
 
 export interface ClusterAboutPropType {
@@ -236,6 +248,16 @@ interface NodeDataPropType {
 export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
     isSuperAdmin: boolean
+    addTab: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+        dynamicTitle?: string,
+        showNameOnSelect?: boolean,
+    ) => boolean
 }
 
 export interface NodeActionRequest {
@@ -344,3 +366,23 @@ export interface ManifestPopuptype {
 export type MDEditorSelectedTabType = 'write' | 'preview'
 
 export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS
+
+export interface DescriptionDataType {
+    descriptionId: number
+    descriptionText: string
+    descriptionUpdatedBy: string
+    descriptionUpdatedOn: string
+}
+
+export interface ClusterErrorType {
+    errorText: string
+    errorType: ERROR_TYPE
+    filterText: string[]
+}
+export interface ClusterOverviewProps {
+    isSuperAdmin: boolean
+    clusterCapacityData: ClusterCapacityType
+    clusterErrorList: ClusterErrorType[]
+    clusterErrorTitle: string
+    errorStatusCode: number
+}

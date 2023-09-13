@@ -8,11 +8,11 @@
 :root {
     --modal-index: 20;
     --full-screen-modal-index: 10;
-    --page-header-index: 4;
+    --page-header-index: 12;
     --filter-menu-index: 7;
     --transparent-div-index: 6;
     --app-list-header-index: 3;
-    --navigation-index: 5;
+    --navigation-index: 13;
     --tooltip-index: 7;
     --events-logs: 4;
     --index-next-section: 3;
@@ -217,6 +217,10 @@ a:focus {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.dc__container-below-header {
+    height: calc(100vh - 48px);
 }
 
 .dc__empty__subtitle {
@@ -2009,6 +2013,10 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
+.dc__border-bottom-y2 {
+    border-bottom: solid 1px var(--Y200);
+}
+
 .dc__no-border {
     border: none;
 }
@@ -2825,6 +2833,10 @@ textarea,
 
 .h-32 {
     height: 32px !important;
+}
+
+.h-35 {
+    height: 35px !important;
 }
 
 .h-36 {

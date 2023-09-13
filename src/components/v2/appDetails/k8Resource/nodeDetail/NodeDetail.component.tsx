@@ -6,24 +6,24 @@ import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
-import {
-    NodeDetailTab,
-    ParamsType,
-} from './nodeDetail.type'
+import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Checkbox, CHECKBOX_VALUE, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
-import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../../../../ResourceBrowser/Constants'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
 import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
+import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
+import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
+import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 
 function NodeDetailComponent({
     loadingResources,
@@ -33,6 +33,7 @@ function NodeDetailComponent({
     selectedResource,
     logSearchTerms,
     setLogSearchTerms,
+    removeTabByIdentifier,
 }: NodeDetailPropsType) {
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
@@ -56,6 +57,7 @@ function NodeDetailComponent({
     const [imageListOption, setImageListOption] = useState<OptionType[]>([])
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const { path, url } = useRouteMatch()
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
             setManagedFields(true)
@@ -63,9 +65,9 @@ function NodeDetailComponent({
             setManagedFields(false)
         }
     }
-    const [containers,setContainers] = useState<Options[]>((
-      isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)
-  ) as Options[])
+    const [containers, setContainers] = useState<Options[]>(
+        (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
+    )
 
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
@@ -88,11 +90,11 @@ function NodeDetailComponent({
         ) {
             getContainersFromManifest()
         }
-    }, [loadingResources, params.node])
+    }, [loadingResources, params.node, params.namespace])
 
-    const isExternalEphemeralContainer = (cmds: string[], name: string):boolean => {
+    const isExternalEphemeralContainer = (cmds: string[], name: string): boolean => {
         const matchingCmd = `sh ${name}-devtron.sh`
-        const internal = cmds?.find((cmd) => cmd.includes(matchingCmd) )
+        const internal = cmds?.find((cmd) => cmd.includes(matchingCmd))
         return !internal
     }
 
@@ -128,9 +130,9 @@ function NodeDetailComponent({
                 }
 
                 if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
-                    const ephemeralContainerStatusMap = new Map<string,string[]>()
+                    const ephemeralContainerStatusMap = new Map<string, string[]>()
                     result.manifest.spec.ephemeralContainers.forEach((con) => {
-                        ephemeralContainerStatusMap.set(con.name,con.command as string[])
+                        ephemeralContainerStatusMap.set(con.name, con.command as string[])
                     })
                     let ephemeralContainers = []
                     result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
@@ -141,7 +143,10 @@ function NodeDetailComponent({
                                 name: _container.name,
                                 isInitContainer: false,
                                 isEphemeralContainer: true,
-                                isExternal: isExternalEphemeralContainer(ephemeralContainerStatusMap.get(_container.name),_container.name)
+                                isExternal: isExternalEphemeralContainer(
+                                    ephemeralContainerStatusMap.get(_container.name),
+                                    _container.name,
+                                ),
                             })
                         }
                     })
@@ -150,7 +155,7 @@ function NodeDetailComponent({
             }
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
-                setContainers(_resourceContainers)
+                setContainers(_resourceContainers ?? [])
             }
             // Clear out error on node change
             if (isResourceDeleted) {
@@ -173,13 +178,12 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
+        const _idPrefix =
+            `${(selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
+                ? K8S_EMPTY_GROUP
+                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP)}_${params.namespace}`
         const isTabFound = isResourceBrowserView
-            ? markTabActiveByIdentifier(
-                  selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
-                  params.node,
-                  params.nodeType,
-                  _url,
-              )
+            ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
 
         if (!isTabFound) {
@@ -193,12 +197,7 @@ function NodeDetailComponent({
                 }
 
                 if (isResourceBrowserView) {
-                    addTab(
-                        selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
-                        params.nodeType,
-                        params.node,
-                        _urlToCreate,
-                    )
+                    addTab(_idPrefix, params.nodeType, params.node, _urlToCreate)
                 } else {
                     AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
                 }
@@ -236,8 +235,8 @@ function NodeDetailComponent({
 
     const onClickShowLaunchEphemeral = (): void => {
         setShowEphemeralContainerDrawer(!showEphemeralContainerDrawer)
-        if(showEphemeralContainerDrawer){
-          setEphemeralContainerType(EDITOR_VIEW.BASIC)
+        if (showEphemeralContainerDrawer) {
+            setEphemeralContainerType(EDITOR_VIEW.BASIC)
         }
     }
 
@@ -246,59 +245,75 @@ function NodeDetailComponent({
         setSelectedContainer(selectedContainer.set(selectedContainerValue, containerName))
     }
 
+    const toggleDeleteDialog = () => {
+        setShowDeleteDialog((prevState) => !prevState)
+    }
+
     return (
         <React.Fragment>
-            <div className={`w-100 pr-20 pl-20 bcn-0 flex ${selectedTabName === NodeDetailTab.TERMINAL ? 'dc__content-space' : 'left'}`}>
-                <div data-testid="app-resource-containor-header" className="flex left">
-                    {tabs &&
-                        tabs.length > 0 &&
-                        tabs.map((tab: string, index: number) => {
-                            return (
-                                <div
-                                    key={index + 'resourceTreeTab'}
-                                    className={`${
-                                        tab.toLowerCase() === selectedTabName.toLowerCase()
-                                            ? 'default-tab-row cb-5'
-                                            : 'cn-7'
-                                    } pt-6 pb-6 cursor pl-8 pr-8 top`}
-                                >
-                                    <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
-                                        <span
-                                            data-testid={`${tab.toLowerCase()}-nav-link`}
-                                            className={`${
-                                                tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
-                                            } default-tab-cell`}
-                                        >
-                                            {tab.toLowerCase()}
-                                        </span>
-                                    </NavLink>
-                                </div>
-                            )
-                        })}
-                </div>
-                {selectedTabName === NodeDetailTab.TERMINAL && (
-                    <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
-                        <EphemeralIcon className="mr-4 icon-dim-16 scb-5" />
-                        Launch Ephemeral Container
+            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
+                <div className="flex left">
+                    <div data-testid="app-resource-containor-header" className="flex left">
+                        {tabs &&
+                            tabs.length > 0 &&
+                            tabs.map((tab: string, index: number) => {
+                                return (
+                                    <div
+                                        key={index + 'resourceTreeTab'}
+                                        className={`${
+                                            tab.toLowerCase() === selectedTabName.toLowerCase()
+                                                ? 'default-tab-row cb-5'
+                                                : 'cn-7'
+                                        } pt-6 pb-6 cursor pl-8 pr-8 top`}
+                                    >
+                                        <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
+                                            <span
+                                                data-testid={`${tab.toLowerCase()}-nav-link`}
+                                                className={`${
+                                                    tab.toLowerCase() === selectedTabName.toLowerCase()
+                                                        ? 'cb-5'
+                                                        : 'cn-9'
+                                                } default-tab-cell`}
+                                            >
+                                                {tab.toLowerCase()}
+                                            </span>
+                                        </NavLink>
+                                    </div>
+                                )
+                            })}
                     </div>
-                )}
-
-                {isManagedFields && (
-                    <>
-                        <div className="ml-12 mr-5 tab-cell-border"></div>
-                        <div className="pt-6 pb-6 pl-8 pr-8 top">
-                            <Checkbox
-                                rootClassName="mb-0-imp h-20"
-                                isChecked={hideManagedFields}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={handleChanges}
-                            >
-                                <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">
-                                    Hide Managed Fields
-                                </span>
-                            </Checkbox>
-                        </div>
-                    </>
+                    {selectedTabName === NodeDetailTab.TERMINAL && (
+                        <>
+                            <div className="ml-12 mr-5 tab-cell-border"></div>
+                            <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
+                                <EphemeralIcon className="mr-4 icon-dim-16 scb-5" />
+                                Launch Ephemeral Container
+                            </div>
+                        </>
+                    )}
+                    {isManagedFields && (
+                        <>
+                            <div className="ml-12 mr-5 tab-cell-border"></div>
+                            <div className="pt-6 pb-6 pl-8 pr-8 top">
+                                <Checkbox
+                                    rootClassName="mb-0-imp h-20"
+                                    isChecked={hideManagedFields}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    onChange={handleChanges}
+                                >
+                                    <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">
+                                        Hide Managed Fields
+                                    </span>
+                                </Checkbox>
+                            </div>
+                        </>
+                    )}
+                </div>
+                {isResourceBrowserView && (
+                    <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
+                        <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.delete}
+                    </span>
                 )}
             </div>
 
@@ -389,6 +404,23 @@ function NodeDetailComponent({
                     setContainers={setContainers}
                     switchSelectedContainer={switchSelectedContainer}
                     selectedNamespaceByClickingPod={selectedResource?.namespace}
+                />
+            )}
+            {isResourceBrowserView && showDeleteDialog && (
+                <DeleteResourcePopup
+                    clusterId={`${selectedResource.clusterId}`}
+                    resourceData={selectedResource}
+                    selectedResource={{
+                        gvk: {
+                            Group: selectedResource.group,
+                            Version: selectedResource.version,
+                            Kind: selectedResource.kind as Nodes,
+                        },
+                        namespaced: false,
+                    }}
+                    getResourceListData={noop}
+                    toggleDeleteDialog={toggleDeleteDialog}
+                    removeTabByIdentifier={removeTabByIdentifier}
                 />
             )}
         </React.Fragment>

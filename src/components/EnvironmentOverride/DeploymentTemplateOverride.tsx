@@ -118,7 +118,7 @@ export default function DeploymentTemplateOverride({
     }
 
     async function initialise(
-        isDeleteAction?: boolean,
+        selectedChartRefId?: string,
         forceReloadEnvironments?: boolean,
         updateChartRefOnly?: boolean,
     ) {
@@ -133,7 +133,7 @@ export default function DeploymentTemplateOverride({
             .then((chartRefResp) => {
                 // Use other latest ref id instead of selectedChartRefId on delete override action
                 const _selectedChartId =
-                    (!isDeleteAction && state.selectedChartRefId) ||
+                    selectedChartRefId ||
                     chartRefResp.result.latestEnvChartRef ||
                     chartRefResp.result.latestAppChartRef ||
                     chartRefResp.result.latestChartRef
@@ -152,7 +152,7 @@ export default function DeploymentTemplateOverride({
                     updateRefsData(chartRefsData)
                 }
 
-                if (isDeleteAction || forceReloadEnvironments) {
+                if (selectedChartRefId || forceReloadEnvironments) {
                     setParentState(ComponentStates.reloading)
                 }
             })

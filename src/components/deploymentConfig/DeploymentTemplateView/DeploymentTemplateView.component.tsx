@@ -453,7 +453,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
                 type: DeploymentConfigStateActionTypes.duplicate,
                 payload: null,
             })
-            initialise(true, true)
+            initialise(null, true)
         } catch (err) {
             handleConfigProtectionError(3, err, dispatch, reloadEnvironments)
         } finally {
