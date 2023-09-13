@@ -293,8 +293,8 @@ export interface DeploymentConfigToolbarProps {
     noReadme?: boolean
     showReadme: boolean
     handleReadMeClick: () => void
-    isValues: boolean
-    setIsValues: (isValues: boolean) => void
+    isValues?: boolean
+    setIsValues?: (isValues: boolean) => void
 }
 
 export interface DeploymentConfigStateType {
@@ -328,6 +328,16 @@ export interface DeploymentConfigStateType {
     latestAppChartRef: any
     latestChartRef: any
     isOverride: boolean
+    isValues: boolean
+    loadingManifest: boolean
+    manifestDataRHS:string
+    manifestDataLHS:string
+    groupedOptionsData: Array<Object>
+    isValuesOverride:boolean,
+    manifestDataRHSOverride:string
+    manifestDataLHSOverride:string
+    groupedOptionsDataOverride: Array<Object>
+    loadingManifestOverride: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
@@ -384,6 +394,16 @@ export enum DeploymentConfigStateActionTypes {
     unableToParseYaml = 'unableToParseYaml',
     selectedCompareOption = 'selectedCompareOption',
     multipleOptions = 'multipleOptions',
+    groupedOptionsData = 'groupedOptionsData',
+    loadingManifest = 'loadingManifest',
+    manifestDataRHS = 'manifestDataRHS',
+    manifestDataLHS = 'manifestDataLHS',
+    isValues = 'isValues',
+    isValuesOverride = 'isValuesOverride',
+    groupedOptionsDataOverride = 'groupedOptionsDataOverride',
+    loadingManifestOverride = 'loadingManifestOverride',
+    manifestDataRHSOverride = 'manifestDataRHSOverride',
+    manifestDataLHSOverride = 'manifestDataLHSOverride',
 }
 
 export interface DeploymentConfigStateAction {

@@ -66,16 +66,44 @@ export default function DeploymentConfig({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
-    const [isValues, setIsValues] = useState(true)
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
 
+    const setIsValues = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.isValues,
+            payload: value,
+        })
+    }
 
-    const [manifestDataRHS, setManifestDataRHS] = useState('')
-    const [ManifestDataLHS, setManifestDataLHS] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [groupedOptionsData, setGroupedOptionsData] = useState([])
+    const setManifestDataRHS = (value: string) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.manifestDataRHS,
+            payload: value,
+        })
+    }
+
+    const setManifestDataLHS = (value: string) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.manifestDataLHS,
+            payload: value,
+        })
+    }
+
+    const setLoadingManifest = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.loadingManifest,
+            payload: value,
+        })
+    }
+
+    const setGroupedOptionsData = (value: Array<Object>) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.groupedOptionsData,
+            payload: value,
+        })
+    }
 
     useEffect(() => {
         const fetchOptionsList = async () => {
@@ -155,7 +183,7 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
-        setLoading(true)
+        setLoadingManifest(true)
 
         getDraftByResourceName(appId, -1, 3, 'BaseDeploymentTemplate')
             .then((draftsResp) => {
@@ -169,7 +197,7 @@ export default function DeploymentConfig({
                 updateRefsData(chartRefsData)
             })
             .finally(() => {
-                setLoading(false)
+                setLoadingManifest(false)
             })
     }
 
@@ -350,7 +378,7 @@ export default function DeploymentConfig({
                 payload = templateData
             }
 
-            if (!isValues) {
+            if (!state.isValues) {
                 const _manifestCodeEditorData = await fetchManifestData(_codeEditorStringifyData)
                 setManifestDataRHS(_manifestCodeEditorData)
             }
@@ -451,7 +479,7 @@ export default function DeploymentConfig({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        if (isValues) {
+        if (state.isValues) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -480,7 +508,7 @@ export default function DeploymentConfig({
             }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
-            if(!isValues) return // don't set flag when in manifest view
+            if(!state.isValues) return // don't set flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -624,12 +652,12 @@ export default function DeploymentConfig({
     }
 
     useEffect(() => {
-        if (isValues) return
-        setLoading(true)
+        if (state.isValues) return
+        setLoadingManifest(true)
         const values = Promise.all([getValueRHS(), getValuesLHS()])
         values
             .then((res) => {
-                setLoading(false)
+                setLoadingManifest(false)
                 
                 const [_manifestDataRHS, _manifestDataLHS] = res
                 setManifestDataRHS(_manifestDataRHS)
@@ -640,9 +668,9 @@ export default function DeploymentConfig({
                 toast.error('Unable to fetch manifest data')
             })
             .finally(() => {
-                setLoading(false)
+                setLoadingManifest(false)
             })
-    }, [isValues])
+    }, [state.isValues])
 
     const fetchManifestData = async (data) => {
         const request = {
@@ -651,9 +679,9 @@ export default function DeploymentConfig({
             valuesAndManifestFlag: 2,
             values: data,
         }
-        setLoading(true)
+        setLoadingManifest(true)
         const response = await getDeploymentManisfest(request)
-        setLoading(false)
+        setLoadingManifest(false)
         return response.result.data
     }
 
@@ -676,7 +704,7 @@ const renderEditorComponent = () => {
       );
     }
   
-    if (loading) {
+    if (state.loadingManifest) {
       return (
         <div className='h-100vh'>
           <Progressing pageLoader />
@@ -688,13 +716,13 @@ const renderEditorComponent = () => {
   
     return (
       <DeploymentTemplateEditorView
-        defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : ManifestDataLHS}
-        value={isValues ? valuesDataRHS : manifestDataRHS}
+        defaultValue={state.isValues ? state.publishedState?.tempFormData ?? state.data : state.manifestDataLHS}
+        value={state.isValues ? valuesDataRHS : state.manifestDataRHS}
         globalChartRefId={state.selectedChartRefId}
         editorOnChange={editorOnChange}
-        readOnly={isCompareAndApprovalState || !isValues}
-        isValues={isValues}
-        groupedData={groupedOptionsData}
+        readOnly={isCompareAndApprovalState || !state.isValues}
+        isValues={state.isValues}
+        groupedData={state.groupedOptionsData}
       />
     );
   };
@@ -711,7 +739,7 @@ const renderEditorComponent = () => {
             <DeploymentTemplateOptionsTab
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
-                isValues={isValues}
+                isValues={state.isValues}
             />
                 {renderEditorComponent()}
                 <DeploymentConfigFormCTA
@@ -730,7 +758,7 @@ const renderEditorComponent = () => {
                     toggleAppMetrics={toggleAppMetrics}
                     isPublishedMode={readOnlyPublishedMode}
                     reload={initialise}
-                    isValues={isValues}
+                    isValues={state.isValues}
                 />
             </form>
         )
@@ -770,7 +798,7 @@ const renderEditorComponent = () => {
                         approvalUsers={state.latestDraft?.approvers}
                         showValuesPostfix={true}
                         reload={initialise}
-                        isValues={isValues}
+                        isValues={state.isValues}
                         setIsValues={setIsValues}
                     />
                     {renderValuesView()}

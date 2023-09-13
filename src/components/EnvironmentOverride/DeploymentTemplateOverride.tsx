@@ -46,16 +46,40 @@ export default function DeploymentTemplateOverride({
         initDeploymentConfigState,
     )
 
-    const [groupedOptionsData, setGroupedOptionsData] = useState([])
-    const [manifestDataRHS, setManifestDataRHS] = useState('')
-    const [manifestDataLHS, setManifestDataLHS] = useState('')
-    const [isValuesOverride, setIsValuesOverride] = useState(true)
+
+    const setIsValuesOverride = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.isValuesOverride,
+            payload: value,
+        })
+    }
+
+    const setManifestDataRHSOverride = (value: string) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.manifestDataRHSOverride,
+            payload: value,
+        })
+    }
+
+    const setManifestDataLHSOverride = (value: string) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.manifestDataLHSOverride,
+            payload: value,
+        })
+    }
+
+    const setGroupedOptionsDataOverride = (value: Array<Object>) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.groupedOptionsDataOverride,
+            payload: value,
+        })
+    }
 
     useEffect(() => {
         const fetchOptionsList = async () => {
             const { result } = await getOptions(+appId, +envId)
             const _groupedData = groupDataByType(result)
-            setGroupedOptionsData(_groupedData)
+            setGroupedOptionsDataOverride(_groupedData)
         }
         fetchOptionsList()
     }, [environments])
@@ -80,8 +104,8 @@ export default function DeploymentTemplateOverride({
 
         if (clearPublishedState) {
             payload.publishedState = null
-            payload.selectedTabIndex = 2 // same behaviour as base deployment template, to redirect on tab 2 when discarded a draft
-            payload.openComparison = false
+            payload.selectedTabIndex = 2 // to have same behaviour as when we discard draft in base deployment template
+            payload.openComparison = true // to have same behaviour as when we discard draft in base deployment template
             payload.showReadme = false
             payload.showComments = false
             payload.latestDraft = null
@@ -455,13 +479,13 @@ export default function DeploymentTemplateOverride({
                         isEnterpriseInstallation={
                             currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                         }
-                        isValuesOverride={isValuesOverride}
+                        isValuesOverride={state.isValuesOverride}
                         setIsValuesOverride={setIsValuesOverride}
-                        groupedData={groupedOptionsData}
-                        manifestDataRHS={manifestDataRHS}
-                        manifestDataLHS={manifestDataLHS}
-                        setManifestDataRHS={setManifestDataRHS}
-                        setManifestDataLHS={setManifestDataLHS}
+                        groupedData={state.groupedOptionsDataOverride}
+                        manifestDataRHS={state.manifestDataRHSOverride}
+                        manifestDataLHS={state.manifestDataLHSOverride}
+                        setManifestDataRHS={setManifestDataRHSOverride}
+                        setManifestDataLHS={setManifestDataLHSOverride}
                     />
                 )}
             </div>

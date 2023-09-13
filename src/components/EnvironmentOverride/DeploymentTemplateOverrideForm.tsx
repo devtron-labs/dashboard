@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
@@ -55,7 +55,6 @@ export default function DeploymentTemplateOverrideForm({
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
-    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -76,6 +75,13 @@ export default function DeploymentTemplateOverrideForm({
         dispatch({
             type: DeploymentConfigStateActionTypes.yamlMode,
             payload: yamlMode,
+        })
+    }
+
+    const setLoadingManifestOverride = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.loadingManifestOverride,
+            payload: value,
         })
     }
 
@@ -374,7 +380,7 @@ export default function DeploymentTemplateOverrideForm({
     useEffect(() => {
         if (isValuesOverride) return
         const values = Promise.all([getCodeEditorManifestValue(false), getCodeEditorManifestValue(true)])
-        setLoading(true)
+        setLoadingManifestOverride(true)
         values
             .then((res) => {
                 const [_manifestDataRHS, _manifestDataLHS] = res
@@ -386,7 +392,7 @@ export default function DeploymentTemplateOverrideForm({
                 setIsValuesOverride(true)
             })
             .finally(() => {
-                setLoading(false)
+                setLoadingManifestOverride(false)
             })
     }, [isValuesOverride])
 
@@ -455,9 +461,9 @@ export default function DeploymentTemplateOverrideForm({
             valuesAndManifestFlag: 2,
             values: data,
         }
-        setLoading(true)
+        setLoadingManifestOverride(true)
         const response = await getDeploymentManisfest(request)
-        setLoading(false)
+        setLoadingManifestOverride(false)
         return response.result.data
     }
 
@@ -469,7 +475,8 @@ export default function DeploymentTemplateOverrideForm({
               isEnvOverride={true}
             />
           );
-        } else if (loading) {
+        } else if (state.loadingManifestOverride) {
+            console.log('loading manifest override');
           return (
             <div className="h-100vh">
               <Progressing pageLoader />

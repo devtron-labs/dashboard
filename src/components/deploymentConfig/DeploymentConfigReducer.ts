@@ -42,6 +42,16 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     isDraftOverriden: false,
     unableToParseYaml: false,
     selectedCompareOption: null,
+    isValues: true,
+    loadingManifest: false,
+    manifestDataRHS:'',
+    manifestDataLHS:'',
+    groupedOptionsData:[],
+    manifestDataLHSOverride:'',
+    manifestDataRHSOverride:'',
+    loadingManifestOverride:false,
+    isValuesOverride:true,
+    groupedOptionsDataOverride:[]
 }
 
 export const deploymentConfigReducer = (
@@ -129,6 +139,26 @@ export const deploymentConfigReducer = (
             return { ...state, unableToParseYaml: action.payload }
         case DeploymentConfigStateActionTypes.selectedCompareOption:
             return { ...state, selectedCompareOption: action.payload }
+        case DeploymentConfigStateActionTypes.isValues:
+            return { ...state, isValues: action.payload }
+        case DeploymentConfigStateActionTypes.loadingManifest:
+            return { ...state, loadingManifest: action.payload }
+        case DeploymentConfigStateActionTypes.manifestDataRHS:
+            return { ...state, manifestDataRHS: action.payload }
+        case DeploymentConfigStateActionTypes.manifestDataLHS:
+            return { ...state, manifestDataLHS: action.payload }
+        case DeploymentConfigStateActionTypes.groupedOptionsData:
+            return { ...state, groupedOptionsData: action.payload }   
+        case DeploymentConfigStateActionTypes.isValuesOverride:
+            return { ...state, isValuesOverride: action.payload }
+        case DeploymentConfigStateActionTypes.manifestDataLHSOverride:
+            return { ...state, manifestDataLHSOverride: action.payload }
+        case DeploymentConfigStateActionTypes.manifestDataRHSOverride:
+            return { ...state, manifestDataRHSOverride: action.payload }
+        case DeploymentConfigStateActionTypes.loadingManifestOverride:
+            return { ...state, loadingManifestOverride: action.payload }
+        case DeploymentConfigStateActionTypes.groupedOptionsDataOverride:
+            return { ...state, groupedOptionsDataOverride: action.payload }                                     
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

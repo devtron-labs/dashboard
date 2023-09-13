@@ -176,18 +176,8 @@ export const CompareWithDropdown = ({
             })
         })
 
-        const getSelectedOption = () => {
-            if (isEnvOverride) {
-                const option = groupedData.find((group) => group[0].type === 3)?.[0]
-                option.label = textDecider(option, charts)
-                option.id = _groupOptions[getPosition(isValues,isEnvOverride,3)].options[0].id
-                return option
-            }
-            return baseTemplateOption
-        }
-
         setGroupedOptions(_groupOptions)
-        setSelectedOption(getSelectedOption())
+        setSelectedOption(baseTemplateOption)
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
