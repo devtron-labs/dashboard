@@ -22,11 +22,11 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
             // No need to check if variables exists since we are not even showing search bar if there are no variables
             const filteredSuggestions = variables.filter(
                 (variable) =>
-                    variable.variableName.toLowerCase().includes(text.toLowerCase()) ||
-                    variable.shortDescription?.toLowerCase().includes(text.toLowerCase()),
+                    variable.variableName.toLowerCase().includes(text.trim().toLowerCase()) ||
+                    variable.shortDescription?.toLowerCase().includes(text.trim().toLowerCase()),
             )
             setSuggestions(filteredSuggestions)
-            setHighlightText(text)
+            setHighlightText(text.trim())
         },
         [variables],
     )
