@@ -7,66 +7,28 @@ export const validScopedVariablesData = {
             kind: 'Variable',
             spec: [
                 {
-                    description: 'Sample Variable 40',
-                    name: 'container-port-value',
+                    notes: 'KAFKA',
+                    shortDescription: '',
+                    isSensitive: false,
+                    name: 'KAFKA',
                     values: [
                         {
                             category: 'Global',
-                            value: 8080,
+                            value: "'",
                         },
                     ],
                 },
                 {
-                    description: 'Sample Variable 1',
-                    name: 'variableNew1',
-                    values: [
-                        {
-                            category: 'Env',
-                            value: 'variableNew1-Env-virtual-env-1',
-                            selectors: {
-                                attributeSelectors: {
-                                    EnvName: 'dev',
-                                },
-                            },
-                        },
-                        {
-                            category: 'Cluster',
-                            value: 'variableNew1-Cluster-default_cluster',
-                            selectors: {
-                                attributeSelectors: {
-                                    ClusterName: 'default_cluster',
-                                },
-                            },
-                        },
-                        {
-                            category: 'Global',
-                            value: 'test-global',
-                        },
-                        {
-                            category: 'ApplicationEnv',
-                            value: 'variableNew1-ApplicationEnv-dev-dev-test',
-                            selectors: {
-                                attributeSelectors: {
-                                    ApplicationName: 'dev-test',
-                                    EnvName: 'dev',
-                                },
-                            },
-                        },
-                        {
-                            category: 'Env',
-                            value: 'variableNew1-Env-virtual-env-1',
-                            selectors: {
-                                attributeSelectors: {
-                                    EnvName: 'virtual-env-1',
-                                },
-                            },
-                        },
-                    ],
+                    notes: 'Microservices',
+                    shortDescription: 'Short Description',
+                    isSensitive: true,
+                    name: 'Microservices',
+                    values: [],
                 },
             ],
         },
         jsonSchema:
-            '{\n  "$schema": "https://json-schema.org/draft/2020-12/schema",\n  "$id": "https://github.com/devtron-labs/devtron/pkg/variables/models/scoped-variable-manifest",\n  "$ref": "#/$defs/ScopedVariableManifest",\n  "$defs": {\n    "ScopedVariableManifest": {\n      "properties": {\n        "apiVersion": {\n          "type": "string"\n        },\n        "kind": {\n          "type": "string"\n        },\n        "spec": {\n          "items": {\n            "$ref": "#/$defs/VariableSpec"\n          },\n          "type": "array"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "apiVersion",\n        "kind",\n        "spec"\n      ]\n    },\n    "Selector": {\n      "properties": {\n        "attributeSelectors": {\n          "patternProperties": {\n            ".*": {\n              "type": "string"\n            }\n          },\n          "type": "object"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "attributeSelectors"\n      ]\n    },\n    "VariableSpec": {\n      "properties": {\n        "description": {\n          "type": "string"\n        },\n        "name": {\n          "type": "string"\n        },\n        "values": {\n          "items": {\n            "$ref": "#/$defs/VariableValueSpec"\n          },\n          "type": "array"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "description",\n        "name",\n        "values"\n      ]\n    },\n    "VariableValueSpec": {\n      "properties": {\n        "category": {\n          "type": "string"\n        },\n        "value": true,\n        "selectors": {\n          "$ref": "#/$defs/Selector"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "category",\n        "value"\n      ]\n    }\n  }\n}',
+            '{\n  "$schema": "https://json-schema.org/draft/2020-12/schema",\n  "$id": "https://github.com/devtron-labs/devtron/pkg/variables/models/scoped-variable-manifest",\n  "$ref": "#/$defs/ScopedVariableManifest",\n  "$defs": {\n    "ScopedVariableManifest": {\n      "properties": {\n        "apiVersion": {\n          "type": "string"\n        },\n        "kind": {\n          "type": "string"\n        },\n        "spec": {\n          "items": {\n            "$ref": "#/$defs/VariableSpec"\n          },\n          "type": "array"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "apiVersion",\n        "kind",\n        "spec"\n      ]\n    },\n    "Selector": {\n      "properties": {\n        "attributeSelectors": {\n          "patternProperties": {\n            ".*": {\n              "type": "string"\n            }\n          },\n          "type": "object"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "attributeSelectors"\n      ]\n    },\n    "VariableSpec": {\n      "properties": {\n        "notes": {\n          "type": "string"\n        },\n        "shortDescription": {\n          "type": "string"\n        },\n        "isSensitive": {\n          "type": "boolean"\n        },\n        "name": {\n          "type": "string"\n        },\n        "values": {\n          "items": {\n            "$ref": "#/$defs/VariableValueSpec"\n          },\n          "type": "array"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "notes",\n        "shortDescription",\n        "isSensitive",\n        "name",\n        "values"\n      ]\n    },\n    "VariableValueSpec": {\n      "properties": {\n        "category": {\n          "type": "string"\n        },\n        "value": true,\n        "selectors": {\n          "$ref": "#/$defs/Selector"\n        }\n      },\n      "additionalProperties": false,\n      "type": "object",\n      "required": [\n        "category",\n        "value"\n      ]\n    }\n  }\n}',
     },
 }
 
@@ -83,9 +45,11 @@ export const validVariablesList = [
     {
         name: 'newVariable',
         description: 'newVariableDescription',
+        isSensitive: false,
     },
     {
         name: 'newVariable1',
         description: 'newVariable1Description',
+        isSensitive: true,
     },
 ]

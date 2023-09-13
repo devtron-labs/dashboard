@@ -38,7 +38,8 @@ export default function SavedVariablesView({
         if (status?.status == null && scopedVariablesData?.spec?.length) {
             const variables = scopedVariablesData.spec.map((variable) => ({
                 name: variable.name,
-                description: variable.description,
+                description: variable.shortDescription,
+                isSensitive: variable.isSensitive,
             }))
             setVariablesList([...variables])
         }
@@ -54,12 +55,13 @@ export default function SavedVariablesView({
         const filteredVariables = scopedVariablesData?.spec?.filter(
             (variable) =>
                 variable.name.toLowerCase().includes(query.toLowerCase()) ||
-                variable.description.toLowerCase().includes(query.toLowerCase()),
+                variable.shortDescription?.toLowerCase().includes(query.toLowerCase()),
         )
 
         const variables = filteredVariables?.map((variable) => ({
             name: variable.name,
-            description: variable.description,
+            description: variable.shortDescription,
+            isSensitive: variable.isSensitive,
         }))
         setVariablesList(variables)
     }
