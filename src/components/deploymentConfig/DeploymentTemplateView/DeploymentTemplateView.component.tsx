@@ -131,7 +131,7 @@ export const CompareWithDropdown = ({
     ])
     const baseTemplateOption = {
         id: -1,
-        label: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
+        label: `${DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label} ${globalChartRef?.version ? `(v${globalChartRef.version})` : ''}`,
         environmentName: DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.label,
         chartRefId: globalChartRef?.id || '',
         chartVersion: globalChartRef?.version || '',
