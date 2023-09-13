@@ -22,11 +22,11 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
             // No need to check if variables exists since we are not even showing search bar if there are no variables
             const filteredSuggestions = variables.filter(
                 (variable) =>
-                    variable.variableName.toLowerCase().includes(text.toLowerCase()) ||
-                    variable.shortDescription?.toLowerCase().includes(text.toLowerCase()),
+                    variable.variableName.toLowerCase().includes(text.trim().toLowerCase()) ||
+                    variable.shortDescription?.toLowerCase().includes(text.trim().toLowerCase()),
             )
             setSuggestions(filteredSuggestions)
-            setHighlightText(text)
+            setHighlightText(text.trim())
         },
         [variables],
     )
@@ -55,9 +55,8 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                     <DebouncedSearch
                         onSearch={onSearch}
                         placeholder="Search variables"
-                        containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp"
-                        inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-5 fw-4 p-0"
-                        debounceTimeout={500}
+                        containerClass="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
+                        inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
                         Icon={ICSearch}
                         iconClass="icon-dim-16"
                         clearSearch={clearSearch}
@@ -93,6 +92,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                             variableName={variable.variableName}
                             description={variable.shortDescription ?? NO_DEFINED_DESCRIPTION}
                             variableValue={variable.variableValue?.value ?? NO_DEFINED_VALUE}
+                            isRedacted={variable.isRedacted}
                             highlightText={highlightText}
                         />
                     ))

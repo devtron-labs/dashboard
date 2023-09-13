@@ -32,7 +32,7 @@ export default function ClipboardButton({ content, copiedTippyText, duration, tr
     }, [trigger, handleCopyContent])
 
     return (
-        <div className="icon-dim-16 ml-8">
+        <div className="icon-dim-16 flex center">
             <Tippy
                 className="default-tt"
                 content={copied ? copiedTippyText : 'Copy'}
