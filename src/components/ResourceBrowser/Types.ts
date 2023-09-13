@@ -192,13 +192,12 @@ export interface ClusterOptionType extends OptionType {
     errorInConnecting: string
 }
 
-export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProps {
+export interface ConnectingToClusterStateProps {
     loader: boolean
     errorMsg: string
     setErrorMsg: React.Dispatch<React.SetStateAction<string>>
+    selectedCluster: ClusterOptionType
     setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
-    showSelectClusterState: boolean
-    setShowSelectClusterState: React.Dispatch<React.SetStateAction<boolean>>
     handleRetry: (e) => void
     sideDataAbortController: {
         prev: AbortController

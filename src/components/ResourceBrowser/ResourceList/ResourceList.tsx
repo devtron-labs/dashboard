@@ -111,7 +111,6 @@ export default function ResourceList() {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [accessDeniedCode, setAccessDeniedCode] = useState(0)
     const [errorMsg, setErrorMsg] = useState('')
-    const [showSelectClusterState, setShowSelectClusterState] = useState(false)
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
@@ -686,8 +685,6 @@ export default function ResourceList() {
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
         if (selected.value === selectedCluster?.value) {
             return
-        } else if (showSelectClusterState) {
-            setShowSelectClusterState(false)
         }
         if (sideDataAbortController.current.prev?.signal.aborted) {
             sideDataAbortController.current.prev = null
@@ -938,28 +935,15 @@ export default function ResourceList() {
             )
         }
 
-        return showSelectClusterState || loader || rawGVKLoader ? (
+        return loader || rawGVKLoader || errorMsg ? (
             <ConnectingToClusterState
                 loader={loader}
                 errorMsg={errorMsg}
                 setErrorMsg={setErrorMsg}
-                handleRetry={handleRetry}
-                sideDataAbortController={sideDataAbortController.current}
-                selectedResource={selectedResource}
-                resourceList={resourceList}
                 selectedCluster={selectedCluster}
                 setSelectedCluster={setSelectedCluster}
-                namespaceOptions={namespaceOptions}
-                selectedNamespace={selectedNamespace}
-                setSelectedNamespace={setSelectedNamespace}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                searchApplied={searchApplied}
-                setSearchApplied={setSearchApplied}
-                handleFilterChanges={handleFilterChanges}
-                clearSearch={clearSearch}
-                showSelectClusterState={showSelectClusterState}
-                setShowSelectClusterState={setShowSelectClusterState}
+                handleRetry={handleRetry}
+                sideDataAbortController={sideDataAbortController.current}
             />
         ) : (
             <div className="resource-browser bcn-0">
@@ -1017,13 +1001,13 @@ export default function ResourceList() {
                     <ErrorScreenManager code={accessDeniedCode} />
                 </div>
             )
-        } else if (!showSelectClusterState && ((loader && !selectedCluster?.value) || clusterLoader)) {
+        } else if ((loader && !selectedCluster?.value) || clusterLoader) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (!showSelectClusterState && !selectedCluster?.value) {
+        } else if (!selectedCluster?.value) {
             return (
                 <ClusterSelectionList
                     clusterOptions={clusterList}
