@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import FloatingVariablesSuggestions from '../FloatingVariablesSuggestions'
-import { mockVariable } from '../mocks'
+import { useAsync } from '../../helpers/Helpers'
 
 // Mocking suggestions items since its already tested
 jest.mock(
@@ -12,34 +12,24 @@ jest.mock(
         },
 )
 
+jest.mock('../../helpers/Helpers', () => ({
+    useAsync: jest.fn(),
+}))
+
 describe('When FloatingVariablesSuggestions mounts', () => {
     beforeEach(() => {
         jest.clearAllMocks()
     })
 
     it('should show collapsed state by default', () => {
-        const { getByTestId } = render(
-            <FloatingVariablesSuggestions
-                zIndex={20}
-                loading={false}
-                variables={mockVariable}
-                reloadVariables={null}
-                error={false}
-            />,
-        )
+        (useAsync as jest.Mock).mockReturnValue([true, null, null, null])
+        const { getByTestId } = render(<FloatingVariablesSuggestions zIndex={20} appId="1" />)
         expect(getByTestId('collapsed-state')).toBeTruthy()
     })
 
     it('should allow dragging collapsed state on drag of handle-drag', () => {
-        const { getByTestId, container } = render(
-            <FloatingVariablesSuggestions
-                zIndex={20}
-                loading={false}
-                variables={mockVariable}
-                reloadVariables={null}
-                error={false}
-            />,
-        )
+        (useAsync as jest.Mock).mockReturnValue([true, null, null, null])
+        const { getByTestId, container } = render(<FloatingVariablesSuggestions zIndex={20} appId="1" />)
         const initialPosition = getByTestId('collapsed-state').getBoundingClientRect()
         const dragButton = container.querySelector('.handle-drag')
         fireEvent.mouseDown(dragButton)
@@ -50,15 +40,8 @@ describe('When FloatingVariablesSuggestions mounts', () => {
     })
 
     it('should show expanded state on click of activate-suggestions', () => {
-        const { getByTestId } = render(
-            <FloatingVariablesSuggestions
-                zIndex={20}
-                loading={false}
-                variables={mockVariable}
-                reloadVariables={null}
-                error={false}
-            />,
-        )
+        (useAsync as jest.Mock).mockReturnValue([true, null, null, null])
+        const { getByTestId } = render(<FloatingVariablesSuggestions zIndex={20} appId="1" />)
         fireEvent.click(getByTestId('activate-suggestions'))
         expect(screen.queryByTestId('collapsed-state')).toBeFalsy()
     })

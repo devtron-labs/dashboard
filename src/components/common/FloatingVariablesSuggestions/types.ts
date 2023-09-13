@@ -9,10 +9,9 @@ export interface SuggestionType {
 
 export interface FloatingVariablesSuggestionsProps {
     zIndex: number
-    loading: boolean
-    variables: SuggestionType[]
-    reloadVariables: () => void
-    error: boolean
+    appId: string
+    envId?: string
+    clusterId?: string
 }
 
 export interface SuggestionsItemProps {

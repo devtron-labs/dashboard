@@ -1,6 +1,8 @@
 import React, { useState, useRef, useMemo } from 'react'
 import Draggable from 'react-draggable'
+import { useAsync } from '../helpers/Helpers'
 import Suggestions from './Suggestions'
+import { getScopedVariables } from './service'
 import { FloatingVariablesSuggestionsProps } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
 import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
@@ -9,14 +11,18 @@ import Tippy from '@tippyjs/react'
 
 export default function FloatingVariablesSuggestions({
     zIndex,
-    loading,
-    variables,
-    reloadVariables,
-    error,
+    appId,
+    envId,
+    clusterId,
 }: FloatingVariablesSuggestionsProps) {
     const [isActive, setIsActive] = useState<boolean>(false)
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
+    const [loadingScopedVariables, variablesData, error, reloadScopedVariables] = useAsync(
+        () => getScopedVariables(appId, envId, clusterId),
+        [],
+    )
 
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
@@ -142,9 +148,9 @@ export default function FloatingVariablesSuggestions({
             >
                 <Suggestions
                     handleDeActivation={handleDeActivation}
-                    loading={loading}
-                    variables={variables}
-                    reloadVariables={reloadVariables}
+                    loading={loadingScopedVariables}
+                    variables={variablesData?.result}
+                    reloadVariables={reloadScopedVariables}
                     error={error}
                 />
             </div>
