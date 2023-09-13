@@ -179,7 +179,7 @@ function NodeDetailComponent({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         const _idPrefix =
-            `${(selectedResource.kind === SIDEBAR_KEYS.eventGVK.Kind
+            `${(selectedResource?.kind === SIDEBAR_KEYS.eventGVK.Kind
                 ? K8S_EMPTY_GROUP
                 : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP)}_${params.namespace}`
         const isTabFound = isResourceBrowserView
