@@ -15,7 +15,7 @@ export const getScopedVariables = (appId, envId, clusterId) => {
     query += generateScope('envId', envId)
     query += generateScope('clusterId', clusterId)
 
-    if (query[query.length - 1] === ',') {
+    if (query.endsWith(',')) {
         query = query.slice(0, -1)
     }
 
