@@ -17,7 +17,8 @@ export interface SSOLoginState {
     ssoConfig: SSOConfigType;
     isError: {
         url: string;
-    }
+    },
+    invalidYaml: boolean;
 }
 
 export interface SSOConfigType {
@@ -44,3 +45,5 @@ export interface SSOLoginTabType {
     value: string;
     SSOName: string
 }
+
+export const OIDC:string = "oidc"
