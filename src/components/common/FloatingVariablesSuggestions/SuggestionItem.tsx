@@ -9,15 +9,17 @@ export default function SuggestionItem({
     variableName,
     description,
     variableValue,
+    isRedacted,
     highlightText,
 }: SuggestionsItemProps) {
     const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
 
     const handleCopyTrigger = useCallback(() => setTriggerCopy(true), [])
 
-    const sanitiseVariableValue = (value): string => {
-        if (value === '') return '""'
-        return value
+    const sanitiseVariableValue = (value): JSX.Element => {
+        if (isRedacted) return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
+        if (value === '') return <p className="cn-0 fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
+        return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value}</p>
     }
 
     const highlightedText = (text: string): string =>

@@ -19,6 +19,7 @@ export interface SuggestionsItemProps {
     variableName: string
     description: string
     variableValue: string
+    isRedacted: boolean
     highlightText: string
 }
 

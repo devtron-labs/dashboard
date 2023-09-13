@@ -88,6 +88,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                             variableName={variable.variableName}
                             description={variable.shortDescription ?? NO_DEFINED_DESCRIPTION}
                             variableValue={variable.variableValue?.value ?? NO_DEFINED_VALUE}
+                            isRedacted={variable.isRedacted}
                             highlightText={highlightText}
                         />
                     ))
