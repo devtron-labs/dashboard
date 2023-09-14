@@ -221,10 +221,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     saveSSO(response): void {
-        if (response.result.config?.config?.hasOwnProperty('clientID')) {
+        if (response.result.config.config.hasOwnProperty('clientID')) {
             response.result.config.config.clientID = ''
         }
-        if (response.result.config?.config?.hasOwnProperty('clientSecret')) {
+        if (response.result.config.config.hasOwnProperty('clientSecret')) {
             response.result.config.config.clientSecret = ''
         }
         this.setConfig(response, this.state.sso.toLowerCase())
@@ -285,13 +285,15 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
 
+        console.log(this.state.ssoConfig)
+
         if (this.state.sso === OIDCType) {
             if (this.state.invalidYaml) {
                 toast.error("Invalid YAML")
                 return
             }
-            if (!this.state.ssoConfig.config.id || !this.state.ssoConfig.config.name) {
-                toast.error("Config must have id and name value")
+            if (!this.state.ssoConfig.config.id || !this.state.ssoConfig.config.name || !this.state.ssoConfig.config.config) {
+                toast.error("Configuration must have id, name and config value")
                 return
             }
         }
@@ -364,6 +366,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.setState({
                 invalidYaml: false
             })
+            var configValue = ""
+            if (config?.config) {
+                configValue = yamlJsParser.stringify(config.config)
+            }
             this.setState({
                 ssoConfig:{
                     ...this.state.ssoConfig,
@@ -371,7 +377,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         name: config?.name,
                         id: config?.id,
                         type: this.state.ssoConfig.config.type,
-                        config: yamlJsParser.stringify(config?.config)
+                        config: configValue
                     }
                 }
             })
@@ -406,10 +412,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
         if (newConfig) {
-            if (newConfig?.hasOwnProperty('clientID') && !newConfig?.clientID) {
+            if (newConfig.hasOwnProperty('clientID') && !newConfig.clientID) {
                 newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
             }
-            if (newConfig?.hasOwnProperty('clientSecret') && !newConfig?.clientSecret) {
+            if (newConfig.hasOwnProperty('clientSecret') && !newConfig.clientSecret) {
                 newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
             }
         }
