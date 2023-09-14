@@ -12,6 +12,8 @@ export function useTabs(persistanceKey: string) {
         title: string,
         positionFixed: boolean,
         iconPath: string,
+        dynamicTitle: string,
+        showNameOnSelect: boolean
     ) => {
         return {
             id,
@@ -22,6 +24,8 @@ export function useTabs(persistanceKey: string) {
             isDeleted: false,
             positionFixed,
             iconPath,
+            dynamicTitle,
+            showNameOnSelect
         } as DynamicTabType
     }
 
@@ -48,21 +52,25 @@ export function useTabs(persistanceKey: string) {
         const url = `${_initTab.url}${_initTab.url.endsWith('/') ? '' : '/'}`
         const title = _initTab.kind ? `${_initTab.kind}/${_initTab.name}` : _initTab.name
         const _id = `${_initTab.idPrefix}-${title}`
-        return populateTabData(_id, title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath)
+        return populateTabData(_id, title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath, _initTab.dynamicTitle, _initTab.showNameOnSelect)
     }
 
-    const initTabs = (initTabsData: InitTabType[]) => {
-        const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+    const initTabs = (initTabsData: InitTabType[], reInit?: boolean, tabsToRemove?:string[]) => {
+        let _tabs: DynamicTabType[] = []
         let parsedTabsData: Record<string, any> = {}
-        let _tabs: DynamicTabType[]
-        try {
-            parsedTabsData = JSON.parse(persistedTabsData)
-            _tabs = persistedTabsData ? parsedTabsData.data : tabs
-        } catch (err) {
-            _tabs = tabs
+        if (!reInit) {
+            const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+            try {
+                parsedTabsData = JSON.parse(persistedTabsData)
+                _tabs = persistedTabsData ? parsedTabsData.data : tabs
+            } catch (err) {
+                _tabs = tabs
+            }
         }
-
         if (_tabs.length > 0) {
+            if (tabsToRemove?.length) {
+                _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
+            }
             const tabNames = _tabs.map((_tab) => _tab.name)
             initTabsData.forEach((_initTab, idx) => {
                 if (!tabNames.includes(_initTab.name)) {
@@ -86,6 +94,8 @@ export function useTabs(persistanceKey: string) {
         url: string,
         positionFixed?: boolean,
         iconPath?: string,
+        dynamicTitle?: string,
+        showNameOnSelect?: boolean
     ): boolean => {
         if (!name || !url || !kind) return
 
@@ -103,7 +113,7 @@ export function useTabs(persistanceKey: string) {
         })
 
         if (!alreadyAdded) {
-            _tabs.push(populateTabData(_id, title, url, true, title, positionFixed, iconPath))
+            _tabs.push(populateTabData(_id, title, url, true, title, positionFixed, iconPath, dynamicTitle, showNameOnSelect))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -111,15 +121,39 @@ export function useTabs(persistanceKey: string) {
         return true
     }
 
-    const removeTabByIdentifier = (title: string): string => {
+    const removeTabByIdentifier = (id: string): string => {
+      let pushURL = ''
+      let selectedRemoved = false
+      const _tabs = tabs.filter((tab) => {
+          if (tab.id === id) {
+              selectedRemoved = tab.isSelected
+              return false
+          }
+          return true
+      })
+
+      if (selectedRemoved) {
+          _tabs[0].isSelected = true
+          pushURL = _tabs[0].url
+      }
+
+      localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+      setTabs(_tabs)
+      return pushURL
+    }
+
+    const stopTabByIdentifier = (title: string): string => {
         let pushURL = ''
         let selectedRemoved = false
-        const _tabs = tabs.filter((tab) => {
+        const _tabs = tabs.map((tab) => {
             if (tab.title.toLowerCase() === title.toLowerCase()) {
                 selectedRemoved = tab.isSelected
-                return false
-            }
-            return true
+                return {
+                    ...tab,
+                    url: tab.url.split('?')[0],
+                    isSelected: false
+                }
+            } else return tab
         })
 
         if (selectedRemoved) {
@@ -174,10 +208,11 @@ export function useTabs(persistanceKey: string) {
         setTabs(_tabs)
     }
 
-    const updateTabUrl = (id: string, url: string) => {
+    const updateTabUrl = (id: string, url: string, dynamicTitle?: string) => {
         const _tabs = tabs.map((tab) => {
             if (tab.id === id) {
                 tab.url = url
+                tab.dynamicTitle = dynamicTitle || ''
             }
             return tab
         })
@@ -193,5 +228,6 @@ export function useTabs(persistanceKey: string) {
         markTabActiveByIdentifier,
         markTabResourceDeletedByIdentifier,
         updateTabUrl,
+        stopTabByIdentifier
     }
 }
