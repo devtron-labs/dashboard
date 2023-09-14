@@ -17,7 +17,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
+import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -1090,10 +1090,30 @@ export default function NewCDPipeline({
         )
     }
 
+    const renderFloatingVariablesWidget = () => {
+        if (!window._env_.ENABLE_SCOPED_VARIABLES) return <></>
+
+        if (activeStageName === BuildStageVariable.PreBuild || activeStageName === BuildStageVariable.PostBuild) {
+            return (
+                <div className="flexbox dc__content-end floating-scoped-variables-widget">
+                    <div>
+                        <FloatingVariablesSuggestions zIndex={21} appId={appId} />
+                    </div>
+                </div>
+            )
+        }
+
+        return <></>
+    }
+
     return cdPipelineId || isAdvanced ? (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            {renderCDPipelineModal()}
-        </Drawer>
+        <>
+            {renderFloatingVariablesWidget()}
+
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {renderCDPipelineModal()}
+            </Drawer>
+        </>
     ) : (
         <VisibleModal className="">{renderCDPipelineModal()}</VisibleModal>
     )
