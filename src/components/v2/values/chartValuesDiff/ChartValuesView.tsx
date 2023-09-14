@@ -779,11 +779,11 @@ function ChartValuesView({
 
         // validate data
         try {
-            JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
             if (!commonState.modifiedValuesYaml) {
                 toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
                 return false
             }
+            JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
             toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
             return false

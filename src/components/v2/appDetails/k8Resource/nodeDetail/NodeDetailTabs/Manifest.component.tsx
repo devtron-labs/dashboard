@@ -191,11 +191,12 @@ function ManifestComponent({
 
         let manifestString
         try {
-            manifestString = JSON.stringify(YAML.parse(modifiedManifest))
             if (!modifiedManifest) {
                 setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
                 // Handled for blocking API call
                 manifestString = ""
+            } else {
+                manifestString = JSON.stringify(YAML.parse(modifiedManifest))
             }
         } catch (err2) {
             setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} “${err2}”`)
