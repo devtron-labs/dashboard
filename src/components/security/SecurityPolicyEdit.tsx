@@ -124,7 +124,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             }
         }).catch(error => {
             showError(error);
-            this.setState({ view: ViewType.ERROR });
+            // this.setState({ view: ViewType.ERROR });
         })
     }
 
