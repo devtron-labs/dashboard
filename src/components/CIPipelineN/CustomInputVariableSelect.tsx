@@ -99,12 +99,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 {
                     label: 'System variables',
                     options: globalVariables.filter((variable) => (isCdPipeline && variable.stageType !== 'post-cd') || (!excludeVariables.includes(variable.value))),
-                    
+
                 },
             ])
         }
         setSelectedVariableValue()
-        
+
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: OptionType) => {

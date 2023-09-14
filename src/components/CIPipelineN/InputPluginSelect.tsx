@@ -3,6 +3,7 @@ import { InputPluginSelectionType, optionsListType } from '../ConfigMapSecret/Ty
 import { PopupMenu, ResizableTagTextArea, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
+import { handleKeyDown } from '../app/appLabelCommon'
 
 export const InputPluginSelection = ({
     selectedOutputVariable,
@@ -28,7 +29,7 @@ export const InputPluginSelection = ({
     }
 
     const handleInputChange = (event): void => {
-        if(event.target.value){
+        if (event.target.value) {
             setSelectedValue(event.target.value)
             setTagData({
                 label: event.target.value,
@@ -56,7 +57,11 @@ export const InputPluginSelection = ({
     }
 
     const handleOnBlur = (e) => {
-        if (!e.relatedTarget || !e.relatedTarget.classList.value || !e.relatedTarget.classList.value.includes(`tag-${variableType}-class`)) {
+        if (
+            !e.relatedTarget ||
+            !e.relatedTarget.classList.value ||
+            !e.relatedTarget.classList.value.includes(`tag-${variableType}-class`)
+        ) {
             setActiveElement('')
             let _tagData = { ...tagData }
             let trimmedValue = trimLines(selectedValue)
@@ -88,7 +93,7 @@ export const InputPluginSelection = ({
                 <>
                     {filteredArray.map((_tag, idx) => {
                         return (
-                            <div>
+                            <div onClick={stopPropagation}>
                                 {_tag.descriptions ? (
                                     <Tippy
                                         className="default-tt"
@@ -101,11 +106,13 @@ export const InputPluginSelection = ({
                                                 </span>
                                                 <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
                                                     <div className="fs-12 fw-6 cn-9 dc__break-word">{_tag.label}</div>
-                                                    <div className="fs-12 fw-4 cn-9 dc__break-word">{_tag.descriptions}</div>
+                                                    <div className="fs-12 fw-4 cn-9 dc__break-word">
+                                                        {_tag.descriptions}
+                                                    </div>
                                                 </div>
                                             </>
                                         }
-                                    >   
+                                    >
                                         {option(_tag, idx)}
                                     </Tippy>
                                 ) : (
@@ -155,5 +162,4 @@ export const InputPluginSelection = ({
             )}
         </PopupMenu>
     )
-    
 }
