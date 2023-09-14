@@ -121,6 +121,7 @@ export default function NewCDPipeline({
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
+        clusterId: null,
         runPreStageInEnv: false,
         runPostStageInEnv: false,
         allowedDeploymentTypes: [],
@@ -249,6 +250,7 @@ export default function NewCDPipeline({
                 list = list.map((env) => {
                     return {
                         id: env.id,
+                        clusterId: env.cluster_id,
                         clusterName: env.cluster_name,
                         name: env.environment_name,
                         namespace: env.namespace || '',
@@ -322,7 +324,10 @@ export default function NewCDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
-                setFormData(form)
+                setFormData({
+                    ...form,
+                    clusterId: result.form?.clusterId,
+                })
                 setPageState(ViewType.FORM)
             })
             .catch((error: ServerErrors) => {
@@ -1097,7 +1102,12 @@ export default function NewCDPipeline({
             return (
                 <div className="flexbox dc__content-end floating-scoped-variables-widget">
                     <div>
-                        <FloatingVariablesSuggestions zIndex={21} appId={appId} />
+                        <FloatingVariablesSuggestions
+                            zIndex={21}
+                            appId={appId}
+                            envId={formData?.environmentId ? String(formData.environmentId) : null}
+                            clusterId={formData?.clusterId}
+                        />
                     </div>
                 </div>
             )
