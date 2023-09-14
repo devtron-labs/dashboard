@@ -68,7 +68,7 @@ export default function HelmAppList({
     const [sortBy, setSortBy] = useState(SortBy.APP_NAME)
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
-    const [appStatus, setAppStatus] = useState('')
+    const [appStatus, setAppStatus] = useState(_getAppStatusFromRequestUrl())
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined)
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
@@ -143,7 +143,9 @@ export default function HelmAppList({
         setDevtronInstalledHelmAppsList([])
         setFilteredHelmAppsList([])
         setClusterIdsCsv(_getClusterIdsFromRequestUrl())
-        setAppStatus(_getAppStatusFromRequestUrl())
+        if (appStatus !== _getAppStatusFromRequestUrl()) {
+            setAppStatus(_getAppStatusFromRequestUrl())
+        }
         setExternalHelmAppsList([])
         if (sseConnection) {
             sseConnection.close()
