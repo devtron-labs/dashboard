@@ -381,11 +381,7 @@ export default function NewCDPipeline({
     }
 
     const filterOutEmptySecret = (secret: any) => {
-        if (secret['label'].length > 0) {
-            return true
-        } else {
-            return false
-        }
+        return secret['label'].length
     }
 
     const updateStateFromResponse = (pipelineConfigFromRes, environments, form, dockerRegistries): void => {
