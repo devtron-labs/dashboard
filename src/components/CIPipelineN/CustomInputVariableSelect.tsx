@@ -1,32 +1,19 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
-import { pluginSelectStyle, baseSelectStyles } from './ciPipeline.utils'
 import {
     RefVariableType,
     PluginType,
     RefVariableStageType,
-    ClearIndicator,
-    TagLabelSelect,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CreatableSelect from 'react-select/creatable'
-import Select, { components } from 'react-select'
 import { BuildStageVariable } from '../../config'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import Tippy from '@tippyjs/react'
 import { OptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
-import { Label } from 'recharts'
-import { MenuList } from 'react-select/dist/declarations/src/components/Menu'
-import AboutTagEditModal from '../app/details/AboutTagEditModal'
-import { importComponentFromFELibrary } from '../common/helpers/Helpers'
-import {TagLabelValueSelector} from '@devtron-labs/devtron-fe-common-lib'
 import { InputPluginSelection } from './InputPluginSelect'
-// import { Select } from '../common'
+import { SuggestedTagOptionType } from '../ConfigMapSecret/Types'
 
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const refVar = useRef(null)
-    const dependentRef = useRef(null)
     const {
         formData,
         setFormData,
@@ -44,12 +31,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         value: '',
         format: '',
     })
-   
-    const [inputVariableOptions, setInputVariableOptions] = useState<{
-        label: string,
-        options: any[]
 
-    }[]>([])
+    const [inputVariableOptions, setInputVariableOptions] = useState<SuggestedTagOptionType[]>([])
 
     useEffect(() => {
         const previousStepVariables = []
@@ -124,7 +107,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
-    const handleOutputVariableSelector = (selectedValue) => {
+    const handleOutputVariableSelector = (selectedValue: OptionType) => {
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -197,80 +180,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
-    function formatOptionLabel(option) {
-        if (option.refVariableStepIndex) {
-            return (
-                <div className="flexbox justify-space">
-                    <span className="cn-9 fw-4">{option.label}</span>
-                    <span className="cn-5 fw-4">
-                        {option.refVariableStage === 'PRE_CI'
-                            ? formData[BuildStageVariable.PreBuild].steps[option.refVariableStepIndex - 1]?.name
-                            : formData[activeStageName].steps[option.refVariableStepIndex - 1]?.name}
-                    </span>
-                </div>
-            )
-        } else {
-            return (
-                <div className="">
-                    <span className="cn-9 fw-4">{option.label}</span>
-                </div>
-            )
-        }
-    }
-    const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
-        return (
-            <components.ValueContainer {...props}>
-                <>
-                    {value ? value : !props.selectProps.menuIsOpen && (
-                        <span>Select source or input value</span>
-                    )}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
-        )
-    }
-
-    function Option(_props) {
-        const { selectProps, data } = _props
-        selectProps.styles.option = getCustomOptionSelectionStyle({ padding: '4px 10px' })
-        if (data.description) {
-            return (
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="left"
-                    content={<span style={{ display: 'block', width: '180px' }}>{data.description}</span>}
-                >
-                    <div className="flex left">
-                        <components.Option {..._props}>{_props.children}</components.Option>
-                    </div>
-                </Tippy>
-            )
-        } else {
-            return (
-                <div className="flex left">
-                    <components.Option {..._props}>{_props.children}</components.Option>
-                </div>
-            )
-        }
-    }
-
-    function handleCreatableBlur(e) {
-        if (e.target.value) {
-            handleOutputVariableSelector({
-                label: e.target.value,
-                value: e.target.value,
-            })
-        }
-    }
-
-    const handleKeyDown = (event) => {
-        if (event.key === 'Enter' || event.key === 'Tab') {
-            event.target.blur()
-        }
-    }
-    console.log(inputVariableOptions)
     return (
         <InputPluginSelection
             placeholder='Select source or input value'
@@ -278,8 +187,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             setTagData={handleOutputVariableSelector}
             tagData={selectedOutputVariable}
             refVar={refVar}
-            dependentRef={dependentRef}
-            // tagOptions={inputVariableOptions}
+            tagOptions={inputVariableOptions}
             variableType={selectedOutputVariable.format}
         />
     )

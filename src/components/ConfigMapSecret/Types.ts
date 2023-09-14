@@ -15,13 +15,21 @@ export interface KeyValueInputInterface {
     valueType?: string
 }
 
-export interface SuggestedTagOptionType extends OptionType {
+export interface SuggestedTagOptionType {
     label: string
-    options: any[]
+    options: optionsListType[]
 }
 
+export interface optionsListType {
+    value: string 
+    descriptions: string
+    format: string 
+    label: string
+    stageType: string
+    variableType: string
+}
 
-export interface InputPluginSelectionType {
+export interface InputPluginSelectionType { 
     selectedOutputVariable: OptionType
     tagOptions?: SuggestedTagOptionType[]
     tagData?: OptionType
