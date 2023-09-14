@@ -55,67 +55,19 @@ export const UPLOAD_FAILED_STANDARD_MESSAGE = 'Invalid file content'
 export const SCOPED_VARIABLES_TEMPLATE_DATA = `apiVersion: devtron.ai/v1beta1
 kind: Variable
 spec:
-  - description: Sample Variable 1
-    name: variableNew1
-    values:
-      - category: ApplicationEnv
-        value: test-app-env
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-            EnvName: dev
-      - category: Env
-        value: 'null'
-        selectors:
-          attributeSelectors:
-            EnvName: dev
-      - category: Env
-        value: 'null'
-        selectors:
-          attributeSelectors:
-            EnvName: virtual-env-1
-      - category: Cluster
-        value: test-cluster
-        selectors:
-          attributeSelectors:
-            ClusterName: default_cluster
-      - category: Global
-        value: test-global
-        selectors: null
-  - description: 'Sample Variable 2'
-    name: variableNew2
-    values:
-      - category: ApplicationEnv
-        value: test-app-env
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-            EnvName: dev
-      - category: ApplicationEnv
-        value: test-app-env
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-            EnvName: virtual-env-1
-      - category: Application
-        value: test-app
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-      - category: Env
-        value: test-env
-        selectors:
-          attributeSelectors:
-            EnvName: dev
-      - category: Cluster
-        value: test-cluster
-        selectors:
-          attributeSelectors:
-            ClusterName: default_cluster
-      - category: Global
-        value: test-global
-        selectors: null
-`
+  # Name of the variable, must be unique
+- name: KAFKA 
+  #Provide a short description for this variable in max 120 characters. This description will be shown in UI while using the variable.
+  shortDescription: Enter a short description here
+  # Mention notes that tell more about this variable. This will not be shown in UI while using the variable. No char limit.
+  notes: Enter any notes for additional details 
+  # Optional property. Accepts Boolean Value, default value false. Values for sensitive variables are not shown in UI while using the variable
+  isSensitive: false 
+  # List of values for this variable
+  values: 
+      #Global category can be used to define variables which are common across all applications
+    - category: Global 
+      value: Global`
 
 // TOAST Messages while saving file
 export const SAVE_SUCCESS_TOAST_MESSAGE = 'File saved successfully'
