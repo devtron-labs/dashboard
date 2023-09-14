@@ -137,6 +137,8 @@ export interface CompareWithApprovalPendingAndDraftProps {
     isDeleteDraftState: boolean
     setShowDraftData: (show: boolean) => void
     isValues: boolean
+    selectedOptionDraft:any
+    setSelectedOptionDraft: any
 }
 
 export interface compareApprovalAndDraftSelectedOption {

@@ -183,3 +183,17 @@ export const getDeploymentConfigDropdownStyles = (overridden:boolean) => {
         }),
     }
 }
+
+export const getApprovalPendingOption = (selectedChartVersion:string) => {
+    return {
+        id: 0,
+        label: `Approval Pending (v${selectedChartVersion})`,
+    }
+}
+
+export const getDraftOption = (selectedChartVersion:string, isValues:boolean) => {
+    return {
+        id: 1,
+        label: `${isValues ? 'Values' : 'Manifest'} from draft (v${selectedChartVersion})`,
+    }
+}

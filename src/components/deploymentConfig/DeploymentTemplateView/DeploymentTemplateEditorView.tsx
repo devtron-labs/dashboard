@@ -4,8 +4,9 @@ import {
     DeploymentConfigContextType,
     DeploymentConfigStateActionTypes,
     DeploymentTemplateEditorViewProps,
+    compareApprovalAndDraftSelectedOption,
 } from '../types'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getApprovalPendingOption } from '../constants'
 import { versionComparator } from '../../common'
 import { SortingOrder } from '../../app/types'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
@@ -48,6 +49,7 @@ export default function DeploymentTemplateEditorView({
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
+    const [selectedOptionDraft, setSelectedOptionDraft] = useState<compareApprovalAndDraftSelectedOption>(getApprovalPendingOption(state.selectedChart?.version))
 
     const getLocalDaftManifest = async () => {
         const request = {
@@ -92,6 +94,7 @@ export default function DeploymentTemplateEditorView({
                     kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key,
                 })) as DeploymentChartOptionType[],
             )
+            setSelectedOptionDraft(getApprovalPendingOption(state.selectedChart.version))
         }
     }, [state.selectedChart, environments])
 
@@ -204,10 +207,8 @@ export default function DeploymentTemplateEditorView({
                 ...prevStatus,
                 [state.selectedCompareOption.id]: result.IsOverride,
             }))
-            return isValues ? YAML.parse(result.data) : result.data
-        } else {
-            return isValues ? YAML.parse(result.data) : result.data
         }
+        return isValues ? YAML.parse(result.data) : result.data
     }
 
     const setFetchedValues = (fetchedValues: Record<number | string, string>) => {
@@ -237,12 +238,117 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
-    const selectedOptionId = state.selectedCompareOption?.id
+    // choose LHS value for comparison
+    const selectedOptionId = state.selectedCompareOption?.id || -1
     const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId)
+    const source = isValues ? state.fetchedValues : state.fetchedValuesManifest;
+    const valueLHS = (isIdMatch ? defaultValue : source[selectedOptionId]) || '';
 
-    const valueLHS = isValues
-        ? (isIdMatch ? defaultValue : state.fetchedValues[selectedOptionId]) || ''
-        : (isIdMatch ? defaultValue : state.fetchedValuesManifest[selectedOptionId]) || ''
+    // choose RHS value for comparison
+    const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
+    const selectedData = isValues ? (state.tempFormData || state.draftValues) : draftManifestData
+    const valueRHS = shouldUseDraftData ? selectedData : value
+
+    const renderCodeEditorHeading = () => (
+        <CodeEditor.Header
+            className={`code-editor__header flex left p-0-imp ${getOverrideClass()}`}
+            hideDefaultSplitHeader={true}
+        >
+            <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
+                {renderEditorHeading(
+                    isEnvOverride,
+                    !!state.duplicate,
+                    readOnly,
+                    environmentName,
+                    state.selectedChart,
+                    handleOverride,
+                    state.latestDraft,
+                    state.publishedState?.isOverride,
+                    isDeleteDraftState,
+                    isValues,
+                )}
+            </div>
+        </CodeEditor.Header>
+    )
+
+    const renderCodeEditorCompareMode = () => (
+        <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+            <div className="flex column">
+                <div className="code-editor__header flex left w-100 p-0-imp">
+                    <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
+                        <span className="fw-n" style={{ width: '85px' }}>
+                            Compare with:{' '}
+                        </span>
+                        <CompareWithDropdown
+                            envId={envId}
+                            isEnvOverride={isEnvOverride}
+                            environments={filteredEnvironments}
+                            charts={filteredCharts}
+                            selectedOption={state.selectedCompareOption}
+                            setSelectedOption={setSelectedOption}
+                            globalChartRef={globalChartRef}
+                            isValues={isValues}
+                            groupedData={groupedData}
+                        />
+                        {!isDeleteDraftState &&
+                            isEnvOverride &&
+                            state.selectedCompareOption?.kind === DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key &&
+                            typeof optionOveriddeStatus?.[state.selectedCompareOption.id] !== 'undefined' && (
+                                <span className="flex right flex-grow-1 fs-12 fw-4 lh-20 dc__italic-font-style w-44">
+                                    {optionOveriddeStatus[state.selectedCompareOption.id]
+                                        ? 'Overriden'
+                                        : 'Inheriting from base'}
+                                </span>
+                            )}
+                    </div>
+                    <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
+                        {!isCompareAndApprovalState ? (
+                            renderEditorHeading(
+                                isEnvOverride,
+                                !!state.duplicate,
+                                readOnly,
+                                environmentName,
+                                state.selectedChart,
+                                handleOverride,
+                                state.latestDraft,
+                                state.publishedState?.isOverride,
+                                isDeleteDraftState,
+                                isValues,
+                            )
+                        ) : (
+                            <CompareWithApprovalPendingAndDraft
+                                isEnvOverride={isEnvOverride}
+                                overridden={!!state.duplicate}
+                                readOnly={readOnly}
+                                environmentName={environmentName}
+                                selectedChart={state.selectedChart}
+                                handleOverride={handleOverride}
+                                latestDraft={state.latestDraft}
+                                isPublishedOverriden={state.publishedState?.isOverride}
+                                isDeleteDraftState={isDeleteDraftState}
+                                setShowDraftData={setShowDraftData}
+                                isValues={isValues}
+                                selectedOptionDraft={selectedOptionDraft}
+                                setSelectedOptionDraft={setSelectedOptionDraft}
+                            />
+                        )}
+                    </div>
+                </div>
+                {isDeleteDraftState && (
+                    <div className="code-editor__header flex left w-100 p-0-imp">
+                        <div className="bcr-1 pt-8 pb-8 pl-16 pr-16">
+                            <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
+                            <div className="fs-13 fw-4 cn-9 lh-20">Override base</div>
+                        </div>
+                        <div className="bcg-1 pt-8 pb-8 pl-16 pr-16">
+                            <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
+                            <div className="fs-13 fw-4 cn-9 lh-20">Inherit from base</div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </CodeEditor.Header>
+    )
 
     const renderCodeEditor = (): JSX.Element => (
         <div
@@ -252,13 +358,7 @@ export default function DeploymentTemplateEditorView({
         >
             <CodeEditor
                 defaultValue={valueLHS}
-                value={
-                    state.selectedTabIndex !== 3 && showDraftData
-                        ? isValues
-                            ? (state.tempFormData? state.tempFormData:state.draftValues)
-                            : draftManifestData
-                        : value
-                }
+                value={valueRHS}
                 onChange={editorOnChange}
                 mode={MODES.YAML}
                 validatorSchema={state.schema}
@@ -273,103 +373,8 @@ export default function DeploymentTemplateEditorView({
                 {isUnSet && !state.openComparison && !state.showReadme && (
                     <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
                 )}
-                {state.showReadme && (
-                    <CodeEditor.Header
-                        className={`code-editor__header flex left p-0-imp ${getOverrideClass()}`}
-                        hideDefaultSplitHeader={true}
-                    >
-                        <div className="flex fs-12 fw-6 cn-9 pl-12 pr-12 w-100">
-                            {renderEditorHeading(
-                                isEnvOverride,
-                                !!state.duplicate,
-                                readOnly,
-                                environmentName,
-                                state.selectedChart,
-                                handleOverride,
-                                state.latestDraft,
-                                state.publishedState?.isOverride,
-                                isDeleteDraftState,
-                                isValues
-                            )}
-                        </div>
-                    </CodeEditor.Header>
-                )}
-                {state.openComparison && (
-                    <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
-                        <div className="flex column">
-                            <div className="code-editor__header flex left w-100 p-0-imp">
-                                <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
-                                    <span className='fw-n' style={{ width: '85px' }}>Compare with: </span>
-                                    <CompareWithDropdown
-                                        envId={envId}
-                                        isEnvOverride={isEnvOverride}
-                                        environments={filteredEnvironments}
-                                        charts={filteredCharts}
-                                        selectedOption={state.selectedCompareOption}
-                                        setSelectedOption={setSelectedOption}
-                                        globalChartRef={globalChartRef}
-                                        isValues={isValues}
-                                        groupedData={groupedData}
-                                    />
-                                    {!isDeleteDraftState &&
-                                        isEnvOverride &&
-                                        state.selectedCompareOption?.kind ===
-                                            DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key &&
-                                        typeof optionOveriddeStatus?.[state.selectedCompareOption.id] !==
-                                            'undefined' && (
-                                            <span className="flex right flex-grow-1 fs-12 fw-4 lh-20 dc__italic-font-style w-44">
-                                                {optionOveriddeStatus[state.selectedCompareOption.id]
-                                                    ? 'Overriden'
-                                                    : 'Inheriting from base'}
-                                            </span>
-                                        )}
-                                </div>
-                                <div className={`flex left fs-12 fw-6 cn-9 h-32 pl-12 pr-12 ${getOverrideClass()}`}>
-                                    {!isCompareAndApprovalState ? (
-                                        renderEditorHeading(
-                                            isEnvOverride,
-                                            !!state.duplicate,
-                                            readOnly,
-                                            environmentName,
-                                            state.selectedChart,
-                                            handleOverride,
-                                            state.latestDraft,
-                                            state.publishedState?.isOverride,
-                                            isDeleteDraftState,
-                                            isValues,
-                                        )
-                                    ) : (
-                                        <CompareWithApprovalPendingAndDraft
-                                            isEnvOverride={isEnvOverride}
-                                            overridden={!!state.duplicate}
-                                            readOnly={readOnly}
-                                            environmentName={environmentName}
-                                            selectedChart={state.selectedChart}
-                                            handleOverride={handleOverride}
-                                            latestDraft={state.latestDraft}
-                                            isPublishedOverriden={state.publishedState?.isOverride}
-                                            isDeleteDraftState={isDeleteDraftState}
-                                            setShowDraftData={setShowDraftData}
-                                            isValues={isValues}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                            {isDeleteDraftState && (
-                                <div className="code-editor__header flex left w-100 p-0-imp">
-                                    <div className="bcr-1 pt-8 pb-8 pl-16 pr-16">
-                                        <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
-                                        <div className="fs-13 fw-4 cn-9 lh-20">Override base</div>
-                                    </div>
-                                    <div className="bcg-1 pt-8 pb-8 pl-16 pr-16">
-                                        <div className="fs-12 fw-4 cn-7 lh-16">Configuration</div>
-                                        <div className="fs-13 fw-4 cn-9 lh-20">Inherit from base</div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </CodeEditor.Header>
-                )}
+                {state.showReadme && renderCodeEditorHeading()}
+                {state.openComparison && renderCodeEditorCompareMode()}
             </CodeEditor>
         </div>
     )

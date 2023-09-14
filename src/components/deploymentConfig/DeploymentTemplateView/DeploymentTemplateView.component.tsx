@@ -19,7 +19,7 @@ import {
     DropdownItemProps,
     compareApprovalAndDraftSelectedOption,
 } from '../types'
-import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getCommonSelectStyles, getDeploymentConfigDropdownStyles } from '../constants'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getApprovalPendingOption, getCommonSelectStyles, getDeploymentConfigDropdownStyles, getDraftOption } from '../constants'
 import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
@@ -288,31 +288,23 @@ export const CompareWithApprovalPendingAndDraft = ({
     isPublishedOverriden,
     isDeleteDraftState,
     setShowDraftData,
-    isValues
+    isValues,
+    selectedOptionDraft,
+    setSelectedOptionDraft
 }: CompareWithApprovalPendingAndDraftProps) => {
-
-    const APPROVAL_PENDING_OPTION = { id: 0, label: `Approval Pending (v${selectedChart.version})` };
-    const DRAFT_OPTION = { id: 1, label: `${isValues?'Values':'Manifest'} from draft (v${selectedChart.version})` }
-
-    const [selectedOption, setSelectedOption] = useState<compareApprovalAndDraftSelectedOption>(APPROVAL_PENDING_OPTION)
-
+    
     const compareWithApprovalAndDraftOptions = [
         {
             label: 'Manifest generated from',
             options: [
-                APPROVAL_PENDING_OPTION,
-                DRAFT_OPTION,
+                getApprovalPendingOption(selectedChart?.version),
+                getDraftOption(selectedChart?.version,isValues),
             ],
         },
     ]
-
-    useEffect(() => {
-        setShowDraftData(selectedOption.id === 1)
-    }, [selectedOption])
-
-
     const onChange = (selected) => {
-        setSelectedOption(selected)
+        setSelectedOptionDraft(selected)
+        setShowDraftData(selected.id === 1)
     }
 
     return (
@@ -323,7 +315,7 @@ export const CompareWithApprovalPendingAndDraft = ({
                         <ReactSelect
                             options={compareWithApprovalAndDraftOptions}
                             isMulti={false}
-                            value={selectedOption}
+                            value={selectedOptionDraft}
                             isOptionSelected={(option, selected) => option.id === selected[0].id}
                             classNamePrefix="compare-template-values-select"
                             formatOptionLabel={formatOptionLabel}

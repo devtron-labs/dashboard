@@ -472,7 +472,6 @@ export default function DeploymentTemplateOverrideForm({
             />
           );
         } else if (state.loadingManifestOverride) {
-            console.log('loading manifest override');
           return (
             <div className="h-100vh">
               <Progressing pageLoader />
