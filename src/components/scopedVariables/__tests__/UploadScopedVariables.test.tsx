@@ -3,6 +3,7 @@ import { fireEvent, render } from '@testing-library/react'
 import UploadScopedVariables from '../UploadScopedVariables'
 import { downloadData } from '../utils'
 import { SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS } from '../constants'
+import { importComponentFromFELibrary } from '../../common'
 
 jest.mock('../utils', () => ({
     validator: jest.fn(),
@@ -12,6 +13,11 @@ jest.mock('../utils', () => ({
 describe('UploadScopedVariables', () => {
     describe('UploadScopedVariables', () => {
         it('should download template when download template button is clicked', () => {
+            const downloadTemplateData = importComponentFromFELibrary(
+                'SCOPED_VARIABLES_TEMPLATE_DATA',
+                SCOPED_VARIABLES_TEMPLATE_DATA,
+                'function',
+            )
             const { container } = render(
                 <UploadScopedVariables
                     reloadScopedVariables={() => {}}
@@ -20,11 +26,7 @@ describe('UploadScopedVariables', () => {
                 />,
             )
             fireEvent.click(container.querySelector('button')!)
-            expect(downloadData).toHaveBeenCalledWith(
-                SCOPED_VARIABLES_TEMPLATE_DATA,
-                DOWNLOAD_TEMPLATE_NAME,
-                DOWNLOAD_FILES_AS,
-            )
+            expect(downloadData).toHaveBeenCalledWith(downloadTemplateData, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
         })
 
         it('should read file when file is uploaded', () => {

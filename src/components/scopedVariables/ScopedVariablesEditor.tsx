@@ -28,7 +28,7 @@ export default function ScopedVariablesEditor({
     const [showSaveView, setShowSaveView] = useState<boolean>(false)
     const [loadingSavedScopedVariables, setLoadingSavedScopedVariables] = useState<boolean>(false)
     const [isSaving, setIsSaving] = useState<boolean>(false)
-    const [footerError, setFooterError] = useState<string>('')
+    const [infoError, setInfoError] = useState<string>('')
 
     const handleParsing = (data: string): ScopedVariablesDataType => {
         let variablesObj: ScopedVariablesDataType
@@ -60,7 +60,7 @@ export default function ScopedVariablesEditor({
             }
         } catch (e) {
             if (e instanceof ServerErrors && Array.isArray(e.errors) && e.code === 406) {
-                setFooterError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+                setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
             }
             toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             setIsSaving(false)
@@ -108,22 +108,6 @@ export default function ScopedVariablesEditor({
         abortRead()
     }
 
-    const handleClearError = () => {
-        setFooterError('')
-    }
-
-    function renderInfoBarCloseButton(): JSX.Element {
-        return (
-            <button
-                type="button"
-                className="p-0 h-20 dc__no-border dc__outline-none-imp bcr-1"
-                onClick={handleClearError}
-            >
-                <ICClose className="icon-dim-20 mt-2" />
-            </button>
-        )
-    }
-
     return (
         <div className="flex column dc__content-space h-100 bcn-0 saved-variables-editor">
             <Descriptor />
@@ -154,6 +138,15 @@ export default function ScopedVariablesEditor({
                         </Tippy>
                     </div>
 
+                    {infoError && (
+                        <InfoColourBar
+                            message={infoError}
+                            classname="w-100 bcr-1 mb-16 m-0 dc__border dc__border-bottom-r2 dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
+                            Icon={ICError}
+                            iconClass="icon-dim-20"
+                        />
+                    )}
+
                     {showSaveView && (
                         <div className="bcn-1 flexbox dc__content-space w-100 h-32 dc__align-items-center">
                             <div
@@ -181,16 +174,6 @@ export default function ScopedVariablesEditor({
                         onChange={handleEditorChange}
                         validatorSchema={jsonSchema}
                     />
-
-                    {footerError && (
-                        <InfoColourBar
-                            message={footerError}
-                            classname="w-100 bcr-1 mb-16 m-0"
-                            Icon={ICError}
-                            iconClass="icon-dim-20"
-                            renderActionButton={renderInfoBarCloseButton}
-                        />
-                    )}
 
                     <div className="flexbox pt-13 pb-13 pl-12 pr-12 bcn-0 dc__border-top dc__content-end dc__align-items-center dc__align-self-stretch dc__gap-12">
                         <button
