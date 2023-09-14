@@ -1,8 +1,7 @@
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { ReadFileAs } from '../common/hooks/types'
-import { validator } from '../scopedVariables/utils'
-import { importConfigSecretImportFileMessaging } from './Constants'
+import { configMapsSecretImportFileValidator, importConfigSecretImportFileMessaging } from './Constants'
 import { HiddenInput } from '../common'
 
 function ConfigMapSecretFileReaderPopup({readFile }) {
@@ -10,7 +9,7 @@ function ConfigMapSecretFileReaderPopup({readFile }) {
     const onClickFileUpload = (e: React.ChangeEvent<HTMLInputElement>, isFileNameAsKey ) => {
         e.preventDefault()
         if (readFile) {
-            readFile(e.target.files![0], validator, ReadFileAs.TEXT, isFileNameAsKey)
+            readFile(e.target.files![0], configMapsSecretImportFileValidator, ReadFileAs.TEXT, isFileNameAsKey)
         }
     }
 
