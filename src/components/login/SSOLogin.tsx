@@ -221,10 +221,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     saveSSO(response): void {
-        if (response.result.config.config.hasOwnProperty('clientID')) {
+        if (response.result.config?.config?.hasOwnProperty('clientID')) {
             response.result.config.config.clientID = ''
         }
-        if (response.result.config.config.hasOwnProperty('clientSecret')) {
+        if (response.result.config?.config?.hasOwnProperty('clientSecret')) {
             response.result.config.config.clientSecret = ''
         }
         this.setConfig(response, this.state.sso.toLowerCase())
@@ -406,10 +406,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
         if (newConfig) {
-            if (newConfig.hasOwnProperty('clientID') && !newConfig.clientID) {
+            if (newConfig?.hasOwnProperty('clientID') && !newConfig?.clientID) {
                 newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
             }
-            if (newConfig.hasOwnProperty('clientSecret') && !newConfig.clientSecret) {
+            if (newConfig?.hasOwnProperty('clientSecret') && !newConfig?.clientSecret) {
                 newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
             }
         }
