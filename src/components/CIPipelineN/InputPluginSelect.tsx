@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { InputPluginSelectionType, optionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
 
 export const InputPluginSelection = ({
@@ -27,9 +27,13 @@ export const InputPluginSelection = ({
         }, 300)
     }
 
-    const handleInputChange = (e): void => {
-        if(e.target.value){
-            setSelectedValue(e.target.value)
+    const handleInputChange = (event): void => {
+        if(event.target.value){
+            setSelectedValue(event.target.value)
+            setTagData({
+                label: event.target.value,
+                value: event.target.value,
+            })
         }
     }
 
@@ -43,11 +47,20 @@ export const InputPluginSelection = ({
         setActiveElement('')
     }
 
+    const trimLines = (value: string) => {
+        let trimmedLines = value.split('\n')
+        let nonEmptyLines = trimmedLines.filter((line) => {
+            return line.trim() !== ''
+        })
+        return nonEmptyLines.join('\n')
+    }
+
     const handleOnBlur = (e) => {
-        if (!e.relatedTarget || !e.relatedTarget.classList.value) {
+        if (!e.relatedTarget || !e.relatedTarget.classList.value || !e.relatedTarget.classList.value.includes(`tag-${variableType}-class`)) {
             setActiveElement('')
             let _tagData = { ...tagData }
-            _tagData.value = selectedValue
+            let trimmedValue = trimLines(selectedValue)
+            _tagData.value = trimmedValue
             setTagData(_tagData)
         }
     }
@@ -73,7 +86,6 @@ export const InputPluginSelection = ({
                 .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0)
             return (
                 <>
-                    <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">Type to enter a custom value.</div>
                     {filteredArray.map((_tag, idx) => {
                         return (
                             <div>
@@ -89,13 +101,11 @@ export const InputPluginSelection = ({
                                                 </span>
                                                 <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
                                                     <div className="fs-12 fw-6 cn-9 dc__break-word">{_tag.label}</div>
-                                                    <div className="fs-12 fw-4 cn-9 dc__break-word">
-                                                        {_tag.descriptions}
-                                                    </div>
+                                                    <div className="fs-12 fw-4 cn-9 dc__break-word">{_tag.descriptions}</div>
                                                 </div>
                                             </>
                                         }
-                                    >
+                                    >   
                                         {option(_tag, idx)}
                                     </Tippy>
                                 ) : (
@@ -109,8 +119,7 @@ export const InputPluginSelection = ({
         }
     }
 
-    const handleCloseIcon = (e) => {
-        handleOnBlur(e)
+    const handleClear = (e) => {
         setSelectedValue('')
     }
 
@@ -128,14 +137,15 @@ export const InputPluginSelection = ({
                     onFocus={handleOnFocus}
                     placeholder={placeholder}
                     refVar={refVar}
+                    clearable={false}
                 />
-                <button type="button" className="dc__transparent" onClick={handleCloseIcon}>
-                    <CloseIcon />
+                <button type="button" className="dc__transparent" onClick={handleClear}>
+                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button>
             </PopupMenu.Button>
             {popupMenuBody && (
                 <PopupMenu.Body
-                    rootClassName="mxh-210 dc__overflow-auto tag"
+                    rootClassName={`mxh-210 dc__overflow-auto tag-${variableType}-class`}
                     autoWidth={true}
                     preventWheelDisable={true}
                     noBackDrop={noBackDrop}
