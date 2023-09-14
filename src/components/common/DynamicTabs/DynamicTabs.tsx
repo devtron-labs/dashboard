@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
+import { withShortcut, IWithShortcut } from 'react-keybind'
 import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
@@ -22,7 +23,13 @@ import './DynamicTabs.scss'
  *
  * Note: To be used with useTabs hook
  */
-export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
+function DynamicTabs({
+    tabs,
+    removeTabByIdentifier,
+    stopTabByIdentifier,
+    enableShortCut,
+    shortcut,
+}: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
@@ -33,6 +40,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const tabPopupMenuRef = useRef(null)
 
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
@@ -46,7 +54,10 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     }
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
-        const { name, url, isDeleted, isSelected, iconPath } = tab
+        const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
+        const _showNameOnSelect = showNameOnSelect ? !!url.split('?')[1] : true
+        let tabName = dynamicTitle || name
+
         return (
             <NavLink
                 to={url}
@@ -59,10 +70,15 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                 <div
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
-                    {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
-                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
-                        {name}
-                    </span>
+                    {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
+                    {_showNameOnSelect && (
+                        <span
+                            className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath ? 'ml-8' : ''} `}
+                            data-testid={name}
+                        >
+                            {tabName}
+                        </span>
+                    )}
                 </div>
             </NavLink>
         )
@@ -70,7 +86,17 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
 
     const handleTabCloseAction = (e) => {
         e.stopPropagation()
-        const pushURL = removeTabByIdentifier(e.currentTarget.dataset.title)
+        const pushURL = removeTabByIdentifier(e.currentTarget.dataset.id)
+        setTimeout(() => {
+            if (pushURL) {
+                push(pushURL)
+            }
+        }, 1)
+    }
+
+    const handleTabStopAction = (e) => {
+        e.stopPropagation()
+        const pushURL = stopTabByIdentifier(e.currentTarget.dataset.title)
         setTimeout(() => {
             if (pushURL) {
                 push(pushURL)
@@ -90,6 +116,8 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     }
 
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
+        const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect
+
         return (
             <Fragment key={`${idx}-tab`}>
                 <li
@@ -117,13 +145,22 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                             <div
                                 className={`w-100 ${
                                     tab.isSelected ? 'dynamic-tab-selected bcn-0 cn-9' : ''
-                                } flex left ${isFixed ? '' : 'pr-12'} h-36`}
+                                } flex left ${isFixed && !_showNameOnSelect ? '' : 'pr-12'} h-36`}
                             >
                                 {getTabNavLink(tab, isFixed)}
-                                {!isFixed && (
+                                {_showNameOnSelect && (
                                     <div
                                         className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
                                         data-title={tab.title}
+                                        onClick={handleTabStopAction}
+                                    >
+                                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                                    </div>
+                                )}
+                                {!isFixed && (
+                                    <div
+                                        className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
+                                        data-id={tab.id}
                                         onClick={handleTabCloseAction}
                                     >
                                         <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
@@ -171,7 +208,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                     </div>
                     <div
                         className="dynamic-tab__close icon-dim-20 flex br-5 ml-8"
-                        data-title={data.title}
+                        data-id={data.id}
                         onClick={handleTabCloseAction}
                     >
                         <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
@@ -245,7 +282,12 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                             {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                         </ul>
                     </div>
-                    <MoreButtonWrapper isMenuOpen={isMenuOpen} onClose={closeMenu} toggleMenu={toggleMenu}>
+                    <MoreButtonWrapper
+                        tabPopupMenuRef={tabPopupMenuRef}
+                        isMenuOpen={isMenuOpen}
+                        onClose={closeMenu}
+                        toggleMenu={toggleMenu}
+                    >
                         <div className="more-tabs__search-icon icon-dim-16 cursor-text" onClick={focusSearchTabInput}>
                             <SearchIcon className="icon-dim-16" />
                         </div>
@@ -285,3 +327,5 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         </div>
     )
 }
+
+export default withShortcut(DynamicTabs)

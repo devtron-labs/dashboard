@@ -51,22 +51,12 @@
     display: grid;
     grid-template-columns: 24px minmax(278px, 346px) 120px 130px 190px minmax(80px, 90px);
     grid-column-gap: 16px;
-
-
-    path:last-of-type {
-        fill: var(--R500);
-    }
 }
 
 .saved-cluster-list-row {
     display: grid;
     grid-template-columns: 0px minmax(278px, 346px) 100px 360px 190px minmax(80px, 90px);
     grid-column-gap: 16px;
-
-
-    path:last-of-type {
-        fill: var(--R500);
-    }
 }
 
 .cluster-list-row-1 {

@@ -32,6 +32,10 @@ export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): P
     })
 }
 
+export const getResourceGroupListRaw = (clusterId: string): Promise<APIResourceResponse> => {
+    return get(`${Routes.API_RESOURCE}/${Routes.GVK}/${clusterId}`)
+}
+
 export const createNewResource = (resourceListPayload: CreateResourcePayload): Promise<CreateResourceResponse> => {
     return post(Routes.K8S_RESOURCE_CREATE, resourceListPayload)
 }
