@@ -1,70 +1,60 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
-import { getClusterCapacity, getNodeList } from './clusterNodes.service'
+import { getNodeList } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import { handleUTCTime, Pagination, filterImageList, createGroupSelectList } from '../common'
+import { Pagination } from '../common'
 import { showError, Progressing, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    ClusterCapacityType,
-    ColumnMetadataType,
-    TEXT_COLOR_CLASS,
-    ERROR_TYPE,
-    ClusterDetailsPropType,
-    NodeDetail,
-    ImageList,
-} from './types'
+import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
-import ClusterTerminal from './ClusterTerminal'
 import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
-import './clusterNodes.scss'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
-import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
-import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import * as queryString from 'query-string'
 import { URLS } from '../../config'
-import { createTaintsList } from '../cluster/cluster.util'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
+import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import './clusterNodes.scss'
 
-export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList, clusterId}: ClusterDetailsPropType) {
+export default function NodeDetailsList({
+    isSuperAdmin,
+    clusterId,
+    nodeK8sVersions,
+    renderCallBackSync,
+    addTab,
+    syncError,
+    lastDataSync,
+    setLastDataSync
+}) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const urlParams = new URLSearchParams(location.search)
+    const k8sVersion = urlParams.get('k8sversion')
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState('')
-    const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
-    const [collapsedErrorSection, setCollapsedErrorSection] = useState<boolean>(true)
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
-    const [clusterErrorTitle, setClusterErrorTitle] = useState('')
-    const [clusterErrorList, setClusterErrorList] = useState<
-        { errorText: string; errorType: ERROR_TYPE; filterText: string[] }[]
-    >([])
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(new Map())
-    const [selectedVersion, setSelectedVersion] = useState<OptionType>(defaultVersion)
+    const [selectedVersion, setSelectedVersion] = useState<OptionType>(
+        k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
+    )
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
-   
+
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    const [showTerminal, setTerminal] = useState<boolean>(false)
-    const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
-    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
-    const [selectedNode, setSelectedNode] = useState<string>()
-    
+
     const pageSize = 15
 
     useEffect(() => {
@@ -72,34 +62,29 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             /*
           136 is standard with of every column for calculations
           65 is width of left nav
+          220 is width of resource
           160 is the diff of node column
           60 is the diff of status column
           */
 
-            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60
+            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60 + 220
             const windowWidth = window.innerWidth
             let clientWidth = 0
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
-  
+
     useEffect(() => {
-        const qs=queryString.parse(location.search)
-        const offset=Number(qs["offset"])
-        setNodeListOffset(offset||0)
+        const qs = queryString.parse(location.search)
+        const offset = Number(qs['offset'])
+        setNodeListOffset(offset || 0)
     }, [location.search])
 
     useEffect(() => {
-        const qs=queryString.parse(location.search)
-        const offset=Number(qs["offset"])
-        setNodeListOffset(offset||0)
-    }, [location.search])
-
-    useEffect(() => {
-        if (filteredFlattenNodeList && imageList && namespaceList) {
+        if (filteredFlattenNodeList) {
             handleUrlChange(filteredFlattenNodeList)
         }
-    }, [filteredFlattenNodeList, imageList, namespaceList])
+    }, [filteredFlattenNodeList])
 
     const getUpdatedAppliedColumn = () => {
         let isMissingColumn = false // intialized this to check if sortingFieldName is missing
@@ -166,11 +151,10 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     const getNodeListData = (): void => {
         setClusterDetailsLoader(true)
         setErrorResponseCode(null)
-        Promise.all([getNodeList(clusterId), getClusterCapacity(clusterId)])
+        getNodeList(clusterId)
             .then((response) => {
-                setLastDataSync(!lastDataSync)
-                if (response[0].result) {
-                    const _flattenNodeList = response[0].result.map((data) => {
+                if (response.result) {
+                    const _flattenNodeList = response.result.map((data) => {
                         const _flattenNodeData = flattenObject(data)
                         if (data['errors']) {
                             _flattenNodeData['errorCount'] = Object.keys(data['errors']).length
@@ -182,61 +166,13 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                     })
                     setFlattenNodeList(_flattenNodeList)
                 }
-                if (response[1].result) {
-                    setClusterCapacityData(response[1].result)
-                    let _errorTitle = '',
-                        _errorList = [],
-                        _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
-                    const _nodeK8sVersions = response[1].result.nodeK8sVersions || []
-                    if (_nodeK8sVersions.length > 1) {
-                        let diffType = '',
-                            majorVersion,
-                            minorVersion
-                        for (const _nodeK8sVersion of _nodeK8sVersions) {
-                            const elementArr = _nodeK8sVersion.split('.')
-                            if (!majorVersion) {
-                                majorVersion = elementArr[0]
-                            }
-                            if (!minorVersion) {
-                                minorVersion = elementArr[1]
-                            }
-                            if (majorVersion !== elementArr[0]) {
-                                diffType = 'Major'
-                                break
-                            } else if (diffType !== 'Minor' && minorVersion !== elementArr[1]) {
-                                diffType = 'Minor'
-                            }
-                        }
-                        if (diffType !== '') {
-                            _errorTitle = 'Version diff'
-                            _errorList.push({
-                                errorText: `${diffType} version diff identified among nodes. Current versions `,
-                                errorType: ERROR_TYPE.VERSION_ERROR,
-                                filterText: _nodeK8sVersions,
-                            })
-                        }
-                    }
-
-                    if (_nodeErrors.length > 0) {
-                        _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
-                        for (const _nodeError of _nodeErrors) {
-                            const _errorLength = response[1].result.nodeErrors[_nodeError].length
-                            _errorList.push({
-                                errorText: `${_nodeError} on ${
-                                    _errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
-                                }`,
-                                errorType: ERROR_TYPE.OTHER,
-                                filterText: response[1].result.nodeErrors[_nodeError],
-                            })
-                        }
-                    }
-                    setClusterErrorTitle(_errorTitle)
-                    setClusterErrorList(_errorList)
-                }
+                setLastDataSync(!lastDataSync)
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {
-                showError(error)
+                if (error['code'] !== 403) {
+                    showError(error)
+                }
                 setErrorResponseCode(error.code)
                 setClusterDetailsLoader(false)
             })
@@ -246,22 +182,11 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         getNodeListData()
     }, [clusterId])
 
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
-
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
         const selectedNode = sortedResult.find((item) => item.name === queryParams.get('node'))
         if (selectedNode) {
-            openTerminal(selectedNode)
+            openTerminalComponent(selectedNode)
         }
     }
 
@@ -350,7 +275,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
 
     useEffect(() => {
         handleFilterChanges()
-    }, [searchedTextMap, searchText, flattenNodeList, sortByColumn, sortOrder])
+    }, [searchedTextMap, searchText, flattenNodeList, sortByColumn, sortOrder, selectedVersion])
 
     const handleSortClick = (column: ColumnMetadataType): void => {
         if (sortByColumn.label === column.label) {
@@ -361,195 +286,12 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         }
     }
 
-    const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
-        if (errorType === ERROR_TYPE.VERSION_ERROR) {
-            const selectedVersion = `K8s version: ${filterText}`
-            setSelectedVersion({ label: selectedVersion, value: selectedVersion })
-        } else {
-            const _searchedTextMap = new Map()
-            const searchedLabelArr = filterText.split(',')
-            for (const selectedVersion of searchedLabelArr) {
-                const currentItem = selectedVersion.trim()
-                _searchedTextMap.set(currentItem, true)
-            }
-            setSelectedSearchTextType('name')
-            setSearchedTextMap(_searchedTextMap)
-            setSearchText(filterText)
-        }
-    }
-
-    const headerTerminalIcon = (): void => {
-        openTerminalComponent({ name: 'autoSelectNode', k8sVersion: 'latest' })
-    }
-
-    const renderClusterError = (): JSX.Element => {
-        if (clusterErrorList.length === 0) return
-        return (
-            <div
-                className={`pl-20 pr-20 pt-12 bcr-1 dc__border-top dc__border-bottom ${
-                    collapsedErrorSection ? ' pb-12 ' : ' pb-8'
-                }`}
-            >
-                <div className={`flexbox dc__content-space ${collapsedErrorSection ? '' : ' mb-16'}`}>
-                    <span
-                        className="flexbox pointer"
-                        onClick={(event) => {
-                            setCollapsedErrorSection(!collapsedErrorSection)
-                        }}
-                    >
-                        <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                        <span className="fw-6 fs-13 cn-9 mr-16">
-                            {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
-                        </span>
-                        {collapsedErrorSection && <span className="fw-4 fs-13 cn-9">{clusterErrorTitle}</span>}
-                    </span>
-                    <Dropdown
-                        className="pointer"
-                        style={{ transform: collapsedErrorSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                        onClick={(event) => {
-                            setCollapsedErrorSection(!collapsedErrorSection)
-                        }}
-                    />
-                </div>
-                {!collapsedErrorSection && (
-                    <>
-                        {clusterErrorList.map((error, index) => (
-                            <div key={`error-${index}`} className="fw-4 fs-13 cn-9 mb-8">
-                                {error.errorText}
-                                {error.errorType === ERROR_TYPE.OTHER ? (
-                                    <span
-                                        className="cb-5 pointer"
-                                        onClick={(event) => {
-                                            setCustomFilter(error.errorType, error.filterText.join(','))
-                                        }}
-                                    >
-                                        &nbsp; View nodes
-                                    </span>
-                                ) : (
-                                    error.filterText.map((filter, index) => (
-                                        <>
-                                            &nbsp;
-                                            {index > 0 && ', '}
-                                            <span
-                                                className="cb-5 pointer"
-                                                onClick={(event) => {
-                                                    setCustomFilter(error.errorType, filter)
-                                                }}
-                                            >
-                                                {filter}
-                                            </span>
-                                        </>
-                                    ))
-                                )}
-                            </div>
-                        ))}
-                    </>
-                )}
-            </div>
-        )
-    }
-
-    const renderClusterSummary = (): JSX.Element => {
-        return (
-            <>
-                <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 mt-16 mb-16 ml-20 mr-20 bcn-0 br-4 en-2 bw-1">
-                    <div className="flex fw-6 fs-13">
-                        <div className="fw-6 fs-14 cn-9 h-20 flex cg-5">
-                            <CloudIcon className="icon-dim-16 mr-4" />
-                            <span data-testid="cluster_connected" className="h-20 flex">Connected</span>
-                        </div>
-                        {isSuperAdmin && (
-                            <>
-                                <span className="dc__divider ml-12 h-16"></span>
-                                <div className="flex left cursor pl-12 pr-12 cb-5" data-testid="node-list-header-terminal" onClick={headerTerminalIcon}>
-                                    <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
-                                    <span className="h-20">Terminal</span>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                    <div className="fs-13 h-20">
-                        {lastDataSyncTimeString && (
-                            <div className="flex h-20">
-                                {lastDataSyncTimeString}
-                                <button
-                                    className="btn flex btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                    onClick={getNodeListData}
-                                >
-                                    <SyncIcon className="icon-dim-16" />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="flexbox dc__content-space pl-20 pr-20 pb-20">
-                    <div className="flexbox dc__content-space mr-16 w-50 p-16 bcn-0 br-4 en-2 bw-1">
-                        <div className="mr-16 w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Usage</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.cpu?.usagePercentage}
-                            </div>
-                        </div>
-                        <div className="mr-16 w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Capacity</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
-                        </div>
-                        <div className="mr-16 w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Requests</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.cpu?.requestPercentage}
-                            </div>
-                        </div>
-                        <div className="w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">CPU Limits</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.cpu?.limitPercentage}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flexbox dc__content-space w-50 p-16 bcn-0 br-4 en-2 bw-1">
-                        <div className="mr-16 w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Usage</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.usagePercentage}
-                            </div>
-                        </div>
-                        <div className="mr-16 w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Capacity</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.capacity}
-                            </div>
-                        </div>
-                        <div className="mr-16 w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Requests</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.requestPercentage}
-                            </div>
-                        </div>
-                        <div className="w-25">
-                            <div className="dc__align-center fs-13 fw-4 cn-7">Memory Limits</div>
-                            <div className="dc__align-center fs-24 fw-4 cn-9">
-                                {clusterCapacityData?.memory?.limitPercentage}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {renderClusterError()}
-            </>
-        )
-    }
-
-    const renderSortDirection = (column: ColumnMetadataType) : JSX.Element => {
-        if(column.isSortingAllowed) {
-            if(sortByColumn.value === column.value) {
-                return (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : '' } ml-4`}></span>
-                )
+    const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
+        if (column.isSortingAllowed) {
+            if (sortByColumn.value === column.value) {
+                return <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
             } else {
-                return (
-                    <span className="sort-column dc__opacity-0_5 ml-4"></span>
-                )
+                return <span className="sort-column dc__opacity-0_5 ml-4"></span>
             }
         }
     }
@@ -612,16 +354,14 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                     <span className="cr-5"> SchedulingDisabled</span>
                 </span>
             )
+        } else if (column.value === 'k8sVersion') {
+            return (
+                <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
+                    <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
+                </Tippy>
+            )
         } else {
-            if (column.value === 'k8sVersion') {
-                return (
-                    <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
-                        <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
-                    </Tippy>
-                )
-            } else {
-                return nodeData[column.value]
-            }
+            return nodeData[column.value]
         }
     }
 
@@ -668,15 +408,26 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         >
                             <div className="w-100 flex left">
                                 <div className="w-250 pr-4 dc__ellipsis-right">
-                                    <NavLink data-testid="cluster-node-link" to={`${match.url}/${nodeData[column.value]}`} >
-                                        {nodeData[column.value]}
-                                    </NavLink>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="right"
+                                        content={nodeData[column.value]}
+                                    >
+                                        <NavLink
+                                            data-testid="cluster-node-link"
+                                            to={`${match.url}/${nodeData[column.value]}`}
+                                        >
+                                            {nodeData[column.value]}
+                                        </NavLink>
+                                    </Tippy>
                                 </div>
                                 <NodeActionsMenu
                                     nodeData={nodeData as NodeDetail}
                                     openTerminal={openTerminalComponent}
                                     getNodeListData={getNodeListData}
                                     isSuperAdmin={isSuperAdmin}
+                                    addTab={addTab}
                                 />
                             </div>
                         </div>
@@ -695,20 +446,20 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             </div>
         )
     }
-      const changePage = (pageNo: number): void => {
-          let offset = pageSize * (pageNo - 1)
-          setNodeListOffset(offset)
-          let qs = queryString.parse(location.search)
-          let keys = Object.keys(qs)
-          let query = {}
-          keys.forEach((key) => {
-              query[key] = qs[key]
-          })
-          query['offset'] = offset
-          let queryStr = queryString.stringify(query)
-          let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
-          history.push(url)
-      }
+    const changePage = (pageNo: number): void => {
+        let offset = pageSize * (pageNo - 1)
+        setNodeListOffset(offset)
+        let qs = queryString.parse(location.search)
+        let keys = Object.keys(qs)
+        let query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
+        query['offset'] = offset
+        let queryStr = queryString.stringify(query)
+        let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+        history.push(url)
+    }
     const renderPagination = (): JSX.Element => {
         return (
             filteredFlattenNodeList.length > pageSize && (
@@ -726,50 +477,42 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     const openTerminalComponent = (nodeData) => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
-        history.push({
-            search: queryParams.toString(),
-        })
-        openTerminal(nodeData)
-    }
-
-    function openTerminal(clusterData): void {
-        setSelectedNode(clusterData.name)
-        setNodeImageList(filterImageList(imageList, clusterData.k8sVersion))
-        setTerminal(true)
-    }
-
-    const closeTerminal = (skipRedirection: boolean): void => {
-        setTerminal(false)
-        if (!skipRedirection) {
-            history.push(match.url)
-        }
+        const url = location.pathname
+        history.push(`${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}?${queryParams.toString()}`)
     }
 
     if (errorResponseCode) {
         return (
-            <div className="dc__loading-wrapper">
-                <ErrorScreenManager code={errorResponseCode} />
+            <div className="dc__border-left flex">
+                <ErrorScreenManager
+                    code={errorResponseCode}
+                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                />
             </div>
         )
     }
 
     if (clusterDetailsLoader) {
-        return <Progressing pageLoader />
+        return (
+            <div className="dc__border-left">
+                <Progressing pageLoader />
+            </div>
+        )
     }
 
     return (
         <>
-            <div data-testid="cluster_name_info_page" className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
-                {renderClusterSummary()}
-                <div 
-                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
-                        clusterErrorList?.length ? 'with-error-bar' : ''
+            <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
+                {typeof renderCallBackSync === 'function' && renderCallBackSync()}
+                <div
+                    className={`bcn-0 pt-16 list-min-height ${syncError ? 'sync-error' : ''} ${
+                        noResults ? 'no-result-container' : ''
                     }`}
                 >
                     <div className="pl-20 pr-20">
                         <NodeListSearchFilter
                             defaultVersion={defaultVersion}
-                            nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                            nodeK8sVersions={nodeK8sVersions}
                             selectedVersion={selectedVersion}
                             setSelectedVersion={setSelectedVersion}
                             appliedColumns={appliedColumns}
@@ -797,24 +540,11 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                                     .slice(nodeListOffset, nodeListOffset + pageSize)
                                     ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {!showTerminal && renderPagination()}
+                            {renderPagination()}
                         </>
                     )}
                 </div>
             </div>
-            {showTerminal && selectedNode && (
-                <ClusterTerminal
-                    clusterId={Number(clusterId)}
-                    nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}
-                    closeTerminal={closeTerminal}
-                    clusterImageList={nodeImageList}
-                    isClusterDetailsPage={true}
-                    namespaceList={namespaceList[clusterName]}
-                    node={selectedNode}
-                    setSelectedNode={setSelectedNode}
-                    taints={createTaintsList(filteredFlattenNodeList, 'name')}
-                />
-            )}
         </>
     )
 }
