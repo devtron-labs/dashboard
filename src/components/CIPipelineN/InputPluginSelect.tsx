@@ -69,45 +69,41 @@ export const InputPluginSelection = ({
     const renderSuggestions = (): JSX.Element => {
         if (tagOptions?.length) {
             const filteredArray = tagOptions
-            .filter((tag) => tag.options.length > 0)[0]
-            .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0)
+                .filter((tag) => tag.options.length > 0)[0]
+                .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0)
             return (
                 <>
-                    <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                        Type to enter a custom value. Press Enter to accept.
-                    </div>
+                    <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">Type to enter a custom value.</div>
                     {filteredArray.map((_tag, idx) => {
-                            return (
-                                <div>
-                                    {_tag.descriptions ? (
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="left"
-                                            content={
-                                                <>
-                                                    <span style={{ display: 'block', width: '220px' }}>
+                        return (
+                            <div>
+                                {_tag.descriptions ? (
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="left"
+                                        content={
+                                            <>
+                                                <span style={{ display: 'block', width: '220px' }}>
+                                                    {_tag.descriptions}
+                                                </span>
+                                                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+                                                    <div className="fs-12 fw-6 cn-9 dc__break-word">{_tag.label}</div>
+                                                    <div className="fs-12 fw-4 cn-9 dc__break-word">
                                                         {_tag.descriptions}
-                                                    </span>
-                                                    <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                                                        <div className="fs-12 fw-6 cn-9 dc__break-word">
-                                                            {_tag.label}
-                                                        </div>
-                                                        <div className="fs-12 fw-4 cn-9 dc__break-word">
-                                                            {_tag.descriptions}
-                                                        </div>
                                                     </div>
-                                                </>
-                                            }
-                                        >
-                                            {option(_tag, idx)}
-                                        </Tippy>
-                                    ) : (
-                                        option(_tag, idx)
-                                    )}
-                                </div>
-                            )
-                        })}
+                                                </div>
+                                            </>
+                                        }
+                                    >
+                                        {option(_tag, idx)}
+                                    </Tippy>
+                                ) : (
+                                    option(_tag, idx)
+                                )}
+                            </div>
+                        )
+                    })}
                 </>
             )
         }
