@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
 import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { OIDCtype, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
 import { ViewType, DOCUMENTATION } from '../../config'
@@ -285,7 +285,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
 
-        if (this.state.sso === OIDCtype) {
+        if (this.state.sso === OIDCType) {
             if (this.state.invalidYaml) {
                 toast.error("Invalid YAML")
                 return
@@ -350,7 +350,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     handleConfigChange(value: string): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
-        if (this.state.sso === OIDCtype) {
+        if (this.state.sso === OIDCType) {
             let config:any
             try {
                 config = yamlJsParser.parse(value)
@@ -428,7 +428,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     renderSSOCodeEditor() {
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 })
-        if (this.state.sso === OIDCtype) {
+        if (this.state.sso === OIDCType) {
             const config = {
                 "name": this.state.ssoConfig.config.name,
                 "id": this.state.ssoConfig.config.id,
@@ -465,7 +465,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
                 </div>
 
-        if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso == OIDCtype) {
+        if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso == OIDCType) {
             presetConfig = 
                 <div
                     style={{
@@ -491,7 +491,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                presetConfig
             ) : null
 
-            const decorationWidth = this.state.sso !== OIDCtype?50:25
+            const decorationWidth = this.state.sso !== OIDCType?50:25
         return (
             <div className="mt-0 ml-24 mr-24 mb-24">
                 <div className="code-editor-container">
@@ -499,7 +499,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         value={codeEditorBody}
                         height={300}
                         mode="yaml"
-                        noParsing={this.state.sso==OIDCtype}
+                        noParsing={this.state.sso==OIDCType}
                         lineDecorationsWidth={(this.state.configMap === SwitchItemValues.Configuration) ? decorationWidth : 0}
                         shebang={shebangHtml}
                         readOnly={this.state.configMap !== SwitchItemValues.Configuration}
