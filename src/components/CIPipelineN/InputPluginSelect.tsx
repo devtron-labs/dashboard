@@ -14,6 +14,7 @@ export const InputPluginSelection = ({
     noBackDrop,
     variableType,
     placeholder,
+    selectedVariableIndex,
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
     const [activeElement, setActiveElement] = useState('')
@@ -144,12 +145,12 @@ export const InputPluginSelection = ({
                     onFocus={handleOnFocus}
                     placeholder={placeholder}
                     refVar={refVar}
-                    clearable={false}
+                    tabIndex={selectedVariableIndex}
                 />
-                <button type="button" className="dc__transparent" onClick={handleClear}>
+            </PopupMenu.Button>
+            <button type="button" className="dc__transparent" onClick={handleClear}>
                     <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                 </button>
-            </PopupMenu.Button>
             {popupMenuBody && (
                 <PopupMenu.Body
                     rootClassName={`mxh-210 dc__overflow-auto tag-${variableType}-class`}

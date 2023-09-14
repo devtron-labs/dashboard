@@ -39,6 +39,7 @@ export interface InputPluginSelectionType {
     placeholder: string
     dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
     variableType: string
+    selectedVariableIndex: number
 }
 
 export interface ResizableTextareaProps {

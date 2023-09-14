@@ -189,6 +189,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             refVar={refVar}
             tagOptions={inputVariableOptions}
             variableType={selectedOutputVariable.format}
+            selectedVariableIndex={selectedVariableIndex}
         />
     )
 }
