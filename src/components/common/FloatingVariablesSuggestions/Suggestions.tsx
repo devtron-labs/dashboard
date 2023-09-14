@@ -31,6 +31,10 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         [variables],
     )
 
+    const handleClearSearch = () => {
+        setClearSearch(!clearSearch)
+    }
+
     const renderHeader = (): JSX.Element => (
         <div className="flexbox-col dc__align-self-stretch">
             <div className="handle-drag flexbox pt-8 pl-12 pr-12 dc__gap-16 dc__align-start dc__align-self-stretch bcn-7 dc__grabbable">
@@ -66,11 +70,8 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         </div>
     )
 
-    const renderClearSearchButton = (): JSX.Element => {
-        const handleClearSearch = () => {
-            setClearSearch(!clearSearch)
-        }
-
+    // Not using it as an arrow function since its passed as a prop to GenericEmptyState
+    function renderClearSearchButton(): JSX.Element {
         return (
             <button
                 className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-8-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center mb-12"
