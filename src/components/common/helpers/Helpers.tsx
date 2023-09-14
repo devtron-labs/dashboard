@@ -944,7 +944,7 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string, signal?: string) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
         const module = require('@devtron-labs/devtron-fe-lib')
         if (type === 'function') {
