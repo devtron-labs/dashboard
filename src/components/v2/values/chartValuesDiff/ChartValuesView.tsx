@@ -579,21 +579,36 @@ function ChartValuesView({
         if (commonState.isDeleteInProgress) {
             return
         }
+        // updating the delete state to progressing
         dispatch({
             type: ChartValuesViewActionTypes.isDeleteInProgress,
             payload: true,
         })
+
+        // initiating deletion (External Helm App/ Helm App/ Preset Value)
         getDeleteApplicationApi(deleteAction)
             .then((response: ResponseType) => {
-                if (response.result.deleteResponse?.deleteInitiated) {
+                //preset value deleted successfully
+                if (isCreateValueView) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
                     history.push(
-                        isCreateValueView
-                            ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                            : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
+                        getSavedValuesListURL(installedConfigFromParent.appStoreId)
                     )
-                } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                    return
+                }
+                // ends
+
+                // helm app OR external helm app delete initiated
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    init && init()
+                    history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
+                    return
+                } 
+
+                // helm app delete failed due to cluster not reachable (ArgoCD installed)
+                if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
@@ -615,6 +630,13 @@ function ChartValuesView({
                 }
             })
             .catch((error) => {
+                /*
+                helm app delete failed due to:
+                1. cluster not reachable (Helm installed) 
+                2. ArgoCD dashboard not reachable
+                3. any other event loss
+                */
+                // updating state for force delete dialog box
                 if (deleteAction !== DELETE_ACTION.FORCE_DELETE && error.code !== 403) {
                     let forceDeleteTitle = '',
                         forceDeleteMessage = ''
@@ -658,11 +680,16 @@ function ChartValuesView({
     }
 
     const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
+        // Delete: external helm app
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
-        } else if (isCreateValueView) {
+        }
+        // Delete: helm chart preset values
+        else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
-        } else {
+        } 
+        // Delete: helm app
+        else {
             return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, deleteAction)
         }
     }
@@ -1616,7 +1643,7 @@ function ChartValuesView({
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
-                        handleDelete={deleteApplication}
+                        handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
                         toggleConfirmation={() => {
                             dispatch({
                                 type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
@@ -1624,7 +1651,7 @@ function ChartValuesView({
                             })
                         }}
                         disableButton={commonState.isDeleteInProgress}
-                        isCreateValueView
+                        isCreateValueView={isCreateValueView}
                     />
                 )}
                 {commonState.forceDeleteData.forceDelete && (
