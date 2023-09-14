@@ -105,9 +105,10 @@ import {
     COMPARISON_OPTION_LABELS,
     COMPARISON_OPTION_TIPPY_CONTENT,
     CONNECT_TO_HELM_CHART_TEXTS,
-    DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO,
+    UPDATE_DATA_VALIDATION_ERROR_MSG,
+    EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
@@ -778,9 +779,13 @@ function ChartValuesView({
 
         // validate data
         try {
+            if (!commonState.modifiedValuesYaml) {
+                toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                return false
+            }
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`${DATA_VALIDATION_ERROR_MSG} “${err}”`)
+            toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
             return false
         }
 
