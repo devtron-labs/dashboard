@@ -285,8 +285,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
 
-        console.log(this.state.ssoConfig)
-
         if (this.state.sso === OIDCType) {
             if (this.state.invalidYaml) {
                 toast.error("Invalid YAML")
@@ -366,7 +364,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.setState({
                 invalidYaml: false
             })
-            var configValue = ""
+            let configValue:string = ""
             if (config?.config) {
                 configValue = yamlJsParser.stringify(config.config)
             }
