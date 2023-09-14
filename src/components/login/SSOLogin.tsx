@@ -402,7 +402,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
         let newConfig:any
-        try{
+        try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
         } catch (error) {
             //Invalid YAML, couldn't be parsed to JSON. Show error toast
@@ -434,13 +434,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 })
         if (this.state.sso === OIDCType) {
             const config = {
-                "name": this.state.ssoConfig.config.name,
-                "id": this.state.ssoConfig.config.id,
-                "config": yamlJsParser.parse(this.state.ssoConfig.config.config)
+                name: this.state.ssoConfig.config.name,
+                id: this.state.ssoConfig.config.id,
+                config: yamlJsParser.parse(this.state.ssoConfig.config.config),
             }
-            const stringifyConfig = yamlJsParser.stringify(config, {indent:1})
-        
-            ssoConfig = stringifyConfig.replaceAll("null", "")
+            const stringifyConfig = yamlJsParser.stringify(config, { indent: 1 })
+
+            ssoConfig = stringifyConfig.replaceAll('null', '')
         }
 
         let codeEditorBody =
@@ -448,29 +448,30 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 ? ssoConfig
                 : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
 
-        let presetConfig =  
-                <div
-                    style={{
-                        resize: 'none',
-                        lineHeight: '1.4',
-                        border: 'none',
-                        padding: `0 35px`,
-                        overflow: 'none',
-                        color: '#f32e2e',
-                        fontSize: '14px',
-                        fontFamily: 'Consolas, "Courier New", monospace',
-                    }}
-                    className="w-100"
-                >
-                    <p className="m-0">config:</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
-                </div>
+        let presetConfig = (
+            <div
+                style={{
+                    resize: 'none',
+                    lineHeight: '1.4',
+                    border: 'none',
+                    padding: `0 35px`,
+                    overflow: 'none',
+                    color: '#f32e2e',
+                    fontSize: '14px',
+                    fontFamily: 'Consolas, "Courier New", monospace',
+                }}
+                className="w-100"
+            >
+                <p className="m-0">config:</p>
+                <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
+                <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
+                <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
+                <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
+            </div>
+        )
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso == OIDCType) {
-            presetConfig = 
+            presetConfig = (
                 <div
                     style={{
                         resize: 'none',
@@ -486,16 +487,13 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 >
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
-
                 </div>
+            )
         }
-        
-        let shebangHtml =
-            this.state.configMap === SwitchItemValues.Configuration ? (
-               presetConfig
-            ) : null
 
-            const decorationWidth = this.state.sso !== OIDCType?50:25
+        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
+
+        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
             <div className="mt-0 ml-24 mr-24 mb-24">
                 <div className="code-editor-container">
