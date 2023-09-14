@@ -680,6 +680,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
+        let appStatusFilters ;
+        params.appType === AppListConstants.AppType.HELM_APPS ? appStatusFilters = masterFilters.appStatus.slice(0,masterFilters.appStatus.length - 1) : appStatusFilters = masterFilters.appStatus;
         const showExportCsvButton =
             userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
@@ -715,7 +717,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     {isArgoInstalled && (
                         <>
                             <Filter
-                                list={masterFilters.appStatus}
+                                list={appStatusFilters}
                                 labelKey="label"
                                 buttonText={APP_LIST_HEADERS.AppStatus}
                                 placeholder={APP_LIST_HEADERS.SearchAppStatus}
