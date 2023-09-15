@@ -232,6 +232,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     ) {
         getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
             .then((response) => {
+                console.log('response in trigger view = ', response)
                 const _result = response.result
                 if (_result) {
                     _selectedMaterial.history = [
