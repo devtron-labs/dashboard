@@ -10,7 +10,7 @@ export const DOWNLOAD_FILE_NAME = 'variables.yaml'
 export const DOWNLOAD_TEMPLATE_NAME = 'variables-template.yaml'
 export const DOWNLOAD_FILES_AS = 'application/x-yaml'
 export const DROPDOWN_ITEMS = ['Download saved file', 'Download template']
-export const TABLE_LIST_HEADINGS = ['VARIABLE NAMES', 'DESCRIPTION']
+export const TABLE_LIST_HEADINGS = ['VARIABLE NAMES', 'DESCRIPTION', 'VALUE IS']
 
 // File Reader error messages
 export const PARSE_ERROR_STATUS = {
@@ -127,3 +127,7 @@ export const NO_VARIABLES_MESSAGE = {
     TITLE: 'No matching results found',
     SUBTITLE: "We couldn't find any matching variable",
 }
+
+export const NO_DESCRIPTION_MESSAGE = 'No description'
+export const SENSITIVE_VARIABLE_DESCRIPTION = 'Value is sensitive & hidden while using this variable'
+export const IN_SENSITIVE_VARIABLE_DESCRIPTION = 'Value is not sensitive & visible while using this variable'

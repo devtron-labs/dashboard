@@ -5,5 +5,5 @@ export interface GridProps {
     xs?: number
     containerClass?: string
     itemClass?: string
-    children: React.ReactNode
+    children?: React.ReactNode
 }

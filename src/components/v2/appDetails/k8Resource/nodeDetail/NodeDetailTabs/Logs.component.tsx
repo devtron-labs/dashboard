@@ -52,6 +52,7 @@ function LogsComponent({
         clusterId: string
         nodeType: string
         node: string
+        namespace: string
     }>()
     const key = useKeyDown()
     const [logsPaused, setLogsPaused] = useState(false)
@@ -308,7 +309,7 @@ function LogsComponent({
             }
         }
         //TODO: reset pauseLog and grepToken
-    }, [params.podName, params.node])
+    }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
         //Values are already set once we reach here

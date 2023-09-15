@@ -38,7 +38,7 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string, namespace: string }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -127,7 +127,7 @@ function ManifestComponent({
         } catch (err) {
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType, params.group])
+    }, [params.podName, params.node, params.nodeType, params.group, params.namespace])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
