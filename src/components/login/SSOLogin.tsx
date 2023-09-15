@@ -538,7 +538,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <input
                             type="text"
                             className="form__input"
-                            value={this.state.ssoConfig.url.length === 0 ? `${window.location.origin}/orchestrator` : this.state.ssoConfig.url}
+                            value={this.state.ssoConfig.url || `${window.location.origin}/${process.env.REACT_APP_ORCHESTRATOR_ROOT}`}
                             onChange={this.handleURLChange}
                             data-testid="sso-url-input"
                         />
