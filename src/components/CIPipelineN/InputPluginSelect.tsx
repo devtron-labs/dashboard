@@ -3,7 +3,6 @@ import { InputPluginSelectionType, optionsListType } from '../ConfigMapSecret/Ty
 import { PopupMenu, ResizableTagTextArea, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
-import { handleKeyDown } from '../app/appLabelCommon'
 
 export const InputPluginSelection = ({
     selectedOutputVariable,
@@ -18,6 +17,8 @@ export const InputPluginSelection = ({
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
     const [activeElement, setActiveElement] = useState('')
+    const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(-1);
+    const [filteredArray, setFilteredArray] = useState([])
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -30,13 +31,11 @@ export const InputPluginSelection = ({
     }
 
     const handleInputChange = (event): void => {
-        if (event.target.value) {
-            setSelectedValue(event.target.value)
-            setTagData({
-                label: event.target.value,
-                value: event.target.value,
-            })
-        }
+        setSelectedValue(event.target.value)
+        setTagData({
+            label: event.target.value,
+            value: event.target.value,
+        })
     }
 
     const onSelectValue = (e): void => {
@@ -93,13 +92,14 @@ export const InputPluginSelection = ({
             return (
                 <>
                     {filteredArray.map((_tag, idx) => {
+                        const isFocused = idx === focusedSuggestionIndex;
                         return (
-                            <div onClick={stopPropagation}>
+                            <div>
                                 {_tag.descriptions ? (
                                     <Tippy
                                         className="default-tt"
                                         arrow={false}
-                                        placement="left"
+                                        placement="right"
                                         content={
                                             <>
                                                 <span style={{ display: 'block', width: '220px' }}>
@@ -128,6 +128,10 @@ export const InputPluginSelection = ({
     }
 
     const handleClear = (e) => {
+        setTagData({
+            label: '',
+            value: '',
+        })
         setSelectedValue('')
     }
 
@@ -149,7 +153,7 @@ export const InputPluginSelection = ({
                 />
             </PopupMenu.Button>
             <button type="button" className="dc__transparent" onClick={handleClear}>
-                    <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                    <Clear className="icon-dim-18 icon-n4 dc__position-abs" style={{top: "5px", right: "6px"}} />
                 </button>
             {popupMenuBody && (
                 <PopupMenu.Body
@@ -157,6 +161,7 @@ export const InputPluginSelection = ({
                     autoWidth={true}
                     preventWheelDisable={true}
                     noBackDrop={noBackDrop}
+                    // onKeyDown = {handleKey}
                 >
                     {popupMenuBody}
                 </PopupMenu.Body>
