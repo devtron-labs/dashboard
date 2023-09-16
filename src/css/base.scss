@@ -1979,7 +1979,11 @@ button.anchor {
 
 .dc__border-bottom-v2 {
     border-bottom: solid 1px var(--V200);
-} 
+}
+
+.dc__border-bottom-r2 {
+    border-bottom: 1px solid var(--R200);
+}
 
 .dc__border-bottom-imp {
     border-bottom: solid 1px var(--N200) !important;
