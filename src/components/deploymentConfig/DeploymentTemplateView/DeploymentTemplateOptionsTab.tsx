@@ -93,14 +93,16 @@ export default function DeploymentTemplateOptionsTab({
             interactive={true}
             showCloseButton={true}
         >
-            <span>{children}</span>
+            <span data-testid="tippy-error">{children}</span>
         </TippyCustomized>
     )
 
     const _unableToParseYaml = state.unableToParseYaml && (!state.latestDraft || state.selectedTabIndex === 3)
-
     return (
-        <div className="dt-options-tab-container flex dc__content-space pl-16 pr-16">
+        <div
+            className="dt-options-tab-container flex dc__content-space pl-16 pr-16"
+            data-testid="deployment-template-options-tab"
+        >
             <div className="flex">
                 <ChartTypeVersionOptions
                     isUnSet={isUnSet}
