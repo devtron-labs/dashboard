@@ -229,6 +229,12 @@
     }
 }
 
+.icon-fill-n6 {
+    .fill-color {
+        fill: var(--N600);
+    }
+}
+
 .icon-delete {
     &:hover {
         .stroke-color {

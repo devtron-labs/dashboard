@@ -4,7 +4,7 @@ import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import VariablesList from './VariablesList'
-import { useFileReader } from '../common'
+import { importComponentFromFELibrary, useFileReader } from '../common'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import Descriptor from './Descriptor'
 import { downloadData, parseIntoYAMLString } from './utils'
@@ -33,12 +33,18 @@ export default function SavedVariablesView({
     const scopedVariablesYAML = parseIntoYAMLString(scopedVariablesData)
 
     const { status, progress, fileData, abortRead, readFile } = useFileReader()
+    const SCOPED_VARIABLES_TEMPLATE = importComponentFromFELibrary(
+        'SCOPED_VARIABLES_TEMPLATE_DATA',
+        SCOPED_VARIABLES_TEMPLATE_DATA,
+        'function',
+    )
 
     useEffect(() => {
         if (status?.status == null && scopedVariablesData?.spec?.length) {
             const variables = scopedVariablesData.spec.map((variable) => ({
                 name: variable.name,
-                description: variable.description,
+                description: variable.shortDescription,
+                isSensitive: variable.isSensitive,
             }))
             setVariablesList([...variables])
         }
@@ -54,12 +60,13 @@ export default function SavedVariablesView({
         const filteredVariables = scopedVariablesData?.spec?.filter(
             (variable) =>
                 variable.name.toLowerCase().includes(query.toLowerCase()) ||
-                variable.description.toLowerCase().includes(query.toLowerCase()),
+                variable.shortDescription?.toLowerCase().includes(query.toLowerCase()),
         )
 
         const variables = filteredVariables?.map((variable) => ({
             name: variable.name,
-            description: variable.description,
+            description: variable.shortDescription,
+            isSensitive: variable.isSensitive,
         }))
         setVariablesList(variables)
     }
@@ -72,7 +79,7 @@ export default function SavedVariablesView({
                     downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
                     break
                 case DROPDOWN_ITEMS[1]:
-                    downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
+                    downloadData(SCOPED_VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
                     break
             }
         }

@@ -53,6 +53,7 @@ export interface DescriptorProps {
 export interface VariableType {
     name: string
     description: string
+    isSensitive: boolean
 }
 export interface ScopedVariablesProps {
     isSuperAdmin: boolean
@@ -65,8 +66,10 @@ export interface ScopedVariablesDataType {
 }
 
 export interface VariableSpecType {
-    description?: string
+    notes?: string
+    shortDescription?: string
     name: string
+    isSensitive: boolean
     values: ValueType[]
 }
 

@@ -146,7 +146,7 @@ export default function DeploymentTemplateOverrideForm({
                 type: DeploymentConfigStateActionTypes.fetchedValues,
                 payload: {},
             })
-            initialise(true, false, true)
+            initialise(null, false, true)
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
@@ -388,7 +388,7 @@ export default function DeploymentTemplateOverrideForm({
             type: DeploymentConfigStateActionTypes.loading,
             payload: true,
         })
-        initialise(false, true, false)
+        initialise(state.selectedChartRefId, true, false)
     }
 
     const renderValuesView = () => {
