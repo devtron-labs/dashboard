@@ -9,7 +9,14 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
         readOnly: false,
         environmentName: 'Test Environment',
         selectedChart: {
-            version: 1,
+            id: 1,
+            version: '1',
+            chartRefId: 1,
+            type: 2,
+            pipelineConfigOverrideId: 1,
+            name: 'Test Chart',
+            description: 'Test Chart Description',
+            isAppMetricsSupported: false,
         },
         handleOverride: jest.fn(),
         latestDraft: {
@@ -27,14 +34,11 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
     }
 
     it('renders when in isApprovalPending state', async () => {
-        //@ts-ignore
         const { getByTestId, getByText } = render(<CompareWithApprovalPendingAndDraft {...mockProps} />)
         expect(getByTestId('approval-draft-dropdown')).toBeTruthy()
         expect(getByText('Approval Pending')).toBeTruthy()
     })
-
     it('renders delete override option in draft state, in overriden state', async () => {
-        //@ts-ignore
         const { getByText } = render(<CompareWithApprovalPendingAndDraft {...mockProps} />)
         expect(getByText('Delete override')).toBeTruthy()
     })
@@ -43,7 +47,6 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
             ...mockProps,
             overridden: false,
         }
-        //@ts-ignore
         const { getByText } = render(<CompareWithApprovalPendingAndDraft {..._mockProps} />)
         expect(getByText('Allow override')).toBeTruthy()
     })
@@ -52,7 +55,6 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
             ...mockProps,
             isValues: false,
         }
-        //@ts-ignore
         const { queryByText } = render(<CompareWithApprovalPendingAndDraft {..._mockProps} />)
         expect(queryByText('Delete override')).toBeFalsy()
     })
@@ -62,7 +64,6 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
             isValues: false,
             overridden: false,
         }
-        //@ts-ignore
         const { queryByText } = render(<CompareWithApprovalPendingAndDraft {..._mockProps} />)
         expect(queryByText('Allow override')).toBeFalsy()
     })
@@ -71,7 +72,6 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
             ...mockProps,
             readOnly: true,
         }
-        //@ts-ignore
         const { getByTestId } = render(<CompareWithApprovalPendingAndDraft {..._mockProps} />)
         expect(getByTestId('readonly-icon')).toBeTruthy()
     })
