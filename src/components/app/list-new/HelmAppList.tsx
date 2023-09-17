@@ -297,12 +297,20 @@ export default function HelmAppList({
         }
 
         // handle sort
-        if (_sortOrder == OrderBy.ASC) {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
+        if(_sortBy === SortBy.APP_NAME) {
+            if (_sortOrder == OrderBy.ASC) {
+                _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
+            } else {
+                _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
+            }
         } else {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
+            if (_sortOrder == OrderBy.ASC) {
+                _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => a.lastDeployedAt.localeCompare(b.lastDeployedAt))
+            } else {
+                _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b.lastDeployedAt.localeCompare(a.lastDeployedAt))
+            }
         }
-
+        console.log(_sortBy)
         setSortBy(_sortBy)
         setSortOrder(_sortOrder)
         setFilteredHelmAppsList(_filteredHelmAppsList)
@@ -398,14 +406,14 @@ export default function HelmAppList({
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
                 <div className="app-list__cell app-list__cell--time">
-                    <span className="app-list__cell-header flex cursor" onClick={sortByLastDeployed}>
+                    <button className="app-list__cell-header flex cursor" onClick={sortByLastDeployed}>
                         {APP_LIST_HEADERS.LastDeployedAt}
                         {sortBy == SortBy.LAST_DEPLOYED ? (
-                            <span className={`sort ${sortOrder == OrderBy.DESC ? 'sort-up' : ''} ml-4`}></span>
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
                         ) : (
                             <span className="sort-col dc__opacity-0_5 ml-4"></span>
                         )}
-                    </span>
+                    </button>
                 </div>
             </div>
         )
