@@ -152,6 +152,7 @@ const AppDetailsComponent = ({
             return <VirtualAppDetailsEmptyState environmentName={appDetails.environmentName} />
         }
         if (
+            !appDetails?.resourceTree?.nodes?.length &&
             appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
             appDetails?.helmReleaseStatus &&
             (appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
