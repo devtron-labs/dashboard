@@ -163,7 +163,7 @@ export default function DeploymentTemplateGUIView({ fetchingValues, value, readO
                 }`}
             >
                 {state.chartConfigLoading || !value || fetchingValues ? (
-                    <div className="flex h-100">
+                    <div className="flex h-100" data-testid="loading-gui-view">
                         <Progressing pageLoader />
                     </div>
                 ) : (
