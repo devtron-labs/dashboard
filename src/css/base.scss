@@ -3696,7 +3696,7 @@ textarea::placeholder {
 }
 
 .focus-within-border-b5:focus-within {
-    border: 1px solid var(--B500);
+    border: 1px solid var(--B500) !important;
 }
 
 .dc__hover-border-n300:hover {
