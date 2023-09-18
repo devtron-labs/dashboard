@@ -4,6 +4,13 @@ import { copyToClipboard } from '../helpers/Helpers'
 import ClipboardProps from './types'
 import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 
+/**
+ * @param content - Content to be copied
+ * @param copiedTippyText - Text to be shown in the tippy when the content is copied
+ * @param duration - Duration for which the tippy should be shown
+ * @param trigger - To trigger the copy action, if set to true the content will be copied, use case being triggering the copy action from outside the component
+ * @param setTrigger - Callback function to set the trigger
+ */
 export default function ClipboardButton({ content, copiedTippyText, duration, trigger, setTrigger }: ClipboardProps) {
     const [copied, setCopied] = useState<boolean>(false)
     const [enableTippy, setEnableTippy] = useState<boolean>(false)

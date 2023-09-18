@@ -9,6 +9,14 @@ import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view
 import { SUGGESTIONS_SIZE } from './constants'
 import Tippy from '@tippyjs/react'
 
+/**
+ * Component uses react-draggable and handles the re-sizing and positioning of the suggestions on the assumption that the suggestions are going to expand to the right and bottom of the collapsed state
+ * @param zIndex - To Set the zIndex of the suggestions
+ * @param appId -  To fetch the scoped variables
+ * @param envId - (Optional)
+ * @param clusterId - (Optional)
+ * @returns
+ */
 export default function FloatingVariablesSuggestions({
     zIndex,
     appId,
@@ -149,7 +157,7 @@ export default function FloatingVariablesSuggestions({
                 <Suggestions
                     handleDeActivation={handleDeActivation}
                     loading={loadingScopedVariables}
-                    variables={variablesData?.result}
+                    variables={variablesData?.result ?? []}
                     reloadVariables={reloadScopedVariables}
                     error={error}
                 />
