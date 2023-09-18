@@ -46,6 +46,7 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import AppStatus from '../AppStatus'
+import { NewSortBy } from '../types'
 
 export default function HelmAppList({
     serverMode,
@@ -295,17 +296,7 @@ export default function HelmAppList({
                     app.chartName.toLowerCase().includes(_search.toLowerCase()),
             )
         }
-        let newSortBy=_sortBy
-        if(newSortBy==='appNameSort') {
-            newSortBy='appName'
-        } else {
-            newSortBy='lastDeployedAt'
-        }
-
-        enum NewSortBy {
-            appNameSort = 'appName',
-            lastDeployedSort = 'lastDeployedAt'
-        }
+        
         const dynamicSortBy = NewSortBy[_sortBy];
         
         // handle sort
