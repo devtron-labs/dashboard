@@ -642,7 +642,7 @@ export default function NodeDetails({
       const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
           tab ? `/${tab.toLowerCase()}` : ''
       }`
-      const isAdded = addTab(_group, 'pod', name, _url)
+      const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
       if (isAdded) {
           updateNodeSelectionData(_nodeSelectionData, _group)
           push(_url)
