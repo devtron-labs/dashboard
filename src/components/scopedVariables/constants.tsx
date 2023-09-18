@@ -10,7 +10,7 @@ export const DOWNLOAD_FILE_NAME = 'variables.yaml'
 export const DOWNLOAD_TEMPLATE_NAME = 'variables-template.yaml'
 export const DOWNLOAD_FILES_AS = 'application/x-yaml'
 export const DROPDOWN_ITEMS = ['Download saved file', 'Download template']
-export const TABLE_LIST_HEADINGS = ['VARIABLE NAMES', 'DESCRIPTION']
+export const TABLE_LIST_HEADINGS = ['VARIABLE NAME', 'DESCRIPTION', 'VALUE IS']
 
 // File Reader error messages
 export const PARSE_ERROR_STATUS = {
@@ -55,67 +55,19 @@ export const UPLOAD_FAILED_STANDARD_MESSAGE = 'Invalid file content'
 export const SCOPED_VARIABLES_TEMPLATE_DATA = `apiVersion: devtron.ai/v1beta1
 kind: Variable
 spec:
-  - description: Sample Variable 1
-    name: variableNew1
-    values:
-      - category: ApplicationEnv
-        value: test-app-env
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-            EnvName: dev
-      - category: Env
-        value: 'null'
-        selectors:
-          attributeSelectors:
-            EnvName: dev
-      - category: Env
-        value: 'null'
-        selectors:
-          attributeSelectors:
-            EnvName: virtual-env-1
-      - category: Cluster
-        value: test-cluster
-        selectors:
-          attributeSelectors:
-            ClusterName: default_cluster
-      - category: Global
-        value: test-global
-        selectors: null
-  - description: 'Sample Variable 2'
-    name: variableNew2
-    values:
-      - category: ApplicationEnv
-        value: test-app-env
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-            EnvName: dev
-      - category: ApplicationEnv
-        value: test-app-env
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-            EnvName: virtual-env-1
-      - category: Application
-        value: test-app
-        selectors:
-          attributeSelectors:
-            ApplicationName: dev-test
-      - category: Env
-        value: test-env
-        selectors:
-          attributeSelectors:
-            EnvName: dev
-      - category: Cluster
-        value: test-cluster
-        selectors:
-          attributeSelectors:
-            ClusterName: default_cluster
-      - category: Global
-        value: test-global
-        selectors: null
-`
+  # Name of the variable, must be unique
+- name: KAFKA 
+  #Provide a short description for this variable in max 120 characters. This description will be shown in UI while using the variable.
+  shortDescription: Enter a short description here
+  # Mention notes that tell more about this variable. This will not be shown in UI while using the variable. No char limit.
+  notes: Enter any notes for additional details 
+  # Optional property. Accepts Boolean Value, default value false. Values for sensitive variables are not shown in UI while using the variable
+  isSensitive: false 
+  # List of values for this variable
+  values: 
+      #Global category can be used to define variables which are common across all applications
+    - category: Global 
+      value: Global`
 
 // TOAST Messages while saving file
 export const SAVE_SUCCESS_TOAST_MESSAGE = 'File saved successfully'
@@ -127,3 +79,7 @@ export const NO_VARIABLES_MESSAGE = {
     TITLE: 'No matching results found',
     SUBTITLE: "We couldn't find any matching variable",
 }
+
+export const NO_DESCRIPTION_MESSAGE = 'No description'
+export const SENSITIVE_VARIABLE_DESCRIPTION = 'Value is sensitive & will be hidden while using this variable'
+export const IN_SENSITIVE_VARIABLE_DESCRIPTION = 'Value is not sensitive & will be visible while using this variable'

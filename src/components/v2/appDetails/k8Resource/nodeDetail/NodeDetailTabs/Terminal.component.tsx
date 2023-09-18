@@ -39,7 +39,7 @@ function TerminalComponent({
     switchSelectedContainer,
     setContainers,
 }: TerminalComponentProps) {
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string, clusterId?: string; namespace: string }>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
@@ -190,7 +190,7 @@ function TerminalComponent({
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url)
         handleAbort()
-    }, [params.podName, params.node])
+    }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
         setSelectedContainerName(_selectedContainer)

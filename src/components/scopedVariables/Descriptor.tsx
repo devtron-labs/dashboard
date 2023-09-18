@@ -54,7 +54,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                     </div>
 
                     <div className="flex dc__gap-12">
-                        {onSearch && <SearchBar onSearch={onSearch} placeholder="Search Variables" Icon={ICSearch} />}
+                        {onSearch && <SearchBar onSearch={onSearch} placeholder="Search variables" Icon={ICSearch} />}
 
                         {showUploadButton && (
                             <button

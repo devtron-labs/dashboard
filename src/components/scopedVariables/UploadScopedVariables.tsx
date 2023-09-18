@@ -1,5 +1,5 @@
 import React from 'react'
-import { useFileReader, HiddenInput } from '../common'
+import { useFileReader, HiddenInput, importComponentFromFELibrary } from '../common'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import ScopedVariablesLoader from './ScopedVariablesLoader'
 import { validator, downloadData } from './utils'
@@ -24,13 +24,19 @@ export default function UploadScopedVariables({
 }: UploadScopedVariablesProps) {
     const { fileData, progress, status, readFile, abortRead } = useFileReader()
 
+    const SCOPED_VARIABLES_TEMPLATE = importComponentFromFELibrary(
+        'SCOPED_VARIABLES_TEMPLATE_DATA',
+        SCOPED_VARIABLES_TEMPLATE_DATA,
+        'function',
+    )
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault()
         readFile(e.target.files![0], validator, ReadFileAs.TEXT)
     }
 
     const handleDownloadTemplate = () => {
-        downloadData(SCOPED_VARIABLES_TEMPLATE_DATA, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
+        downloadData(SCOPED_VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
     }
 
     return status?.status === FileReaderStatus.SUCCESS ? (

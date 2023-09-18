@@ -5,12 +5,11 @@ import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { showError, DeleteDialog, PopupMenu, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
-import { DELETE_MODAL_MESSAGING, RESOURCE_ACTION_MENU } from '../Constants'
-import { ResourceBrowserActionMenuType, ResourceListPayloadType } from '../Types'
+import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { RESOURCE_ACTION_MENU } from '../Constants'
+import { ResourceBrowserActionMenuType } from '../Types'
 import { Nodes } from '../../app/types'
-import { deleteResource } from '../ResourceBrowser.service'
-import { toast } from 'react-toastify'
+import DeleteResourcePopup from './DeleteResourcePopup'
 
 export default function ResourceBrowserActionMenu({
     clusterId,
@@ -18,41 +17,12 @@ export default function ResourceBrowserActionMenu({
     selectedResource,
     getResourceListData,
     handleResourceClick,
+    removeTabByIdentifier
 }: ResourceBrowserActionMenuType) {
-    const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const [forceDelete, setForceDelete] = useState(false)
 
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
-    }
-
-    const handleDelete = async (): Promise<void> => {
-        try {
-            setApiCallInProgress(true)
-            const resourceDeletePayload: ResourceListPayloadType = {
-                clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedResource.gvk,
-                        namespace: resourceData.namespace,
-                        name: resourceData.name,
-                    },
-                },
-            }
-
-            await deleteResource(resourceDeletePayload)
-            toast.success('Resource deleted successfully')
-            getResourceListData(true)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setApiCallInProgress(false)
-        }
-    }
-
-    const forceDeleteHandler = (e) => {
-        setForceDelete((prevState) => !prevState)
     }
 
     return (
@@ -66,6 +36,7 @@ export default function ResourceBrowserActionMenu({
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.manifest}
+                            data-namespace={resourceData.namespace}
                             className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                             data-testid="manifest-option-link"
@@ -76,6 +47,7 @@ export default function ResourceBrowserActionMenu({
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.Events}
+                            data-namespace={resourceData.namespace}
                             className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                             onClick={handleResourceClick}
                             data-testid="events-option-link"
@@ -83,11 +55,12 @@ export default function ResourceBrowserActionMenu({
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
-                        {selectedResource?.gvk.Kind === Nodes.Pod && (
+                        {selectedResource?.gvk?.Kind === Nodes.Pod && (
                             <>
                                 <span
                                     data-name={resourceData.name}
                                     data-tab={RESOURCE_ACTION_MENU.logs}
+                                    data-namespace={resourceData.namespace}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                     data-testid="logs-option-link"
@@ -98,6 +71,7 @@ export default function ResourceBrowserActionMenu({
                                 <span
                                     data-name={resourceData.name}
                                     data-tab={RESOURCE_ACTION_MENU.terminal}
+                                    data-namespace={resourceData.namespace}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
                                     data-testid="terminal-option-link"
@@ -119,25 +93,14 @@ export default function ResourceBrowserActionMenu({
                 </PopupMenu.Body>
             </PopupMenu>
             {showDeleteDialog && (
-                <DeleteDialog
-                    title={`Delete ${selectedResource.gvk.Kind} "${resourceData.name}"`}
-                    delete={handleDelete}
-                    closeDelete={toggleDeleteDialog}
-                    apiCallInProgress={apiCallInProgress}
-                >
-                    <DeleteDialog.Description>
-                        <p className="mb-12">{DELETE_MODAL_MESSAGING.description}</p>
-                        <Checkbox
-                            rootClassName="resource-force-delete"
-                            isChecked={forceDelete}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            disabled={apiCallInProgress}
-                            onChange={forceDeleteHandler}
-                        >
-                            {DELETE_MODAL_MESSAGING.checkboxText}
-                        </Checkbox>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
+                <DeleteResourcePopup
+                    clusterId={clusterId}
+                    resourceData={resourceData}
+                    selectedResource={selectedResource}
+                    getResourceListData={getResourceListData}
+                    toggleDeleteDialog={toggleDeleteDialog}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                />
             )}
         </>
     )
