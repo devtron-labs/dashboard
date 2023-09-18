@@ -232,7 +232,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     ) {
         getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
             .then((response) => {
-                const _result = response.result
+                const _result = response.result?.Commit
                 if (_result) {
                     _selectedMaterial.history = [
                         {

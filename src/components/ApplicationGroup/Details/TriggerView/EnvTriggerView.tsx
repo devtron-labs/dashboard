@@ -378,7 +378,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     ) => {
         getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
             .then((response) => {
-                const _result = response.result
+                const _result = response.result?.Commit
                 if (_result) {
                     _selectedMaterial.history = [
                         {
