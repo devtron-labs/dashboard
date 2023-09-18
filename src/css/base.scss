@@ -3400,12 +3400,20 @@ textarea::placeholder {
     background-color: var(--G500) !important;
 }
 
+.dc__hover-b500:hover {
+    background-color: var(--B500);
+}
+
 .dc__hover-n100:hover {
     background-color: var(--N100);
 }
 
 .dc__hover-r100:hover {
     background-color: var(--R100);
+}
+
+.dc__hover-cn1:hover {
+    color: var(--N100);
 }
 
 .dc__user-select-none {

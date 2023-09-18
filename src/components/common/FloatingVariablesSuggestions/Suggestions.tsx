@@ -37,7 +37,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
     const renderClearSearchButton = useCallback(
         (): JSX.Element => (
             <button
-                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center"
+                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
                 onClick={handleClearSearch}
                 type="button"
             >
