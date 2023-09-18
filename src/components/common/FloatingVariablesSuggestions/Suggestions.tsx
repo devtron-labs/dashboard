@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback } from 'react'
-import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, Progressing, Reload, ImageType } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-close.svg'
@@ -31,9 +31,22 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         [variables],
     )
 
-    const handleClearSearch = () => {
+    const handleClearSearch = useCallback(() => {
         setClearSearch(!clearSearch)
-    }
+    }, [clearSearch])
+
+    const renderClearSearchButton = useCallback(
+        (): JSX.Element => (
+            <button
+                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-8-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center mb-12"
+                onClick={handleClearSearch}
+                type="button"
+            >
+                Clear Search
+            </button>
+        ),
+        [handleClearSearch],
+    )
 
     const renderHeader = (): JSX.Element => (
         <div className="flexbox-col dc__align-self-stretch">
@@ -70,19 +83,6 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         </div>
     )
 
-    // Not using it as an arrow function since its passed as a prop to GenericEmptyState
-    function renderClearSearchButton(): JSX.Element {
-        return (
-            <button
-                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-8-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center mb-12"
-                onClick={handleClearSearch}
-                type="button"
-            >
-                Clear Search
-            </button>
-        )
-    }
-
     const renderSuggestions = (): JSX.Element => (
         <>
             <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
@@ -103,8 +103,10 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                     <GenericEmptyState
                         title="No matching variable found"
                         isButtonAvailable
+                        imageType={ImageType.Medium}
                         image={NoResults}
                         renderButton={renderClearSearchButton}
+                        classname="h-200"
                     />
                 )}
             </div>
@@ -114,21 +116,27 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
     )
 
     const renderBody = (): JSX.Element => {
-        if (loading)
+        if (loading) {
             return (
-                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
+                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200">
                     <Progressing pageLoader />
                 </div>
             )
+        }
 
-        if (variables?.length === 0)
+        if (variables?.length === 0) {
             return (
-                <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
-                    <GenericEmptyState title="No variables found" image={NoVariables} />
-                </div>
-            )
+                <>
+                    <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200 bcn-0">
+                        <GenericEmptyState title="No variables found" image={NoVariables} />
+                    </div>
 
-        if (!enableSearch) return <Reload reload={reloadVariables} className="bcn-0" />
+                    <SuggestionsInfo />
+                </>
+            )
+        }
+
+        if (!enableSearch) return <Reload reload={reloadVariables} className="bcn-0 pb-16" />
 
         return renderSuggestions()
     }
