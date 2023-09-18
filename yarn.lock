@@ -16389,4 +16389,3 @@ yargs@^15.0.1:
     yargs-parser "^18.1.2"
 
 yn@3.1.1:
-  version "3.1.1"
