@@ -3688,7 +3688,6 @@ textarea::placeholder {
     cursor: -webkit-grab;
 }
 
- /* (Optional) Apply a "closed-hand" cursor during drag operation. */
 .dc__grabbable:active {
     cursor: grabbing;
     cursor: -moz-grabbing;
