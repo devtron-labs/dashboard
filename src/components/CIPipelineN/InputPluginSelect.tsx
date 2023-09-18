@@ -17,8 +17,7 @@ export const InputPluginSelection = ({
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
     const [activeElement, setActiveElement] = useState('')
-    const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(-1);
-    const [filteredArray, setFilteredArray] = useState([])
+    const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -37,6 +36,45 @@ export const InputPluginSelection = ({
             value: event.target.value,
         })
     }
+
+    const handleOnKeyDown = (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            // e.preventDefault();
+            const filteredArray = tagOptions
+                .filter((tag) => tag.options.length > 0)[0]
+                .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0);
+
+            if (filteredArray.length === 0) {
+                return;
+            }
+
+            if (e.key === 'ArrowUp') {
+                setHighlightedIndex((prevIndex) => {
+                    if (prevIndex <= 0) {
+                        return filteredArray.length - 1;
+                    } else {
+                        return prevIndex - 1;
+                    }
+                });
+            } else if (e.key === 'ArrowDown') {
+                setHighlightedIndex((prevIndex) => {
+                    if (prevIndex === filteredArray.length - 1) {
+                        return 0;
+                    } else {
+                        return prevIndex + 1;
+                    }
+                });
+            }
+        } else if (e.key === 'Enter' && highlightedIndex !== -1) {
+            const selectedOption = tagOptions
+                .filter((tag) => tag.options.length > 0)[0]
+                .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0)[highlightedIndex];
+
+            if (selectedOption) {
+                onSelectValue(selectedOption);
+            }
+        }
+    };
 
     const onSelectValue = (e): void => {
         stopPropagation(e)
@@ -92,7 +130,6 @@ export const InputPluginSelection = ({
             return (
                 <>
                     {filteredArray.map((_tag, idx) => {
-                        const isFocused = idx === focusedSuggestionIndex;
                         return (
                             <div>
                                 {_tag.descriptions ? (
@@ -161,7 +198,6 @@ export const InputPluginSelection = ({
                     autoWidth={true}
                     preventWheelDisable={true}
                     noBackDrop={noBackDrop}
-                    // onKeyDown = {handleKey}
                 >
                     {popupMenuBody}
                 </PopupMenu.Body>
