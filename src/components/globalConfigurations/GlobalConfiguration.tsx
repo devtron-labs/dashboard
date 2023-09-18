@@ -36,6 +36,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 
@@ -381,6 +382,17 @@ function NavItem({ serverMode }) {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
+
+                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Scoped Variables</div>
+                        </NavLink>
+                    )}
+
                     {PluginsPolicy && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_PLUGINS}
@@ -541,6 +553,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                    <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />

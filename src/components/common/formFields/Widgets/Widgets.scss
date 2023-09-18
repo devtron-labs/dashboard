@@ -104,6 +104,18 @@ progress.styled-progress-bar {
     }
 }
 
+progress.styled-progress-bar-error {
+    color: var(--R500);
+
+    &::-webkit-progress-value {
+        background-color: var(--R500);
+    }
+
+    &::-moz-progress-bar {
+        background-color: var(--R500);
+    }
+}
+
 .shortcut-key-badge {
     box-shadow: 0px 1px 0px var(--N200);
 }
