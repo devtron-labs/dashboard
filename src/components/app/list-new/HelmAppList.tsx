@@ -302,11 +302,17 @@ export default function HelmAppList({
             newSortBy='lastDeployedAt'
         }
 
+        enum NewSortBy {
+            appNameSort = 'appName',
+            lastDeployedSort = 'lastDeployedAt'
+        }
+        const dynamicSortBy = NewSortBy[_sortBy];
+        
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>  a[newSortBy].localeCompare(b[newSortBy]))
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>  a[dynamicSortBy].localeCompare(b[dynamicSortBy]))
         } else {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b[newSortBy].localeCompare(a[newSortBy]))
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b[dynamicSortBy].localeCompare(a[dynamicSortBy]))
         }
         setSortBy(_sortBy)
         setSortOrder(_sortOrder)
