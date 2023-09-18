@@ -1,10 +1,9 @@
 import React, { useState, memo, useCallback } from 'react'
-import { GenericEmptyState, Progressing, Reload, ImageType } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
-import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
 import { SuggestionsProps, SuggestionType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
@@ -38,7 +37,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
     const renderClearSearchButton = useCallback(
         (): JSX.Element => (
             <button
-                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-8-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center mb-12"
+                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center"
                 onClick={handleClearSearch}
                 type="button"
             >
@@ -103,8 +102,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                     <GenericEmptyState
                         title="No matching variable found"
                         isButtonAvailable
-                        imageType={ImageType.Medium}
-                        image={NoResults}
+                        noImage
                         renderButton={renderClearSearchButton}
                         classname="h-200"
                     />

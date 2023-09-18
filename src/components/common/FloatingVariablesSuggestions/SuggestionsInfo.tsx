@@ -36,7 +36,12 @@ function SuggestionsInfo() {
                 <div className="flex pl-24 dc__gap-4 flex-wrap dc__content-center">
                     <p className="m-0 fs-13 fw-4 lh-20 cn-9">
                         Use a scoped variable for dynamic values, which are defined in the&nbsp;
-                        <Link className="cb-5 m-0" to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                        <Link
+                            className="cb-5 m-0"
+                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             Global Configuration
                         </Link>
                         . To use a variable, type&nbsp;
