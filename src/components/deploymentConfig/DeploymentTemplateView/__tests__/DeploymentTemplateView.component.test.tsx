@@ -1,6 +1,10 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { CompareWithApprovalPendingAndDraft } from '../DeploymentTemplateView.component'
+import {
+    CompareWithApprovalPendingAndDraft,
+    DropdownContainer,
+    DropdownItem,
+} from '../DeploymentTemplateView.component'
 
 jest.mock('react-select', () => ({ options, value, onChange }) => {
     function handleChange(event) {
@@ -111,5 +115,76 @@ describe('CompareWithApprovalPendingAndDraft Component', () => {
         const { getByText } = render(<CompareWithApprovalPendingAndDraft {...mockProps} />)
         fireEvent.click(getByText('Delete override'))
         expect(mockProps.handleOverride).toHaveBeenCalled()
+    })
+})
+
+describe('DropdownContainer Component', () => {
+    const mockProps = {
+        isOpen: true,
+        onClose: jest.fn(),
+        children: <div data-testid="child">Test</div>,
+    }
+    it('should render correctly', () => {
+        const { getByTestId } = render(<DropdownContainer {...mockProps} />)
+        const dropdownContainer = getByTestId('dropdown-container')
+        expect(dropdownContainer).toBeTruthy()
+    })
+    it('should call onClose function when clicked outside', () => {
+        const { getByTestId } = render(<DropdownContainer {...mockProps} />)
+        const dropdownContainer = getByTestId('dropdown-container')
+        fireEvent.click(dropdownContainer)
+        expect(mockProps.onClose).toHaveBeenCalled()
+    })
+    it('should call onClose function when clicked inside', () => {
+        const { getByTestId } = render(<DropdownContainer {...mockProps} />)
+        const dropdownContainer = getByTestId('dropdown-container')
+        fireEvent.click(dropdownContainer.children[0])
+        expect(mockProps.onClose).toHaveBeenCalled()
+    })
+    it('should not render when isOpen is false', () => {
+        const _mockProps = {
+            ...mockProps,
+            isOpen: false,
+        }
+        const { queryByTestId } = render(<DropdownContainer {..._mockProps} />)
+        const dropdownContainer = queryByTestId('dropdown-container')
+        expect(dropdownContainer).toBeFalsy()
+    })
+    it('should render children when isOpen is true', () => {
+        const { getByTestId } = render(<DropdownContainer {...mockProps} />)
+        const dropdownContainer = getByTestId('child')
+        expect(dropdownContainer).toBeTruthy()
+    })
+})
+
+describe('DropdownItem', () => {
+    it('renders with label and default styles', () => {
+        const label = 'Example Label'
+        const onClick = jest.fn()
+
+        render(<DropdownItem label={label} isValues={false} onClick={onClick} />)
+        const itemElement = screen.getByText(label)
+        expect(itemElement).toBeTruthy()
+        const classList = itemElement.classList
+        expect(classList).toContain('fw-n') // Default font weight
+        expect(classList).toContain('cn-9') // Default color
+        fireEvent.click(itemElement)
+        expect(onClick).toHaveBeenCalled()
+    })
+
+    it('renders with custom styles for values', () => {
+        const label = 'Values Label'
+        const onClick = jest.fn()
+
+        render(<DropdownItem label={label} isValues={true} onClick={onClick} />)
+
+        const itemElement = screen.getByText(label)
+        const classList = itemElement.classList
+
+        expect(itemElement).toBeTruthy()
+        expect(classList).toContain('fw-6') // Custom font weight for values
+        expect(classList).toContain('bcb-1') // Custom color for values
+        fireEvent.click(itemElement)
+        expect(onClick).toHaveBeenCalled()
     })
 })
