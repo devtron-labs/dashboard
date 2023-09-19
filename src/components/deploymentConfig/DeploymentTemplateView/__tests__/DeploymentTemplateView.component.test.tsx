@@ -1,17 +1,15 @@
 import React from 'react'
-import { fireEvent, getByTestId, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import {
     ChartTypeVersionOptions,
     CompareWithApprovalPendingAndDraft,
     CompareWithDropdown,
     DropdownContainer,
     DropdownItem,
-    SaveConfirmationDialog,
     SuccessToastBody,
     renderEditorHeading,
 } from '../DeploymentTemplateView.component'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../../constants'
-import { DeploymentConfigContext } from '../../DeploymentConfig'
 
 jest.mock('react-select', () => ({ options, value, onChange }) => {
     function handleChange(event) {
