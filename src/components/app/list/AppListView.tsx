@@ -52,7 +52,12 @@ export class AppListView extends Component<AppListViewProps> {
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
-                        <button type="button" className="cell__link fs-13 dc__truncate-text mw-18" data-key={app.id} onClick={this.expandEnv}>
+                        <button
+                            type="button"
+                            className="cell__link fs-13 dc__truncate-text mw-18"
+                            data-key={app.id}
+                            onClick={this.expandEnv}
+                        >
                             +{len - 1} more
                         </button>
                     ) : null}
@@ -89,7 +94,7 @@ export class AppListView extends Component<AppListViewProps> {
             let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list" data-testid="app-list-container">
-                    <div className="app-list__header">
+                    <div className="app-list__header dc__position-sticky dc__top-47">
                         <div className="app-list__cell--icon flex left cursor" onClick={this.toggleAllExpandRow}>
                             <Arrow className={`icon-dim-24 p-2 ${this.arrowIcon()}`} />
                         </div>
@@ -120,12 +125,12 @@ export class AppListView extends Component<AppListViewProps> {
                             </span>
                             <Tippy
                                 data-testid="env-tippy"
-                                className="default-tt"
+                                className="default-tt w-200"
                                 arrow={true}
                                 placement="top"
                                 content="Environment is a unique combination of cluster and namespace"
                             >
-                                <HelpOutlineIcon className="icon-dim-20" />
+                                <HelpOutlineIcon className="icon-dim-16" />
                             </Tippy>
                         </div>
                         <div className="app-list__cell app-list__cell--cluster">
@@ -147,7 +152,12 @@ export class AppListView extends Component<AppListViewProps> {
                                 {APP_LIST_HEADERS.LastDeployedAt}
 
                                 {this.props.sortRule.key === SortBy.LAST_DEPLOYED ? (
-                                    <span data-testid="sort-app-name-list" className={` sort ${this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                                    <span
+                                        data-testid="sort-app-name-list"
+                                        className={` sort ${
+                                            this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
+                                        } ml-4`}
+                                    ></span>
                                 ) : (
                                     <span className="sort-col dc__opacity-0_5 ml-4"></span>
                                 )}
@@ -185,7 +195,10 @@ export class AppListView extends Component<AppListViewProps> {
                                                 className="app-list__cell app-list__cell--app_status"
                                                 data-testid="devtron-app-status"
                                             >
-                                                <AppStatus appStatus={app.defaultEnv.appStatus} isVirtualEnv={app.defaultEnv.isVirtualEnvironment} />
+                                                <AppStatus
+                                                    appStatus={app.defaultEnv.appStatus}
+                                                    isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
+                                                />
                                             </div>
                                         )}
                                         {this.renderEnvironmentList(app)}
@@ -283,7 +296,7 @@ export class AppListView extends Component<AppListViewProps> {
                         linkIconPlacement={CardLinkIconPlacement.BeforeLink}
                     />
                     <ContentCard
-                    datatestid="create-application"
+                        datatestid="create-application"
                         redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                         rootClassName="ev-5"
                         imgSrc={DeployCICD}

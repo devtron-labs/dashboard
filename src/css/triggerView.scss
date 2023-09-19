@@ -155,7 +155,7 @@
     background-color: var(--white);
     border-radius: 4px;
     cursor: pointer;
-    
+
     &.material-history__approved-image {
         grid-template-columns: repeat(4, auto) 1fr;
     }
@@ -637,6 +637,8 @@
 }
 .url-box {
     max-width: 240px;
+    cursor: pointer;
+    color: var(--B500);
 }
 .trigger-modal__trigger {
     display: flex;

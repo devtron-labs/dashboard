@@ -45,7 +45,10 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
             setErrorMessage({ title: '', subtitle: '' })
         } catch (error) {
             setLoading(false)
-            setErrorMessage({title: 'Failed to fetch URLs', subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.' })
+            setErrorMessage({
+                title: 'Failed to fetch URLs',
+                subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.',
+            })
         }
     }
 
@@ -112,9 +115,14 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 arrow={false}
                                                                 placement="top"
                                                             >
-                                                                <span className="url-box dc__ellipsis-right mr-6">
+                                                                <a
+                                                                    href={'//' + url}
+                                                                    className="url-box dc__ellipsis-right mr-6"
+                                                                    target="_blank"
+                                                                    rel="noreferrer noopener"
+                                                                >
                                                                     {url}
-                                                                </span>
+                                                                </a>
                                                             </Tippy>
                                                             <span className="icon-dim-16">
                                                                 <CopyToClipboardTextWithTippy

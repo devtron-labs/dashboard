@@ -321,6 +321,9 @@ a:focus {
 .dc__top-26 {
     top: 26px;
 }
+.dc__top-47 {
+    top: 47px;
+}
 
 .dc__bottom-0 {
     bottom: 0;
@@ -408,7 +411,7 @@ a:focus {
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-column-gap: 16px;
-  }
+}
 
 // ClassName of text area
 .dc__code-textarea {
@@ -1833,7 +1836,7 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
-    &.dc__link_over{
+    &.dc__link_over {
         color: var(--N600);
     }
     &:hover {
@@ -1967,6 +1970,7 @@ button.anchor {
 
 .dc__border-bottom-v2 {
     border-bottom: solid 1px var(--V200);
+}
 }
 
 .dc__border-bottom-r2 {
@@ -2646,7 +2650,7 @@ textarea,
     width: 300px !important;
 }
 
-.w-320{
+.w-320 {
     width: 320px;
 }
 
@@ -2701,6 +2705,10 @@ textarea,
 // Width in percentage
 .w-25 {
     width: 25%;
+}
+
+.w-30 {
+    width: 30%;
 }
 
 .w-44 {
@@ -2911,7 +2919,7 @@ textarea,
     height: 112px !important;
 }
 
-.h-128{
+.h-128 {
     height: 128px !important;
 }
 
@@ -2969,7 +2977,7 @@ textarea,
 }
 
 .mh-400 {
-  min-height: 400px;
+    min-height: 400px;
 }
 
 .mh-600 {
@@ -2993,7 +3001,7 @@ textarea,
 }
 
 .mxh-390-imp {
-    max-height: 390px!important;
+    max-height: 390px !important;
 }
 
 // Height in percentage
@@ -3247,7 +3255,7 @@ textarea,
     }
 }
 
-.dc__column-gap-8{
+.dc__column-gap-8 {
     column-gap: 8px;
 }
 

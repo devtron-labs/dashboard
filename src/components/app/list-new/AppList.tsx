@@ -46,7 +46,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
-    const [projectMap, setProjectMap] = useState(new Map());
+    const [projectMap, setProjectMap] = useState(new Map())
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
@@ -396,7 +396,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
-        
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -968,7 +967,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className="h-100">
+        <div>
             {dataStateType === AppListViewType.ERROR ? (
                 <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />
