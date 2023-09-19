@@ -4,8 +4,7 @@ module.exports = function (app) {
     app.use(
         '/orchestrator',
         createProxyMiddleware({
-            // target: 'http://localhost:8080/',
-            target: 'http://ashishsonam.devtron.info:31102/',
+            target: 'https://demo.devtron.info/',
             changeOrigin: true,
             logLevel: 'info',
             secure: false,
