@@ -779,3 +779,5 @@ export const SERVER_ERROR_CODES = {
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
+
+export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
