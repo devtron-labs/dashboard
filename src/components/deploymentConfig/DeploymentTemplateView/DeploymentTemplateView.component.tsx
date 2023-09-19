@@ -259,7 +259,7 @@ export const renderEditorHeading = (
                     placement="top"
                     content={DEPLOYMENT_TEMPLATE_LABELS_KEYS.baseTemplate.allowOverrideText}
                 >
-                    <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    <Locked className="icon-dim-16 fcn-6 ml-10" data-testid="locked-icon" />
                 </Tippy>
             )}
         </div>
