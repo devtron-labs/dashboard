@@ -198,7 +198,8 @@ export default function NewCDPipeline({
             getDeploymentStrategyList(appId),
             getGlobalVariable(Number(appId), true),
             getDockerRegistryMinAuth(appId, true),
-        ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+        ])
+            .then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
                 let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
                 let dockerRegistries = dockerResponse.result || []
                 const _allStrategies = {}
@@ -236,7 +237,8 @@ export default function NewCDPipeline({
 
                 setGlobalVariables(_globalVariableOptions || [])
                 setDockerRegistries(dockerRegistries)
-            }).catch((error: ServerErrors) => {
+            })
+            .catch((error: ServerErrors) => {
                 showError(error)
                 setErrorCode(error.code)
                 setPageState(ViewType.ERROR)
