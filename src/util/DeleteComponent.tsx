@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { ServerErrors, ConfirmationDialog, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, ConfirmationDialog, DeleteDialog, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
 import info from '../assets/icons/ic-info-filled.svg'
@@ -40,6 +40,7 @@ function DeleteComponent({
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
             }
+            showError(serverError)
         } finally {
             setDeleting(false)
         }

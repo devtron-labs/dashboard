@@ -135,7 +135,6 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             const { result } = await getChartGroups()
             this.setState({ charts: result.groups })
         } catch (err) {
-            console.log('here showing unauthorized error..........')
             showError(err)
         } finally {
             this.setState({
