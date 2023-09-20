@@ -292,10 +292,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>
-                        {!state.external && error &&  <div className="validation-error-block">
-                    <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
-                    <div>{error}</div>
-                </div>}
+                        {!state.external && error && (
+                            <div className="validation-error-block">
+                                <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
+                                <div>{error}</div>
+                            </div>
+                        )}
                     </CodeEditor>
                 </div>
             )
