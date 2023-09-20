@@ -41,24 +41,23 @@ export const InputPluginSelection = ({
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             // e.preventDefault();
             const filteredArray = tagOptions
-                .filter((tag) => tag.options.length > 0)[0]
-                .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0);
+                .filter((tag) => tag.options.length > 0)[0];
 
-            if (filteredArray.length === 0) {
+            if (filteredArray.options.length === 0) {
                 return;
             }
 
             if (e.key === 'ArrowUp') {
                 setHighlightedIndex((prevIndex) => {
                     if (prevIndex <= 0) {
-                        return filteredArray.length - 1;
+                        return filteredArray.options.length - 1;
                     } else {
                         return prevIndex - 1;
                     }
                 });
             } else if (e.key === 'ArrowDown') {
                 setHighlightedIndex((prevIndex) => {
-                    if (prevIndex === filteredArray.length - 1) {
+                    if (prevIndex === filteredArray.options.length - 1) {
                         return 0;
                     } else {
                         return prevIndex + 1;
@@ -67,9 +66,7 @@ export const InputPluginSelection = ({
             }
         } else if (e.key === 'Enter' && highlightedIndex !== -1) {
             const selectedOption = tagOptions
-                .filter((tag) => tag.options.length > 0)[0]
-                .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0)[highlightedIndex];
-
+                .filter((tag) => tag.options.length > 0)[0].options[highlightedIndex]
             if (selectedOption) {
                 onSelectValue(selectedOption);
             }
