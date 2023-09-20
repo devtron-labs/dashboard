@@ -57,7 +57,6 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         )
 
         const randerValidationError = (error: string): JSX.Element => {
-            console.log(error)
             if (!error) {
                 if (state.isValidateFormError) {
                     dispatch({
