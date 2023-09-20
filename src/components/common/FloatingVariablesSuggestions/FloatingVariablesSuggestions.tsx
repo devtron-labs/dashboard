@@ -1,5 +1,6 @@
-import React, { useState, useRef, useMemo, useCallback, memo } from 'react'
+import React, { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react'
 import Draggable from 'react-draggable'
+import { useWindowSize } from '../helpers/UseWindowSize'
 import { useAsync } from '../helpers/Helpers'
 import Suggestions from './Suggestions'
 import { getScopedVariables } from './service'
@@ -28,6 +29,7 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         [appId, envId, clusterId],
     )
 
+    const windowSize = useWindowSize()
     // In case of StrictMode, we get error findDOMNode is deprecated in StrictMode
     // So we use useRef to get the DOM node
     const nodeRef = useRef(null)
@@ -42,6 +44,25 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         return { x: initialPosition.x, y: initialPosition.y }
     }, [nodeRef.current])
 
+    // The size of the active state can expand say in case user expands SuggestionsInfo and the widget is at bottom of screen
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver((entries) => {
+            if (entries?.length > 0 && isActive) {
+                const { height } = entries[0].contentRect
+                if (initialPosition.y + expandedPosition.y + height > windowSize.height) {
+                    setExpandedPosition({
+                        x: expandedPosition.x,
+                        y: windowSize.height - height - initialPosition.y,
+                    })
+                }
+            }
+        })
+        resizeObserver.observe(nodeRef.current)
+        return () => {
+            resizeObserver.disconnect()
+        }
+    }, [isActive, expandedPosition, windowSize, initialPosition])
+
     const handleActivation = () => {
         const currentPosInScreen = {
             x: initialPosition.x + collapsedPosition.x,
@@ -53,27 +74,27 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
             y: collapsedPosition.y,
         })
 
-        if (currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height) {
+        if (currentPosInScreen.y > windowSize.height - SUGGESTIONS_SIZE.height) {
             setExpandedPosition({
                 x: collapsedPosition.x,
-                y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
+                y: windowSize.height - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }
 
-        if (currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width) {
+        if (currentPosInScreen.x > windowSize.width - SUGGESTIONS_SIZE.width) {
             setExpandedPosition({
-                x: window.innerWidth - SUGGESTIONS_SIZE.width - initialPosition.x,
+                x: windowSize.width - SUGGESTIONS_SIZE.width - initialPosition.x,
                 y: collapsedPosition.y,
             })
         }
 
         if (
-            currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width &&
-            currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height
+            currentPosInScreen.x > windowSize.width - SUGGESTIONS_SIZE.width &&
+            currentPosInScreen.y > windowSize.height - SUGGESTIONS_SIZE.height
         ) {
             setExpandedPosition({
-                x: window.innerWidth - SUGGESTIONS_SIZE.width - initialPosition.x,
-                y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
+                x: windowSize.width - SUGGESTIONS_SIZE.width - initialPosition.x,
+                y: windowSize.height - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }
 
@@ -95,8 +116,8 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         if (
             currentPosInScreen.y < 0 ||
             currentPosInScreen.x < 0 ||
-            currentPosInScreen.x + nodeRef.current?.getBoundingClientRect().width > window.innerWidth ||
-            currentPosInScreen.y + nodeRef.current?.getBoundingClientRect().height > window.innerHeight
+            currentPosInScreen.x + nodeRef.current?.getBoundingClientRect().width > windowSize.width ||
+            currentPosInScreen.y + nodeRef.current?.getBoundingClientRect().height > windowSize.height
         ) {
             return
         }
@@ -112,8 +133,8 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         if (
             currentPosInScreen.y < 0 ||
             currentPosInScreen.x < 0 ||
-            currentPosInScreen.x + nodeRef.current?.getBoundingClientRect().width > window.innerWidth ||
-            currentPosInScreen.y + nodeRef.current?.getBoundingClientRect().height > window.innerHeight
+            currentPosInScreen.x + nodeRef.current?.getBoundingClientRect().width > windowSize.width ||
+            currentPosInScreen.y + nodeRef.current?.getBoundingClientRect().height > windowSize.height
         ) {
             return
         }
