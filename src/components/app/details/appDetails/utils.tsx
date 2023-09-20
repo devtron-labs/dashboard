@@ -698,7 +698,7 @@ export const processDeploymentStatusDetailsData = (
             deploymentData.deploymentStatusText = 'Failed'
             deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
         } else if (data?.wfrStatus === 'Progressing') {
-            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.PROGRESSING
+            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.INPROGRESS
             deploymentData.deploymentStatusText = 'In progress'
         }
     }
