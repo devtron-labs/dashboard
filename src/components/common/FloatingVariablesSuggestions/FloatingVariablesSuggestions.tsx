@@ -95,8 +95,8 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         if (
             currentPosInScreen.y < 0 ||
             currentPosInScreen.x < 0 ||
-            currentPosInScreen.x > window.innerWidth ||
-            currentPosInScreen.y > window.innerHeight
+            currentPosInScreen.x + nodeRef.current?.getBoundingClientRect().width > window.innerWidth ||
+            currentPosInScreen.y + nodeRef.current?.getBoundingClientRect().height > window.innerHeight
         ) {
             return
         }
@@ -112,8 +112,8 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
         if (
             currentPosInScreen.y < 0 ||
             currentPosInScreen.x < 0 ||
-            currentPosInScreen.x > window.innerWidth ||
-            currentPosInScreen.y > window.innerHeight
+            currentPosInScreen.x + nodeRef.current?.getBoundingClientRect().width > window.innerWidth ||
+            currentPosInScreen.y + nodeRef.current?.getBoundingClientRect().height > window.innerHeight
         ) {
             return
         }
