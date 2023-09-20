@@ -1,3 +1,5 @@
+import { DraggableBounds } from "react-draggable"
+
 export interface SuggestionType {
     variableName: string
     shortDescription: string | null
@@ -12,6 +14,7 @@ export interface FloatingVariablesSuggestionsProps {
     appId: string
     envId?: string
     clusterId?: string
+    bounds?: DraggableBounds | string | false
 }
 
 export interface SuggestionsItemProps {

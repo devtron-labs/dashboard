@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useCallback } from 'react'
 import Draggable from 'react-draggable'
 import { useAsync } from '../helpers/Helpers'
 import Suggestions from './Suggestions'
@@ -15,6 +15,7 @@ import Tippy from '@tippyjs/react'
  * @param appId -  To fetch the scoped variables
  * @param envId - (Optional)
  * @param clusterId - (Optional)
+ * @param bounds - (Optional) To set the bounds of the suggestions
  * @returns
  */
 export default function FloatingVariablesSuggestions({
@@ -22,6 +23,7 @@ export default function FloatingVariablesSuggestions({
     appId,
     envId,
     clusterId,
+    bounds,
 }: FloatingVariablesSuggestionsProps) {
     const [isActive, setIsActive] = useState<boolean>(false)
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
@@ -85,13 +87,10 @@ export default function FloatingVariablesSuggestions({
     }
 
     // Need to memoize this function since it is passed as a prop to Suggestions
-    const handleDeActivation = useMemo(
-        () => (e: React.MouseEvent<HTMLOrSVGElement>) => {
-            e.stopPropagation()
-            setIsActive(false)
-        },
-        [],
-    )
+    const handleDeActivation = useCallback((e: React.MouseEvent<HTMLOrSVGElement>) => {
+        e.stopPropagation()
+        setIsActive(false)
+    }, [])
 
     // e will be unused, but we need to pass it as a parameter since Draggable expects it
     const handleCollapsedDrag = (e, data: { x: number; y: number }) => {
@@ -107,6 +106,7 @@ export default function FloatingVariablesSuggestions({
     if (!isActive)
         return (
             <Draggable
+                bounds={bounds}
                 handle=".handle-drag"
                 nodeRef={nodeRef}
                 position={collapsedPosition}
@@ -121,7 +121,6 @@ export default function FloatingVariablesSuggestions({
                     <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20">
                         <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" />
                     </button>
-                    {/* DUMMY ICON */}
 
                     <Tippy content="Scoped variables" placement="top" className="default-tt" arrow={false}>
                         <button
@@ -130,6 +129,7 @@ export default function FloatingVariablesSuggestions({
                             onClick={handleActivation}
                             data-testid="activate-suggestions"
                         >
+                            {/* DUMMY ICON */}
                             <ICGridView className="scn-0 icon-dim-20" />
                         </button>
                     </Tippy>
@@ -138,7 +138,13 @@ export default function FloatingVariablesSuggestions({
         )
 
     return (
-        <Draggable handle=".handle-drag" nodeRef={nodeRef} position={expandedPosition} onDrag={handleExpandedDrag}>
+        <Draggable
+            bounds={bounds}
+            handle=".handle-drag"
+            nodeRef={nodeRef}
+            position={expandedPosition}
+            onDrag={handleExpandedDrag}
+        >
             <div
                 className="flex column dc__no-shrink w-356 dc__content-space dc__border-radius-8-imp dc__border-n7 dc__overflow-hidden dc__position-abs mxh-504"
                 style={{

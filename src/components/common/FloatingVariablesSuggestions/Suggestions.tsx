@@ -60,14 +60,16 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                     <p className="dc__align-self-stretch c-n50 fs-12 fw-4 lh-20">Use variable to set dynamic value</p>
                 </div>
 
-                <button
-                    type="button"
-                    className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
-                    onClick={handleDeActivation}
-                    data-testid="deactivate-suggestions"
-                >
-                    <ICClose className="fcn-0 icon-dim-20 cursor" />
-                </button>
+                <div className="h-100">
+                    <button
+                        type="button"
+                        className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20"
+                        onClick={handleDeActivation}
+                        data-testid="deactivate-suggestions"
+                    >
+                        <ICClose className="fcn-0 icon-dim-20 cursor" />
+                    </button>
+                </div>
             </div>
 
             {enableSearch && (
