@@ -237,6 +237,9 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
+    SCOPED_GLOBAL_VARIABLES: 'global/variables',
+    SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
+    GVK: 'gvk'
 }
 
 export const ViewType = {
@@ -349,6 +352,7 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'

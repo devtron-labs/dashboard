@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { Option } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'
@@ -47,6 +47,9 @@ const MenuList = (props: any): JSX.Element => {
         if (typeof Storage !== 'undefined') {
             localStorage.appliedColumns = JSON.stringify(_appliedColumns)
         }
+        if (props.selectRef.current) {
+            props.selectRef.current.blur();
+          }
         setAppliedColumns(_appliedColumns)
     }
     return (
@@ -76,6 +79,7 @@ export default function ColumnSelector() {
     } = useColumnFilterContext()
     const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
     const [columnFilterInput, setColumnFilterInput] = useState('')
+    const selectRef = useRef(null);
 
     useEffect(() => {
         setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
@@ -93,14 +97,17 @@ export default function ColumnSelector() {
         handleMenuState(false)
         setSelectedColumns(appliedColumns)
     }
+
     return (
         <ReactSelect
+            ref={selectRef}
             menuIsOpen={isMenuOpen}
             name="columns"
             value={selectedColumns}
             options={columnOptions}
             onChange={setSelectedColumns}
             isMulti={true}
+            autoFocus={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
             onMenuOpen={() => handleMenuState(true)}
@@ -113,13 +120,12 @@ export default function ColumnSelector() {
             onInputChange={(value, action) => {
                 if (action.action === 'input-change') setColumnFilterInput(value)
             }}
-            autoFocus
             components={{
                 Option: Option,
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,
-                MenuList,
+                MenuList: (props) => <MenuList {...props} selectRef={selectRef} />,
             }}
             styles={{
                 ...containerImageSelectStyles,
