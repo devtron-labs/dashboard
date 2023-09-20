@@ -462,17 +462,19 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     function renderAppDescription() {
         return (
-            <GenericDescription
-                isClusterTerminal={false}
-                isSuperAdmin={true}
-                appId={Number(appId)}
-                descriptionId={descriptionId}
-                initialDescriptionText={newDescription}
-                initialDescriptionUpdatedBy={newUpdatedBy}
-                initialDescriptionUpdatedOn={newUpdatedOn}
-                initialEditDescriptionView={true}
-                appMetaInfo={appMetaInfo}
-            />
+            <div className='pl-16 pr-16 pt-16 dc__border-bottom-n1' >
+                <GenericDescription
+                    isClusterTerminal={false}
+                    isSuperAdmin={true}
+                    appId={Number(appId)}
+                    descriptionId={descriptionId}
+                    initialDescriptionText={newDescription}
+                    initialDescriptionUpdatedBy={newUpdatedBy}
+                    initialDescriptionUpdatedOn={newUpdatedOn}
+                    initialEditDescriptionView={true}
+                    appMetaInfo={appMetaInfo}
+                />
+            </div>
         )
     }
 
