@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react'
+import React, { useState, useRef, useMemo, useCallback, memo } from 'react'
 import Draggable from 'react-draggable'
 import { useAsync } from '../helpers/Helpers'
 import Suggestions from './Suggestions'
@@ -18,13 +18,7 @@ import Tippy from '@tippyjs/react'
  * @param bounds - (Optional) To set the bounds of the suggestions
  * @returns
  */
-export default function FloatingVariablesSuggestions({
-    zIndex,
-    appId,
-    envId,
-    clusterId,
-    bounds,
-}: FloatingVariablesSuggestionsProps) {
+function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds }: FloatingVariablesSuggestionsProps) {
     const [isActive, setIsActive] = useState<boolean>(false)
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
@@ -94,10 +88,35 @@ export default function FloatingVariablesSuggestions({
 
     // e will be unused, but we need to pass it as a parameter since Draggable expects it
     const handleCollapsedDrag = (e, data: { x: number; y: number }) => {
+        const currentPosInScreen = {
+            x: initialPosition.x + data.x,
+            y: initialPosition.y + data.y,
+        }
+        if (
+            currentPosInScreen.y < 0 ||
+            currentPosInScreen.x < 0 ||
+            currentPosInScreen.x > window.innerWidth ||
+            currentPosInScreen.y > window.innerHeight
+        ) {
+            return
+        }
+
         setCollapsedPosition(data)
     }
 
     const handleExpandedDrag = (e, data: { x: number; y: number }) => {
+        const currentPosInScreen = {
+            x: initialPosition.x + data.x,
+            y: initialPosition.y + data.y,
+        }
+        if (
+            currentPosInScreen.y < 0 ||
+            currentPosInScreen.x < 0 ||
+            currentPosInScreen.x > window.innerWidth ||
+            currentPosInScreen.y > window.innerHeight
+        ) {
+            return
+        }
         setExpandedPosition(data)
         // Only Need to retain the collapsed position if the user has not dragged the suggestions, so need to update
         setCollapsedPosition(data)
@@ -164,3 +183,6 @@ export default function FloatingVariablesSuggestions({
         </Draggable>
     )
 }
+
+// This would save API call if the props are same
+export default memo(FloatingVariablesSuggestions)
