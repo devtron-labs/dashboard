@@ -67,6 +67,7 @@ export default function NewCDPipeline({
     downstreamNodeSize,
     getWorkflows,
     refreshParentWorkflows,
+    envIds,
 }) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -141,6 +142,7 @@ export default function NewCDPipeline({
     const [forceDeleteData, setForceDeleteData] = useState({ forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' })
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
+    const [isEnvUsedState, setIsEnvUsedState] = useState<boolean>(false)
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
     const [isAdvanced, setIsAdvanced] = useState<boolean>(!!cdPipelineId)
     const [errorCode, setErrorCode] = useState<number>()
@@ -196,7 +198,8 @@ export default function NewCDPipeline({
             getDeploymentStrategyList(appId),
             getGlobalVariable(Number(appId), true),
             getDockerRegistryMinAuth(appId, true),
-        ]).then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
+        ])
+            .then(([pipelineStrategyResponse, envResponse, dockerResponse]) => {
                 let strategies = pipelineStrategyResponse.result.pipelineStrategy || []
                 let dockerRegistries = dockerResponse.result || []
                 const _allStrategies = {}
@@ -234,7 +237,8 @@ export default function NewCDPipeline({
 
                 setGlobalVariables(_globalVariableOptions || [])
                 setDockerRegistries(dockerRegistries)
-            }).catch((error: ServerErrors) => {
+            })
+            .catch((error: ServerErrors) => {
                 showError(error)
                 setErrorCode(error.code)
                 setPageState(ViewType.ERROR)
@@ -962,6 +966,8 @@ export default function NewCDPipeline({
             getPrePostStageInEnv,
             isVirtualEnvironment,
             setInputVariablesListFromPrevStep,
+            isEnvUsedState,
+            setIsEnvUsedState
         }
     }, [
         formData,
@@ -1034,6 +1040,7 @@ export default function NewCDPipeline({
                                     parentPipelineId={parentPipelineId}
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
+                                    envIds={envIds}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
