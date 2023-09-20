@@ -61,7 +61,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                                 className="descriptor-container__upload-button bcb-5 cn-0 flexbox center p-0 dc__no-border dc__outline-none-imp dc__gap-6 dc__border-radius-4-imp mw-56"
                                 type="button"
                             >
-                                <HiddenInput handleFileUpload={handleReUpload} id="descriptor-variables-input">
+                                <HiddenInput handleFileUpload={handleReUpload} id="descriptor-variables-input" accessibleFileExtensions=".yaml, .yml, .json">
                                     <div className="flex dc__gap-6 center pt-6 pr-10 pb-6 pl-8">
                                         <ICUpload width={14} height={14} className="scn-0" />
                                         <p className="fs-13 fw-6 lh-20 m-0">Upload new file to replace</p>

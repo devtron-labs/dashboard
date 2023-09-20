@@ -37,7 +37,7 @@ export const SECRET_TOAST_INFO = {
 
 export const importConfigSecretImportFileMessaging = [
     {
-        title: '--from',
+        title: '--from-file',
         description: 'Use file name as key and file content as value (supports multi-line data)',
         isFileNameAsKey: true,
     },

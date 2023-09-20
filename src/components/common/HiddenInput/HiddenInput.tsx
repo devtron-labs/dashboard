@@ -1,13 +1,14 @@
 import React from 'react'
 import HiddenInputProps from './types'
 
-export default function HiddenInput({ handleFileUpload, children, id }: HiddenInputProps) {
+export default function HiddenInput({ handleFileUpload, children, id, accessibleFileExtensions }: HiddenInputProps) {
+    
     return (
         <>
             <input
                 type="file"
                 id={id}
-                accept=".yaml, .yml, .json"
+                accept={accessibleFileExtensions ?? "" }
                 style={{
                     display: 'none',
                 }}

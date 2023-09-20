@@ -1,4 +1,5 @@
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { FileReaderStatusType, ValidatorType } from '../common/hooks/types'
 import { CM_SECRET_STATE } from './Constants'
 
 export interface KeyValueInputInterface {
@@ -208,4 +209,13 @@ export interface InfoIconWithTippyType {
     titleText: string
     infoText: string
     documentationLink: string
+}
+
+export interface ConfigMapSecretFileReaderPopupType {
+    toggleFileReaderPopup: () => void
+    hideFileReaderPopup: () => void
+    showFileReaderPopup: boolean,
+    isDisabledClick?: boolean
+    state: ConfigMapSecretState
+    dispatch: (action: ConfigMapAction) => void
 }

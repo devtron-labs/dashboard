@@ -60,7 +60,7 @@ export default function UploadScopedVariables({
 
                 <div className="flex column center dc__gap-8 bc-n50 dc__align-self-stretch dc__border-dashed w-320 h-128 br-4">
                     {status === null ? (
-                        <HiddenInput handleFileUpload={handleFileUpload} id="upload-scoped-variables-input">
+                        <HiddenInput handleFileUpload={handleFileUpload} id="upload-scoped-variables-input" accessibleFileExtensions=".yaml, .yml, .json">
                             <div className="flex center p-8 dc__gap-4 dc__border-radius-50-per bcb-1">
                                 <ICUpload className="icon-dim-20" />
                             </div>

@@ -31,8 +31,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         readonlyView,
         draftMode,
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
-        const [showFileReaderPopup, setFileReaderPopup] = React.useState(false)
-        const { fileData, readFile } = useFileReader()
+        const [showFileReaderPopup, setFileReaderPopup] = React.useState(false) 
 
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
@@ -253,7 +252,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             return (
                 <div className="yaml-container">
                     <CodeEditor
-                        value={fileData?.data ?? value}
+                        value={value}
                         mode="yaml"
                         inline
                         height={350}
@@ -339,6 +338,10 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 setFileReaderPopup(!showFileReaderPopup)
             }
 
+            const hideFileReaderPopup = () => {
+                setFileReaderPopup(false)
+            }
+
             return (
                 <>
                     <div className="flex left mb-16">
@@ -359,10 +362,17 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         )}
 
                         {
+                           !state.external ?
                             <ConfigMapSecretFileReaderPopup
-                                readFile={readFile}
-                            />
-                        }
+                                toggleFileReaderPopup={toggleFileReaderPopup}
+                                hideFileReaderPopup={hideFileReaderPopup}
+                                showFileReaderPopup={showFileReaderPopup}
+                                dispatch={dispatch}
+                                state={state}
+                                isDisabledClick={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView) }
+                            /> : null
+                        
+                    }
                         {renderSecretShowHide()}
                     </div>
                     {componentType !== 'secret' && !state.external && state.yamlMode && (
