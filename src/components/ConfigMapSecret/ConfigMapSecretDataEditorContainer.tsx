@@ -29,6 +29,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         tempArr,
         readonlyView,
         draftMode,
+        setValidateFormError
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
@@ -55,6 +56,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
             `Key must consist of alphanumeric characters, '.', '-' and '_'`,
         )
+        setValidateFormError(error) 
         const { yaml: lockedYaml } = useKeyValueYaml(
             state.currentData?.map(({ k, v }) => ({ k, v: Array(8).fill('*').join('') })),
             setKeyValueArray,

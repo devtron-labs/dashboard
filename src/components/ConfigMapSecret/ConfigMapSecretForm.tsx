@@ -85,7 +85,7 @@ export const ConfigMapSecretForm = React.memo(
             memoizedReducer,
             initState(configMapSecretData, componentType, cmSecretStateLabel, draftMode || latestDraftData?.draftId),
         )
-
+        const [validateFormError, setValidateFormError] = React.useState<string>("")
         const { appId, envId } = useParams<{ appId; envId }>()
 
         const isChartVersion309OrBelow =
@@ -1019,6 +1019,7 @@ export const ConfigMapSecretForm = React.memo(
                                 tempArr={tempArr}
                                 readonlyView={readonlyView}
                                 draftMode={draftMode}
+                                setValidateFormError={setValidateFormError}
                             />
                         )}
                     </div>
@@ -1041,7 +1042,8 @@ export const ConfigMapSecretForm = React.memo(
                             <button
                                 disabled={
                                     (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
-                                    (draftMode && !isAppAdmin)
+                                    (draftMode && !isAppAdmin) || 
+                                    !!validateFormError
                                 }
                                 data-testid={`${componentType === 'secret' ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="button"

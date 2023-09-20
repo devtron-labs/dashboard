@@ -81,6 +81,7 @@ export interface ConfigMapSecretDataEditorContainerProps {
     tempArr
     readonlyView: boolean
     draftMode: boolean
+    setValidateFormError: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface DraftDetailsForCommentDrawerType {
