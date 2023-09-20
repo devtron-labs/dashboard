@@ -102,15 +102,15 @@ export default function BuildCD({
     }
 
     const selectEnvironment = (selection: Environment): void => {
-        if (envIds.includes(selection.id)){
-            setIsEnvUsedState(true)
-        }else {
-            setIsEnvUsedState(false)
-        }
         const _form = { ...formData }
         const _formDataErrorObj = { ...formDataErrorObj }
 
         if (selection) {
+            if (envIds.includes(selection.id)) {
+                setIsEnvUsedState(true)
+            } else {
+                setIsEnvUsedState(false)
+            }
             _form.environmentId = selection.id
             _form.environmentName = selection.name
             _form.namespace = selection.namespace
@@ -140,7 +140,9 @@ export default function BuildCD({
                 _form.deploymentAppType,
                 selection.isVirtualEnvironment,
             )
-            _form.generatedHelmPushAction = selection.isVirtualEnvironment ? GeneratedHelmPush.DO_NOT_PUSH : GeneratedHelmPush.PUSH
+            _form.generatedHelmPushAction = selection.isVirtualEnvironment
+                ? GeneratedHelmPush.DO_NOT_PUSH
+                : GeneratedHelmPush.PUSH
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)

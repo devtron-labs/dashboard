@@ -102,7 +102,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 let isDeletionInProgress
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
-                        this.state.envIds.push(node.environmentId)
+                        this.setState({
+                            envIds: [...this.state.envIds, node.environmentId]
+                        })
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
