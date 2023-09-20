@@ -2,7 +2,13 @@ import React, { useState, useEffect, useContext, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
 import { List } from '../../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    useEffectAfterMount,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
@@ -10,7 +16,7 @@ import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
 import { marked } from 'marked'
-import * as DOMPurify from 'dompurify';
+import * as DOMPurify from 'dompurify'
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
@@ -332,7 +338,13 @@ const Deployment: React.FC<DeploymentProps> = ({
     return (
         <div className="deployment-container chart-deployment flex column left white-card white-card--chart-detail">
             <div className="dc__chart-grid-item__icon-wrapper">
-                <img src={icon} onError={handleImageError} className="dc__chart-grid-item__icon" alt="chart icon" data-testid="chart-type-image" />
+                <img
+                    src={icon}
+                    onError={handleImageError}
+                    className="dc__chart-grid-item__icon"
+                    alt="chart icon"
+                    data-testid="chart-type-image"
+                />
             </div>
             <div className="mb-16">
                 <div className="repository" data-testid="chart-type">
@@ -345,10 +357,20 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <button type="button" className="flex cta h-36" data-testid="configure-and-deploy-button"onClick={handleDeploy}>
+            <button
+                type="button"
+                className="flex cta h-36"
+                data-testid="configure-and-deploy-button"
+                onClick={handleDeploy}
+            >
                 Configure & Deploy
             </button>
-            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" data-testid="preset-values-button" onClick={openSavedValuesList}>
+            <button
+                type="button"
+                className="flex cta h-36 cb-5 cancel mt-8"
+                data-testid="preset-values-button"
+                onClick={openSavedValuesList}
+            >
                 Preset values
             </button>
         </div>
@@ -378,28 +400,34 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     )
 }
 
-function isReadmeInputCheckbox(text: string) { 
-    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) { 
-        return true;
+function isReadmeInputCheckbox(text: string) {
+    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) {
+        return true
     }
-    return false;
+    return false
 }
 export function MarkDown({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
-    const mdeRef = useRef(null);
+    const mdeRef = useRef(null)
 
     renderer.listitem = function (text: string) {
         if (isReadmeInputCheckbox(text)) {
             text = text
-            .replace(uncheckedCheckboxInputElement , '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>')
-            .replace(checkedCheckboxInputElement, '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>');
-            return `<li style="list-style: none">${text}</li>`     
-        } 
-        return `<li>${text}</li>`;     
-    };
+                .replace(
+                    uncheckedCheckboxInputElement,
+                    '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>',
+                )
+                .replace(
+                    checkedCheckboxInputElement,
+                    '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>',
+                )
+            return `<li style="list-style: none">${text}</li>`
+        }
+        return `<li>${text}</li>`
+    }
 
-    renderer.image = function (href: string, title: string, text: string) { 
+    renderer.image = function (href: string, title: string, text: string) {
         return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
     }
 
@@ -415,8 +443,8 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
     }
 
     renderer.heading = function (text, level) {
-        const escapedText = disableEscapedText? "" :text.toLowerCase().replace(/[^\w]+/g, '-')
-          
+        const escapedText = disableEscapedText ? '' : text.toLowerCase().replace(/[^\w]+/g, '-')
+
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
                 <h${level} data-testid="deployment-template-readme-version">

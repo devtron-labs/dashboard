@@ -27,7 +27,7 @@ function EnvironmentStatusComponent({
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
     isHelmApp,
-    refetchDeploymentStatus
+    refetchDeploymentStatus,
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -167,7 +167,8 @@ function EnvironmentStatusComponent({
 
     const renderLastUpdatedBlock = () => {
         return (
-            appDetails?.lastDeployedTime && appDetails?.appType !== "external_helm_chart" && (
+            appDetails?.lastDeployedTime &&
+            appDetails?.appType !== 'external_helm_chart' && (
                 <DeploymentStatusCard
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
@@ -198,7 +199,13 @@ function EnvironmentStatusComponent({
                         {appDetails.appStoreChartName && (
                             <span data-testid="chart-name-value">{appDetails.appStoreChartName}/</span>
                         )}
-                        {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                        <Link
+                            className="cb-5 fw-6"
+                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                            style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
+                        >
+                            {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                        </Link>
                     </div>
                     <div className="flex left">
                         {notes && (
@@ -211,16 +218,6 @@ function EnvironmentStatusComponent({
                             </div>
                         )}
                         {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
-                        {appDetails.appStoreChartId && (
-                            <div data-testid="view-chart-button">
-                                <Link
-                                    className="cb-5 fw-6"
-                                    to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                >
-                                    View Chart
-                                </Link>
-                            </div>
-                        )}
                     </div>
                 </div>
             )
