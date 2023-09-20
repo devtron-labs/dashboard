@@ -39,6 +39,8 @@ function DeleteComponent({
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
+            } else {
+                showError(serverError)
             }
             showError(serverError)
         } finally {
