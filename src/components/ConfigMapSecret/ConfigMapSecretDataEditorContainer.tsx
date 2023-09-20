@@ -56,32 +56,14 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             `Key must consist of alphanumeric characters, '.', '-' and '_'`,
         )
 
-        const randerValidationError = (error: string): JSX.Element => {
-            if (!error) {
-                if (state.isValidateFormError) {
-                    dispatch({
-                        type: ConfigMapActionTypes.setValidateFormError,
-                        payload: false,
-                    })
-                }
-                return null
-            }
-
-            // set validation error for blocking save operation
-            if (!state.isValidateFormError) {
-                dispatch({
-                    type: ConfigMapActionTypes.setValidateFormError,
-                    payload: true,
-                })
-            } 
-
-            return (
-                <div className="validation-error-block">
-                    <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
-                    <div>{error}</div>
-                </div>
-            )
+        if (state.isValidateFormError !== !!error) {
+            console.log('error', error, state.isValidateFormError)
+            dispatch({
+                type: ConfigMapActionTypes.setValidateFormError,
+                payload: !!error,
+            })
         }
+
 
         const { yaml: lockedYaml } = useKeyValueYaml(
             state.currentData?.map(({ k, v }) => ({ k, v: Array(8).fill('*').join('') })),
@@ -311,7 +293,10 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>
-                        {!state.external && randerValidationError(error)}
+                        {!state.external && error &&  <div className="validation-error-block">
+                    <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
+                    <div>{error}</div>
+                </div>}
                     </CodeEditor>
                 </div>
             )
