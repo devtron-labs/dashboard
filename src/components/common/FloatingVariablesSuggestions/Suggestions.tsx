@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback } from 'react'
+import React, { useState, memo, useCallback, useEffect } from 'react'
 import { GenericEmptyState, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import SuggestionItem from './SuggestionItem'
@@ -10,11 +10,15 @@ import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
 function Suggestions({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) {
-    const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables ?? [])
+    const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables)
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [highlightText, setHighlightText] = useState<string>('')
 
     const enableSearch = !loading && !error && !!variables?.length
+
+    useEffect(() => {
+        setSuggestions(variables)
+    }, [variables])
 
     const onSearch = useCallback(
         (text: string) => {
@@ -117,7 +121,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         if (loading) {
             return (
                 <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1 h-200">
-                    <Progressing pageLoader />
+                    <Progressing pageLoader size={32} />
                 </div>
             )
         }

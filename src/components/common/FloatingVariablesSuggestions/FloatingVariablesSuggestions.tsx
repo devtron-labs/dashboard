@@ -52,26 +52,15 @@ export default function FloatingVariablesSuggestions({
             y: initialPosition.y + collapsedPosition.y,
         }
 
-        // The fixed height is 58+54+45 = 157px, taking it as 170px
-        // In case of no variables, the height is 58+45 = 103px, to have some buffer taking it as 120px
-        // In case of loading, not computing the height since the height is going to change
-        // In case of no variables the height is going to be 120+200 = 320px
-        const calculatedHeight =
-            !loadingScopedVariables && !error && !variablesData?.result
-                ? 320
-                : variablesData?.result?.length <= 3
-                ? variablesData.result.length * 100 + 170
-                : null
-
         setExpandedPosition({
             x: collapsedPosition.x,
             y: collapsedPosition.y,
         })
 
-        if (currentPosInScreen.y > window.innerHeight - (calculatedHeight ?? SUGGESTIONS_SIZE.height)) {
+        if (currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height) {
             setExpandedPosition({
                 x: collapsedPosition.x,
-                y: window.innerHeight - (calculatedHeight ?? SUGGESTIONS_SIZE.height) - initialPosition.y,
+                y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }
 
@@ -84,11 +73,11 @@ export default function FloatingVariablesSuggestions({
 
         if (
             currentPosInScreen.x > window.innerWidth - SUGGESTIONS_SIZE.width &&
-            currentPosInScreen.y > window.innerHeight - (calculatedHeight ?? SUGGESTIONS_SIZE.height)
+            currentPosInScreen.y > window.innerHeight - SUGGESTIONS_SIZE.height
         ) {
             setExpandedPosition({
                 x: window.innerWidth - SUGGESTIONS_SIZE.width - initialPosition.x,
-                y: window.innerHeight - (calculatedHeight ?? SUGGESTIONS_SIZE.height) - initialPosition.y,
+                y: window.innerHeight - SUGGESTIONS_SIZE.height - initialPosition.y,
             })
         }
 
