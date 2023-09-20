@@ -81,7 +81,6 @@ export interface ConfigMapSecretDataEditorContainerProps {
     tempArr
     readonlyView: boolean
     draftMode: boolean
-    setValidateFormError: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface DraftDetailsForCommentDrawerType {
@@ -165,6 +164,7 @@ export interface ConfigMapState {
     showProtectedDeleteModal: boolean
     showProtectedDeleteOverrideModal: boolean
     draftPayload: any
+    isValidateFormError: boolean
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
@@ -198,6 +198,7 @@ export enum ConfigMapActionTypes {
     toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
     toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
+    setValidateFormError = 'setValidateFormError',
 }
 
 export interface ConfigMapAction {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Info, RadioGroup } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
@@ -29,7 +29,6 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         tempArr,
         readonlyView,
         draftMode,
-        setValidateFormError
     }: ConfigMapSecretDataEditorContainerProps): JSX.Element => {
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
@@ -56,7 +55,35 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
             `Key must consist of alphanumeric characters, '.', '-' and '_'`,
         )
-        setValidateFormError(error) 
+
+        const randerValidationError = (error: string): JSX.Element => {
+            console.log(error)
+            if (!error) {
+                if (state.isValidateFormError) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setValidateFormError,
+                        payload: false,
+                    })
+                }
+                return null
+            }
+
+            // set validation error for blocking save operation
+            if (!state.isValidateFormError) {
+                dispatch({
+                    type: ConfigMapActionTypes.setValidateFormError,
+                    payload: true,
+                })
+            } 
+
+            return (
+                <div className="validation-error-block">
+                    <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
+                    <div>{error}</div>
+                </div>
+            )
+        }
+
         const { yaml: lockedYaml } = useKeyValueYaml(
             state.currentData?.map(({ k, v }) => ({ k, v: Array(8).fill('*').join('') })),
             setKeyValueArray,
@@ -285,12 +312,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
                             <CodeEditor.Clipboard />
                         </CodeEditor.Header>
-                        {!state.external && error && (
-                            <div className="validation-error-block">
-                                <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
-                                <div>{error}</div>
-                            </div>
-                        )}
+                        {!state.external && randerValidationError(error)}
                     </CodeEditor>
                 </div>
             )
