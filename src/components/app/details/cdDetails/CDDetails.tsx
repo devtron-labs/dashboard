@@ -526,7 +526,7 @@ export const TriggerOutput: React.FC<{
             <HistoryLogs
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
-                loading={(triggerDetailsLoading && !triggerDetailsResult) || !triggerDetails || (areTagDetailsRequired && !tagDetailsResult)}
+                loading={triggerDetailsLoading || !triggerDetails || (areTagDetailsRequired && !tagDetailsResult)}
                 userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
                 triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}

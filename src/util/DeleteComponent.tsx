@@ -42,7 +42,6 @@ function DeleteComponent({
             } else {
                 showError(serverError)
             }
-            showError(serverError)
         } finally {
             setDeleting(false)
         }
