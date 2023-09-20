@@ -16,6 +16,14 @@ jest.mock('../../helpers/Helpers', () => ({
     useAsync: jest.fn(),
 }))
 
+window.ResizeObserver =
+    window.ResizeObserver ||
+    jest.fn().mockImplementation(() => ({
+        disconnect: jest.fn(),
+        observe: jest.fn(),
+        unobserve: jest.fn(),
+    }))
+
 describe('When FloatingVariablesSuggestions mounts', () => {
     beforeEach(() => {
         jest.clearAllMocks()
