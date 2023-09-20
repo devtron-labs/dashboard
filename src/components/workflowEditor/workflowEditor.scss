@@ -107,6 +107,7 @@
 
 .floating-scoped-variables-widget {
     z-index: 21;
-    margin-right: 104px;
-    margin-top: -148px;
+	position: fixed;
+	bottom: 108px;
+	right: 96px;
 }

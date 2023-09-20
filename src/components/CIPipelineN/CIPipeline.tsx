@@ -821,7 +821,7 @@ export default function CIPipeline({
         if (isJobView && activeStageName === BuildStageVariable.PreBuild) {
             return (
                 <div className="flexbox dc__content-end floating-scoped-variables-widget">
-                    <div>
+                    <div className="floating-scoped-variables-widget">
                         <FloatingVariablesSuggestions
                             zIndex={21}
                             appId={appId}
@@ -836,7 +836,7 @@ export default function CIPipeline({
         if (activeStageName === BuildStageVariable.PreBuild || activeStageName === BuildStageVariable.PostBuild) {
             return (
                 <div className="flexbox dc__content-end floating-scoped-variables-widget">
-                    <div>
+                    <div className="floating-scoped-variables-widget">
                         <FloatingVariablesSuggestions zIndex={21} appId={appId} />
                     </div>
                 </div>
