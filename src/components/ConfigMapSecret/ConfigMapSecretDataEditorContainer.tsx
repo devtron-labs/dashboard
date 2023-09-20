@@ -57,7 +57,6 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         )
 
         if (state.isValidateFormError !== !!error) {
-            console.log('error', error, state.isValidateFormError)
             dispatch({
                 type: ConfigMapActionTypes.setValidateFormError,
                 payload: !!error,
