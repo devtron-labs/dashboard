@@ -1096,24 +1096,20 @@ export default function NewCDPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES) return <></>
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
 
-        if (activeStageName === BuildStageVariable.PreBuild || activeStageName === BuildStageVariable.PostBuild) {
-            return (
-                <div className="flexbox">
-                    <div className="floating-scoped-variables-widget">
-                        <FloatingVariablesSuggestions
-                            zIndex={21}
-                            appId={appId}
-                            envId={formData?.environmentId ? String(formData.environmentId) : null}
-                            clusterId={formData?.clusterId}
-                        />
-                    </div>
+        return (
+            <div className="flexbox">
+                <div className="floating-scoped-variables-widget">
+                    <FloatingVariablesSuggestions
+                        zIndex={21}
+                        appId={appId}
+                        envId={formData?.environmentId ? String(formData.environmentId) : null}
+                        clusterId={formData?.clusterId}
+                    />
                 </div>
-            )
-        }
-
-        return <></>
+            </div>
+        )
     }
 
     return cdPipelineId || isAdvanced ? (

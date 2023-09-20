@@ -816,34 +816,20 @@ export default function CIPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES) return <></>
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
 
-        if (isJobView && activeStageName === BuildStageVariable.PreBuild) {
-            return (
-                <div className="flexbox">
-                    <div className="floating-scoped-variables-widget">
-                        <FloatingVariablesSuggestions
-                            zIndex={21}
-                            appId={appId}
-                            envId={selectedEnv?.id ? String(selectedEnv.id) : null}
-                            clusterId={selectedEnv?.clusterId}
-                        />
-                    </div>
+        return (
+            <div className="flexbox">
+                <div className="floating-scoped-variables-widget">
+                    <FloatingVariablesSuggestions
+                        zIndex={21}
+                        appId={appId}
+                        envId={selectedEnv?.id ? String(selectedEnv.id) : null}
+                        clusterId={selectedEnv?.clusterId}
+                    />
                 </div>
-            )
-        }
-
-        if (activeStageName === BuildStageVariable.PreBuild || activeStageName === BuildStageVariable.PostBuild) {
-            return (
-                <div className="flexbox">
-                    <div className="floating-scoped-variables-widget">
-                        <FloatingVariablesSuggestions zIndex={21} appId={appId} />
-                    </div>
-                </div>
-            )
-        }
-
-        return <></>
+            </div>
+        )
     }
 
     return ciPipelineId || isAdvanced ? (
