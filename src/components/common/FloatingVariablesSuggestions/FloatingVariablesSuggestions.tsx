@@ -6,7 +6,7 @@ import Suggestions from './Suggestions'
 import { getScopedVariables } from './service'
 import { FloatingVariablesSuggestionsProps } from './types'
 import { ReactComponent as ICDrag } from '../../../assets/icons/drag.svg'
-import { ReactComponent as ICGridView } from '../../../assets/icons/ic-grid-view.svg'
+import { ReactComponent as ICVariable } from '../../../assets/icons/ic-variable.svg'
 import { SUGGESTIONS_SIZE } from './constants'
 import Tippy from '@tippyjs/react'
 
@@ -158,8 +158,8 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
                     ref={nodeRef}
                     data-testid="collapsed-state"
                 >
-                    <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-20">
-                        <ICDrag className="handle-drag dc__grabbable scn-4 icon-dim-20" />
+                    <button type="button" className="dc__outline-none-imp dc__no-border p-0 bcn-7 h-24">
+                        <ICDrag className="handle-drag dc__grabbable icon-dim-24 fcn-2" />
                     </button>
 
                     <Tippy content="Scoped variables" placement="top" className="default-tt" arrow={false}>
@@ -169,8 +169,7 @@ function FloatingVariablesSuggestions({ zIndex, appId, envId, clusterId, bounds 
                             onClick={handleActivation}
                             data-testid="activate-suggestions"
                         >
-                            {/* DUMMY ICON */}
-                            <ICGridView className="scn-0 icon-dim-20" />
+                            <ICVariable className="scn-0 icon-dim-20" />
                         </button>
                     </Tippy>
                 </div>

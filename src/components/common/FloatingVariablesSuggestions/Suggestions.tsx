@@ -4,6 +4,7 @@ import DebouncedSearch from '../DebouncedSearch/DebouncedSearch'
 import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as ICVariable } from '../../../assets/icons/ic-variable.svg'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
 import { SuggestionsProps, SuggestionType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
@@ -55,7 +56,11 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         <div className="flexbox-col dc__align-self-stretch">
             <div className="handle-drag flexbox pt-8 pl-12 pr-12 dc__gap-16 dc__align-start dc__align-self-stretch bcn-7 dc__grabbable">
                 <div className="flexbox-col dc__content-center dc__align-start flex-grow-1 dc__no-shrink">
-                    <p className="m-0 cn-0 fs-13 fw-6 lh-20 dc__align-self-stretch">Scoped variables</p>
+                    <div className="flex center dc__gap-4">
+                        <p className="m-0 cn-0 fs-13 fw-6 lh-20 dc__align-self-stretch">Scoped variables</p>
+
+                        <ICVariable className="icon-dim-16 scn-0" />
+                    </div>
 
                     <p className="dc__align-self-stretch c-n50 fs-12 fw-4 lh-20">Use variable to set dynamic value</p>
                 </div>
