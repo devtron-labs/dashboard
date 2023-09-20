@@ -240,6 +240,8 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
+    SCOPED_GLOBAL_VARIABLES: 'global/variables',
+    SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk'
 }
 
