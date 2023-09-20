@@ -62,7 +62,7 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
                         <ICVariable className="icon-dim-16 scn-0" />
                     </div>
 
-                    <p className="dc__align-self-stretch c-n50 fs-12 fw-4 lh-20">Use variable to set dynamic value</p>
+                    <p className="dc__align-self-stretch c-n50 fs-12 fw-1 lh-20">Use variable to set dynamic value</p>
                 </div>
 
                 <div className="h-100">
