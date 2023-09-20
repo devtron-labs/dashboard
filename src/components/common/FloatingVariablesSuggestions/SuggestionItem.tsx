@@ -25,7 +25,12 @@ export default function SuggestionItem({
     const highlightedText = (text: string): string => {
         if (highlightText === '') return text
 
-        return text.replace(new RegExp(highlightText, 'gi'), (match) => `<span class="bcy-2">${match}</span>`)
+        try {
+            const regex = new RegExp(highlightText, 'gi')
+            return text.replace(regex, (match) => `<span class="bcy-2">${match}</span>`)
+        } catch (error) {
+            return text
+        }
     }
 
     const renderDescription = (): JSX.Element => {
