@@ -80,7 +80,7 @@ export default function ChartGroupUpdate({}) {
         try {
             const requestBody = {
                 id: Number(groupId),
-                name:state.name,
+                name: state.name,
                 chartGroupEntries: state.charts.map((chart: ChartGroupEntry) => {
                     const result = {
                         ...(chart.installedId ? { id: chart.installedId } : {}),
