@@ -308,7 +308,7 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
-export enum NewSortBy {
+export enum AppListColumnSort {
     appNameSort = 'appName',
     lastDeployedSort = 'lastDeployedAt'
 }

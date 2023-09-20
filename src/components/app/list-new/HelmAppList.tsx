@@ -46,7 +46,7 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import AppStatus from '../AppStatus'
-import { NewSortBy } from '../types'
+import { AppListColumnSort } from '../types'
 
 export default function HelmAppList({
     serverMode,
@@ -297,7 +297,7 @@ export default function HelmAppList({
             )
         }
         
-        const dynamicSortBy = NewSortBy[_sortBy];
+        const dynamicSortBy = AppListColumnSort[_sortBy];
         
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
