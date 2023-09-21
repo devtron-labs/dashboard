@@ -155,9 +155,10 @@ const AppDetailsComponent = ({
             !appDetails?.resourceTree?.nodes?.length &&
             appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
             appDetails?.helmReleaseStatus &&
-            (appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
-                appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING ||
-                appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN)
+            appDetails.helmReleaseStatus.status &&
+            (appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
+                appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING ||
+                appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN)
         ) {
             return (
                 <ReleaseStatusEmptyState
