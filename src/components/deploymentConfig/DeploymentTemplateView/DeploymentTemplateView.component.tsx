@@ -158,16 +158,6 @@ export const CompareWithDropdown = ({
         _initOptions()
     }, [environments, charts, isValues])
 
-    const getSelectedOption = () => {
-        if (isEnvOverride) {
-            const currentEnv = environments.find((env) => +envId === env.id)
-            if (currentEnv?.value) {
-                return currentEnv
-            }
-        }
-        return baseTemplateOption
-    }
-
     const _initOptions = () => {
         const _groupOptions = []
 
@@ -193,6 +183,19 @@ export const CompareWithDropdown = ({
                 })),
             }
         })
+
+        const getSelectedOption = () => {
+            if (isEnvOverride) {
+                const currentEnv = _groupOptions[getPosition(isValues, isEnvOverride, 2)].options.find(
+                    (option) => option.environmentName === envName,
+                )
+
+                if (currentEnv?.label) {
+                    return currentEnv
+                }
+            }
+            return baseTemplateOption
+        }
 
         setGroupedOptions(_groupOptions)
         setSelectedOption(getSelectedOption())
