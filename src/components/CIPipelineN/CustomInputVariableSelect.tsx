@@ -115,7 +115,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 : 'pluginRefStepDetail'
         const _formData = { ...formData }
         let _variableDetail
-        if (selectedValue?.['refVariableStepIndex']) {
+        if (selectedValue['refVariableStepIndex']) {
             _variableDetail = {
                 value: '',
                 variableType: RefVariableType.FROM_PREVIOUS_STEP,
@@ -124,7 +124,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 format: selectedValue['format'],
                 refVariableStage: selectedValue['refVariableStage'],
             }
-        } else if (selectedValue?.['variableType'] === RefVariableType.GLOBAL) {
+        } else if (selectedValue['variableType'] === RefVariableType.GLOBAL) {
             _variableDetail = {
                 variableType: RefVariableType.GLOBAL,
                 refVariableStepIndex: 0,
@@ -144,9 +144,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         let _inputVariables =
             _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
                 selectedVariableIndex
-            ] ? _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].inputVariables[
-                selectedVariableIndex
-            ] : ""
+            ]
         if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
             _variableDetail.format = _inputVariables.format
         }
@@ -184,10 +182,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         <InputPluginSelection
             placeholder='Select source or input value'
             selectedOutputVariable={selectedOutputVariable}
-            setTagData={handleOutputVariableSelector}
-            tagData={selectedOutputVariable}
+            setVariableData={handleOutputVariableSelector}
+            variableData={selectedOutputVariable}
             refVar={refVar}
-            tagOptions={inputVariableOptions}
+            variableOptions={inputVariableOptions}
             variableType={selectedOutputVariable.format}
             selectedVariableIndex={selectedVariableIndex}
         />
