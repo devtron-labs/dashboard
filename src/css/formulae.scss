@@ -145,7 +145,7 @@ $color-suffix: 00;
 }
 
 // border-radius
-@for $i from 0 through 48 {
+@for $i from 0 through 16 {
     .br-#{$i} {
         border-radius: 0px + $i;
     }
