@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import * as DOMPurify from 'dompurify'
 import ClipboardButton from '../ClipboardButton/ClipboardButton'
@@ -14,7 +14,7 @@ export default function SuggestionItem({
 }: SuggestionsItemProps) {
     const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
 
-    const handleCopyTrigger = useCallback(() => setTriggerCopy(true), [])
+    const handleCopyTrigger = () => setTriggerCopy(true)
 
     const sanitiseVariableValue = (value): JSX.Element => {
         if (isRedacted) return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
