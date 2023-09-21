@@ -184,7 +184,7 @@ export default function DeploymentTemplateEditorView({
                             : state.fetchedValues[state.selectedCompareOption?.id]) || ''
                     }
                     value={value}
-                    chartVersion={state.selectedChart?.version.replace(',', '-')}
+                    chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
