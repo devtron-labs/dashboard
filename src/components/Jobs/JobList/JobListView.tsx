@@ -132,7 +132,7 @@ export default function JobListView(props: JobListViewProps) {
         const icon = props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
         return (
             <div className="app-list" data-testid="job-list-container">
-                <div className="app-list__header dc__border-bottom">
+                <div className="app-list__header dc__border-bottom dc__position-sticky dc__top-47">
                     <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
                         <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
                     </div>

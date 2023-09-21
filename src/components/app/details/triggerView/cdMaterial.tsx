@@ -980,7 +980,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             }
         }
         return (
-            <Tippy className="default-tt cursor" arrow={false} content={'Config Diff from Last Deployed'}>
+            <Tippy
+                className="default-tt cursor"
+                arrow={false}
+                content={(diffFound ? 'Config' : 'No config') + ' diff from last deployed'}
+            >
                 <div
                     className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
                         _canReviewConfig ? 'cursor' : 'config-not-found'
