@@ -672,17 +672,6 @@
             margin: 0;
         }
     }
-    &:hover {
-        .trigger-modal__config-diff-status {
-            &:not(.config-not-found) {
-                .config-diff-status {
-                    &::after {
-                        content: ' from Last Deployed';
-                    }
-                }
-            }
-        }
-    }
 }
 .trigger-modal__config-diff-status {
     &:not(.config-not-found):hover {

@@ -217,7 +217,6 @@ function EnvironmentStatusComponent({
                                 <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                             </div>
                         )}
-                        {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
                     </div>
                 </div>
             )
