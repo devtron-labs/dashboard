@@ -72,14 +72,14 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     isCiPipeline: boolean
     environments: AppEnvironment[]
     isProtected: boolean
-    reloadEnvironments: ()=> void
+    reloadEnvironments: () => void
 }
 
 export interface DeploymentChartVersionType {
     id: number | string
     version: string
     chartRefId: number
-    type:number
+    type: number
     pipelineConfigOverrideId: number
     name: string
     description?: string
@@ -137,11 +137,11 @@ export interface CompareWithApprovalPendingAndDraftProps {
     isDeleteDraftState: boolean
     setShowDraftData: (show: boolean) => void
     isValues: boolean
-    selectedOptionDraft:any
+    selectedOptionDraft: any
     setSelectedOptionDraft: any
 }
 
-export interface compareApprovalAndDraftSelectedOption {
+export interface CompareApprovalAndDraftSelectedOption {
     id: number
     label: string
 }
@@ -337,19 +337,19 @@ export interface DeploymentConfigStateType {
     isOverride: boolean
     isValues: boolean
     loadingManifest: boolean
-    manifestDataRHS:string
-    manifestDataLHS:string
+    manifestDataRHS: string
+    manifestDataLHS: string
     groupedOptionsData: Array<Object>
-    isValuesOverride:boolean,
-    manifestDataRHSOverride:string
-    manifestDataLHSOverride:string
+    isValuesOverride: boolean
+    manifestDataRHSOverride: string
+    manifestDataLHSOverride: string
     groupedOptionsDataOverride: Array<Object>
     loadingManifestOverride: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
-    draftValues: string,
+    draftValues: string
     showSaveChangsModal: boolean
     allDrafts: any[]
     latestDraft: any

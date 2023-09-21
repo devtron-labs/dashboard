@@ -1,4 +1,4 @@
-import React, { Reducer, createContext, useContext, useEffect, useReducer, useState } from 'react'
+import React, { Reducer, createContext, useContext, useEffect, useReducer } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
@@ -502,7 +502,7 @@ export default function DeploymentConfig({
             }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
-            if(!state.isValues) return // don't set flag when in manifest view
+            if (!state.isValues) return // don't set flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -652,7 +652,7 @@ export default function DeploymentConfig({
         values
             .then((res) => {
                 setLoadingManifest(false)
-                
+
                 const [_manifestDataRHS, _manifestDataLHS] = res
                 setManifestDataRHS(_manifestDataRHS)
                 setManifestDataLHS(_manifestDataLHS)
@@ -691,36 +691,33 @@ export default function DeploymentConfig({
 
     const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)
 
-const renderEditorComponent = () => {
-    if (readOnlyPublishedMode && !state.showReadme) {
-      return (
-        <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
-      );
-    }
-  
-    if (state.loadingManifest) {
-      return (
-        <div className="h-100vh">
-          <Progressing pageLoader />
-        </div>
-      );
-    }
+    const renderEditorComponent = () => {
+        if (readOnlyPublishedMode && !state.showReadme) {
+            return <DeploymentTemplateReadOnlyEditorView value={state.publishedState?.tempFormData} />
+        }
 
-    const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
-  
-    return (
-      <DeploymentTemplateEditorView
-        defaultValue={state.isValues ? state.publishedState?.tempFormData ?? state.data : state.manifestDataLHS}
-        value={state.isValues ? valuesDataRHS : state.manifestDataRHS}
-        globalChartRefId={state.selectedChartRefId}
-        editorOnChange={editorOnChange}
-        readOnly={isCompareAndApprovalState || !state.isValues}
-        isValues={state.isValues}
-        groupedData={state.groupedOptionsData}
-      />
-    );
-  };
+        if (state.loadingManifest) {
+            return (
+                <div className="h-100vh">
+                    <Progressing pageLoader />
+                </div>
+            )
+        }
 
+        const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
+
+        return (
+            <DeploymentTemplateEditorView
+                defaultValue={state.isValues ? state.publishedState?.tempFormData ?? state.data : state.manifestDataLHS}
+                value={state.isValues ? valuesDataRHS : state.manifestDataRHS}
+                globalChartRefId={state.selectedChartRefId}
+                editorOnChange={editorOnChange}
+                readOnly={isCompareAndApprovalState || !state.isValues}
+                isValues={state.isValues}
+                groupedData={state.groupedOptionsData}
+            />
+        )
+    }
 
     const renderValuesView = () => (
         <form
@@ -735,27 +732,27 @@ const renderEditorComponent = () => {
                 disableVersionSelect={readOnlyPublishedMode}
                 isValues={state.isValues}
             />
-                {renderEditorComponent()}
-                <DeploymentConfigFormCTA
-                    loading={state.loading || state.chartConfigLoading}
-                    showAppMetricsToggle={
-                        state.charts &&
-                        state.selectedChart &&
-                        window._env_?.APPLICATION_METRICS_ENABLED &&
-                        grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
-                        state.yamlMode
-                    }
-                    isAppMetricsEnabled={
-                        readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
-                    }
-                    isCiPipeline={isCiPipeline}
-                    toggleAppMetrics={toggleAppMetrics}
-                    isPublishedMode={readOnlyPublishedMode}
-                    reload={initialise}
-                    isValues={state.isValues}
-                />
-            </form>
-        )
+            {renderEditorComponent()}
+            <DeploymentConfigFormCTA
+                loading={state.loading || state.chartConfigLoading}
+                showAppMetricsToggle={
+                    state.charts &&
+                    state.selectedChart &&
+                    window._env_?.APPLICATION_METRICS_ENABLED &&
+                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED &&
+                    state.yamlMode
+                }
+                isAppMetricsEnabled={
+                    readOnlyPublishedMode ? state.publishedState?.isAppMetricsEnabled : state.isAppMetricsEnabled
+                }
+                isCiPipeline={isCiPipeline}
+                toggleAppMetrics={toggleAppMetrics}
+                isPublishedMode={readOnlyPublishedMode}
+                reload={initialise}
+                isValues={state.isValues}
+            />
+        </form>
+    )
 
     const getValueForContext = () => ({
         isUnSet: readOnlyPublishedMode ? false : isUnSet,

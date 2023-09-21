@@ -17,7 +17,6 @@ import {
     DeploymentConfigStateActionTypes,
     DropdownContainerProps,
     DropdownItemProps,
-    compareApprovalAndDraftSelectedOption,
 } from '../types'
 import {
     DEPLOYMENT_TEMPLATE_LABELS_KEYS,
@@ -33,7 +32,6 @@ import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
-import { get } from 'http'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,

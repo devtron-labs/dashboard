@@ -4,7 +4,7 @@ import {
     DeploymentConfigContextType,
     DeploymentConfigStateActionTypes,
     DeploymentTemplateEditorViewProps,
-    compareApprovalAndDraftSelectedOption,
+    CompareApprovalAndDraftSelectedOption,
 } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, getApprovalPendingOption } from '../constants'
 import { versionComparator } from '../../common'
@@ -49,18 +49,20 @@ export default function DeploymentTemplateEditorView({
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
-    const [selectedOptionDraft, setSelectedOptionDraft] = useState<compareApprovalAndDraftSelectedOption>(getApprovalPendingOption(state.selectedChart?.version))
+    const [selectedOptionDraft, setSelectedOptionDraft] = useState<CompareApprovalAndDraftSelectedOption>(
+        getApprovalPendingOption(state.selectedChart?.version),
+    )
 
     const getLocalDaftManifest = async () => {
         const request = {
             appId: +appId,
             chartRefId: state.selectedChartRefId,
             getValues: false,
-            values: state.tempFormData? state.tempFormData:state.draftValues
+            values: state.tempFormData ? state.tempFormData : state.draftValues,
         }
 
         const response = await getDeploymentManisfest(request)
-        
+
         return response.result.data
     }
 
@@ -241,12 +243,12 @@ export default function DeploymentTemplateEditorView({
     // choose LHS value for comparison
     const selectedOptionId = state.selectedCompareOption?.id || -1
     const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId)
-    const source = isValues ? state.fetchedValues : state.fetchedValuesManifest;
-    const valueLHS = (isIdMatch ? defaultValue : source[selectedOptionId]) || '';
+    const source = isValues ? state.fetchedValues : state.fetchedValuesManifest
+    const valueLHS = (isIdMatch ? defaultValue : source[selectedOptionId]) || ''
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
-    const selectedData = isValues ? (state.tempFormData || state.draftValues) : draftManifestData
+    const selectedData = isValues ? state.tempFormData || state.draftValues : draftManifestData
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     const renderCodeEditorHeading = () => (
