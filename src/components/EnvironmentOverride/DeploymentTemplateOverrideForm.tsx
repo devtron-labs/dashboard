@@ -50,7 +50,7 @@ export default function DeploymentTemplateOverrideForm({
     manifestDataRHS,
     manifestDataLHS,
     setManifestDataRHS,
-    setManifestDataLHS
+    setManifestDataLHS,
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -400,21 +400,22 @@ export default function DeploymentTemplateOverrideForm({
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             const readOnlyData = getCodeEditorValueForReadOnly()
-            codeEditorValue = await fetchManifestData(readOnlyData)
+            codeEditorValue = readOnlyData
         } else if (isCompareAndApprovalState) {
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
-                    ? await fetchManifestData(state.draftValues)
-                    : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
+                    ? state.draftValues
+                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
         } else if (state.tempFormData) {
-            codeEditorValue = await fetchManifestData(state.tempFormData)
+            codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? await fetchManifestData(YAML.stringify(state.duplicate, { indent: 2 }))
-                : await fetchManifestData(YAML.stringify(state.data.globalConfig, { indent: 2 }))
+                ? YAML.stringify(state.duplicate, { indent: 2 })
+                : YAML.stringify(state.data.globalConfig, { indent: 2 })
         }
-        return codeEditorValue
+        const manifestEditorValue = await fetchManifestData(codeEditorValue)
+        return manifestEditorValue
     }
 
     const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
@@ -465,41 +466,41 @@ export default function DeploymentTemplateOverrideForm({
 
     function renderEditorComponent() {
         if (readOnlyPublishedMode && !state.showReadme) {
-          return (
-            <DeploymentTemplateReadOnlyEditorView
-              value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
-              isEnvOverride={true}
-            />
-          );
+            return (
+                <DeploymentTemplateReadOnlyEditorView
+                    value={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
+                    isEnvOverride={true}
+                />
+            )
         } else if (state.loadingManifestOverride) {
-          return (
-            <div className="h-100vh">
-              <Progressing pageLoader />
-            </div>
-          );
+            return (
+                <div className="h-100vh">
+                    <Progressing pageLoader />
+                </div>
+            )
         } else {
-          return (
-            <DeploymentTemplateEditorView
-              isEnvOverride={true}
-              value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
-              defaultValue={
-                state.data && state.openComparison
-                  ? isValuesOverride
-                    ? getCodeEditorValue(true)
-                    : manifestDataLHS
-                  : ''
-              }
-              editorOnChange={editorOnChange}
-              environmentName={environmentName}
-              readOnly={!state.duplicate || isCompareAndApprovalState || !overridden || !isValuesOverride}
-              globalChartRefId={state.data.globalChartRefId}
-              handleOverride={handleOverride}
-              isValues={isValuesOverride}
-              groupedData={groupedData}
-            />
-          );
+            return (
+                <DeploymentTemplateEditorView
+                    isEnvOverride={true}
+                    value={isValuesOverride ? getCodeEditorValue(false) : manifestDataRHS}
+                    defaultValue={
+                        state.data && state.openComparison
+                            ? isValuesOverride
+                                ? getCodeEditorValue(true)
+                                : manifestDataLHS
+                            : ''
+                    }
+                    editorOnChange={editorOnChange}
+                    environmentName={environmentName}
+                    readOnly={!state.duplicate || isCompareAndApprovalState || !overridden || !isValuesOverride}
+                    globalChartRefId={state.data.globalChartRefId}
+                    handleOverride={handleOverride}
+                    isValues={isValuesOverride}
+                    groupedData={groupedData}
+                />
+            )
         }
-      }
+    }
 
     const renderValuesView = () => (
         <form
