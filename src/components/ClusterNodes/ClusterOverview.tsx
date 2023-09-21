@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
+import { URLS } from '../../config'
 import { getClusterNote } from './clusterNodes.service'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote } from './constants'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
-import { ErrorScreenManager, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ErrorScreenManager,
+    Progressing,
+    TippyCustomized,
+    TippyTheme,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 
@@ -32,7 +41,20 @@ export default function ClusterOverview({
     const history = useHistory()
     const { path } = useRouteMatch()
     const [errorCode, setErrorCode] = useState(0)
-
+    const metricsApiTippyContent = () => (
+        <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
+            Devtron uses Kubernetes’s{' '}
+            <a
+                href="https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/#metrics-api"
+                rel="noreferrer noopener"
+                target="_blank"
+            >
+                Metrics API
+            </a>{' '}
+            to show CPU and Memory Capacity. Please install metrics-server in this cluster to display CPU and Memory
+            Capacity.
+        </div>
+    )
     useEffect(() => {
         setIsLoading(true)
         if (errorStatusCode > 0) return
@@ -141,6 +163,26 @@ export default function ClusterOverview({
         )
     }
 
+    const tippyForMetricsApi = () => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100 fcv-5 dc__align-left"
+                placement="bottom"
+                Icon={QuestionFilled}
+                heading={'Metrics API is not available'}
+                showCloseButton={true}
+                trigger="click"
+                additionalContent={metricsApiTippyContent()}
+                interactive={true}
+                documentationLinkText="View metrics-server helm chart"
+                documentationLink={`${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
+            >
+                <TippyIcon className="icon-dim-20 ml-8 cursor fcn-5" />
+            </TippyCustomized>
+        )
+    }
+
     const renderCardDetails = () => {
         return (
             <div className="flexbox dc__content-space pb-16">
@@ -148,7 +190,14 @@ export default function ClusterOverview({
                     <div className="mr-16 w-25">
                         <div className="dc__align-center fs-13 fw-4 cn-7">CPU Usage</div>
                         <div className="dc__align-center fs-24 fw-4 cn-9">
-                            {clusterCapacityData?.cpu?.usagePercentage}
+                            {clusterCapacityData?.cpu?.usagePercentage ? (
+                                clusterCapacityData?.cpu?.usagePercentage
+                            ) : (
+                                <>
+                                    {'NA'}
+                                    {tippyForMetricsApi()}
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="mr-16 w-25">
@@ -173,7 +222,14 @@ export default function ClusterOverview({
                     <div className="mr-16 w-25">
                         <div className="dc__align-center fs-13 fw-4 cn-7">Memory Usage</div>
                         <div className="dc__align-center fs-24 fw-4 cn-9">
-                            {clusterCapacityData?.memory?.usagePercentage}
+                            {clusterCapacityData?.memory?.usagePercentage ? (
+                                clusterCapacityData?.memory?.usagePercentage
+                            ) : (
+                                <>
+                                    {'NA'}
+                                    {tippyForMetricsApi()}
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="mr-16 w-25">
