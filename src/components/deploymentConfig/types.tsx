@@ -80,7 +80,9 @@ export interface DeploymentChartVersionType {
     version: string
     chartRefId: number
     type: number
-    pipelineConfigOverrideId: number
+    deploymentTemplateHistoryId: number
+    pipelineId: number
+    environmentId: number
     name: string
     description?: string
     isAppMetricsSupported: boolean

@@ -156,7 +156,7 @@ export function textDecider(option, charts) {
 
         case 3:
             const c3 = charts.find((chart) => chart.value === option.chartRefId)
-            text = `${formatTimestamp(option.startedOn)} ${
+            text = `${formatTimestamp(option.finishedOn)} ${
                 option.chartVersion ? `(v${option.chartVersion})` : `(${c3?.label.split(' ')[0]})`
             }`
             break

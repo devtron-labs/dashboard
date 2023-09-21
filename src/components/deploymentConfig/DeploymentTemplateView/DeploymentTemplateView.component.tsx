@@ -189,7 +189,6 @@ export const CompareWithDropdown = ({
                 options: group.map((item) => ({
                     id: id++,
                     label: textDecider(item, charts),
-                    envId: envId,
                     ...item,
                 })),
             }

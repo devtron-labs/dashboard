@@ -150,8 +150,10 @@ export default function DeploymentTemplateEditorView({
                       +appId,
                       +state.selectedCompareOption.chartRefId,
                       isValues,
+                      +state.selectedCompareOption.environmentId,
                       +state.selectedCompareOption.type,
-                      +state.selectedCompareOption.pipelineConfigOverrideId,
+                      +state.selectedCompareOption.deploymentTemplateHistoryId,
+                      +state.selectedCompareOption.pipelineId,
                   )
 
             _getDeploymentTemplate
