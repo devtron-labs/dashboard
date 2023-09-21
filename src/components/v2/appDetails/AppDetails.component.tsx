@@ -152,9 +152,10 @@ const AppDetailsComponent = ({
             return <VirtualAppDetailsEmptyState environmentName={appDetails.environmentName} />
         }
         if (
-            !appDetails?.resourceTree?.nodes?.length &&
-            appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
-            appDetails?.helmReleaseStatus &&
+            appDetails &&
+            !appDetails.resourceTree?.nodes?.length &&
+            appDetails.deploymentAppType === DeploymentAppTypes.HELM &&
+            appDetails.helmReleaseStatus &&
             appDetails.helmReleaseStatus.status &&
             (appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
                 appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING ||
@@ -164,7 +165,7 @@ const AppDetailsComponent = ({
                 <ReleaseStatusEmptyState
                     message={appDetails.helmReleaseStatus.message}
                     description={
-                        appDetails?.helmReleaseStatus.status?.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN
+                        appDetails.helmReleaseStatus.status.toLowerCase() === DEPLOYMENT_STATUS.UNKNOWN
                             ? ''
                             : appDetails.helmReleaseStatus.description
                     }
