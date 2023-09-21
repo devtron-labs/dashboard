@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import Suggestions from '../Suggestions'
 import { mockVariable } from '../mocks'
 
@@ -9,18 +9,6 @@ jest.mock(
     () =>
         function SuggestionItem() {
             return <div data-testid="suggestion-item" />
-        },
-)
-
-// mocking DebouncedSearch since its already tested
-jest.mock(
-    '../../DebouncedSearch/DebouncedSearch',
-    () =>
-        function DebouncedSearch({ onSearch }: { onSearch: (text: string) => void }) {
-            const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-                onSearch(e.target.value)
-            }
-            return <input data-testid="debounced-search" onChange={handleSearch} />
         },
 )
 
@@ -93,7 +81,7 @@ describe('When Suggestions mounts', () => {
         expect(screen.getByText('No variables found')).toBeTruthy()
     })
 
-    it('should show no matching variable found if there are no matching variables', () => {
+    it('should show no matching variable found if there are no matching variables', async () => {
         render(
             <Suggestions
                 handleDeActivation={null}
@@ -104,6 +92,9 @@ describe('When Suggestions mounts', () => {
             />,
         )
         fireEvent.change(screen.getByTestId('debounced-search'), { target: { value: 'test' } })
+        await act(async () => {
+            await new Promise((res) => setTimeout(res, 500))
+        })
         expect(screen.getByText('No matching variable found')).toBeTruthy()
     })
 })
