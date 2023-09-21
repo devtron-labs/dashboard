@@ -753,7 +753,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
         }
     }
 
-    return { yaml, handleYamlChange, error }
+    return { yaml, handleYamlChange, error, setError }
 }
 
 export function Override({ overridden, onClick, loading = false, type, readonlyView, isProtectedView }) {

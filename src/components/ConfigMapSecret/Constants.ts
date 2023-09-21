@@ -53,22 +53,6 @@ export const configMapsSecretImportFileValidator: ValidatorType = ({ data, type,
         return EMPTY_FILE_STATUS
     }
     switch (type) {
-        case 'application/json':
-            try {
-                const parsedData = JSON.parse(data)
-                if (parsedData && typeof parsedData === 'object') {
-                    return {
-                        status: FileReaderStatus.SUCCESS,
-                        message: {
-                            data: yaml.safeDump(parsedData),
-                            description: 'File uploaded successfully',
-                        },
-                    }
-                }
-                return PARSE_ERROR_STATUS
-            } catch (e) {
-                return JSON_PARSE_ERROR_STATUS
-            }
         case 'application/x-yaml':
         case 'application/yaml':
         case 'text/yaml':
@@ -89,6 +73,12 @@ export const configMapsSecretImportFileValidator: ValidatorType = ({ data, type,
                 return YAML_PARSE_ERROR_STATUS
             }
         default:
-            return FILE_NOT_SUPPORTED_STATUS
+            return {
+                status: FileReaderStatus.SUCCESS,
+                message: {
+                    data: data,
+                    description: 'File uploaded successfully',
+                },
+            }
     }
 }

@@ -1,3 +1,4 @@
+import React from 'react'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { FileReaderStatusType, ValidatorType } from '../common/hooks/types'
 import { CM_SECRET_STATE } from './Constants'
@@ -35,6 +36,7 @@ export interface KeyValueYaml {
     yaml: string
     handleYamlChange: any
     error: string
+    setError: React.Dispatch<React.SetStateAction<string>>
 }
 export interface KeyValue {
     k: string
@@ -216,6 +218,7 @@ export interface ConfigMapSecretFileReaderPopupType {
     hideFileReaderPopup: () => void
     showFileReaderPopup: boolean,
     isDisabledClick?: boolean
-    state: ConfigMapSecretState
     dispatch: (action: ConfigMapAction) => void
+    setKeyValueArray,
+    state: ConfigMapSecretState
 }

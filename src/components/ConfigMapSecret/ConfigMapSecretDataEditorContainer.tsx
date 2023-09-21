@@ -1,5 +1,5 @@
 import React from 'react'
-import { Info, RadioGroup, useFileReader } from '../common'
+import { Info, RadioGroup } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'
@@ -368,8 +368,9 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                                 hideFileReaderPopup={hideFileReaderPopup}
                                 showFileReaderPopup={showFileReaderPopup}
                                 dispatch={dispatch}
-                                state={state}
                                 isDisabledClick={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView) }
+                                setKeyValueArray={setKeyValueArray}
+                                state={state}
                             /> : null
                         
                     }
