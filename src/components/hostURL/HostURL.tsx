@@ -195,7 +195,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Host URL</div>
                                 <input
                                     id="host"
-                                    value={this.state.form.value}
+                                    value={this.state.form.value || window.location.origin}
                                     autoFocus
                                     tabIndex={1}
                                     type="text"
