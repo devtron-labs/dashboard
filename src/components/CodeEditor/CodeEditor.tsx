@@ -221,14 +221,13 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                 format: true,
                 schemas:[
                     {
-                        uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}`, // id of the first schema
+                        uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
                         fileMatch: ['*'], // associate with our model
                         schema: validatorSchema,
                     }]
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema, chartVersion]);
-
     useEffect(() => {
         if (!editorRef.current) return
         editorRef.current.updateOptions({ readOnly })
