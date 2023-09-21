@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, useEffect } from 'react'
+import React, { useState, memo, useEffect } from 'react'
 import { GenericEmptyState, Progressing, Reload, DebouncedSearch } from '@devtron-labs/devtron-fe-common-lib'
 import SuggestionItem from './SuggestionItem'
 import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
@@ -20,35 +20,30 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
         setSuggestions(variables)
     }, [variables])
 
-    const onSearch = useCallback(
-        (text: string) => {
-            // No need to check if variables exists since we are not even showing search bar if there are no variables
-            const filteredSuggestions = variables.filter(
-                (variable) =>
-                    variable.variableName.toLowerCase().includes(text.trim().toLowerCase()) ||
-                    variable.shortDescription?.toLowerCase().includes(text.trim().toLowerCase()),
-            )
-            setSuggestions(filteredSuggestions)
-            setHighlightText(text.trim())
-        },
-        [variables],
-    )
+    const onSearch = (text: string) => {
+        // No need to check if variables exists since we are not even showing search bar if there are no variables
+        const trimmedText = text.trim().toLowerCase()
+        const filteredSuggestions = variables.filter(
+            (variable) =>
+                variable.variableName.toLowerCase().includes(trimmedText) ||
+                variable.shortDescription?.toLowerCase().includes(trimmedText),
+        )
+        setSuggestions(filteredSuggestions)
+        setHighlightText(trimmedText)
+    }
 
-    const handleClearSearch = useCallback(() => {
+    const handleClearSearch = () => {
         setClearSearch(!clearSearch)
-    }, [clearSearch])
+    }
 
-    const renderClearSearchButton = useCallback(
-        (): JSX.Element => (
-            <button
-                className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
-                onClick={handleClearSearch}
-                type="button"
-            >
-                Clear Search
-            </button>
-        ),
-        [handleClearSearch],
+    const renderClearSearchButton = (): JSX.Element => (
+        <button
+            className="dc__outline-none-imp flexbox mw-56 pt-5 pb-5 pl-12 pr-12 dc__gap-8 dc__align-items-center dc__border-radius-4-imp dc__border bcn-0 cb-5 fs-12 fw-6 lh-18 dc__align-center dc__hover-cn1 dc__hover-b500"
+            onClick={handleClearSearch}
+            type="button"
+        >
+            Clear Search
+        </button>
     )
 
     const renderHeader = (): JSX.Element => (
