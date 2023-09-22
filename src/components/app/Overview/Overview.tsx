@@ -34,7 +34,7 @@ import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
+import { StatusConstants , DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
@@ -51,7 +51,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
-    const [descriptionId, setDescriptionId] = useState<number>(0)
+    const [descriptionId,setDescriptionId] = useState<number>(0)
     const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
@@ -76,13 +76,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             setCurrentLabelTags(appMetaInfo.labels)
             _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
-            const description =
-                appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id
-                    ? appMetaInfo.description.description
-                    : isJobOverview
-                    ? DefaultJobNote
-                    : DefaultAppNote
-            _date = appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id ? _date : ''
+            const description = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? appMetaInfo.description.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
+            _date = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? _date : ''
             setNewUpdatedOn(_date)
             setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
             setNewDescription(description)
@@ -212,10 +207,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         Project
                     </div>
                     <div
-                        className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9 "
+                        className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9"
                         data-testid="overview-projectName"
                     >
-                        <div className="dc__truncate-text w-180">{appMetaInfo?.projectName}</div>
+                        {appMetaInfo?.projectName}
                         <EditIcon
                             data-testid="overview-project-edit"
                             className="icon-dim-20 cursor"
@@ -388,7 +383,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 )
         }
     }
-
+    
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
@@ -439,9 +434,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {environmentName(jobPipeline)}
-                                {environmentName(jobPipeline) === DEFAULT_ENV && (
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
-                                )}
+                                {environmentName(jobPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
                                 {jobPipeline.startedOn !== '0001-01-01T00:00:00Z'

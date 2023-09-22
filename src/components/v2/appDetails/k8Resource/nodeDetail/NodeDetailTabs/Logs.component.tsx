@@ -10,7 +10,7 @@ import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, Host} from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -146,11 +146,7 @@ function LogsComponent({
             subject.publish(log)
             if (prevContainer) {
                 for (const _co of podContainerOptions.containerOptions) {
-                    if (
-                        _co.selected &&
-                        log.toString() ===
-                            `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`
-                    ) {
+                    if ( _co.selected && log.toString() === `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`) {
                         setNoPrevContainer(log.toString())
                     }
                 }
@@ -653,7 +649,7 @@ function LogsComponent({
                             )}
                         </div>
 
-                        {prevContainer && showNoPrevContainer != '' ? (
+                        {(prevContainer && showNoPrevContainer != '') ? (
                             <MessageUI
                                 dataTestId="no-prev-container-logs"
                                 msg={showNoPrevContainer}
@@ -661,7 +657,7 @@ function LogsComponent({
                                 minHeight={isResourceBrowserView ? '200px' : ''}
                                 msgStyle={{ maxWidth: '300px', margin: '8px auto' }}
                             />
-                        ) : (
+                        ) :
                             <div className="log-viewer">
                                 <LogViewerComponent
                                     subject={subject}
@@ -670,7 +666,7 @@ function LogsComponent({
                                     reset={logsCleared}
                                 />
                             </div>
-                        )}
+                        }
 
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${

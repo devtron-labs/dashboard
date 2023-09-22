@@ -185,28 +185,26 @@
     }
 }
 
-.code-editor-container {
+.code-editor-container{
     height: 100%;
     background: var(--N50);
     border: 0;
     border-radius: none;
 
-    .code-editor__header {
+    .code-editor__header{
         background-color: var(--N000);
     }
 
-    .react-monaco-editor-container,
-    .overflow-guard {
-        height: calc(100vh - 178px) !important;
+    .react-monaco-editor-container, .overflow-guard {
+        height: calc(100vh - 178px)!important;
     }
-    .monaco-editor {
-        .monaco-editor-background,
-        .margin {
+    .monaco-editor{
+        .monaco-editor-background, .margin {
             background-color: var(--N50) !important;
         }
         height: calc(100vh - 178px) !important;
     }
-    .radio-group {
+    .radio-group{
         border: 1px solid var(--N200);
         border-radius: 4px;
     }

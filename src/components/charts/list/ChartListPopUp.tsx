@@ -41,7 +41,7 @@ function ChartListPopUp({
     const [showAddPopUp, setShowAddPopUp] = useState<boolean>(false)
     const isEmpty = chartList.length && !filteredChartList.length
     const history = useHistory()
-
+    
     const setStore = (event): void => {
         setSearchText(event.target.value)
     }
@@ -133,18 +133,20 @@ function ChartListPopUp({
     }
 
     const renderGlobalRefetch = () => {
-        return (
-            <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts from all resources">
-                <a
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    className={`chartRepo_form__subtitle dc__float-right dc__link flex ${!fetching ? 'cursor' : ''}`}
-                    onClick={refetchCharts}
-                >
-                    {fetching ? <Progressing size={16} /> : <SyncIcon />}
-                </a>
-            </Tippy>
-        )
+            return (
+                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts from all resources">
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className={`chartRepo_form__subtitle dc__float-right dc__link flex ${
+                            !fetching ? 'cursor' : ''
+                        }`}
+                        onClick={refetchCharts}
+                    >
+                        {fetching ? <Progressing size={16} /> : <SyncIcon />}
+                    </a>
+                </Tippy>
+            )
     }
 
     const renderChartList = () => {
@@ -163,7 +165,7 @@ function ChartListPopUp({
                     iconClass="icon-dim-20 fcv-5"
                 />
             </div>
-        )
+            )
     }
 
     const handleFilterChanges = (_searchText: string): void => {
@@ -244,12 +246,9 @@ function ChartListPopUp({
 
     return (
         <div className="dc__transparent-div" onClick={closeChartPopUpModalOnBlur}>
-            <div
-                className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"
-                onClick={stopPropagation}
-            >
+            <div className="chart-store__list h-100 w-400 br-4 bcn-0 en-2 bw-1 fw-4 fs-13 dc__overflow-hidden"  onClick={stopPropagation}>
                 {renderChartListHeaders()}
-                {renderChartListBody()}
+               {renderChartListBody()}
             </div>
         </div>
     )

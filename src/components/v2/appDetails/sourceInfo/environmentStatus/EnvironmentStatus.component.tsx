@@ -27,7 +27,7 @@ function EnvironmentStatusComponent({
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
     isHelmApp,
-    refetchDeploymentStatus,
+    refetchDeploymentStatus
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -167,8 +167,7 @@ function EnvironmentStatusComponent({
 
     const renderLastUpdatedBlock = () => {
         return (
-            appDetails?.lastDeployedTime &&
-            appDetails?.appType !== 'external_helm_chart' && (
+            appDetails?.lastDeployedTime && appDetails?.appType !== "external_helm_chart" && (
                 <DeploymentStatusCard
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}

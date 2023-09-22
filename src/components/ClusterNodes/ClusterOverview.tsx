@@ -43,16 +43,16 @@ export default function ClusterOverview({
     const [errorCode, setErrorCode] = useState(0)
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
-            Devtron uses Kubernetes’s{' '}
+            Devtron uses Kubernetes’s&nbsp;
             <a
                 href="https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/#metrics-api"
                 rel="noreferrer noopener"
                 target="_blank"
             >
                 Metrics API
-            </a>{' '}
-            to show CPU and Memory Capacity. Please install metrics-server in this cluster to display CPU and Memory
-            Capacity.
+            </a>
+            &nbsp; to show CPU and Memory Capacity. Please install metrics-server in this cluster to display CPU and
+            Memory Capacity.
         </div>
     )
     useEffect(() => {
@@ -165,21 +165,24 @@ export default function ClusterOverview({
 
     const tippyForMetricsApi = () => {
         return (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5 dc__align-left"
-                placement="bottom"
-                Icon={QuestionFilled}
-                heading={'Metrics API is not available'}
-                showCloseButton={true}
-                trigger="click"
-                additionalContent={metricsApiTippyContent()}
-                interactive={true}
-                documentationLinkText="View metrics-server helm chart"
-                documentationLink={`/dashboard/${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
-            >
-                <TippyIcon className="icon-dim-20 ml-8 cursor fcn-5" />
-            </TippyCustomized>
+            <>
+                <span>NA</span>
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300 h-100 fcv-5 dc__align-left"
+                    placement="bottom"
+                    Icon={QuestionFilled}
+                    heading={'Metrics API is not available'}
+                    showCloseButton={true}
+                    trigger="click"
+                    additionalContent={metricsApiTippyContent()}
+                    interactive={true}
+                    documentationLinkText="View metrics-server helm chart"
+                    documentationLink={`/dashboard/${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
+                >
+                    <TippyIcon className="icon-dim-20 ml-8 cursor fcn-5" />
+                </TippyCustomized>
+            </>
         )
     }
 
@@ -190,14 +193,9 @@ export default function ClusterOverview({
                     <div className="mr-16 w-25">
                         <div className="dc__align-left fs-13 fw-4 cn-7">CPU Usage</div>
                         <div className="dc__align-left fs-24 fw-4 cn-9">
-                            {clusterCapacityData?.cpu?.usagePercentage ? (
-                                clusterCapacityData?.cpu?.usagePercentage
-                            ) : (
-                                <>
-                                    {'NA'}
-                                    {tippyForMetricsApi()}
-                                </>
-                            )}
+                            {clusterCapacityData?.cpu?.usagePercentage
+                                ? clusterCapacityData?.cpu?.usagePercentage
+                                : tippyForMetricsApi()}
                         </div>
                     </div>
                     <div className="mr-16 w-25">
@@ -222,14 +220,9 @@ export default function ClusterOverview({
                     <div className="mr-16 w-25">
                         <div className="dc__align-left fs-13 fw-4 cn-7">Memory Usage</div>
                         <div className="dc__align-left fs-24 fw-4 cn-9">
-                            {clusterCapacityData?.memory?.usagePercentage ? (
-                                clusterCapacityData?.memory?.usagePercentage
-                            ) : (
-                                <>
-                                    {'NA'}
-                                    {tippyForMetricsApi()}
-                                </>
-                            )}
+                            {clusterCapacityData?.memory?.usagePercentage
+                                ? clusterCapacityData?.memory?.usagePercentage
+                                : tippyForMetricsApi()}
                         </div>
                     </div>
                     <div className="mr-16 w-25">

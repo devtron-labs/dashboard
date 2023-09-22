@@ -115,6 +115,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid, appNameErrors: true })
     }
 
+
     handleProject(item: number): void {
         let { form, isValid } = { ...this.state }
         form.projectId = item

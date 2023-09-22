@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef, useContext, useMemo } from 'react'
-import { Select, mapByKey, sortOptionsByLabel } from '../../common'
+import {
+    Select,
+    mapByKey,
+    sortOptionsByLabel,
+} from '../../common'
 import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
@@ -54,7 +58,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
         })
 }
 
-function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
+function DiscoverChartList({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const { serverMode } = useContext(mainContext)
     const location = useLocation()
     const history = useHistory()
@@ -81,7 +85,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
         applyFilterOnCharts,
         resetPaginationOffset,
         setGitOpsConfigAvailable,
-        setEnvironmentList,
+        setEnvironmentList
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -125,7 +129,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                     }
                 })
                 .sort(sortOptionsByLabel),
-        [chartLists],
+        [chartLists]
     )
 
     useEffect(() => {
@@ -134,6 +138,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             chartRepos && initialiseFromQueryParams(chartRepos)
             callApplyFilterOnCharts(true)
             getGitOpsModuleInstalledAndConfigured()
+
         }
     }, [chartRepos, location.search, state.loading])
 
@@ -151,18 +156,19 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
         }
     }
 
-    async function getGitOpsModuleInstalledAndConfigured() {
+    async function getGitOpsModuleInstalledAndConfigured(){
         await isGitOpsModuleInstalledAndConfigured().then((response) => {
-            setGitOpsConfigAvailable(response.result.isInstalled && !response.result.isConfigured)
+            setGitOpsConfigAvailable(response.result.isInstalled &&
+                !response.result.isConfigured)
         })
     }
 
-    const handleDeployButtonClick = (): void => {
-        handleActionButtonClick(false)
+    const handleDeployButtonClick= (): void => {
+      handleActionButtonClick(false)
     }
 
-    const handleAdvancedButtonClick = (): void => {
-        handleActionButtonClick(true)
+    const handleAdvancedButtonClick= (): void => {
+      handleActionButtonClick(true)
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -268,7 +274,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
         setChartListloading(false)
     }
 
-    async function callPaginationOnCharts() {
+    async function callPaginationOnCharts(){
         await applyFilterOnCharts(location.search, false)
     }
 
@@ -402,7 +408,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                 />
                 {!state.loading ? (
                     <div className="discover-charts__body">
-                        {typeof state.configureChartIndex != 'number' && chartRepos?.length > 0 && (
+                        {typeof state.configureChartIndex != 'number' && (chartRepos?.length > 0) && (
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
@@ -434,9 +440,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                                                 handleNameChange={handleNameChange}
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
                                             />
-                                        ) : (
-                                            randerChartStoreEmptyState()
-                                        )}
+                                        ) : randerChartStoreEmptyState()}
                                     </div>
                                 ) : (
                                     <>
@@ -472,15 +476,10 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                                                     {chartList.length ? (
                                                         <>
                                                             <ChartListHeader charts={state.charts} />
-                                                            <div
-                                                                className={`chart-grid ${!isGrid ? 'list-view' : ''}`}
-                                                                data-testid={`chart-${
-                                                                    !isGrid ? 'list-view' : 'grid-view'
-                                                                }`}
-                                                            >
+                                                            <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`} data-testid={`chart-${!isGrid ? 'list-view' : 'grid-view'}`}>
                                                                 {chartList
                                                                     .slice(0, showDeployModal ? 12 : chartList.length)
-                                                                    .map((chart, index) => (
+                                                                    .map((chart,index) => (
                                                                         <ChartSelect
                                                                             key={chart.id}
                                                                             chart={chart}
@@ -503,24 +502,16 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                                                                             }
                                                                             datatestid={`single-${index}`}
                                                                         />
+
                                                                     ))}
-                                                                {state.hasMoreCharts && (
-                                                                    <DetectBottom callback={reloadNextAfterBottom} />
-                                                                )}
+                                                                {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
+
+
                                                             </div>
-                                                            {state.hasMoreCharts && (
-                                                                <Progressing
-                                                                    size={25}
-                                                                    styles={{
-                                                                        height: '0%',
-                                                                        paddingBottom: '20px',
-                                                                    }}
-                                                                />
-                                                            )}
+                                                            {state.hasMoreCharts && <Progressing size={25} styles={{height:'0%', paddingBottom:'5px'}}/>}
+
                                                         </>
-                                                    ) : (
-                                                        randerChartStoreEmptyState()
-                                                    )}
+                                                    ) : randerChartStoreEmptyState()}
                                                 </div>
                                             )}
                                         </div>
@@ -550,12 +541,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
                             >
                                 {state.advanceVisited && (
                                     <div>
-                                        <label
-                                            className="dc__required-field"
-                                            data-testid="advanced-option-project-heading"
-                                        >
-                                            Project
-                                        </label>
+                                        <label className="dc__required-field" data-testid="advanced-option-project-heading">Project</label>
                                         <Select
                                             rootClassName={`${project.error ? 'popup-button--error' : ''}`}
                                             value={project.id}
@@ -675,7 +661,7 @@ function DiscoverChartList({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     )
 }
 
-export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
+export default function DiscoverCharts({isSuperAdmin} : {isSuperAdmin: boolean}) {
     const match = useRouteMatch()
     const { path } = match
 
@@ -702,7 +688,7 @@ function ChartListHeader({ charts }) {
             <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
                 {charts.length === 0 ? 'All Charts' : 'Select Charts'}
             </h3>
-            <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
+            <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading" >
                 Select chart to deploy. &nbsp;
                 <a
                     className="dc__link"
@@ -734,9 +720,7 @@ export function EmptyChartGroup({
         <div className="bcn-0 flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
             <div>
-                <div className="fs-16 fw-6" data-testid="chart-group-heading">
-                    {title || 'Chart group'}
-                </div>
+                <div className="fs-16 fw-6" data-testid="chart-group-heading">{title || 'Chart group'}</div>
                 <div className="cn-7" data-testid="chart-group-subheading">
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
@@ -746,7 +730,7 @@ export function EmptyChartGroup({
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
-                        data-testid="chart-group-link"
+                        data-testid='chart-group-link'
                     >
                         Learn more about chart groups
                     </a>

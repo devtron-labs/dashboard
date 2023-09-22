@@ -1839,7 +1839,7 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
-    &.dc__link_over {
+    &.dc__link_over{
         color: var(--N600);
     }
     &:hover {
@@ -2652,7 +2652,7 @@ textarea,
     width: 300px !important;
 }
 
-.w-320 {
+.w-320{
     width: 320px;
 }
 
@@ -2921,7 +2921,7 @@ textarea,
     height: 112px !important;
 }
 
-.h-128 {
+.h-128{
     height: 128px !important;
 }
 
@@ -3003,7 +3003,7 @@ textarea,
 }
 
 .mxh-390-imp {
-    max-height: 390px !important;
+    max-height: 390px!important;
 }
 
 // Height in percentage
@@ -3257,7 +3257,7 @@ textarea,
     }
 }
 
-.dc__column-gap-8 {
+.dc__column-gap-8{
     column-gap: 8px;
 }
 

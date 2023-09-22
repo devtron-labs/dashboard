@@ -1004,9 +1004,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {((!this.state.checkingDiff && _canReviewConfig) ||
                         isLastDeployedOption ||
                         !this.state.recentDeploymentConfig) && (
-                        <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>
-                            REVIEW
-                        </span>
+                        <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
                     )}
                 </div>
             </Tippy>
@@ -1053,6 +1051,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.isDeployButtonDisabled() ||
             (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
         const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
+
         return (
             <div
                 className={`trigger-modal__trigger ${

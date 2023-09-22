@@ -77,7 +77,7 @@ export const ConfigMapSecretForm = React.memo(
         draftMode,
         latestDraftData,
         reloadEnvironments,
-        isAppAdmin,
+        isAppAdmin
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
         const tempArr = useRef([])
