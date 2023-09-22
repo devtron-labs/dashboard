@@ -27,10 +27,12 @@ export const InputPluginSelection = ({
         if (variableOptions?.length) {
             const filtered = variableOptions
                 .filter((tag) => tag.options.length > 0)[0]
-                .options.filter((tag) => tag.label.indexOf(selectedValue) >= 0);
-            setFilteredArray(filtered);
+                .options.filter((tag) => tag.label.toLowerCase().indexOf(selectedValue.toLowerCase()) >= 0)
+            setFilteredArray(filtered)
+        } else {
+            setFilteredArray([])
         }
-    }, [variableOptions, selectedValue]);
+    }, [variableOptions, selectedValue])
 
     const handleInputChange = (event): void => {
         setSelectedValue(event.target.value)
@@ -41,30 +43,29 @@ export const InputPluginSelection = ({
     }
 
     const handleOnKeyDown = (e) => {
-        if(e.key === 'Backspace' && selectedValue.length === 1) {
+        if (e.key === 'Backspace' && selectedValue.length === 1) {
             handleClear(e)
         }
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault()
-            setHighlightedIndex((prevIndex) => {                        
+            setHighlightedIndex((prevIndex) => {
                 if (e.key === 'ArrowUp') {
-                return prevIndex <= 0 ? filteredArray.length - 1 : prevIndex - 1
+                    return prevIndex <= 0 ? filteredArray.length - 1 : prevIndex - 1
                 } else if (e.key === 'ArrowDown') {
                     return prevIndex === filteredArray.length - 1 ? 0 : prevIndex + 1
                 }
             })
-            if(highlightedIndex!=-1) {
+            if (highlightedIndex != -1) {
                 const selectedVariable = filteredArray[highlightedIndex]
                 renderOutputOptions(selectedVariable, highlightedIndex)
             }
         } else if (e.key === 'Enter' && highlightedIndex !== -1) {
             const selectedOption = filteredArray[highlightedIndex]
-            if (selectedOption && selectedOption.label.indexOf(selectedValue) >= 0) {
+            if (selectedOption) {
                 setSelectedValue(selectedOption.value)
             } else {
                 setSelectedValue(e.target.value)
             }
-            setHighlightedIndex(0)
+            setHighlightedIndex(-1)
         }
     }
 
@@ -74,14 +75,14 @@ export const InputPluginSelection = ({
         _tagData.value = e.currentTarget.dataset.key
         setVariableData(_tagData)
         setSelectedValue(_tagData.value)
-    }  
+    }
 
     const trimLines = (value: string) => {
-        let trimmedLines = value?.split('\n')
-        let nonEmptyLines = trimmedLines?.filter((line) => {
+        let trimmedLines = value.split('\n')
+        let nonEmptyLines = trimmedLines.filter((line) => {
             return line.trim() !== ''
         })
-        return nonEmptyLines?.join('\n')
+        return nonEmptyLines.join('\n')
     }
 
     const handleOnBlur = (e) => {
@@ -90,7 +91,7 @@ export const InputPluginSelection = ({
             !e.relatedTarget.classList.value ||
             !e.relatedTarget.classList.value.includes(`tag-${variableType}-class`)
         ) {
-            setHighlightedIndex(0)
+            setHighlightedIndex(-1)
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
@@ -99,27 +100,31 @@ export const InputPluginSelection = ({
     }
 
     const renderOutputOptions = (tag: optionsListType, index: number): JSX.Element => {
-        const isHighlighted = index === highlightedIndex;
+        const isHighlighted = index === highlightedIndex
         return (
             <div
                 key={index}
-                data-key={tag.label}
-                className={isHighlighted ? "dc__bg-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8" : "dc__hover-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8 cursor"}
+                data-key={tag?.label || ""}
+                className={
+                    isHighlighted
+                        ? 'dc__bg-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8'
+                        : 'dc__hover-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8 cursor'
+                }
                 onClick={onSelectValue}
                 data-testid={`tag-label-value-${index}`}
             >
-                {tag.label}
+                {tag?.label || ""}
             </div>
         )
     }
 
     const renderSuggestions = () => {
-            return (
-                <>
-                    {filteredArray.map((_tag, idx) => {
-                        return (
-                            <div>
-                                {_tag.description ?
+        return (
+            <>
+                {filteredArray.map((_tag, idx) => {
+                    return (
+                        <div>
+                            {_tag.description ? (
                                 <Tippy
                                     className="default-tt"
                                     arrow={false}
@@ -132,14 +137,15 @@ export const InputPluginSelection = ({
                                 >
                                     {renderOutputOptions(_tag, idx)}
                                 </Tippy>
-                                : renderOutputOptions(_tag, idx)
-                                }
-                            </div>
-                        )
-                    })}
-                </>
-            )
-        }
+                            ) : (
+                                renderOutputOptions(_tag, idx)
+                            )}
+                        </div>
+                    )
+                })}
+            </>
+        )
+    }
 
     const handleClear = (e) => {
         setVariableData({
@@ -175,15 +181,14 @@ export const InputPluginSelection = ({
                     <Clear className="icon-dim-18 icon-n4" />
                 </button>
             ) : null}
-                <PopupMenu.Body
-                    rootClassName={`mxh-210 dc__overflow-auto tag-${variableType}-class`}
-                    autoWidth={true}
-                    preventWheelDisable={true}
-                    noBackDrop={noBackDrop}
-                >
-                    {renderSuggestions()}
-                </PopupMenu.Body>
-            
+            <PopupMenu.Body
+                rootClassName={`mxh-210 dc__overflow-auto tag-${variableType}-class`}
+                autoWidth={true}
+                preventWheelDisable={true}
+                noBackDrop={noBackDrop}
+            >
+                {renderSuggestions()}
+            </PopupMenu.Body>
         </PopupMenu>
     )
 }
