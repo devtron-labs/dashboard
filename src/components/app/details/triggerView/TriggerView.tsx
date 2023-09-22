@@ -289,7 +289,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             workflow.nodes.map((node) => {
                 if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.isSelected && material.searchText !== commitHash) {
+                        if (material.isSelected){
                             material.isMaterialLoading = true
                             material.searchText = commitHash
                             material.showAllCommits = false
