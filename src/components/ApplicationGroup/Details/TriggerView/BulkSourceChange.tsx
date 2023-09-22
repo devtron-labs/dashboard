@@ -50,7 +50,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     }, [responseList])
 
     const updateBranch = () => {
-        if (input.length == 0) {
+        if (input.length === 0) {
             setError('This is required')
             return
         }
@@ -85,7 +85,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     }
 
     const checkInput = (): boolean => {
-        return input == ''
+        return input === ''
     }
 
     const handleInputChange = (e): void => {
@@ -123,9 +123,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
                     <button
                         data-testid="save_cluster_after_entering_cluster_details"
                         className="cta ml-12 h-36 lh-36"
-                        onClick={() => {
-                            updateBranch()
-                        }}
+                        onClick={updateBranch}
                         disabled={isDisabled}
                     >
                         {loading ? <Progressing /> : 'Update branch'}
