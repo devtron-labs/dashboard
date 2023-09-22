@@ -10,13 +10,13 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
-import { AppGroupAppFilterContextType } from './AppGroup.types'
+import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
 export const ValueContainer = (props): JSX.Element => {
-    const { appListOptions, selectedAppList, selectedFilterTab, selectedGroupFilter }: AppGroupAppFilterContextType =
+    const { appListOptions, selectedAppList, selectedFilterTab, selectedGroupFilter, filterParentType }: AppGroupAppFilterContextType =
         useAppGroupAppFilterContext()
     let selectorText,
         selectedAppsLength = props.getValue().length
@@ -25,7 +25,7 @@ export const ValueContainer = (props): JSX.Element => {
     } else {
         selectorText = `${selectedAppList.length > 0 ? selectedAppList.length : appListOptions.length}/${
             appListOptions.length
-        } Applications`
+        } ${filterParentType===FilterParentType.env? 'Applications': 'Environments'}`
     }
     return (
         <components.ValueContainer {...props}>
@@ -144,6 +144,7 @@ export const MenuList = (props: any): JSX.Element => {
         openCreateGroup,
         selectedGroupFilter,
         setSelectedGroupFilter,
+        filterParentType
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const clearSelection = (): void => {
         setSelectedAppList([])
@@ -152,6 +153,7 @@ export const MenuList = (props: any): JSX.Element => {
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)
     }
+    const selectedType = filterParentType===FilterParentType.env? 'applications': 'environments'
     return (
         <components.MenuList {...props}>
             <div className="dc__position-sticky dc__top-0 bcn-0">
@@ -183,7 +185,7 @@ export const MenuList = (props: any): JSX.Element => {
                                     selectedFilterTab === AppFilterTabs.APP_FILTER ? 'fw-6 active' : 'fw-4'
                                 }`}
                             >
-                                <span>All applications </span>
+                                <span>All {selectedType} </span>
                             </div>
                             {selectedFilterTab === AppFilterTabs.APP_FILTER && <div className="apps-tab__active-tab" />}
                         </li>
@@ -192,7 +194,7 @@ export const MenuList = (props: any): JSX.Element => {
                 <div className="flex flex-justify dc__window-bg w-100 pt-6 pr-8 pb-6 pl-8">
                     <span className="fs-12 fw-6 cn-9">
                         Working with {selectedAppList?.length > 0 ? selectedAppList.length : appListOptions.length}/
-                        {appListOptions?.length} Applications
+                        {appListOptions?.length} {selectedType}
                     </span>
                     {selectedAppList?.length > 0 && selectedAppList.length !== appListOptions?.length && (
                         <Clear className="icon-dim-16 mr-4 mw-18 cursor icon-n4" onClick={clearSelection} />
@@ -206,7 +208,7 @@ export const MenuList = (props: any): JSX.Element => {
                     <InfoIcon className="icon-dim-20 mr-4 mw-18 cursor fcn-6 mb-4" />
                     <div className="fs-13 fw-6 cn-9 mb-4">No saved filters</div>
                     <div className="fs-12 fw-4 cn-7 dc__align-center ">
-                        To save a filter, select some applications from All applications and click on ‘Save selection as
+                        To save a filter, select some {selectedType} from All {selectedType} and click on ‘Save selection as
                         filter’
                     </div>
                 </div>

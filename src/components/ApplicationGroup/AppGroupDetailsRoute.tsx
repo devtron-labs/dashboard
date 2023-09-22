@@ -31,6 +31,7 @@ import {
     CheckPermissionType,
     CreateGroupAppListType,
     EnvHeaderType,
+    FilterParentType,
     GroupOptionType,
 } from './AppGroup.types'
 import { MultiValue } from 'react-select'
@@ -43,7 +44,7 @@ import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 import { toast } from 'react-toastify'
 import CreateAppGroup from './CreateAppGroup'
 
-const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
+export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
 export function useAppGroupAppFilterContext() {
     const context = React.useContext(AppGroupAppFilterContext)
@@ -445,6 +446,7 @@ export function EnvHeader({
             openCreateGroup,
             openDeleteGroup,
             isSuperAdmin,
+            filterParentType: FilterParentType.env
         }),
         [
             appListOptions,
