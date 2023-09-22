@@ -127,15 +127,15 @@ export default function DeploymentTemplateEditorView({
     const isCompareAndApprovalState =
         state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
+    // fetch values for LHS (values/manifest) and save in corresponding caching stores, if not already fetched and in cache.
     useEffect(() => {
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
             state.selectedCompareOption.id !== -1 &&
-            state.selectedCompareOption?.id !== Number(envId) &&
             (isValues
                 ? !state.fetchedValues[state.selectedCompareOption.id]
-                : !state.fetchedValuesManifest[state.selectedCompareOption.id]) &&
+                : !state.fetchedValuesManifest[state.selectedCompareOption.id]) && // check if present in respective cache
             !state.chartConfigLoading &&
             !fetchingValues
         ) {
@@ -243,10 +243,10 @@ export default function DeploymentTemplateEditorView({
     }
 
     // choose LHS value for comparison
-    const selectedOptionId = state.selectedCompareOption?.id || -1
-    const isIdMatch = selectedOptionId === -1 || selectedOptionId === Number(envId)
+    const selectedOptionId = state.selectedCompareOption?.id || -1 // -1 for base deployment template (values/manifest)
+    const isIdMatch = selectedOptionId === -1
     const source = isValues ? state.fetchedValues : state.fetchedValuesManifest
-    const valueLHS = (isIdMatch ? defaultValue : source[selectedOptionId]) || ''
+    const valueLHS = (isIdMatch ? defaultValue : source[selectedOptionId]) || '' // fetch LHS data from respective cache store
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
