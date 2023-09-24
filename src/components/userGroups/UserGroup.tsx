@@ -112,7 +112,7 @@ const tempMultiSelectStyles = {
     menu: (base, state) => ({
         ...base,
         top: 'auto',
-        width: '140%',
+        width: '100%',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,
