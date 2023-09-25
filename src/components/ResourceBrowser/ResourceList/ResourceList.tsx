@@ -4,6 +4,8 @@ import {
     convertToOptionsList,
     createGroupSelectList,
     filterImageList,
+    formatDurationDiff,
+    getTimeElapsed,
     handleUTCTime,
     processK8SObjects,
     sortObjectArrayAlphabetically,
@@ -104,6 +106,7 @@ export default function ResourceList() {
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
+    const [timeElapsedLastSync, setTimeElapsedLastSync] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
     const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
@@ -358,17 +361,23 @@ export default function ResourceList() {
     }, [selectedNamespace])
 
     useEffect(() => {
+        console.log('lastDataSync',lastDataSync)
         const _lastDataSyncTime = Date()
+        console.log('lastDataSyncTime', _lastDataSyncTime);
         const _staleDataCheckTime = moment()
+        console.log('staleDataCheckTime', _staleDataCheckTime);
         isStaleDataRef.current = false
 
         setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
+        setTimeElapsedLastSync('');
         const interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
+            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()));
         }, 1000)
 
         return () => {
+            console.log('cleared')
             clearInterval(interval)
         }
     }, [lastDataSync])
@@ -1028,7 +1037,7 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal}/>
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} timeElapsedLastSync={timeElapsedLastSync} refreshData={refreshData}/>
                     </div>
                 </div>
                 {renderResourceBrowser()}

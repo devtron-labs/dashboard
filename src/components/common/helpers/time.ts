@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import { ZERO_TIME_STRING } from '../../../config';
+import { Duration } from 'moment';
 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
     let timestamp = "";
@@ -34,6 +35,13 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
         console.error("Error Parsing Date:", ts);
     }
     return timestamp;
+}
+
+export const getTimeElapsed = (startedOn, finishedOn) => {
+    const diff: moment.Duration = moment.duration(finishedOn.diff(startedOn))
+    return `${diff.hours() > 0 ? `${String(diff.hours()).padStart(2, '0')}h:` : ''}${
+        diff.minutes() > 0 ? `${String(diff.minutes()).padStart(2, '0')}m:` : ''
+    }${String(diff.seconds()).padStart(2, '0')}s`
 }
 
 export const formatDurationDiff = (startedOn: string, finishedOn: string) => {

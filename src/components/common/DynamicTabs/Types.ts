@@ -26,6 +26,8 @@ export interface DynamicTabsProps {
     removeTabByIdentifier: (id: string) => string
     stopTabByIdentifier: (title: string) => string
     enableShortCut?: boolean
+    timeElapsedLastSync: string,
+    refreshData: () => void
 }
 
 export interface TabsDataType {
