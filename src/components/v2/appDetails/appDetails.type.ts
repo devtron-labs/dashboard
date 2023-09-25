@@ -3,6 +3,7 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
+import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -180,7 +181,7 @@ export interface AppDetails {
     otherEnvironment?: OtherEnvironment[]
     projectName?: string
     appType?: AppType
-    additionalData?: any
+    helmReleaseStatus?: HelmReleaseStatus
     clusterId?: number
     notes?: string
     deploymentAppType?: DeploymentAppTypes
@@ -396,6 +397,7 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
     addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
+    removeTabByIdentifier?: (id: string) => string
 }
 
 export interface LogsComponentProps extends NodeDetailPropsType {

@@ -61,6 +61,8 @@ export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: bool
             return AggregationKeys['Custom Resource']
         case Nodes.Event:
             return AggregationKeys.Events
+        case Nodes.Namespace:
+            return AggregationKeys.Namespaces
         default:
             return defaultAsOtherResources ? AggregationKeys['Other Resources'] : AggregationKeys['Custom Resource']
     }
@@ -696,7 +698,7 @@ export const processDeploymentStatusDetailsData = (
             deploymentData.deploymentStatusText = 'Failed'
             deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
         } else if (data?.wfrStatus === 'Progressing') {
-            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.PROGRESSING
+            deploymentData.deploymentStatus = DEPLOYMENT_STATUS.INPROGRESS
             deploymentData.deploymentStatusText = 'In progress'
         }
     }

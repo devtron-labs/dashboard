@@ -317,7 +317,7 @@ export default function GenericDescription({
         <div
             className={`cluster__body-details ${
                 initialEditDescriptionView
-                    ? 'pl-16 pr-16 pt-16 pb-16 dc__border-bottom-n1 generic-decription-max-width dc__overflow-scroll'
+                    ? 'pb-16 dc__overflow-scroll'
                     : ''
             }`}
         >
@@ -326,7 +326,7 @@ export default function GenericDescription({
                 className={!isEditDescriptionView ? 'dc__overflow-auto' : 'dc__overflow-hidden'}
             >
                 {isEditDescriptionView ? (
-                    <div className="min-w-500 bcn-0 br-4 dc__border-top dc__border-left dc__border-right w-100 ">
+                    <div className="min-w-500 bcn-0 br-4 dc__border-top dc__border-left dc__border-right w-100 dc__border-bottom">
                         <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
                             <div className="flex left fw-6 lh-20 cn-9">
                                 <DescriptionIcon className="icon-dim-20 mr-8" />
@@ -383,7 +383,7 @@ export default function GenericDescription({
                         )}
                     </div>
                 ) : (
-                    <div className="min-w-500 ">
+                    <div className="min-w-500">
                         <ReactMde
                             ref={mdeRef}
                             classes={{

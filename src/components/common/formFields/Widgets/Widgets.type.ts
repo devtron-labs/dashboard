@@ -55,6 +55,9 @@ export interface StyledSelectPropsType extends WidgetPropsType {
 export interface StyledProgressBarProps {
     resetProgress?: boolean
     updateProgressValue?: (currentValue: number) => void
+    styles?: React.CSSProperties
+    classes?: string
+    progress?: number
 }
 
 export interface ShortcutKeyBadgeProps {
