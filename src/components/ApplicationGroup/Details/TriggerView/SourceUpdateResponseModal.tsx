@@ -18,7 +18,6 @@ export default function SourceUpdateResponseModal({ closePopup, responseList, is
                     <div className="fs-12 fw-6 cn-7 ">Message</div>
                 </div>
                 {responseList
-                    .sort((a, b) => sortCallback('appName', a, b))
                     .map((response, index) => (
                         <TriggerModalRow key={response.appId} rowData={response} index={index} />
                     ))}

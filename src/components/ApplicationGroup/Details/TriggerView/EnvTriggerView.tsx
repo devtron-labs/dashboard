@@ -1450,7 +1450,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setResponseList((prevList) => {
             const resultMap = new Map(_responseList.map((data) => [data.appId, data]))
             const updatedArray = prevList?.map((prevItem) => resultMap.get(prevItem.appId) || prevItem)
-            return (updatedArray?.length > 0 ? updatedArray : _responseList).sort(sortResponseList)
+            return (updatedArray?.length > 0 ? updatedArray : _responseList).sort((a, b) => sortCallback('appName', a, b))
         })
     }
 
