@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progressing, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerModalRow } from './TriggerModalTableRow'
 
 export default function SourceUpdateResponseModal({ closePopup, responseList, isLoading }) {

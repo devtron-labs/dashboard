@@ -61,7 +61,6 @@ import {
     BulkResponseStatus,
     ENV_TRIGGER_VIEW_GA_EVENTS,
     BULK_CD_RESPONSE_STATUS_TEXT,
-    responseListOrder,
     BULK_VIRTUAL_RESPONSE_STATUS,
     GetBranchChangeStatus,
 } from '../../Constants'
