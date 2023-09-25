@@ -272,6 +272,7 @@ function ChartDeploymentHistory({
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
+                    const helmDeploymentStatus: string = deployment?.status ? deployment.status.toLowerCase() : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
@@ -299,7 +300,7 @@ function ChartDeploymentHistory({
                                                 : ''
                                         } ${
                                             installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
-                                                ? 'succeeded'
+                                                ? helmDeploymentStatus
                                                 : ''
                                         }`}
                                     ></div>
