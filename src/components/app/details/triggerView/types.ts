@@ -88,6 +88,8 @@ export interface ConfigToDeployOptionType {
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
+    showSearch:boolean
+    searchValue:string
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean

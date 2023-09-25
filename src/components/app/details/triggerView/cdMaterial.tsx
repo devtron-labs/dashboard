@@ -19,6 +19,8 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -39,6 +41,7 @@ import {
     ImageTagButton,
     ImageTagsContainer,
     GenericEmptyState,
+    DebouncedSearch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -90,6 +93,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
             materialInEditModeMap: new Map<number, boolean>(),
+            showSearch: false,
+            searchValue: '',
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -794,10 +799,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         })
     }
 
-    processConsumedAndApprovedImages = () => {
+    processConsumedAndApprovedImages = (filteredMaterial) => {
         const consumedImage = []
         const approvedImages = []
-        this.props.material.forEach((mat) => {
+        filteredMaterial.forEach((mat) => {
             if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
                 mat.isSelected = false
                 consumedImage.push(mat)
@@ -812,21 +817,41 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         let _consumedImage = []
         let materialList = []
 
+        let filteredMaterial = this.props.material
+        // filter by search value, if exists
+        if (this.state.searchValue) {
+            filteredMaterial = this.props.material.filter((mat) => {
+                return mat?.image.toLowerCase().includes(this.state.searchValue.toLowerCase())
+            })
+        }
+
         if (isApprovalConfigured) {
-            const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
+            const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages(filteredMaterial)
             _consumedImage = consumedImage
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
         } else {
             materialList =
-                this.state.isRollbackTrigger && this.state.showOlderImages
-                    ? [this.props.material[0]]
-                    : this.props.material
+                this.state.isRollbackTrigger && this.state.showOlderImages ? [filteredMaterial[0]] : filteredMaterial
         }
         return {
             consumedImage: _consumedImage,
             materialList,
         }
+    }
+
+    setSearchValue = (searchValue: string) => {
+        this.setState({
+            searchValue,
+        })
+    }
+
+    handleRefresh = () => {
+        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+        this.setState({
+            showSearch: false,
+            searchValue: '',
+        })
     }
 
     renderMaterialList = (isApprovalConfigured: boolean) => {
@@ -835,16 +860,41 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
-
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
                 {!this.props.isFromBulkCD && (
                     <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
                         <span className="flex dc__align-start">{titleText}</span>
+                        <span className="flexbox dc__align-items-center h-32 dc__gap-16">
+                            {!this.state.isRollbackTrigger && ( // remove this condition when search/refresh for rollback is implemented
+                                <>
+                                    {this.state.showSearch ? (
+                                        <DebouncedSearch
+                                            onSearch={this.setSearchValue}
+                                            placeholder="Search by image tag"
+                                            containerClass="flexbox flex-grow-1 h-4 pt-4 w-250 pb-4 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
+                                            inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
+                                            Icon={SearchIcon}
+                                            iconClass="icon-dim-18"
+                                        />
+                                    ) : (
+                                        <SearchIcon
+                                            onClick={() =>
+                                                this.setState({
+                                                    showSearch: true,
+                                                })
+                                            }
+                                            className="icon-dim-18 icon-color-n6 cursor"
+                                        />
+                                    )}
+                                    <RefreshIcon onClick={this.handleRefresh} className="icon-dim-16 scn-6 cursor" />
+                                </>
+                            )}
+                        </span>
                     </div>
                 )}
-                {isApprovalConfigured && materialList.length <= 0
+                {materialList.length <= 0
                     ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
                     : this.renderMaterial(materialList, false, isApprovalConfigured)}
             </>
