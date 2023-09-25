@@ -76,8 +76,8 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     const renderInfoBar = (): JSX.Element => {
         return (
             <InfoColourBar
-                message="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’."
-                classname="warn"
+                message="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’ or ‘Branch Regex’."
+                classname="warn dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
                 Icon={Warn}
                 iconClass="warning-icon"
             />
