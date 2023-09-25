@@ -190,7 +190,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         workflows.forEach((wf) => {
             workflowMap.set(wf.id, wf.isSelected)
         })
-        _workflows.map((wf) => {
+        _workflows.forEach((wf) => {
             wf.isSelected = workflowMap.get(wf.id)
         })
     }
@@ -1363,10 +1363,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const onShowChangeSourceModal = () => {
         setShowBulkSourceChangeModal(true)
-    }
-
-    const sortResponseList = (a, b) => {
-        return responseListOrder[a.status] - responseListOrder[b.status]
     }
 
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
