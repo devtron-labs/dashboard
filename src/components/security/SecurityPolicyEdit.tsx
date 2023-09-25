@@ -24,7 +24,7 @@ import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 
 export class SecurityPolicyEdit extends Component<
     FetchPolicyQueryParams,
-    GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean; view: string }
+    GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean; view: string; errorStatusCode: number}
 > {
     private vulnerabilityMetaData: VulnerabilityUIMetaData[] = [
         {
@@ -63,7 +63,7 @@ export class SecurityPolicyEdit extends Component<
         this.state = {
             view: ViewType.LOADING,
             showWhitelistModal: false,
-            // errorStatusCode:0,
+            errorStatusCode:0,
             result: {
                 level: this.props.level,
                 policies: [],
@@ -91,6 +91,7 @@ export class SecurityPolicyEdit extends Component<
             })
             .catch((error) => {
                 showError(error)
+                this.setState({errorStatusCode: error.code})
                 this.setState({ view: ViewType.ERROR })
             })
     }
@@ -519,7 +520,7 @@ export class SecurityPolicyEdit extends Component<
         else if (this.state.view === ViewType.ERROR)
             return (
                 <ErrorScreenManager
-                    // code={errorStatusCode}
+                    code={403}
                     subtitle="Information on this page is available only to superadmin users."
                 />
             )
