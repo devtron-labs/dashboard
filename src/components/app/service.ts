@@ -477,7 +477,7 @@ export const triggerCDNode = (
     return post(Routes.CD_TRIGGER_POST, request)
 }
 
-export const triggerChangeBranch = (appIds: number[], envId: number, value: string) => {
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
     const request = {
         appIds: appIds,
         environmentId: envId,

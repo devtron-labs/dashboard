@@ -39,7 +39,7 @@ import {
     refreshGitMaterial,
     triggerCDNode,
     triggerCINode,
-    triggerChangeBranch,
+    triggerBranchChange,
 } from '../../../app/service'
 import {
     createGitCommitUrl,
@@ -63,6 +63,7 @@ import {
     BULK_CD_RESPONSE_STATUS_TEXT,
     responseListOrder,
     BULK_VIRTUAL_RESPONSE_STATUS,
+    GetBranchChangeStatus,
 } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -181,12 +182,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
     }
 
-    const processWorkflow = (_workflows: WorkflowType[]) => {
+    const preserveSelection = (_workflows: WorkflowType[]) => {
         if (!workflows || !_workflows) {
             return
         }
         const workflowMap = new Map()
-        workflows.map((wf) => {
+        workflows.forEach((wf) => {
             workflowMap.set(wf.id, wf.isSelected)
         })
         _workflows.map((wf) => {
@@ -212,7 +213,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     }),
                 )
             }
-            processWorkflow(_workflows)
+            preserveSelection(_workflows)
             setWorkflows(_workflows)
             setFilteredCIPipelines(filteredCIPipelines)
             setErrorCode(0)
@@ -1051,19 +1052,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
-    const getBranchChangeStatus = (statusText: string): BulkResponseStatus => {
-        switch (statusText) {
-            case BULK_VIRTUAL_RESPONSE_STATUS.pass:
-                return BulkResponseStatus.PASS
-            case BULK_VIRTUAL_RESPONSE_STATUS.fail:
-                return BulkResponseStatus.FAIL
-            case BULK_VIRTUAL_RESPONSE_STATUS.unauthorized:
-                return BulkResponseStatus.UNAUTHORIZE
-            default:
-                return
-        }
-    }
-
     const changeBranch = (value): void => {
         let appIds = []
         let appNameMap = new Map()
@@ -1072,7 +1060,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             appNameMap.set(app.id, app.name)
         })
         setIsBranchChangeLoading(true)
-        triggerChangeBranch(appIds, +envId, value)
+        triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
                 console.log(response)
                 const _responseList = []
@@ -1081,7 +1069,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         appId: res.appId,
                         appName: appNameMap.get(res.appId),
                         statusText: res.status,
-                        status: getBranchChangeStatus(res.status),
+                        status: GetBranchChangeStatus(res.status),
                         envId: +envId,
                         message: res.message,
                     })
@@ -1362,7 +1350,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }, 100)
     }
 
-    const hideChangeSourceChange = () => {
+    const hideChangeSourceModal = () => {
         if (responseList.length > 0) {
             setPageViewType(ViewType.LOADING)
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
@@ -1373,7 +1361,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setResponseList([])
     }
 
-    const onShowChangeSourceChange = () => {
+    const onShowChangeSourceModal = () => {
         setShowBulkSourceChangeModal(true)
     }
 
@@ -1951,7 +1939,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
         return (
             <BulkSourceChange
-                closePopup={hideChangeSourceChange}
+                closePopup={hideChangeSourceModal}
                 responseList={responseList}
                 changeBranch={changeBranch}
                 loading={isBranchChangeLoading}
@@ -2132,7 +2120,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     className="dc__edit_button h-36 lh-36"
                     type="button"
                     style={{ marginRight: 'auto' }}
-                    onClick={onShowChangeSourceChange}
+                    onClick={onShowChangeSourceModal}
                 >
                     <span className="flex dc__align-items-center">
                         <Pencil className="icon-dim-16 scb-5 mr-4" />

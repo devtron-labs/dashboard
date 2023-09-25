@@ -7,9 +7,9 @@ import SourceUpdateResponseModal from './SourceUpdateResponseModal'
 export default function BulkSourceChange({ closePopup, responseList, changeBranch, loading, selectedAppCount }) {
     const sourceChangeDetailRef = useRef<HTMLDivElement>(null)
 
-    const [show, setShow] = useState(false)
-    const [error, setError] = useState('')
-    const [input, setInput] = useState('')
+    const [showResponseModal, setShowResponseModal] = useState(false)
+    const [inputError, setInputError] = useState('')
+    const [branchName, setBranchName] = useState('')
 
     const closeBulkCIModal = (evt) => {
         closePopup(evt)
@@ -46,15 +46,15 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     }, [outsideClickHandler])
 
     useEffect(() => {
-        setShow(responseList.length > 0)
+        setShowResponseModal(responseList.length > 0)
     }, [responseList])
 
     const updateBranch = () => {
-        if (input.length === 0) {
-            setError('This is required')
+        if (branchName.length === 0) {
+            setInputError('This is required')
             return
         }
-        changeBranch(input)
+        changeBranch(branchName)
     }
 
     const renderHeaderSection = (): JSX.Element | null => {
@@ -85,12 +85,12 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
     }
 
     const checkInput = (): boolean => {
-        return input === ''
+        return branchName === ''
     }
 
     const handleInputChange = (e): void => {
-        setInput(e.target.value)
-        setError('')
+        setBranchName(e.target.value)
+        setInputError('')
     }
 
     const renderForm = (): JSX.Element => {
@@ -104,8 +104,8 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
                         autoComplete="off"
                         name="branch_name"
                         disabled={false}
-                        value={input}
-                        error={error}
+                        value={branchName}
+                        error={inputError}
                         onChange={handleInputChange}
                         label="Change to branch"
                         placeholder="Enter branch name"
@@ -133,10 +133,10 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
         )
     }
     return (
-        <Drawer position="right" width="75%" minWidth={show ? '1024px' : '600px'} maxWidth={show ? '1200px' : '600px'}>
+        <Drawer position="right" width="75%" minWidth={showResponseModal ? '1024px' : '600px'} maxWidth={showResponseModal ? '1200px' : '600px'}>
             <div className="dc__window-bg h-100 bcn-0 bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 {renderHeaderSection()}
-                {show ? (
+                {showResponseModal ? (
                     <SourceUpdateResponseModal closePopup={closePopup} isLoading={false} responseList={responseList} />
                 ) : (
                     <>
