@@ -86,16 +86,17 @@ jobs:
           # Check if issue is open or closed
           text=$(curl -s "$url")
           echo "checking status of the issue"
-          if [[ $(echo "$text" | jq -r '.state') == "open" ]]; then
+          # Skipping this condition as the Issue can be in closed state as BE PRs are merged before FE
+          # if [[ $(echo "$text" | jq -r '.state') == "open" ]]; then
             echo "Issue #$issue_num is open"
             echo "Issue reference found in the pull request body."
             gh pr edit $PRNUM --remove-label "PR:Issue-verification-failed"
             gh pr edit $PRNUM --add-label "PR:Ready-to-Review"
             exit 0
-          else
-            echo "Issue #$issue_num is not open"
-            exit 1
-          fi
+          # else
+          #   echo "Issue #$issue_num is not open"
+          #   exit 1
+          # fi
         else
             echo "Invalid Response Code obtained - error code: $response_code"
             echo "No valid issue reference found in the pull request body."
