@@ -172,7 +172,7 @@ export default function ClusterOverview({
                     className="w-300 h-100 fcv-5 dc__align-left"
                     placement="bottom"
                     Icon={QuestionFilled}
-                    heading={'Metrics API is not available'}
+                    heading='Metrics API is not available'
                     showCloseButton={true}
                     trigger="click"
                     additionalContent={metricsApiTippyContent()}
