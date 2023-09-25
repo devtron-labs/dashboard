@@ -111,7 +111,7 @@ export default function BulkSourceChange({ closePopup, responseList, changeBranc
                         placeholder="Enter branch name"
                     />
                 </div>
-                <div className="">
+                <div className="flexbox">
                     <button
                         data-testid="cancel_button"
                         className="cta cancel h-36 lh-36"
