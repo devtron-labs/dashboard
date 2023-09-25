@@ -111,6 +111,8 @@ import {
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
+import IndexStore from '../../appDetails/index.store'
+import { AppDetails } from '../../appDetails/appDetails.type'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -886,6 +888,7 @@ function ChartValuesView({
             } else if (res?.result && (res.result.success || res.result.appName)) {
               appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
+                IndexStore.publishAppDetails({} as AppDetails, null)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {
                 toast.error(SOME_ERROR_MSG)
