@@ -889,7 +889,9 @@ function ChartValuesView({
               appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
                 IndexStore.publishAppDetails({} as AppDetails, null)
+                // console.log('url = ', `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
+                history.go(0)
             } else {
                 toast.error(SOME_ERROR_MSG)
             }
