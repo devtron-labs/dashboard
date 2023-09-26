@@ -106,10 +106,6 @@ const UserGroupContext = React.createContext<UserGroup>({
     },
 })
 
-const customWidth = {
-    width: '100%'
-}
-
 const tempMultiSelectStyles = {
     ...multiSelectStyles,
     ...groupHeaderStyle,
@@ -1426,7 +1422,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                             menu: (base, state) => ({
                                 ...base,
                                 top: 'auto',
-                                ...customWidth,
+                                width: '100%',
                             }),
                         }}
                         closeMenuOnSelect={false}
