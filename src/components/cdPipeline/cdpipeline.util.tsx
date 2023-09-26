@@ -17,6 +17,8 @@ import {
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 
+const taskNameSet = new Set()
+
 export const styles = {
     control: (base, state) => ({
         ...base,
@@ -193,7 +195,8 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
     }
 }
 
-const checkStepsUniqueness = (list): boolean => {
+const checkStepsUniqueness = (list, type?: string): boolean => {
+    let flag=true;
     const stageNameList = list.map((taskData) => {
         if (taskData.stepType === PluginType.INLINE) {
             if (taskData.inlineStepDetail['scriptType'] === ScriptType.CONTAINERIMAGE) {
@@ -226,14 +229,30 @@ const checkStepsUniqueness = (list): boolean => {
         return taskData.name
     })
 
+    if(type) {
+        if(type === "pre") {
+            stageNameList.array.forEach(task => {
+                taskNameSet.add(task)
+            });
+        } else {
+            console.log(taskNameSet)
+            stageNameList.forEach(task => {
+                if(taskNameSet.has(task)) {
+                    flag=false;
+                    return;
+                }
+            });
+        }
+        return flag;
+    }
     // Below code is to check if all the task name from pre-stage and post-stage is unique
     return stageNameList.length === new Set(stageNameList).size
 }
 
 export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
     if(isCDPipeline){
-        const preStageValidation: boolean = checkStepsUniqueness(formData.preBuildStage.steps)
-        const postStageValidation: boolean = checkStepsUniqueness(formData.postBuildStage.steps)
+        const preStageValidation: boolean = checkStepsUniqueness(formData.preBuildStage.steps, "pre")
+        const postStageValidation: boolean = checkStepsUniqueness(formData.postBuildStage.steps, "post")
         return preStageValidation && postStageValidation
 
     } else {
