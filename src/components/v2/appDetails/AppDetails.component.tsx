@@ -45,6 +45,8 @@ const AppDetailsComponent = ({
     loadingDetails: boolean
     loadingResourceTree: boolean
 }) => {
+    const [loadingDetailsTemp, setLoadingDetailsTemp] = useState(true)
+    const [loadingResourceTreeTemp, setLoadingResourceTreeTemp] = useState(true)
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -52,6 +54,13 @@ const AppDetailsComponent = ({
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const location = useLocation()
     const deploymentModalShownRef = useRef(false)
+
+    useEffect(() => {
+        if (appDetails?.appType !== null) {
+            setLoadingDetailsTemp(false)
+            setLoadingResourceTreeTemp(false)
+        }
+    }, [appDetails?.appType])
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -165,14 +174,14 @@ const AppDetailsComponent = ({
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
-                    loadingResourceTree={loadingResourceTree}
+                    loadingResourceTree={loadingResourceTreeTemp}
                     isVirtualEnvironment={isVirtualEnv.current}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
-                        loadingDetails={loadingDetails}
-                        loadingResourceTree={loadingResourceTree}
+                        loadingDetails={loadingDetailsTemp}
+                        loadingResourceTree={loadingResourceTreeTemp}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
                         isHelmApp={true}
