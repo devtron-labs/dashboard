@@ -89,8 +89,10 @@ export const GitChanges = ({
 }: GitChangesType) => {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
-        initialise()
-    }, [])
+        if(artifactId){
+            initialise()
+        }    
+    }, [artifactId])
     async function initialise() {
         try {
             const userRole = await getUserRole()
