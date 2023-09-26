@@ -27,6 +27,7 @@ export interface DynamicTabsProps {
     stopTabByIdentifier: (title: string) => string
     enableShortCut?: boolean
     timeElapsedLastSync: string,
+    loader: boolean,
     refreshData: () => void
 }
 

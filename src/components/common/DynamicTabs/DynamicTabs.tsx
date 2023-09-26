@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
@@ -33,6 +33,7 @@ function DynamicTabs({
     shortcut,
     timeElapsedLastSync,
     refreshData,
+    loader
 }: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -262,7 +263,35 @@ function DynamicTabs({
             closeMenu()
         }
     }
-
+    
+    const timerForSync = () => {
+        if (loader) {
+            return (
+                <div className='ml-12 mr-4 flex'>
+                    <Progressing size={18}  />
+                    <div className='fs-13 ml-8'>Syncing...</div>
+                </div>
+            )
+        } else {
+            return (
+                timeElapsedLastSync && (
+                    <>
+                        <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
+                            <div>
+                                <RefreshIcon
+                                    className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                                    onClick={refreshData}
+                                />
+                            </div>
+                        </Tippy>
+                        {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
+                            <div className="flex">{timeElapsedLastSync} ago </div>
+                        )}
+                    </>
+                )
+            )
+        }
+    }
     return (
         <div ref={tabsSectionRef} className="dynamic-tabs-section flex left pl-12 pr-12 w-100 dc__outline-none-imp">
             {tabsData.fixedTabs.length > 0 && (
@@ -275,26 +304,14 @@ function DynamicTabs({
             {tabsData.dynamicTabs.length > 0 && (
                 <div
                     className="dynamic-tabs-container dc__border-left"
-                    style={{
-                        width: fixedContainerRef.current
-                            ? `calc(100% - ${fixedContainerRef.current.offsetWidth + 142}px)`
-                            : 'calc(100% - 142px)',
-                    }}
                 >
                     <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
                         {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                     </ul>
                 </div>
             )}
-            <div className="flexbox ml-auto dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center">
-                <Tippy className="default-tt" arrow={false} placement="top" content={'Sync Now'}>
-                    <div>
-                        <RefreshIcon className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12" onClick={refreshData} />
-                    </div>
-                </Tippy>
-                {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                    <div className="flex">{timeElapsedLastSync} ago</div>
-                )}
+            <div className="flexbox ml-auto dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center dc__no-shrink">
+                {timerForSync()}
             </div>
 
             {tabsData.dynamicTabs.length > 0 && (

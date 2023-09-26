@@ -139,6 +139,7 @@ export default function ResourceList() {
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
     const hideSyncWarning: boolean = loader || rawGVKLoader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
+    let interval;
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -361,19 +362,15 @@ export default function ResourceList() {
     }, [selectedNamespace])
 
     useEffect(() => {
-        console.log('lastDataSync',lastDataSync)
         const _lastDataSyncTime = Date()
-        console.log('lastDataSyncTime', _lastDataSyncTime);
         const _staleDataCheckTime = moment()
-        console.log('staleDataCheckTime', _staleDataCheckTime);
         isStaleDataRef.current = false
-
+        setTimeElapsedLastSync('')
         setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-        setTimeElapsedLastSync('');
-        const interval = setInterval(() => {
+         interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()));
+            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()))
         }, 1000)
 
         return () => {
@@ -746,6 +743,8 @@ export default function ResourceList() {
     )
 
     const refreshData = (): void => {
+        setTimeElapsedLastSync('')
+        clearInterval(interval)
         setSelectedResource(null)
         getSidebarData(selectedCluster.value)
     }
@@ -1037,7 +1036,7 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} timeElapsedLastSync={timeElapsedLastSync} refreshData={refreshData}/>
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} timeElapsedLastSync={timeElapsedLastSync} refreshData={refreshData} loader={loader}/>
                     </div>
                 </div>
                 {renderResourceBrowser()}
