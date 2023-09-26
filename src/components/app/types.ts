@@ -11,6 +11,9 @@ export interface AddNewAppProps extends RouteComponentProps<{}> {
 export interface OptionType {
     label: string
     value: string
+}
+
+export interface formatOption {
     format?: string
 }
 

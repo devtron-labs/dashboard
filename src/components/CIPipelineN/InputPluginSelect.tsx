@@ -176,7 +176,7 @@ export const InputPluginSelection = ({
                 <button
                     type="button"
                     className="dc__transparent dc__position-abs"
-                    style={{ top: '3px', right: '0px' }}
+                    style={{ top: '4px', right: '4px' }}
                     onClick={handleClear}
                 >
                     <Clear className="icon-dim-18 icon-n4" />

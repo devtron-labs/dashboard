@@ -5,7 +5,7 @@ import {
     RefVariableStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildStageVariable } from '../../config'
-import { OptionType } from '../app/types'
+import { OptionType, formatOption } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
 import { InputPluginSelection } from './InputPluginSelect'
@@ -29,7 +29,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
         label: '',
         value: '',
-        format: '',
+    })
+
+    const [selectedOutputVariableFormat, setSelectedOutputVariableFormat] = useState<formatOption> ({
+        format: ""
     })
 
     const [inputVariableOptions, setInputVariableOptions] = useState<SuggestedTagOptionType[]>([])
@@ -175,6 +178,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             (selectedVariable.variableType === RefVariableType.NEW
                 ? selectedVariable.value
                 : selectedVariable.refVariableName) || ''
+        setSelectedOutputVariableFormat(selectedVariable['format'])
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
@@ -186,7 +190,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             variableData={selectedOutputVariable}
             refVar={refVar}
             variableOptions={inputVariableOptions}
-            variableType={selectedOutputVariable.format}
+            variableType={selectedOutputVariableFormat.format}
             selectedVariableIndex={selectedVariableIndex}
         />
     )
