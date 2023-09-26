@@ -20,7 +20,13 @@ import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
-export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, unAuthorizedApps }: CreateGroupType) {
+export default function CreateAppGroup({
+    appList,
+    selectedAppGroup,
+    closePopup,
+    unAuthorizedApps,
+    isEnv,
+}: CreateGroupType) {
     const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
@@ -109,8 +115,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     const appFilterAuthorizedList = () => {
         let _authorizedApp = []
         appList.forEach((app) => {
-            if(!unAuthorizedApps.get(app.appName)) {
-                _authorizedApp.push({id: app.id, appName: app.appName})
+            if (!unAuthorizedApps.get(app.appName)) {
+                _authorizedApp.push({ id: app.id, appName: app.appName })
             }
         })
         setAuthorizedAppList(_authorizedApp)
@@ -134,11 +140,11 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     const appFilterList = () => {
         let _authorizedAppList = []
         let _unauthorizedAppList = []
-        appList.forEach((app) =>{
-                unAuthorizedApps.get(app.appName) ?
-                _unauthorizedAppList.push({id: app.id, appName: app.appName})
-             : _authorizedAppList.push({id: app.id, appName: app.appName})
-            })
+        appList.forEach((app) => {
+            unAuthorizedApps.get(app.appName)
+                ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
+                : _authorizedAppList.push({ id: app.id, appName: app.appName })
+        })
         setUnauthorizedAppList(_unauthorizedAppList)
         setAuthorizedAppList(_authorizedAppList)
     }
@@ -232,7 +238,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                         arrow={false}
                                         placement="bottom-start"
                                         content="You don't have admin/manager pemission for this app."
-                                    >  
+                                    >
                                         <div>{children}</div>
                                     </Tippy>
                                 )}
@@ -328,8 +334,11 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                 </div>
                 <div>
                     <ul role="tablist" className="tab-list dc__border-bottom mb-8">
-                        {renderTabItem(CreateGroupTabs.SELECTED_APPS, selectedAppsCount)}
-                        {renderTabItem(CreateGroupTabs.ALL_APPS, appList.length)}
+                        {renderTabItem(
+                            isEnv ? CreateGroupTabs.SELECTED_ENV : CreateGroupTabs.SELECTED_APPS,
+                            selectedAppsCount,
+                        )}
+                        {renderTabItem(isEnv ? CreateGroupTabs.ALL_ENV : CreateGroupTabs.ALL_APPS, appList.length)}
                     </ul>
                     {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
                 </div>
@@ -337,7 +346,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         )
     }
 
-    const handleSave = async (e): Promise<void> => { 
+    const handleSave = async (e): Promise<void> => {
         e.preventDefault()
         if (!appGroupName || appGroupDescription?.length > 50) {
             return
@@ -351,7 +360,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
-        
+
         let appListIds = []
         appList.forEach((element) => {
             if (!unAuthorizedApps.get(element.appName)) {

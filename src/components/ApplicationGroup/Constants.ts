@@ -160,10 +160,14 @@ export enum AppFilterTabs {
 
 export enum CreateGroupTabs {
     'SELECTED_APPS' = 'selectedApps',
+    'SELECTED_ENV' = 'selectedEnv',
     'ALL_APPS' = 'allApps',
+    'ALL_ENV' = 'allEnv',
 }
 
 export const CREATE_GROUP_TABS = {
     selectedApps: 'Selected applications',
     allApps: 'Add/Remove applications',
+    selectedEnv: 'Selected environments',
+    allEnv: 'Add/Remove environments',
 }

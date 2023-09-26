@@ -14,8 +14,9 @@ import './appDetails/appDetails.scss'
 import './app.scss'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs } from '../../ApplicationGroup/Constants'
-import { GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+import { CheckPermissionType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
 import { getAppOtherEnvironmentMin } from '../../../services/service'
+import { appGroupPermission } from '../../ApplicationGroup/AppGroup.service'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -28,7 +29,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -39,6 +40,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
     const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
     const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
+    const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -125,6 +127,56 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }
 
+    async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {
+        try {
+            const { result } = await appGroupPermission(envId, payload)
+            if (result && !_delete) {
+                console.log(result)
+                setShowCreateGroup(true)
+            } else if (result && _delete) {
+                // setIsPopupBox(true)
+                // setShowDeleteGroup(true)
+            }
+        } catch (err) {
+            let _map = new Map<string, boolean>()
+            if (err['code'] === 403) {
+                let arrUnauthorized = []
+                let unauthorizedCount = 0
+                err['errors'].map((errors) => {
+                    arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
+                    errors['userMessage']['unauthorizedApps'].forEach((element) => {
+                        if (!_map.get(element)) {
+                            _map.set(element, true)
+                        }
+                        for (let idx in selectedAppList) {
+                            if (element === selectedAppList[idx].label) {
+                                unauthorizedCount++
+                            }
+                        }
+                    })
+                    // setMapUnauthorizedApp(_map)
+                })
+                if (_edit && arrUnauthorized.length > 0) {
+                    // handleToast('edit')
+                } else if (_delete && arrUnauthorized.length > 0) {
+                    // handleToast('delete')
+                } else if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
+                    // setIsPopupBox(false)
+                    // handleToast('create')
+                } else {
+                    setShowCreateGroup(true)
+                }
+                arrUnauthorized = []
+                unauthorizedCount = 0
+            } else {
+                setShowCreateGroup(true)
+                // setShowDeleteGroup(false)
+                // if (_delete) setIsPopupBox(true)
+            }
+            showError(err)
+        }
+    }
+
     const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
@@ -152,25 +204,25 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         for (let app of _allAppList) {
             _allAppLists.push(+app.id)
         }
-        // let _permissionData = {
-        //     id: +envId,
-        //     appIds: _allAppLists,
-        //     envId: +envId,
-        // }
-        // if (_edit) {
-        //     getPermissionCheck({ appIds: _allAppIds }, _edit)
-        // } else {
-        //     getPermissionCheck(_permissionData)
-        // }
+        let _permissionData = {
+            id: +envId,
+            appIds: _allAppLists,
+            envId: +envId,
+        }
+        if (_edit) {
+            getPermissionCheck({ appIds: _allAppIds }, _edit)
+        } else {
+            getPermissionCheck(_permissionData)
+        }
     }
 
-    // const closeCreateGroup = (e, groupId?: number) => {
-    //     stopPropagation(e)
-    //     setShowCreateGroup(false)
-    //     if (groupId) {
-    //         getSavedFilterData(groupId)
-    //     }
-    // }
+    const closeCreateGroup = (e, groupId?: number) => {
+        stopPropagation(e)
+        setShowCreateGroup(false)
+        if (groupId) {
+            getSavedFilterData(groupId)
+        }
+    }
 
     const openDeleteGroup = (e, groupId: string) => {
         stopPropagation(e)
@@ -200,6 +252,8 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     openCreateGroup={openCreateGroup}
                     openDeleteGroup={openDeleteGroup}
                     isSuperAdmin={true}
+                    //@ts-ignore
+                    showCreateGroup={showCreateGroup}
                 />
             )}
             <ErrorBoundary>
@@ -233,7 +287,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds}/>
+                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

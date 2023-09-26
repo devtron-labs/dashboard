@@ -13,7 +13,8 @@ import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import './appDetails/appDetails.scss'
 import './app.scss'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
-import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
+import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
@@ -32,6 +33,8 @@ export function AppHeader({
     openCreateGroup,
     openDeleteGroup,
     isSuperAdmin,
+    //@ts-ignore
+    showCreateGroup,
 }: AppHeaderType) {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
@@ -39,6 +42,9 @@ export function AppHeader({
     const location = useLocation()
     const currentPathname = useRef('')
     const [isMenuOpen, setMenuOpen] = useState(false)
+    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
+    const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
+    const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
 
     const contextValue = useMemo(
         () => ({
@@ -55,7 +61,7 @@ export function AppHeader({
             openCreateGroup,
             openDeleteGroup,
             isSuperAdmin,
-            filterParentType: FilterParentType.app
+            filterParentType: FilterParentType.app,
         }),
         [
             appListOptions,
@@ -228,12 +234,29 @@ export function AppHeader({
         )
     }
 
+    const closeCreateGroup = () => {
+        // FIXME
+        setClickedGroup(null)
+        openCreateGroup(false)
+    }
+
     return (
-        <PageHeader
-            breadCrumbs={renderBreadcrumbs}
-            isBreadcrumbs={true}
-            showTabs={true}
-            renderHeaderTabs={renderAppDetailsTabs}
-        />
+        <>
+            <PageHeader
+                breadCrumbs={renderBreadcrumbs}
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderAppDetailsTabs}
+            />
+            {showCreateGroup && (
+                <CreateAppGroup
+                    unAuthorizedApps={mapUnauthorizedApp}
+                    appList={allAppsList}
+                    selectedAppGroup={clickedGroup}
+                    closePopup={closeCreateGroup}
+                    isEnv={true}
+                />
+            )}
+        </>
     )
 }
