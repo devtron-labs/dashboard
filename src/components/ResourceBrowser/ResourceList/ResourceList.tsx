@@ -139,8 +139,6 @@ export default function ResourceList() {
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
     const hideSyncWarning: boolean = loader || rawGVKLoader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
-    let interval;
-
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -367,14 +365,13 @@ export default function ResourceList() {
         isStaleDataRef.current = false
         setTimeElapsedLastSync('')
         setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-         interval = setInterval(() => {
+         const interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
             setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()))
         }, 1000)
 
         return () => {
-            console.log('cleared')
             clearInterval(interval)
         }
     }, [lastDataSync])
@@ -674,7 +671,6 @@ export default function ResourceList() {
             }
             setNoResults(result.data.length === 0)
             setShowErrorState(false)
-            setLastDataSync(!lastDataSync)
         } catch (err) {
             if (!resourceListAbortController.signal.aborted) {
                 showError(err)
@@ -744,7 +740,7 @@ export default function ResourceList() {
 
     const refreshData = (): void => {
         setTimeElapsedLastSync('')
-        clearInterval(interval)
+        setLastDataSync(!lastDataSync)
         setSelectedResource(null)
         getSidebarData(selectedCluster.value)
     }
