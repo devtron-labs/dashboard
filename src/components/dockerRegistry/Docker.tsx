@@ -718,19 +718,22 @@ function DockerForm({
             selectedDockerRegistryType.value === RegistryType.OTHER
         ) {
             let error = false
-            if (
-                (!isPublic && !customState.username.value) ||
-                !(customState.password.value || id) ||
-                !customState.registryUrl.value
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                error = true
+            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
+                if (
+                    !customState.username.value ||
+                    !(customState.password.value || id) ||
+                    !customState.registryUrl.value
+                ) {
+                    setCustomState((st) => ({
+                        ...st,
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    error = true
+                }
             }
+
             if (
                 selectedDockerRegistryType.value === RegistryType.OTHER &&
                 state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT
