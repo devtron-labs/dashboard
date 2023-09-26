@@ -21,7 +21,10 @@ on:
 jobs:
   validate-PR-issue:
     runs-on: ubuntu-latest
-
+    permissions:
+      issues: write
+      contents: read
+      pull-requests: write
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
