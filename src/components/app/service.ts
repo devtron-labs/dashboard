@@ -9,6 +9,7 @@ import {
     DeploymentNodeType,
     CDModalTab,
     CDMaterialResponseType,
+    put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
@@ -474,6 +475,15 @@ export const triggerCDNode = (
         }
     }
     return post(Routes.CD_TRIGGER_POST, request)
+}
+
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
+    const request = {
+        appIds: appIds,
+        environmentId: envId,
+        value: value,
+    }
+    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
 }
 
 export const getPrePostCDTriggerStatus = (params) => {
