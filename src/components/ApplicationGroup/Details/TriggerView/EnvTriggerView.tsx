@@ -742,7 +742,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
         let _workflowId, _appID
         setCDLoading(true)
-        console.log('onClickCDMaterial', isApprovalNode)
         setShowCDModal(!isApprovalNode)
         setShowApprovalModal(isApprovalNode)
         abortControllerRef.current = new AbortController()
