@@ -3,13 +3,12 @@ import { ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
-import { URLS } from '../../config'
 import { getClusterNote } from './clusterNodes.service'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote } from './constants'
 import moment from 'moment'
-import { Moment12HourFormat } from '../../config'
+import { Moment12HourFormat,URLS } from '../../config'
 import {
     ErrorScreenManager,
     Progressing,

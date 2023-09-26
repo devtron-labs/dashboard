@@ -483,7 +483,7 @@ function LogsComponent({
                             <React.Fragment>
                                 <div className="h-16 dc__border-right ml-8 mr-8"></div>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
-                                <div>
+                                <div className='dc__mxw-200'>
                                     <Select
                                         placeholder="Select Containers"
                                         classNamePrefix="containers-select"
