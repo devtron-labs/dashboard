@@ -231,11 +231,10 @@ const checkStepsUniqueness = (list, type?: string): boolean => {
 
     if(type) {
         if(type === "pre") {
-            stageNameList.array.forEach(task => {
+            stageNameList.forEach(task => {
                 taskNameSet.add(task)
             });
         } else {
-            console.log(taskNameSet)
             stageNameList.forEach(task => {
                 if(taskNameSet.has(task)) {
                     flag=false;
