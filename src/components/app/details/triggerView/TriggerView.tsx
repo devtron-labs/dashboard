@@ -652,7 +652,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag: string = '') {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ showCDModal: true, showApprovalModal: isApprovalNode, isLoading: true })
+        this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
 
         getCDMaterialList(
@@ -695,6 +695,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     cdNodeId: cdNodeId,
                     nodeType,
                     showApprovalModal: isApprovalNode,
+                    showCDModal: !isApprovalNode,
                     isLoading: false,
                     appReleaseTags: data.appReleaseTagNames,
                     tagsEditable: data.tagsEditable,

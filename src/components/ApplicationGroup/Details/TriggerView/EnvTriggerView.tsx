@@ -742,7 +742,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
         let _workflowId, _appID
         setCDLoading(true)
-        setShowCDModal(true)
+        console.log('onClickCDMaterial', isApprovalNode)
+        setShowCDModal(!isApprovalNode)
         setShowApprovalModal(isApprovalNode)
         abortControllerRef.current = new AbortController()
         getCDMaterialList(
@@ -783,7 +784,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setFilteredWorkflows(_workflows)
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
-                // setShowCDModal(!isApprovalNode)
+                setShowCDModal(!isApprovalNode)
                 setShowApprovalModal(isApprovalNode)
                 setCDLoading(false)
                 preventBodyScroll(true)

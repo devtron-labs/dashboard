@@ -799,10 +799,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         })
     }
 
-    processConsumedAndApprovedImages = (filteredMaterial) => {
+    processConsumedAndApprovedImages = () => {
         const consumedImage = []
         const approvedImages = []
-        filteredMaterial.forEach((mat) => {
+        this.props.material.forEach((mat) => {
             if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
                 mat.isSelected = false
                 consumedImage.push(mat)
@@ -817,26 +817,28 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         let _consumedImage = []
         let materialList = []
 
-        let filteredMaterial = this.props.material
-        // filter by search value, if exists
-        if (this.state.searchValue) {
-            filteredMaterial = this.props.material.filter((mat) => {
-                return mat?.image.toLowerCase().includes(this.state.searchValue.toLowerCase())
-            })
-        }
-
         if (isApprovalConfigured) {
-            const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages(filteredMaterial)
+            const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
         } else {
             materialList =
-                this.state.isRollbackTrigger && this.state.showOlderImages ? [filteredMaterial[0]] : filteredMaterial
+                this.state.isRollbackTrigger && this.state.showOlderImages
+                    ? [this.props.material[0]]
+                    : this.props.material
+        }
+
+        let filteredMaterial = materialList
+
+        if (this.state.searchValue) {
+            filteredMaterial = materialList.filter((mat) => {
+                return mat?.image.toLowerCase().includes(this.state.searchValue.toLowerCase())
+            })
         }
         return {
             consumedImage: _consumedImage,
-            materialList,
+            materialList: filteredMaterial,
         }
     }
 
@@ -847,7 +849,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     handleRefresh = () => {
-        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+        this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType, false)
         this.setState({
             showSearch: false,
             searchValue: '',
