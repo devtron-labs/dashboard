@@ -17,6 +17,7 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { getUserRole } from '../../../userGroups/userGroup.service'
 
 let ApprovalInfoTippy = null
 
@@ -36,6 +37,21 @@ export default function Artifacts({
     tagsEditable,
     hideImageTaggingHardDelete,
 }: ArtifactType) {
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
+    useEffect(() => {
+        initialise()
+    }, [])
+    async function initialise() {
+        try {
+            const userRole = await getUserRole()
+
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            setSuperAdmin(superAdmin)
+        } catch (err) {
+            showError(err)
+        }
+    }
+
     const { triggerId, buildId } = useParams<{
         triggerId: string
         buildId: string
@@ -113,6 +129,9 @@ export default function Artifacts({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
+                        
+
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
@@ -129,8 +148,9 @@ export default function Artifacts({
                     </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
+                    <CIListItem isSuperAdmin={isSuperAdmin} type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
                         <div className="flex column left">
+                    
                             <div className="cn-9 fs-14">Reports.zip</div>
                             <button
                                 type="button"
@@ -195,6 +215,7 @@ export const CIListItem = ({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    isSuperAdmin,
 }: CIListItemType) => {
     if(!ApprovalInfoTippy) ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
     return (
@@ -238,6 +259,7 @@ export const CIListItem = ({
                         appReleaseTagNames={appReleaseTagNames}
                         tagsEditable={tagsEditable}
                         hideHardDelete={hideImageTaggingHardDelete}
+                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

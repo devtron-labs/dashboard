@@ -102,6 +102,7 @@ export interface CIListItemType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    isSuperAdmin?:boolean
 }
 
 export interface ImageComment {

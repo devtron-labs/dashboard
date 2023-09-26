@@ -71,6 +71,8 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
+    isSuperAdmin?:boolean
+    
 }
 
 export enum DeploymentWithConfigType {
@@ -102,6 +104,7 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
+    isSuperAdmin?:boolean
 }
 
 export interface MaterialInfo {
