@@ -60,6 +60,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { getDefaultConfig } from '../../../notifications/notifications.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -919,11 +920,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (this.state.selectedEnv && this.state.selectedEnv.id !== 0) {
             envId = this.state.selectedEnv.id
         }
+
+        const _ciPipelineType = node.isExternal ? CIPipelineBuildType.CI_EXTERNAL : CIPipelineBuildType.CI_BUILD
         const payload = {
             pipelineId: +this.state.ciNodeId,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
+            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : _ciPipelineType
         }
 
         triggerCINode(payload)

@@ -193,7 +193,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView)
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView, false)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {

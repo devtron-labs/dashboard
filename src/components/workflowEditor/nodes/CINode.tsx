@@ -6,6 +6,7 @@ import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import { CIPipelineBuildType } from '../../ciPipeline/types'
 
 export interface CINodeProps {
     x: number
@@ -20,6 +21,7 @@ export interface CINodeProps {
     triggerType: string
     isLinkedCI: boolean
     isExternalCI: boolean
+    isJobCI: boolean
     isTrigger: boolean
     linkedCount: number
     downstreams: NodeAttr[]
@@ -41,7 +43,7 @@ export class CINode extends Component<CINodeProps> {
         return (
             <div
                 className={`workflow-node__icon-common ${
-                    this.props.isJobView ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
+                    (this.props.isJobView || this.props.isJobCI) ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
                 }`}
             />
         )
@@ -49,7 +51,7 @@ export class CINode extends Component<CINodeProps> {
 
     renderReadOnlyCard = () => {
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
-        const nodeText = this.props.isJobView ? 'Job' : _buildText
+        const nodeText =  (this.props.isJobView || this.props.isJobCI) ? 'Job' : _buildText
         return (
             <div className="workflow-node">
                 <div className="workflow-node__title flex">
@@ -64,11 +66,12 @@ export class CINode extends Component<CINodeProps> {
     }
 
     renderCardContent = () => {
+        const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
+        const isJobCard = this.props.isJobView || currPipeline?.pipelineType === CIPipelineBuildType.CI_JOB
+        const env = currPipeline?.environmentId ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId) : undefined
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
         const _linkedBuildText = this.props.isLinkedCI ? 'Build: Linked' : _buildText
-        const pipeline = this.props.isJobView ? 'Job' : _linkedBuildText
-        const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
-        const env = currPipeline?.environmentId ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId) : undefined
+        const pipeline =  isJobCard ? 'Job' : _linkedBuildText
 
         return (
             <>

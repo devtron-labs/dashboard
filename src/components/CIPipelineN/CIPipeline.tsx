@@ -36,7 +36,7 @@ import {
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
+import { CIBuildType, CIPipelineBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -65,6 +65,7 @@ export default function CIPipeline({
     close,
     deleteWorkflow,
     isJobView,
+    isJobCI,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -80,9 +81,10 @@ export default function CIPipeline({
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
-    const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobView ? 'job' : 'build'} pipeline`
+    const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
+    const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobCard ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
-        isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
+        isJobCard || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingState, setLoadingState] = useState<LoadingState>({
@@ -149,6 +151,7 @@ export default function CIPipeline({
         linkedCount: 0,
         scanEnabled: false,
         environmentId: 0,
+        pipelineType: "",
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
@@ -277,7 +280,7 @@ export default function CIPipeline({
                     showError(error)
                 })
         } else {
-            getInitData(appId, true, !isJobView)
+            getInitData(appId, true, !isJobCard)
                 .then((ciResponse) => {
                     setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
@@ -345,7 +348,7 @@ export default function CIPipeline({
     }
 
     const getMandatoryPluginData = (_formData: PipelineFormType, pluginList: PluginDetailType[]): void => {
-        if (!isJobView && processPluginData && prepareFormData && pluginList.length) {
+        if (!isJobCard && processPluginData && prepareFormData && pluginList.length) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
@@ -517,7 +520,11 @@ export default function CIPipeline({
         } else {
             _ciPipeline.environmentId = undefined
         }
-
+        if (!isJobView) {
+            const _ciPipelineType = ciPipeline.isExternal ? CIPipelineBuildType.CI_EXTERNAL : CIPipelineBuildType.CI_BUILD
+            const ciPipelineType = isJobCI ? CIPipelineBuildType.CI_JOB : _ciPipelineType
+            _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
+        }
         saveCIPipeline(
             {
                 ...formData,
@@ -635,7 +642,7 @@ export default function CIPipeline({
                         validateStage(activeStageName, formData)
                     }}
                 >
-                    {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
+                    {isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
                     {(showAlert || showWarning) && (
                         <WarningTriangle
                             className={`icon-dim-16 mr-5 ml-5 mt-3 ${
@@ -704,7 +711,7 @@ export default function CIPipeline({
                 </div>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
-                        {isJobView ? (
+                        {isJobCard ? (
                             <>
                                 {getNavLink(`build`, BuildStageVariable.Build)}
                                 {getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
@@ -727,6 +734,7 @@ export default function CIPipeline({
                             <div className="sidebar-container">
                                 <Sidebar
                                     isJobView={isJobView}
+                                    isJobCI={isJobCI}
                                     mandatoryPluginData={mandatoryPluginData}
                                     pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
@@ -743,7 +751,7 @@ export default function CIPipeline({
                                     <PreBuild
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
-                                        isJobView={isJobView}
+                                        isJobView={isJobCard}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
@@ -765,7 +773,7 @@ export default function CIPipeline({
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     setDockerConfigOverridden={setDockerConfigOverridden}
-                                    isJobView={isJobView}
+                                    isJobView={isJobCard}
                                     getPluginData={getPluginData}
                                 />
                             </Route>
