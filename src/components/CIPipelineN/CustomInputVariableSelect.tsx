@@ -136,7 +136,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         } else {
             _variableDetail = {
                 variableType: RefVariableType.NEW,
-                value: selectedValue?.label,
+                value: selectedValue.label,
                 refVariableName: '',
                 refVariableStage: '',
             }

@@ -49,6 +49,7 @@ export const InputPluginSelection = ({
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             setHighlightedIndex((prevIndex) => {
                 if (e.key === 'ArrowUp') {
+                    if(prevIndex === -1 || prevIndex === 0) return -1;
                     return prevIndex <= 0 ? filteredArray.length - 1 : prevIndex - 1
                 } else if (e.key === 'ArrowDown') {
                     return prevIndex === filteredArray.length - 1 ? 0 : prevIndex + 1

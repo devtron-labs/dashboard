@@ -37,7 +37,6 @@ export interface InputPluginSelectionType {
     refVar?: React.MutableRefObject<HTMLTextAreaElement>
     noBackDrop?: boolean
     placeholder: string
-    dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
     variableType: string
     selectedVariableIndex: number
 }
