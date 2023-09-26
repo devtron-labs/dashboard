@@ -176,11 +176,14 @@ export const CompareWithDropdown = ({
             if (!envId && group[0].type === 3) return
             _groupOptions[getPosition(isValues, isEnvOverride, group[0].type)] = {
                 label: labelName[group[0].type],
-                options: group.map((item) => ({
-                    id: id++,
-                    label: textDecider(item, charts),
-                    ...item,
-                })),
+                //filter out item where item.chartType !== 'deployment
+                options: group
+                    .filter((item) => (item.type === 1 ? item?.chartType === 'Deployment' : true))
+                    .map((item) => ({
+                        id: id++,
+                        label: textDecider(item, charts),
+                        ...item,
+                    })),
             }
         })
 
@@ -314,7 +317,7 @@ export const CompareWithApprovalPendingAndDraft = ({
 }: CompareWithApprovalPendingAndDraftProps) => {
     const compareWithApprovalAndDraftOptions = [
         {
-            label: 'Manifest generated from',
+            label: `${isValues ? 'Values' : 'Manifest'} generated from`,
             options: [
                 getApprovalPendingOption(selectedChart?.version),
                 getDraftOption(selectedChart?.version, isValues),
