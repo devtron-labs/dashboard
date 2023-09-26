@@ -697,28 +697,27 @@ function DockerForm({
         ) {
             const isValidJsonFile = isValidJson(customState.password.value) || id
             const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
-            if (
-                (registryStorageType === RegistryStorageType.OCI_PRIVATE && !customState.username.value) ||
-                !(customState.password.value || id) ||
-                !isValidJsonFile
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: {
-                        ...st.password,
-                        error: id || st.password.value ? isValidJsonStr : 'Mandatory',
-                    },
-                }))
-                return
+            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
+                if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
+                    setCustomState((st) => ({
+                        ...st,
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: {
+                            ...st.password,
+                            error: id || st.password.value ? isValidJsonStr : 'Mandatory',
+                        },
+                    }))
+                    return
+                }
             }
+            
         } else if (
             selectedDockerRegistryType.value === RegistryType.ACR ||
             selectedDockerRegistryType.value === RegistryType.QUAY ||
             selectedDockerRegistryType.value === RegistryType.OTHER
         ) {
             let error = false
-            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
+            if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
                 if (
                     !customState.username.value ||
                     !(customState.password.value || id) ||
