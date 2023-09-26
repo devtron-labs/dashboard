@@ -106,13 +106,17 @@ const UserGroupContext = React.createContext<UserGroup>({
     },
 })
 
+const customWidth = {
+    width: '100%'
+}
+
 const tempMultiSelectStyles = {
     ...multiSelectStyles,
     ...groupHeaderStyle,
     menu: (base, state) => ({
         ...base,
         top: 'auto',
-        width: '100%',
+        width: '140%',
     }),
     dropdownIndicator: (base, state) => ({
         ...base,
@@ -1418,6 +1422,11 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                                 height: '30px',
                                 margin: '0 8px 0 0',
                                 padding: '1px',
+                            }),
+                            menu: (base, state) => ({
+                                ...base,
+                                top: 'auto',
+                                ...customWidth,
                             }),
                         }}
                         closeMenuOnSelect={false}
