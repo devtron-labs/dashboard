@@ -157,9 +157,10 @@ export default function DeploymentTemplateOverrideForm({
                 </div>,
                 { autoClose: null },
             )
+            // Resetting the fetchedValues and fetchedValuesManifest caches to avoid showing the old data
             dispatch({
-                type: DeploymentConfigStateActionTypes.fetchedValues,
-                payload: {},
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload: { fetchedValues: {}, fetchedValuesManifest: {} },
             })
             initialise(null, false, true)
         } catch (err) {
