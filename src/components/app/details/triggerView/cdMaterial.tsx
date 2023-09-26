@@ -132,7 +132,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             const userRole =  await getUserRole()
             const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
             this.setState({isSuperAdmin:superAdmin})
-            console.log(superAdmin)
         } catch (err) {
             showError(err)
         }
