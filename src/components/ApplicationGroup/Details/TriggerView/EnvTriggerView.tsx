@@ -138,7 +138,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const { queryParams } = useSearchString()
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    const [filterParams, setFilterParams] = useState<string>('')
+    const [searchImageTag, setSearchImageTag] = useState<string>('')
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -1880,6 +1880,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
             const material = node?.[materialType] || []
+            const handleMaterialFilters = (text: string) => {
+                setSearchImageTag(text)
+            }
 
             // TODO: Handler to settle search url
 
@@ -1934,6 +1937,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 location={location}
                                 match={match}
                                 isApplicationGroupTrigger={true}
+                                handleMaterialFilters={handleMaterialFilters}
                             />
                         )}
                     </div>

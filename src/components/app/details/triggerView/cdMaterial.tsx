@@ -96,7 +96,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
             materialInEditModeMap: new Map<number, boolean>(),
             showSearch: false,
-            searchValue: '',
             areMaterialsPassingFilters: props.material.filter((materialDetails) => materialDetails.filterState===FilterStates.ALLOWED).length > 0,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
@@ -898,30 +897,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     : this.props.material
         }
 
-        let filteredMaterial = materialList
-
-        if (this.state.searchValue) {
-            filteredMaterial = materialList.filter((mat) => {
-                return mat?.image.toLowerCase().includes(this.state.searchValue.toLowerCase())
-            })
-        }
         return {
             consumedImage: _consumedImage,
-            materialList: filteredMaterial,
+            materialList,
         }
     }
 
     setSearchValue = (searchValue: string) => {
-        this.setState({
-            searchValue,
-        })
+        if (!this.props.handleMaterialFilters) {
+            return
+        }
+
+        this.props.handleMaterialFilters(searchValue)
     }
 
     handleRefresh = () => {
         this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType, false)
         this.setState({
-            showSearch: false,
-            searchValue: '',
+            showSearch: false
         })
     }
 

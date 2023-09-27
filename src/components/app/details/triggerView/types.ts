@@ -17,8 +17,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-export enum FilterMaterialsType {
-    SEARCH = 'SEARCH',
+interface SearchParams {
+    search: string
 }
 
 export interface CDMaterialProps extends RouteComponentProps<{}> {
@@ -75,7 +75,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
-    handleMaterialFilters?: (text: string, FilterMaterialsType) => void
+    handleMaterialFilters?: (text: string) => void
 } 
 
 export enum DeploymentWithConfigType {
@@ -94,7 +94,6 @@ export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
     showSearch:boolean
-    searchValue:string
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
@@ -364,6 +363,7 @@ export interface TriggerViewState {
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
     isDefaultConfigPresent?: boolean
+    searchImageTag?: string
 }
 
 //-- begining of response type objects for trigger view

@@ -113,6 +113,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             tagsEditable: false,
             configs: false,
             isDefaultConfigPresent: false,
+            searchImageTag: ''
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
