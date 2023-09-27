@@ -171,14 +171,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     toggleCIMenu = (event) => {
-        const { top, left } = event.target.getBoundingClientRect()
-        this.setState({
-            cIMenuPosition: {
-                top: top,
-                left: left,
-            },
-            showCIMenu: !this.state.showCIMenu,
-        })
+      if (this.props.filteredEnvIds) {
+          return
+      }
+      const { top, left } = event.target.getBoundingClientRect()
+      this.setState({
+          cIMenuPosition: {
+              top: top,
+              left: left,
+          },
+          showCIMenu: !this.state.showCIMenu,
+      })
     }
 
     deleteWorkflow = (appId?: string, workflowId?: number) => {
@@ -361,6 +364,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
+                                    isLastNode={cdNode['isLast']}
                                 />
                             )
                         }}
@@ -438,10 +442,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             <>
                 <button
                     type="button"
-                    className="cta dc__no-decor flex mb-20"
+                    className={`cta dc__no-decor flex mb-20 ${this.props.filteredEnvIds ? 'dc__disabled' : ''}`}
                     data-testid="new-workflow-button"
                     onClick={this.toggleCIMenu}
-                    disabled={!!this.props.filteredEnvIds}
                 >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
