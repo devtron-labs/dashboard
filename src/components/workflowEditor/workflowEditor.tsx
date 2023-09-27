@@ -563,7 +563,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     isJobView={this.props.isJobView}
                     envList={this.props.envList}
                     filteredCIPipelines={this.state.filteredCIPipelines}
-                    addNewBlocked={!!this.props.filteredEnvIds}
+                    addNewPipelineBlocked={!!this.props.filteredEnvIds}
                 />
             )
         })

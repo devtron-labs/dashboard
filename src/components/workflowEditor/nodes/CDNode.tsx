@@ -52,7 +52,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     onClickAddNode = (event: any) => {
-      if (this.props.addNewBlocked) {
+      if (this.props.addNewPipelineBlocked) {
           return
       }
       if (this.props.deploymentAppDeleteRequest) {
@@ -146,14 +146,14 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         placement="top"
                         content={
                             <span className="add-cd-btn-tippy">
-                                {this.props.addNewBlocked
+                                {this.props.addNewPipelineBlocked
                                     ? 'Not allowed with env filter'
                                     : 'Add deployment pipeline'}
                             </span>
                         }
                     >
                         <Add
-                            className={`icon-dim-18 fcb-5 ${this.props.addNewBlocked ? 'dc__disabled' : ''}`}
+                            className={`icon-dim-18 fcb-5 ${this.props.addNewPipelineBlocked ? 'dc__disabled' : ''}`}
                             onClick={this.onClickAddNode}
                         />
                     </Tippy>

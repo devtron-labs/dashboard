@@ -31,12 +31,12 @@ export interface CINodeProps {
     showPluginWarning?: boolean
     envList?: any[]
     filteredCIPipelines?: any[]
-    addNewBlocked?: boolean
+    addNewPipelineBlocked?: boolean
 }
 
 export class CINode extends Component<CINodeProps> {
     onClickAddNode = (event: any) => {
-      if (this.props.addNewBlocked) {
+      if (this.props.addNewPipelineBlocked) {
           return
       }
       event.stopPropagation()
@@ -141,14 +141,14 @@ export class CINode extends Component<CINodeProps> {
                             placement="top"
                             content={
                                 <span style={{ display: 'block', width: '145px' }}>
-                                    {this.props.addNewBlocked
+                                    {this.props.addNewPipelineBlocked
                                         ? 'Not allowed with env filter'
                                         : 'Add deployment pipeline'}
                                 </span>
                             }
                         >
                             <Add
-                                className={`icon-dim-18 fcb-5 ${this.props.addNewBlocked ? 'dc__disabled' : ''}`}
+                                className={`icon-dim-18 fcb-5 ${this.props.addNewPipelineBlocked ? 'dc__disabled' : ''}`}
                                 onClick={this.onClickAddNode}
                             />
                         </Tippy>

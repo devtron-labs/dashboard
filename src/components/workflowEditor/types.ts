@@ -92,7 +92,7 @@ export interface CDNodeProps{
     match: RouteComponentProps['match']
     description: string
     isVirtualEnvironment?: boolean
-    addNewBlocked?: boolean
+    addNewPipelineBlocked?: boolean
 }
 
 export interface WebhookNodeProps {
@@ -105,7 +105,7 @@ export interface WebhookNodeProps {
     configDiffView?: boolean
     toggleCDMenu?: () => void
     hideWebhookTippy?:  () => void
-    addNewBlocked?: boolean
+    addNewPipelineBlocked?: boolean
 }
 
 export interface WebhookTippyType {

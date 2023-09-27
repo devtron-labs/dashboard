@@ -6,9 +6,9 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
-export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu, hideWebhookTippy, addNewBlocked }: WebhookNodeProps) {
+export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu, hideWebhookTippy, addNewPipelineBlocked }: WebhookNodeProps) {
     const addNewCD = (event): void => {
-      if (addNewBlocked) {
+      if (addNewPipelineBlocked) {
           return
       }
       event.stopPropagation()
@@ -47,11 +47,11 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                             placement="top"
                             content={
                                 <span style={{ display: 'block', width: '145px' }}>
-                                    {addNewBlocked ? 'Not allowed with env filter' : 'Add deployment pipeline'}
+                                    {addNewPipelineBlocked ? 'Not allowed with env filter' : 'Add deployment pipeline'}
                                 </span>
                             }
                         >
-                            <Add className={`icon-dim-18 fcb-5 ${addNewBlocked ? 'dc__disabled' : ''}`} onClick={addNewCD} />
+                            <Add className={`icon-dim-18 fcb-5 ${addNewPipelineBlocked ? 'dc__disabled' : ''}`} onClick={addNewCD} />
                         </Tippy>
                     </button>
                 )}
