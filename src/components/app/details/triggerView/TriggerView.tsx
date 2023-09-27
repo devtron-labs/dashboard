@@ -161,7 +161,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflows = (isFromOnMount?: boolean) => {
-        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
+        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView, this.props.filteredEnvIds)
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 const wf = result.workflows || []
@@ -214,7 +214,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.match.params.appId !== prevProps.match.params.appId) {
+        if (
+            this.props.match.params.appId !== prevProps.match.params.appId ||
+            prevProps.filteredEnvIds !== this.props.filteredEnvIds
+        ) {
             this.setState({
                 showCIModal: false,
                 showMaterialRegexModal: false,

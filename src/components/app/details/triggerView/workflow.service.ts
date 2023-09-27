@@ -22,15 +22,17 @@ export const getTriggerWorkflows = (
     appId,
     useAppWfViewAPI: boolean,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
 }
 
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
+    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
 const getInitialWorkflows = (
@@ -39,9 +41,14 @@ const getInitialWorkflows = (
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
+  let filteredEnvParams = ''
+  if (filteredEnvIds) {
+      filteredEnvParams = `?envIds=${filteredEnvIds}`
+  }
     if (useAppWfViewAPI) {
-        return getWorkflowViewList(id).then((response) => {
+        return getWorkflowViewList(id, filteredEnvParams).then((response) => {
             const workflows = {
                 appId: id,
                 workflows: response.result?.workflows as Workflow[],
@@ -63,7 +70,7 @@ const getInitialWorkflows = (
             )
         })
     } else if (isJobView) {
-        return Promise.all([getWorkflowList(id), getCIConfig(id)]).then(([workflow, ciConfig]) => {
+        return Promise.all([getWorkflowList(id, filteredEnvParams), getCIConfig(id)]).then(([workflow, ciConfig]) => {
             return processWorkflow(
                 workflow.result as WorkflowResult,
                 ciConfig.result as CiPipelineResult,

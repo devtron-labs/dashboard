@@ -287,6 +287,7 @@ export interface TriggerViewProps extends RouteComponentProps<{
     envId: string
 }> {
     isJobView?: boolean
+    filteredEnvIds?: string
 }
 
 export interface WorkflowType {
@@ -544,7 +545,7 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
-export interface PrePostDeployStageType {  
+export interface PrePostDeployStageType {
     isValid: boolean;
     steps: TaskErrorObj[];
     triggerType: string

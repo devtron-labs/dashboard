@@ -496,9 +496,13 @@ export const getWorkflowStatus = (appId: string) => {
     return get(URL)
 }
 
-export const getCIPipelines = (appId) => {
-    let URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}`
-    return get(URL)
+export const getCIPipelines = (appId, filteredEnvIds?: string) => {
+  let filteredEnvParams = ''
+  if (filteredEnvIds) {
+      filteredEnvParams = `?envIds=${filteredEnvIds}`
+  }
+  const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
+  return get(URL)
 }
 
 export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {

@@ -219,9 +219,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} filteredEnvIds={_filteredEnvIds} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
+                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds}/>} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} />
+                            <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
