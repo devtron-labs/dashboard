@@ -18,10 +18,13 @@ function PodHeaderComponent({ callBack }) {
     );
 
     useEffect(() => {
-        callBack(podTab === 'new');
-        if (pods && podMetaData?.length > 0 ) {
-            const newPodStats = { running: 0, all: 0 }
-            const oldPodStats = { running: 0, all: 0 }
+        callBack(podTab === 'new')
+        // initialize new pods and old pods
+        const newPodStats = { running: 0, all: 0 }
+        const oldPodStats = { running: 0, all: 0 }
+
+        // calculate new pods and old pods
+        if (pods && podMetaData?.length > 0) {
             pods.forEach((pod) => {
                 const podStatusLower = getNodeStatus(pod)?.toLowerCase()
                 if (podMetaData.find((f) => f.name === pod.name)?.isNew) {
@@ -31,10 +34,12 @@ function PodHeaderComponent({ callBack }) {
                     oldPodStats[podStatusLower] = (oldPodStats[podStatusLower] || 0) + 1
                     oldPodStats['all'] += 1
                 }
-            })  
-            setNewPods({...newPodStats});
-            setOldPods({...oldPodStats});
+            })
         }
+
+        // update new pods and old pods state
+        setNewPods({ ...newPodStats })
+        setOldPods({ ...oldPodStats })
     }, [filteredNodes, podTab]);
 
     return (
