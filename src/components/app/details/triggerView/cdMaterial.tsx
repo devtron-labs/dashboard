@@ -349,18 +349,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
                             mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
                             this.renderFailedCD(mat)}
-                        {mat.index == 0 && this.props.materialType !== MATERIAL_TYPE.rollbackMaterialList && (
-                            <div className="">
-                                <ImageTagButton
-                                    text="Latest"
-                                    isSoftDeleted={false}
-                                    isEditing={false}
-                                    tagId={0}
-                                    softDeleteTags={[]}
-                                    isSuperAdmin={[]}
-                                />
-                            </div>
-                        )}
+                        {mat.index == 0 &&
+                            this.props.materialType !== MATERIAL_TYPE.rollbackMaterialList &&
+                            !this.props.searchImageTag && (
+                                <div className="">
+                                    <ImageTagButton
+                                        text="Latest"
+                                        isSoftDeleted={false}
+                                        isEditing={false}
+                                        tagId={0}
+                                        softDeleteTags={[]}
+                                        isSuperAdmin={[]}
+                                    />
+                                </div>
+                            )}
                     </div>
                 </div>
             )
