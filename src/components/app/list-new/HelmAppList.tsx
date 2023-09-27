@@ -362,7 +362,7 @@ export default function HelmAppList({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header">
+            <div className="app-list__header dc__position-sticky dc__top-47">
                 <div className="app-list__cell--icon"></div>
                 <div className="app-list__cell app-list__cell--name">
                     {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
@@ -370,7 +370,7 @@ export default function HelmAppList({
                         <button className="app-list__cell-header flex" onClick={sortByAppName}>
                             {APP_LIST_HEADERS.AppName}
                             {sortBy == SortBy.APP_NAME ? (
-                                <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                                <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`}></span>
                             ) : (
                                 <span className="sort-col dc__opacity-0_5 ml-4"></span>
                             )}

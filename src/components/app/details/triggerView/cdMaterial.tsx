@@ -980,28 +980,34 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             }
         }
         return (
-            <div
-                className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
-                    _canReviewConfig ? 'cursor' : 'config-not-found'
-                } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
-                onClick={this.reviewConfig}
+            <Tippy
+                className="default-tt cursor"
+                arrow={false}
+                content={(diffFound ? 'Config' : 'No config') + ' diff from last deployed'}
             >
-                {!isLastDeployedOption && (this.state.recentDeploymentConfig !== null || this.state.checkingDiff) && (
-                    <div
-                        className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
-                    >
-                        {checkingdiff}
-                        {configNotAvailable}
-                        {diffFound}
-                        {noDiff}
-                    </div>
-                )}
-                {((!this.state.checkingDiff && _canReviewConfig) ||
-                    isLastDeployedOption ||
-                    !this.state.recentDeploymentConfig) && (
-                    <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
-                )}
-            </div>
+                <div
+                    className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
+                        _canReviewConfig ? 'cursor' : 'config-not-found'
+                    } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
+                    onClick={this.reviewConfig}
+                >
+                    {!isLastDeployedOption && (this.state.recentDeploymentConfig !== null || this.state.checkingDiff) && (
+                        <div
+                            className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
+                        >
+                            {checkingdiff}
+                            {configNotAvailable}
+                            {diffFound}
+                            {noDiff}
+                        </div>
+                    )}
+                    {((!this.state.checkingDiff && _canReviewConfig) ||
+                        isLastDeployedOption ||
+                        !this.state.recentDeploymentConfig) && (
+                        <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
+                    )}
+                </div>
+            </Tippy>
         )
     }
 
