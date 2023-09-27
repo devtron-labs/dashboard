@@ -1528,7 +1528,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
-        if (isApprovalConfigured && ApprovalEmptyState) {
+        if (this.props.searchImageTag) {
+            return (
+                <GenericEmptyState
+                    image={noartifact}
+                    title="No matching image available"
+                    subTitle="We couldn't find any matching image"
+                    isButtonAvailable={true}
+                    renderButton={this.renderGenerateButton}
+                />
+            )
+        } else if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
                     className="dc__skip-align-reload-center"
@@ -1537,16 +1547,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     isRollbackTrigger={this.state.isRollbackTrigger}
                     envName={this.props.envName}
                     viewAllImages={this.viewAllImages}
-                />
-            )
-        } else if (this.props.searchImageTag) {
-            return (
-                <GenericEmptyState
-                    image={noartifact}
-                    title="No matching image available"
-                    subTitle="We couldn't find any matching image"
-                    isButtonAvailable={true}
-                    renderButton={this.renderGenerateButton}
                 />
             )
         }
