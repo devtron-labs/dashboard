@@ -46,6 +46,7 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import AppStatus from '../AppStatus'
+import { AppListColumnSort } from '../types'
 
 export default function HelmAppList({
     serverMode,
@@ -295,14 +296,15 @@ export default function HelmAppList({
                     app.chartName.toLowerCase().includes(_search.toLowerCase()),
             )
         }
-
+        
+        const dynamicSortBy = AppListColumnSort[_sortBy];
+        
         // handle sort
         if (_sortOrder == OrderBy.ASC) {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) =>  a[dynamicSortBy].localeCompare(b[dynamicSortBy]))
         } else {
-            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
+            _filteredHelmAppsList = _filteredHelmAppsList.sort((a, b) => b[dynamicSortBy].localeCompare(a[dynamicSortBy]))
         }
-
         setSortBy(_sortBy)
         setSortOrder(_sortOrder)
         setFilteredHelmAppsList(_filteredHelmAppsList)

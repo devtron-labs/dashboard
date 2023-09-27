@@ -663,21 +663,31 @@ function DockerForm({
 
      function onValidation() {
         if (selectedDockerRegistryType.value === RegistryType.ECR) {
-            if (
-                (!isIAMAuthType &&
-                    (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
-                !customState.registryUrl.value
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
-                    awsSecretAccessKey: {
-                        ...st.awsSecretAccessKey,
-                        error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
-                    },
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                return
+            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
+                if (
+                    (!isIAMAuthType &&
+                        (!customState.awsAccessKeyId.value || !(customState.awsSecretAccessKey.value || id))) ||
+                    !customState.registryUrl.value
+                ) {
+                    setCustomState((st) => ({
+                        ...st,
+                        awsAccessKeyId: { ...st.awsAccessKeyId, error: st.awsAccessKeyId.value ? '' : 'Mandatory' },
+                        awsSecretAccessKey: {
+                            ...st.awsSecretAccessKey,
+                            error: id || st.awsSecretAccessKey.value ? '' : 'Mandatory',
+                        },
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    return
+                }
+            } else {
+                if (!customState.registryUrl.value) {
+                    setCustomState((st) => ({
+                        ...st,
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    return
+                }
             }
         } else if (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB) {
             if (
@@ -697,20 +707,27 @@ function DockerForm({
         ) {
             const isValidJsonFile = isValidJson(customState.password.value) || id
             const isValidJsonStr = isValidJsonFile ? '' : 'Invalid JSON'
-            if (
-                (registryStorageType === RegistryStorageType.OCI_PRIVATE && !customState.username.value) ||
-                !(customState.password.value || id) ||
-                !isValidJsonFile
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: {
-                        ...st.password,
-                        error: id || st.password.value ? isValidJsonStr : 'Mandatory',
-                    },
-                }))
-                return
+            if (registryStorageType === RegistryStorageType.OCI_PRIVATE) {
+                if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
+                    setCustomState((st) => ({
+                        ...st,
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: {
+                            ...st.password,
+                            error: id || st.password.value ? isValidJsonStr : 'Mandatory',
+                        },
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    return
+                }
+            } else {
+                if (!customState.registryUrl.value) {
+                    setCustomState((st) => ({
+                        ...st,
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    return
+                }
             }
         } else if (
             selectedDockerRegistryType.value === RegistryType.ACR ||
@@ -718,19 +735,30 @@ function DockerForm({
             selectedDockerRegistryType.value === RegistryType.OTHER
         ) {
             let error = false
-            if (
-                (!isPublic && !customState.username.value) ||
-                !(customState.password.value || id) ||
-                !customState.registryUrl.value
-            ) {
-                setCustomState((st) => ({
-                    ...st,
-                    username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                    password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
-                    registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
-                }))
-                error = true
+            if (registryStorageType !== RegistryStorageType.OCI_PUBLIC) {
+                if (
+                    !customState.username.value ||
+                    !(customState.password.value || id) ||
+                    !customState.registryUrl.value
+                ) {
+                    setCustomState((st) => ({
+                        ...st,
+                        username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    error = true
+                }
+            } else {
+                if (!customState.registryUrl.value) {
+                    setCustomState((st) => ({
+                        ...st,
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    error = true
+                }
             }
+
             if (
                 selectedDockerRegistryType.value === RegistryType.OTHER &&
                 state.advanceSelect.value === CERTTYPE.SECURE_WITH_CERT

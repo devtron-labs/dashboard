@@ -645,7 +645,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                     clusterName: _env.clusterName || '-',
                                     namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
                                     namespace: _env.namespace || '-',
-                                    status: _env.status || '-',
+                                    status: _env.appStatus || '-',
                                     lastDeployedTime: _env.lastDeployedTime
                                         ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
                                         : '-',
