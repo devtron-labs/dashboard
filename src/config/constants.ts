@@ -20,6 +20,7 @@ export const Routes = {
     IMAGE_TAGGING: 'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
+    CI_PIPELINE_SOURCE_BULK_PATCH: 'app/ci-pipeline/bulk/branch-update',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
