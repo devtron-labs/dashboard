@@ -483,7 +483,7 @@ function LogsComponent({
                             <React.Fragment>
                                 <div className="h-16 dc__border-right ml-8 mr-8"></div>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
-                                <div className='dc__mxw-200'>
+                                <div className="dc__mxw-200">
                                     <Select
                                         placeholder="Select Containers"
                                         classNamePrefix="containers-select"
@@ -649,7 +649,7 @@ function LogsComponent({
                             )}
                         </div>
 
-                        {(prevContainer && showNoPrevContainer != '') ? (
+                        {prevContainer && showNoPrevContainer != '' ? (
                             <MessageUI
                                 dataTestId="no-prev-container-logs"
                                 msg={showNoPrevContainer}
@@ -657,7 +657,7 @@ function LogsComponent({
                                 minHeight={isResourceBrowserView ? '200px' : ''}
                                 msgStyle={{ maxWidth: '300px', margin: '8px auto' }}
                             />
-                        ) :
+                        ) : (
                             <div className="log-viewer">
                                 <LogViewerComponent
                                     subject={subject}
@@ -666,7 +666,7 @@ function LogsComponent({
                                     reset={logsCleared}
                                 />
                             </div>
-                        }
+                        )}
 
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
