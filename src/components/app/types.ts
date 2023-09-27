@@ -309,6 +309,11 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
+export enum AppListColumnSort {
+    appNameSort = 'appName',
+    lastDeployedSort = 'lastDeployedAt'
+}
+
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
