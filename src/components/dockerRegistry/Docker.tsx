@@ -716,11 +716,19 @@ function DockerForm({
                             ...st.password,
                             error: id || st.password.value ? isValidJsonStr : 'Mandatory',
                         },
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
+                    }))
+                    return
+                }
+            } else {
+                if (!customState.registryUrl.value) {
+                    setCustomState((st) => ({
+                        ...st,
+                        registryUrl: { ...st.registryUrl, error: st.registryUrl.value ? '' : 'Mandatory' },
                     }))
                     return
                 }
             }
-            
         } else if (
             selectedDockerRegistryType.value === RegistryType.ACR ||
             selectedDockerRegistryType.value === RegistryType.QUAY ||
