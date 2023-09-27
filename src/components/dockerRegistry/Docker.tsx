@@ -315,7 +315,7 @@ function DockerForm({
         {
             id: {
                 required: true,
-                validator: { error: 'Please avoid writing /', regex: /^[^/]+$/ },
+                validator: { error: 'Not Allowed character ("/")', regex: /^[^/]+$/ },
             },
             registryType: {
                 required: true,
