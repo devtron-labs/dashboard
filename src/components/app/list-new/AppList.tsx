@@ -396,7 +396,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
-        
+
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
