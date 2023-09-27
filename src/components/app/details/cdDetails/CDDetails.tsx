@@ -156,8 +156,8 @@ export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
               const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
               let _selectedEnvironment = (result[0]['value']?.result || [])
                   .filter((env) => {
-                    console.log(filteredEnvMap?.get(env.environmentId))
-                    return !filteredEnvMap || filteredEnvMap.get(env.environmentId)})
+                      return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
+                  })
                   .find((envData) => {
                       return +envId === envData.environmentId
                   })
@@ -185,7 +185,6 @@ export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
             .filter((env) => {
-              console.log(filteredEnvMap?.get(env.environmentId))
               return !filteredEnvMap || filteredEnvMap.get(env.environmentId)})
                 .map((envData) => {
                     if (envData.environmentId === +envId) {
