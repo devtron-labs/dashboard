@@ -16,11 +16,12 @@ import { AddCveModal } from './AddCveModal'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service'
-import { showError, Progressing, Reload, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { NavLink } from 'react-router-dom'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
+import { toast } from 'react-toastify'
 
 export class SecurityPolicyEdit extends Component<
     FetchPolicyQueryParams,
@@ -63,7 +64,7 @@ export class SecurityPolicyEdit extends Component<
         this.state = {
             view: ViewType.LOADING,
             showWhitelistModal: false,
-            errorStatusCode:0,
+            errorStatusCode: 0,
             result: {
                 level: this.props.level,
                 policies: [],
@@ -91,7 +92,6 @@ export class SecurityPolicyEdit extends Component<
             })
             .catch((error) => {
                 showError(error)
-                this.setState({errorStatusCode: error.code})
                 this.setState({ view: ViewType.ERROR })
             })
     }
@@ -106,7 +106,7 @@ export class SecurityPolicyEdit extends Component<
             })
             .catch((error) => {
                 showError(error)
-                // this.setState({errorStatusCode: error.code})
+                this.setState({errorStatusCode: error.code})
                 this.setState({ view: ViewType.ERROR })
             })
     }
@@ -134,6 +134,7 @@ export class SecurityPolicyEdit extends Component<
             })
             .catch((error) => {
                 showError(error)
+                this.setState({errorStatusCode: error.code})
                 this.setState({ view: ViewType.ERROR })
             })
     }
@@ -519,10 +520,7 @@ export class SecurityPolicyEdit extends Component<
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR)
             return (
-                <ErrorScreenManager
-                    code={403}
-                    subtitle="Information on this page is available only to superadmin users."
-                />
+                toast.error('Admin Permission is required')
             )
         else {
             let isCollapsible = this.props.level === 'application'
