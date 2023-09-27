@@ -49,6 +49,7 @@ import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { safeTrim } from '../../util/Util'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const KubectlConnectionRadio = importComponentFromFELibrary('KubectlConnectionRadio')
@@ -533,7 +534,7 @@ export default function ClusterForm({
         sshTunnelConfig: {
             user: state.sshTunnelUser.value,
             password: state.sshTunnelPassword.value,
-            authKey: state.sshTunnelPrivateKey.value,
+            authKey: safeTrim(state.sshTunnelPrivateKey.value),
             sshServerAddress: state.sshTunnelUrl.value
         },
         server_url,
