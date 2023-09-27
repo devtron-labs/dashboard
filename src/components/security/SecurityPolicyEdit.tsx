@@ -21,6 +21,7 @@ import { ViewType } from '../../config';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { NavLink } from 'react-router-dom';
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
+import { toast } from 'react-toastify';
 
 export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean, view: string; }> {
 
@@ -464,7 +465,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload />;
+        else if (this.state.view === ViewType.ERROR) return (
+            toast.error("You don't have permission to add CVE policy")
+        );
         else {
             let isCollapsible = this.props.level === "application";
             return <>
