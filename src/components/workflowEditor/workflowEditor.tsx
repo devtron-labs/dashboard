@@ -79,6 +79,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (
+            prevProps.filteredEnvIds !== this.props.filteredEnvIds
+        ) {
+            this.getWorkflows()
+        }
+    }
+
     removeTakeMeThereClickedItem = () => {
         if (typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked')) {
             localStorage.removeItem('takeMeThereClicked')
@@ -94,6 +102,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         getCreateWorkflows(
             this.props.match.params.appId,
             this.props.isJobView,
+            this.props.filteredEnvIds
         )
             .then((result) => {
                 const allCINodeMap = new Map()

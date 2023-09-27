@@ -66,7 +66,7 @@ const getInitialWorkflows = (
             )
         })
     } else if (isJobView) {
-        return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id)]).then(([workflow, ciConfig]) => {
+        return Promise.all([getWorkflowList(id), getCIConfig(id)]).then(([workflow, ciConfig]) => {
             return processWorkflow(
                 workflow.result as WorkflowResult,
                 ciConfig.result as CiPipelineResult,
@@ -77,7 +77,7 @@ const getInitialWorkflows = (
             )
         })
     } else {
-        return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+        return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
             ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
                 return processWorkflow(
                     workflow.result as WorkflowResult,

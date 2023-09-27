@@ -42,6 +42,7 @@ export interface WorkflowEditProps
     isJobView?: boolean
     envList?: any[]
     ciPipelines?: any[]
+    filteredEnvIds?: string
 }
 
 export interface AddWorkflowState {
@@ -188,6 +189,6 @@ export interface PipelineContext {
     getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
     isVirtualEnvironment?: boolean
     globalVariables: {
-        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string 
+        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
 }[]
 }
