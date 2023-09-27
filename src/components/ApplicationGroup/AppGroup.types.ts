@@ -311,7 +311,7 @@ export interface CreateGroupType {
     selectedAppGroup: GroupOptionType
     unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
-    isEnv: boolean
+    filterParentType: FilterParentType
 }
 
 export interface ApplistEnvType {

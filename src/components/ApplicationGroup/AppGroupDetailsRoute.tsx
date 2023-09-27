@@ -216,13 +216,16 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }
 
+    // opens with edit state and blank state while clicked onSave
     const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
+        console.log('openCreateGroup', groupId, _edit)
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
         let _selectedGroup
         const _allAppIds: number[] = []
         if (groupId) {
+            // true for edit
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)
             const groupAppIds = _selectedGroup?.appIds || []
             for (const appId of groupAppIds) {
@@ -249,6 +252,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             envId: +envId,
         }
         if (_edit) {
+            // true for edit
             getPermissionCheck({ appIds: _allAppIds }, _edit)
         } else {
             getPermissionCheck(_permissionData)
@@ -393,7 +397,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
-                    isEnv={false}
+                    filterParentType={FilterParentType.app}
                 />
             )}
             {showDeleteGroup && isPopupBox && (

@@ -14,9 +14,15 @@ import './appDetails/appDetails.scss'
 import './app.scss'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs } from '../../ApplicationGroup/Constants'
-import { CheckPermissionType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+import {
+    CheckPermissionType,
+    CreateGroupAppListType,
+    FilterParentType,
+    GroupOptionType,
+} from '../../ApplicationGroup/AppGroup.types'
 import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission } from '../../ApplicationGroup/AppGroup.service'
+import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -29,7 +35,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId } = useParams<{ appId }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -41,6 +47,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
     const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
     const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
+    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
+    const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
+    const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -129,7 +138,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {
         try {
-            const { result } = await appGroupPermission(envId, payload)
+            const { result } = await appGroupPermission(appId, payload)
             if (result && !_delete) {
                 console.log(result)
                 setShowCreateGroup(true)
@@ -205,9 +214,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             _allAppLists.push(+app.id)
         }
         let _permissionData = {
-            id: +envId,
+            id: +appId,
             appIds: _allAppLists,
-            envId: +envId,
+            envId: +appId,
         }
         if (_edit) {
             getPermissionCheck({ appIds: _allAppIds }, _edit)
@@ -252,8 +261,15 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     openCreateGroup={openCreateGroup}
                     openDeleteGroup={openDeleteGroup}
                     isSuperAdmin={true}
-                    //@ts-ignore
-                    showCreateGroup={showCreateGroup}
+                />
+            )}
+            {showCreateGroup && (
+                <CreateAppGroup
+                    unAuthorizedApps={mapUnauthorizedApp}
+                    appList={allAppsList}
+                    selectedAppGroup={clickedGroup}
+                    closePopup={closeCreateGroup}
+                    filterParentType={FilterParentType.env}
                 />
             )}
             <ErrorBoundary>

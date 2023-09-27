@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -33,8 +33,6 @@ export function AppHeader({
     openCreateGroup,
     openDeleteGroup,
     isSuperAdmin,
-    //@ts-ignore
-    showCreateGroup,
 }: AppHeaderType) {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
@@ -42,9 +40,6 @@ export function AppHeader({
     const location = useLocation()
     const currentPathname = useRef('')
     const [isMenuOpen, setMenuOpen] = useState(false)
-    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
-    const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
-    const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
 
     const contextValue = useMemo(
         () => ({
@@ -234,12 +229,6 @@ export function AppHeader({
         )
     }
 
-    const closeCreateGroup = () => {
-        // FIXME
-        setClickedGroup(null)
-        openCreateGroup(false)
-    }
-
     return (
         <>
             <PageHeader
@@ -248,15 +237,6 @@ export function AppHeader({
                 showTabs={true}
                 renderHeaderTabs={renderAppDetailsTabs}
             />
-            {showCreateGroup && (
-                <CreateAppGroup
-                    unAuthorizedApps={mapUnauthorizedApp}
-                    appList={allAppsList}
-                    selectedAppGroup={clickedGroup}
-                    closePopup={closeCreateGroup}
-                    isEnv={true}
-                />
-            )}
         </>
     )
 }

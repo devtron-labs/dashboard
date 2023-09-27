@@ -12,20 +12,21 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
-import { CreateGroupType, CreateTypeOfAppListType } from './AppGroup.types'
+import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
 import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { filter } from 'rxjs'
 
 export default function CreateAppGroup({
     appList,
     selectedAppGroup,
     closePopup,
     unAuthorizedApps,
-    isEnv,
+    filterParentType,
 }: CreateGroupType) {
     const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
@@ -335,10 +336,17 @@ export default function CreateAppGroup({
                 <div>
                     <ul role="tablist" className="tab-list dc__border-bottom mb-8">
                         {renderTabItem(
-                            isEnv ? CreateGroupTabs.SELECTED_ENV : CreateGroupTabs.SELECTED_APPS,
+                            filterParentType === FilterParentType.env
+                                ? CreateGroupTabs.SELECTED_ENV
+                                : CreateGroupTabs.SELECTED_APPS,
                             selectedAppsCount,
                         )}
-                        {renderTabItem(isEnv ? CreateGroupTabs.ALL_ENV : CreateGroupTabs.ALL_APPS, appList.length)}
+                        {renderTabItem(
+                            filterParentType === FilterParentType.env
+                                ? CreateGroupTabs.ALL_ENV
+                                : CreateGroupTabs.ALL_APPS,
+                            appList.length,
+                        )}
                     </ul>
                     {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
                 </div>
