@@ -31,9 +31,19 @@ export interface CINodeProps {
     showPluginWarning?: boolean
     envList?: any[]
     filteredCIPipelines?: any[]
+    addNewBlocked?: boolean
 }
 
 export class CINode extends Component<CINodeProps> {
+    onClickAddNode = (event: any) => {
+      if (this.props.addNewBlocked) {
+          return
+      }
+      event.stopPropagation()
+      let { top, left } = event.target.getBoundingClientRect()
+      top = top + 25
+      this.props.toggleCDMenu()
+    }
     renderNodeIcon = () => {
         if (this.props.showPluginWarning) {
             return <Warning className="icon-dim-18 warning-icon-y7" />
@@ -68,7 +78,9 @@ export class CINode extends Component<CINodeProps> {
         const _linkedBuildText = this.props.isLinkedCI ? 'Build: Linked' : _buildText
         const pipeline = this.props.isJobView ? 'Job' : _linkedBuildText
         const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
-        const env = currPipeline?.environmentId ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId) : undefined
+        const env = currPipeline?.environmentId
+            ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId)
+            : undefined
 
         return (
             <>
@@ -103,9 +115,16 @@ export class CINode extends Component<CINodeProps> {
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
-                                {this.props.isJobView && <>
-                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span></>}
+                                {this.props.isJobView && (
+                                    <>
+                                        <span className="fw-4 fs-11">
+                                            Env: {env ? env.environment_name : DEFAULT_ENV}
+                                        </span>
+                                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
+                                            {!env && '(Default)'}
+                                        </span>
+                                    </>
+                                )}
                             </div>
                             {this.renderNodeIcon()}
                         </div>
@@ -121,17 +140,16 @@ export class CINode extends Component<CINodeProps> {
                             arrow={false}
                             placement="top"
                             content={
-                                <span style={{ display: 'block', width: '145px' }}> Add deployment pipeline </span>
+                                <span style={{ display: 'block', width: '145px' }}>
+                                    {this.props.addNewBlocked
+                                        ? 'Not allowed with env filter'
+                                        : 'Add deployment pipeline'}
+                                </span>
                             }
                         >
                             <Add
-                                className="icon-dim-18 fcb-5"
-                                onClick={(event: any) => {
-                                    event.stopPropagation()
-                                    let { top, left } = event.target.getBoundingClientRect()
-                                    top = top + 25
-                                    this.props.toggleCDMenu()
-                                }}
+                                className={`icon-dim-18 fcb-5 ${this.props.addNewBlocked ? 'dc__disabled' : ''}`}
+                                onClick={this.onClickAddNode}
                             />
                         </Tippy>
                     </button>

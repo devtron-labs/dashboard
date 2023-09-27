@@ -3656,3 +3656,8 @@ textarea::placeholder {
 .dc__disable-click {
     pointer-events: none;
 }
+
+.dc__disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

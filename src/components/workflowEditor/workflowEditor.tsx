@@ -441,6 +441,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     className="cta dc__no-decor flex mb-20"
                     data-testid="new-workflow-button"
                     onClick={this.toggleCIMenu}
+                    disabled={!!this.props.filteredEnvIds}
                 >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
@@ -559,6 +560,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     isJobView={this.props.isJobView}
                     envList={this.props.envList}
                     filteredCIPipelines={this.state.filteredCIPipelines}
+                    addNewBlocked={!!this.props.filteredEnvIds}
                 />
             )
         })

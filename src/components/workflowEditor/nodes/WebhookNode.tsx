@@ -6,12 +6,15 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ConditionalWrap } from '../../common'
 import { WebhookNodeProps } from '../types'
 
-export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu, hideWebhookTippy }: WebhookNodeProps) {
+export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggleCDMenu, hideWebhookTippy, addNewBlocked }: WebhookNodeProps) {
     const addNewCD = (event): void => {
-        event.stopPropagation()
-        let { top } = event.target.getBoundingClientRect()
-        top = top + 25
-        toggleCDMenu()
+      if (addNewBlocked) {
+          return
+      }
+      event.stopPropagation()
+      let { top } = event.target.getBoundingClientRect()
+      top = top + 25
+      toggleCDMenu()
     }
 
     const renderWebhookCard = (): JSX.Element => {
@@ -43,10 +46,12 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                             arrow={false}
                             placement="top"
                             content={
-                                <span style={{ display: 'block', width: '145px' }}> Add deployment pipeline </span>
+                                <span style={{ display: 'block', width: '145px' }}>
+                                    {addNewBlocked ? 'Not allowed with env filter' : 'Add deployment pipeline'}
+                                </span>
                             }
                         >
-                            <Add className="icon-dim-18 fcb-5" onClick={addNewCD} />
+                            <Add className={`icon-dim-18 fcb-5 ${addNewBlocked ? 'dc__disabled' : ''}`} onClick={addNewCD} />
                         </Tippy>
                     </button>
                 )}
