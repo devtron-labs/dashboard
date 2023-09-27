@@ -64,6 +64,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
             filteredCIPipelines: [],
+            envIds: [],
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -101,6 +102,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 let isDeletionInProgress
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
+                        this.setState({
+                            envIds: [...this.state.envIds, node.environmentId]
+                        })
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
@@ -350,6 +354,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     downstreamNodeSize={downstreamNodeSize}
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
+                                    envIds={this.state.envIds}
                                 />
                             )
                         }}

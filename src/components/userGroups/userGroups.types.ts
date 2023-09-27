@@ -242,3 +242,7 @@ export interface CustomRoleAndMeta {
     possibleRolesMetaForCluster: {}
 }
 
+export const ViewChartGroupPermission:APIRoleFilter = {
+    entity: EntityTypes.CHART_GROUP,
+    action: ActionTypes.VIEW,
+}
