@@ -64,7 +64,6 @@ export default function NewCDPipeline({
     location,
     appName,
     close,
-    downstreamNodeSize,
     getWorkflows,
     refreshParentWorkflows,
     envIds,
@@ -898,7 +897,7 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            const canDeletePipeline = isLastNode //?? downstreamNodeSize === 0
+            const canDeletePipeline = isLastNode
             const message =
                 !canDeletePipeline ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (

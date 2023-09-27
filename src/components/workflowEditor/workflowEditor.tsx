@@ -353,14 +353,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )}
                         render={({ location, match }: { location: any; match: any }) => {
                             const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
-                            const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
                             return (
                                 <NewCDPipeline
                                     match={match}
                                     location={location}
                                     appName={this.state.appName}
                                     close={this.closePipeline}
-                                    downstreamNodeSize={downstreamNodeSize}
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
