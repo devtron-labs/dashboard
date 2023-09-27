@@ -21,7 +21,8 @@ import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fai
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import {ReactComponent as ICAbort} from '../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -43,7 +44,8 @@ import {
     ImageTagsContainer,
     GenericEmptyState,
     DebouncedSearch,
-    FilterStates
+    FilterStates,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -69,7 +71,7 @@ const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
 const ApprovedImagesMessage = importComponentFromFELibrary('ApprovedImagesMessage')
 const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
-
+let timeoutId
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
@@ -95,8 +97,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
             materialInEditModeMap: new Map<number, boolean>(),
-            showSearch: false,
-            areMaterialsPassingFilters: props.material.filter((materialDetails) => materialDetails.filterState===FilterStates.ALLOWED).length > 0,
+            showSearch: !!this.props.searchImageTag,
+            areMaterialsPassingFilters:
+                props.material.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED)
+                    .length > 0,
+            searchApplied: !!this.props.searchImageTag,
+            searchText: this.props.searchImageTag,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -118,6 +124,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.searchImageTag != prevProps.searchImageTag) {
+          if (this.props.searchImageTag) {
+              this.setState({
+                  searchApplied: true,
+                  showSearch: true,
+                  searchText: this.props.searchImageTag,
+              })
+          } else {
+              this.setState({
+                  searchApplied: false,
+                  showSearch: false,
+                  searchText: '',
+              })
+          }
         }
     }
 
@@ -437,9 +461,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     placement="top"
                     content="Image does not match the configured filter condition"
                 >
-                    <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
-                        Excluded
-                    </i>
+                    <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
                 </Tippy>
             )
         }
@@ -528,7 +550,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             className="default-tt w-200"
                             arrow={false}
                             placement="top"
-                            content={"Image does not match the configured filter condition"}    
+                            content={'Image does not match the configured filter condition'}
                         >
                             <div className="flexbox pt-2 pb-2 pl-8 pr-8 br-4 bcr-1 dc__align-items-center dc__gap-4">
                                 <ICAbort className="icon-dim-20 fcr-5" />
@@ -613,16 +635,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     {mat.filterState !== FilterStates.ALLOWED && (
                                         <div className="flex dc__gap-12 ml-12">
                                             <div className="h-20 dc__border-left" />
-                                                <Tippy
-                                                    className="default-tt w-200"
-                                                    arrow={false}
-                                                    placement="top"
-                                                    content="Image does not match the configured filter condition"
-                                                >
-                                                    <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
-                                                        Excluded
-                                                    </i>
-                                                </Tippy>
+                                            <Tippy
+                                                className="default-tt w-200"
+                                                arrow={false}
+                                                placement="top"
+                                                content="Image does not match the configured filter condition"
+                                            >
+                                                <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
+                                            </Tippy>
                                         </div>
                                     )}
                                 </>
@@ -723,16 +743,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             {mat.filterState !== FilterStates.ALLOWED && (
                                                 <div className="flex dc__gap-12 ml-12">
                                                     <div className="h-20 dc__border-left" />
-                                                        <Tippy
-                                                            className="default-tt w-200"
-                                                            arrow={false}
-                                                            placement="top"
-                                                            content="Image does not match the configured filter condition"
-                                                        >
-                                                            <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
-                                                                Excluded
-                                                            </i>
-                                                        </Tippy>
+                                                    <Tippy
+                                                        className="default-tt w-200"
+                                                        arrow={false}
+                                                        placement="top"
+                                                        content="Image does not match the configured filter condition"
+                                                    >
+                                                        <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
+                                                            Excluded
+                                                        </i>
+                                                    </Tippy>
                                                 </div>
                                             )}
                                         </>
@@ -908,14 +928,71 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return
         }
 
-        this.props.handleMaterialFilters(searchValue)
+        this.props.handleMaterialFilters(searchValue, this.props.pipelineId, this.props.stageType, false)
     }
 
-    handleRefresh = () => {
-        this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType, false)
+    handleRefresh = (e) => {
+        stopPropagation(e)
+        if (!this.props.handleMaterialFilters) {
+            return
+        }
+        this.props.handleMaterialFilters(null, this.props.pipelineId, this.props.stageType, false)
         this.setState({
-            showSearch: false
+            showSearch: false,
         })
+    }
+
+    handleSearchClick = (e) => {
+        stopPropagation(e)
+        this.setState({
+            showSearch: true,
+        })
+    }
+
+    clearSearch = (e): void => {
+        stopPropagation(e)
+        if (this.state.searchText) {
+            this.setSearchValue('')
+        }
+    }
+
+    handleInputChange = (event): void => {
+        this.setState({
+            searchText: event.target.value,
+        })
+    }
+
+    handleFilterKeyPress = (event): void => {
+        const theKeyCode = event.key
+        if (theKeyCode === 'Enter') {
+            if (event.target.value !== this.props.searchImageTag) {
+                this.setSearchValue(event.target.value)
+            }
+        } else if (theKeyCode === 'Backspace' && this.props.searchImageTag.length === 1) {
+            this.clearSearch(event)
+        }
+    }
+
+    renderSearch = (): JSX.Element => {
+        return (
+            <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
+                <SearchIcon className="search__icon icon-dim-18" />
+                <input
+                    data-testid="ci-trigger-search-by-commit-hash"
+                    type="text"
+                    placeholder="Search by commit hash"
+                    value={this.state.searchText}
+                    className="search__input dc__right-0"
+                    onChange={this.handleInputChange}
+                    onKeyDown={this.handleFilterKeyPress}
+                />
+                {this.state.searchApplied && (
+                    <button className="search__clear-button" type="button" onClick={this.clearSearch}>
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
+                    </button>
+                )}
+            </div>
+        )
     }
 
     renderMaterialList = (isApprovalConfigured: boolean) => {
@@ -927,37 +1004,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
-                {!this.props.isFromBulkCD && (
-                    <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                        <span className="flex dc__align-start">{titleText}</span>
-                        <span className="flexbox dc__align-items-center h-32 dc__gap-16">
-                            {!this.state.isRollbackTrigger && ( // remove this condition when search/refresh for rollback is implemented
-                                <>
-                                    {this.state.showSearch ? (
-                                        <DebouncedSearch
-                                            onSearch={this.setSearchValue}
-                                            placeholder="Search by image tag"
-                                            containerClass="flexbox flex-grow-1 h-4 pt-4 w-250 pb-4 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300"
-                                            inputClass="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
-                                            Icon={SearchIcon}
-                                            iconClass="icon-dim-18"
-                                        />
-                                    ) : (
-                                        <SearchIcon
-                                            onClick={() =>
-                                                this.setState({
-                                                    showSearch: true,
-                                                })
-                                            }
-                                            className="icon-dim-18 icon-color-n6 cursor"
-                                        />
-                                    )}
-                                    <RefreshIcon onClick={this.handleRefresh} className="icon-dim-16 scn-6 cursor" />
-                                </>
-                            )}
-                        </span>
-                    </div>
-                )}
+                <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                    <span className="flex dc__align-start">{titleText}</span>
+                    <span className="flexbox dc__align-items-center h-32 dc__gap-16">
+                        {!this.state.isRollbackTrigger && ( // remove this condition when search/refresh for rollback is implemented
+                            <>
+                                {this.state.showSearch ? (
+                                    this.renderSearch()
+                                ) : (
+                                    <SearchIcon
+                                        onClick={this.handleSearchClick}
+                                        className="icon-dim-18 icon-color-n6 cursor"
+                                    />
+                                )}
+                                <RefreshIcon onClick={this.handleRefresh} className="icon-dim-16 scn-6 cursor" />
+                            </>
+                        )}
+                    </span>
+                </div>
                 {materialList.length <= 0
                     ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
                     : this.renderMaterial(materialList, false, isApprovalConfigured)}
@@ -1123,7 +1187,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const selectedImage = this.props.material.find((artifact) => artifact.isSelected)
 
         return (
-            !selectedImage || !this.state.areMaterialsPassingFilters ||
+            !selectedImage ||
+            !this.state.areMaterialsPassingFilters ||
             (this.state.isRollbackTrigger && (this.state.checkingDiff || !this.canDeployWithConfig())) ||
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
                 !this.state.recentDeploymentConfig)
@@ -1141,7 +1206,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 </>
             )
         }
-
 
         return (
             <>
@@ -1455,6 +1519,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    renderGenerateButton = () => {
+        return (
+            <button className="flex cta h-32" onClick={this.clearSearch}>
+                Clear filter
+            </button>
+        )
+    }
+
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
         if (isApprovalConfigured && ApprovalEmptyState) {
             return (
@@ -1465,6 +1537,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     isRollbackTrigger={this.state.isRollbackTrigger}
                     envName={this.props.envName}
                     viewAllImages={this.viewAllImages}
+                />
+            )
+        } else if (this.props.searchImageTag) {
+            return (
+                <GenericEmptyState
+                    image={noartifact}
+                    title="No matching image available"
+                    subTitle="We couldn't find any matching image"
+                    isButtonAvailable={true}
+                    renderButton={this.renderGenerateButton}
                 />
             )
         }

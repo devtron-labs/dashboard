@@ -737,7 +737,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean): void => {
+    const onClickCDMaterial = (
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode: boolean = false,
+        searchText?: string,
+    ): void => {
         ReactGA.event(
             isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked,
         )
@@ -751,6 +756,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             abortControllerRef.current.signal,
             isApprovalNode,
+            searchText,
         )
             .then((data) => {
                 let _selectedNode
@@ -903,6 +909,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         setErrorCode(response.code)
                         preventBodyScroll(false)
                         getWorkflowStatusData(workflows)
+                        setSearchImageTag('')
                     }
                 })
                 .catch((errors: ServerErrors) => {
@@ -1222,6 +1229,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         preventBodyScroll(false)
         setCDLoading(false)
         setShowCDModal(false)
+        setSearchImageTag('')
     }
 
     const closeApprovalModal = (e): void => {
@@ -1305,7 +1313,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
         const _workflows = filteredWorkflows.map((wf) => {
-            if (wf.isSelected) {
+            if (wf.isSelected && cdMaterialResponse[wf.appId]) {
                 const _appId = wf.appId
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
@@ -1865,6 +1873,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const handleMaterialFilters = (
+        searchText: string,
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode: boolean = false,
+    ) => {
+        onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        setSearchImageTag(searchText)
+    }
+
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal) {
             let node: NodeAttr, _appID
@@ -1880,11 +1898,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
             const material = node?.[materialType] || []
-            const handleMaterialFilters = (text: string) => {
-                setSearchImageTag(text)
-            }
-
-            // TODO: Handler to settle search url
 
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
@@ -1938,6 +1951,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 match={match}
                                 isApplicationGroupTrigger={true}
                                 handleMaterialFilters={handleMaterialFilters}
+                                searchImageTag={searchImageTag}
                             />
                         )}
                     </div>
