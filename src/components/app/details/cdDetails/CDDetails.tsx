@@ -202,7 +202,7 @@ export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
                     }
                 })
 
-            if (envOptions.length === 1 && !envId && !isEnvDeleted) {
+            if ((envOptions.length === 1 && !envId && !isEnvDeleted) || (envId && !_selectedEnvironment)) {
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
             }
             setEnvOptions(envOptions)
