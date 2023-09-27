@@ -281,13 +281,13 @@ export function getCDMaterialList(
     isApprovalNode?: boolean,
     searchParam?: string,
 ): Promise<CDMaterialResponseType> {
-    const URL = searchParam?.length
+    const URL = searchParam
         ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
               isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-          }`
+          }&search=${searchParam}`
         : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
               isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-          }&search=${searchParam}`
+          }`
 
     return get(URL, {
         signal: abortSignal,
