@@ -4,7 +4,6 @@ import ci from '../../assets/img/ic-pipeline-ci@2x.png'
 import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 import webhook from '../../assets/img/webhook.svg'
 import ciJobIcon from '../../assets/icons/ic-job-node.svg'
-import { ReactComponent as JobIcon } from '../../assets/icons/ic-job-node.svg'
 import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
 import { Modal } from '@devtron-labs/devtron-fe-common-lib'
 
