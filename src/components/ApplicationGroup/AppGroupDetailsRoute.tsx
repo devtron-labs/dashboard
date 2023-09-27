@@ -101,7 +101,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const getSavedFilterData = async (groupId?: number): Promise<void> => {
         setSelectedAppList([])
         setAppListLoading(true)
-        const { result } = await getEnvGroupList(+envId)
+        const { result } = await getEnvGroupList(+envId, FilterParentType.app) //FIXME if required
         if (result) {
             const _groupFilterOption = []
             let _selectedGroup
@@ -227,6 +227,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         if (groupId) {
             // true for edit
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)
+            console.log('_selectedGroup', _selectedGroup)
             const groupAppIds = _selectedGroup?.appIds || []
             for (const appId of groupAppIds) {
                 _allAppIds.push(appId)

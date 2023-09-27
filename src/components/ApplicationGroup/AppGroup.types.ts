@@ -385,6 +385,6 @@ export interface SearchBarType {
 }
 
 export enum FilterParentType {
-    app = 'app',
-    env = 'env',
+    app = 'app-group',
+    env = 'env-group',
 }

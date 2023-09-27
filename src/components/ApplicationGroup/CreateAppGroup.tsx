@@ -28,13 +28,15 @@ export default function CreateAppGroup({
     unAuthorizedApps,
     filterParentType,
 }: CreateGroupType) {
-    const { envId } = useParams<{ envId: string }>()
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
     const [appGroupName, setAppGroupName] = useState<string>(selectedAppGroup?.label ?? '')
     const [appGroupDescription, setAppGroupDescription] = useState<string>(selectedAppGroup?.description ?? '')
-    const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(CreateGroupTabs.SELECTED_APPS)
+    const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(
+        filterParentType === FilterParentType.env ? CreateGroupTabs.SELECTED_ENV : CreateGroupTabs.SELECTED_APPS,
+    )
     const [allAppSearchText, setAllAppSearchText] = useState('')
     const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
     const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
@@ -151,6 +153,7 @@ export default function CreateAppGroup({
     }
 
     const renderSelectedApps = (): JSX.Element => {
+        console.log('selectedApps')
         return (
             <div>
                 <SearchBar
@@ -216,6 +219,7 @@ export default function CreateAppGroup({
     }
 
     const renderAllApps = (): JSX.Element => {
+        console.log('allApps')
         return (
             <div>
                 <SearchBar
@@ -262,6 +266,7 @@ export default function CreateAppGroup({
     }
 
     const onTabChange = (e): void => {
+        console.log('onTabChange', e.currentTarget.dataset.tabName)
         setSelectedTab(e.currentTarget.dataset.tabName)
     }
 
@@ -288,6 +293,8 @@ export default function CreateAppGroup({
             return 'Max 30 char is allowed in name'
         }
     }
+    console.log(selectedTab, CreateGroupTabs.SELECTED_APPS, CreateGroupTabs.SELECTED_ENV)
+    console.log(selectedTab === (CreateGroupTabs.SELECTED_APPS || selectedTab === CreateGroupTabs.SELECTED_ENV))
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
@@ -348,7 +355,10 @@ export default function CreateAppGroup({
                             appList.length,
                         )}
                     </ul>
-                    {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
+
+                    {selectedTab === CreateGroupTabs.SELECTED_APPS || selectedTab === CreateGroupTabs.SELECTED_ENV
+                        ? renderSelectedApps()
+                        : renderAllApps()}
                 </div>
             </div>
         )
@@ -386,12 +396,15 @@ export default function CreateAppGroup({
             id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,
             description: appGroupDescription,
-            appIds: payloadAppIds,
+            resourceIds: payloadAppIds,
+            groupType: filterParentType,
         }
 
         try {
-            const { result } = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
+            const id = filterParentType === FilterParentType.env ? appId : envId
+            const { result } = await createEnvGroup(id, payload, !!selectedAppGroup?.value)
             toast.success('Successfully saved')
+            console.log('result', result)
             closePopup(e, result.id)
         } catch (err) {
             showError(err)
