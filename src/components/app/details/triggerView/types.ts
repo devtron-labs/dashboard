@@ -17,6 +17,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
+export enum FilterMaterialsType {
+    SEARCH = 'SEARCH',
+}
+
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
@@ -71,7 +75,8 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
-}
+    handleMaterialFilters?: (text: string, FilterMaterialsType) => void
+} 
 
 export enum DeploymentWithConfigType {
     LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
@@ -104,6 +109,7 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
+    areMaterialsPassingFilters: boolean
 }
 
 export interface MaterialInfo {

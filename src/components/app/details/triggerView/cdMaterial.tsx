@@ -21,6 +21,7 @@ import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fai
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import {ReactComponent as ICAbort} from '../../../../assets/icons/ic-abort.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -42,6 +43,7 @@ import {
     ImageTagsContainer,
     GenericEmptyState,
     DebouncedSearch,
+    FilterStates
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -95,6 +97,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             materialInEditModeMap: new Map<number, boolean>(),
             showSearch: false,
             searchValue: '',
+            areMaterialsPassingFilters: props.material.filter((materialDetails) => materialDetails.filterState===FilterStates.ALLOWED).length > 0,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -427,6 +430,21 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         isImageApprover: boolean,
         disableSelection: boolean,
     ) => {
+        if (mat.filterState !== FilterStates.ALLOWED) {
+            return (
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="top"
+                    content="Image does not match the configured filter condition"
+                >
+                    <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
+                        Excluded
+                    </i>
+                </Tippy>
+            )
+        }
+
         if (mat.vulnerable) {
             return (
                 <span
@@ -501,10 +519,25 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 <div className="flex left column">
-                    <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                        <img src={docker} alt="" className="commit-hash__icon" />
-                        {mat.image}
-                    </div>
+                    {mat.filterState === FilterStates.ALLOWED ? (
+                        <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
+                            <img src={docker} alt="" className="commit-hash__icon" />
+                            {mat.image}
+                        </div>
+                    ) : (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top"
+                            content={"Image does not match the configured filter condition"}    
+                        >
+                            <div className="flexbox pt-2 pb-2 pl-8 pr-8 br-4 bcr-1 dc__align-items-center dc__gap-4">
+                                <ICAbort className="icon-dim-20 fcr-5" />
+
+                                <p className="m-0 fs-12 lh-16 fw-4 cr-5">{mat.image}</p>
+                            </div>
+                        </Tippy>
+                    )}
                     {this.props.stageType !== STAGE_TYPE.CD && mat.latest && (
                         <span className="last-deployed-status">Last Run</span>
                     )}
@@ -568,14 +601,32 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             !isImageApprover &&
                             !disableSelection &&
                             ExpireApproval && (
-                                <ExpireApproval
-                                    matId={mat.id}
-                                    appId={this.props.appId}
-                                    pipelineId={this.props.pipelineId}
-                                    stageType={this.props.stageType}
-                                    userApprovalMetadata={mat.userApprovalMetadata}
-                                    onClickCDMaterial={this.context.onClickCDMaterial}
-                                />
+                                <>
+                                    <ExpireApproval
+                                        matId={mat.id}
+                                        appId={this.props.appId}
+                                        pipelineId={this.props.pipelineId}
+                                        stageType={this.props.stageType}
+                                        userApprovalMetadata={mat.userApprovalMetadata}
+                                        onClickCDMaterial={this.context.onClickCDMaterial}
+                                    />
+
+                                    {mat.filterState !== FilterStates.ALLOWED && (
+                                        <div className="flex dc__gap-12 ml-12">
+                                            <div className="h-20 dc__border-left" />
+                                                <Tippy
+                                                    className="default-tt w-200"
+                                                    arrow={false}
+                                                    placement="top"
+                                                    content="Image does not match the configured filter condition"
+                                                >
+                                                    <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
+                                                        Excluded
+                                                    </i>
+                                                </Tippy>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                     </div>
@@ -660,14 +711,32 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     !isImageApprover &&
                                     !disableSelection &&
                                     ExpireApproval && (
-                                        <ExpireApproval
-                                            matId={mat.id}
-                                            appId={this.props.appId}
-                                            pipelineId={this.props.pipelineId}
-                                            stageType={this.props.stageType}
-                                            userApprovalMetadata={mat.userApprovalMetadata}
-                                            onClickCDMaterial={this.context.onClickCDMaterial}
-                                        />
+                                        <>
+                                            <ExpireApproval
+                                                matId={mat.id}
+                                                appId={this.props.appId}
+                                                pipelineId={this.props.pipelineId}
+                                                stageType={this.props.stageType}
+                                                userApprovalMetadata={mat.userApprovalMetadata}
+                                                onClickCDMaterial={this.context.onClickCDMaterial}
+                                            />
+
+                                            {mat.filterState !== FilterStates.ALLOWED && (
+                                                <div className="flex dc__gap-12 ml-12">
+                                                    <div className="h-20 dc__border-left" />
+                                                        <Tippy
+                                                            className="default-tt w-200"
+                                                            arrow={false}
+                                                            placement="top"
+                                                            content="Image does not match the configured filter condition"
+                                                        >
+                                                            <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
+                                                                Excluded
+                                                            </i>
+                                                        </Tippy>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                             </div>
@@ -1059,8 +1128,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     isDeployButtonDisabled() {
         const selectedImage = this.props.material.find((artifact) => artifact.isSelected)
+
         return (
-            !selectedImage ||
+            !selectedImage || !this.state.areMaterialsPassingFilters ||
             (this.state.isRollbackTrigger && (this.state.checkingDiff || !this.canDeployWithConfig())) ||
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
                 !this.state.recentDeploymentConfig)
@@ -1068,6 +1138,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     getTippyContent() {
+        if (!this.state.areMaterialsPassingFilters) {
+            return (
+                <>
+                    <h2 className="fs-12 fw-6 lh-18 m-0">No eligible images found!</h2>
+                    <p className="fs-12 fw-4 lh-18 m-0">
+                        Please select an image that passes the configured filters to deploy
+                    </p>
+                </>
+            )
+        }
+
+
         return (
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
