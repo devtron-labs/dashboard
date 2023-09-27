@@ -33,7 +33,8 @@ function DynamicTabs({
     shortcut,
     timeElapsedLastSync,
     refreshData,
-    loader
+    loader,
+    isOverview
 }: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -265,30 +266,28 @@ function DynamicTabs({
     }
     
     const timerForSync = () => {
-        if (loader) {
+        if (loader || !timeElapsedLastSync) {
             return (
-                <div className='ml-12 mr-4 flex'>
-                    <Progressing size={18}  />
-                    <div className='fs-13 ml-8'>Syncing...</div>
+                <div className="ml-12 mr-4 flex">
+                    <Progressing size={18} />
+                    <div className="fs-13 ml-8">Syncing...</div>
                 </div>
             )
         } else {
             return (
-                timeElapsedLastSync && (
-                    <>
-                        <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                            <div>
-                                <RefreshIcon
-                                    className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                                    onClick={refreshData}
-                                />
-                            </div>
-                        </Tippy>
-                        {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                            <div className="flex">{timeElapsedLastSync} ago </div>
-                        )}
-                    </>
-                )
+                <>
+                    <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
+                        <div>
+                            <RefreshIcon
+                                className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                                onClick={refreshData}
+                            />
+                        </div>
+                    </Tippy>
+                    {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
+                        <div className="flex">{timeElapsedLastSync} ago </div>
+                    )}
+                </>
             )
         }
     }
@@ -302,17 +301,17 @@ function DynamicTabs({
                 </div>
             )}
             {tabsData.dynamicTabs.length > 0 && (
-                <div
-                    className="dynamic-tabs-container dc__border-left"
-                >
+                <div className="dynamic-tabs-container dc__border-left">
                     <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
                         {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                     </ul>
                 </div>
             )}
-            <div className="flexbox ml-auto dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center dc__no-shrink">
-                {timerForSync()}
-            </div>
+            {!isOverview && (
+                <div className="flexbox ml-auto dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center dc__no-shrink">
+                    {timerForSync()}
+                </div>
+            )}
 
             {tabsData.dynamicTabs.length > 0 && (
                 <MoreButtonWrapper

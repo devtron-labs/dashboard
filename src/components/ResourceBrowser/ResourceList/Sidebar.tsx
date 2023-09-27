@@ -25,7 +25,9 @@ function Sidebar({
     updateResourceSelectionData,
     shortcut,
     isCreateModalOpen,
-    isClusterError
+    isClusterError,
+    setLastDataSync,
+    lastDataSync,
 }: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -74,7 +76,7 @@ function Sidebar({
     }
 
     const covertK8sMapToOptionsList = () => {
-      let isNamespacesAvailable, isEventsAvailable
+        let isNamespacesAvailable, isEventsAvailable
         const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
             return [...k8sObject.child.entries()].flatMap(([key, value]) => {
                 const keyLowerCased = key.toLowerCase()
@@ -83,8 +85,9 @@ function Sidebar({
                     keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
                     keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                 ) {
-                  isNamespacesAvailable= isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
-                  isEventsAvailable= isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                    isNamespacesAvailable =
+                        isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                    isEventsAvailable = isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
                     return []
                 }
 
@@ -180,6 +183,7 @@ function Sidebar({
         }
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
+        setLastDataSync(!lastDataSync)
 
         /**
          * If groupName present then kind selection is from search dropdown,
@@ -294,7 +298,10 @@ function Sidebar({
                 },
             },
             option.groupName,
-            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes) && option.label !== (SIDEBAR_KEYS.nodes as Nodes) && option.label !== (SIDEBAR_KEYS.overview as Nodes),
+            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) &&
+                option.label !== (SIDEBAR_KEYS.events as Nodes) &&
+                option.label !== (SIDEBAR_KEYS.nodes as Nodes) &&
+                option.label !== (SIDEBAR_KEYS.overview as Nodes),
         )
     }
 
@@ -356,7 +363,7 @@ function Sidebar({
                 />
             </div>
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
-            <div className="pb-8">
+                <div className="pb-8">
                     <div
                         key={SIDEBAR_KEYS.overviewGVK.Kind}
                         ref={updateRef}
@@ -428,36 +435,40 @@ function Sidebar({
                             {SIDEBAR_KEYS.namespaces}
                         </div>
                     )}
-            </div>
-                {k8SObjectMap?.size && [...k8SObjectMap.values()].map((k8sObject) =>
-                    k8sObject.name === AggregationKeys.Events || k8sObject.name === AggregationKeys.Namespaces ? null : (
-                        <Fragment key={`${k8sObject.name}-parent`}>
-                            <div
-                                className="flex pointer"
-                                data-group-name={k8sObject.name}
-                                onClick={handleGroupHeadingClick}
-                            >
-                                <DropDown
-                                    className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
-                                    style={{ ['--rotateBy' as any]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
-                                />
-                                <span
-                                    className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
-                                    data-testid={`k8sObject-${k8sObject.name}`}
+                </div>
+                {k8SObjectMap?.size &&
+                    [...k8SObjectMap.values()].map((k8sObject) =>
+                        k8sObject.name === AggregationKeys.Events ||
+                        k8sObject.name === AggregationKeys.Namespaces ? null : (
+                            <Fragment key={`${k8sObject.name}-parent`}>
+                                <div
+                                    className="flex pointer"
+                                    data-group-name={k8sObject.name}
+                                    onClick={handleGroupHeadingClick}
                                 >
-                                    {k8sObject.name}
-                                </span>
-                            </div>
-                            {k8sObject.isExpanded && (
-                                <div className="pl-20">
-                                    {[...k8sObject.child.entries()].map(([key, value]) =>
-                                        renderK8sResourceChildren(key, value, k8sObject),
-                                    )}
+                                    <DropDown
+                                        className={`${
+                                            k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'
+                                        } rotate icon-dim-24 pointer`}
+                                        style={{ ['--rotateBy' as any]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
+                                    />
+                                    <span
+                                        className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
+                                        data-testid={`k8sObject-${k8sObject.name}`}
+                                    >
+                                        {k8sObject.name}
+                                    </span>
                                 </div>
-                            )}
-                        </Fragment>
-                    ),
-                )}
+                                {k8sObject.isExpanded && (
+                                    <div className="pl-20">
+                                        {[...k8sObject.child.entries()].map(([key, value]) =>
+                                            renderK8sResourceChildren(key, value, k8sObject),
+                                        )}
+                                    </div>
+                                )}
+                            </Fragment>
+                        ),
+                    )}
             </div>
         </div>
     )

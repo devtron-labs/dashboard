@@ -73,6 +73,8 @@ import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createTaintsList } from '../../cluster/cluster.util'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
+let interval
+
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -363,15 +365,14 @@ export default function ResourceList() {
         const _lastDataSyncTime = Date()
         const _staleDataCheckTime = moment()
         isStaleDataRef.current = false
-        setTimeElapsedLastSync('')
         setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-         const interval = setInterval(() => {
+         interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
             setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()))
         }, 1000)
-
         return () => {
+            setTimeElapsedLastSync('')
             clearInterval(interval)
         }
     }, [lastDataSync])
@@ -535,7 +536,6 @@ export default function ResourceList() {
                         namespaced: false,
                         gvk: SIDEBAR_KEYS.overviewGVK,
                     }
-
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected, true)
@@ -671,6 +671,8 @@ export default function ResourceList() {
             }
             setNoResults(result.data.length === 0)
             setShowErrorState(false)
+            setLastDataSync(!lastDataSync)
+            
         } catch (err) {
             if (!resourceListAbortController.signal.aborted) {
                 showError(err)
@@ -739,8 +741,8 @@ export default function ResourceList() {
     )
 
     const refreshData = (): void => {
+        clearInterval(interval)
         setTimeElapsedLastSync('')
-        setLastDataSync(!lastDataSync)
         setSelectedResource(null)
         getSidebarData(selectedCluster.value)
     }
@@ -959,6 +961,8 @@ export default function ResourceList() {
                     updateResourceSelectionData={updateResourceSelectionData}
                     isCreateModalOpen={showCreateResourceModal}
                     isClusterError={!!clusterErrorTitle}
+                    setLastDataSync={setLastDataSync}
+                    lastDataSync={lastDataSync}
                 />
                 {renderListBar()}
             </div>
@@ -1032,7 +1036,7 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} timeElapsedLastSync={timeElapsedLastSync} refreshData={refreshData} loader={loader}/>
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} timeElapsedLastSync={timeElapsedLastSync} refreshData={refreshData} loader={loader||rawGVKLoader||clusterLoader||resourceListLoader} isOverview={isOverview}/>
                     </div>
                 </div>
                 {renderResourceBrowser()}
