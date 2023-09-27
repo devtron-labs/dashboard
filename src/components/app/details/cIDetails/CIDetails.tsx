@@ -152,7 +152,8 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
-    if (pipelines.length === 1 && !pipelineId) {
+    const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
+    if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist)) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
