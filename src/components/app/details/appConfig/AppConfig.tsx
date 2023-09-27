@@ -89,7 +89,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
     useEffect(() => {
         Promise.all([
             getAppConfigStatus(+appId, isJobView),
-            getWorkflowList(appId),
+            getWorkflowList(appId, filteredEnvIds),
             getAppOtherEnvironmentMin(appId),
             typeof getConfigProtections === 'function' && !isJobView
                 ? getConfigProtections(Number(appId))
@@ -421,6 +421,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                             isBaseConfigProtected={state.isBaseConfigProtected}
                             reloadEnvironments={reloadEnvironments}
                             configProtectionData={state.configProtectionData}
+                            filteredEnvIds={filteredEnvIds}
                         />
                     </div>
                 </div>

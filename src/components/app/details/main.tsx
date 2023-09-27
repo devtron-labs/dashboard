@@ -355,19 +355,28 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         ) : (
                             <Route
                                 path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails />}
+                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                                filteredEnvIds={_filteredEnvIds}
+                            />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
+                        <Route
+                            path={`${path}/${URLS.APP_TRIGGER}`}
+                            render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds} />}
+                        />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} />
+                            <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
-                            component={DeploymentMetrics}
+                            render={(props) => {
+                                return <DeploymentMetrics {...props} filteredEnvIds={_filteredEnvIds} />
+                            }}
                         />
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

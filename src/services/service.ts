@@ -202,13 +202,21 @@ export function getEnvironmentSecrets(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}`)
 }
 
-export function getWorkflowList(appId) {
-    const URL = `${Routes.WORKFLOW}/${appId}`
-    return get(URL)
+export function getWorkflowList(appId, filteredEnvIds?: string) {
+  let filteredEnvParams = ''
+  if (filteredEnvIds) {
+      filteredEnvParams = `?envIds=${filteredEnvIds}`
+  }
+  const URL = `${Routes.WORKFLOW}/${appId}${filteredEnvParams}`
+  return get(URL)
 }
 
-export function getWorkflowViewList(appId) {
-    return get(`${Routes.WORKFLOW}/view/${appId}`);
+export function getWorkflowViewList(appId, filteredEnvIds?: string) {
+  let filteredEnvParams = ''
+  if (filteredEnvIds) {
+      filteredEnvParams = `?envIds=${filteredEnvIds}`
+  }
+  return get(`${Routes.WORKFLOW}/view/${appId}${filteredEnvParams}`)
 }
 
 export function stopStartApp(AppId, EnvironmentId, RequestType) {

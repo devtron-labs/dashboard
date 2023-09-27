@@ -64,6 +64,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
             filteredCIPipelines: [],
+            envIds: [],
         }
         this.hideWebhookTippy = this.hideWebhookTippy.bind(this)
     }
@@ -76,6 +77,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.removeTakeMeThereClickedItem()
         if (this.workflowTimer) {
             clearTimeout(this.workflowTimer)
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (
+            prevProps.filteredEnvIds !== this.props.filteredEnvIds
+        ) {
+            this.getWorkflows()
         }
     }
 
@@ -94,6 +103,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         getCreateWorkflows(
             this.props.match.params.appId,
             this.props.isJobView,
+            this.props.filteredEnvIds
         )
             .then((result) => {
                 const allCINodeMap = new Map()
@@ -101,6 +111,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 let isDeletionInProgress
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
+                        this.setState({
+                            envIds: [...this.state.envIds, node.environmentId]
+                        })
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
@@ -347,6 +360,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     downstreamNodeSize={downstreamNodeSize}
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
+                                    envIds={this.state.envIds}
                                 />
                             )
                         }}

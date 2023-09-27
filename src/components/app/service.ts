@@ -9,6 +9,7 @@ import {
     DeploymentNodeType,
     CDModalTab,
     CDMaterialResponseType,
+    put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
@@ -476,6 +477,15 @@ export const triggerCDNode = (
     return post(Routes.CD_TRIGGER_POST, request)
 }
 
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
+    const request = {
+        appIds: appIds,
+        environmentId: envId,
+        value: value,
+    }
+    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
+}
+
 export const getPrePostCDTriggerStatus = (params) => {
     const URL = `${Routes.APP}/cd-pipeline/workflow/status/${params.appId}/${params.environmentId}/${params.pipelineId}`
     return get(URL)
@@ -486,9 +496,13 @@ export const getWorkflowStatus = (appId: string) => {
     return get(URL)
 }
 
-export const getCIPipelines = (appId) => {
-    let URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}`
-    return get(URL)
+export const getCIPipelines = (appId, filteredEnvIds?: string) => {
+  let filteredEnvParams = ''
+  if (filteredEnvIds) {
+      filteredEnvParams = `?envIds=${filteredEnvIds}`
+  }
+  const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
+  return get(URL)
 }
 
 export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {

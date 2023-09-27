@@ -252,7 +252,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             savingRegexValue: true,
         })
         const payload: any = {
-            appId: +this.props.match.params.appId,
+            appId: Number(this.props.match.params.appId ?? this.props.appId),
             id: +this.props.workflowId,
             ciPipelineMaterial: [],
         }

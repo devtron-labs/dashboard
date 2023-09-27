@@ -26,7 +26,7 @@ import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
+export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean, filteredEnvIds?: string }) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -45,11 +45,11 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
-                getCIPipelines(+appId),
+                getCIPipelines(+appId, filteredEnvIds),
                 getModuleInfo(ModuleNameMap.SECURITY),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
-        [appId],
+        [appId, filteredEnvIds],
     )
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+pipelineId, pagination),
@@ -152,7 +152,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
-    if (pipelines.length === 1 && !pipelineId) {
+    const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
+    if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist)) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {

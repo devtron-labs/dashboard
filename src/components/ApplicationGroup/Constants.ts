@@ -171,3 +171,16 @@ export const CREATE_GROUP_TABS = {
     selectedEnv: 'Selected environments',
     allEnv: 'Add/Remove environments',
 }
+
+export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus => {
+    switch (statusText) {
+        case BULK_VIRTUAL_RESPONSE_STATUS.pass:
+            return BulkResponseStatus.PASS
+        case BULK_VIRTUAL_RESPONSE_STATUS.fail:
+            return BulkResponseStatus.FAIL
+        case BULK_VIRTUAL_RESPONSE_STATUS.unauthorized:
+            return BulkResponseStatus.UNAUTHORIZE
+        default:
+            return
+    }
+}

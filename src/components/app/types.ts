@@ -309,6 +309,11 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
+export enum AppListColumnSort {
+    appNameSort = 'appName',
+    lastDeployedSort = 'lastDeployedAt'
+}
+
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -423,6 +428,7 @@ export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     isJobOverview?: boolean
+    filteredEnvIds?: string
 }
 
 export interface AboutAppInfoModalProps {

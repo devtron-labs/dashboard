@@ -95,6 +95,7 @@ export interface AppComposeRouterProps {
     isBaseConfigProtected?: boolean
     reloadEnvironments:()=> void
     configProtectionData: any[]
+    filteredEnvIds?: string
 }
 
 export interface EnvironmentOverridesProps {
