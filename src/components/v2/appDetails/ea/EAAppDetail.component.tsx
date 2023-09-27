@@ -80,7 +80,7 @@ function ExternalAppDetail({ appId, appName, isExternalApp }) {
             },
             appStoreAppName: helmAppDetail.chartMetadata.chartName,
             appStoreAppVersion: helmAppDetail.chartMetadata.chartVersion,
-            additionalData: helmAppDetail.releaseStatus,
+            helmReleaseStatus: helmAppDetail.releaseStatus,
             clusterId: helmAppDetail.environmentDetails.clusterId,
             notes: helmAppDetail.chartMetadata.notes,
         }
