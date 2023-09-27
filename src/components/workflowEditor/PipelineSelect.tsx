@@ -77,7 +77,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                             data-pipeline-type={CIPipelineNodeType.JOB_CI}
                             onClick={this.handleMenuClick}
                         >
-                            <div className="h-40 cb-5 bcb-1 scb-5 flex br-8 mr-12">
+                            <div className="h-40 bcb-1 flex br-8 mr-12">
                                 <img src={ciJobIcon} className="icon-dim-20 ml-10 mr-10" alt="job-ci" />
                             </div>
                             <div>
