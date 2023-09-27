@@ -285,47 +285,48 @@ const SummaryTooltipCard = React.memo(
                         <div className="dc__bullet ml-6 mr-6"></div>
                         <div>{triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}</div>
                     </div>
-                    {ciMaterials?.map((ciMaterial) => {
-                        const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
-                        const sourceType = gitDetail?.CiConfigureSourceType
-                            ? gitDetail.CiConfigureSourceType
-                            : ciMaterial?.type
-                        const sourceValue = gitDetail?.CiConfigureSourceValue
-                            ? gitDetail.CiConfigureSourceValue
-                            : ciMaterial?.value
-                        const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail.GitRepoUrl : ciMaterial?.url
-                        if (sourceType !== SourceTypeMap.WEBHOOK && !gitDetail) {
-                            return null
-                        }
-                        return (
-                            <div className="mt-22 ci-material-detail" key={ciMaterial.id}>
-                                {sourceType == SourceTypeMap.WEBHOOK ? (
-                                    <div className="flex left column">
-                                        <CiPipelineSourceConfig
-                                            sourceType={sourceType}
-                                            sourceValue={sourceValue}
-                                            showTooltip={false}
-                                        />
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="dc__git-logo"> </div>
+                    {Object.keys(gitTriggers ?? {}).length > 0 &&
+                        ciMaterials?.map((ciMaterial) => {
+                            const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
+                            const sourceType = gitDetail?.CiConfigureSourceType
+                                ? gitDetail.CiConfigureSourceType
+                                : ciMaterial?.type
+                            const sourceValue = gitDetail?.CiConfigureSourceValue
+                                ? gitDetail.CiConfigureSourceValue
+                                : ciMaterial?.value
+                            const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail.GitRepoUrl : ciMaterial?.url
+                            if (sourceType !== SourceTypeMap.WEBHOOK && !gitDetail) {
+                                return null
+                            }
+                            return (
+                                <div className="mt-22 ci-material-detail" key={ciMaterial.id}>
+                                    {sourceType == SourceTypeMap.WEBHOOK ? (
                                         <div className="flex left column">
-                                            <a
-                                                href={createGitCommitUrl(gitMaterialUrl, gitDetail.Commit)}
-                                                target="_blank"
-                                                rel="noopener noreferer"
-                                                className="fs-12 fw-6 cn-9 pointer"
-                                            >
-                                                /{sourceValue}
-                                            </a>
-                                            <p className="fs-12 cn-7">{gitDetail?.Message}</p>
+                                            <CiPipelineSourceConfig
+                                                sourceType={sourceType}
+                                                sourceValue={sourceValue}
+                                                showTooltip={false}
+                                            />
                                         </div>
-                                    </>
-                                )}
-                            </div>
-                        )
-                    })}
+                                    ) : (
+                                        <>
+                                            <div className="dc__git-logo"> </div>
+                                            <div className="flex left column">
+                                                <a
+                                                    href={createGitCommitUrl(gitMaterialUrl, gitDetail.Commit)}
+                                                    target="_blank"
+                                                    rel="noopener noreferer"
+                                                    className="fs-12 fw-6 cn-9 pointer"
+                                                >
+                                                    /{sourceValue}
+                                                </a>
+                                                <p className="fs-12 cn-7">{gitDetail?.Message}</p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            )
+                        })}
                 </div>
             </div>
         )
