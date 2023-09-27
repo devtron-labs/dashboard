@@ -8,7 +8,6 @@ import {
     ConfirmationDialog,
     InfoColourBar,
     PopupMenu,
-    OptionType,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
@@ -27,14 +26,13 @@ import { ReactComponent as DeleteIcon } from '../../../../assets/icons/ic-delete
 import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
-import './appConfig.scss'
 import { DOCUMENTATION } from '../../../../config'
 import { EnvironmentOverrideRouteProps, EnvironmentOverrideRouterProps } from './appConfig.type'
 import ReactSelect, { components } from 'react-select'
 import { groupHeading } from '../../../CIPipelineN/Constants'
-import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
 import { groupStyle } from '../../../v2/common/ReactSelect.utils'
+import './appConfig.scss'
 
 const EnvOverridesHelpNote = () => {
     return (

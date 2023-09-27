@@ -2,6 +2,7 @@ import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-com
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
+import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -93,7 +94,7 @@ interface Description{
     updatedOn: string
 }
 
-export interface AppHeaderType {
+export interface AppHeaderType extends GroupFilterType {
     appName: string
     appMetaInfo: AppMetaInfo
     reloadMandatoryProjects: boolean
@@ -422,6 +423,7 @@ export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     isJobOverview?: boolean
+    filteredEnvIds?: string
 }
 
 export interface AboutAppInfoModalProps {

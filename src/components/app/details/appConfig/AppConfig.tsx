@@ -47,7 +47,7 @@ import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
 
-export default function AppConfig({ appName, isJobView }: AppConfigProps) {
+export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppConfigProps) {
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
     const location = useLocation()
@@ -111,9 +111,11 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
+                const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
                 const updatedEnvs =
                     envResult.result
-                        ?.map((env) => {
+                        ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                        .map((env) => {
                             let envData = { ...env, isProtected: false }
                             if (envProtectMap[env.environmentId]) {
                                 envData.isProtected = true
@@ -148,7 +150,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 showError(errors)
                 setState({ ...state, view: ViewType.ERROR, statusCode: errors.code })
             })
-    }, [appId])
+    }, [filteredEnvIds])
 
     function reloadWorkflows() {
         getWorkflowList(appId).then((response) => {
@@ -269,9 +271,11 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                         envProtectMap[config.envId] = config.state === 1
                     }
                 }
+                const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
                 const updatedEnvs =
                     envResult.result
-                        ?.map((env) => {
+                        ?.filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                        .map((env) => {
                             let envData = { ...env, isProtected: false }
                             if (envProtectMap[env.environmentId]) {
                                 envData.isProtected = true
