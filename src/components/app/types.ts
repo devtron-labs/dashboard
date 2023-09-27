@@ -423,6 +423,7 @@ export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     isJobOverview?: boolean
+    filteredEnvIds?: string
 }
 
 export interface AboutAppInfoModalProps {
