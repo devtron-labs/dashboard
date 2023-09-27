@@ -43,12 +43,8 @@ const getInitialWorkflows = (
     isJobView?: boolean,
     filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-  let filteredEnvParams = ''
-  if (filteredEnvIds) {
-      filteredEnvParams = `?envIds=${filteredEnvIds}`
-  }
     if (useAppWfViewAPI) {
-        return getWorkflowViewList(id, filteredEnvParams).then((response) => {
+        return getWorkflowViewList(id, filteredEnvIds).then((response) => {
             const workflows = {
                 appId: id,
                 workflows: response.result?.workflows as Workflow[],
@@ -70,7 +66,7 @@ const getInitialWorkflows = (
             )
         })
     } else if (isJobView) {
-        return Promise.all([getWorkflowList(id, filteredEnvParams), getCIConfig(id)]).then(([workflow, ciConfig]) => {
+        return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id)]).then(([workflow, ciConfig]) => {
             return processWorkflow(
                 workflow.result as WorkflowResult,
                 ciConfig.result as CiPipelineResult,
