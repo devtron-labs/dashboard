@@ -193,7 +193,7 @@ export function processWorkflow(
                             cdPipeline.parentPipelineType = branch.parentType
                         }
 
-                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast??false)
+                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
                         if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
