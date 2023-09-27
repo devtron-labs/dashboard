@@ -194,7 +194,7 @@ export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
     return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
 
-export const getEnvGroupList = (envId: number, filterParentType:string): Promise<EnvGroupListResponse> => {
+export const getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}?groupType=${filterParentType}`)
 }
 

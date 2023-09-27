@@ -167,6 +167,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         console.log(payload, 'payload')
         try {
             const { result } = await appGroupPermission(appId, payload)
+            console.log(result, 'permission')
             if (result && !_delete) {
                 console.log(result)
                 setShowCreateGroup(true)
@@ -175,6 +176,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 setShowDeleteGroup(true)
             }
         } catch (err) {
+            console.log(err)
             let _map = new Map<string, boolean>()
             if (err['code'] === 403) {
                 let arrUnauthorized = []
