@@ -238,7 +238,7 @@ export default function GitCommitInfoGeneric({
                         </div>
                     ) : null}
                     {_lowerCaseCommitInfo.message ? (
-                        <div data-testid={`${_lowerCaseCommitInfo.message.trim()}-${isExcluded ? "excluded": "included"}`} className="material-history__text flex left top material-history-text--padded">
+                        <div data-testid={`${_lowerCaseCommitInfo.message.trim()}-${isExcluded ? "excluded": "included"}`} className="material-history__text flex left top material-history-text--padded dc__word-break-all">
                             <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                             {_lowerCaseCommitInfo.message}
                         </div>
