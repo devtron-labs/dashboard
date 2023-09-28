@@ -198,6 +198,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 }
                 arrUnauthorized = []
                 unauthorizedCount = 0
+                return
             } else {
                 setShowCreateGroup(true)
                 setShowDeleteGroup(false)
