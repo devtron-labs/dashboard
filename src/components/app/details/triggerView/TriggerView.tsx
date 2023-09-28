@@ -921,13 +921,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             envId = this.state.selectedEnv.id
         }
 
-        const _ciPipelineType = node.isExternal ? CIPipelineBuildType.CI_EXTERNAL : CIPipelineBuildType.CI_BUILD
         const payload = {
             pipelineId: +this.state.ciNodeId,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
-            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : _ciPipelineType
+            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
         }
 
         triggerCINode(payload)

@@ -993,12 +993,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        const _ciPipelineType = node.isExternal ? CIPipelineBuildType.CI_EXTERNAL : CIPipelineBuildType.CI_BUILD
         const payload = {
             pipelineId: +selectedCINode.id,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: invalidateCache,
-            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : _ciPipelineType
+            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
         }
 
         triggerCINode(payload)

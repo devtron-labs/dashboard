@@ -521,8 +521,12 @@ export default function CIPipeline({
             _ciPipeline.environmentId = undefined
         }
         if (!isJobView) {
-            const _ciPipelineType = ciPipeline.isExternal ? CIPipelineBuildType.CI_EXTERNAL : CIPipelineBuildType.CI_BUILD
-            const ciPipelineType = isJobCI ? CIPipelineBuildType.CI_JOB : _ciPipelineType
+            let ciPipelineType: CIPipelineBuildType = CIPipelineBuildType.CI_BUILD
+            if (ciPipeline.isExternal) {
+                ciPipelineType = CIPipelineBuildType.CI_EXTERNAL
+            } else if (isJobCI) {
+                ciPipelineType = CIPipelineBuildType.CI_JOB
+            }
             _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
         }
         saveCIPipeline(
