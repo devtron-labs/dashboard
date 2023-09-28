@@ -17,7 +17,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { CDDeploymentTabText, DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ButtonWithLoader, sortObjectArrayAlphabetically } from '../common'
+import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -122,6 +122,7 @@ export default function NewCDPipeline({
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
+        clusterId: null,
         runPreStageInEnv: false,
         runPostStageInEnv: false,
         allowedDeploymentTypes: [],
@@ -253,6 +254,7 @@ export default function NewCDPipeline({
                 list = list.map((env) => {
                     return {
                         id: env.id,
+                        clusterId: env.cluster_id,
                         clusterName: env.cluster_name,
                         name: env.environment_name,
                         namespace: env.namespace || '',
@@ -326,7 +328,10 @@ export default function NewCDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
-                setFormData(form)
+                setFormData({
+                    ...form,
+                    clusterId: result.form?.clusterId,
+                })
                 setPageState(ViewType.FORM)
             })
             .catch((error: ServerErrors) => {
@@ -1105,10 +1110,31 @@ export default function NewCDPipeline({
         )
     }
 
+    const renderFloatingVariablesWidget = () => {
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+
+        return (
+            <div className="flexbox">
+                <div className="floating-scoped-variables-widget">
+                    <FloatingVariablesSuggestions
+                        zIndex={21}
+                        appId={appId}
+                        envId={formData?.environmentId ? String(formData.environmentId) : null}
+                        clusterId={formData?.clusterId}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return cdPipelineId || isAdvanced ? (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            {renderCDPipelineModal()}
-        </Drawer>
+        <>
+            {renderFloatingVariablesWidget()}
+
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {renderCDPipelineModal()}
+            </Drawer>
+        </>
     ) : (
         <VisibleModal className="">{renderCDPipelineModal()}</VisibleModal>
     )
