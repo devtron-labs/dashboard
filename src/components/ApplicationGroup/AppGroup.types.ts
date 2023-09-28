@@ -311,6 +311,7 @@ export interface CreateGroupType {
     selectedAppGroup: GroupOptionType
     unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
+    filterParentType: FilterParentType
 }
 
 export interface ApplistEnvType {
@@ -384,6 +385,6 @@ export interface SearchBarType {
 }
 
 export enum FilterParentType {
-    app = 'app',
-    env = 'env',
+    app = 'env-group',
+    env = 'app-group',
 }

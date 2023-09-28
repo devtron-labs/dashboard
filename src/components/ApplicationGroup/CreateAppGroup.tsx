@@ -12,22 +12,31 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
-import { CreateGroupType, CreateTypeOfAppListType } from './AppGroup.types'
+import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
 import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { filter } from 'rxjs'
 
-export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, unAuthorizedApps }: CreateGroupType) {
-    const { envId } = useParams<{ envId: string }>()
+export default function CreateAppGroup({
+    appList,
+    selectedAppGroup,
+    closePopup,
+    unAuthorizedApps,
+    filterParentType,
+}: CreateGroupType) {
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
     const [appGroupName, setAppGroupName] = useState<string>(selectedAppGroup?.label ?? '')
     const [appGroupDescription, setAppGroupDescription] = useState<string>(selectedAppGroup?.description ?? '')
-    const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(CreateGroupTabs.SELECTED_APPS)
+    const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(
+        filterParentType === FilterParentType.app ? CreateGroupTabs.SELECTED_ENV : CreateGroupTabs.SELECTED_APPS,
+    )
     const [allAppSearchText, setAllAppSearchText] = useState('')
     const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
     const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
@@ -109,8 +118,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     const appFilterAuthorizedList = () => {
         let _authorizedApp = []
         appList.forEach((app) => {
-            if(!unAuthorizedApps.get(app.appName)) {
-                _authorizedApp.push({id: app.id, appName: app.appName})
+            if (!unAuthorizedApps.get(app.appName)) {
+                _authorizedApp.push({ id: app.id, appName: app.appName })
             }
         })
         setAuthorizedAppList(_authorizedApp)
@@ -134,11 +143,11 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
     const appFilterList = () => {
         let _authorizedAppList = []
         let _unauthorizedAppList = []
-        appList.forEach((app) =>{
-                unAuthorizedApps.get(app.appName) ?
-                _unauthorizedAppList.push({id: app.id, appName: app.appName})
-             : _authorizedAppList.push({id: app.id, appName: app.appName})
-            })
+        appList.forEach((app) => {
+            unAuthorizedApps.get(app.appName)
+                ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
+                : _authorizedAppList.push({ id: app.id, appName: app.appName })
+        })
         setUnauthorizedAppList(_unauthorizedAppList)
         setAuthorizedAppList(_authorizedAppList)
     }
@@ -232,7 +241,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                                         arrow={false}
                                         placement="bottom-start"
                                         content="You don't have admin/manager pemission for this app."
-                                    >  
+                                    >
                                         <div>{children}</div>
                                     </Tippy>
                                 )}
@@ -328,16 +337,29 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
                 </div>
                 <div>
                     <ul role="tablist" className="tab-list dc__border-bottom mb-8">
-                        {renderTabItem(CreateGroupTabs.SELECTED_APPS, selectedAppsCount)}
-                        {renderTabItem(CreateGroupTabs.ALL_APPS, appList.length)}
+                        {renderTabItem(
+                            filterParentType === FilterParentType.app
+                                ? CreateGroupTabs.SELECTED_ENV
+                                : CreateGroupTabs.SELECTED_APPS,
+                            selectedAppsCount,
+                        )}
+                        {renderTabItem(
+                            filterParentType === FilterParentType.app
+                                ? CreateGroupTabs.ALL_ENV
+                                : CreateGroupTabs.ALL_APPS,
+                            appList.length,
+                        )}
                     </ul>
-                    {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
+
+                    {selectedTab === CreateGroupTabs.SELECTED_APPS || selectedTab === CreateGroupTabs.SELECTED_ENV
+                        ? renderSelectedApps()
+                        : renderAllApps()}
                 </div>
             </div>
         )
     }
 
-    const handleSave = async (e): Promise<void> => { 
+    const handleSave = async (e): Promise<void> => {
         e.preventDefault()
         if (!appGroupName || appGroupDescription?.length > 50) {
             return
@@ -351,7 +373,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
         for (const _appId in selectedAppsMap) {
             _selectedAppIds.push(+_appId)
         }
-        
+
         let appListIds = []
         appList.forEach((element) => {
             if (!unAuthorizedApps.get(element.appName)) {
@@ -369,11 +391,13 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup, 
             id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,
             description: appGroupDescription,
-            appIds: payloadAppIds,
+            resourceIds: payloadAppIds,
+            groupType: filterParentType,
         }
 
         try {
-            const { result } = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
+            const id = filterParentType === FilterParentType.app ? appId : envId
+            const { result } = await createEnvGroup(id, payload, !!selectedAppGroup?.value)
             toast.success('Successfully saved')
             closePopup(e, result.id)
         } catch (err) {

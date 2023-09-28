@@ -1,7 +1,14 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
-import { showError, Progressing, stopPropagation, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    stopPropagation,
+    OptionType,
+    ToastBody,
+    DeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import AppConfig from './appConfig/AppConfig'
 import { getAppMetaInfo } from '../service'
@@ -14,8 +21,16 @@ import './appDetails/appDetails.scss'
 import './app.scss'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs } from '../../ApplicationGroup/Constants'
-import { GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+import {
+    CheckPermissionType,
+    CreateGroupAppListType,
+    FilterParentType,
+    GroupOptionType,
+} from '../../ApplicationGroup/AppGroup.types'
 import { getAppOtherEnvironmentMin } from '../../../services/service'
+import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
+import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
+import { toast } from 'react-toastify'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -28,7 +43,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
+    const { appId, envId } = useParams<{ appId; envId }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -39,6 +54,13 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
     const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
     const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
+    const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
+    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
+    const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
+    const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
+    const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
+    const [isPopupBox, setIsPopupBox] = useState(false)
+    const [deleting, setDeleting] = useState<boolean>(false)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -56,37 +78,38 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setSelectedAppList([])
         setAppListLoading(true)
         setGroupFilterOptions([])
-        // const { result } = await getEnvGroupList(+envId)
-        // if (result) {
-        //     const _groupFilterOption = []
-        //     let _selectedGroup
-        //     for (const group of result) {
-        //         const processedGroupData = {
-        //             value: group.id.toString(),
-        //             label: group.name,
-        //             appIds: group.appIds,
-        //             description: group.description,
-        //         }
-        //         _groupFilterOption.push(processedGroupData)
-        //         if (groupId && groupId === group.id) {
-        //             _selectedGroup = processedGroupData
-        //         }
-        //     }
-        //     if (_selectedGroup) {
-        //         const selectedAppsMap: Record<string, boolean> = {}
-        //         const groupAppIds = _selectedGroup?.appIds || []
-        //         for (const appId of groupAppIds) {
-        //             selectedAppsMap[appId] = true
-        //         }
-        //         setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
-        //         setSelectedGroupFilter([_selectedGroup])
-        //     } else {
-        //         setSelectedAppList([])
-        //         setSelectedGroupFilter([])
-        //     }
-        //     _groupFilterOption.sort(sortOptionsByLabel)
-        //     setGroupFilterOptions(_groupFilterOption)
-        // }
+        const { result } = await getEnvGroupList(+appId, FilterParentType.app)
+        if (result) {
+            const _groupFilterOption = []
+            let _selectedGroup
+            for (const group of result) {
+                const processedGroupData = {
+                    value: group.id.toString(),
+                    label: group.name,
+                    //@ts-ignore
+                    appIds: group.resourceIds,
+                    description: group.description,
+                }
+                _groupFilterOption.push(processedGroupData)
+                if (groupId && groupId === group.id) {
+                    _selectedGroup = processedGroupData
+                }
+            }
+            if (_selectedGroup) {
+                const selectedAppsMap: Record<string, boolean> = {}
+                const groupAppIds = _selectedGroup?.appIds || []
+                for (const appId of groupAppIds) {
+                    selectedAppsMap[appId] = true
+                }
+                setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
+                setSelectedGroupFilter([_selectedGroup])
+            } else {
+                setSelectedAppList([])
+                setSelectedGroupFilter([])
+            }
+            _groupFilterOption.sort(sortOptionsByLabel)
+            setGroupFilterOptions(_groupFilterOption)
+        }
         setAppListLoading(false)
     }
 
@@ -123,6 +146,68 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         }
     }
 
+    const handleToast = (action: string) => {
+        return toast.info(
+            <ToastBody
+                title={`Cannot ${action} filter`}
+                subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
+            />,
+            {
+                className: 'devtron-toast unauthorized',
+            },
+        )
+    }
+
+    async function getPermissionCheck(payload, _edit?: boolean, _delete?: boolean): Promise<void> {
+        try {
+            const { result } = await appGroupPermission(appId, payload)
+            if (result && !_delete) {
+                setShowCreateGroup(true)
+            } else if (result && _delete) {
+                setIsPopupBox(true)
+                setShowDeleteGroup(true)
+            }
+        } catch (err) {
+            let _map = new Map<string, boolean>()
+            if (err['code'] === 403) {
+                let arrUnauthorized = []
+                let unauthorizedCount = 0
+                err['errors'].map((errors) => {
+                    arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
+                    errors['userMessage']['unauthorizedApps'].forEach((element) => {
+                        if (!_map.get(element)) {
+                            _map.set(element, true)
+                        }
+                        for (let idx in selectedAppList) {
+                            if (element === selectedAppList[idx].label) {
+                                unauthorizedCount++
+                            }
+                        }
+                    })
+                    setMapUnauthorizedApp(_map)
+                })
+                if (_edit && arrUnauthorized.length > 0) {
+                    handleToast('edit')
+                } else if (_delete && arrUnauthorized.length > 0) {
+                    handleToast('delete')
+                } else if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
+                    setIsPopupBox(false)
+                    handleToast('create')
+                } else {
+                    setShowCreateGroup(true)
+                }
+                arrUnauthorized = []
+                unauthorizedCount = 0
+                return
+            } else {
+                setShowCreateGroup(true)
+                setShowDeleteGroup(false)
+                if (_delete) setIsPopupBox(true)
+            }
+            showError(err)
+        }
+    }
+
     const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
@@ -144,38 +229,65 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         for (const app of appListOptions) {
             _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
         }
-        //setClickedGroup(_selectedGroup)
-        //setAllAppsList(_allAppList)
+        setClickedGroup(_selectedGroup)
+        setAllAppsList(_allAppList)
         const _allAppLists: number[] = []
         for (let app of _allAppList) {
             _allAppLists.push(+app.id)
         }
-        // let _permissionData = {
-        //     id: +envId,
-        //     appIds: _allAppLists,
-        //     envId: +envId,
-        // }
-        // if (_edit) {
-        //     getPermissionCheck({ appIds: _allAppIds }, _edit)
-        // } else {
-        //     getPermissionCheck(_permissionData)
-        // }
+        let _permissionData = {
+            id: +appId,
+            resourceIds: _allAppLists,
+            parentResourceId: +appId,
+            groupType: FilterParentType.app,
+        }
+        if (_edit) {
+            getPermissionCheck({ resourceIds: _allAppIds, groupType: FilterParentType.app }, _edit)
+        } else {
+            getPermissionCheck(_permissionData)
+        }
     }
 
-    // const closeCreateGroup = (e, groupId?: number) => {
-    //     stopPropagation(e)
-    //     setShowCreateGroup(false)
-    //     if (groupId) {
-    //         getSavedFilterData(groupId)
-    //     }
-    // }
+    const closeCreateGroup = (e, groupId?: number) => {
+        stopPropagation(e)
+        setShowCreateGroup(false)
+        if (groupId) {
+            getSavedFilterData(groupId)
+        }
+    }
+
+    async function handleDelete() {
+        if (deleting) {
+            return
+        }
+        setDeleting(true)
+        try {
+            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+            toast.success('Successfully deleted')
+            setShowDeleteGroup(false)
+            getSavedFilterData(
+                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                    ? +selectedGroupFilter[0].value
+                    : null,
+            )
+        } catch (serverError) {
+            showError(serverError)
+        } finally {
+            setDeleting(false)
+        }
+    }
+
+    const closeDeleteGroup = () => {
+        setShowDeleteGroup(false)
+    }
 
     const openDeleteGroup = (e, groupId: string) => {
         stopPropagation(e)
         const selectedGroupId = groupFilterOptions.find((group) => group.value === groupId)
-        //setClickedGroup(selectedGroupId)
-        //getPermissionCheck({ appIds: selectedGroupId.appIds }, false, true)
+        setClickedGroup(selectedGroupId)
+        getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
+
     if (appListLoading) {
         return <Progressing pageLoader />
     }
@@ -200,6 +312,23 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     isSuperAdmin={true}
                 />
             )}
+            {showCreateGroup && (
+                <CreateAppGroup
+                    unAuthorizedApps={mapUnauthorizedApp}
+                    appList={allAppsList}
+                    selectedAppGroup={clickedGroup}
+                    closePopup={closeCreateGroup}
+                    filterParentType={FilterParentType.app}
+                />
+            )}
+            {showDeleteGroup && isPopupBox && (
+                <DeleteDialog
+                    title={`Delete filter '${clickedGroup?.label}' ?`}
+                    description="Are you sure you want to delete this filter?"
+                    delete={handleDelete}
+                    closeDelete={closeDeleteGroup}
+                />
+            )}
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -211,21 +340,28 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         ) : (
                             <Route
                                 path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds}/>}
+                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} filteredEnvIds={_filteredEnvIds} />
+                            <Overview
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                                filteredEnvIds={_filteredEnvIds}
+                            />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds}/>} />
+                        <Route
+                            path={`${path}/${URLS.APP_TRIGGER}`}
+                            render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds} />}
+                        />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                             <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
                             render={(props) => {
-                              return <DeploymentMetrics {...props} filteredEnvIds={_filteredEnvIds} />
-                          }}
+                                return <DeploymentMetrics {...props} filteredEnvIds={_filteredEnvIds} />
+                            }}
                         />
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
@@ -233,7 +369,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds}/>
+                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

@@ -8,6 +8,7 @@ import {
     ErrorScreenManager,
     DeleteDialog,
     InfoColourBar,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
@@ -32,6 +33,7 @@ import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
+import Tippy from '@tippyjs/react'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 
@@ -438,28 +440,42 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             top = top + 40
         }
         return (
-            <>
-                <button
-                    type="button"
-                    className={`cta dc__no-decor flex mb-20 ${this.props.filteredEnvIds ? 'dc__disabled' : ''}`}
-                    data-testid="new-workflow-button"
-                    onClick={this.toggleCIMenu}
-                >
-                    <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                    New workflow
-                </button>
-                <PipelineSelect
-                    workflowId={0}
-                    showMenu={this.state.showCIMenu}
-                    addCIPipeline={this.addCIPipeline}
-                    addWebhookCD={this.addWebhookCD}
-                    toggleCIMenu={this.toggleCIMenu}
-                    styles={{
-                        left: `${left}px`,
-                        top: `${top}px`,
-                    }}
-                />
-            </>
+            <ConditionalWrap
+                condition={!!this.props.filteredEnvIds}
+                wrap={(children) => (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content="Cannot add new workflow or deployment pipelines when environment filter is applied."
+                    >
+                        {children}
+                    </Tippy>
+                )}
+            >
+                <div className="dc_max-width__max-content">
+                    <button
+                        type="button"
+                        className={`cta dc__no-decor flex mb-20 ${this.props.filteredEnvIds ? 'dc__disabled' : ''}`}
+                        data-testid="new-workflow-button"
+                        onClick={this.toggleCIMenu}
+                    >
+                        <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
+                        New workflow
+                    </button>
+                    <PipelineSelect
+                        workflowId={0}
+                        showMenu={this.state.showCIMenu}
+                        addCIPipeline={this.addCIPipeline}
+                        addWebhookCD={this.addWebhookCD}
+                        toggleCIMenu={this.toggleCIMenu}
+                        styles={{
+                            left: `${left}px`,
+                            top: `${top}px`,
+                        }}
+                    />
+                </div>
+            </ConditionalWrap>
         )
     }
 

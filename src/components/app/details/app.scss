@@ -30,3 +30,23 @@
         padding: 0 0 8px 0;
     }
 }
+
+.selected-app-row {
+    .check-icon {
+        display: block;
+    }
+    .delete-icon {
+        display: none;
+        use {
+            fill: var(--R500);
+        }
+    }
+    &:hover {
+        .check-icon {
+            display: none;
+        }
+        .delete-icon {
+            display: block;
+        }
+    }
+}

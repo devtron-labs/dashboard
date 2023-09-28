@@ -147,7 +147,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         content={
                             <span className="add-cd-btn-tippy">
                                 {this.props.addNewPipelineBlocked
-                                    ? 'Not allowed with env filter'
+                                    ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
                                     : 'Add deployment pipeline'}
                             </span>
                         }

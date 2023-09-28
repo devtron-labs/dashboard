@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -13,7 +13,8 @@ import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import './appDetails/appDetails.scss'
 import './app.scss'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
-import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
+import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
+import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
@@ -55,7 +56,7 @@ export function AppHeader({
             openCreateGroup,
             openDeleteGroup,
             isSuperAdmin,
-            filterParentType: FilterParentType.app
+            filterParentType: FilterParentType.app,
         }),
         [
             appListOptions,

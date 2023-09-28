@@ -393,6 +393,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
+                    filterParentType={FilterParentType.env}
                 />
             )}
             {showDeleteGroup && isPopupBox && (
@@ -446,7 +447,7 @@ export function EnvHeader({
             openCreateGroup,
             openDeleteGroup,
             isSuperAdmin,
-            filterParentType: FilterParentType.env
+            filterParentType: FilterParentType.env,
         }),
         [
             appListOptions,
@@ -521,7 +522,6 @@ export function EnvHeader({
         onClickTabPreventDefault(event, 'active')
     }
 
-
     const renderEnvDetailsTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
@@ -530,7 +530,9 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action)}
+                        onClick={(event) =>
+                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action)
+                        }
                     >
                         Overview
                     </NavLink>
@@ -541,7 +543,9 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
                         data-testid="group-build-deploy"
-                        onClick={(event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action)}
+                        onClick={(event) =>
+                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action)
+                        }
                     >
                         Build & Deploy
                     </NavLink>
@@ -573,7 +577,9 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
                         data-testid="group-configuration"
-                        onClick={(event) => handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action)}
+                        onClick={(event) =>
+                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action)
+                        }
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         Configurations
