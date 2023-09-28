@@ -36,22 +36,22 @@ export interface CINodeProps {
 }
 
 export class CINode extends Component<CINodeProps> {
-    renderNodeIcon = () => {
+    renderNodeIcon = (isJobCard: boolean) => {
         if (this.props.showPluginWarning) {
             return <Warning className="icon-dim-18 warning-icon-y7" />
         }
         return (
             <div
                 className={`workflow-node__icon-common ${
-                    (this.props.isJobView || this.props.isJobCI) ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
+                    (isJobCard) ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
                 }`}
             />
         )
     }
 
-    renderReadOnlyCard = () => {
+    renderReadOnlyCard = (isJobCard: boolean) => {
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
-        const nodeText =  (this.props.isJobView || this.props.isJobCI) ? 'Job' : _buildText
+        const nodeText =  (isJobCard) ? 'Job' : _buildText
         return (
             <div className="workflow-node">
                 <div className="workflow-node__title flex">
@@ -59,15 +59,14 @@ export class CINode extends Component<CINodeProps> {
                         <span className="workflow-node__text-light">{nodeText}</span>
                         <div className="dc__ellipsis-left">{this.props.title}</div>
                     </div>
-                    {this.renderNodeIcon()}
+                    {this.renderNodeIcon(isJobCard)}
                 </div>
             </div>
         )
     }
 
-    renderCardContent = () => {
+    renderCardContent = (isJobCard: boolean) => {
         const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
-        const isJobCard = this.props.isJobView || currPipeline?.pipelineType === CIPipelineBuildType.CI_JOB
         const env = currPipeline?.environmentId ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId) : undefined
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
         const _linkedBuildText = this.props.isLinkedCI ? 'Build: Linked' : _buildText
@@ -110,7 +109,7 @@ export class CINode extends Component<CINodeProps> {
                                     <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
                                     <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span></>}
                             </div>
-                            {this.renderNodeIcon()}
+                            {this.renderNodeIcon(isJobCard)}
                         </div>
                     </div>
                 </Link>
@@ -144,6 +143,7 @@ export class CINode extends Component<CINodeProps> {
     }
 
     render() {
+        const isJobCard: boolean = this.props.isJobView || this.props.isJobCI
         return (
             <foreignObject
                 className="data-hj-whitelist"
@@ -153,7 +153,7 @@ export class CINode extends Component<CINodeProps> {
                 height={this.props.height}
                 style={{ overflow: 'visible' }}
             >
-                {this.props.configDiffView ? this.renderReadOnlyCard() : this.renderCardContent()}
+                {this.props.configDiffView ? this.renderReadOnlyCard(isJobCard) : this.renderCardContent(isJobCard)}
             </foreignObject>
         )
     }
