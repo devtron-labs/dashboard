@@ -308,6 +308,11 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
+export enum AppListColumnSort {
+    appNameSort = 'appName',
+    lastDeployedSort = 'lastDeployedAt'
+}
+
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -348,6 +353,8 @@ export enum Nodes {
     VolumeSnapshotClass = 'VolumeSnapshotClass',
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
+    Namespace = 'Namespace',
+    ClusterOverview = 'ClusterOverview'
 }
 export type NodeType = keyof typeof Nodes
 
@@ -360,6 +367,7 @@ export enum AggregationKeys {
     'Custom Resource' = 'Custom Resource',
     'Other Resources' = 'Other Resources',
     Events = 'Events',
+    Namespaces = 'Namespaces',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
 

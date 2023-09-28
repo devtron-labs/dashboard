@@ -20,7 +20,7 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
-import { TippyCustomized, TippyTheme, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -139,9 +139,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
     }
 
-    const toggleClipBoardPort = (event: React.MouseEvent, port: string) => {
+    const toggleClipBoardPort = (event: React.MouseEvent, node: string) => {
         event.stopPropagation()
-        copyToClipboard(port, () => setCopiedPortName(port))
+        copyToClipboard(node, () => setCopiedPortName(node))
     }
 
     const getPodRestartCount = (node: iNode) => {
@@ -202,59 +202,63 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
             return (
-                <ol className="pl-20 pr-20">
+                <>
                     {node?.port.map((val) => {
                         return (
-                            <div className="flex dc__content-space">
-                                <li key={node.name}>
+                            <div className="flex left cn-9 m-0 dc__no-decore">
+                                <div className="" key={node.name}>
                                     {node.name}:{val}
                                 <Clipboard
-                                    className="ml-5 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
+                                    className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, val)
+                                        toggleClipBoardPort(event, node.name.concat(":",val))
                                     }}
                                 />
-                                </li>
+                                </div>
                             </div>
                         )
                     })}
-                </ol>
+            </>
             )
         }
-
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
                 return (
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        trigger="click"
-                        additionalContent={additionalTippyContent(node)}
-                        interactive={true}
-                    >
-                        <div onClick={(e) => stopPropagation(e)}>
+                    <>
+                        <div>
                             <span>
-                                {node.name}.{node.namespace}:
-                            </span>
-                            <span className="fs-13 dc__truncate-text mw-18 cursor">
-                            {node.port[0]}  
-                                <span>
-                                    <Clipboard
-                                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-4 mr-4"
-                                        onClick={(event) => {
-                                            toggleClipBoard(event, node.name)
-                                        }}
-                                    />
-                                </span>
-                                +{node.port.length - 1} more
+                                {node.name}.{node.namespace}:{node.port[0]}
                             </span>
                         </div>
-                    </TippyCustomized>
+                        <span>
+                            <Clipboard
+                                className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                                onClick={(event) => {
+                                    toggleClipBoardPort(event, node.name.concat(":", node.port))
+                                }}
+                            />
+                        </span>
+                        <TippyCustomized
+                            hideHeading={true}
+                            noHeadingBorder={true}
+                            theme={TippyTheme.white}
+                            className="default-tt p-12"
+                            arrow={false}
+                            placement="bottom"
+                            trigger="click"
+                            additionalContent={additionalTippyContent(node)}
+                            interactive={true}
+                        >
+                            <div>
+                                <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
+                                    +{node.port.length - 1} more
+                                </span>
+                            </div>
+                        </TippyCustomized>
+                    </>
                 )
             } else if(node.port?.length ===  1){
-                return `${node.name}.${node.namespace} : ${node.port}`
+                return `${node.name}.${node.namespace}:${node.port}`
             } else {
                 return "Port Number is missing"
             }
@@ -281,7 +285,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     <Clipboard
                         className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                         onClick={(event) => {
-                            toggleClipBoard(event, nodeName)
+                            toggleClipBoard(event, nodeName.split(" ").join(""))
                         }}
                     />
                 </span>
@@ -330,7 +334,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             )}
                         </div>
                     )}
-                    <div className="node-row m-0 resource-row">
+                    <div className="node-row m-0 resource-row dc__hover-icon">
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9`}>
                             <div className="flex left">
                                 <div
@@ -431,9 +435,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         </div>
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
-                            <div className={'col-5 pt-9 pb-9 flex left'}>
+                            <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                 {portNumberPlaceHolder(node)}
-                                {renderClipboardInteraction(nodeName)}
+                                {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
                             </div>
                         )}
 

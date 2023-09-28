@@ -89,7 +89,7 @@ export class AppListView extends Component<AppListViewProps> {
             let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list" data-testid="app-list-container">
-                    <div className="app-list__header">
+                    <div className="app-list__header dc__position-sticky dc__top-47">
                         <div className="app-list__cell--icon flex left cursor" onClick={this.toggleAllExpandRow}>
                             <Arrow className={`icon-dim-24 p-2 ${this.arrowIcon()}`} />
                         </div>
@@ -120,12 +120,12 @@ export class AppListView extends Component<AppListViewProps> {
                             </span>
                             <Tippy
                                 data-testid="env-tippy"
-                                className="default-tt"
+                                className="default-tt w-200"
                                 arrow={true}
                                 placement="top"
                                 content="Environment is a unique combination of cluster and namespace"
                             >
-                                <HelpOutlineIcon className="icon-dim-20" />
+                                <HelpOutlineIcon className="icon-dim-16" />
                             </Tippy>
                         </div>
                         <div className="app-list__cell app-list__cell--cluster">
@@ -147,7 +147,12 @@ export class AppListView extends Component<AppListViewProps> {
                                 {APP_LIST_HEADERS.LastDeployedAt}
 
                                 {this.props.sortRule.key === SortBy.LAST_DEPLOYED ? (
-                                    <span data-testid="sort-app-name-list" className={` sort ${this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
+                                    <span
+                                        data-testid="sort-app-name-list"
+                                        className={` sort ${
+                                            this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
+                                        } ml-4`}
+                                    ></span>
                                 ) : (
                                     <span className="sort-col dc__opacity-0_5 ml-4"></span>
                                 )}
@@ -283,7 +288,7 @@ export class AppListView extends Component<AppListViewProps> {
                         linkIconPlacement={CardLinkIconPlacement.BeforeLink}
                     />
                     <ContentCard
-                    datatestid="create-application"
+                        datatestid="create-application"
                         redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                         rootClassName="ev-5"
                         imgSrc={DeployCICD}

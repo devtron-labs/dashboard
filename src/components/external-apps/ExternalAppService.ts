@@ -81,7 +81,7 @@ export interface ChartMetadata {
     notes?: string
 }
 
-interface HelmReleaseStatus {
+export interface HelmReleaseStatus {
     status: string,
     message: string,
     description: string

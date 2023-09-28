@@ -6,6 +6,8 @@ import {
     REQUIRED_FIELD_MSG,
     ERROR_MESSAGE_FOR_VALIDATION,
     CustomErrorMessage,
+    MAX_LENGTH_30,
+    REPO_NAME_VALIDATION,
 } from '../../config/constantMessaging'
 
 export class ValidationRules {
@@ -144,7 +146,9 @@ export class ValidationRules {
 
     repository = (repository: string): { isValid: boolean; message: string } => {
         if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
-        else return { isValid: true, message: null }
+        if (repository.split('/').slice(-1)[0].length > 30) return { isValid: false, message: MAX_LENGTH_30 }
+        if (repository.split('/').slice(-1)[0].includes("_")) return { isValid: false, message: REPO_NAME_VALIDATION }
+        return { isValid: true, message: null }
     }
 
     customTag = (value: string): { message: string[] | []; isValid: boolean } => {

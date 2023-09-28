@@ -49,7 +49,7 @@ function NotesDrawer({ notes, close }: NotesDrawerType) {
                         </span>
                     </div>
                 </div>
-                <div className="app-notes__body">
+                <div className="app-notes__body dc__white-space-pre">
                     <MarkDown className="app-notes__markdown fs-13" markdown={notes} breaks={true} />
                 </div>
             </div>

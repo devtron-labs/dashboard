@@ -20,6 +20,7 @@ export const Routes = {
     IMAGE_TAGGING: 'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
+    CI_PIPELINE_SOURCE_BULK_PATCH: 'app/ci-pipeline/bulk/branch-update',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
@@ -187,6 +188,7 @@ export const Routes = {
     CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
+    DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
     CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
@@ -236,6 +238,9 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
+    SCOPED_GLOBAL_VARIABLES: 'global/variables',
+    SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
+    GVK: 'gvk'
 }
 
 export const ViewType = {
@@ -337,6 +342,7 @@ export const DOCUMENTATION = {
     APP_METRICS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/app-details/app-metrics`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/secrets#external-secrets`,
     BLOB_STORAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/installation-configuration#configuration-of-blob-storage`,
+    DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template`,
     ROLLOUT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/rollout-deployment`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/job-and-cronjob`,
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
@@ -348,6 +354,7 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -420,9 +427,10 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
     PUSH: 'PUSH',
     PULL_PUSH: 'PULL/PUSH',
 }
+
 export const RegistryStorageType = {
-    CONTAINER: 'CONTAINER',
     OCI_PRIVATE: 'OCI_PRIVATE',
+    OCI_PUBLIC: 'OCI_PUBLIC'
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -430,6 +438,14 @@ export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
     infoText:
         'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
     additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'Custom Charts',
+    infoText: 'Devtron provides charts that cover most use cases.',
+    additionalParagraphText:
+        'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
     documentationLinkText: 'View documentation',
 }
 
@@ -455,11 +471,23 @@ export interface RegistryPayloadType {
         ignoredClusterIdsCsv: string
     }
     ociRegistryConfig?: OCIRegistryStorageConfigType
+    repositoryList: string[]
+    isPublic: boolean
+}
+
+export const RegistryType = {
+   DOCKER_HUB: 'docker-hub',
+   ACR: 'acr',
+   QUAY: 'quay',
+   OTHER: 'other',
+   ECR: 'ecr',
+   ARTIFACT_REGISTRY: 'artifact-registry',
+   GCR: 'gcr'
 }
 
 export const RegistryTypeName = {
-    CONTAINER: 'Container registry',
-    OCI_PRIVATE: 'OCI Registry (Private)',
+    'OCI_PRIVATE': 'Private Registry',
+    'OCI_PUBLIC': 'Public Registry'
 }
 
 export const AppCreationType = {
@@ -691,8 +719,9 @@ export const DEPLOYMENT_STATUS = {
     TIMED_OUT: 'timed_out',
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
-    PROGRESSING: 'inprogress',
+    PROGRESSING: 'progressing',
     SUPERSEDED: 'superseded',
+    UNKNOWN: 'unknown',
 }
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
@@ -747,3 +776,11 @@ export const ManifestMessaging = {
     CANCEL: 'Cancel',
     TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }
+
+export const SERVER_ERROR_CODES = {
+    RELEASE_NOT_FOUND: "7001",
+    CHART_ALREADY_EXISTS: '5001',
+    CHART_NAME_RESERVED: '5002',
+}
+
+export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
