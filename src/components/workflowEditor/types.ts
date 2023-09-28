@@ -31,6 +31,7 @@ export interface WorkflowEditState {
     envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]
+    envIds?: number[]
 }
 
 export interface WorkflowEditProps
@@ -184,6 +185,8 @@ export interface PipelineContext {
     addNewTask: () => void,
     pageState?: string
     setPageState?: React.Dispatch<React.SetStateAction<string>>
+    isEnvUsedState?: boolean
+    setIsEnvUsedState?: React.Dispatch<React.SetStateAction<boolean>>
     handleStrategy?: (value: any) => void
     getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
     isVirtualEnvironment?: boolean

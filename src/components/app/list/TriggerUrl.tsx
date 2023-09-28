@@ -112,9 +112,14 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 arrow={false}
                                                                 placement="top"
                                                             >
-                                                                <span className="url-box dc__ellipsis-right mr-6">
+                                                                <a
+                                                                    href={'//' + url}
+                                                                    className="url-box dc__ellipsis-right mr-6"
+                                                                    target="_blank"
+                                                                    rel="noreferrer noopener"
+                                                                >
                                                                     {url}
-                                                                </span>
+                                                                </a>
                                                             </Tippy>
                                                             <span className="icon-dim-16">
                                                                 <CopyToClipboardTextWithTippy
@@ -134,7 +139,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                         arrow={false}
                                                         placement="top"
                                                     >
-                                                        <span className="url-box dc__ellipsis-right mr-6">
+                                                        <span className="dc__ellipsis-right mr-6">
                                                             {value.pointsTo}
                                                         </span>
                                                     </Tippy>

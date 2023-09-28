@@ -39,6 +39,7 @@ import {
     refreshGitMaterial,
     triggerCDNode,
     triggerCINode,
+    triggerBranchChange,
 } from '../../../app/service'
 import {
     createGitCommitUrl,
@@ -47,6 +48,7 @@ import {
     preventBodyScroll,
     sortObjectArrayAlphabetically,
 } from '../../../common'
+import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
@@ -59,8 +61,8 @@ import {
     BulkResponseStatus,
     ENV_TRIGGER_VIEW_GA_EVENTS,
     BULK_CD_RESPONSE_STATUS_TEXT,
-    responseListOrder,
     BULK_VIRTUAL_RESPONSE_STATUS,
+    GetBranchChangeStatus,
 } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -88,6 +90,7 @@ import Tippy from '@tippyjs/react'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getDefaultConfig } from '../../../notifications/notifications.service'
+import BulkSourceChange from './BulkSourceChange'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -102,6 +105,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isCILoading, setCILoading] = useState(false)
     const [isCDLoading, setCDLoading] = useState(false)
+    const [isBranchChangeLoading, setIsBranchChangeLoading] = useState(false);
     const [showPreDeployment, setShowPreDeployment] = useState(false)
     const [showPostDeployment, setShowPostDeployment] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
@@ -110,6 +114,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [showApprovalModal, setShowApprovalModal] = useState(false)
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
+    const [showBulkSourceChangeModal, setShowBulkSourceChangeModal] = useState(false)
     const [showWebhookModal, setShowWebhookModal] = useState(false)
     const [isWebhookPayloadLoading, setWebhookPayloadLoading] = useState(false)
     const [invalidateCache, setInvalidateCache] = useState(false)
@@ -176,6 +181,19 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
     }
 
+    const preserveSelection = (_workflows: WorkflowType[]) => {
+        if (!workflows || !_workflows) {
+            return
+        }
+        const workflowMap = new Map()
+        workflows.forEach((wf) => {
+            workflowMap.set(wf.id, wf.isSelected)
+        })
+        _workflows.forEach((wf) => {
+            wf.isSelected = workflowMap.get(wf.id)
+        })
+    }
+
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
@@ -194,6 +212,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     }),
                 )
             }
+            preserveSelection(_workflows)
             setWorkflows(_workflows)
             setFilteredCIPipelines(filteredCIPipelines)
             setErrorCode(0)
@@ -1032,6 +1051,41 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
+    const changeBranch = (value): void => {
+        let appIds = []
+        let appNameMap = new Map()
+        selectedAppList.map((app) => {
+            appIds.push(app.id)
+            appNameMap.set(app.id, app.name)
+        })
+        setIsBranchChangeLoading(true)
+        triggerBranchChange(appIds, +envId, value)
+            .then((response: any) => {
+                console.log(response)
+                const _responseList = []
+                response.result.apps.map((res) => {
+                    _responseList.push({
+                        appId: res.appId,
+                        appName: appNameMap.get(res.appId),
+                        statusText: res.status,
+                        status: GetBranchChangeStatus(res.status),
+                        envId: +envId,
+                        message: res.message,
+                    })
+                })
+                updateResponseListData(_responseList)
+                setCDLoading(false)
+                setCILoading(false)
+                preventBodyScroll(false)
+            })
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {
+                setIsBranchChangeLoading(false)
+            })
+    }
+
     const selectMaterial = (materialId, pipelineId?: number): void => {
         const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
@@ -1295,8 +1349,19 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }, 100)
     }
 
-    const sortResponseList = (a, b) => {
-        return responseListOrder[a.status] - responseListOrder[b.status]
+    const hideChangeSourceModal = () => {
+        if (responseList.length > 0) {
+            setPageViewType(ViewType.LOADING)
+            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+            getWorkflowsData()
+        }
+        setIsBranchChangeLoading(false)
+        setShowBulkSourceChangeModal(false)
+        setResponseList([])
+    }
+
+    const onShowChangeSourceModal = () => {
+        setShowBulkSourceChangeModal(true)
     }
 
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
@@ -1380,7 +1445,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setResponseList((prevList) => {
             const resultMap = new Map(_responseList.map((data) => [data.appId, data]))
             const updatedArray = prevList?.map((prevItem) => resultMap.get(prevItem.appId) || prevItem)
-            return (updatedArray?.length > 0 ? updatedArray : _responseList).sort(sortResponseList)
+            return (updatedArray?.length > 0 ? updatedArray : _responseList).sort((a, b) => sortCallback('appName', a, b))
         })
     }
 
@@ -1862,6 +1927,22 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const renderBulkSourchChange = (): JSX.Element | null => {
+        if (!showBulkSourceChangeModal) {
+            return null
+        }
+
+        return (
+            <BulkSourceChange
+                closePopup={hideChangeSourceModal}
+                responseList={responseList}
+                changeBranch={changeBranch}
+                loading={isBranchChangeLoading}
+                selectedAppCount={selectedAppList.length}
+            />
+        )
+    }
+
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal) {
             let node: NodeAttr, _appID
@@ -2031,6 +2112,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return (
             <div className="flex dc__min-width-fit-content">
                 <button
+                    className="dc__edit_button h-36 lh-36"
+                    type="button"
+                    style={{ marginRight: 'auto' }}
+                    onClick={onShowChangeSourceModal}
+                >
+                    <span className="flex dc__align-items-center">
+                        <Pencil className="icon-dim-16 scb-5 mr-4" />
+                        Change branch
+                    </span>
+                </button>
+                <span className="filter-divider"></span>
+                <button
                     className="cta flex h-36 mr-12"
                     data-testid="bulk-build-image-button"
                     onClick={onShowBulkCIModal}
@@ -2157,6 +2250,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 {renderBulkCDMaterial()}
                 {renderBulkCIMaterial()}
                 {renderApprovalMaterial()}
+                {renderBulkSourchChange()}
             </TriggerViewContext.Provider>
             <div></div>
         </div>
