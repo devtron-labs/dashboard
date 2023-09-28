@@ -230,13 +230,11 @@ export function AppHeader({
     }
 
     return (
-        <>
-            <PageHeader
-                breadCrumbs={renderBreadcrumbs}
-                isBreadcrumbs={true}
-                showTabs={true}
-                renderHeaderTabs={renderAppDetailsTabs}
-            />
-        </>
+        <PageHeader
+            breadCrumbs={renderBreadcrumbs}
+            isBreadcrumbs={true}
+            showTabs={true}
+            renderHeaderTabs={renderAppDetailsTabs}
+        />
     )
 }

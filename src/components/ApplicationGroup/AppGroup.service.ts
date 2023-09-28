@@ -194,7 +194,8 @@ export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
     return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
 
-export const getEnvGroupList = (envId: number, filterParentType:string): Promise<EnvGroupListResponse> => {
+export const getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
+    if(!filterParentType) return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}`)
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}?groupType=${filterParentType}`)
 }
 
@@ -204,7 +205,6 @@ export const getEnvGroup = (envId: number, groupId: number): Promise<EnvGroupRes
 
 export const createEnvGroup = (envId: string, data, isEdit: boolean): Promise<EnvGroupResponse> => {
     if (isEdit) {
-        console.log('edit')
         return put(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
     }
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)

@@ -78,8 +78,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setSelectedAppList([])
         setAppListLoading(true)
         setGroupFilterOptions([])
-        const { result } = await getEnvGroupList(+appId, FilterParentType.env)
-        console.log(result, 'savedFilterData')
+        const { result } = await getEnvGroupList(+appId, FilterParentType.app)
         if (result) {
             const _groupFilterOption = []
             let _selectedGroup
@@ -115,7 +114,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     const getAppListData = async (): Promise<void> => {
-        console.log('abhishek')
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getAppOtherEnvironmentMin(appId)
@@ -162,13 +160,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function getPermissionCheck(payload, _edit?: boolean, _delete?: boolean): Promise<void> {
-        console.log(_delete, 'delete')
-        console.log(_edit, 'edit')
-        console.log(payload, 'payload')
         try {
             const { result } = await appGroupPermission(appId, payload)
             if (result && !_delete) {
-                console.log(result)
                 setShowCreateGroup(true)
             } else if (result && _delete) {
                 setIsPopupBox(true)
@@ -221,13 +215,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         let _selectedGroup
         const _allAppIds: number[] = []
         if (groupId) {
-            console.log(groupId)
-            console.log(groupFilterOptions)
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)
-            console.log(_selectedGroup)
             const groupAppIds = _selectedGroup?.appIds || []
             for (const appId of groupAppIds) {
-                console.log(appId)
                 _allAppIds.push(appId)
                 selectedAppsMap[appId] = true
             }
@@ -239,7 +229,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         for (const app of appListOptions) {
             _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
         }
-        console.log(_allAppList)
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
         const _allAppLists: number[] = []
@@ -250,13 +239,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             id: +appId,
             resourceIds: _allAppLists,
             parentResourceId: +appId,
-            groupType: FilterParentType.env,
+            groupType: FilterParentType.app,
         }
         if (_edit) {
-            console.log('edit')
-            getPermissionCheck({ resourceIds: _allAppIds, groupType: FilterParentType.env }, _edit)
+            getPermissionCheck({ resourceIds: _allAppIds, groupType: FilterParentType.app }, _edit)
         } else {
-            console.log('create')
             getPermissionCheck(_permissionData)
         }
     }
@@ -270,14 +257,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-        console.log('handleDelete')
         if (deleting) {
             return
         }
         setDeleting(true)
         try {
-            console.log('deleting', clickedGroup.value)
-            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.env)
+            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
             toast.success('Successfully deleted')
             setShowDeleteGroup(false)
             getSavedFilterData(
@@ -300,7 +285,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         stopPropagation(e)
         const selectedGroupId = groupFilterOptions.find((group) => group.value === groupId)
         setClickedGroup(selectedGroupId)
-        getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.env }, false, true)
+        getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
     if (appListLoading) {
@@ -333,7 +318,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
-                    filterParentType={FilterParentType.env}
+                    filterParentType={FilterParentType.app}
                 />
             )}
             {showDeleteGroup && isPopupBox && (
