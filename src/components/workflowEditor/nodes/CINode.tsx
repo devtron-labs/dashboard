@@ -142,7 +142,7 @@ export class CINode extends Component<CINodeProps> {
                             content={
                                 <span style={{ display: 'block', width: '145px' }}>
                                     {this.props.addNewPipelineBlocked
-                                        ? 'Not allowed with env filter'
+                                        ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
                                         : 'Add deployment pipeline'}
                                 </span>
                             }

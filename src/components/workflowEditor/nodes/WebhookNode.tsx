@@ -47,7 +47,7 @@ export function WebhookNode({ x, y, width, height, id, to, configDiffView, toggl
                             placement="top"
                             content={
                                 <span style={{ display: 'block', width: '145px' }}>
-                                    {addNewPipelineBlocked ? 'Not allowed with env filter' : 'Add deployment pipeline'}
+                                    {addNewPipelineBlocked ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.' : 'Add deployment pipeline'}
                                 </span>
                             }
                         >
