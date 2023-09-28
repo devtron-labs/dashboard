@@ -58,14 +58,16 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
                 active: envId == env.id,
                 isClusterCdActive: env.isClusterCdActive,
                 allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                clusterId: env.cluster_id,
             }
         });
 
-        let env = environments.find((e) => e.id === cdPipeline.environmentId)
+        const env = environments.find((e) => e.id === cdPipeline.environmentId)
 
         const form = {
             name: cdPipeline.name,
             environmentId: cdPipeline.environmentId,
+            clusterId: env.clusterId,
             namespace: env.namespace,
             triggerType: cdPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
             preBuildStage: cdPipeline.preDeployStage || { id: 0, triggerType: TriggerType.Auto, steps: [] },

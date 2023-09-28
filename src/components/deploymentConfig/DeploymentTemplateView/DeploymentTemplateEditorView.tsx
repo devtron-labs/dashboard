@@ -184,6 +184,7 @@ export default function DeploymentTemplateEditorView({
                             : state.fetchedValues[state.selectedCompareOption?.id]) || ''
                     }
                     value={value}
+                    chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
@@ -217,6 +218,7 @@ export default function DeploymentTemplateEditorView({
                     )}
                     {state.openComparison && (
                         <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+
                             <div className="flex column">
                                 <div className="code-editor__header flex left w-100 p-0-imp">
                                     <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">

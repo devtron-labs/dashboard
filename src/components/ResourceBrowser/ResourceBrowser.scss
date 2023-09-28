@@ -156,13 +156,13 @@
             .scrollable-resource-list,
             .scrollable-event-list {
                 .hover-class {
-                  &:hover {
-                      background-color: var(--N50);
-                      .sticky-column {
-                          background-color: var(--N50);
-                      }
-                  }
-              }
+                    &:hover {
+                        background-color: var(--N50);
+                        .sticky-column {
+                            background-color: var(--N50);
+                        }
+                    }
+                }
             }
 
             .pagination-wrapper {
@@ -199,7 +199,7 @@
     }
 
     .log-viewer-container {
-        height: calc(100vh - 161px);
+        height: calc(100vh - 150px);
     }
 
     .terminal-container {
