@@ -352,7 +352,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId`,
                         )}
                         render={({ location, match }: { location: any; match: any }) => {
-                            const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
                             return (
                                 <NewCDPipeline
                                     match={match}
@@ -362,7 +361,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
-                                    isLastNode={cdNode['isLast']}
+                                    isLastNode={
+                                        this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
+                                    }
                                 />
                             )
                         }}
