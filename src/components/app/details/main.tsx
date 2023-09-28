@@ -117,7 +117,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getAppOtherEnvironmentMin(appId)
-        // setAppGroupListData(result)
         if (result?.length) {
             setAppListOptions(
                 result
