@@ -52,14 +52,17 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     onClickAddNode = (event: any) => {
-        if (this.props.deploymentAppDeleteRequest) {
-            toast.error(ERR_MESSAGE_ARGOCD)
-        } else {
-            event.stopPropagation()
-            let { top, left } = event.target.getBoundingClientRect()
-            top = top + 25
-            this.props.toggleCDMenu()
-        }
+      if (this.props.addNewPipelineBlocked) {
+          return
+      }
+      if (this.props.deploymentAppDeleteRequest) {
+          toast.error(ERR_MESSAGE_ARGOCD)
+      } else {
+          event.stopPropagation()
+          let { top, left } = event.target.getBoundingClientRect()
+          top = top + 25
+          this.props.toggleCDMenu()
+      }
     }
 
     getAppDetailsURL(): string {
@@ -128,8 +131,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                             <div
                                 className={`workflow-node__icon-common ${
                                     this.props.isVirtualEnvironment
-                                        ? "workflow-node__CD-rocket-icon"
-                                        : "workflow-node__CD-icon dc__flip"
+                                        ? 'workflow-node__CD-rocket-icon'
+                                        : 'workflow-node__CD-icon dc__flip'
                                 }`}
                             ></div>
                         </div>
@@ -141,9 +144,18 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         className="default-tt workflow-node__add-cd-btn-tippy"
                         arrow={false}
                         placement="top"
-                        content={<span className="add-cd-btn-tippy"> Add deployment pipeline </span>}
+                        content={
+                            <span className="add-cd-btn-tippy">
+                                {this.props.addNewPipelineBlocked
+                                    ? 'Not allowed with env filter'
+                                    : 'Add deployment pipeline'}
+                            </span>
+                        }
                     >
-                        <Add className="icon-dim-18 fcb-5" onClick={this.onClickAddNode} />
+                        <Add
+                            className={`icon-dim-18 fcb-5 ${this.props.addNewPipelineBlocked ? 'dc__disabled' : ''}`}
+                            onClick={this.onClickAddNode}
+                        />
                     </Tippy>
                 </button>
                 {this.state.showDeletePipelinePopup && this.renderConfirmationModal()}

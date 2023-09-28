@@ -89,7 +89,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
     useEffect(() => {
         Promise.all([
             getAppConfigStatus(+appId, isJobView),
-            getWorkflowList(appId, filteredEnvIds),
+            getWorkflowList(appId),
             getAppOtherEnvironmentMin(appId),
             typeof getConfigProtections === 'function' && !isJobView
                 ? getConfigProtections(Number(appId))
