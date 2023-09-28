@@ -1,6 +1,5 @@
-
-import React, { Component } from 'react';
-import { Progressing} from '@devtron-labs/devtron-fe-common-lib'
+import React, { Component } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ButtonProps {
     disabled?: boolean
@@ -9,6 +8,7 @@ export interface ButtonProps {
     loaderColor: string
     onClick: (event) => void
     dataTestId?: string
+    children?: React.ReactNode
 }
 
 export class ButtonWithLoader extends Component<ButtonProps> {
