@@ -403,7 +403,7 @@ export default function HelmAppList({
                     <span className="app-list__cell-header flex cursor" onClick={sortByLastDeployed}>
                         {APP_LIST_HEADERS.LastDeployedAt}
                         {sortBy == SortBy.LAST_DEPLOYED ? (
-                            <span className={`sort ${sortOrder == OrderBy.DESC ? 'sort-up' : ''} ml-4`}></span>
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`}></span>
                         ) : (
                             <span className="sort-col dc__opacity-0_5 ml-4"></span>
                         )}
