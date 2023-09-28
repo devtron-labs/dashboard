@@ -182,7 +182,16 @@ export default function CIPipeline({
         ) {
             localStorage.removeItem('takeMeThereClicked')
         }
-    }, [location.pathname])
+        // redirect to ci-job based on pipeline type
+        if (
+            location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
+            ciPipelineId &&
+            ciPipeline.pipelineType === CIPipelineBuildType.CI_JOB 
+        ) {
+            const editCIPipelineURL: string = location.pathname.replace(`/${URLS.APP_CI_CONFIG}/`, `/${URLS.APP_JOB_CI_CONFIG}/`)
+            window.location.href =  editCIPipelineURL
+        }
+    }, [location.pathname, ciPipeline.pipelineType])
 
     const getEnvironments = (envId) => {
         envId = envId || 0

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import { ConditionalWrap, createGitCommitUrl } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
-import ReactSelect from 'react-select'
-import { Option, DropdownIndicator } from '../../../v2/common/ReactSelect.utils'
+import ReactSelect, { components } from 'react-select'
+import { DropdownIndicator, getCustomOptionSelectionStyle } from '../../../v2/common/ReactSelect.utils'
 import moment from 'moment'
 import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
@@ -87,6 +87,27 @@ const Sidebar = React.memo(
                 return HISTORY_LABEL.ENVIRONMENT
             }
         }
+
+        const containerRegistryOption = (props): JSX.Element => {
+            props.selectProps.styles.option = getCustomOptionSelectionStyle()
+            console.log(props.data.pipelineType?.toLowerCase())
+            return (
+                <components.Option {...props}>
+                    <div style={{ display: 'flex' }}>
+                        {(type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) && (
+                            <div
+                                className={
+                                    'dc__ci-pipeline-type-icon mr-5 ' +
+                                        props.data.pipelineType?.toLowerCase() || ''
+                                }
+                            ></div>
+                        )}
+                        {props.label}
+                    </div>
+                </components.Option>
+            )
+        }
+
         return (
             <>
                 <div
@@ -109,8 +130,8 @@ const Sidebar = React.memo(
                         onChange={handleFilterChange}
                         components={{
                             IndicatorSeparator: null,
+                            Option: containerRegistryOption,
                             DropdownIndicator,
-                            Option,
                         }}
                         styles={FILTER_STYLE}
                         menuPortalTarget={document.body}
