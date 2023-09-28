@@ -245,11 +245,11 @@ export class Command extends Component<CommandProps, CommandState>  {
     }
 
     handleKeyPress(event) {
-        if (event.metaKey && event.key === '/') {
-            this.props.toggleCommandBar(true);
+        if (event.metaKey && event.key === 'k') {
+            this.props.toggleCommandBar(true)
             ReactGA.event({
                 category: 'Command Bar',
-                action: 'Open (⌘+/)',
+                action: 'Open (⌘+k)',
                 label: `${this.props.location.pathname.replace(/\d+/g, '')}`,
             });
         }

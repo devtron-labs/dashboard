@@ -263,6 +263,9 @@ a:focus {
 .dc__white-space-normal {
     white-space: normal;
 }
+.dc__white-space-pre {
+    white-space: pre;
+}
 
 .dc__hyphens-auto {
     -ms-hyphens: auto;
@@ -320,6 +323,9 @@ a:focus {
 
 .dc__top-26 {
     top: 26px;
+}
+.dc__top-47 {
+    top: 47px;
 }
 
 .dc__bottom-0 {
@@ -408,7 +414,7 @@ a:focus {
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-column-gap: 16px;
-  }
+}
 
 // ClassName of text area
 .dc__code-textarea {
@@ -2052,6 +2058,10 @@ button.anchor {
     text-align: center;
 }
 
+.dc__text-justify {
+    text-align: justify;
+}
+
 .dc__mxw-inherit {
     max-width: inherit;
 }
@@ -2723,6 +2733,10 @@ textarea,
     width: 25%;
 }
 
+.w-30 {
+    width: 30%;
+}
+
 .w-44 {
     width: 44%;
 }
@@ -2989,7 +3003,7 @@ textarea,
 }
 
 .mh-400 {
-  min-height: 400px;
+    min-height: 400px;
 }
 
 .mh-600 {
