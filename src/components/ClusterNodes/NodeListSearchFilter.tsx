@@ -8,6 +8,9 @@ import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
+import { useLocation, useHistory,generatePath,useParams,useRouteMatch} from 'react-router-dom'
+import * as queryString from 'query-string'
+
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -38,7 +41,8 @@ export default function NodeListSearchFliter({
     const [searchInputText, setSearchInputText] = useState('')
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [selectedColumns, setSelectedColumns] = useState<MultiValue<ColumnMetadataType>>([])
-
+    const location = useLocation()
+    const { push } = useHistory()
     useEffect(() => {
         if (searchInputText !== searchText) {
             setSearchInputText(searchText)
@@ -76,6 +80,7 @@ export default function NodeListSearchFliter({
     }
 
     const clearTextFilter = (): void => {
+        handleQueryParamsSeacrh('')
         setSearchInputText('')
         setSearchText('')
         setSelectedSearchTextType('')
@@ -85,6 +90,23 @@ export default function NodeListSearchFliter({
 
     const handleFilterInput = (event): void => {
         setSearchInputText(event.target.value)
+    }
+    const handleQueryParamsSeacrh=(searchString:string)=>{
+        let qs = queryString.parse(location.search)
+        let keys = Object.keys(qs)
+        let query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
+        if(searchString){
+            query[selectedSearchTextType] = searchInputText
+        }
+        else {
+            delete query[selectedSearchTextType]
+        }
+        let queryStr = queryString.stringify(query)
+        push(`?${queryStr}`)
+
     }
 
     const handleFilterTag = (event): void => {
@@ -109,12 +131,15 @@ export default function NodeListSearchFliter({
                     _searchedTextMap.set(currentItem, true)
                 }
             }
+            
+            handleQueryParamsSeacrh(searchInputText)
             setSearchText(searchInputText)
             setSearchedTextMap(_searchedTextMap)
             setSearchApplied(true)
             setOpenFilterPopup(false)
         } else if (theKeyCode === 'Backspace') {
             if (searchInputText.length === 0 && selectedSearchTextType) {
+                handleQueryParamsSeacrh('')
                 setSelectedSearchTextType('')
                 setSearchText('')
                 setOpenFilterPopup(false)
@@ -131,6 +156,21 @@ export default function NodeListSearchFliter({
         setSelectedSearchTextType(filter.label)
         setSearchInputText('')
         setOpenFilterPopup(false)
+    }
+    
+    const applyFilter=(selected)=>{
+        setSelectedVersion(selected)
+        let qs = queryString.parse(location.search)
+        let keys = Object.keys(qs)
+        let query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
+        if(selected.value===defaultVersion.value)delete query['k8sversion']
+        else query['k8sversion']=selected.value
+        let queryStr = queryString.stringify(query)
+        push(`?${queryStr}`)
+
     }
     const renderTextFilter = (): JSX.Element => {
         let placeholderText = ''
@@ -217,7 +257,7 @@ export default function NodeListSearchFliter({
                         value: version,
                     })) || []),
                 ]}
-                onChange={setSelectedVersion}
+                onChange={applyFilter}
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,

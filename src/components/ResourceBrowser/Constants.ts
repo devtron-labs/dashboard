@@ -175,7 +175,7 @@ export const SIDEBAR_KEYS = {
     nodeGVK: {
         Group: '',
         Version: '',
-        Kind: 'Node',
+        Kind: 'Node' as Nodes,
     },
     overviewGVK: {
         Group: '',
