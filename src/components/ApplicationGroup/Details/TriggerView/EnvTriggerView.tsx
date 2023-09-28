@@ -1069,7 +1069,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(true)
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
-                console.log(response)
                 const _responseList = []
                 response.result.apps.map((res) => {
                     _responseList.push({

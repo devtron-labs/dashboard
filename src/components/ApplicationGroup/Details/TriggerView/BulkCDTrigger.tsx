@@ -314,7 +314,6 @@ export default function BulkCDTrigger({
             const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
             getCDMaterialList(cdNodeId, nodeType, abortControllerRef.current.signal, isApprovalNode, searchText)
                 .then((response) => {
-                    console.log(response)
                     if (response) {
                         _cdMaterialResponse[selectedApp.appId] = {
                             approvalUsers: response.approvalUsers,
