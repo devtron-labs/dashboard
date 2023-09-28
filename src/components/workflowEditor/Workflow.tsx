@@ -60,6 +60,7 @@ export interface WorkflowProps
     isJobView?: boolean
     envList?: any[]
     filteredCIPipelines?: any[]
+    addNewPipelineBlocked?: boolean
 }
 
 interface WorkflowState {
@@ -253,6 +254,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     this.props.handleCDSelect(this.props.id, node.id, PipelineType.WEBHOOK, node.id, true)
                 }}
                 hideWebhookTippy={this.props.hideWebhookTippy}
+                addNewPipelineBlocked={this.props.addNewPipelineBlocked}
             />
         )
     }
@@ -328,6 +330,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 showPluginWarning={node.showPluginWarning}
                 envList={this.props.envList}
                 filteredCIPipelines={this.props.filteredCIPipelines}
+                addNewPipelineBlocked={this.props.addNewPipelineBlocked}
             />
         )
     }
@@ -362,6 +365,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
                 match={this.props.match}
                 isVirtualEnvironment={node.isVirtualEnvironment}
+                addNewPipelineBlocked={this.props.addNewPipelineBlocked}
             />
         )
     }

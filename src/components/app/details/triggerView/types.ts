@@ -417,6 +417,7 @@ export interface Tree {
     componentId: number
     parentId: number
     parentType: PipelineType
+    isLast?: boolean
 }
 
 export interface Workflow {
