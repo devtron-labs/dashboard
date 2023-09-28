@@ -113,7 +113,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             tagsEditable: false,
             configs: false,
             isDefaultConfigPresent: false,
-            searchImageTag: ''
+            searchImageTag: '',
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -651,7 +651,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag: string = '') {
+    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false, searchText?: string) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
@@ -661,6 +661,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
             isApprovalNode,
+            searchText,
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -839,6 +840,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 showCDModal: false,
                                 isSaveLoading: false,
                                 isLoading: false,
+                                searchImageTag: '',
                             },
                             () => {
                                 preventBodyScroll(false)
@@ -1194,7 +1196,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     closeCDModal = (e): void => {
         preventBodyScroll(false)
         this.abortController.abort()
-        this.setState({ showCDModal: false })
+        this.setState({ showCDModal: false, searchImageTag: '' })
     }
 
     closeApprovalModal = (e): void => {
@@ -1365,6 +1367,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return node ?? ({} as NodeAttr)
     }
 
+    handleMaterialFilters = (
+        searchText: string,
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode: boolean = false,
+    ) => {
+        this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        this.setState({ searchImageTag: searchText })
+    }
+
     renderCDMaterial() {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
@@ -1422,6 +1434,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 location={this.props.location}
                                 match={this.props.match}
                                 isApplicationGroupTrigger={false}
+                                handleMaterialFilters={this.handleMaterialFilters}
+                                searchImageTag={this.state.searchImageTag}
                             />
                         )}
                     </div>

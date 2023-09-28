@@ -75,8 +75,9 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
-    handleMaterialFilters?: (text: string) => void
-} 
+    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
+    searchImageTag?: string
+}
 
 export enum DeploymentWithConfigType {
     LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
@@ -109,6 +110,8 @@ export interface CDMaterialState {
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
     areMaterialsPassingFilters: boolean
+    searchApplied: boolean
+    searchText: string
 }
 
 export interface MaterialInfo {
@@ -552,7 +555,7 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
-export interface PrePostDeployStageType {  
+export interface PrePostDeployStageType {
     isValid: boolean;
     steps: TaskErrorObj[];
     triggerType: string
