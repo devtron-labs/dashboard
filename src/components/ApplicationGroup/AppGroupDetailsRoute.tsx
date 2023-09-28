@@ -393,7 +393,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                     appList={allAppsList}
                     selectedAppGroup={clickedGroup}
                     closePopup={closeCreateGroup}
-                    filterParentType={FilterParentType.app}
+                    filterParentType={FilterParentType.env}
                 />
             )}
             {showDeleteGroup && isPopupBox && (

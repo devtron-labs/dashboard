@@ -195,8 +195,11 @@ export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
 }
 
 export const getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
-    if(!filterParentType) return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}`)
-    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}?groupType=${filterParentType}`)
+    let filterParentTypeQuery = ''
+    if (filterParentType) {
+        filterParentTypeQuery = `?groupType=${filterParentType}`
+    }
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}${filterParentTypeQuery}`)
 }
 
 export const getEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
@@ -215,5 +218,9 @@ export const appGroupPermission = (envId: string, data: CheckPermissionType): Pr
 }
 
 export const deleteEnvGroup = (envId: string, groupId: string, filterParentType?:string): Promise<EnvGroupResponse> => {
-    return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}?groupType=${filterParentType}`)
+    let filterParentTypeQuery = ''
+    if (filterParentType) {
+        filterParentTypeQuery = `?groupType=${filterParentType}`
+    }
+    return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}${filterParentTypeQuery}`)
 }
