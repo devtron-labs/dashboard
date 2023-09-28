@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { ButtonWithLoader, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
+import {
+    ButtonWithLoader,
+    FloatingVariablesSuggestions,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import {
     ServerErrors,
     showError,
@@ -37,7 +42,7 @@ import {
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CIBuildType, CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
@@ -189,6 +194,7 @@ export default function CIPipeline({
                 list.push({
                     id: 0,
                     clusterName: '',
+                    clusterId: null,
                     name: DEFAULT_ENV,
                     active: false,
                     isClusterActive: false,
@@ -199,6 +205,7 @@ export default function CIPipeline({
                         list.push({
                             id: env.id,
                             clusterName: env.cluster_name,
+                            clusterId: env.cluster_id,
                             name: env.environment_name,
                             active: false,
                             isClusterActive: env.isClusterActive,
@@ -512,7 +519,7 @@ export default function CIPipeline({
         }
 
         let _ciPipeline = ciPipeline
-        if(selectedEnv && selectedEnv.id !== 0) {
+        if (selectedEnv && selectedEnv.id !== 0) {
             _ciPipeline.environmentId = selectedEnv.id
         } else {
             _ciPipeline.environmentId = undefined
@@ -692,6 +699,7 @@ export default function CIPipeline({
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
+
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"
@@ -702,6 +710,7 @@ export default function CIPipeline({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
+
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
                         {isJobView ? (
@@ -719,9 +728,7 @@ export default function CIPipeline({
                     </ul>
                 )}
                 <hr className="divider m-0" />
-                <pipelineContext.Provider
-                    value={contextValue}
-                >
+                <pipelineContext.Provider value={contextValue}>
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
@@ -808,10 +815,31 @@ export default function CIPipeline({
         )
     }
 
+    const renderFloatingVariablesWidget = () => {
+        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) return <></>
+
+        return (
+            <div className="flexbox">
+                <div className="floating-scoped-variables-widget">
+                    <FloatingVariablesSuggestions
+                        zIndex={21}
+                        appId={appId}
+                        envId={selectedEnv?.id ? String(selectedEnv.id) : null}
+                        clusterId={selectedEnv?.clusterId}
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return ciPipelineId || isAdvanced ? (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            {renderCIPipelineModal()}
-        </Drawer>
+        <>
+            {renderFloatingVariablesWidget()}
+
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                {renderCIPipelineModal()}
+            </Drawer>
+        </>
     ) : (
         <VisibleModal className="">{renderCIPipelineModal()}</VisibleModal>
     )
