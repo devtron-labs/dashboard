@@ -88,9 +88,8 @@ const Sidebar = React.memo(
             }
         }
 
-        const containerRegistryOption = (props): JSX.Element => {
+        const ciPipelineBuildTypeOption = (props): JSX.Element => {
             props.selectProps.styles.option = getCustomOptionSelectionStyle()
-            console.log(props.data.pipelineType?.toLowerCase())
             return (
                 <components.Option {...props}>
                     <div style={{ display: 'flex' }}>
@@ -130,7 +129,7 @@ const Sidebar = React.memo(
                         onChange={handleFilterChange}
                         components={{
                             IndicatorSeparator: null,
-                            Option: containerRegistryOption,
+                            Option: ciPipelineBuildTypeOption,
                             DropdownIndicator,
                         }}
                         styles={FILTER_STYLE}
