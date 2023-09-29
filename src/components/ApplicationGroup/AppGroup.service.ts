@@ -22,7 +22,6 @@ import {
     EnvAppType,
     EnvDeploymentStatusType,
     EnvGroupListResponse,
-    EnvGroupListType,
     EnvGroupResponse,
     WorkflowsResponseType,
 } from './AppGroup.types'

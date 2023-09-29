@@ -22,7 +22,6 @@ import './app.scss'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs } from '../../ApplicationGroup/Constants'
 import {
-    CheckPermissionType,
     CreateGroupAppListType,
     FilterParentType,
     GroupOptionType,
@@ -43,7 +42,7 @@ const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId } = useParams<{ appId; }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
