@@ -21,7 +21,6 @@ import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { filter } from 'rxjs'
 
 export default function CreateAppGroup({
     appList,

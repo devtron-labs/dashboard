@@ -10,11 +10,10 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import PageHeader from '../../common/header/PageHeader'
 import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
+import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
+import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import './appDetails/appDetails.scss'
 import './app.scss'
-import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
-import { CreateGroupAppListType, FilterParentType, GroupOptionType } from '../../ApplicationGroup/AppGroup.types'
-import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
