@@ -190,7 +190,7 @@ export default function CreateAppGroup({
                         })}
                     {unauthorizedAppList.length > 0 && (
                         <div className="dc__bold ml-4">
-                            You don't have admin/manager pemission for the following Application.
+                            {`You don't have admin/manager pemission for the following ${filterParentTypeMsg}.`}
                         </div>
                     )}
                     {unauthorizedAppList.map((app) => {
@@ -200,7 +200,7 @@ export default function CreateAppGroup({
                                 className="default-tt w-200"
                                 arrow={false}
                                 placement="bottom-start"
-                                content="You don't have admin/manager pemission for this app."
+                                content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
                             >
                                 <div>
                                     <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
@@ -239,7 +239,7 @@ export default function CreateAppGroup({
                                         className="default-tt w-200"
                                         arrow={false}
                                         placement="bottom-start"
-                                        content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.}`}
+                                        content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
                                     >
                                         <div>{children}</div>
                                     </Tippy>
