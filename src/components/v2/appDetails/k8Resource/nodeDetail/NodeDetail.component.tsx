@@ -39,6 +39,7 @@ function NodeDetailComponent({
         AppDetailsStore.getAppDetailsTabs(),
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
+    console.log('selectedResource', selectedResource)
     const appDetails = IndexStore.getAppDetails()
     const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
@@ -248,6 +249,8 @@ function NodeDetailComponent({
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
     }
+    console.log('re rendering node detail')
+
 
     return (
         <React.Fragment>
@@ -427,4 +430,4 @@ function NodeDetailComponent({
     )
 }
 
-export default NodeDetailComponent
+export default React.memo(NodeDetailComponent)

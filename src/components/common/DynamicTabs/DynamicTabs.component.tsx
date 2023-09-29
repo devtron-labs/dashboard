@@ -21,7 +21,7 @@ export const MoreButtonWrapper = ({
     toggleMenu,
     tabPopupMenuRef,
 }: MoreButtonWrapperProps) => (
-    <div className="more-tabs-wrapper dc__position-rel">
+    <div className="more-tabs-wrapper dc__position-rel flex">
         <button
             className="more-tabs-option p-0 flexbox dc__overflow-hidden flex-align-center ml-8 bcn-0 dc__border br-4"
             onClick={toggleMenu}
