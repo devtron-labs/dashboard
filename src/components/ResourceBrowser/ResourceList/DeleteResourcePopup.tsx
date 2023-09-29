@@ -36,7 +36,6 @@ export default function DeleteResourcePopup({
             toast.success('Resource deleted successfully')
             getResourceListData(true)
             toggleDeleteDialog()
-            window.location.reload()
             if (removeTabByIdentifier) {
                 const pushURL = removeTabByIdentifier(
                     `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
