@@ -4,7 +4,6 @@ import {
     convertToOptionsList,
     createGroupSelectList,
     filterImageList,
-    formatDurationDiff,
     getTimeElapsed,
     handleUTCTime,
     processK8SObjects,
@@ -141,6 +140,7 @@ export default function ResourceList() {
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
     const hideSyncWarning: boolean = loader || rawGVKLoader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
+
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -366,10 +366,10 @@ export default function ResourceList() {
         const _staleDataCheckTime = moment()
         isStaleDataRef.current = false
         setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-         interval = setInterval(() => {
+        interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()))
+            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime, moment()))
         }, 1000)
         return () => {
             setTimeElapsedLastSync('')
@@ -536,6 +536,7 @@ export default function ResourceList() {
                         namespaced: false,
                         gvk: SIDEBAR_KEYS.overviewGVK,
                     }
+
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected, true)
@@ -672,7 +673,6 @@ export default function ResourceList() {
             setNoResults(result.data.length === 0)
             setShowErrorState(false)
             setLastDataSync(!lastDataSync)
-            
         } catch (err) {
             if (!resourceListAbortController.signal.aborted) {
                 showError(err)

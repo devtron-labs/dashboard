@@ -33,7 +33,7 @@ function ResourceFilterOptions({
     isSearchInputDisabled,
     shortcut,
     isCreateModalOpen,
-    renderCallBackSync,
+    renderCallBackSync
 }: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
     const location = useLocation()
