@@ -47,7 +47,7 @@ function DynamicTabs({
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const tabPopupMenuRef = useRef(null)
-    const CLUSTER_TERMAINL_TAB = 'cluster_terminal-Terminal'
+    const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
 
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
@@ -308,7 +308,7 @@ function DynamicTabs({
                     </ul>
                 </div>
             )}
-            {!isOverview && !(selectedTab.id === CLUSTER_TERMAINL_TAB) && (
+            {!isOverview && selectedTab.id !== CLUSTER_TERMINAL_TAB && (
                 <div className="flexbox ml-auto dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center dc__no-shrink">
                     {timerForSync()}
                 </div>
