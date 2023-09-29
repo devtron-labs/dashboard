@@ -369,7 +369,7 @@ export default function GenericDescription({
                             }
                         />
                         {!isClusterTerminal && (
-                            <div className="bcn-0 pl-16 pt-8 pb-12 dc__position-rel dc__zi-4 flex left br-4 dc__border-bottom">
+                            <div className="bcn-0 pl-16 pt-8 pb-12 dc__position-rel dc__zi-4 flex left br-4">
                                 {showExpandableIcon && (
                                     <div className="cursor cb-5 fs-13 fw-6 h-20 flex left" onClick={toggleShowText}>
                                         {`${showAllText ? 'Show less' : 'Show more'}`}
