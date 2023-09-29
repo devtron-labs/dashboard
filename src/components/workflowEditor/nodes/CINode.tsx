@@ -6,7 +6,6 @@ import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
-import { CIPipelineBuildType } from '../../ciPipeline/types'
 
 export interface CINodeProps {
     x: number
