@@ -163,7 +163,7 @@ export default function CreateAppGroup({
                 ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
                 : _authorizedAppList.push({ id: app.id, appName: app.appName })
         })
-        _unauthorizedAppList.filter(
+        _unauthorizedAppList = _unauthorizedAppList.filter(
             (app) =>
                 selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
         )
