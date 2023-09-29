@@ -134,45 +134,48 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     callGetAppOtherEnv(prevEnvId: string | undefined) {
-        getAppOtherEnvironmentMin(this.props.match.params.appId)
-            .then((envResponse) => {
-                const filteredEnvMap = this.props.filteredEnvIds
-                    ?.split(',')
-                    .reduce((agg, curr) => agg.set(+curr, true), new Map())
-                let allEnv =
-                    envResponse.result
-                        ?.filter((env) => env.prod && (!filteredEnvMap || filteredEnvMap.get(env.environmentId)))
-                        .map((env) => {
-                            return {
-                                label: env.environmentName,
-                                value: env.environmentId,
-                                deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
-                            }
-                        }) || []
-                this.setState({
-                    environments: allEnv,
-                    filteredEnvironment: allEnv.filter((_env) => !_env.deploymentAppDeleteRequest),
-                    view: (!allEnv.length || (prevEnvId && prevEnvId !== this.props.match.params.envId) || this.props.match.params.envId)!
-                        ? ViewType.FORM
-                        : ViewType.LOADING,
-                })
-                if (allEnv.length) {
-                    if (prevEnvId && prevEnvId !== this.props.match.params.envId) {
-                        const isEnvExist = allEnv.find((e) => Number(e.value) === Number(prevEnvId))
-                        let url = generatePath(this.props.match.path, {
-                            appId: this.props.match.params.appId,
-                            envId: isEnvExist ? prevEnvId : allEnv[0].value,
-                        })
-                        this.props.history.push(url)
-                    } else if (this.props.match.params.envId) {
-                        this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
-                    }
-                }
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState({ code: error.code, view: ViewType.ERROR })
-            })
+      getAppOtherEnvironmentMin(this.props.match.params.appId)
+          .then((envResponse) => {
+              const filteredEnvMap = this.props.filteredEnvIds
+                  ?.split(',')
+                  .reduce((agg, curr) => agg.set(+curr, true), new Map())
+              let allEnv =
+                  envResponse.result
+                      ?.filter(
+                          (env) =>
+                              env.prod &&
+                              !env.deploymentAppDeleteRequest &&
+                              (!filteredEnvMap || filteredEnvMap.get(env.environmentId)),
+                      )
+                      .map((env) => {
+                          return {
+                              label: env.environmentName,
+                              value: env.environmentId,
+                              deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
+                          }
+                      }) || []
+              let isEnvExist = prevEnvId && allEnv.find((e) => Number(e.value) === Number(prevEnvId))
+              const redirectToNewUrl =
+                  allEnv.length && prevEnvId && (prevEnvId !== this.props.match.params.envId || !isEnvExist)
+              this.setState({
+                  environments: allEnv,
+                  filteredEnvironment: allEnv,
+                  view: this.props.match.params.envId || redirectToNewUrl ? ViewType.LOADING : ViewType.FORM,
+              })
+              if (redirectToNewUrl) {
+                  let url = generatePath(this.props.match.path, {
+                      appId: this.props.match.params.appId,
+                      envId: isEnvExist ? prevEnvId : allEnv[0].value,
+                  })
+                  this.props.history.push(url)
+              } else if (this.props.match.params.envId) {
+                  this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
+              }
+          })
+          .catch((error) => {
+              showError(error)
+              this.setState({ code: error.code, view: ViewType.ERROR })
+          })
     }
 
     closeDeploymentTableModal(): void {
