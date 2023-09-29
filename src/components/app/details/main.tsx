@@ -150,7 +150,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         return toast.info(
             <ToastBody
                 title={`Cannot ${action} filter`}
-                subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
+                subtitle={`You can ${action} a filter with only those environments for which you have admin/manager permission.`}
             />,
             {
                 className: 'devtron-toast unauthorized',
