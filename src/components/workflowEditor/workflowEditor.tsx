@@ -187,7 +187,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             })
     }
 
-    handleCISelect = (workflowId: number | string, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI') => {
+    handleCISelect = (workflowId: number | string, type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI' | 'JOB-CI') => {
         let link = `${URLS.APP}/${this.props.match.params.appId}/edit/workflow/${workflowId}`
         switch (type) {
             case 'CI':
@@ -199,11 +199,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             case 'LINKED-CI':
                 link = `${link}/linked-ci`
                 break
+            case 'JOB-CI':
+                link = `${link}/ci-job/0`
+                break
         }
         this.props.history.push(link)
     }
 
-    addCIPipeline = (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI', workflowId?: number | string) => {
+    addCIPipeline = (type: 'EXTERNAL-CI' | 'CI' | 'LINKED-CI' | 'JOB-CI', workflowId?: number | string) => {
         this.handleCISelect(workflowId || 0, type)
     }
 
@@ -357,7 +360,29 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         }}
                     />
                 )}
-                <Route path={`${this.props.match.path}/ci-pipeline/:ciPipelineId`}>
+                <Route
+                    path={[URLS.APP_JOB_CI_CONFIG, URLS.APP_CI_CONFIG].map(
+                        (ciPipeline) => `${this.props.match.path}/${ciPipeline}/:ciPipelineId`,
+                    )}
+                    render={({ location, match }: { location: any; match: any }) => {
+                        let isJobCI = false
+                        if (location.pathname.indexOf(URLS.APP_JOB_CI_CONFIG) >= 0) {
+                            isJobCI = true
+                        }
+                        return (
+                            <CIPipeline
+                                appName={this.state.appName}
+                                connectCDPipelines={this.getLen()}
+                                close={this.closePipeline}
+                                getWorkflows={this.getWorkflows}
+                                deleteWorkflow={this.deleteWorkflow}
+                                isJobView={this.props.isJobView}
+                                isJobCI={isJobCI}
+                            />
+                        )
+                    }}
+                />
+                <Route path={`${this.props.match.path}/ci-job/:ciPipelineId`}>
                     <CIPipeline
                         appName={this.state.appName}
                         connectCDPipelines={this.getLen()}
