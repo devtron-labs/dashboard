@@ -981,7 +981,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 <input
                     data-testid="ci-trigger-search-by-commit-hash"
                     type="text"
-                    placeholder="Search by commit hash"
+                    placeholder="Search by image tag"
                     value={this.state.searchText}
                     className="search__input dc__right-0"
                     onChange={this.handleInputChange}
