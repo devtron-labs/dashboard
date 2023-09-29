@@ -184,3 +184,5 @@ export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus =>
             return
     }
 }
+
+export const FILTER_NAME_REGEX = /^[a-z][a-z0-9-]{1,}[a-z0-9]$/

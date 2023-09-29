@@ -4,6 +4,7 @@ import {
     CHECKBOX_VALUE,
     ConditionalWrap,
     Drawer,
+    GenericEmptyState,
     Progressing,
     showError,
     stopPropagation,
@@ -12,9 +13,10 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
+import Info from '../../assets/icons/ic-info-outline-grey.svg'
 import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
 import SearchBar from './SearchBar'
-import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
+import { CreateGroupTabs, CREATE_GROUP_TABS, FILTER_NAME_REGEX } from './Constants'
 import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
@@ -54,6 +56,18 @@ export default function CreateAppGroup({
             typeof closePopup === 'function'
         ) {
             closePopup(evt)
+        }
+    }
+
+    const validateName = (name: string) => {
+        if (!name) {
+            return
+        }
+        if (!FILTER_NAME_REGEX.test(name) || name.length > 30) {
+            // regex doesnt check of max length = 30
+            setShowErrorMsg(true)
+        } else {
+            setShowErrorMsg(false)
         }
     }
 
@@ -97,8 +111,8 @@ export default function CreateAppGroup({
     }
 
     const onInputChange = (event): void => {
-        setShowErrorMsg(true)
         if (event.target.name === 'name') {
+            validateName(event.target.value)
             setAppGroupName(event.target.value)
         } else {
             setAppGroupDescription(event.target.value)
@@ -157,7 +171,15 @@ export default function CreateAppGroup({
         setAuthorizedAppList(_authorizedAppList)
     }
 
+    const renderEmptyState = (title?: string): JSX.Element => {
+        return <GenericEmptyState title={title} image={Info} imageClassName="h-20" classname="h-40vh" />
+    }
+
     const renderSelectedApps = (): JSX.Element => {
+        const filteredAuthList = authorizedAppList.filter(
+            (app) =>
+                selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
+        )
         return (
             <div>
                 <SearchBar
@@ -168,26 +190,22 @@ export default function CreateAppGroup({
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {authorizedAppList
-                        .filter(
-                            (app) =>
-                                selectedAppsMap[app.id] &&
-                                (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
-                        )
-                        .map((app) => {
-                            return (
-                                <div
-                                    key={`selected-app-${app.id}`}
-                                    className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
-                                    data-app-id={app.id}
-                                    onClick={removeAppSelection}
-                                >
-                                    <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
-                                    <Close className="icon-dim-16 cursor delete-icon mr-8" />
-                                    <span>{app.appName}</span>
-                                </div>
-                            )
-                        })}
+                    {filteredAuthList.length <= 0
+                        ? renderEmptyState('No matching results')
+                        : filteredAuthList.map((app) => {
+                              return (
+                                  <div
+                                      key={`selected-app-${app.id}`}
+                                      className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
+                                      data-app-id={app.id}
+                                      onClick={removeAppSelection}
+                                  >
+                                      <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
+                                      <Close className="icon-dim-16 cursor delete-icon mr-8" />
+                                      <span>{app.appName}</span>
+                                  </div>
+                              )
+                          })}
                     {unauthorizedAppList.length > 0 && (
                         <div className="dc__bold ml-4">
                             {`You don't have admin/manager pemission for the following ${filterParentTypeMsg}.`}
@@ -282,11 +300,16 @@ export default function CreateAppGroup({
         )
     }
 
+    // called when showErrorMsg is true
     const nameErrorMessage = (): string => {
         if (!appGroupName) {
             return 'Group name is required field'
-        } else {
+        }
+        if (appGroupName.length > 30) {
             return 'Max 30 char is allowed in name'
+        }
+        if (!FILTER_NAME_REGEX.test(appGroupName)) {
+            return 'Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use spaces'
         }
     }
 
@@ -310,7 +333,7 @@ export default function CreateAppGroup({
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
                     />
 
-                    {showErrorMsg && (!appGroupName || appGroupName.length > 30) && (
+                    {showErrorMsg && (
                         <span className="form__error">
                             <Error className="form__icon form__icon--error" />
                             {nameErrorMessage()}
@@ -360,6 +383,10 @@ export default function CreateAppGroup({
 
     const handleSave = async (e): Promise<void> => {
         e.preventDefault()
+        if (showErrorMsg) {
+            toast.error('Please fix the errors')
+            return
+        }
         if (!appGroupName || appGroupDescription?.length > 50) {
             setShowErrorMsg(true)
             return
