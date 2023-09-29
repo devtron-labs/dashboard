@@ -50,3 +50,104 @@
         }
     }
 }
+
+// .env-empty-state {
+//     height: calc(100vh - 48px);
+// }
+
+// .loading-state {
+//     height: calc(100vh - 78px);
+// }
+
+// .saved-env-filters__wrap {
+//     padding: 6px 20px;
+//     display: flex;
+//     flex-wrap: wrap;
+//     background-color: var(--white);
+//     z-index: var(--app-list-header-index);
+
+//     .saved-env-filter {
+//         display: flex;
+//         align-items: center;
+//         border-radius: 4px;
+//         border: solid 1px var(--N200);
+//         background-color: #f7fafc;
+//         padding-left: 6px;
+//         padding-right: 6px;
+//         -webkit-user-select: none;
+//         user-select: none;
+//         margin: 0 12px 0 0;
+//         min-height: 24px;
+//     }
+
+//     .saved-env-filter-divider {
+//         height: 24px;
+//         width: 1px;
+//         background-color: var(--N200);
+//     }
+
+//     .saved-env-filter__close-btn {
+//         font-size: 14px;
+//         line-height: 1;
+//         margin-left: 10px;
+//         color: #72767a;
+//         border: none;
+//         padding: 1px;
+//         background-color: #f7fafc;
+//     }
+
+//     .saved-env-filters__clear-btn {
+//         background-color: var(--white);
+//         height: 24px;
+//         text-transform: capitalize;
+//         font-size: 12px;
+//         font-weight: 600;
+//         font-style: normal;
+//         font-stretch: normal;
+//         line-height: 1.5;
+//         letter-spacing: normal;
+//         padding: 7px 10px;
+//         margin-right: 12px;
+//         color: var(--B500);
+//         border: none;
+//         width: 115px;
+//     }
+// }
+
+// .env-details-page {
+//     height: calc(100vh - 77px);
+
+//     .tab-list__tab-link {
+//         padding: 0 0 8px 0;
+//     }
+
+//     .tab-list__tab-link.active .tab-list__icon path {
+//         fill: var(--B500);
+//     }
+
+//     .tab-list__tab-link:hover path {
+//         color: var(--B500);
+//         text-decoration: none;
+//         fill: var(--B500);
+//     }
+// }
+
+.create-group-container,
+.env-header-tab {
+    .tab-list {
+        .tab-list__tab {
+            .tab-hover {
+                &:hover,
+                &.active {
+                    color: var(--B500);
+                }
+            }
+            .apps-tab__active-tab {
+                height: 2px;
+                background-color: var(--B500);
+                border-radius: 2px 2px 0px 0px;
+                margin-top: -1px;
+            }
+        }
+    }
+}

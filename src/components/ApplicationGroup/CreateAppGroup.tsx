@@ -163,10 +163,6 @@ export default function CreateAppGroup({
                 ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
                 : _authorizedAppList.push({ id: app.id, appName: app.appName })
         })
-        _unauthorizedAppList = _unauthorizedAppList.filter(
-            (app) =>
-                selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
-        )
         setUnauthorizedAppList(_unauthorizedAppList)
         setAuthorizedAppList(_authorizedAppList)
     }
@@ -187,6 +183,10 @@ export default function CreateAppGroup({
             (app) =>
                 selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
         )
+        const filteredUnAuthList = unauthorizedAppList.filter(
+            (app) =>
+                selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
+        )
         return (
             <div>
                 <SearchBar
@@ -197,7 +197,7 @@ export default function CreateAppGroup({
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {filteredAuthList.length <= 0
+                    {filteredAuthList.length <= 0 && filteredUnAuthList.length <= 0
                         ? renderEmptyState('No matching results')
                         : filteredAuthList.map((app) => {
                               return (
@@ -213,12 +213,12 @@ export default function CreateAppGroup({
                                   </div>
                               )
                           })}
-                    {unauthorizedAppList.length > 0 && (
+                    {filteredUnAuthList.length > 0 && (
                         <div className="dc__bold ml-4">
                             {`You don't have admin/manager pemission for the following ${filterParentTypeMsg}.`}
                         </div>
                     )}
-                    {unauthorizedAppList.map((app) => {
+                    {filteredUnAuthList.map((app) => {
                         return (
                             <Tippy
                                 key={`selected-app-${app.id}`}
