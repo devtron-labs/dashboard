@@ -147,24 +147,26 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                             value: env.environmentId,
                             deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
                         }
-                    })
-                allEnv = allEnv || []
-                let callAPIOnEnvOfPrevApp = prevEnvId && allEnv.find((e) => Number(e.value) === Number(prevEnvId))
-                this.setState({
-                    environments: allEnv,
-                    filteredEnvironment: allEnv.filter((_env) => !_env.deploymentAppDeleteRequest),
-                    view: this.props.match.params.envId || callAPIOnEnvOfPrevApp ? ViewType.LOADING : ViewType.FORM,
-                })
-                if (prevEnvId) {
-                    const isEnvExist = allEnv.find((e) => Number(e.value) === Number(prevEnvId))
-                    let url = generatePath(this.props.match.path, {
-                        appId: this.props.match.params.appId,
-                        envId: isEnvExist ? prevEnvId : allEnv[0].value,
-                    })
-                    this.props.history.push(url)
-                } else if (this.props.match.params.envId) {
-                    this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
+                    }) || []
+                let hideLoader = true
+                if (allEnv.length) {
+                    if (prevEnvId && prevEnvId !== this.props.match.params.envId) {
+                        const isEnvExist = allEnv.find((e) => Number(e.value) === Number(prevEnvId))
+                        let url = generatePath(this.props.match.path, {
+                            appId: this.props.match.params.appId,
+                            envId: isEnvExist ? prevEnvId : allEnv[0].value,
+                        })
+                        this.props.history.push(url)
+                    } else if (this.props.match.params.envId) {
+                        hideLoader = false
+                        this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
+                    }
                 }
+                this.setState({
+                  environments: allEnv,
+                  filteredEnvironment: allEnv.filter((_env) => !_env.deploymentAppDeleteRequest),
+                  view: hideLoader ? ViewType.FORM: ViewType.LOADING,
+              })
             })
             .catch((error) => {
                 showError(error)

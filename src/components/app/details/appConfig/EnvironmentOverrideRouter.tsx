@@ -69,9 +69,7 @@ const EnvOverrideRoute = ({
     const [deletePipeline, setDeletePipeline] = useState()
 
     useEffect(() => {
-        if (!location.pathname.includes(`${LINK}/`) && !collapsed) {
-            toggleCollapsed(true)
-        }
+        toggleCollapsed(!location.pathname.includes(`${LINK}/`))
     }, [location.pathname])
 
     const handleNavItemClick = () => {
