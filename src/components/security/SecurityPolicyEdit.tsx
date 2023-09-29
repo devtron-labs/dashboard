@@ -481,7 +481,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload />
+        else if (this.state.view === ViewType.ERROR && this.state.error.code !== 403) return <Reload />;
         else {
             let isCollapsible = this.props.level === "application";
             return <>
