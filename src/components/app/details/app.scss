@@ -50,3 +50,23 @@
         }
     }
 }
+
+.create-group-container,
+.env-header-tab {
+    .tab-list {
+        .tab-list__tab {
+            .tab-hover {
+                &:hover,
+                &.active {
+                    color: var(--B500);
+                }
+            }
+            .apps-tab__active-tab {
+                height: 2px;
+                background-color: var(--B500);
+                border-radius: 2px 2px 0px 0px;
+                margin-top: -1px;
+            }
+        }
+    }
+}
