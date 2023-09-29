@@ -17,6 +17,7 @@ import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 export const getTriggerWorkflows = (
     appId,
@@ -465,6 +466,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
         isLinkedCI: !!ciPipeline.parentCiPipeline,
+        isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),

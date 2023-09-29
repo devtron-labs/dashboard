@@ -30,6 +30,7 @@ import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineBuildType } from '../ciPipeline/types'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
@@ -285,12 +286,14 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         } else if (node.isExternalCI) {
             url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         } else {
+            const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +node.id)
             url = getCIPipelineURL(
                 appId,
                 this.props.id.toString(),
                 node.branch === GIT_BRANCH_NOT_CONFIGURED,
                 node.id,
                 this.props.isJobView,
+                currPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
             )
         }
         return `${this.props.match.url}/${url}`
@@ -318,6 +321,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 description={node.description}
                 isExternalCI={node.isExternalCI}
                 isLinkedCI={node.isLinkedCI}
+                isJobCI={node.isJobCI}
                 linkedCount={node.linkedCount}
                 toggleCDMenu={() => {
                     this.props.hideWebhookTippy()

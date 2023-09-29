@@ -29,6 +29,7 @@ export default function Artifacts({
     ciPipelineId,
     artifactId,
     isJobView,
+    isJobCI,
     imageComment,
     imageReleaseTags,
     type,
@@ -94,10 +95,27 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
+        if (isJobCI) {
+            return (
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifacts}
+                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifactsError}
+                />
+            ) 
+        }
+
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+            />
+        )
+    } else if (!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.SUCCEEDED) {
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFound}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFoundError}
+                image={noartifact}
             />
         )
     } else {

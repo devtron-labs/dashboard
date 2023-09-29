@@ -17,6 +17,7 @@ import { getTriggerHistory } from '../../../app/service'
 import { asyncWrap, mapByKey, useAsync, useInterval } from '../../../common'
 import { getCIConfigList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId, pipelineId, buildId } = useParams<{
@@ -181,7 +182,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelineList || []).map((item) => {
-        return { value: `${item.id}`, label: item.appName, pipelineId: item.id }
+        return { value: `${item.id}`, label: item.appName, pipelineId: item.id, pipelineType: item.pipelineType }
     })
     const pipelinesMap = mapByKey(pipelineList, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -205,6 +206,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchBuildIdData}
+                        isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
                     />
                 </Route>
             )
