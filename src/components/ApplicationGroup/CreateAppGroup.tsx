@@ -46,6 +46,7 @@ export default function CreateAppGroup({
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
     const [authorizedAppList, setAuthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
 
+    const filterParentTypeMsg = filterParentType === FilterParentType.app ? 'environment' : 'application'
     const outsideClickHandler = (evt): void => {
         if (
             CreateGroupRef.current &&
@@ -148,6 +149,10 @@ export default function CreateAppGroup({
                 ? _unauthorizedAppList.push({ id: app.id, appName: app.appName })
                 : _authorizedAppList.push({ id: app.id, appName: app.appName })
         })
+        _unauthorizedAppList.filter(
+            (app) =>
+                selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
+        )
         setUnauthorizedAppList(_unauthorizedAppList)
         setAuthorizedAppList(_authorizedAppList)
     }
@@ -156,7 +161,7 @@ export default function CreateAppGroup({
         return (
             <div>
                 <SearchBar
-                    placeholder="Search applications"
+                    placeholder={`Search ${filterParentTypeMsg}'s`}
                     searchText={selectedAppSearchText}
                     setSearchText={setSelectedAppSearchText}
                     searchApplied={selectedAppSearchApplied}
@@ -188,30 +193,24 @@ export default function CreateAppGroup({
                             You don't have admin/manager pemission for the following Application.
                         </div>
                     )}
-                    {unauthorizedAppList
-                        .filter(
-                            (app) =>
-                                selectedAppsMap[app.id] &&
-                                (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
-                        )
-                        .map((app) => {
-                            return (
-                                <Tippy
-                                    key={`selected-app-${app.id}`}
-                                    className="default-tt w-200"
-                                    arrow={false}
-                                    placement="bottom-start"
-                                    content="You don't have admin/manager pemission for this app."
-                                >
-                                    <div>
-                                        <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
-                                            <Abort className="mr-8" />
-                                            <span>{app.appName}</span>
-                                        </div>
+                    {unauthorizedAppList.map((app) => {
+                        return (
+                            <Tippy
+                                key={`selected-app-${app.id}`}
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="bottom-start"
+                                content="You don't have admin/manager pemission for this app."
+                            >
+                                <div>
+                                    <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
+                                        <Abort className="mr-8" />
+                                        <span>{app.appName}</span>
                                     </div>
-                                </Tippy>
-                            )
-                        })}
+                                </div>
+                            </Tippy>
+                        )
+                    })}
                 </div>
             </div>
         )
@@ -221,7 +220,7 @@ export default function CreateAppGroup({
         return (
             <div>
                 <SearchBar
-                    placeholder="Search applications"
+                    placeholder={`Search ${filterParentTypeMsg}'s`}
                     searchText={allAppSearchText}
                     setSearchText={setAllAppSearchText}
                     searchApplied={allAppSearchApplied}
@@ -240,7 +239,7 @@ export default function CreateAppGroup({
                                         className="default-tt w-200"
                                         arrow={false}
                                         placement="bottom-start"
-                                        content="You don't have admin/manager pemission for this app."
+                                        content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.}`}
                                     >
                                         <div>{children}</div>
                                     </Tippy>
@@ -362,10 +361,11 @@ export default function CreateAppGroup({
     const handleSave = async (e): Promise<void> => {
         e.preventDefault()
         if (!appGroupName || appGroupDescription?.length > 50) {
+            setShowErrorMsg(true)
             return
         }
         if (selectedAppsCount === 0) {
-            toast.error('Please select apps to create group')
+            toast.error(`Please select ${filterParentTypeMsg} to create group`)
             return
         }
         setLoading(true)

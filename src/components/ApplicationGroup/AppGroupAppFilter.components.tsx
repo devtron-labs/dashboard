@@ -201,7 +201,7 @@ export const MenuList = (props: any): JSX.Element => {
                         Working with {selectedAppList?.length > 0 ? selectedAppList.length : appListOptions.length}/
                         {appListOptions?.length} {selectedType}
                     </span>
-                    {selectedAppList?.length > 0 && selectedAppList.length !== appListOptions?.length && (
+                    {selectedAppList?.length > 0 && (
                         <Clear className="icon-dim-16 mr-4 mw-18 cursor icon-n4" onClick={clearSelection} />
                     )}
                 </div>
