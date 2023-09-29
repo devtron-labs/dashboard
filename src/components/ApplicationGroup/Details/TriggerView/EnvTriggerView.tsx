@@ -92,6 +92,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getDefaultConfig } from '../../../notifications/notifications.service'
 import BulkSourceChange from './BulkSourceChange'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -999,10 +1000,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setCDLoading(false)
             return
         }
+
         const payload = {
             pipelineId: +selectedCINode.id,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: invalidateCache,
+            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
         }
 
         triggerCINode(payload)
@@ -1607,10 +1610,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     ciPipelineMaterials.push(historyItem)
                 })
             }
+
             const payload = {
                 pipelineId: +node.id,
                 ciPipelineMaterials: ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
+                pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
