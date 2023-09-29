@@ -17,6 +17,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
+interface SearchParams {
+    search: string
+}
+
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
@@ -71,6 +75,8 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
+    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
+    searchImageTag?: string
 }
 
 export enum DeploymentWithConfigType {
@@ -88,6 +94,7 @@ export interface ConfigToDeployOptionType {
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
+    showSearch:boolean
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
@@ -102,6 +109,9 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
+    areMaterialsPassingFilters: boolean
+    searchApplied: boolean
+    searchText: string
 }
 
 export interface MaterialInfo {
@@ -357,6 +367,7 @@ export interface TriggerViewState {
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
     isDefaultConfigPresent?: boolean
+    searchImageTag?: string
 }
 
 //-- begining of response type objects for trigger view

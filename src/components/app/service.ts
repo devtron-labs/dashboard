@@ -9,6 +9,7 @@ import {
     DeploymentNodeType,
     CDModalTab,
     CDMaterialResponseType,
+    FilterStates,
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
@@ -279,10 +280,16 @@ export function getCDMaterialList(
     stageType: DeploymentNodeType,
     abortSignal: AbortSignal,
     isApprovalNode?: boolean,
+    searchParam?: string,
 ): Promise<CDMaterialResponseType> {
-    const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
-        isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-    }`
+    const URL = searchParam
+        ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+          }&search=${searchParam}`
+        : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+          }`
+
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
@@ -362,10 +369,13 @@ function cdMaterialListModal(
     artifactStatus?: string,
 ) {
     if (!artifacts || !artifacts.length) return []
+
     const markFirstSelected = offset===1
     const startIndex = offset-1
     const materials = artifacts.map((material, index) => {
         let artifactStatusValue = ''
+        const filterState = material.filterState ?? FilterStates.ALLOWED
+
         if (artifactId && artifactStatus && material.id === artifactId) {
             artifactStatusValue = artifactStatus
         }
@@ -383,7 +393,7 @@ function cdMaterialListModal(
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
-            isSelected: markFirstSelected ? !material.vulnerable && index === 0 : false,
+            isSelected: markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable && index === 0 : false,
             showSourceInfo: false,
             deployed: material.deployed || false,
             latest: material.latest || false,
@@ -417,6 +427,7 @@ function cdMaterialListModal(
                       }
                   })
                 : [],
+            filterState,
         }
     })
     return materials
