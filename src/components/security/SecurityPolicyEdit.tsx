@@ -16,7 +16,7 @@ import { AddCveModal } from './AddCveModal';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service';
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { NavLink } from 'react-router-dom';
@@ -77,6 +77,10 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     componentDidMount() {
         this.fetchVulnerabilities(this.props.level, this.props.id);
     }
+    
+    handleDelete() {
+        return toast.error("You don't have permission to add CVE policy")
+    }
 
     private fetchVulnerabilities(level: string, id?: number): void {
         this.setState({ view: ViewType.LOADING });
@@ -88,6 +92,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             })
         }).catch((error) => {
             showError(error);
+            if(error.code === 403) {
+                this.handleDelete();
+            }
             this.setState({ view: ViewType.ERROR });
         })
     }
@@ -100,6 +107,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             }
         }).catch(error => {
             showError(error);
+            if(error.code === 403) {
+                this.handleDelete();
+            }
             this.setState({ view: ViewType.ERROR });
         })
     }
@@ -125,6 +135,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             }
         }).catch(error => {
             showError(error);
+            if(error.code === 403) {
+                this.handleDelete();
+            }
             this.setState({ view: ViewType.ERROR });
         })
     }
@@ -140,6 +153,9 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             }
         }).catch(error => {
             this.setState({ view: ViewType.ERROR });
+            if(error.code === 403) {
+                this.handleDelete();
+            }
             showError(error);
         })
     }
@@ -465,9 +481,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return (
-            toast.error("You don't have permission to add CVE policy")
-        );
+        else if (this.state.view === ViewType.ERROR) return <Reload />
         else {
             let isCollapsible = this.props.level === "application";
             return <>
