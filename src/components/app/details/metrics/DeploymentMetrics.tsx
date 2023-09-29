@@ -139,16 +139,23 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 const filteredEnvMap = this.props.filteredEnvIds
                     ?.split(',')
                     .reduce((agg, curr) => agg.set(+curr, true), new Map())
-                let allEnv = envResponse.result
-                    ?.filter((env) => env.prod && (!filteredEnvMap || filteredEnvMap.get(env.environmentId)))
-                    .map((env) => {
-                        return {
-                            label: env.environmentName,
-                            value: env.environmentId,
-                            deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
-                        }
-                    }) || []
-                let hideLoader = true
+                let allEnv =
+                    envResponse.result
+                        ?.filter((env) => env.prod && (!filteredEnvMap || filteredEnvMap.get(env.environmentId)))
+                        .map((env) => {
+                            return {
+                                label: env.environmentName,
+                                value: env.environmentId,
+                                deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
+                            }
+                        }) || []
+                this.setState({
+                    environments: allEnv,
+                    filteredEnvironment: allEnv.filter((_env) => !_env.deploymentAppDeleteRequest),
+                    view: (!allEnv.length || (prevEnvId && prevEnvId !== this.props.match.params.envId) || this.props.match.params.envId)!
+                        ? ViewType.FORM
+                        : ViewType.LOADING,
+                })
                 if (allEnv.length) {
                     if (prevEnvId && prevEnvId !== this.props.match.params.envId) {
                         const isEnvExist = allEnv.find((e) => Number(e.value) === Number(prevEnvId))
@@ -158,15 +165,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                         })
                         this.props.history.push(url)
                     } else if (this.props.match.params.envId) {
-                        hideLoader = false
                         this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
                     }
                 }
-                this.setState({
-                  environments: allEnv,
-                  filteredEnvironment: allEnv.filter((_env) => !_env.deploymentAppDeleteRequest),
-                  view: hideLoader ? ViewType.FORM: ViewType.LOADING,
-              })
             })
             .catch((error) => {
                 showError(error)
