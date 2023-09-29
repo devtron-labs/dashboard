@@ -242,6 +242,7 @@ export default function CreateAppGroup({
     }
 
     const renderAllApps = (): JSX.Element => {
+        const filteredAllApps = appList.filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
         return (
             <div>
                 <SearchBar
@@ -252,36 +253,36 @@ export default function CreateAppGroup({
                     setSearchApplied={setAllAppSearchApplied}
                 />
                 <div>
-                    {appList
-                        .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
-                        .map((app) => (
-                            <ConditionalWrap
-                                condition={unAuthorizedApps.get(app.appName) === true}
-                                wrap={(children) => (
-                                    <Tippy
-                                        key={`selected-app-${app.id}`}
-                                        data-testid="env-tippy"
-                                        className="default-tt w-200"
-                                        arrow={false}
-                                        placement="bottom-start"
-                                        content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
-                                    >
-                                        <div>{children}</div>
-                                    </Tippy>
-                                )}
-                            >
-                                <Checkbox
-                                    key={`app-${app.id}`}
-                                    rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
-                                    isChecked={unAuthorizedApps.get(app.appName) ? false : selectedAppsMap[app.id]}
-                                    value={CHECKBOX_VALUE.CHECKED}
-                                    onChange={() => toggleAppSelection(app.id)}
-                                    disabled={unAuthorizedApps.get(app.appName) ? true : false}
-                                >
-                                    {app.appName}
-                                </Checkbox>
-                            </ConditionalWrap>
-                        ))}
+                    {filteredAllApps.length <= 0
+                        ? renderEmptyState('No matching results')
+                        : filteredAllApps.map((app) => (
+                              <ConditionalWrap
+                                  condition={unAuthorizedApps.get(app.appName) === true}
+                                  wrap={(children) => (
+                                      <Tippy
+                                          key={`selected-app-${app.id}`}
+                                          data-testid="env-tippy"
+                                          className="default-tt w-200"
+                                          arrow={false}
+                                          placement="bottom-start"
+                                          content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
+                                      >
+                                          <div>{children}</div>
+                                      </Tippy>
+                                  )}
+                              >
+                                  <Checkbox
+                                      key={`app-${app.id}`}
+                                      rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
+                                      isChecked={unAuthorizedApps.get(app.appName) ? false : selectedAppsMap[app.id]}
+                                      value={CHECKBOX_VALUE.CHECKED}
+                                      onChange={() => toggleAppSelection(app.id)}
+                                      disabled={unAuthorizedApps.get(app.appName) ? true : false}
+                                  >
+                                      {app.appName}
+                                  </Checkbox>
+                              </ConditionalWrap>
+                          ))}
                 </div>
             </div>
         )
