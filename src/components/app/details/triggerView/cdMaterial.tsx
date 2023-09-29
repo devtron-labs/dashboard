@@ -61,7 +61,7 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT } from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -460,7 +460,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     className="default-tt w-200"
                     arrow={false}
                     placement="top"
-                    content="Image does not match the configured filter condition"
+                    content={EXCLUDED_IMAGE_TOOLTIP}
                 >
                     <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
                 </Tippy>
@@ -551,7 +551,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             className="default-tt w-200"
                             arrow={false}
                             placement="top"
-                            content={'Image does not match the configured filter condition'}
+                            content={EXCLUDED_IMAGE_TOOLTIP}
                         >
                             <div className="flexbox pt-2 pb-2 pl-8 pr-8 br-4 bcr-1 dc__align-items-center dc__gap-4">
                                 <ICAbort className="icon-dim-20 fcr-5" />
@@ -640,7 +640,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                                 className="default-tt w-200"
                                                 arrow={false}
                                                 placement="top"
-                                                content="Image does not match the configured filter condition"
+                                                content={EXCLUDED_IMAGE_TOOLTIP}
                                             >
                                                 <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
                                             </Tippy>
@@ -748,7 +748,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                                         className="default-tt w-200"
                                                         arrow={false}
                                                         placement="top"
-                                                        content="Image does not match the configured filter condition"
+                                                        content={EXCLUDED_IMAGE_TOOLTIP}
                                                     >
                                                         <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
                                                             Excluded
