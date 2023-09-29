@@ -172,7 +172,14 @@ export default function CreateAppGroup({
     }
 
     const renderEmptyState = (title?: string): JSX.Element => {
-        return <GenericEmptyState title={title} image={Info} imageClassName="h-20" classname="h-40vh" />
+        return (
+            <GenericEmptyState
+                title={title}
+                image={Info}
+                imageClassName="h-20"
+                styles={{ height: 'calc(100vh - 420px)' }}
+            />
+        )
     }
 
     const renderSelectedApps = (): JSX.Element => {
