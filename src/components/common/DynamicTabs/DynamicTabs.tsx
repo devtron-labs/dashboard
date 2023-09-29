@@ -308,8 +308,9 @@ function DynamicTabs({
                     </ul>
                 </div>
             )}
+            <div className='ml-auto flexbox'>
             {!isOverview && selectedTab.id !== CLUSTER_TERMINAL_TAB && (
-                <div className="flexbox ml-auto dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center dc__no-shrink">
+                <div className="flexbox dc__border-left fw-6 cn-7 dc__align-self-stretch dc__align-items-center dc__no-shrink">
                     {timerForSync()}
                 </div>
             )}
@@ -356,6 +357,7 @@ function DynamicTabs({
                     </div>
                 </MoreButtonWrapper>
             )}
+            </div>
         </div>
     )
 }
