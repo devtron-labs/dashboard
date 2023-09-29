@@ -70,6 +70,7 @@ export const URLS = {
     GLOBAL_CONFIG_SCOPED_VARIABLES: '/global-config/scoped-variables',
     GLOBAL_CONFIG_TAGS: '/global-config/tags',
     GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
+    GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     SECURITY: '/security',
