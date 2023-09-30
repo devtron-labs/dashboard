@@ -32,9 +32,20 @@ export interface CINodeProps {
     showPluginWarning?: boolean
     envList?: any[]
     filteredCIPipelines?: any[]
+    addNewPipelineBlocked?: boolean
 }
 
 export class CINode extends Component<CINodeProps> {
+    onClickAddNode = (event: any) => {
+      if (this.props.addNewPipelineBlocked) {
+          return
+      }
+      event.stopPropagation()
+      let { top, left } = event.target.getBoundingClientRect()
+      top = top + 25
+      this.props.toggleCDMenu()
+    }
+
     renderNodeIcon = (isJobCard: boolean) => {
         if (this.props.showPluginWarning) {
             return <Warning className="icon-dim-18 warning-icon-y7" />
@@ -104,9 +115,16 @@ export class CINode extends Component<CINodeProps> {
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
-                                {this.props.isJobView && <>
-                                    <span className="fw-4 fs-11">Env: {env ? env.environment_name : DEFAULT_ENV}</span>
-                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{!env && "(Default)"}</span></>}
+                                {this.props.isJobView && (
+                                    <>
+                                        <span className="fw-4 fs-11">
+                                            Env: {env ? env.environment_name : DEFAULT_ENV}
+                                        </span>
+                                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
+                                            {!env && '(Default)'}
+                                        </span>
+                                    </>
+                                )}
                             </div>
                             {this.renderNodeIcon(isJobCard)}
                         </div>
@@ -122,17 +140,16 @@ export class CINode extends Component<CINodeProps> {
                             arrow={false}
                             placement="top"
                             content={
-                                <span style={{ display: 'block', width: '145px' }}> Add deployment pipeline </span>
+                                <span style={{ display: 'block', width: '145px' }}>
+                                    {this.props.addNewPipelineBlocked
+                                        ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                        : 'Add deployment pipeline'}
+                                </span>
                             }
                         >
                             <Add
-                                className="icon-dim-18 fcb-5"
-                                onClick={(event: any) => {
-                                    event.stopPropagation()
-                                    let { top, left } = event.target.getBoundingClientRect()
-                                    top = top + 25
-                                    this.props.toggleCDMenu()
-                                }}
+                                className={`icon-dim-18 fcb-5 ${this.props.addNewPipelineBlocked ? 'dc__disabled' : ''}`}
+                                onClick={this.onClickAddNode}
                             />
                         </Tippy>
                     </button>

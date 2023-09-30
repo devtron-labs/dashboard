@@ -23,15 +23,17 @@ export const getTriggerWorkflows = (
     appId,
     useAppWfViewAPI: boolean,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
 }
 
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
+    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
 const getInitialWorkflows = (
@@ -40,9 +42,10 @@ const getInitialWorkflows = (
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
     if (useAppWfViewAPI) {
-        return getWorkflowViewList(id).then((response) => {
+        return getWorkflowViewList(id, filteredEnvIds).then((response) => {
             const workflows = {
                 appId: id,
                 workflows: response.result?.workflows as Workflow[],
@@ -75,7 +78,7 @@ const getInitialWorkflows = (
             )
         })
     } else {
-        return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+        return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
             ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
                 return processWorkflow(
                     workflow.result as WorkflowResult,
@@ -191,7 +194,7 @@ export function processWorkflow(
                             cdPipeline.parentPipelineType = branch.parentType
                         }
 
-                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
+                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
                         if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
@@ -497,7 +500,7 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
     } as NodeAttr
 }
 
-function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {
+function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number, isLast: boolean): NodeAttr {
     let trigger = cdPipeline.triggerType?.toLowerCase() ?? ''
     let preCD: NodeAttr | undefined = undefined,
         postCD: NodeAttr | undefined = undefined
@@ -574,6 +577,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
+        isLast: isLast
     } as NodeAttr
     stageIndex++
 

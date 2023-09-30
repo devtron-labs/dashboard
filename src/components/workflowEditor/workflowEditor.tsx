@@ -8,6 +8,7 @@ import {
     ErrorScreenManager,
     DeleteDialog,
     InfoColourBar,
+    ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
@@ -32,6 +33,7 @@ import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import NewCDPipeline from '../cdPipeline/NewCDPipeline'
+import Tippy from '@tippyjs/react'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 
@@ -80,6 +82,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
     }
 
+    componentDidUpdate(prevProps) {
+        if (
+            prevProps.filteredEnvIds !== this.props.filteredEnvIds
+        ) {
+            this.getWorkflows()
+        }
+    }
+
     removeTakeMeThereClickedItem = () => {
         if (typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked')) {
             localStorage.removeItem('takeMeThereClicked')
@@ -95,6 +105,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         getCreateWorkflows(
             this.props.match.params.appId,
             this.props.isJobView,
+            this.props.filteredEnvIds
         )
             .then((result) => {
                 const allCINodeMap = new Map()
@@ -162,14 +173,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     toggleCIMenu = (event) => {
-        const { top, left } = event.target.getBoundingClientRect()
-        this.setState({
-            cIMenuPosition: {
-                top: top,
-                left: left,
-            },
-            showCIMenu: !this.state.showCIMenu,
-        })
+      if (this.props.filteredEnvIds) {
+          return
+      }
+      const { top, left } = event.target.getBoundingClientRect()
+      this.setState({
+          cIMenuPosition: {
+              top: top,
+              left: left,
+          },
+          showCIMenu: !this.state.showCIMenu,
+      })
     }
 
     deleteWorkflow = (appId?: string, workflowId?: number) => {
@@ -343,18 +357,18 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId`,
                         )}
                         render={({ location, match }: { location: any; match: any }) => {
-                            const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
-                            const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
                             return (
                                 <NewCDPipeline
                                     match={match}
                                     location={location}
                                     appName={this.state.appName}
                                     close={this.closePipeline}
-                                    downstreamNodeSize={downstreamNodeSize}
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
+                                    isLastNode={
+                                        this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)?.['isLast']
+                                    }
                                 />
                             )
                         }}
@@ -451,28 +465,42 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             top = top + 40
         }
         return (
-            <>
-                <button
-                    type="button"
-                    className="cta dc__no-decor flex mb-20"
-                    data-testid="new-workflow-button"
-                    onClick={this.toggleCIMenu}
-                >
-                    <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                    New workflow
-                </button>
-                <PipelineSelect
-                    workflowId={0}
-                    showMenu={this.state.showCIMenu}
-                    addCIPipeline={this.addCIPipeline}
-                    addWebhookCD={this.addWebhookCD}
-                    toggleCIMenu={this.toggleCIMenu}
-                    styles={{
-                        left: `${left}px`,
-                        top: `${top}px`,
-                    }}
-                />
-            </>
+            <ConditionalWrap
+                condition={!!this.props.filteredEnvIds}
+                wrap={(children) => (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content="Cannot add new workflow or deployment pipelines when environment filter is applied."
+                    >
+                        {children}
+                    </Tippy>
+                )}
+            >
+                <div className="dc_max-width__max-content">
+                    <button
+                        type="button"
+                        className={`cta dc__no-decor flex mb-20 ${this.props.filteredEnvIds ? 'dc__disabled' : ''}`}
+                        data-testid="new-workflow-button"
+                        onClick={this.toggleCIMenu}
+                    >
+                        <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
+                        New workflow
+                    </button>
+                    <PipelineSelect
+                        workflowId={0}
+                        showMenu={this.state.showCIMenu}
+                        addCIPipeline={this.addCIPipeline}
+                        addWebhookCD={this.addWebhookCD}
+                        toggleCIMenu={this.toggleCIMenu}
+                        styles={{
+                            left: `${left}px`,
+                            top: `${top}px`,
+                        }}
+                    />
+                </div>
+            </ConditionalWrap>
         )
     }
 
@@ -575,6 +603,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     isJobView={this.props.isJobView}
                     envList={this.props.envList}
                     filteredCIPipelines={this.state.filteredCIPipelines}
+                    addNewPipelineBlocked={!!this.props.filteredEnvIds}
                 />
             )
         })

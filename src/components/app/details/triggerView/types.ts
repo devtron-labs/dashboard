@@ -297,6 +297,7 @@ export interface TriggerViewProps extends RouteComponentProps<{
     envId: string
 }> {
     isJobView?: boolean
+    filteredEnvIds?: string
 }
 
 export interface WorkflowType {
@@ -428,6 +429,7 @@ export interface Tree {
     componentId: number
     parentId: number
     parentType: PipelineType
+    isLast?: boolean
 }
 
 export interface Workflow {

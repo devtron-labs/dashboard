@@ -3718,6 +3718,11 @@ textarea::placeholder {
     pointer-events: none;
 }
 
+.dc__disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+}
+
 .dc__grabbable {
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
