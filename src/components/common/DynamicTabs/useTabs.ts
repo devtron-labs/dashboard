@@ -229,7 +229,6 @@ export function useTabs(persistanceKey: string) {
 
     const updateTabUrl = (id: string, url: string, dynamicTitle?: string) => {
         setTabs((prevTabs)=>{
-            console.log('prevTabs',prevTabs)
             const _tabs=prevTabs.map((tab) => {
                 if (tab.id === id) {
                     tab.url = url

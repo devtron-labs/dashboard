@@ -20,6 +20,7 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
+import { NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
 
 export default function NodeDetailsList({
     isSuperAdmin,
@@ -93,8 +94,7 @@ export default function NodeDetailsList({
 
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    const pageSize = 15
-
+    const [pageSize, setPageSize] = useState(20)
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
@@ -327,6 +327,11 @@ export default function NodeDetailsList({
         }
     }
 
+    const changePageSize = (size: number) => {
+        setPageSize(size)
+        setNodeListOffset(0)
+    }
+
     const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
         if (column.isSortingAllowed) {
             if (sortByColumn.value === column.value) {
@@ -498,7 +503,7 @@ export default function NodeDetailsList({
         })
         query['offset'] = offset
         let queryStr = queryString.stringify(query)
-        let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+        let url = `${match.url}?${queryStr}`
         history.push(url)
     }
     const renderPagination = (): JSX.Element => {
@@ -509,7 +514,8 @@ export default function NodeDetailsList({
                     pageSize={pageSize}
                     offset={nodeListOffset}
                     changePage={changePage}
-                    isPageSizeFix={true}
+                    changePageSize={changePageSize}
+                    pageSizeOptions={NODE_DETAILS_PAGE_SIZE_OPTIONS}
                 />
             )
         )
