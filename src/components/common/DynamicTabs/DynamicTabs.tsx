@@ -337,54 +337,63 @@ function DynamicTabs({
                     </ul>
                 </div>
             )}
-            <div className="ml-auto flexbox dc__no-shrink dc__align-self-stretch dc__border-left">
-                {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
-                    <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
-                )}
+            {(tabsData.dynamicTabs.length > 0 ||
+                !isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB )&& (
+                    <div className="ml-auto flexbox dc__no-shrink dc__align-self-stretch dc__border-left">
+                        {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
+                            <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
+                        )}
 
-                {tabsData.dynamicTabs.length > 0 && (
-                    <MoreButtonWrapper
-                        tabPopupMenuRef={tabPopupMenuRef}
-                        isMenuOpen={isMenuOpen}
-                        onClose={closeMenu}
-                        toggleMenu={toggleMenu}
-                    >
-                        <div className="more-tabs__search-icon icon-dim-16 cursor-text" onClick={focusSearchTabInput}>
-                            <SearchIcon className="icon-dim-16" />
-                        </div>
-                        <ReactSelect
-                            ref={moreButtonRef}
-                            placeholder="Search tabs"
-                            classNamePrefix="tab-search-select"
-                            options={tabsData.dynamicTabs}
-                            value={selectedTab}
-                            inputValue={tabSearchText}
-                            onChange={onChangeTab}
-                            onKeyDown={escHandler}
-                            onInputChange={handleOnChangeSearchText}
-                            tabSelectsValue={false}
-                            backspaceRemovesValue={false}
-                            controlShouldRenderValue={false}
-                            hideSelectedOptions={false}
-                            menuIsOpen
-                            autoFocus
-                            noOptionsMessage={noMatchingTabs}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator: null,
-                                Option: tabsOption,
-                                Menu: TabsMenu,
-                            }}
-                            styles={COMMON_TABS_SELECT_STYLES}
-                        />
-                        <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
-                            {tabSearchText && (
-                                <ClearIcon className="clear-tab-search-icon icon-dim-16" onClick={clearSearchInput} />
-                            )}
-                        </div>
-                    </MoreButtonWrapper>
+                        {tabsData.dynamicTabs.length > 0 && (
+                            <MoreButtonWrapper
+                                tabPopupMenuRef={tabPopupMenuRef}
+                                isMenuOpen={isMenuOpen}
+                                onClose={closeMenu}
+                                toggleMenu={toggleMenu}
+                            >
+                                <div
+                                    className="more-tabs__search-icon icon-dim-16 cursor-text"
+                                    onClick={focusSearchTabInput}
+                                >
+                                    <SearchIcon className="icon-dim-16" />
+                                </div>
+                                <ReactSelect
+                                    ref={moreButtonRef}
+                                    placeholder="Search tabs"
+                                    classNamePrefix="tab-search-select"
+                                    options={tabsData.dynamicTabs}
+                                    value={selectedTab}
+                                    inputValue={tabSearchText}
+                                    onChange={onChangeTab}
+                                    onKeyDown={escHandler}
+                                    onInputChange={handleOnChangeSearchText}
+                                    tabSelectsValue={false}
+                                    backspaceRemovesValue={false}
+                                    controlShouldRenderValue={false}
+                                    hideSelectedOptions={false}
+                                    menuIsOpen
+                                    autoFocus
+                                    noOptionsMessage={noMatchingTabs}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator: null,
+                                        Option: tabsOption,
+                                        Menu: TabsMenu,
+                                    }}
+                                    styles={COMMON_TABS_SELECT_STYLES}
+                                />
+                                <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
+                                    {tabSearchText && (
+                                        <ClearIcon
+                                            className="clear-tab-search-icon icon-dim-16"
+                                            onClick={clearSearchInput}
+                                        />
+                                    )}
+                                </div>
+                            </MoreButtonWrapper>
+                        )}
+                    </div>
                 )}
-            </div>
         </div>
     )
 }

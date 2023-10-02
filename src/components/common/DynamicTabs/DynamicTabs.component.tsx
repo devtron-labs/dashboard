@@ -34,7 +34,7 @@ export const MoreButtonWrapper = ({
         </button>
         {isMenuOpen && (
             <>
-                <div className="more-tabs__menu-wrapper bcn-0 mt-8 dc__position-abs w-300">{children}</div>
+                <div className="more-tabs__menu-wrapper bcn-0 mt-12 dc__position-abs w-300 dc__top-26">{children}</div>
                 <div className="more-tabs__blanket dc__position-fixed" onClick={onClose} />
             </>
         )}
