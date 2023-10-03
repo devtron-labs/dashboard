@@ -3,14 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
+import { showError, Progressing, TagType, stopPropagation, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import {
     handleUTCTime,
     importComponentFromFELibrary,
     processDeployedTime,
     sortOptionsByValue,
-    useAsync,
 } from '../../common'
-import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'

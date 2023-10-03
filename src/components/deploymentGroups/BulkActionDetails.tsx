@@ -1,4 +1,4 @@
-import { useAsync, useInterval, Td } from '../common'
+import React, { useState } from 'react'
 import {
     showError,
     Progressing,
@@ -7,10 +7,11 @@ import {
     ConfirmationDialog,
     PopupMenu,
     DeploymentNodeType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useInterval, Td } from '../common'
 import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as DeployButton } from '../../assets/icons/ic-deploy.svg';
-import React, { useState } from 'react'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { Switch, Route, useLocation } from 'react-router-dom';
 import moment from 'moment'

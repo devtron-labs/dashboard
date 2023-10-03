@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
+import { VisibleModal, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Success } from '../../assets/icons/ic-success-outline.svg'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
 import { GenerateTokenModalType } from './authorization.type'
 import Tippy from '@tippyjs/react'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard } from '../common'
 
 function GenerateModal({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) {
     const [copied, setCopied] = useState(false)

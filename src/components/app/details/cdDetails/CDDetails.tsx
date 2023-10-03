@@ -6,10 +6,10 @@ import {
     UserApprovalMetadataType,
     GenericEmptyState,
     DeploymentAppTypes,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import {
-    useAsync,
     useInterval,
     useScrollable,
     mapByKey,
