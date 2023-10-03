@@ -174,8 +174,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         const selectedValueLabel =
             (selectedVariable.variableType === RefVariableType.NEW
                 ? selectedVariable.value
-                : selectedVariable.refVariableName) || ''
-        setSelectedOutputVariable(selectedVariable['format'])
+                : selectedVariable.refVariableName) || ''     
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
@@ -186,8 +185,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             setVariableData={handleOutputVariableSelector}
             variableData={selectedOutputVariable}
             refVar={refVar}
-            variableOptions={inputVariableOptions}
-            // variableType={selectedOutputVariable.format}
+            variableOptions={inputVariableOptions}        
             selectedVariableIndex={selectedVariableIndex}
         />
     )
