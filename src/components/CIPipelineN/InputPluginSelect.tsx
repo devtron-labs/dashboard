@@ -127,6 +127,7 @@ export const InputPluginSelection = ({
                         <div>
                             {_tag.description ? (
                                 <Tippy
+                                    key={idx}
                                     className="default-tt"
                                     arrow={false}
                                     placement="right"

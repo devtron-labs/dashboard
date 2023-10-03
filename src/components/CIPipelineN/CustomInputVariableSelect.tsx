@@ -5,7 +5,7 @@ import {
     RefVariableStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildStageVariable } from '../../config'
-import { OptionType, ExtendedOptionType } from '../app/types'
+import { ExtendedOptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
 import { InputPluginSelection } from './InputPluginSelect'
