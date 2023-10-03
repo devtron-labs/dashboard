@@ -14,7 +14,7 @@ export interface OptionType {
     value: string
 }
 
-export interface formatOption {
+export interface ExtendedOptionType extends OptionType {
     format?: string
 }
 

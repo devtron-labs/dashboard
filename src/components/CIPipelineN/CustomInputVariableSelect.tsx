@@ -5,7 +5,7 @@ import {
     RefVariableStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildStageVariable } from '../../config'
-import { OptionType, formatOption } from '../app/types'
+import { OptionType, ExtendedOptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
 import { InputPluginSelection } from './InputPluginSelect'
@@ -26,13 +26,10 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         validateTask,
         isCdPipeline
     } = useContext(pipelineContext)
-    const [selectedOutputVariable, setSelectedOutputVariable] = useState<OptionType>({
+    const [selectedOutputVariable, setSelectedOutputVariable] = useState<ExtendedOptionType>({
         label: '',
         value: '',
-    })
-
-    const [selectedOutputVariableFormat, setSelectedOutputVariableFormat] = useState<formatOption> ({
-        format: ""
+        format: '',
     })
 
     const [inputVariableOptions, setInputVariableOptions] = useState<SuggestedTagOptionType[]>([])
@@ -110,7 +107,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
-    const handleOutputVariableSelector = (selectedValue: OptionType) => {
+    const handleOutputVariableSelector = (selectedValue: ExtendedOptionType) => {
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -178,7 +175,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             (selectedVariable.variableType === RefVariableType.NEW
                 ? selectedVariable.value
                 : selectedVariable.refVariableName) || ''
-        setSelectedOutputVariableFormat(selectedVariable['format'])
+        setSelectedOutputVariable(selectedVariable['format'])
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
@@ -190,7 +187,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             variableData={selectedOutputVariable}
             refVar={refVar}
             variableOptions={inputVariableOptions}
-            variableType={selectedOutputVariableFormat.format}
+            variableType={selectedOutputVariable.format}
             selectedVariableIndex={selectedVariableIndex}
         />
     )

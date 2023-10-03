@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { InputPluginSelectionType, optionsListType } from '../ConfigMapSecret/Types'
+import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
@@ -89,8 +89,8 @@ export const InputPluginSelection = ({
     const handleOnBlur = (e) => {
         if (
             !e.relatedTarget ||
-            !e.relatedTarget.classList.value ||
-            !e.relatedTarget.classList.value.includes(`tag-${variableType}-class`)
+            !e?.relatedTarget?.classList?.value ||
+            !e?.relatedTarget?.classList?.value.includes(`tag-${variableType}-class`)
         ) {
             setHighlightedIndex(-1)
             let _tagData = { ...variableData }
@@ -100,7 +100,7 @@ export const InputPluginSelection = ({
         }
     }
 
-    const renderOutputOptions = (tag: optionsListType, index: number): JSX.Element => {
+    const renderOutputOptions = (tag: OptionsListType, index: number): JSX.Element => {
         const isHighlighted = index === highlightedIndex
         return (
             <div
@@ -172,7 +172,7 @@ export const InputPluginSelection = ({
                     handleKeyDown={handleOnKeyDown}
                 />
             </PopupMenu.Button>
-            {selectedValue ? (
+            {selectedValue && (
                 <button
                     type="button"
                     className="dc__transparent dc__position-abs"
@@ -180,8 +180,7 @@ export const InputPluginSelection = ({
                     onClick={handleClear}
                 >
                     <Clear className="icon-dim-18 icon-n4" />
-                </button>
-            ) : null}
+                </button>)}
             <PopupMenu.Body
                 rootClassName={`mxh-210 dc__overflow-auto tag-${variableType}-class`}
                 autoWidth={true}
