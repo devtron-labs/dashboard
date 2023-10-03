@@ -176,7 +176,13 @@ function EnvironmentStatusComponent({
                         {appDetails.appStoreChartName && (
                             <span data-testid="chart-name-value">{appDetails.appStoreChartName}/</span>
                         )}
-                        {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                        <Link
+                            className="cb-5 fw-6"
+                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                            style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
+                        >
+                            {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                        </Link>
                     </div>
                     <div className="flex left">
                         {notes && (
@@ -186,17 +192,6 @@ function EnvironmentStatusComponent({
                                 data-testid="notes.txt-heading"
                             >
                                 <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
-                            </div>
-                        )}
-                        {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
-                        {appDetails.appStoreChartId && (
-                            <div data-testid="view-chart-button">
-                                <Link
-                                    className="cb-5 fw-6"
-                                    to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                >
-                                    View Chart
-                                </Link>
                             </div>
                         )}
                     </div>

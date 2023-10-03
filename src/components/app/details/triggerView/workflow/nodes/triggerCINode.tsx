@@ -20,6 +20,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     triggerType: string
     isExternalCI: boolean
     isLinkedCI: boolean
+    isJobCI: boolean
     description: string
     status: string
     linkedCount: number
@@ -134,7 +135,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
                     }`}
                     style={{
-                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4
+                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
                     }}
                 >
                     {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
@@ -142,20 +143,24 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        {!this.props.isJobView && <span className="workflow-node__text-light">Build</span>}
+                        {!this.props.isJobView && <span className="workflow-node__text-light"> {this.props.isJobCI ? "Job" : "Build" } </span>}
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                         {this.props.isJobView && _selectedEnv && (
                             <>
                                 <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>
-                                {_selectedEnv.name === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>}
+                                {_selectedEnv.name === DEFAULT_ENV && (
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
+                                )}
                             </>
                         )}
                     </div>
                     <div
                         className={`workflow-node__icon-common ml-8 ${
-                            this.props.isJobView ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
+                            this.props.isJobView || this.props.isJobCI
+                                ? 'workflow-node__job-icon'
+                                : 'workflow-node__CI-icon'
                         }`}
                     />
                 </div>

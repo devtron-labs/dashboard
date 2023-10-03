@@ -106,7 +106,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
 )
 let deploymentStatusTimer = null
 
-export default function AppDetail() {
+export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -116,25 +116,42 @@ export default function AppDetail() {
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const isVirtualEnvRef = useRef(false)
 
-    useEffect(() => {
-        if (otherEnvsLoading) return
-        // If there is only one environment, redirect to that environment
-        if (!params.envId && otherEnvsResult?.result?.length === 1) {
-            const newUrl = getAppDetailsURL(params.appId, otherEnvsResult?.result[0].environmentId)
-            push(newUrl)
-        }
-        if (
-            !params.envId &&
-            environmentId &&
-            otherEnvsResult?.result?.map((env) => env.environmentId).includes(environmentId)
-        ) {
-            const newUrl = getAppDetailsURL(params.appId, environmentId)
-            push(newUrl)
-        } else if (!otherEnvsResult?.result?.map((env) => env.environmentId).includes(+params.envId)) {
-            setEnvironmentId(null)
-            return
-        }
-    }, [otherEnvsLoading])
+    const envList = useMemo(() => {
+      if (otherEnvsResult?.result?.length > 0) {
+          const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+          const _envList =
+              otherEnvsResult.result
+                  .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                  ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+
+          if (_envList.length > 0) {
+              let _envId
+              if (!params.envId && _envList.length === 1) {
+                  _envId = _envList[0].environmentId
+              } else if (
+                  !params.envId &&
+                  environmentId &&
+                  _envList.map((env) => env.environmentId).includes(environmentId)
+              ) {
+                  _envId = environmentId
+              } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
+                  _envId = _envList[0].environmentId
+              }
+              if (_envId) {
+                  const newUrl = getAppDetailsURL(params.appId, _envId)
+                  push(newUrl)
+              } else{
+                setEnvironmentId(null)
+              }
+          } else {
+              setEnvironmentId(null)
+          }
+          return _envList
+      } else {
+          setEnvironmentId(null)
+      }
+      return []
+  }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) return
@@ -147,26 +164,28 @@ export default function AppDetail() {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&
+                    {(envList.length === 0) &&
                         !isAppDeleted &&
                         !isVirtualEnvRef.current && <AppNotConfigured />}
-                    {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvRef.current && (
-                        <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
+                    {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
+                        <EnvironmentNotConfigured environments={envList} />
                     )}
                 </>
             )
         )
     }
 
-    const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
+    const environment = useMemo(() => {
+        return envList.find((env) => env.environmentId === +params.envId)
+    }, [envList, params.envId])
 
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
-            {!params.envId && otherEnvsResult?.result?.length > 0 && (
+            {!params.envId && envList.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo
                         appDetails={null}
-                        environments={otherEnvsResult?.result}
+                        environments={envList}
                         environment={environment}
                         refetchDeploymentStatus={noop}
                     />
@@ -179,7 +198,7 @@ export default function AppDetail() {
                     appDetailsAPI={fetchAppDetailsInTime}
                     isAppDeployment
                     environment={environment}
-                    environments={otherEnvsResult?.result}
+                    environments={envList}
                     setIsAppDeleted={setIsAppDeleted}
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
