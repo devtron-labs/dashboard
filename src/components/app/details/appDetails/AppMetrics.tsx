@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
+import { not, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect } from './utils';
-import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType } from './appDetails.type';
-import { AppDetailsPathParams } from './appDetails.type';
+import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType, AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, useAsync } from '../../../common';
-import { not, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DatePickerType2 as DateRangePicker } from '../../../common';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap } from '../../../../config';
+import { getAppComposeURL, APP_COMPOSE_STAGE, DOCUMENTATION, DEFAULTK8SVERSION, ModuleNameMap, URLS } from '../../../../config';
 import { Link, NavLink } from 'react-router-dom';
 import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service';
-import { URLS } from '../../../../config';
 import { getHostURLConfiguration } from '../../../../services/service';
 import { toast } from 'react-toastify'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png';
