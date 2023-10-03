@@ -20,6 +20,7 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
+import { NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
 
 export default function NodeDetailsList({
     isSuperAdmin,
@@ -93,8 +94,7 @@ export default function NodeDetailsList({
 
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    const pageSize = 15
-
+    const [pageSize, setPageSize] = useState(20)
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
@@ -309,9 +309,18 @@ export default function NodeDetailsList({
     }
 
     const clearFilter = (): void => {
+        let qs = queryString.parse(location.search)
+        let keys = Object.keys(qs)
+        let query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
         setSearchText('')
         setSelectedSearchTextType('')
         setSearchedTextMap(new Map())
+        delete query[selectedSearchTextType]
+        let queryStr = queryString.stringify(query)
+        history.push(`?${queryStr}`)
     }
 
     useEffect(() => {
@@ -325,6 +334,11 @@ export default function NodeDetailsList({
             setSortByColumn(column)
             setSortOrder(OrderBy.ASC)
         }
+    }
+
+    const changePageSize = (size: number) => {
+        setPageSize(size)
+        setNodeListOffset(0)
     }
 
     const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
@@ -498,7 +512,7 @@ export default function NodeDetailsList({
         })
         query['offset'] = offset
         let queryStr = queryString.stringify(query)
-        let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+        let url = `${match.url}?${queryStr}`
         history.push(url)
     }
     const renderPagination = (): JSX.Element => {
@@ -509,7 +523,8 @@ export default function NodeDetailsList({
                     pageSize={pageSize}
                     offset={nodeListOffset}
                     changePage={changePage}
-                    isPageSizeFix={true}
+                    changePageSize={changePageSize}
+                    pageSizeOptions={NODE_DETAILS_PAGE_SIZE_OPTIONS}
                 />
             )
         )

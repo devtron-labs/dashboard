@@ -7,7 +7,7 @@ import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailT
 import { ApiResourceGroupType, K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
-    VERSION_ERROR = 'VERSION_ERROR',
+    VERSION_ERROR = 'K8s Version diff',
     OTHER = 'OTHER',
 }
 
