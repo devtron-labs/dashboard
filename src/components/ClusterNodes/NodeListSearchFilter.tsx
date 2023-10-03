@@ -185,13 +185,13 @@ export default function NodeListSearchFliter({
         return (
             <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
-                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox"
+                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start"
                     onClick={() => setOpenFilterPopup(true)}
                 >
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span className="dc__position-rel bottom-2px">
+                            <span className="bottom-2px">
                                 {selectedSearchTextType === SEARCH_OPTION_LABEL.NODE_GROUP
                                     ? SEARCH_OPTION_LABEL.NODE_GROUP_TEXT
                                     : selectedSearchTextType}

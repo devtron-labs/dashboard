@@ -309,9 +309,18 @@ export default function NodeDetailsList({
     }
 
     const clearFilter = (): void => {
+        let qs = queryString.parse(location.search)
+        let keys = Object.keys(qs)
+        let query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
         setSearchText('')
         setSelectedSearchTextType('')
         setSearchedTextMap(new Map())
+        delete query[selectedSearchTextType]
+        let queryStr = queryString.stringify(query)
+        history.push(`?${queryStr}`)
     }
 
     useEffect(() => {

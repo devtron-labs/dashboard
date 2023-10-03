@@ -96,21 +96,21 @@ function ClusterOverview({
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
-            <div className="mb-16 dc__border br-4 pt-12 pb-12">
+            <div className="mb-16 dc__border br-4 pt-12">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
                     <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">
                         {clusterErrorList.length === 1 ? '1 Error' : clusterErrorList.length + ' Errors in cluster'}
                     </span>
                 </div>
-                <div className="fw-6 pt-6 pb-6 pl-16 pr-16 flex left dc__border-bottom">
-                    <div className="w-250">Error</div>
-                    <span>Message</span>
+                <div className="fw-6 pt-6 pb-6 pl-16 pr-16 flex left dc__border-bottom cn-7">
+                    <div className="w-250">ERROR</div>
+                    <span>MESSAGE</span>
                 </div>
-                <div className="pl-16 pr-16 pt-8">
+                <div className="pl-16 pr-16 fs-13 fw-4">
                     {clusterErrorList.map((error, index) => (
-                        <div className="flex left" key={`${error.errorType}-${index}`}>
-                            <div className="w-250">
+                        <div className="flex left pt-8 pb-8" key={`${error.errorType}-${index}`}>
+                            <div className="w-250 cn-9">
                                 {error.errorType}
                             </div>
                             <div className="fw-4 fs-13 cn-9">
