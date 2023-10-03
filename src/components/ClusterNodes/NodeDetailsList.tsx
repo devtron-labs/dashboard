@@ -35,27 +35,66 @@ export default function NodeDetailsList({
     const location = useLocation()
     const history = useHistory()
     const urlParams = new URLSearchParams(location.search)
-    const k8sVersion = urlParams.get('k8sversion')
+    const k8sVersion = urlParams.get('k8sversion')?decodeURIComponent(urlParams.get('k8sversion')):''
+    const name= urlParams.get('name')?decodeURIComponent(urlParams.get('name')):''
+    const label= urlParams.get('label')?decodeURIComponent(urlParams.get('label')):''
+    const group= urlParams.get('group')?decodeURIComponent(urlParams.get('group')):''
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
-    const [searchText, setSearchText] = useState('')
+    const [searchText, setSearchText] = useState(name || label || group || '')
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
-    const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(
         k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
     )
-    const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
+    const initialSeachType = name
+        ? NODE_SEARCH_TEXT.NAME
+        : label
+        ? NODE_SEARCH_TEXT.LABEL
+        : group
+        ? NODE_SEARCH_TEXT.NODE_GROUP
+        : ''
+
+    const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>(initialSeachType)
+    
+
+
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
 
-    const [nodeListOffset, setNodeListOffset] = useState(0)
+    const getSearchTextMap = (searchText: string): Map<string, string> => {
+        const _searchedTextMap = new Map()
+        if (searchText) {
+            const searchedLabelArr = searchText.split(',')
+            for (let index = 0; index < searchedLabelArr.length; index++) {
+                const currentItem = searchedLabelArr[index].trim()
+                if (!currentItem) {
+                    continue
+                }
+                if (selectedSearchTextType === NODE_SEARCH_TEXT.LABEL) {
+                    const element = currentItem.split('=')
+                    const key = element[0] ? element[0].trim() : null
+                    if (!key) {
+                        continue
+                    }
+                    const value = element[1] ? element[1].trim() : null
+                    _searchedTextMap.set(key, value)
+                } else {
+                    _searchedTextMap.set(currentItem, true)
+                }
+            }
+            return _searchedTextMap
+        }
+    }
 
+    const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
+    const [nodeListOffset, setNodeListOffset] = useState(0)
     const pageSize = 15
+
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
@@ -185,7 +224,9 @@ export default function NodeDetailsList({
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
         const selectedNode = sortedResult.find((item) => item.name === queryParams.get('node'))
+        console.log('selected node', selectedNode)
         if (selectedNode) {
+            console.log('open terminal')
             openTerminalComponent(selectedNode)
         }
     }

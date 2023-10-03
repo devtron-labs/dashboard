@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterNote } from './clusterNodes.service'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useHistory, useParams, useRouteMatch,useLocation } from 'react-router-dom'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote } from './constants'
 import moment from 'moment'
@@ -11,12 +11,13 @@ import { ErrorScreenManager, Progressing, showError } from '@devtron-labs/devtro
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 
-export default function ClusterOverview({
+function ClusterOverview({
     isSuperAdmin,
     clusterCapacityData,
     clusterErrorList,
     clusterErrorTitle,
     errorStatusCode,
+    setSelectedResource
 }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
@@ -72,24 +73,30 @@ export default function ClusterOverview({
     }, [])
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
-        if (errorType === ERROR_TYPE.VERSION_ERROR) {
+
+        // if (errorType === ERROR_TYPE.VERSION_ERROR) {
+            const queryParam=errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
             const newUrl =
                 generatePath(path, {
                     clusterId,
                     namespace,
-                    nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+                    nodeType: 'node',//SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                     group: K8S_EMPTY_GROUP,
                 }) +
                 '?' +
-                `k8sversion=${filterText}`
+                `${queryParam}=${encodeURIComponent(filterText)}`
             history.push(newUrl)
-        }
-    }
 
+
+            setSelectedResource({
+                namespaced: false,
+                gvk: SIDEBAR_KEYS.nodeGVK,
+            })
+    }
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
-            <div className="m-16 dc__border br-4 pt-12 pb-12">
+            <div className="mb-16 dc__border br-4 pt-12 pb-12">
                 <div className="flexbox pointer mb-12 pl-16 pr-16">
                     <Error className="mt-2 mb-2 mr-8 icon-dim-20" />
                     <span className="fw-6 fs-13 cn-9 mr-16">
@@ -104,11 +111,11 @@ export default function ClusterOverview({
                     {clusterErrorList.map((error, index) => (
                         <div className="flex left" key={`${error.errorType}-${index}`}>
                             <div className="w-250">
-                                {error.errorType === ERROR_TYPE.OTHER ? 'Memory pressure' : `${clusterErrorTitle}`}
+                                {error.errorType}
                             </div>
                             <div className="fw-4 fs-13 cn-9">
                                 {error.errorText}
-                                {error.errorType === ERROR_TYPE.OTHER ? (
+                                {error.errorType !== ERROR_TYPE.VERSION_ERROR ? (
                                     <span
                                         className="cb-5 pointer"
                                         onClick={(event) => {
@@ -241,3 +248,5 @@ export default function ClusterOverview({
 
     return renderClusterSummary()
 }
+
+export default React.memo(ClusterOverview)

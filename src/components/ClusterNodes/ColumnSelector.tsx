@@ -152,6 +152,11 @@ export default function ColumnSelector() {
                     transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                     padding: '0 8px',
                 }),
+                valueContainer: (base,state) => ({
+                    ...containerImageSelectStyles.valueContainer(base,state),
+                    display:'flex',
+                }),
+               
             }}
         />
     )
