@@ -187,7 +187,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             variableData={selectedOutputVariable}
             refVar={refVar}
             variableOptions={inputVariableOptions}
-            variableType={selectedOutputVariable.format}
+            // variableType={selectedOutputVariable.format}
             selectedVariableIndex={selectedVariableIndex}
         />
     )

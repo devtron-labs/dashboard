@@ -31,14 +31,13 @@ export interface OptionsListType {
 }
 
 export interface InputPluginSelectionType { 
-    selectedOutputVariable: OptionType
+    selectedOutputVariable: ExtendedOptionType
     variableOptions?: SuggestedTagOptionType[]
     variableData?: OptionType
     setVariableData?: (tagData:ExtendedOptionType ) => void
     refVar?: React.MutableRefObject<HTMLTextAreaElement>
     noBackDrop?: boolean
     placeholder: string
-    variableType: string
     selectedVariableIndex: number
 }
 

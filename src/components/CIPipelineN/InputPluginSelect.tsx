@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
+import { ExtendedOptionType } from '../app/types'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
 
@@ -11,7 +12,6 @@ export const InputPluginSelection = ({
     variableData,
     refVar,
     noBackDrop,
-    variableType,
     placeholder,
     selectedVariableIndex,
 }: InputPluginSelectionType) => {
@@ -90,7 +90,7 @@ export const InputPluginSelection = ({
         if (
             !e.relatedTarget ||
             !e?.relatedTarget?.classList?.value ||
-            !e?.relatedTarget?.classList?.value.includes(`tag-${variableType}-class`)
+            !e?.relatedTarget?.classList?.value.includes(`tag-${selectedOutputVariable.format}-class`)
         ) {
             setHighlightedIndex(-1)
             let _tagData = { ...variableData }
@@ -183,7 +183,7 @@ export const InputPluginSelection = ({
                     <Clear className="icon-dim-18 icon-n4" />
                 </button>)}
             <PopupMenu.Body
-                rootClassName={`mxh-210 dc__overflow-auto tag-${variableType}-class`}
+                rootClassName={`mxh-210 dc__overflow-auto tag-${selectedOutputVariable.format}-class`}
                 autoWidth={true}
                 preventWheelDisable={true}
                 noBackDrop={noBackDrop}
