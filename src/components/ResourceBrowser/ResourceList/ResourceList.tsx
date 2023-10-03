@@ -141,6 +141,7 @@ export default function ResourceList() {
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
     const hideSyncWarning: boolean = loader || rawGVKLoader || showErrorState || !isStaleDataRef.current || !(!node && lastDataSyncTimeString && !resourceListLoader)
+    console.log('tabs', tabs)
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
@@ -157,7 +158,7 @@ export default function ResourceList() {
                 setResourceSelectionData(parsedTabsData.resourceSelectionData)
                 setNodeSelectionData(parsedTabsData.nodeSelectionData)
             }
-        } catch (err) { }
+        } catch (err) {}
 
         // Clean up on unmount
         return (): void => {
@@ -172,7 +173,7 @@ export default function ResourceList() {
 
     useEffect(() => {
         getDetailsClusterList()
-    },[toggleSync])
+    }, [toggleSync])
 
     useEffect(() => {
         if (clusterId && terminalClusterData?.length > 0) {
@@ -212,27 +213,27 @@ export default function ResourceList() {
     }, [location.pathname])
 
     const getGVKData = async (_clusterId): Promise<void> => {
-      if (!_clusterId) return
-      try {
-          setRawGVKLoader(true)
-          setK8SObjectMapRaw(null)
-          const { result } = await getResourceGroupListRaw(_clusterId)
-          if (result) {
-              const processedData = processK8SObjects(result.apiResources, nodeType)
-              const _k8SObjectMap = processedData.k8SObjectMap
-              const _k8SObjectList: K8SObjectType[] = []
-              for (const element of ORDERED_AGGREGATORS) {
-                  if (_k8SObjectMap.get(element)) {
-                      _k8SObjectList.push(_k8SObjectMap.get(element))
-                  }
-              }
-              setK8SObjectMapRaw(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
-          }
-          setRawGVKLoader(false)
-      } catch (err) {
-          setRawGVKLoader(false)
-      }
-  }
+        if (!_clusterId) return
+        try {
+            setRawGVKLoader(true)
+            setK8SObjectMapRaw(null)
+            const { result } = await getResourceGroupListRaw(_clusterId)
+            if (result) {
+                const processedData = processK8SObjects(result.apiResources, nodeType)
+                const _k8SObjectMap = processedData.k8SObjectMap
+                const _k8SObjectList: K8SObjectType[] = []
+                for (const element of ORDERED_AGGREGATORS) {
+                    if (_k8SObjectMap.get(element)) {
+                        _k8SObjectList.push(_k8SObjectMap.get(element))
+                    }
+                }
+                setK8SObjectMapRaw(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
+            }
+            setRawGVKLoader(false)
+        } catch (err) {
+            setRawGVKLoader(false)
+        }
+    }
 
     const updateOnClusterChange = async (clusterId) => {
         try {
@@ -280,8 +281,9 @@ export default function ResourceList() {
                     for (const _nodeError of _nodeErrors) {
                         const _errorLength = result.nodeErrors[_nodeError].length
                         _errorList.push({
-                            errorText: `${_nodeError} on ${_errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
-                                }`,
+                            errorText: `${_nodeError} on ${
+                                _errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
+                            }`,
                             errorType: _nodeError,
                             filterText: result.nodeErrors[_nodeError],
                         })
@@ -295,7 +297,7 @@ export default function ResourceList() {
                 setErrorStatusCode(err['code'])
             }
         } finally {
-          setResourceListLoader(false)
+            setResourceListLoader(false)
         }
     }
 
@@ -303,13 +305,17 @@ export default function ResourceList() {
 
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
-            const updateData = [{
-                id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-                url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value
-                    }/${selectedResource.gvk.Kind.toLowerCase()}/${selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+            const updateData = [
+                {
+                    id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+                    url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                        selectedNamespace.value
+                    }/${selectedResource.gvk.Kind.toLowerCase()}/${
+                        selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
                     }`,
-                dynamicTitle: selectedResource.gvk.Kind
-            }]
+                    dynamicTitle: selectedResource.gvk.Kind,
+                },
+            ]
             updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
         }
     }, [selectedCluster, selectedNamespace, selectedResource])
@@ -319,16 +325,16 @@ export default function ResourceList() {
             return
         }
         if (selectedCluster?.value && selectedNamespace?.value && nodeType) {
-          const _searchParam = tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : ''
-          updateTabUrl(
-              `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
-              `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                  selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
-              }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
-                  nodeType === AppDetailsTabs.terminal ? location.search : _searchParam
-              }`,
-              `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
-          )
+            const _searchParam = tabs[1]?.url.split('?')[1] ? `?${tabs[1].url.split('?')[1]}` : ''
+            updateTabUrl(
+                `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
+                `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                    selectedNamespace.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
+                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
+                    nodeType === AppDetailsTabs.terminal ? location.search : _searchParam
+                }`,
+                `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
+            )
         } else {
             removeTabByIdentifier(`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`)
         }
@@ -338,7 +344,14 @@ export default function ResourceList() {
     }, [clusterCapacityData, location.search])
 
     useEffect(() => {
-        if (clusterId && selectedResource && selectedResource.gvk.Kind!==SIDEBAR_KEYS.overviewGVK.Kind && !isOverview && !isTerminal && !isNodes) {
+        if (
+            clusterId &&
+            selectedResource &&
+            selectedResource.gvk.Kind !== SIDEBAR_KEYS.overviewGVK.Kind &&
+            !isOverview &&
+            !isTerminal &&
+            !isNodes
+        ) {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
@@ -366,10 +379,10 @@ export default function ResourceList() {
         const _staleDataCheckTime = moment()
         isStaleDataRef.current = false
         setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-         interval = setInterval(() => {
+        interval = setInterval(() => {
             checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime,moment()))
+            //  setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime, moment()))
         }, 1000)
         return () => {
             setTimeElapsedLastSync('')
