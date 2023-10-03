@@ -59,6 +59,7 @@ export default function AppComposeRouter({
     isBaseConfigProtected,
     reloadEnvironments,
     configProtectionData,
+    filteredEnvIds
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
     const renderJobViewRoutes = (): JSX.Element => {
@@ -190,6 +191,7 @@ export default function AppComposeRouter({
                                 isCDPipeline={isCDPipeline}
                                 respondOnSuccess={respondOnSuccess}
                                 getWorkflows={getWorkflows}
+                                filteredEnvIds={filteredEnvIds}
                             />
                         )}
                     />,

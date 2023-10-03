@@ -39,7 +39,7 @@ export default function CiWebhookModal({
             window.open(
                 window.location.href.replace(
                     location.pathname,
-                    getCIPipelineURL(appId, workflowId, true, ciPipelineId, isJobView),
+                    getCIPipelineURL(appId, workflowId, true, ciPipelineId, isJobView, false),
                 ),
                 '_blank',
                 'noreferrer',

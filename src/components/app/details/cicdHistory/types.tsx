@@ -74,6 +74,7 @@ export interface ArtifactType {
     isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
+    isJobCI?: boolean
     type: HistoryComponentType
     ciPipelineId?: number
     artifactId?: number
@@ -248,6 +249,7 @@ export interface StartDetailsType {
 
 export interface CICDSidebarFilterOptionType extends OptionType {
     pipelineId: number
+    pipelineType?: string
     deploymentAppDeleteRequest?: boolean
 }
 
