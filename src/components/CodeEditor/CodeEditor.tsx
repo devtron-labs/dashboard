@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
-import { useJsonYaml, Select, RadioGroup, useWindowSize, copyToClipboard } from '../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, Select, RadioGroup, useWindowSize } from '../common'
+import { Progressing, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
