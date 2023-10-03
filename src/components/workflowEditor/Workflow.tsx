@@ -286,7 +286,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         } else if (node.isExternalCI) {
             url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         } else {
-            const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +node.id)
+            const currPipeline = (this.props.filteredCIPipelines ?? []).find((pipeline) => +pipeline.id === +node.id)
             url = getCIPipelineURL(
                 appId,
                 this.props.id.toString(),
