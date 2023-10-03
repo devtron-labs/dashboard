@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
+import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../index.store'
 import Tippy from '@tippyjs/react'
-import { copyToClipboard, getElapsedTime } from '../../../../common'
+import { getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
@@ -20,7 +21,6 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()

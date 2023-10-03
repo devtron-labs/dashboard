@@ -1,17 +1,14 @@
-import React from 'react'
+import React, {useEffect, useCallback, useReducer, useMemo} from 'react'
 import { useParams, useHistory, useLocation } from 'react-router';
-import { useCallback } from 'react';
-import { useReducer } from 'react';
-import { useKeyDown, Info, useAsync } from '../common'
+import { useKeyDown, Info } from '../common'
 import {
     showError,
     Progressing,
     OpaqueModal,
     ConfirmationDialog,
-    EmptyState,
     GenericEmptyState,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect } from 'react';
 import { ReactComponent as EnvIcon } from '../../assets/icons/ic-env.svg';
 import { ReactComponent as BranchIcon } from '../../assets/icons/misc/branch.svg';
 import { ReactComponent as Error } from '../../assets/icons/misc/errorInfo.svg';
@@ -24,7 +21,6 @@ import {
     createUpdateDeploymentGroup,
     getDeploymentGroupDetails,
 } from './service'
-import { useMemo } from 'react';
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 
 export function BulkActionEdit() {

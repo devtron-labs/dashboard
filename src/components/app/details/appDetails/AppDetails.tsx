@@ -8,9 +8,9 @@ import {
     stopPropagation,
     multiSelectStyles,
     useEffectAfterMount,
-    Drawer,
     DeploymentAppTypes,
     useSearchString,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -29,7 +29,6 @@ import {
     useAppContext,
     useEventSource,
     FragmentHOC,
-    useAsync,
     ScanDetailsModal,
 } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
