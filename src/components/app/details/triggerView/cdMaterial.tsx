@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import {
     CDMaterialProps,
@@ -65,6 +65,7 @@ import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP } from '
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { getUserRole } from '../../../userGroups/userGroup.service'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -102,6 +103,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     .length > 0,
             searchApplied: !!this.props.searchImageTag,
             searchText: this.props.searchImageTag,
+            isSuperAdmin:false,
+            
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -123,6 +126,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
+            this.initialise()
         }
     }
 
@@ -152,6 +156,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return this.state.selectedMaterial
             ? this.state.selectedMaterial.wfrId
             : this.props.material?.find((_mat) => _mat.isSelected)?.wfrId
+    }
+    async initialise() {
+        try {
+            const userRole =  await getUserRole()
+            const superAdmin = userRole?.result?.roles?.includes('role:super-admin___')
+            this.setState({isSuperAdmin:superAdmin})
+        } catch (err) {
+            showError(err)
+        }
     }
 
     getDeploymentConfigDetails() {
@@ -775,6 +788,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 forceReInit={true}
                                 hideHardDelete={this.props.hideImageTaggingHardDelete}
                                 updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
+                                isSuperAdmin={this.props.isSuperAdmin}
                             />
                         </div>
                     </div>
