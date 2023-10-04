@@ -262,6 +262,7 @@ export interface CIPipelineType {
     close: () => void
     deleteWorkflow: (appId?: string, workflowId?: number) => any
     isJobView?: boolean
+    isJobCI?: boolean
 }
 
 export interface CIPipelineDataType {
@@ -280,6 +281,7 @@ export interface CIPipelineDataType {
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
     environmentId?: any
+    pipelineType?: string
 }
 export interface CIPipelineState {
     code: number
@@ -393,4 +395,10 @@ export interface PreBuildType {
   sharedPlugins: PluginDetailType[]
   mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
   isJobView?: boolean
+}
+
+export enum CIPipelineBuildType {
+    CI_JOB = 'CI_JOB',
+    CI_BUILD = 'CI_BUILD',
+    CI_EXTERNAL = 'CI_EXTERNAL',
 }

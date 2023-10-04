@@ -23,7 +23,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
-import { OptionType } from '../../app/types'
+import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
     EVENT_LIST,
@@ -54,6 +54,7 @@ import {
     getParentAndChildNodes,
     getUpdatedNodeSelectionData,
     getUpdatedResourceSelectionData,
+    removeDefaultForStorageClass,
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
@@ -642,6 +643,9 @@ export default function ResourceList() {
             const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
+            }
+            if (selectedResource?.gvk.Kind === Nodes.StorageClass) {
+                result.data = removeDefaultForStorageClass(result.data)
             }
             setResourceList(result)
 

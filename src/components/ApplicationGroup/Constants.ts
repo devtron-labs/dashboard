@@ -160,10 +160,29 @@ export enum AppFilterTabs {
 
 export enum CreateGroupTabs {
     'SELECTED_APPS' = 'selectedApps',
+    'SELECTED_ENV' = 'selectedEnv',
     'ALL_APPS' = 'allApps',
+    'ALL_ENV' = 'allEnv',
 }
 
 export const CREATE_GROUP_TABS = {
     selectedApps: 'Selected applications',
     allApps: 'Add/Remove applications',
+    selectedEnv: 'Selected environments',
+    allEnv: 'Add/Remove environments',
 }
+
+export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus => {
+    switch (statusText) {
+        case BULK_VIRTUAL_RESPONSE_STATUS.pass:
+            return BulkResponseStatus.PASS
+        case BULK_VIRTUAL_RESPONSE_STATUS.fail:
+            return BulkResponseStatus.FAIL
+        case BULK_VIRTUAL_RESPONSE_STATUS.unauthorized:
+            return BulkResponseStatus.UNAUTHORIZE
+        default:
+            return
+    }
+}
+
+export const FILTER_NAME_REGEX = /^[a-z][a-z0-9-]{1,}[a-z0-9]$/

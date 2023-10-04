@@ -13,10 +13,11 @@ import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { importComponentFromFELibrary, useAsync } from '../../../../common'
-import { DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../../../../common'
+import { DeploymentAppTypes, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { EnvironmentStatusComponentType } from '../environment.type'
+import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -78,7 +79,7 @@ function EnvironmentStatusComponent({
     }
 
     const renderStatusBlock = () => {
-        return (
+        return status ? (
             <div
                 className="app-status-card bcn-0 mr-12 br-8 p-16 cursor  "
                 onClick={loadingResourceTree ? noop : handleShowAppStatusDetail}
@@ -112,7 +113,7 @@ function EnvironmentStatusComponent({
                     </>
                 )}
             </div>
-        )
+        ) : null
     }
 
     const onClickShowNotes = () => {
@@ -120,37 +121,14 @@ function EnvironmentStatusComponent({
     }
 
     const renderHelmConfigApplyStatusBlock = () => {
-        return (
-            appDetails?.appType == AppType.EXTERNAL_HELM_CHART && (
-                <div className="app-status-card bcn-0 mr-12 br-8 p-16  ">
-                    <div className="cn-9 flex left">
-                        <span>Config apply status</span>
-                        <Tippy
-                            className="default-tt cursor"
-                            arrow={false}
-                            content={'Whether or not your last helm install was successful'}
-                        >
-                            <Question className="cursor icon-dim-16 ml-4" />
-                        </Tippy>
-                    </div>
-                    <div
-                        className={`f-${appDetails.additionalData[
-                            'status'
-                        ].toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}
-                    >
-                        <span>{appDetails.additionalData['status']}</span>
-                        <figure
-                            className={`${appDetails.additionalData[
-                                'status'
-                            ].toLowerCase()} dc__app-summary__icon ml-8 icon-dim-20`}
-                        ></figure>
-                    </div>
-                    <div className="cn-9 flex left">
-                        <span>{appDetails.additionalData['message']}</span>
-                    </div>
-                </div>
-            )
-        )
+        if (
+            appDetails?.appType === AppType.EXTERNAL_HELM_CHART ||
+            (appDetails?.deploymentAppType === DeploymentAppTypes.HELM &&
+                appDetails?.appType === AppType.DEVTRON_HELM_CHART)
+        ) {
+            return <HelmAppConfigApplyStatusCard releaseStatus={appDetails.helmReleaseStatus} />
+        }
+        return null
     }
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
@@ -198,7 +176,13 @@ function EnvironmentStatusComponent({
                         {appDetails.appStoreChartName && (
                             <span data-testid="chart-name-value">{appDetails.appStoreChartName}/</span>
                         )}
-                        {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                        <Link
+                            className="cb-5 fw-6"
+                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                            style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
+                        >
+                            {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                        </Link>
                     </div>
                     <div className="flex left">
                         {notes && (
@@ -208,17 +192,6 @@ function EnvironmentStatusComponent({
                                 data-testid="notes.txt-heading"
                             >
                                 <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
-                            </div>
-                        )}
-                        {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
-                        {appDetails.appStoreChartId && (
-                            <div data-testid="view-chart-button">
-                                <Link
-                                    className="cb-5 fw-6"
-                                    to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                >
-                                    View Chart
-                                </Link>
                             </div>
                         )}
                     </div>

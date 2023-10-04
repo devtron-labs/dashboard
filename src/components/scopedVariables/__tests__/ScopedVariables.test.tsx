@@ -1,10 +1,13 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
+import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import ScopedVariables from '../ScopedVariables'
-import { useAsync } from '../../common'
 
-jest.mock('../../common', () => ({
+jest.mock('@devtron-labs/devtron-fe-common-lib', () => ({
     useAsync: jest.fn(),
+    ErrorScreenNotAuthorized: jest.fn(),
+    Progressing: jest.fn(),
+    Reload: jest.fn(),
 }))
 
 jest.mock('../../CodeEditor/CodeEditor', () => jest.fn(() => null))

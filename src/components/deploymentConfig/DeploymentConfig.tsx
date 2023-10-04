@@ -3,8 +3,8 @@ import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getChartReferences } from '../../services/service'
-import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
-import { showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, importComponentFromFELibrary } from '../common'
+import { showError, useEffectAfterMount, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
     DeploymentConfigProps,

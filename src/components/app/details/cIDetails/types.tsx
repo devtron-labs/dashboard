@@ -14,6 +14,7 @@ export interface BuildDetails {
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
     isJobView?: boolean
+    isJobCI?: boolean
     appIdFromParent?: string
     appReleaseTags?: []
     tagsEditable: boolean
@@ -25,6 +26,7 @@ export interface HistoryLogsType {
     triggerDetails: History
     isBlobStorageConfigured?: boolean
     isJobView?: boolean
+    isJobCI?: boolean
     appIdFromParent?: string
     appReleaseTags?: []
     tagsEditable: boolean

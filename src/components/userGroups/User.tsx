@@ -22,6 +22,7 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
+    ViewChartGroupPermission,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext } from './UserGroup';
@@ -212,6 +213,13 @@ export default function UserForm({
                 environment: '',
                 entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
             });
+            if (chartPermission.action != ActionTypes.VIEW) {
+                payload.roleFilters.push({
+                    ...ViewChartGroupPermission,
+                    team: '',
+                    environment: '',
+                })
+            }
         }
         try {
             const { result } = await saveUser(payload);

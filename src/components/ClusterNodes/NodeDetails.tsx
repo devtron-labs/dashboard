@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { copyToClipboard, ToastBodyWithButton } from '../common'
+import { ToastBodyWithButton } from '../common'
 import {
     showError,
     Progressing,
     toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
+    copyToClipboard,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
