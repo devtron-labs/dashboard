@@ -1,6 +1,5 @@
 import moment from 'moment-timezone';
 import { ZERO_TIME_STRING } from '../../../config';
-import { Duration } from 'moment';
 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
     let timestamp = "";
@@ -39,9 +38,10 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
 
 export const getTimeElapsed = (startedOn, finishedOn) => {
     const diff: moment.Duration = moment.duration(finishedOn.diff(startedOn))
-    return `${diff.hours() > 0 ? `${String(diff.hours()).padStart(2, '0')}h:` : ''}${
-        diff.minutes() > 0 ? `${String(diff.minutes()).padStart(2, '0')}m:` : ''
-    }${String(diff.seconds()).padStart(2, '0')}s`
+    const hours = diff.hours() > 0 ? `${String(diff.hours()).padStart(2, '0')}h:` : ''
+    const minutes = diff.minutes() > 0 ? `${String(diff.minutes()).padStart(2, '0')}m:` : ''
+    const seconds = String(diff.seconds()).padStart(2, '0')
+    return `${hours}${minutes}${seconds}s`
 }
 
 export const formatDurationDiff = (startedOn: string, finishedOn: string) => {

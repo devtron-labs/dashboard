@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ClusterOverviewProps, DescriptionDataType, ERROR_TYPE } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterNote } from './clusterNodes.service'
-import { generatePath, useHistory, useParams, useRouteMatch,useLocation } from 'react-router-dom'
+import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote } from './constants'
 import moment from 'moment'
@@ -73,26 +73,24 @@ function ClusterOverview({
     }, [])
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
+        const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
+        const newUrl =
+            generatePath(path, {
+                clusterId,
+                namespace,
+                nodeType: 'node', //SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+                group: K8S_EMPTY_GROUP,
+            }) +
+            '?' +
+            `${queryParam}=${encodeURIComponent(filterText)}`
+        history.push(newUrl)
 
-        // if (errorType === ERROR_TYPE.VERSION_ERROR) {
-            const queryParam=errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
-            const newUrl =
-                generatePath(path, {
-                    clusterId,
-                    namespace,
-                    nodeType: 'node',//SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
-                    group: K8S_EMPTY_GROUP,
-                }) +
-                '?' +
-                `${queryParam}=${encodeURIComponent(filterText)}`
-            history.push(newUrl)
-
-
-            setSelectedResource({
-                namespaced: false,
-                gvk: SIDEBAR_KEYS.nodeGVK,
-            })
+        setSelectedResource({
+            namespaced: false,
+            gvk: SIDEBAR_KEYS.nodeGVK,
+        })
     }
+    
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
@@ -110,9 +108,7 @@ function ClusterOverview({
                 <div className="pl-16 pr-16 fs-13 fw-4">
                     {clusterErrorList.map((error, index) => (
                         <div className="flex left pt-8 pb-8" key={`${error.errorType}-${index}`}>
-                            <div className="w-250 cn-9">
-                                {error.errorType}
-                            </div>
+                            <div className="w-250 cn-9">{error.errorType}</div>
                             <div className="fw-4 fs-13 cn-9">
                                 {error.errorText}
                                 {error.errorType !== ERROR_TYPE.VERSION_ERROR ? (

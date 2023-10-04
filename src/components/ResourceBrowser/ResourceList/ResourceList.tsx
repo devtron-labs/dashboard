@@ -4,7 +4,6 @@ import {
     convertToOptionsList,
     createGroupSelectList,
     filterImageList,
-    formatDurationDiff,
     getTimeElapsed,
     handleUTCTime,
     processK8SObjects,

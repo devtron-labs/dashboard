@@ -15,12 +15,10 @@ import Tippy from '@tippyjs/react'
 import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import * as queryString from 'query-string'
-import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS ,NODE_DETAILS_PAGE_SIZE_OPTIONS} from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
-import { NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
 
 export default function NodeDetailsList({
     isSuperAdmin,
@@ -37,9 +35,9 @@ export default function NodeDetailsList({
     const history = useHistory()
     const urlParams = new URLSearchParams(location.search)
     const k8sVersion = urlParams.get('k8sversion')?decodeURIComponent(urlParams.get('k8sversion')):''
-    const name= urlParams.get('name')?decodeURIComponent(urlParams.get('name')):''
-    const label= urlParams.get('label')?decodeURIComponent(urlParams.get('label')):''
-    const group= urlParams.get('group')?decodeURIComponent(urlParams.get('group')):''
+    const name = decodeURIComponent(urlParams.get('name') || '');
+    const label = decodeURIComponent(urlParams.get('label') || '');
+    const group = decodeURIComponent(urlParams.get('group') || '');
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState(name || label || group || '')
@@ -49,14 +47,8 @@ export default function NodeDetailsList({
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(
         k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
     )
-    const initialSeachType = name
-        ? NODE_SEARCH_TEXT.NAME
-        : label
-        ? NODE_SEARCH_TEXT.LABEL
-        : group
-        ? NODE_SEARCH_TEXT.NODE_GROUP
-        : ''
 
+    const initialSeachType = getInitialSearchType(name, label, group);
     const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>(initialSeachType)
     
 
@@ -67,29 +59,40 @@ export default function NodeDetailsList({
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
 
+    function getInitialSearchType(name: string, label: string, group: string): string {
+        if (name) {
+            return NODE_SEARCH_TEXT.NAME;
+        } else if (label) {
+            return NODE_SEARCH_TEXT.LABEL;
+        } else if (group) {
+            return NODE_SEARCH_TEXT.NODE_GROUP;
+        } else {
+            return '';
+        }
+    }
+
+
     const getSearchTextMap = (searchText: string): Map<string, string> => {
         const _searchedTextMap = new Map()
-        if (searchText) {
-            const searchedLabelArr = searchText.split(',')
-            for (let index = 0; index < searchedLabelArr.length; index++) {
-                const currentItem = searchedLabelArr[index].trim()
-                if (!currentItem) {
+        if (!searchText) return _searchedTextMap
+        const searchedLabelArr = searchText.split(',')
+        for (let currentItem of searchedLabelArr.map((item) => item.trim())) {
+            if (!currentItem) {
+                continue
+            }
+            if (selectedSearchTextType === NODE_SEARCH_TEXT.LABEL) {
+                const element = currentItem.split('=')
+                const key = element[0] ? element[0].trim() : null
+                if (!key) {
                     continue
                 }
-                if (selectedSearchTextType === NODE_SEARCH_TEXT.LABEL) {
-                    const element = currentItem.split('=')
-                    const key = element[0] ? element[0].trim() : null
-                    if (!key) {
-                        continue
-                    }
-                    const value = element[1] ? element[1].trim() : null
-                    _searchedTextMap.set(key, value)
-                } else {
-                    _searchedTextMap.set(currentItem, true)
-                }
+                const value = element[1] ? element[1].trim() : null
+                _searchedTextMap.set(key, value)
+            } else {
+                _searchedTextMap.set(currentItem, true)
             }
-            return _searchedTextMap
         }
+        return _searchedTextMap
     }
 
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))

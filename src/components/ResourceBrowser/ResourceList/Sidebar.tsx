@@ -154,7 +154,7 @@ function Sidebar({
             dataset: {
                 group: SIDEBAR_KEYS.nodeGVK.Group,
                 version: SIDEBAR_KEYS.nodeGVK.Version,
-                kind: SIDEBAR_KEYS.nodeGVK.Kind as Nodes,
+                kind: SIDEBAR_KEYS.nodeGVK.Kind,
                 namespaced: 'false',
                 grouped: 'false',
             },
