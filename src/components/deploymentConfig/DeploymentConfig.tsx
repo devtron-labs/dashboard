@@ -439,6 +439,7 @@ export default function DeploymentConfig({
             fetchDeploymentTemplate()
             respondOnSuccess()
 
+            // Resetting the fetchedValues and fetchedValuesManifest caches to avoid showing the old data
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload: { fetchedValues: {}, fetchedValuesManifest: {} },
