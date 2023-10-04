@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import {
-    useForm,
-    useAsync,
-    CustomInput,
-    handleOnBlur,
-    handleOnFocus,
-    parsePassword,
-    importComponentFromFELibrary,
-} from '../common'
-import {
     showError,
     Progressing,
     TippyCustomized,
@@ -27,7 +18,16 @@ import {
     ConditionalWrap,
     RepositoryAction,
     ServerErrors,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useForm,
+    CustomInput,
+    handleOnBlur,
+    handleOnFocus,
+    parsePassword,
+    importComponentFromFELibrary,
+} from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList, validateContainerConfiguration } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'

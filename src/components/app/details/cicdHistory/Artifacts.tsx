@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { showError, GenericEmptyState, ImageTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
+import { showError, GenericEmptyState, ImageTagsContainer, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'

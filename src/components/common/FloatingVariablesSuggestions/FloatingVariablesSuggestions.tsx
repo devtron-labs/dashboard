@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react'
+import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import Draggable from 'react-draggable'
 import { useWindowSize } from '../helpers/UseWindowSize'
-import { useAsync } from '../helpers/Helpers'
 import Suggestions from './Suggestions'
 import { getScopedVariables } from './service'
 import { FloatingVariablesSuggestionsProps } from './types'

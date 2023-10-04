@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
+import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import FloatingVariablesSuggestions from '../FloatingVariablesSuggestions'
-import { useAsync } from '../../helpers/Helpers'
 
 // Mocking suggestions items since its already tested
 jest.mock(
@@ -12,7 +12,7 @@ jest.mock(
         },
 )
 
-jest.mock('../../helpers/Helpers', () => ({
+jest.mock('@devtron-labs/devtron-fe-common-lib', () => ({
     useAsync: jest.fn(),
 }))
 
