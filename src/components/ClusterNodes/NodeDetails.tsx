@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { copyToClipboard, ToastBodyWithButton } from '../common'
+import { ToastBodyWithButton } from '../common'
 import {
     showError,
     Progressing,
     toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
+    copyToClipboard,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -65,6 +66,7 @@ export default function NodeDetails({
   addTab,
   updateNodeSelectionData,
   k8SObjectMapRaw,
+  lastDataSync
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -165,7 +167,7 @@ export default function NodeDetails({
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node])
+    }, [node,lastDataSync])
 
     useEffect(() => {
         if (queryParams.has('tab')) {

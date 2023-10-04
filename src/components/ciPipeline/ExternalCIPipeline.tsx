@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, saveCIPipeline, deleteCIPipeline, getPipelineMetaConfiguration } from './ciPipeline.service';
-import { SourceTypeMap, TriggerType, ViewType } from '../../config';
+import { SourceTypeMap, TriggerType, ViewType, URLS } from '../../config';
 import { CIPipelineProps, ExternalCIPipelineState } from './types';
-import { CopyButton } from '../common';
+import { CopyButton, ButtonWithLoader } from '../common';
 import {
     ServerErrors,
     showError,
@@ -15,11 +15,9 @@ import { toast } from 'react-toastify';
 import error from '../../assets/icons/misc/errorInfo.svg'
 import Tippy from '@tippyjs/react';
 import { ValidationRules } from './validationRules';
-import { ButtonWithLoader } from '../common';
 import { NavLink } from 'react-router-dom';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { getHostURLConfiguration } from '../../services/service';
-import { URLS } from '../../config';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { SourceMaterials } from './SourceMaterials';
 import './ciPipeline.scss';

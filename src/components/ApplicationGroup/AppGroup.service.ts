@@ -22,7 +22,6 @@ import {
     EnvAppType,
     EnvDeploymentStatusType,
     EnvGroupListResponse,
-    EnvGroupListType,
     EnvGroupResponse,
     WorkflowsResponseType,
 } from './AppGroup.types'
@@ -194,15 +193,19 @@ export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
     return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
 
-export const getEnvGroupList = (envId: number): Promise<EnvGroupListResponse> => {
-    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}`)
+export const getEnvGroupList = (envId: number, filterParentType?:string): Promise<EnvGroupListResponse> => {
+    let filterParentTypeQuery = ''
+    if (filterParentType) {
+        filterParentTypeQuery = `?groupType=${filterParentType}`
+    }
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}${filterParentTypeQuery}`)
 }
 
 export const getEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
 }
 
-export const createEnvGroup = (envId: string, data: EnvGroupListType, isEdit: boolean): Promise<EnvGroupResponse> => {
+export const createEnvGroup = (envId: string, data, isEdit: boolean): Promise<EnvGroupResponse> => {
     if (isEdit) {
         return put(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
     }
@@ -213,6 +216,10 @@ export const appGroupPermission = (envId: string, data: CheckPermissionType): Pr
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${Routes.PERMISSION}`, data)
 }
 
-export const deleteEnvGroup = (envId: string, groupId: string): Promise<EnvGroupResponse> => {
-    return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
+export const deleteEnvGroup = (envId: string, groupId: string, filterParentType?:string): Promise<EnvGroupResponse> => {
+    let filterParentTypeQuery = ''
+    if (filterParentType) {
+        filterParentTypeQuery = `?groupType=${filterParentType}`
+    }
+    return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}${filterParentTypeQuery}`)
 }

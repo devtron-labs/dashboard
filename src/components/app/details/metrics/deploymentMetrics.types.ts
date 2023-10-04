@@ -18,7 +18,7 @@ export interface StatisticsType {
 }
 
 export interface DeploymentMetricsProps extends RouteComponentProps<{ appId: string; envId: string; }> {
-
+  filteredEnvIds?: string
 }
 
 export interface Environment{

@@ -20,7 +20,6 @@ export class Subject<T> {
     }
 
     public publish(topic: T) {
-        // console.log("publish for "+this.name)
         let keys = Array.from(this.observers.keys())
         keys.forEach((key) => {
             this.observers.get(key)(topic)

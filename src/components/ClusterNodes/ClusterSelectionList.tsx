@@ -145,7 +145,7 @@ export default function ClusterSelectionList({
                     />
                 </div>
                 <div>
-                    {clusterData.errorInNodeListing ? (
+                    {errorCount > 0 ? (
                         <Tippy className="default-tt w-200" arrow={false} content={clusterData.errorInNodeListing}>
                             <div className="flexbox">
                                 <Error className="mt-2 mb-2 mr-8 icon-dim-18" />

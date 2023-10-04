@@ -1,7 +1,6 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { Grid } from '../common'
+import { GenericEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableType, VariablesListItemProps } from './types'
 import {
     TABLE_LIST_HEADINGS,
