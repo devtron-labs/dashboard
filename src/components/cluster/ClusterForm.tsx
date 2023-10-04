@@ -151,7 +151,7 @@ export default function ClusterForm({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: { value: proxyUrl?.value, error: '' },
-            isConnectedViaSSHTunnel: { value: isConnectedViaSSHTunnel?.value, error: '' },
+            isConnectedViaSSHTunnel: isConnectedViaSSHTunnel?.value ? isConnectedViaSSHTunnel.value : false,
             sshTunnelUser: { value: sshTunnelUser?.value, error: '' },
             sshTunnelPassword: { value: sshTunnelPassword?.value, error: '' },
             sshTunnelPrivateKey: { value: sshTunnelPrivateKey?.value, error: '' },
@@ -529,7 +529,7 @@ export default function ClusterForm({
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
         proxyUrl: state.proxyUrl.value,
-        toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : '',
+        toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
         sshTunnelConfig: {
             user: state.sshTunnelUser.value,
             password: state.sshTunnelPassword.value,
