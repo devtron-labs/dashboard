@@ -96,6 +96,8 @@ export default function DeploymentTemplateEditorView({
                     kind: DEPLOYMENT_TEMPLATE_LABELS_KEYS.otherEnv.key,
                 })) as DeploymentChartOptionType[],
             )
+        }
+        if (state.selectedChart) {
             setSelectedOptionDraft(getApprovalPendingOption(state.selectedChart.version))
         }
     }, [state.selectedChart, environments])
@@ -243,10 +245,10 @@ export default function DeploymentTemplateEditorView({
     }
 
     // choose LHS value for comparison
-    const selectedOptionId = state.selectedCompareOption?.id || -1 // -1 for base deployment template (values/manifest)
+    const selectedOptionId = state.selectedCompareOption?.id
     const isIdMatch = selectedOptionId === -1
     const source = isValues ? state.fetchedValues : state.fetchedValuesManifest
-    const valueLHS = (isIdMatch ? defaultValue : source[selectedOptionId]) || '' // fetch LHS data from respective cache store
+    const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
