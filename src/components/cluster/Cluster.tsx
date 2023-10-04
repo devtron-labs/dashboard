@@ -851,6 +851,7 @@ function Cluster({
                     </Drawer>
                 )}
             </article>
+            {console.log('environments = ', environments)}
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0" ref={editLabelRef}>
@@ -859,7 +860,7 @@ function Cluster({
                             cluster_name={cluster_name}
                             {...environment}
                             hideClusterDrawer={hideClusterDrawer}
-                            isNamespaceMandatory={!isVirtualCluster && Array.isArray(environments) && environments.length > 0}
+                            isNamespaceMandatory={!isVirtualCluster}
                             isVirtual={isVirtualCluster}
                         />
                     </div>
