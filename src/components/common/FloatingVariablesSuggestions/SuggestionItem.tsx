@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import * as DOMPurify from 'dompurify'
-import ClipboardButton from '../ClipboardButton/ClipboardButton'
+import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { SuggestionsItemProps } from './types'
 import { NO_DEFINED_DESCRIPTION } from './constants'
 
@@ -38,7 +38,7 @@ export default function SuggestionItem({
 
         return (
             <p
-                className="m-0 fs-12 fw-4 lh-18"
+                className="m-0 fs-12 fw-4 lh-18 dc__word-break-all"
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedText(description)) }}
             />
         )

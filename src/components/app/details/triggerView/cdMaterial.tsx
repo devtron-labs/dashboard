@@ -647,16 +647,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     />
 
                                     {mat.filterState !== FilterStates.ALLOWED && (
-                                        <div className="flex dc__gap-12 ml-12">
-                                            <div className="h-20 dc__border-left" />
-                                            <Tippy
-                                                className="default-tt w-200"
-                                                arrow={false}
-                                                placement="top"
-                                                content={EXCLUDED_IMAGE_TOOLTIP}
-                                            >
-                                                <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
-                                            </Tippy>
+                                        <div className="flex dc__gap-12 mr-12">
+                                            <div className="h-12 dc__border-left" />
                                         </div>
                                     )}
                                 </>
@@ -755,18 +747,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             />
 
                                             {mat.filterState !== FilterStates.ALLOWED && (
-                                                <div className="flex dc__gap-12 ml-12">
-                                                    <div className="h-20 dc__border-left" />
-                                                    <Tippy
-                                                        className="default-tt w-200"
-                                                        arrow={false}
-                                                        placement="top"
-                                                        content={EXCLUDED_IMAGE_TOOLTIP}
-                                                    >
-                                                        <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">
-                                                            Excluded
-                                                        </i>
-                                                    </Tippy>
+                                                <div className="flex dc__gap-12 mr-12">
+                                                    <div className="h-12 dc__border-left" />
                                                 </div>
                                             )}
                                         </>
