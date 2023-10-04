@@ -111,11 +111,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
                 let isDeletionInProgress
+                const _envIds = []
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
-                        this.setState({
-                            envIds: [...this.state.envIds, node.environmentId]
-                        })
+                        _envIds.push(node.environmentId)
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
@@ -142,7 +141,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     allDeploymentNodeMap: allDeploymentNodeMap,
                     view: ViewType.FORM,
                     envToShowWebhookTippy: -1,
-                    filteredCIPipelines: result.filteredCIPipelines
+                    filteredCIPipelines: result.filteredCIPipelines,
+                    envIds: _envIds
                 })
             })
             .catch((errors) => {
