@@ -114,10 +114,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 const _envIds = []
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
-                        _envIds.push(node.environmentId)
                         if (node.type === WorkflowNodeType.CI) {
                             allCINodeMap.set(node.id, node)
                         } else if (node.type === WorkflowNodeType.CD) {
+                            _envIds.push(node.environmentId)
                             if (
                                 node.parentPipelineType === PipelineType.WEBHOOK &&
                                 this.state.envToShowWebhookTippy === node.environmentId
