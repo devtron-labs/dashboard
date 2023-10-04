@@ -20,6 +20,7 @@ export const Routes = {
     IMAGE_TAGGING: 'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
+    CI_PIPELINE_SOURCE_BULK_PATCH: 'app/ci-pipeline/bulk/branch-update',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
@@ -783,3 +784,5 @@ export const SERVER_ERROR_CODES = {
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
+
+export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'

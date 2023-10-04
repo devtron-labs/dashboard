@@ -141,6 +141,15 @@ export const sortEventListData = (eventList: Record<string, any>[]): Record<stri
     ]
 }
 
+export const removeDefaultForStorageClass = (storageList: Record<string, any>[]): Record<string, any>[] => {
+    for (let iterator of storageList) {
+        if (iterator.name.includes("(default)")) {
+            iterator.name = iterator.name.split(" (default)")[0]
+        }
+    }
+    return storageList
+}
+
 export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType: string, group: string) => {
     const parentNode = _k8SObjectList?.[0]
     const childNode = parentNode?.child?.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode?.child?.[0]

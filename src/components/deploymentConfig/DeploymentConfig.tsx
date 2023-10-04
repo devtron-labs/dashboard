@@ -9,8 +9,8 @@ import {
     getOptions,
 } from './service'
 import { getChartReferences } from '../../services/service'
-import { useJsonYaml, useAsync, importComponentFromFELibrary } from '../common'
-import { Progressing, showError, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, importComponentFromFELibrary } from '../common'
+import { showError, useEffectAfterMount, useAsync, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
     DeploymentConfigProps,

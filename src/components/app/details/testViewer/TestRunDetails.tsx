@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAsync, useDebouncedEffect } from '../../../common/';
-import { Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, Drawer, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { useDebouncedEffect } from '../../../common/';
 import { useParams } from 'react-router';
 import './TestRunDetails.scss';
 import List from './List';
@@ -14,8 +14,7 @@ import { ReactComponent as FileIcon } from '../../../../assets/icons/ic-file.svg
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg';
 import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg';
 import { getTestSuites, getTestCase, getSuiteDetail } from './service';
-import { PieChart, Pie, Cell } from 'recharts';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import {SelectedNames} from './Test.types'
 
 const computeHistogram = require('compute-histogram');

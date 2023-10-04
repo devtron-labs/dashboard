@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { copyToClipboard } from '../common';
-import { showError, Progressing, getTeamListMin as getProjectListMin, Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    getTeamListMin as getProjectListMin,
+    Drawer,
+    copyToClipboard,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service';

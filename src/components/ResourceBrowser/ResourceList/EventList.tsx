@@ -38,7 +38,7 @@ export function EventList({
                                 }}
                             ></span>
                         </div>
-                        <div className="dc__highlight-text">
+                        <div className="dc__highlight-text dc__break-word">
                             <span
                                 dangerouslySetInnerHTML={{
                                     __html: highlightSearchedText(searchText, eventData.message),

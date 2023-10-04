@@ -1,10 +1,10 @@
 import React, { useEffect, useReducer, useContext, Reducer } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
-import { useAsync, importComponentFromFELibrary } from '../common'
+import { importComponentFromFELibrary } from '../common'
 import '../deploymentConfig/deploymentConfig.scss'
 import {
     DeploymentConfigStateAction,
