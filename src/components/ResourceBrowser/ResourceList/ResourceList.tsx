@@ -941,8 +941,6 @@ export default function ResourceList() {
                     updateResourceSelectionData={updateResourceSelectionData}
                     isCreateModalOpen={showCreateResourceModal}
                     isClusterError={!!clusterErrorTitle}
-                    setLastDataSync={setLastDataSync}
-                    lastDataSync={lastDataSync}
                 />
                 {renderListBar()}
             </div>

@@ -26,8 +26,6 @@ function Sidebar({
     shortcut,
     isCreateModalOpen,
     isClusterError,
-    setLastDataSync,
-    lastDataSync,
 }: SidebarType & IWithShortcut) {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -182,7 +180,6 @@ function Sidebar({
         }
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
-        setLastDataSync(!lastDataSync)
 
         /**
          * If groupName present then kind selection is from search dropdown,

@@ -112,8 +112,6 @@ export interface SidebarType {
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
     isCreateModalOpen: boolean
     isClusterError?: boolean
-    setLastDataSync: React.Dispatch<React.SetStateAction<boolean>>
-    lastDataSync: boolean
 }
 
 export interface ResourceFilterOptionsProps {
