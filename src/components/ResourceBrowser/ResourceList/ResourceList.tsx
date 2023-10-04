@@ -277,7 +277,7 @@ export default function ResourceList() {
                         _errorList.push({
                             errorText: `${_nodeError} on ${_errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
                                 }`,
-                            errorType: ERROR_TYPE.OTHER,
+                            errorType: _nodeError,
                             filterText: result.nodeErrors[_nodeError],
                         })
                     }
@@ -825,6 +825,7 @@ export default function ResourceList() {
                     clusterErrorList={clusterErrorList}
                     clusterErrorTitle={clusterErrorTitle}
                     errorStatusCode={errorStatusCode}
+                    setSelectedResource={setSelectedResource}
                 />
             )
         } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {

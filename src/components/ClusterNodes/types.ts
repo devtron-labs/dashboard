@@ -4,10 +4,10 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { K8SObjectMapType } from '../ResourceBrowser/Types'
+import { ApiResourceGroupType, K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
-    VERSION_ERROR = 'VERSION_ERROR',
+    VERSION_ERROR = 'K8s Version diff',
     OTHER = 'OTHER',
 }
 
@@ -386,4 +386,5 @@ export interface ClusterOverviewProps {
     clusterErrorList: ClusterErrorType[]
     clusterErrorTitle: string
     errorStatusCode: number
+    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
 }

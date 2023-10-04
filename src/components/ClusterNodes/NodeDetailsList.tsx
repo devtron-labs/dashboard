@@ -15,10 +15,9 @@ import Tippy from '@tippyjs/react'
 import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import * as queryString from 'query-string'
-import { URLS } from '../../config'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS ,NODE_DETAILS_PAGE_SIZE_OPTIONS} from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
 
 export default function NodeDetailsList({
@@ -35,27 +34,71 @@ export default function NodeDetailsList({
     const location = useLocation()
     const history = useHistory()
     const urlParams = new URLSearchParams(location.search)
-    const k8sVersion = urlParams.get('k8sversion')
+    const k8sVersion = urlParams.get('k8sversion')?decodeURIComponent(urlParams.get('k8sversion')):''
+    const name = decodeURIComponent(urlParams.get('name') || '');
+    const label = decodeURIComponent(urlParams.get('label') || '');
+    const group = decodeURIComponent(urlParams.get('group') || '');
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
-    const [searchText, setSearchText] = useState('')
+    const [searchText, setSearchText] = useState(name || label || group || '')
     const defaultVersion = { label: 'K8s version: Any', value: 'K8s version: Any' }
     const [flattenNodeList, setFlattenNodeList] = useState<object[]>([])
     const [filteredFlattenNodeList, setFilteredFlattenNodeList] = useState<object[]>([])
-    const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(new Map())
     const [selectedVersion, setSelectedVersion] = useState<OptionType>(
         k8sVersion ? { label: `K8s version: ${k8sVersion}`, value: k8sVersion } : defaultVersion,
     )
-    const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>('')
+
+    const initialSeachType = getInitialSearchType(name, label, group);
+    const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>(initialSeachType)
+    
+
+
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
 
-    const [nodeListOffset, setNodeListOffset] = useState(0)
+    function getInitialSearchType(name: string, label: string, group: string): string {
+        if (name) {
+            return NODE_SEARCH_TEXT.NAME;
+        } else if (label) {
+            return NODE_SEARCH_TEXT.LABEL;
+        } else if (group) {
+            return NODE_SEARCH_TEXT.NODE_GROUP;
+        } else {
+            return '';
+        }
+    }
 
-    const pageSize = 15
+
+    const getSearchTextMap = (searchText: string): Map<string, string> => {
+        const _searchedTextMap = new Map()
+        if (!searchText) return _searchedTextMap
+        const searchedLabelArr = searchText.split(',').map((item) => item.trim())
+
+        for (let currentItem of searchedLabelArr) {
+            if (!currentItem) {
+                continue
+            }
+            if (selectedSearchTextType === NODE_SEARCH_TEXT.LABEL) {
+                const element = currentItem.split('=')
+                const key = element[0] ? element[0].trim() : null
+                if (!key) {
+                    continue
+                }
+                const value = element[1] ? element[1].trim() : null
+                _searchedTextMap.set(key, value)
+            } else {
+                _searchedTextMap.set(currentItem, true)
+            }
+        }
+        return _searchedTextMap
+    }
+
+    const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
+    const [nodeListOffset, setNodeListOffset] = useState(0)
+    const [pageSize, setPageSize] = useState(20)
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
@@ -268,9 +311,18 @@ export default function NodeDetailsList({
     }
 
     const clearFilter = (): void => {
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
+        keys.forEach((key) => {
+            query[key] = qs[key]
+        })
         setSearchText('')
         setSelectedSearchTextType('')
         setSearchedTextMap(new Map())
+        delete query[selectedSearchTextType]
+        const queryStr = queryString.stringify(query)
+        history.push(`?${queryStr}`)
     }
 
     useEffect(() => {
@@ -284,6 +336,11 @@ export default function NodeDetailsList({
             setSortByColumn(column)
             setSortOrder(OrderBy.ASC)
         }
+    }
+
+    const changePageSize = (size: number) => {
+        setPageSize(size)
+        setNodeListOffset(0)
     }
 
     const renderSortDirection = (column: ColumnMetadataType): JSX.Element => {
@@ -447,17 +504,17 @@ export default function NodeDetailsList({
         )
     }
     const changePage = (pageNo: number): void => {
-        let offset = pageSize * (pageNo - 1)
+        const offset = pageSize * (pageNo - 1)
         setNodeListOffset(offset)
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })
         query['offset'] = offset
-        let queryStr = queryString.stringify(query)
-        let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+        const queryStr = queryString.stringify(query)
+        const url = `${match.url}?${queryStr}`
         history.push(url)
     }
     const renderPagination = (): JSX.Element => {
@@ -468,7 +525,8 @@ export default function NodeDetailsList({
                     pageSize={pageSize}
                     offset={nodeListOffset}
                     changePage={changePage}
-                    isPageSizeFix={true}
+                    changePageSize={changePageSize}
+                    pageSizeOptions={NODE_DETAILS_PAGE_SIZE_OPTIONS}
                 />
             )
         )
