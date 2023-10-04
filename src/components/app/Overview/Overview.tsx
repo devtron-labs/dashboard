@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
+import { showError, Progressing, TagType, stopPropagation, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import {
     handleUTCTime,
     importComponentFromFELibrary,
     processDeployedTime,
     sortOptionsByValue,
-    useAsync,
 } from '../../common'
-import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
@@ -44,7 +43,7 @@ import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
-export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview, filteredEnvIds }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
@@ -93,6 +92,18 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             getExternalLinksDetails()
         }
     }, [appId])
+
+    const envList = useMemo(() => {
+        if (otherEnvsResult?.[0]?.result?.length > 0) {
+            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+            return (
+                otherEnvsResult[0].result
+                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+            )
+        }
+        return []
+    }, [filteredEnvIds, otherEnvsResult])
 
     const getExternalLinksDetails = (): void => {
         getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
@@ -289,8 +300,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderDeploymentComponent = () => {
 
-        if (otherEnvsResult?.[0]?.result?.length > 0) {
-            otherEnvsResult[0].result.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1))
+        if (envList.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div
@@ -304,7 +314,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
 
                     <div className="env-deployments-info-body">
-                        {otherEnvsResult[0].result.map(
+                        {envList.map(
                             (_env, index) =>
                                 !_env.deploymentAppDeleteRequest && (
                                     <div
@@ -383,7 +393,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 )
         }
     }
-    
+
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (

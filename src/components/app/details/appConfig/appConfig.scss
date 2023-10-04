@@ -39,15 +39,17 @@
 
         &.config-protection__side-nav {
             grid-template-rows: 110px repeat(6, 32px) 54px 32px 1fr auto;
-            &.hide-external-links {
-              grid-template-rows: 110px repeat(6, 32px) 16px 32px 1fr auto;
-            }
-            &.hide-app-config-help {
-                grid-template-rows: repeat(6, 32px) 54px 32px 1fr auto;
-
+            
                 &.hide-external-links {
-                    grid-template-rows: repeat(6, 32px) 16px 32px 1fr auto;
+                    grid-template-rows: 110px repeat(6, 32px) 54px 1fr auto;
                 }
+            
+                &.hide-app-config-help {
+                    grid-template-rows: repeat(6, 32px) 54px 32px 1fr auto;
+            
+                    &.hide-external-links {
+                        grid-template-rows: repeat(6, 32px) 54px 1fr auto;
+                    }
             }
         }
 
