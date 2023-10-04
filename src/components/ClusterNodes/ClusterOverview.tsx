@@ -99,9 +99,9 @@ function ClusterOverview({
             generatePath(path, {
                 clusterId,
                 namespace,
-                nodeType: 'node', //SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+                nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                 group: K8S_EMPTY_GROUP,
-            }) +
+            }) + 
             '?' +
             `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)

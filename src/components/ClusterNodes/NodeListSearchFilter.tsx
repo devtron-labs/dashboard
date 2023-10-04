@@ -92,9 +92,9 @@ export default function NodeListSearchFliter({
         setSearchInputText(event.target.value)
     }
     const handleQueryParamsSeacrh=(searchString:string)=>{
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })
@@ -104,7 +104,7 @@ export default function NodeListSearchFliter({
         else {
             delete query[selectedSearchTextType]
         }
-        let queryStr = queryString.stringify(query)
+        const queryStr = queryString.stringify(query)
         push(`?${queryStr}`)
 
     }
@@ -160,9 +160,9 @@ export default function NodeListSearchFliter({
     
     const applyFilter=(selected)=>{
         setSelectedVersion(selected)
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })

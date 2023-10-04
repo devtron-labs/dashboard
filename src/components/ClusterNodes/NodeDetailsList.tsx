@@ -75,8 +75,9 @@ export default function NodeDetailsList({
     const getSearchTextMap = (searchText: string): Map<string, string> => {
         const _searchedTextMap = new Map()
         if (!searchText) return _searchedTextMap
-        const searchedLabelArr = searchText.split(',')
-        for (let currentItem of searchedLabelArr.map((item) => item.trim())) {
+        const searchedLabelArr = searchText.split(',').map((item) => item.trim())
+
+        for (let currentItem of searchedLabelArr) {
             if (!currentItem) {
                 continue
             }
@@ -227,9 +228,7 @@ export default function NodeDetailsList({
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
         const selectedNode = sortedResult.find((item) => item.name === queryParams.get('node'))
-        console.log('selected node', selectedNode)
         if (selectedNode) {
-            console.log('open terminal')
             openTerminalComponent(selectedNode)
         }
     }
@@ -312,9 +311,9 @@ export default function NodeDetailsList({
     }
 
     const clearFilter = (): void => {
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })
@@ -322,7 +321,7 @@ export default function NodeDetailsList({
         setSelectedSearchTextType('')
         setSearchedTextMap(new Map())
         delete query[selectedSearchTextType]
-        let queryStr = queryString.stringify(query)
+        const queryStr = queryString.stringify(query)
         history.push(`?${queryStr}`)
     }
 
@@ -505,17 +504,17 @@ export default function NodeDetailsList({
         )
     }
     const changePage = (pageNo: number): void => {
-        let offset = pageSize * (pageNo - 1)
+        const offset = pageSize * (pageNo - 1)
         setNodeListOffset(offset)
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
+        const qs = queryString.parse(location.search)
+        const keys = Object.keys(qs)
+        const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })
         query['offset'] = offset
-        let queryStr = queryString.stringify(query)
-        let url = `${match.url}?${queryStr}`
+        const queryStr = queryString.stringify(query)
+        const url = `${match.url}?${queryStr}`
         history.push(url)
     }
     const renderPagination = (): JSX.Element => {
