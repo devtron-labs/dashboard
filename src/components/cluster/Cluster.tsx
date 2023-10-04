@@ -355,7 +355,7 @@ function Cluster({
             sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
             sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
             isConnectedViaProxy: proxyUrl?.length ? true : false,
-            isConnectedViaSSHTunnel: { value: toConnectWithSSHTunnel, error: '' },
+            isConnectedViaSSHTunnel: toConnectWithSSHTunnel,
             tlsClientKey: { value: config.tls_key, error: '' },
             tlsClientCert: { value: config.cert_data, error: '' },
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
@@ -555,7 +555,7 @@ function Cluster({
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
             proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
-            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel?.value,
+            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : '',
             sshTunnelConfig: {
                 user: state.sshTunnelUser?.value,
                 password: state.sshTunnelPassword?.value,

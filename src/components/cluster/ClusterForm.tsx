@@ -529,7 +529,7 @@ export default function ClusterForm({
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
         proxyUrl: state.proxyUrl.value,
-        toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel.value,
+        toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : '',
         sshTunnelConfig: {
             user: state.sshTunnelUser.value,
             password: state.sshTunnelPassword.value,
@@ -708,7 +708,7 @@ export default function ClusterForm({
                             <span className="pb-20">
                                 <KubectlConnectionRadio
                                     toConnectViaProxy={isConnectedViaProxyTemp}
-                                    toConnectWithSSHTunnel={isConnectedViaSSHTunnelTemp.value}
+                                    toConnectWithSSHTunnel={isConnectedViaSSHTunnelTemp}
                                     changeClusterConnectionType={changeKubectlConnectionType}
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     proxyUrl={state.proxyUrl}
