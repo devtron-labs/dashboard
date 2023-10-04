@@ -307,6 +307,9 @@ export default function ResourceList() {
             }]
             updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
         }
+        return (): void => {
+            resourceListAbortController.abort()
+        }
     }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
@@ -337,10 +340,6 @@ export default function ResourceList() {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
-
-            return (): void => {
-                resourceListAbortController.abort()
-            }
         } else if (isNodes) {
             setResourceListLoader(false)
             setLastDataSync(!lastDataSync)
@@ -350,10 +349,6 @@ export default function ResourceList() {
     useEffect(() => {
         if (!loader && clusterId && selectedResource?.namespaced && !isOverview && !isNodes) {
             getResourceListData(true)
-
-            return (): void => {
-                resourceListAbortController.abort()
-            }
         }
     }, [selectedNamespace])
 
