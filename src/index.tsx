@@ -21,6 +21,7 @@ interface customEnv {
     GTM_ID?: string
     RECOMMEND_SECURITY_SCANNING?: boolean
     FORCE_SECURITY_SCANNING?: boolean
+    ENABLE_CI_JOB?: boolean
     HIDE_DISCORD?: boolean
     POSTHOG_ENABLED?: boolean
     POSTHOG_TOKEN?: string
@@ -124,6 +125,7 @@ if (!window || !window._env_) {
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
+        ENABLE_CI_JOB: false, 
         HIDE_DISCORD: true,
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,

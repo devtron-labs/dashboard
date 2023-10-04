@@ -1385,6 +1385,7 @@ button.anchor {
     line-height: 1.6;
     border: 1px solid rgba(255, 255, 255, 0.4);
     background-color: var(--N900);
+    word-break: break-all;
 }
 
 .tippy-box.default-white {
@@ -1963,12 +1964,24 @@ button.anchor {
     border: 1px solid var(--N100);
 }
 
+.dc__border-n0 {
+    border: 1px solid var(--N0);
+}
+
+.dc__border-n7 {
+    border: 1px solid var(--N700);
+}
+
 .dc__border-transparent {
     border: 1px solid transparent;
 }
 
 .dc__border-top {
     border-top: solid 1px var(--N200);
+}
+
+.dc__border-top-v1 {
+    border-top: solid 1px var(--V100);
 }
 
 .dc__border-bottom {
@@ -2178,6 +2191,21 @@ button.anchor {
     }
 }
 
+.dc__ci-pipeline-type-icon {
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-image: url('../assets/icons/ic-CI.svg');
+
+    &.normal {
+        background-image: url('../assets/icons/ic-CI.svg');
+    }
+
+    &.ci_job {
+        background-image: url('../assets/icons/ic-job-node.svg');
+    }
+}
+
 .dc__environment-icon {
     width: 18px;
     height: 18px;
@@ -2283,6 +2311,10 @@ input,
 textarea,
 .bc-n50 {
     background-color: var(--N50);
+}
+
+.c-n50{
+    color: var(--N50);
 }
 
 .dc__split-header {
@@ -2688,6 +2720,10 @@ textarea,
     width: 350px;
 }
 
+.w-356 {
+    width: 356px;
+}
+
 .w-400 {
     width: 400px;
 }
@@ -3018,6 +3054,10 @@ textarea,
     max-height: 300px !important;
 }
 
+.mxh-504 {
+    max-height: 504px;
+}
+
 .mxh-390-imp {
     max-height: 390px!important;
 }
@@ -3285,6 +3325,10 @@ textarea,
     column-gap: 24px;
 }
 
+.dc__gap-2 {
+    gap: 2px;
+}
+
 .dc__gap-4 {
     gap: 4px;
 }
@@ -3398,12 +3442,20 @@ textarea::placeholder {
     background-color: var(--G500) !important;
 }
 
+.dc__hover-b500:hover {
+    background-color: var(--B500);
+}
+
 .dc__hover-n100:hover {
     background-color: var(--N100);
 }
 
 .dc__hover-r100:hover {
     background-color: var(--R100);
+}
+
+.dc__hover-cn1:hover {
+    color: var(--N100);
 }
 
 .dc__user-select-none {
@@ -3677,4 +3729,38 @@ textarea::placeholder {
 
 .dc__disable-click {
     pointer-events: none;
+}
+
+.dc__disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+}
+
+.dc__grabbable {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.dc__grabbable:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.focus-within-border-b5:focus-within {
+    border: 1px solid var(--B500) !important;
+}
+
+.dc__hover-border-n300:hover {
+    border: 1px solid var(--N300);
+}
+
+.placeholder-cn5::placeholder {
+    color: var(--N500);
+}
+
+.br-48 {
+    border-radius: 48px;
 }

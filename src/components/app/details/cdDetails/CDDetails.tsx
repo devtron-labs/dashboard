@@ -6,10 +6,10 @@ import {
     UserApprovalMetadataType,
     GenericEmptyState,
     DeploymentAppTypes,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import {
-    useAsync,
     useInterval,
     useScrollable,
     mapByKey,
@@ -48,7 +48,7 @@ const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'f
 let statusSet = new Set(['starting', 'running', 'pending'])
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
-export default function CDDetails() {
+export default function CDDetails({filteredEnvIds}:{filteredEnvIds: string}) {
     const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
@@ -71,7 +71,7 @@ export default function CDDetails() {
                 getCDPipelines(appId),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
-        [appId],
+        [appId, filteredEnvIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
@@ -153,10 +153,15 @@ export default function CDDetails() {
                 )
             }
             if (result[0]) {
-                let _selectedEnvironment = (result[0]['value']?.result || []).find((envData) => {
-                    return +envId === envData.environmentId
-                })
-                setSelectedEnv(_selectedEnvironment)
+              const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
+              let _selectedEnvironment = (result[0]['value']?.result || [])
+                  .filter((env) => {
+                      return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
+                  })
+                  .find((envData) => {
+                      return +envId === envData.environmentId
+                  })
+              setSelectedEnv(_selectedEnvironment)
             }
         }
 
@@ -177,22 +182,26 @@ export default function CDDetails() {
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
             let _selectedEnvironment,
                 isEnvDeleted = false
-            const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((envData) => {
-                if (envData.environmentId === +envId) {
-                    _selectedEnvironment = envData
-                }
-                if (envData.deploymentAppDeleteRequest) {
-                    isEnvDeleted = true
-                }
-                return {
-                    value: `${envData.environmentId}`,
-                    label: envData.environmentName,
-                    pipelineId: cdPipelinesMap.get(envData.environmentId)?.id,
-                    deploymentAppDeleteRequest: envData.deploymentAppDeleteRequest,
-                }
-            })
-            
-            if (envOptions.length === 1 && !envId && !isEnvDeleted) {
+            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+            const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
+            .filter((env) => {
+              return !filteredEnvMap || filteredEnvMap.get(env.environmentId)})
+                .map((envData) => {
+                    if (envData.environmentId === +envId) {
+                        _selectedEnvironment = envData
+                    }
+                    if (envData.deploymentAppDeleteRequest) {
+                        isEnvDeleted = true
+                    }
+                    return {
+                        value: `${envData.environmentId}`,
+                        label: envData.environmentName,
+                        pipelineId: cdPipelinesMap.get(envData.environmentId)?.id,
+                        deploymentAppDeleteRequest: envData.deploymentAppDeleteRequest,
+                    }
+                })
+
+            if ((envOptions.length === 1 && !envId && !isEnvDeleted) || (envId && envOptions.length && !_selectedEnvironment)) {
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
             }
             setEnvOptions(envOptions)

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ReactSelect from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { appGroupAppSelectorStyle } from './AppGroup.utils'
-import { AppGroupAppFilterContextType } from './AppGroup.types'
+import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
 
@@ -18,6 +18,7 @@ export default function AppGroupAppFilter() {
         groupFilterOptions,
         selectedGroupFilter,
         setSelectedGroupFilter,
+        filterParentType
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
@@ -76,6 +77,13 @@ export default function AppGroupAppFilter() {
         }
     }
 
+    const getPlaceHolder = (): string => {
+        if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
+            return `Search ${filterParentType === FilterParentType.env ? 'applications' : 'environments'}`
+        }
+        return 'Search filters'
+    }
+
     return (
         <ReactSelect
             menuIsOpen={isMenuOpen}
@@ -98,7 +106,7 @@ export default function AppGroupAppFilter() {
                 ValueContainer: ValueContainer,
                 MenuList: MenuList,
             }}
-            placeholder={selectedFilterTab === AppFilterTabs.APP_FILTER ? 'Search applications' : 'Search filters'}
+            placeholder={getPlaceHolder()}
             styles={appGroupAppSelectorStyle}
             onKeyDown={escHandler}
         />

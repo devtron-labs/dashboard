@@ -43,6 +43,7 @@ export interface WorkflowEditProps
     isJobView?: boolean
     envList?: any[]
     ciPipelines?: any[]
+    filteredEnvIds?: string
 }
 
 export interface AddWorkflowState {
@@ -91,6 +92,7 @@ export interface CDNodeProps{
     match: RouteComponentProps['match']
     description: string
     isVirtualEnvironment?: boolean
+    addNewPipelineBlocked?: boolean
 }
 
 export interface WebhookNodeProps {
@@ -103,6 +105,7 @@ export interface WebhookNodeProps {
     configDiffView?: boolean
     toggleCDMenu?: () => void
     hideWebhookTippy?:  () => void
+    addNewPipelineBlocked?: boolean
 }
 
 export interface WebhookTippyType {
@@ -200,6 +203,6 @@ export interface PipelineContext {
     getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
     isVirtualEnvironment?: boolean
     globalVariables: {
-        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string 
+        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
 }[]
 }
