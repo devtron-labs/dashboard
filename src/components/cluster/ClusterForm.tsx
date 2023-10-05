@@ -147,6 +147,7 @@ export default function ClusterForm({
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
+
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -455,8 +456,8 @@ export default function ClusterForm({
         if (isConnectedViaSSHTunnelTemp) {
             payload['toConnectWithSSHTunnel'] = true
             payload.sshTunnelConfig['user'] = state.sshTunnelUser?.value
-            payload.sshTunnelConfig['password'] = state.sshTunnelPassword?.value
-            payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
+            payload.sshTunnelConfig['password'] = (SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPassword?.value : ''
+            payload.sshTunnelConfig['authKey'] = (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPrivateKey?.value : '' 
             payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
         } else {
             payload['toConnectWithSSHTunnel'] = false
@@ -718,8 +719,8 @@ export default function ClusterForm({
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     proxyUrl={state.proxyUrl}
                                     sshTunnelUser={state.sshTunnelUser}
-                                    sshTunnelPassword={state.sshTunnelPassword}
-                                    sshTunnelPrivateKey={state.sshTunnelPrivateKey}
+                                    sshTunnelPassword={(SSHConnectionType === SSHAuthenticationType.Password || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPassword : {value: '', error: ''}}
+                                    sshTunnelPrivateKey={(SSHConnectionType === SSHAuthenticationType.SSH_Private_Key || SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) ? state.sshTunnelPrivateKey : {value: '', error: ''}}
                                     sshTunnelUrl={state.sshTunnelUrl}
                                     handleOnChange={handleOnChange}
                                 />
