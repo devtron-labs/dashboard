@@ -1293,10 +1293,10 @@
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   integrity sha512-6It2EVfGskxZCQhuykrfnALg7oVeiI6KclWSmGDqB0AiInVrTGB9Jp9i4/Ad21u9Jde/voVQz6eFX/eSg/UsPA==
 
-"@devtron-labs/devtron-fe-common-lib@0.0.31":
-  version "0.0.31"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.31.tgz#7b305bb019a5afd34f76fb61296576983a1fa684"
-  integrity sha512-mbB1W2M0aOiHG1ZXgs5chMQEdrw3gwsgtHdjSTdQx1KpcCjgYhKURlBcnW4JRw4hgh6xADTxOdIY13WtvB+CSA==
+"@devtron-labs/devtron-fe-common-lib@0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.29.tgz#e790da5bba80bdbfb2ddc6e14185a13c4b3cc663"
+  integrity sha512-nM5QT+pjGjDHviLP7Ezaw1riBC/Nx8m6cPTCR74FQTQYvf/ATnvSdjK8fdPckCepiqw7iSGQjpPvZ3+ipwQbmg==
   dependencies:
     sass "^1.56.2"
     tslib "^2.4.1"
@@ -16399,3 +16399,4 @@ yargs@^15.0.1:
 yn@3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/yn/-/yn-3.1.1.tgz"
+  integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
