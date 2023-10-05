@@ -136,7 +136,12 @@ export default function ClusterForm({
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
-    const [SSHConnectionType, setSSHConnectionType] = useState(SSHAuthenticationType.Password)
+    const initialSSHAuthenticationType = (sshTunnelPassword?.value && sshTunnelPrivateKey?.value)
+        ? SSHAuthenticationType.Password_And_SSH_Private_Key
+        : sshTunnelPrivateKey?.value
+            ? SSHAuthenticationType.SSH_Private_Key
+            : SSHAuthenticationType.Password
+    const [SSHConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -151,7 +156,7 @@ export default function ClusterForm({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: { value: proxyUrl?.value, error: '' },
-            isConnectedViaSSHTunnel: isConnectedViaSSHTunnel?.value ? isConnectedViaSSHTunnel.value : false,
+            isConnectedViaSSHTunnel: isConnectedViaSSHTunnel ? isConnectedViaSSHTunnel : false,
             sshTunnelUser: { value: sshTunnelUser?.value, error: '' },
             sshTunnelPassword: { value: sshTunnelPassword?.value, error: '' },
             sshTunnelPrivateKey: { value: sshTunnelPrivateKey?.value, error: '' },
@@ -412,7 +417,7 @@ export default function ClusterForm({
             },
             active,
             proxyUrl: state.proxyUrl?.value,
-            isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel?.value,
+            isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
             sshTunnelConfig: {
                 user: state.sshTunnelUser?.value,
                 password: state.sshTunnelPassword?.value,
