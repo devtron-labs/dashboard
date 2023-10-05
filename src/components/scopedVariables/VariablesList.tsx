@@ -17,7 +17,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     const renderVariablesListItem = ({ data, classes, tooltip }: VariablesListItemProps) => (
         <div className={classes}>
             {tooltip ? (
-                <Tippy content={data?.length ? data : NO_DESCRIPTION_MESSAGE} className="default-tt" placement="top">
+                <Tippy content={data?.length ? data : NO_DESCRIPTION_MESSAGE} className="default-tt dc__word-break-all" placement="top">
                     {data?.length ? (
                         <p className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">{data}</p>
                     ) : (
