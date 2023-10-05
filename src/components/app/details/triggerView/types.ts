@@ -77,6 +77,8 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     isApplicationGroupTrigger?: boolean
     handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
     searchImageTag?: string
+    isSuperAdmin?:boolean
+    
 }
 
 export enum DeploymentWithConfigType {
@@ -112,6 +114,7 @@ export interface CDMaterialState {
     areMaterialsPassingFilters: boolean
     searchApplied: boolean
     searchText: string
+    isSuperAdmin?:boolean
 }
 
 export interface MaterialInfo {
