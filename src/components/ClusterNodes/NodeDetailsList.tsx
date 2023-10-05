@@ -590,7 +590,7 @@ export default function NodeDetailsList({
                             <div className="mt-16" style={{ width: '100%', overflow: 'auto', height:'calc(100vh - 204px)'}}>
                                 <div
                                     className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
-                                    style={{ width: 'max-content', minWidth: '100%' ,zIndex:20}}
+                                    style={{ width: 'max-content', minWidth: '100%' ,zIndex:5}}
                                 >
                                     {appliedColumns.map((column) => renderNodeListHeader(column))}
                                 </div>

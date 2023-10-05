@@ -270,6 +270,10 @@ export default function NodeListSearchFliter({
                         ...base,
                         padding: '5px 0',
                     }),
+                    menu: (base, state) => ({
+                        ...base,
+                        zIndex: 6,
+                    }),
                 }}
             />
             <div className="dc__border-left h-20 mt-6"></div>
