@@ -56,9 +56,11 @@ export default function BulkCDTrigger({
     const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
     const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const [appSearchTextMap, setAppSearchTextMap] = useState<Record<number, string>>({})
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch()
+
     const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
         setCurrentAppReleaseTags(appReleaseTags)
     }
@@ -147,7 +149,7 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
-                setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false) 
+                setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false)
                 setCurrentAppReleaseTags(_cdMaterialResponse[selectedApp.appId].appReleaseTagNames ?? [])
                 setHideImageTaggingHardDelete(_cdMaterialResponse[selectedApp.appId].hideImageTaggingHardDelete ?? false)
                 updateBulkInputMaterial(_cdMaterialResponse)
@@ -301,6 +303,42 @@ export default function BulkCDTrigger({
             },
         }
 
+        const handleMaterialFilters = (
+            searchText: string,
+            cdNodeId,
+            nodeType: DeploymentNodeType,
+            isApprovalNode: boolean = false,
+        ): void => {
+            setLoading(true)
+            abortControllerRef.current = new AbortController()
+            const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
+            getCDMaterialList(cdNodeId, nodeType, abortControllerRef.current.signal, isApprovalNode, searchText)
+                .then((response) => {
+                    if (response) {
+                        _cdMaterialResponse[selectedApp.appId] = {
+                            approvalUsers: response.approvalUsers,
+                            materials: response.materials,
+                            userApprovalConfig: response.userApprovalConfig,
+                            requestedUserId: response.requestedUserId,
+                            tagsEditable: response.tagsEditable,
+                            appReleaseTagNames: response.appReleaseTagNames,
+                            hideImageTaggingHardDelete: response.hideImageTaggingHardDelete,
+                        }
+                        setCurrentAppTagsEditable(response.tagsEditable ?? false)
+                        setCurrentAppReleaseTags(response.appReleaseTagNames ?? [])
+                        setHideImageTaggingHardDelete(response.hideImageTaggingHardDelete ?? false)
+                        updateBulkInputMaterial(_cdMaterialResponse)
+                        const _appSearchTextMap={...appSearchTextMap}
+                        _appSearchTextMap[selectedApp.appId]=searchText
+                        setAppSearchTextMap(_appSearchTextMap)
+                    }
+                    setLoading(false)
+                })
+                .catch((error) => {
+                    showError(error)
+                })
+        }
+
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -397,6 +435,8 @@ export default function BulkCDTrigger({
                             location={location}
                             match={match}
                             isApplicationGroupTrigger={true}
+                            handleMaterialFilters={handleMaterialFilters}
+                            searchImageTag={appSearchTextMap[selectedApp.appId]}
                         />
                     )}
                 </div>

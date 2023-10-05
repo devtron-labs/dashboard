@@ -4,14 +4,12 @@ import SuggestionItem from '../SuggestionItem'
 import { NO_DEFINED_DESCRIPTION } from '../constants'
 
 // mocking ClipboardButton since its already tested
-jest.mock(
-    '../../ClipboardButton/ClipboardButton',
-    () =>
-        function ClipboardButton(triggerCopy) {
-            if (triggerCopy) return <div>Copied</div>
-            return <div>ClipboardButton</div>
-        },
-)
+jest.mock('@devtron-labs/devtron-fe-common-lib', () => ({
+    ClipboardButton: function ClipboardButton(triggerCopy) {
+        if (triggerCopy) return <div>Copied</div>
+        return <div>ClipboardButton</div>
+    },
+}))
 
 describe('When SuggestionsItem mounts', () => {
     beforeEach(() => {

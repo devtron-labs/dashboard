@@ -8,7 +8,7 @@ import {
     Progressing,
     multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CIPipelineProps, LinkedCIPipelineState } from './types'
+import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
 import { toast } from 'react-toastify'
 import { ValidationRules } from './validationRules'
@@ -116,6 +116,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         }
         this.setState({ loadingData: true })
         let parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
+        parentCIPipeline.pipelineType = CIPipelineBuildType.CI_EXTERNAL
         let params = {
             appId: +this.props.match.params.appId,
             workflowId: +this.props.match.params.workflowId,

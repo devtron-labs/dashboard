@@ -64,10 +64,10 @@ export default function NewCDPipeline({
     location,
     appName,
     close,
-    downstreamNodeSize,
     getWorkflows,
     refreshParentWorkflows,
     envIds,
+    isLastNode
 }) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -711,7 +711,7 @@ export default function NewCDPipeline({
         const request = responseCode()
 
         const _form = { ...formData }
-        
+
         let promise = cdPipelineId ? updateCDPipeline(request) : saveCDPipeline(request)
         promise
             .then((response) => {
@@ -902,9 +902,9 @@ export default function NewCDPipeline({
 
     const renderSecondaryButton = () => {
         if (cdPipelineId) {
-            let canDeletePipeline = downstreamNodeSize === 0
-            let message =
-                downstreamNodeSize > 0 ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
+            const canDeletePipeline = isLastNode
+            const message =
+                !canDeletePipeline ? 'This Pipeline cannot be deleted as it has connected CD pipeline' : ''
             return (
                 <ConditionalWrap
                     condition={!canDeletePipeline}
@@ -1065,7 +1065,7 @@ export default function NewCDPipeline({
         } else {
             title = CREATE_DEPLOYMENT_PIPELINE;
         }
-        
+
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${

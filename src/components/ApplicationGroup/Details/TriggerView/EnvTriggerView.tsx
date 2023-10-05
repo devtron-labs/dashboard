@@ -73,7 +73,8 @@ import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
 import {
     AppGroupDetailDefaultType,
-    BulkCDDetailType, BulkCDDetailTypeResponse,
+    BulkCDDetailType,
+    BulkCDDetailTypeResponse,
     BulkCIDetailType,
     ProcessWorkFlowStatusType,
     ResponseRowType,
@@ -91,6 +92,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getDefaultConfig } from '../../../notifications/notifications.service'
 import BulkSourceChange from './BulkSourceChange'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -138,10 +140,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
     const [appReleaseTags, setAppReleaseTags] = useState<string[]>([])
     const [tagsEditableVal, setTagsEditable] = useState<boolean>(false)
-    const [hideImageTaggingHardDelete,setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const { queryParams } = useSearchString()
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
+    const [searchImageTag, setSearchImageTag] = useState<string>('')
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -163,7 +166,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }, [filteredAppIds])
 
     useEffect(() => {
-        if(location.search.includes('approval-node') && filteredWorkflows?.length) {
+        if (location.search.includes('approval-node') && filteredWorkflows?.length) {
             setShowBulkCDModal(false)
             setShowApprovalModal(true)
             onClickCDMaterial(queryParams.get('approval-node'), DeploymentNodeType.CD, true)
@@ -172,13 +175,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }, [location.search])
 
     const getConfigs = () => {
-        getDefaultConfig()
-            .then((response) => {
-                let isConfigPresent = response.result.isConfigured
-                let _isDefaultConfig = response.result.is_default_configured
-                setDefaultConfig(_isDefaultConfig)
-                setConfigPresent(isConfigPresent)
-            })
+        getDefaultConfig().then((response) => {
+            let isConfigPresent = response.result.isConfigured
+            let _isDefaultConfig = response.result.is_default_configured
+            setDefaultConfig(_isDefaultConfig)
+            setConfigPresent(isConfigPresent)
+        })
     }
 
     const preserveSelection = (_workflows: WorkflowType[]) => {
@@ -313,7 +315,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     preNodeAvailable: false,
                     postNodeAvailable: false,
                     appReleaseTags: wf.appReleaseTags,
-                    tagsEditable: wf.tagsEditable
+                    tagsEditable: wf.tagsEditable,
                 }
                 for (const node of wf.nodes) {
                     if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
@@ -755,7 +757,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => {
+    const onClickCDMaterial = (
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode: boolean = false,
+        searchText?: string,
+    ): void => {
         ReactGA.event(
             isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked,
         )
@@ -769,6 +776,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             abortControllerRef.current.signal,
             isApprovalNode,
+            searchText,
         )
             .then((data) => {
                 let _selectedNode
@@ -921,6 +929,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         setErrorCode(response.code)
                         preventBodyScroll(false)
                         getWorkflowStatusData(workflows)
+                        setSearchImageTag('')
                     }
                 })
                 .catch((errors: ServerErrors) => {
@@ -991,10 +1000,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setCDLoading(false)
             return
         }
+
         const payload = {
             pipelineId: +selectedCINode.id,
             ciPipelineMaterials: ciPipelineMaterials,
             invalidateCache: invalidateCache,
+            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
         }
 
         triggerCINode(payload)
@@ -1061,7 +1072,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(true)
         triggerBranchChange(appIds, +envId, value)
             .then((response: any) => {
-                console.log(response)
                 const _responseList = []
                 response.result.apps.map((res) => {
                     _responseList.push({
@@ -1115,7 +1125,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
-                    (!showBulkCDModal && selectedCDNode && selectedCDNode.id == +node.id && node.type === selectedCDNode.type)
+                    (!showBulkCDModal &&
+                        selectedCDNode &&
+                        selectedCDNode.id == +node.id &&
+                        node.type === selectedCDNode.type)
                 ) {
                     const artifacts = node[materialType].map((artifact, i) => {
                         return {
@@ -1272,13 +1285,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         preventBodyScroll(false)
         setCDLoading(false)
         setShowCDModal(false)
+        setSearchImageTag('')
     }
 
     const closeApprovalModal = (e): void => {
         preventBodyScroll(false)
         setShowApprovalModal(false)
         history.push({
-            search: ''
+            search: '',
         })
     }
 
@@ -1366,7 +1380,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
         const _workflows = filteredWorkflows.map((wf) => {
-            if (wf.isSelected) {
+            if (wf.isSelected && cdMaterialResponse[wf.appId]) {
                 const _appId = wf.appId
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
@@ -1428,7 +1442,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         nodeList.forEach((node, index) => {
             let ciArtifact = null
             node[materialType].forEach((artifact) => {
-                if(artifact.isSelected == true)ciArtifact = artifact
+                if (artifact.isSelected == true) ciArtifact = artifact
             })
             if (ciArtifact) {
                 _CDTriggerPromiseList.push(
@@ -1596,10 +1610,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     ciPipelineMaterials.push(historyItem)
                 })
             }
+
             const payload = {
                 pipelineId: +node.id,
                 ciPipelineMaterials: ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
+                pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD
             }
             _CITriggerPromiseList.push(triggerCINode(payload))
         })
@@ -1613,12 +1629,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
                 //extract unique tags for this workflow
-                wf.appReleaseTags?.forEach((tag)=>{
-                    if(!uniqueTagsSet.has(tag)){
+                wf.appReleaseTags?.forEach((tag) => {
+                    if (!uniqueTagsSet.has(tag)) {
                         uniqueReleaseTags.push(tag)
                     }
                     uniqueTagsSet.add(tag)
-
                 })
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
@@ -1651,7 +1666,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         appReleaseTags: wf.appReleaseTags,
                         tagsEditable: wf.tagsEditable,
                         ciPipelineId: _selectedNode.connectingCiPipelineId,
-                        hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete
+                        hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete,
                     })
                 } else {
                     let warningMessage = ''
@@ -1675,7 +1690,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
         return {
             bulkCDDetailType: _selectedAppWorkflowList,
-            uniqueReleaseTags: uniqueReleaseTags
+            uniqueReleaseTags: uniqueReleaseTags,
         }
     }
 
@@ -1927,6 +1942,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+
+    const handleMaterialFilters = (
+        searchText: string,
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode: boolean = false,
+    ) => {
+        onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        setSearchImageTag(searchText)
+    }
+    
     const renderBulkSourchChange = (): JSX.Element | null => {
         if (!showBulkSourceChangeModal) {
             return null
@@ -1958,6 +1984,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             }
             const material = node?.[materialType] || []
+
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
                     <div
@@ -1999,16 +2026,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 userApprovalConfig={node?.userApprovalConfig}
                                 requestedUserId={node?.requestedUserId}
                                 isVirtualEnvironment={isVirtualEnv}
-                                ciPipelineId = {node?.connectingCiPipelineId}
-                                appReleaseTagNames = {appReleaseTags}
-                                setAppReleaseTagNames = {setAppReleaseTagsNames}
-                                tagsEditable = {tagsEditableVal}
-                                setTagsEditable = {setTagsEditableVal}
-                                hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
+                                ciPipelineId={node?.connectingCiPipelineId}
+                                appReleaseTagNames={appReleaseTags}
+                                setAppReleaseTagNames={setAppReleaseTagsNames}
+                                tagsEditable={tagsEditableVal}
+                                setTagsEditable={setTagsEditableVal}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                 history={history}
                                 location={location}
                                 match={match}
                                 isApplicationGroupTrigger={true}
+                                handleMaterialFilters={handleMaterialFilters}
+                                searchImageTag={searchImageTag}
                             />
                         )}
                     </div>
@@ -2048,12 +2077,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     onClickCDMaterial={onClickCDMaterial}
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
-                    ciPipelineId = {node?.connectingCiPipelineId}
-                    appReleaseTagNames = {appReleaseTags}
-                    setAppReleaseTagNames = {setAppReleaseTagsNames}
-                    tagsEditable = {tagsEditableVal}
-                    setTagsEditable = {setTagsEditableVal}
-                    hideImageTaggingHardDelete = {hideImageTaggingHardDelete}
+                    ciPipelineId={node?.connectingCiPipelineId}
+                    appReleaseTagNames={appReleaseTags}
+                    setAppReleaseTagNames={setAppReleaseTagsNames}
+                    tagsEditable={tagsEditableVal}
+                    setTagsEditable={setTagsEditableVal}
+                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}
                 />

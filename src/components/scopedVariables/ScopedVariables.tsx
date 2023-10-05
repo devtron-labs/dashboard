@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { ErrorScreenNotAuthorized, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenNotAuthorized, Progressing, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import SavedVariablesView from './SavedVariables'
 import UploadScopedVariables from './UploadScopedVariables'
 import { sortVariables } from './utils'
 import { getScopedVariablesJSON } from './service'
-import { useAsync } from '../common'
 import { ScopedVariablesDataType, ScopedVariablesProps } from './types'
 import './styles.scss'
 
