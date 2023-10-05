@@ -62,10 +62,17 @@ export default function DeploymentConfig({
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
+    const baseDeploymentAbortController = new AbortController()
 
     useEffect(() => {
+       const abortController = new AbortController()
         reloadEnvironments()
         initialise()
+
+        return () => {
+            // if(baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted){
+           abortController.abort()
+        }
     }, [])
 
     useEffectAfterMount(() => {
@@ -214,11 +221,16 @@ export default function DeploymentConfig({
         templateData,
         updatePublishedState: boolean,
     ): Promise<void> => {
+        let abortController = new AbortController()
         if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             const {
                 result: { defaultAppOverride },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, true)
+            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, abortController.signal, true)
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
+        }
+
+        if(abortController && !abortController.signal.aborted){
+             abortController.abort()
         }
 
         const statesToUpdate = {}
@@ -289,8 +301,7 @@ export default function DeploymentConfig({
                         currentViewEditor,
                     },
                 },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id)
-
+            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
             const templateData = {
                 template: defaultAppOverride,
                 schema,
@@ -330,6 +341,9 @@ export default function DeploymentConfig({
             }
         } catch (err) {
             showError(err)
+            if(baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted){
+                baseDeploymentAbortController.abort()
+            }
         } finally {
             dispatch({
                 type: DeploymentConfigStateActionTypes.chartConfigLoading,
@@ -374,7 +388,7 @@ export default function DeploymentConfig({
         try {
             const requestBody = prepareDataToSave(true)
             const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
-            await api(requestBody)
+            await api(requestBody, baseDeploymentAbortController.signal)
             reloadEnvironments()
             fetchDeploymentTemplate()
             respondOnSuccess()
@@ -390,6 +404,10 @@ export default function DeploymentConfig({
             }
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
+            if (!baseDeploymentAbortController.signal.aborted) {
+                showError(err)
+                baseDeploymentAbortController.abort()
+            }
         } finally {
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
