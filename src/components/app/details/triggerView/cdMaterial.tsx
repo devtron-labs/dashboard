@@ -19,6 +19,10 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -28,7 +32,6 @@ import {
     showError,
     Progressing,
     ConditionalWrap,
-    EmptyState,
     InfoColourBar,
     noop,
     MaterialInfo,
@@ -37,6 +40,11 @@ import {
     getRandomColor,
     CDModalTab,
     ScanVulnerabilitiesTable,
+    ImageTagButton,
+    ImageTagsContainer,
+    GenericEmptyState,
+    FilterStates,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
@@ -53,15 +61,16 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
+import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP } from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
 const ApprovedImagesMessage = importComponentFromFELibrary('ApprovedImagesMessage')
 const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
-
+let timeoutId
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
@@ -86,6 +95,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
+            materialInEditModeMap: new Map<number, boolean>(),
+            showSearch: !!this.props.searchImageTag,
+            areMaterialsPassingFilters:
+                props.material.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED)
+                    .length > 0,
+            searchApplied: !!this.props.searchImageTag,
+            searchText: this.props.searchImageTag,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -95,15 +111,36 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.isConfigAvailable = this.isConfigAvailable.bind(this)
     }
 
+    static getDerivedStateFromProps(props, state) {
+        return { ...state, selectedMaterial: props.material.find((_mat) => _mat.isSelected) }
+    }
+
     componentDidMount() {
         this.getSecurityModuleStatus()
-
         if (
             (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
             this.state.selectedMaterial &&
             this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.searchImageTag != prevProps.searchImageTag) {
+          if (this.props.searchImageTag) {
+              this.setState({
+                  searchApplied: true,
+                  showSearch: true,
+                  searchText: this.props.searchImageTag,
+              })
+          } else {
+              this.setState({
+                  searchApplied: false,
+                  showSearch: false,
+                  searchText: '',
+              })
+          }
         }
     }
 
@@ -300,15 +337,32 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             mat.runningOnParentCd ||
             mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
             mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-            mat.artifactStatus === ARTIFACT_STATUS.Failed
+            mat.artifactStatus === ARTIFACT_STATUS.Failed ||
+            mat.index == 0
         ) {
             return (
-                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
-                    {this.renderActiveCD(mat)}
-                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
-                    {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
-                        this.renderFailedCD(mat)}
+                <div>
+                    <div className="bcn-0 br-4 mb-8 flex left">
+                        {this.renderActiveCD(mat)}
+                        {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
+                        {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                            mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                            this.renderFailedCD(mat)}
+                        {mat.index == 0 &&
+                            this.props.materialType !== MATERIAL_TYPE.rollbackMaterialList &&
+                            !this.props.searchImageTag && (
+                                <div className="">
+                                    <ImageTagButton
+                                        text="Latest"
+                                        isSoftDeleted={false}
+                                        isEditing={false}
+                                        tagId={0}
+                                        softDeleteTags={[]}
+                                        isSuperAdmin={[]}
+                                    />
+                                </div>
+                            )}
+                    </div>
                 </div>
             )
         }
@@ -365,6 +419,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             index,
             this.props.materialType,
             this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+            this.props.appId,
         )
         if (
             (this.props.materialType === 'none' || this.state.isSelectImageTrigger) &&
@@ -399,6 +454,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         isImageApprover: boolean,
         disableSelection: boolean,
     ) => {
+        if (mat.filterState !== FilterStates.ALLOWED) {
+            return (
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="top"
+                    content={EXCLUDED_IMAGE_TOOLTIP}
+                >
+                    <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
+                </Tippy>
+            )
+        }
+
         if (mat.vulnerable) {
             return (
                 <span
@@ -421,7 +489,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }
                 >
                     <span className="dc__opacity-0_5" data-testid={`cd-approval-artifact-select-disabled-${mat.index}`}>
-                        Select
+                        SELECT
                     </span>
                 </Tippy>
             )
@@ -454,7 +522,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }}
                     data-testid={`cd-artifact-select-${mat.index}`}
                 >
-                    Select
+                    SELECT
                 </span>
             )
         }
@@ -465,6 +533,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         isApprovalConfigured: boolean,
         hideSelector?: boolean,
         disableSelection?: boolean,
+        latestTagAdded?: boolean,
     ) {
         const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
@@ -472,10 +541,25 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 <div className="flex left column">
-                    <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                        <img src={docker} alt="" className="commit-hash__icon" />
-                        {mat.image}
-                    </div>
+                    {mat.filterState === FilterStates.ALLOWED ? (
+                        <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
+                            <img src={docker} alt="" className="commit-hash__icon" />
+                            {mat.image}
+                        </div>
+                    ) : (
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top"
+                            content={EXCLUDED_IMAGE_TOOLTIP}
+                        >
+                            <div className="flexbox pt-2 pb-2 pl-8 pr-8 br-4 bcr-1 dc__align-items-center dc__gap-4">
+                                <ICAbort className="icon-dim-20 fcr-5" />
+
+                                <p className="m-0 fs-12 lh-16 fw-4 cr-5">{mat.image}</p>
+                            </div>
+                        </Tippy>
+                    )}
                     {this.props.stageType !== STAGE_TYPE.CD && mat.latest && (
                         <span className="last-deployed-status">Last Run</span>
                     )}
@@ -507,6 +591,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
                     </div>
                 )}
+
                 {!!mat.deployedBy && this.state.isRollbackTrigger ? (
                     <div className="material-history__deployed-by flex left">
                         {mat.deployedBy === 'system' ? (
@@ -538,14 +623,22 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             !isImageApprover &&
                             !disableSelection &&
                             ExpireApproval && (
-                                <ExpireApproval
-                                    matId={mat.id}
-                                    appId={this.props.appId}
-                                    pipelineId={this.props.pipelineId}
-                                    stageType={this.props.stageType}
-                                    userApprovalMetadata={mat.userApprovalMetadata}
-                                    onClickCDMaterial={this.context.onClickCDMaterial}
-                                />
+                                <>
+                                    <ExpireApproval
+                                        matId={mat.id}
+                                        appId={this.props.appId}
+                                        pipelineId={this.props.pipelineId}
+                                        stageType={this.props.stageType}
+                                        userApprovalMetadata={mat.userApprovalMetadata}
+                                        onClickCDMaterial={this.context.onClickCDMaterial}
+                                    />
+
+                                    {mat.filterState !== FilterStates.ALLOWED && (
+                                        <div className="flex dc__gap-12 mr-12">
+                                            <div className="h-12 dc__border-left" />
+                                        </div>
+                                    )}
+                                </>
                             )}
                         {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                     </div>
@@ -573,118 +666,208 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return isApprovalConfigured ? `material-history__approved-image${disabledClassPostfix}` : ''
     }
 
-    renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
-        return materialList.map((mat, idx) => {
-            const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
-            const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-            const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
+    toggleCardMode = (index) => {
+        this.setState((prevState) => {
+            const _isEditModeList = new Map(prevState.materialInEditModeMap)
+            _isEditModeList.set(index, !_isEditModeList.get(index))
+            return {
+                materialInEditModeMap: _isEditModeList,
+            }
+        })
+    }
 
+    renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
+        return materialList.map((mat) => {
+            const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
+            const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
+            const latestTagAdded =
+                (mat.latest ||
+                    mat.runningOnParentCd ||
+                    mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
+                    mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                    mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                mat.index == 0
+
+            const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
+            const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
+            const hideSourceInfo = !this.state.materialInEditModeMap.get(+mat.id)
             return (
                 <div
                     key={`material-history-${mat.index}`}
-                    className={`material-history material-history--cd ${
+                    className={`material-history material-history--cd image-tag-parent-card ${
                         mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
                             ? 'material-history-selected'
                             : ''
                     }`}
                 >
-                    {this.renderSequentialCDCardTitle(mat)}
-                    <div
-                        data-testid={`cd-material-history-image-${mat.index}`}
-                        className={`material-history__top cursor-default mh-66 ${borderBottom} ${approvedImageClass}`}
-                    >
-                        {this.renderMaterialInfo(mat, isApprovalConfigured, false, disableSelection)}
-                    </div>
-                    {mat.showSourceInfo && (
-                        <>
-                            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
-                                <ul className="tab-list tab-list--vulnerability">
-                                    <li className="tab-list__tab">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                this.props.changeTab(
-                                                    mat.index,
-                                                    Number(mat.id),
-                                                    CDModalTab.Changes,
-                                                    {
-                                                        id: this.props.pipelineId,
-                                                        type: this.props.stageType,
-                                                    },
-                                                    this.props.appId,
-                                                )
-                                            }}
-                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                mat.tab === CDModalTab.Changes ? 'active' : ''
-                                            }`}
-                                        >
-                                            Changes
-                                        </button>
-                                    </li>
-                                    <li className="tab-list__tab">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                this.props.changeTab(
-                                                    mat.index,
-                                                    Number(mat.id),
-                                                    CDModalTab.Security,
-                                                    this.props.isFromBulkCD
-                                                        ? {
-                                                              id: this.props.pipelineId,
-                                                              type: this.props.stageType,
-                                                          }
-                                                        : null,
-                                                    this.props.appId,
-                                                )
-                                            }}
-                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                mat.tab === CDModalTab.Security ? 'active' : ''
-                                            }`}
-                                        >
-                                            Security
-                                            {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
-                                        </button>
-                                    </li>
-                                </ul>
-                            )}
-                            {mat.tab === CDModalTab.Changes
-                                ? this.renderGitMaterialInfo(mat.materialInfo)
-                                : this.renderVulnerabilities(mat)}
-                        </>
-                    )}
-                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
-                        <button
-                            type="button"
-                            className="material-history__changes-btn"
-                            data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                this.props.toggleSourceInfo(
-                                    idx,
-                                    this.props.isFromBulkCD
-                                        ? { id: this.props.pipelineId, type: this.props.stageType }
-                                        : null,
-                                )
-                            }}
-                        >
-                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                            <img
-                                src={arrow}
-                                alt=""
-                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                    <div className="p-12 bcn-0 br-4">
+                        <div className="dc__content-space flexbox dc__align-start">
+                            <div>
+                                {this.renderSequentialCDCardTitle(mat)}
+                                <div
+                                    data-testid={`cd-material-history-image-${mat.index}`}
+                                    className={`material-history__top cursor-default ${approvedImageClass}`}
+                                >
+                                    {this.renderMaterialInfo(
+                                        mat,
+                                        isApprovalConfigured,
+                                        true,
+                                        disableSelection,
+                                        latestTagAdded,
+                                    )}
+                                </div>
+                            </div>
+                            <div className="material-history__select-text fs-13 w-auto dc__no-text-transform flex right cursor-default">
+                                {this.props.materialType !== 'none' &&
+                                    isApprovalRequester &&
+                                    !isImageApprover &&
+                                    !disableSelection &&
+                                    ExpireApproval && (
+                                        <>
+                                            <ExpireApproval
+                                                matId={mat.id}
+                                                appId={this.props.appId}
+                                                pipelineId={this.props.pipelineId}
+                                                stageType={this.props.stageType}
+                                                userApprovalMetadata={mat.userApprovalMetadata}
+                                                onClickCDMaterial={this.context.onClickCDMaterial}
+                                            />
+
+                                            {mat.filterState !== FilterStates.ALLOWED && (
+                                                <div className="flex dc__gap-12 mr-12">
+                                                    <div className="h-12 dc__border-left" />
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
+                            </div>
+                        </div>
+                        <div data-testId={`image-tags-container-${mat.index}`}>
+                            <ImageTagsContainer
+                                ciPipelineId={this.props.ciPipelineId}
+                                artifactId={+mat.id}
+                                imageComment={mat.imageComment}
+                                imageReleaseTags={mat.imageReleaseTags}
+                                appReleaseTagNames={this.props.appReleaseTagNames}
+                                setAppReleaseTagNames={this.props.setAppReleaseTagNames}
+                                tagsEditable={this.props.tagsEditable}
+                                toggleCardMode={this.toggleCardMode}
+                                setTagsEditable={this.props.setTagsEditable}
+                                forceReInit={true}
+                                hideHardDelete={this.props.hideImageTaggingHardDelete}
+                                updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
                             />
-                        </button>
+                        </div>
+                    </div>
+                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && hideSourceInfo && (
+                        <>
+                            <ul
+                                className={`tab-list tab-list--vulnerability ${
+                                    mat.showSourceInfo ? '' : 'tab-bottom-radius'
+                                }`}
+                            >
+                                {mat.showSourceInfo &&
+                                    (this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer ? (
+                                        <>
+                                            <li className="tab-list__tab">
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        this.props.changeTab(
+                                                            mat.index,
+                                                            Number(mat.id),
+                                                            CDModalTab.Changes,
+                                                            {
+                                                                id: this.props.pipelineId,
+                                                                type: this.props.stageType,
+                                                            },
+                                                            this.props.appId,
+                                                        )
+                                                    }}
+                                                    className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                        mat.tab === CDModalTab.Changes ? 'active' : ''
+                                                    }`}
+                                                >
+                                                    Changes
+                                                </button>
+                                            </li>
+                                            <li className="tab-list__tab">
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        this.props.changeTab(
+                                                            mat.index,
+                                                            Number(mat.id),
+                                                            CDModalTab.Security,
+                                                            this.props.isFromBulkCD
+                                                                ? {
+                                                                      id: this.props.pipelineId,
+                                                                      type: this.props.stageType,
+                                                                  }
+                                                                : null,
+                                                            this.props.appId,
+                                                        )
+                                                    }}
+                                                    className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                        mat.tab === CDModalTab.Security ? 'active' : ''
+                                                    }`}
+                                                >
+                                                    Security
+                                                    {mat.vulnerabilitiesLoading
+                                                        ? ''
+                                                        : ` (${mat.vulnerabilities.length})`}
+                                                </button>
+                                            </li>
+                                        </>
+                                    ) : (
+                                        <div className="fs-13 fw-6 flex">Source</div>
+                                    ))}
+                                <li className="flex dc__align-right">
+                                    <button
+                                        type="button"
+                                        className="material-history__changes-btn"
+                                        data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
+                                        onClick={(event) => {
+                                            event.stopPropagation()
+                                            this.props.toggleSourceInfo(
+                                                mat.index,
+                                                this.props.isFromBulkCD
+                                                    ? { id: this.props.pipelineId, type: this.props.stageType }
+                                                    : null,
+                                            )
+                                        }}
+                                    >
+                                        {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                                        <img
+                                            src={arrow}
+                                            alt=""
+                                            style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                                        />
+                                    </button>
+                                </li>
+                            </ul>
+                            {mat.showSourceInfo &&
+                                (mat.tab === CDModalTab.Changes
+                                    ? this.renderGitMaterialInfo(mat.materialInfo)
+                                    : this.renderVulnerabilities(mat))}
+                        </>
                     )}
                 </div>
             )
         })
     }
 
-    viewAllImages = () => {
-        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+    viewAllImages = (e) => {
+        e.stopPropagation()
+        if (!this.props.isApplicationGroupTrigger) {
+            this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+        }
+        this.props.history.push({
+            search: `approval-node=${this.props.pipelineId}`,
+        })
     }
 
     processConsumedAndApprovedImages = () => {
@@ -698,7 +881,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 approvedImages.push(mat)
             }
         })
-
         return { consumedImage, approvedImages }
     }
 
@@ -709,7 +891,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (isApprovalConfigured) {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
-
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
         } else {
@@ -719,18 +900,82 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     : this.props.material
         }
 
-        // reset the selection for some cases
-        for (const mat of materialList) {
-            if (this.state.selectedMaterial?.id === mat.id) {
-                mat.isSelected = true
-                break
-            }
-        }
-
         return {
             consumedImage: _consumedImage,
             materialList,
         }
+    }
+
+    setSearchValue = (searchValue: string) => {
+        if (!this.props.handleMaterialFilters) {
+            return
+        }
+
+        this.props.handleMaterialFilters(searchValue, this.props.pipelineId, this.props.stageType, false)
+    }
+
+    handleRefresh = (e) => {
+        stopPropagation(e)
+        if (!this.props.handleMaterialFilters) {
+            return
+        }
+        this.props.handleMaterialFilters(null, this.props.pipelineId, this.props.stageType, false)
+        this.setState({
+            showSearch: false,
+        })
+    }
+
+    handleSearchClick = (e) => {
+        stopPropagation(e)
+        this.setState({
+            showSearch: true,
+        })
+    }
+
+    clearSearch = (e): void => {
+        stopPropagation(e)
+        if (this.state.searchText) {
+            this.setSearchValue('')
+        }
+    }
+
+    handleInputChange = (event): void => {
+        this.setState({
+            searchText: event.target.value,
+        })
+    }
+
+    handleFilterKeyPress = (event): void => {
+        const theKeyCode = event.key
+        if (theKeyCode === 'Enter') {
+            if (event.target.value !== this.props.searchImageTag) {
+                this.setSearchValue(event.target.value)
+            }
+        } else if (theKeyCode === 'Backspace' && this.props.searchImageTag.length === 1) {
+            this.clearSearch(event)
+        }
+    }
+
+    renderSearch = (): JSX.Element => {
+        return (
+            <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
+                <SearchIcon className="search__icon icon-dim-18" />
+                <input
+                    data-testid="ci-trigger-search-by-commit-hash"
+                    type="text"
+                    placeholder="Search by image tag"
+                    value={this.state.searchText}
+                    className="search__input dc__right-0"
+                    onChange={this.handleInputChange}
+                    onKeyDown={this.handleFilterKeyPress}
+                />
+                {this.state.searchApplied && (
+                    <button className="search__clear-button" type="button" onClick={this.clearSearch}>
+                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
+                    </button>
+                )}
+            </div>
+        )
     }
 
     renderMaterialList = (isApprovalConfigured: boolean) => {
@@ -739,14 +984,28 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
-
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
-                {(!this.props.isFromBulkCD || isApprovalConfigured) && (
-                    <div className="material-list__title pb-16">{titleText}</div>
-                )}
-                {isApprovalConfigured && materialList.length <= 0
+                <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                    <span className="flex dc__align-start">{titleText}</span>
+                    <span className="flexbox dc__align-items-center h-32 dc__gap-16">
+                        {!this.state.isRollbackTrigger && ( // remove this condition when search/refresh for rollback is implemented
+                            <>
+                                {this.state.showSearch ? (
+                                    this.renderSearch()
+                                ) : (
+                                    <SearchIcon
+                                        onClick={this.handleSearchClick}
+                                        className="icon-dim-18 icon-color-n6 cursor"
+                                    />
+                                )}
+                                <RefreshIcon onClick={this.handleRefresh} className="icon-dim-16 scn-6 cursor" />
+                            </>
+                        )}
+                    </span>
+                </div>
+                {materialList.length <= 0
                     ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
                     : this.renderMaterial(materialList, false, isApprovalConfigured)}
             </>
@@ -882,35 +1141,43 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             }
         }
         return (
-            <div
-                className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
-                    _canReviewConfig ? 'cursor' : 'config-not-found'
-                } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
-                onClick={this.reviewConfig}
+            <Tippy
+                className="default-tt cursor"
+                arrow={false}
+                content={(diffFound ? 'Config' : 'No config') + ' diff from last deployed'}
             >
-                {!isLastDeployedOption && (this.state.recentDeploymentConfig !== null || this.state.checkingDiff) && (
-                    <div
-                        className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
-                    >
-                        {checkingdiff}
-                        {configNotAvailable}
-                        {diffFound}
-                        {noDiff}
-                    </div>
-                )}
-                {((!this.state.checkingDiff && _canReviewConfig) ||
-                    isLastDeployedOption ||
-                    !this.state.recentDeploymentConfig) && (
-                    <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
-                )}
-            </div>
+                <div
+                    className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
+                        _canReviewConfig ? 'cursor' : 'config-not-found'
+                    } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
+                    onClick={this.reviewConfig}
+                >
+                    {!isLastDeployedOption && (this.state.recentDeploymentConfig !== null || this.state.checkingDiff) && (
+                        <div
+                            className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
+                        >
+                            {checkingdiff}
+                            {configNotAvailable}
+                            {diffFound}
+                            {noDiff}
+                        </div>
+                    )}
+                    {((!this.state.checkingDiff && _canReviewConfig) ||
+                        isLastDeployedOption ||
+                        !this.state.recentDeploymentConfig) && (
+                        <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
+                    )}
+                </div>
+            </Tippy>
         )
     }
 
     isDeployButtonDisabled() {
         const selectedImage = this.props.material.find((artifact) => artifact.isSelected)
+
         return (
             !selectedImage ||
+            !this.state.areMaterialsPassingFilters ||
             (this.state.isRollbackTrigger && (this.state.checkingDiff || !this.canDeployWithConfig())) ||
             (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
                 !this.state.recentDeploymentConfig)
@@ -918,6 +1185,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     getTippyContent() {
+        if (!this.state.areMaterialsPassingFilters) {
+            return (
+                <>
+                    <h2 className="fs-12 fw-6 lh-18 m-0">No eligible images found!</h2>
+                    <p className="fs-12 fw-4 lh-18 m-0">
+                        Please select an image that passes the configured filters to deploy
+                    </p>
+                </>
+            )
+        }
+
         return (
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
@@ -943,15 +1221,18 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-        const hideConfigDiffSelector = isApprovalConfigured && this.props.material.length <= 1
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
             (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
+        const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
             <div
                 className={`trigger-modal__trigger ${
-                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) || this.state.showConfigDiffView
+                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) ||
+                    this.state.showConfigDiffView ||
+                    this.props.stageType === DeploymentNodeType.PRECD ||
+                    this.props.stageType === DeploymentNodeType.POSTCD
                         ? 'flex right'
                         : ''
                 }`}
@@ -1023,7 +1304,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
+                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
                         {this.props.isSaveLoading ? (
@@ -1227,8 +1508,26 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    renderGenerateButton = () => {
+        return (
+            <button className="flex cta h-32" onClick={this.clearSearch}>
+                Clear filter
+            </button>
+        )
+    }
+
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
-        if (isApprovalConfigured && ApprovalEmptyState) {
+        if (this.props.searchImageTag) {
+            return (
+                <GenericEmptyState
+                    image={noartifact}
+                    title="No matching image available"
+                    subTitle="We couldn't find any matching image"
+                    isButtonAvailable={true}
+                    renderButton={this.renderGenerateButton}
+                />
+            )
+        } else if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
                     className="dc__skip-align-reload-center"
@@ -1242,21 +1541,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={noartifact} alt="" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                        No image available
-                    </h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    {this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
+            <GenericEmptyState
+                image={noartifact}
+                title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
+                subTitle={
+                    this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'
-                        : 'Please Trigger CI Pipeline and find the image here for deployment.'}
-                </EmptyState.Subtitle>
-            </EmptyState>
+                        : 'Please Trigger CI Pipeline and find the image here for deployment.'
+                }
+            />
         )
     }
 

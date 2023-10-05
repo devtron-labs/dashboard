@@ -5,6 +5,7 @@ import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import link from '../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export interface CINodeProps {
     x: number
@@ -19,6 +20,7 @@ export interface CINodeProps {
     triggerType: string
     isLinkedCI: boolean
     isExternalCI: boolean
+    isJobCI: boolean
     isTrigger: boolean
     linkedCount: number
     downstreams: NodeAttr[]
@@ -28,25 +30,38 @@ export interface CINodeProps {
     hideWebhookTippy?: () => void
     isJobView?: boolean
     showPluginWarning?: boolean
+    envList?: any[]
+    filteredCIPipelines?: any[]
+    addNewPipelineBlocked?: boolean
 }
 
 export class CINode extends Component<CINodeProps> {
-    renderNodeIcon = () => {
+    onClickAddNode = (event: any) => {
+      if (this.props.addNewPipelineBlocked) {
+          return
+      }
+      event.stopPropagation()
+      let { top, left } = event.target.getBoundingClientRect()
+      top = top + 25
+      this.props.toggleCDMenu()
+    }
+
+    renderNodeIcon = (isJobCard: boolean) => {
         if (this.props.showPluginWarning) {
             return <Warning className="icon-dim-18 warning-icon-y7" />
         }
         return (
             <div
                 className={`workflow-node__icon-common ${
-                    this.props.isJobView ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
+                    (isJobCard) ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
                 }`}
             />
         )
     }
 
-    renderReadOnlyCard = () => {
+    renderReadOnlyCard = (isJobCard: boolean) => {
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
-        const nodeText = this.props.isJobView ? 'Job' : _buildText
+        const nodeText =  (isJobCard) ? 'Job' : _buildText
         return (
             <div className="workflow-node">
                 <div className="workflow-node__title flex">
@@ -54,16 +69,18 @@ export class CINode extends Component<CINodeProps> {
                         <span className="workflow-node__text-light">{nodeText}</span>
                         <div className="dc__ellipsis-left">{this.props.title}</div>
                     </div>
-                    {this.renderNodeIcon()}
+                    {this.renderNodeIcon(isJobCard)}
                 </div>
             </div>
         )
     }
 
-    renderCardContent = () => {
+    renderCardContent = (isJobCard: boolean) => {
+        const currPipeline = this.props.filteredCIPipelines.find((pipeline) => +pipeline.id === +this.props.id)
+        const env = currPipeline?.environmentId ? this.props.envList.find((env) => +env.id === +currPipeline.environmentId) : undefined
         const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
         const _linkedBuildText = this.props.isLinkedCI ? 'Build: Linked' : _buildText
-        const pipeline = this.props.isJobView ? 'Job' : _linkedBuildText
+        const pipeline =  isJobCard ? 'Job' : _linkedBuildText
 
         return (
             <>
@@ -88,7 +105,7 @@ export class CINode extends Component<CINodeProps> {
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
                                 <span className="workflow-node__text-light" data-testid="linked-indication-name">
-                                    {pipeline}
+                                    {!this.props.isJobView && pipeline}
                                 </span>
                                 <Tippy
                                     className="default-tt"
@@ -98,8 +115,18 @@ export class CINode extends Component<CINodeProps> {
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
+                                {this.props.isJobView && (
+                                    <>
+                                        <span className="fw-4 fs-11">
+                                            Env: {env ? env.environment_name : DEFAULT_ENV}
+                                        </span>
+                                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">
+                                            {!env && '(Default)'}
+                                        </span>
+                                    </>
+                                )}
                             </div>
-                            {this.renderNodeIcon()}
+                            {this.renderNodeIcon(isJobCard)}
                         </div>
                     </div>
                 </Link>
@@ -113,17 +140,16 @@ export class CINode extends Component<CINodeProps> {
                             arrow={false}
                             placement="top"
                             content={
-                                <span style={{ display: 'block', width: '145px' }}> Add deployment pipeline </span>
+                                <span style={{ display: 'block', width: '145px' }}>
+                                    {this.props.addNewPipelineBlocked
+                                        ? 'Cannot add new workflow or deployment pipelines when environment filter is applied.'
+                                        : 'Add deployment pipeline'}
+                                </span>
                             }
                         >
                             <Add
-                                className="icon-dim-18 fcb-5"
-                                onClick={(event: any) => {
-                                    event.stopPropagation()
-                                    let { top, left } = event.target.getBoundingClientRect()
-                                    top = top + 25
-                                    this.props.toggleCDMenu()
-                                }}
+                                className={`icon-dim-18 fcb-5 ${this.props.addNewPipelineBlocked ? 'dc__disabled' : ''}`}
+                                onClick={this.onClickAddNode}
                             />
                         </Tippy>
                     </button>
@@ -133,6 +159,7 @@ export class CINode extends Component<CINodeProps> {
     }
 
     render() {
+        const isJobCard: boolean = this.props.isJobView || this.props.isJobCI
         return (
             <foreignObject
                 className="data-hj-whitelist"
@@ -142,7 +169,7 @@ export class CINode extends Component<CINodeProps> {
                 height={this.props.height}
                 style={{ overflow: 'visible' }}
             >
-                {this.props.configDiffView ? this.renderReadOnlyCard() : this.renderCardContent()}
+                {this.props.configDiffView ? this.renderReadOnlyCard(isJobCard) : this.renderCardContent(isJobCard)}
             </foreignObject>
         )
     }

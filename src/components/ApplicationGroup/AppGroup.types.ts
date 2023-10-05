@@ -31,6 +31,11 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     filteredCIPipelines: any
 }
 
+export interface BulkCDDetailTypeResponse {
+    bulkCDDetailType: BulkCDDetailType[]
+    uniqueReleaseTags: string[]
+}
+
 export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
@@ -43,6 +48,10 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     approvalUsers?: string[]
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
+    appReleaseTags?: string[]
+    tagsEditable?: boolean
+    ciPipelineId?: number
+    hideImageTaggingHardDelete?: boolean
 }
 
 export interface ResponseRowType {
@@ -93,6 +102,7 @@ export interface BulkCDTriggerType {
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
+    uniqueReleaseTags: string[]
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -127,6 +137,7 @@ export interface TriggerResponseModalType {
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
     envName?: string
+    setDownloadPopupOpen?: (e) => void
 }
 
 export interface TriggerModalRowType {
@@ -134,6 +145,7 @@ export interface TriggerModalRowType {
     index: number
     isVirtualEnv?: boolean
     envName?: string
+    setDownloadPopupOpen?: (e) => void
 }
 
 export interface WorkflowNodeSelectionType {
@@ -151,6 +163,7 @@ export interface WorkflowAppSelectionType {
 export interface ConfigAppList {
     id: number
     name: string
+    isProtected?: boolean
 }
 
 export interface EnvApp {
@@ -220,11 +233,7 @@ export interface AppOverridesType {
     setEnvironments: any
 }
 
-export interface EnvHeaderType {
-    envName: string
-    setEnvName: (label: string) => void
-    setShowEmpty: (empty: boolean) => void
-    showEmpty: boolean
+export interface GroupFilterType {
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
@@ -238,6 +247,13 @@ export interface EnvHeaderType {
     isSuperAdmin: boolean
 }
 
+export interface EnvHeaderType extends GroupFilterType {
+    envName: string
+    setEnvName: (label: string) => void
+    setShowEmpty: (empty: boolean) => void
+    showEmpty: boolean
+}
+
 export interface AppGroupAdminType {
     isSuperAdmin: boolean
 }
@@ -246,6 +262,7 @@ export interface AppGroupDetailDefaultType {
     filteredAppIds: string
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
+    envName?: string
 }
 
 interface CIPipeline {
@@ -272,9 +289,10 @@ export interface AppGroupAppFilterContextType {
     groupFilterOptions: GroupOptionType[]
     selectedGroupFilter: MultiValue<GroupOptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
-    openCreateGroup: (e, groupId?: string) => void
-    openDeleteGroup: (e, groupId: string) => void
+    openCreateGroup: (e, groupId?: string, _edit?: boolean) => void
+    openDeleteGroup: (e, groupId: string, _delete?: boolean) => void
     isSuperAdmin: boolean
+    filterParentType: FilterParentType
 }
 
 export interface CreateGroupAppListType {
@@ -283,10 +301,17 @@ export interface CreateGroupAppListType {
     isSelected: boolean
 }
 
+export interface CreateTypeOfAppListType {
+    id: number
+    appName: string
+}
+
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
+    unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
+    filterParentType: FilterParentType
 }
 
 export interface ApplistEnvType {
@@ -325,12 +350,25 @@ export interface EnvGroupListType {
     description: string
 }
 
+export interface CheckPermissionType {
+    id?: number
+    appIds: number[]
+    name?: string
+    description?: string
+    envId?: number
+    active?: boolean
+}
+
 export interface EnvGroupListResponse extends ResponseType {
     result?: EnvGroupListType[]
 }
 
 export interface EnvGroupResponse extends ResponseType {
     result?: EnvGroupListType
+}
+
+export interface CheckPermissionResponse extends ResponseType {
+    result?: boolean
 }
 
 export interface GroupOptionType extends OptionType {
@@ -344,4 +382,9 @@ export interface SearchBarType {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export enum FilterParentType {
+    app = 'env-group',
+    env = 'app-group',
 }

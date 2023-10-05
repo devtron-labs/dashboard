@@ -1,6 +1,5 @@
 import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, useAsync, sortOptionsByLabel } from '../common'
 import {
     Progressing,
     BreadCrumb,
@@ -8,7 +7,11 @@ import {
     stopPropagation,
     DeleteDialog,
     showError,
+    GenericEmptyState,
+    ToastBody,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorBoundary, sortOptionsByLabel } from '../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
@@ -17,18 +20,19 @@ import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
 import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
-import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { deleteEnvGroup, getAppGroupList, getEnvAppList, getEnvGroupList } from './AppGroup.service'
+import { deleteEnvGroup, getAppGroupList, getEnvAppList, getEnvGroupList, appGroupPermission } from './AppGroup.service'
 import {
     AppGroupAdminType,
     AppGroupAppFilterContextType,
     AppGroupListType,
     ApplistEnvType,
+    CheckPermissionType,
     CreateGroupAppListType,
     EnvHeaderType,
+    FilterParentType,
     GroupOptionType,
 } from './AppGroup.types'
 import { MultiValue } from 'react-select'
@@ -41,7 +45,7 @@ import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 import { toast } from 'react-toastify'
 import CreateAppGroup from './CreateAppGroup'
 
-const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
+export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
 export function useAppGroupAppFilterContext() {
     const context = React.useContext(AppGroupAppFilterContext)
@@ -70,13 +74,15 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
     const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
     const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
+    const [isPopupBox, setIsPopupBox] = useState(false)
+    const [mapUnauthorizedApp, setMapUnauthorizedApp] = useState<Map<string, boolean>>(new Map())
 
     useEffect(() => {
         if (envList?.result) {
             const environment = envList.result.envList?.find((env) => env.id === +envId)
             setIsVirtualEnv(environment?.isVirtualEnvironment)
-            setEnvName(environment.environment_name)
-            setShowEmpty(!environment.appCount)
+            setEnvName(environment?.environment_name)
+            setShowEmpty(!environment?.appCount)
         }
     }, [envList, envId])
 
@@ -150,15 +156,78 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppListLoading(false)
     }
 
-    const openCreateGroup = (e, groupId?: string) => {
+    const handleToast = (action: string) => {
+        return toast.info(
+            <ToastBody
+                title={`Cannot ${action} filter`}
+                subtitle={`You can ${action} a filter with only those applications for which you have admin/manager permission.`}
+            />,
+            {
+                className: 'devtron-toast unauthorized',
+            },
+        )
+    }
+
+    async function getPermissionCheck(payload: CheckPermissionType, _edit?: boolean, _delete?: boolean): Promise<void> {
+        try {
+            const { result } = await appGroupPermission(envId, payload)
+            if (result && !_delete) {
+                setShowCreateGroup(true)
+            } else if (result && _delete) {
+                setIsPopupBox(true)
+                setShowDeleteGroup(true)
+            }
+        } catch (err) {
+            let _map = new Map<string, boolean>()
+            if (err['code'] === 403) {
+                let arrUnauthorized = []
+                let unauthorizedCount = 0
+                err['errors'].map((errors) => {
+                    arrUnauthorized.push([...errors['userMessage']['unauthorizedApps']])
+                    errors['userMessage']['unauthorizedApps'].forEach((element) => {
+                        if (!_map.get(element)) {
+                            _map.set(element, true)
+                        }
+                        for (let idx in selectedAppList) {
+                            if (element === selectedAppList[idx].label) {
+                                unauthorizedCount++
+                            }
+                        }
+                    })
+                    setMapUnauthorizedApp(_map)
+                })
+                if (_edit && arrUnauthorized.length > 0) {
+                    handleToast('edit')
+                } else if (_delete && arrUnauthorized.length > 0) {
+                    handleToast('delete')
+                } else if (unauthorizedCount && unauthorizedCount === selectedAppList.length) {
+                    setIsPopupBox(false)
+                    handleToast('create')
+                } else {
+                    setShowCreateGroup(true)
+                }
+                arrUnauthorized = []
+                unauthorizedCount = 0
+            } else {
+                setShowCreateGroup(true)
+                setShowDeleteGroup(false)
+                if (_delete) setIsPopupBox(true)
+            }
+            showError(err)
+        }
+    }
+
+    const openCreateGroup = (e, groupId?: string, _edit?: boolean) => {
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
         let _selectedGroup
+        const _allAppIds: number[] = []
         if (groupId) {
             _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)
             const groupAppIds = _selectedGroup?.appIds || []
             for (const appId of groupAppIds) {
+                _allAppIds.push(appId)
                 selectedAppsMap[appId] = true
             }
         } else {
@@ -171,7 +240,20 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
-        setShowCreateGroup(true)
+        const _allAppLists: number[] = []
+        for (let app of _allAppList) {
+            _allAppLists.push(+app.id)
+        }
+        let _permissionData = {
+            id: +envId,
+            appIds: _allAppLists,
+            envId: +envId,
+        }
+        if (_edit) {
+            getPermissionCheck({ appIds: _allAppIds }, _edit)
+        } else {
+            getPermissionCheck(_permissionData)
+        }
     }
 
     const closeCreateGroup = (e, groupId?: number) => {
@@ -184,8 +266,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const openDeleteGroup = (e, groupId: string) => {
         stopPropagation(e)
-        setClickedGroup(groupFilterOptions.find((group) => group.value === groupId))
-        setShowDeleteGroup(true)
+        const selectedGroupId = groupFilterOptions.find((group) => group.value === groupId)
+        setClickedGroup(selectedGroupId)
+        getPermissionCheck({ appIds: selectedGroupId.appIds }, false, true)
     }
 
     async function handleDelete() {
@@ -215,8 +298,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const renderEmpty = () => {
         return (
-            <ResourceListEmptyState
-                imgSource={EmptyFolder}
+            <GenericEmptyState
+                image={EmptyFolder}
                 title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
                 subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
             />
@@ -275,7 +358,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <EnvCDDetails filteredAppIds={_filteredAppsIds} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
-                                <EnvConfig filteredAppIds={_filteredAppsIds} />
+                                <EnvConfig filteredAppIds={_filteredAppsIds} envName={envName} />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                         </Switch>
@@ -305,10 +388,16 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 isSuperAdmin={isSuperAdmin}
             />
             {renderRoute()}
-            {isSuperAdmin && showCreateGroup && (
-                <CreateAppGroup appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
+            {showCreateGroup && (
+                <CreateAppGroup
+                    unAuthorizedApps={mapUnauthorizedApp}
+                    appList={allAppsList}
+                    selectedAppGroup={clickedGroup}
+                    closePopup={closeCreateGroup}
+                    filterParentType={FilterParentType.env}
+                />
             )}
-            {isSuperAdmin && showDeleteGroup && (
+            {showDeleteGroup && isPopupBox && (
                 <DeleteDialog
                     title={`Delete filter '${clickedGroup?.label}' ?`}
                     description="Are you sure you want to delete this filter?"
@@ -359,6 +448,7 @@ export function EnvHeader({
             openCreateGroup,
             openDeleteGroup,
             isSuperAdmin,
+            filterParentType: FilterParentType.env,
         }),
         [
             appListOptions,
@@ -409,16 +499,28 @@ export function EnvHeader({
         [envId, envName],
     )
 
-    const handleOverViewClick = (): void => {
-        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
+    const onClickTabPreventDefault = (event: React.MouseEvent<Element, MouseEvent>, className: string) => {
+        const linkDisabled = (event.target as Element)?.classList.contains(className)
+        if (linkDisabled) {
+            event.preventDefault()
+        }
     }
 
-    const handleBuildClick = (): void => {
-        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
-    }
-
-    const handleConfigClick = (): void => {
-        ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
+    const handleEventRegistration = (event: React.MouseEvent<Element, MouseEvent>, eventType?: string) => {
+        switch (eventType) {
+            case ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action:
+                ReactGA.event(ENV_APP_GROUP_GA_EVENTS.OverviewClicked)
+                break
+            case ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action:
+                ReactGA.event(ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked)
+                break
+            case ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action:
+                ReactGA.event(ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked)
+                break
+            default:
+                break
+        }
+        onClickTabPreventDefault(event, 'active')
     }
 
     const renderEnvDetailsTabs = () => {
@@ -429,7 +531,9 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={handleOverViewClick}
+                        onClick={(event) =>
+                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.OverviewClicked.action)
+                        }
                     >
                         Overview
                     </NavLink>
@@ -440,7 +544,9 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
                         data-testid="group-build-deploy"
-                        onClick={handleBuildClick}
+                        onClick={(event) =>
+                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.BuildDeployClicked.action)
+                        }
                     >
                         Build & Deploy
                     </NavLink>
@@ -451,6 +557,7 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                         data-testid="app-group-build-history"
+                        onClick={handleEventRegistration}
                     >
                         Build history
                     </NavLink>
@@ -460,6 +567,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
+                        onClick={handleEventRegistration}
                     >
                         Deployment history
                     </NavLink>
@@ -470,7 +578,9 @@ export function EnvHeader({
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
                         data-testid="group-configuration"
-                        onClick={handleConfigClick}
+                        onClick={(event) =>
+                            handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.ConfigurationClicked.action)
+                        }
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         Configurations

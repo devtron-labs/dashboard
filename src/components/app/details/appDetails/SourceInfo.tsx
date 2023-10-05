@@ -12,10 +12,9 @@ import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
@@ -36,7 +35,10 @@ export function SourceInfo({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
+    refetchDeploymentStatus
 }: SourceInfoType) {
+    const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
+    const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
@@ -98,15 +100,13 @@ export function SourceInfo({
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd
-                                ? DeploymentAppTypeNameMapping.GitOps
-                                : DeploymentAppTypeNameMapping.Helm
+                            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
                         <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                     </Tippy>
                 )}
-                {appDetails?.deploymentAppDeleteRequest && (
+                {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
@@ -115,7 +115,7 @@ export function SourceInfo({
                 )}
                 {!loadingResourceTree && environment && (
                     <>
-                        {!appDetails?.deploymentAppDeleteRequest && (
+                        {!isdeploymentAppDeleting && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
                                 {!isVirtualEnvironment && showUrlInfo && (
                                     <button
@@ -233,7 +233,7 @@ export function SourceInfo({
                 shimmerLoaderBlocks()
             ) : (
                 <>
-                    {!appDetails?.deploymentAppDeleteRequest && environment && (
+                    {!isdeploymentAppDeleting && environment && (
                         <div className="flex left w-100">
                             {!isVirtualEnvironment && (
                                 <div
@@ -278,7 +278,7 @@ export function SourceInfo({
                                                     {isHibernated ? 'Hibernating' : status}
                                                 </div>
                                                 <div className="flex left">
-                                                    {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
+                                                    {appDetails?.deploymentAppType === DeploymentAppTypes.HELM ? (
                                                         <span
                                                             data-testid="app-status-card-details"
                                                             className="cb-5 fw-6"
@@ -312,8 +312,9 @@ export function SourceInfo({
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}
-                                hideDetails={appDetails?.deploymentAppType === DeploymentAppType.helm}
+                                hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
                                 isVirtualEnvironment={isVirtualEnvironment}
+                                refetchDeploymentStatus={refetchDeploymentStatus}
                             />
                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (

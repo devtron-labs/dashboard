@@ -3,8 +3,7 @@ import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { copyToClipboard } from '../common'
-import { showError, Progressing, CIBuildType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     Option,
@@ -33,7 +32,7 @@ export default function CICreateDockerfileOption({
     handleFileLocationChange,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
-    setInProgress,
+    setLoadingState,
     selectedBuildContextGitMaterial,
     handleBuildContextPathChange,
     currentBuildContextGitMaterial,
@@ -151,7 +150,10 @@ export default function CICreateDockerfileOption({
             })
             setEditorValue(_currentData.data)
         } else if (_selectedFramework?.templateUrl) {
-            setInProgress(true)
+            setLoadingState((prevState) => ({
+                ...prevState,
+                loading: true
+            }))
             setTemplateData({
                 ...templateData,
                 [templateKey]: {
@@ -186,7 +188,10 @@ export default function CICreateDockerfileOption({
                         languageFramework: _selectedFramework.value,
                     },
                 })
-                setInProgress(false)
+                setLoadingState((prevState) => ({
+                    ...prevState,
+                    loading: false
+                }))
             } catch (err) {
                 // Don't show error toast or log the error as user aborted the request
                 if (!signal.aborted) {
@@ -200,7 +205,10 @@ export default function CICreateDockerfileOption({
                     },
                 })
                 setEditorValue('')
-                setInProgress(false)
+                setLoadingState((prevState) => ({
+                    ...prevState,
+                    loading: false
+                }))
             }
         } else {
             setTemplateData({

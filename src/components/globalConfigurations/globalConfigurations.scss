@@ -17,7 +17,7 @@
 
         a {
             font-size: 13px;
-            line-height: 36px;
+            line-height: 32px;
             color: var(--N700);
             width: 100%;
             border-radius: 4px;
@@ -257,12 +257,6 @@
     }
 }
 
-.form__row--two-third {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-column-gap: 16px;
-}
-
 .form__row--auth-type {
     display: grid;
     width: 100%;
@@ -286,8 +280,7 @@
     }
 }
 
-.git-form,
-.docker-form {
+.git-form {
     padding: 0 24px;
 }
 
@@ -308,21 +301,16 @@
 
     .form__buttons {
         align-items: center;
-
-        .docker-default {
+    }
+    
+    .docker-default {
+        .form__checkbox-label {
             margin-right: auto;
-            color: var(--N700);
+            color: var(--N900);
             font-size: 13px;
             font-weight: normal;
-            line-height: 18px;
-
-            input[type='checkbox'] {
-                height: 16px;
-                width: 16px;
-                border-radius: 3px;
-                border: 1px solid var(--N200);
-                margin: 0 12px 0 0;
-            }
+            line-height: 20px;
+            font-weight: 400;
         }
     }
 }

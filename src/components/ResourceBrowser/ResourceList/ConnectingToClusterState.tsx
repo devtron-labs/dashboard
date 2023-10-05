@@ -1,37 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { SELECTE_CLUSTER_STATE_MESSAGING, TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
+import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ConnectingToClusterStateProps } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
-import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
-import ResourceFilterOptions from './ResourceFilterOptions'
-import { useParams } from 'react-router-dom'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useParams } from 'react-router-dom'
+import { URLS } from '../../../config'
 
 export default function ConnectingToClusterState({
     loader,
     errorMsg,
     setErrorMsg,
-    handleRetry,
-    sideDataAbortController,
-    selectedResource,
-    resourceList,
-    clusterOptions,
     selectedCluster,
     setSelectedCluster,
-    showSelectClusterState,
-    setShowSelectClusterState,
-    onChangeCluster,
-    namespaceOptions,
-    selectedNamespace,
-    setSelectedNamespace,
-    searchText,
-    setSearchText,
-    searchApplied,
-    setSearchApplied,
-    handleFilterChanges,
-    clearSearch,
+    handleRetry,
+    sideDataAbortController,
 }: ConnectingToClusterStateProps) {
+    const { replace } = useHistory()
     const { clusterId } = useParams<{ clusterId: string }>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
@@ -93,7 +77,9 @@ export default function ConnectingToClusterState({
         sideDataAbortController.prev = sideDataAbortController.new
         resetStates()
         setSelectedCluster(null)
-        setShowSelectClusterState(true)
+        replace({
+            pathname: URLS.RESOURCE_BROWSER,
+        })
     }
 
     const handleRetryClick = (e) => {
@@ -102,33 +88,14 @@ export default function ConnectingToClusterState({
         handleRetry(e)
     }
 
-    const renderNoClusterSelected = () => {
-        return (
-            <div style={{ height: 'calc(100vh - 150px)' }}>
-                <EmptyState>
-                    <img
-                        src={NoClusterSelectImage}
-                        width="250"
-                        height="200"
-                        alt={SELECTE_CLUSTER_STATE_MESSAGING.altText}
-                    />
-                    <h2 className="dc__text-center fs-16 fw-4 c-9">{SELECTE_CLUSTER_STATE_MESSAGING.heading}</h2>
-                    <p className="dc__text-center w-300">{SELECTE_CLUSTER_STATE_MESSAGING.infoText}</p>
-                </EmptyState>
-            </div>
-        )
-    }
-
     const renderSelectionState = () => {
-        if (loader && !showSelectClusterState && !errorMsg) {
+        if (loader && !errorMsg) {
             return (
                 <>
                     <StyledProgressBar resetProgress={resetProgress} />
                     {renderInfo(`Connecting to ‘${selectedCluster.label}’`, infoText)}
                 </>
             )
-        } else if (showSelectClusterState) {
-            return renderNoClusterSelected()
         } else if (errorMsg) {
             return (
                 <>
@@ -140,6 +107,7 @@ export default function ConnectingToClusterState({
                 </>
             )
         }
+        return null
     }
 
     const renderClusterState = () => {
@@ -164,27 +132,9 @@ export default function ConnectingToClusterState({
         <div
             className="flex column bcn-0"
             style={{
-                height: 'calc(100vh - 92px)',
+                height: 'calc(100vh - 84px)',
             }}
         >
-            <ResourceFilterOptions
-                selectedResource={selectedResource}
-                clusterOptions={clusterOptions}
-                selectedCluster={selectedCluster}
-                onChangeCluster={onChangeCluster}
-                namespaceOptions={namespaceOptions}
-                selectedNamespace={selectedNamespace}
-                setSelectedNamespace={setSelectedNamespace}
-                hideSearchInput={true}
-                searchText={searchText}
-                searchApplied={searchApplied}
-                resourceList={resourceList}
-                setSearchText={setSearchText}
-                setSearchApplied={setSearchApplied}
-                handleFilterChanges={handleFilterChanges}
-                clearSearch={clearSearch}
-                isNamespaceSelectDisabled={loader || showSelectClusterState || !!errorMsg}
-            />
             {renderClusterState()}
         </div>
     )

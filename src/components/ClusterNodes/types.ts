@@ -3,6 +3,8 @@ import { MultiValue } from 'react-select'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
+import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { K8SObjectMapType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -49,6 +51,7 @@ export interface ClusterCapacityType {
 export interface NodeDetailsType {
     nodeName: string
     nodeGroup: string
+    taints?: NodeTaintType[]
 }
 export interface ClusterDetail {
     id: number
@@ -66,7 +69,7 @@ export interface ClusterDetail {
 }
 export interface ClusterDescriptionType {
     clusterId: number
-    clusterName:   string
+    clusterName: string
     clusterCreatedBy: string
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType
@@ -168,13 +171,24 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType {
-    imageList: ClusterImageList[]
     isSuperAdmin: boolean
-    namespaceList: string[]
+    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    addTab?: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
+    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
+    k8SObjectMapRaw: Map<string, K8SObjectMapType>
 }
 
-export interface ClusterDetailsPropType extends ClusterListType { 
+export interface ClusterDetailsPropType extends ClusterListType {
     clusterId: string
+    namespaceList: string[]
+    imageList: ClusterImageList[]
 }
 
 export interface ClusterAboutPropType {
@@ -182,9 +196,16 @@ export interface ClusterAboutPropType {
     isSuperAdmin: boolean
 }
 
+export interface NodeTaintType {
+    effect: string
+    key: string
+    value: string
+}
+
 export interface SelectGroupType {
     label: string
     options: OptionType[]
+    taints?: NodeTaintType[]
 }
 
 export interface ClusterTerminalType {
@@ -199,6 +220,7 @@ export interface ClusterTerminalType {
     node?: string
     setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
     nodeGroups?: SelectGroupType[]
+    taints: Map<string, NodeTaintType[]>
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -226,6 +248,16 @@ interface NodeDataPropType {
 export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
     isSuperAdmin: boolean
+    addTab: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+        dynamicTitle?: string,
+        showNameOnSelect?: boolean,
+    ) => boolean
 }
 
 export interface NodeActionRequest {
@@ -255,7 +287,8 @@ export interface NodeCordonRequest extends NodeActionRequest {
 }
 
 export interface ClusteNotePatchRequest {
-    clusterId: number
+    id: number //this is mandatory to send in the request
+    identifier: number //equals clusterId for cluster description and appId for app/job description
     description: string
 }
 
@@ -301,6 +334,55 @@ export interface TerminalDataType {
     terminalAccessId?: number
 }
 
-export type MDEditorSelectedTabType = "write" | "preview"
+export interface ClusterManifestType {
+    terminalAccessId: number
+    manifestMode: EditModeType
+    setManifestMode: (mode: EditModeType) => void
+    setManifestData: (manifest: string) => void
+    errorMessage?: string[]
+    setManifestAvailable: (isManifestAvailable: boolean) => void
+    selectTerminalTab: () => void
+}
+
+export interface ClusterEditManifestType {
+    id?: number
+    clusterId: number
+    baseImage: string
+    shellName: string
+    nodeName: string
+    namespace: string
+    terminalAccessId?: number
+    podName: string
+    manifest: string
+    forceDelete?: boolean
+}
+
+export interface ManifestPopuptype {
+    closePopup: (isClose: boolean) => void
+    podName: string
+    namespace: string
+    forceDeletePod: (deletePod: boolean) => void
+}
+export type MDEditorSelectedTabType = 'write' | 'preview'
 
 export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS
+
+export interface DescriptionDataType {
+    descriptionId: number
+    descriptionText: string
+    descriptionUpdatedBy: string
+    descriptionUpdatedOn: string
+}
+
+export interface ClusterErrorType {
+    errorText: string
+    errorType: ERROR_TYPE
+    filterText: string[]
+}
+export interface ClusterOverviewProps {
+    isSuperAdmin: boolean
+    clusterCapacityData: ClusterCapacityType
+    clusterErrorList: ClusterErrorType[]
+    clusterErrorTitle: string
+    errorStatusCode: number
+}

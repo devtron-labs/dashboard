@@ -3,15 +3,20 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
+    multiSelectStyles,
     noop,
     Progressing,
+    ReleaseTag,
+    ImageComment,
     showError,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
+import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
@@ -21,6 +26,9 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
+import ReactSelect, { components } from 'react-select'
+import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 export default function BulkCDTrigger({
     stage,
@@ -34,20 +42,40 @@ export default function BulkCDTrigger({
     responseList,
     isLoading,
     setLoading,
-    isVirtualEnv
+    isVirtualEnv,
+    uniqueReleaseTags,
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
+    const [isDownloadPopupOpen, setDownloadPopupOpen] = useState(false);
+    const [tagNotFoundWarningsMap, setTagNotFoundWarningsMap] = useState<Map<number, string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const [currentAppReleaseTags, setCurrentAppReleaseTags] = useState<string[]>(selectedApp.appReleaseTags)
+    const [currentAppTagsEditable, setCurrentAppTagsEditable] = useState<boolean>(selectedApp.tagsEditable)
+    const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
+    const [appSearchTextMap, setAppSearchTextMap] = useState<Record<number, string>>({})
+    const location = useLocation()
+    const history = useHistory()
+    const match = useRouteMatch()
+
+    const setCurrentAppReleaseTagsWrapper = (appReleaseTags: string[]) => {
+        setCurrentAppReleaseTags(appReleaseTags)
+    }
+    const setCurrentAppTagsEditableWrapper = (tagsEditable: boolean) => {
+        setCurrentAppTagsEditable(tagsEditable)
+    }
 
     const closeBulkCDModal = (e): void => {
         abortControllerRef.current.abort()
         closePopup(e)
     }
-
+    const [selectedTagName, setSelectedTagName] = useState<{ label: string; value: string }>({
+        label: 'latest',
+        value: 'latest',
+    })
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
@@ -56,6 +84,7 @@ export default function BulkCDTrigger({
     }
     const outsideClickHandler = (evt): void => {
         if (
+            !isDownloadPopupOpen &&
             ciTriggerDetailRef.current &&
             !ciTriggerDetailRef.current.contains(evt.target) &&
             typeof closePopup === 'function'
@@ -108,6 +137,9 @@ export default function BulkCDTrigger({
                             materials: response.value['materials'],
                             userApprovalConfig: response.value['userApprovalConfig'],
                             requestedUserId: response.value['requestedUserId'],
+                            tagsEditable: response.value['tagsEditable'],
+                            appReleaseTagNames: response.value['appReleaseTagNames'],
+                            hideImageTaggingHardDelete: response.value['hideImageTaggingHardDelete']
                         }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
@@ -117,6 +149,9 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
+                setCurrentAppTagsEditable(_cdMaterialResponse[selectedApp.appId].tagsEditable ?? false)
+                setCurrentAppReleaseTags(_cdMaterialResponse[selectedApp.appId].appReleaseTagNames ?? [])
+                setHideImageTaggingHardDelete(_cdMaterialResponse[selectedApp.appId].hideImageTaggingHardDelete ?? false)
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -147,7 +182,10 @@ export default function BulkCDTrigger({
     }
 
     const changeApp = (e): void => {
-        setSelectedApp(appList[e.currentTarget.dataset.index])
+        const _selectedApp = appList[e.currentTarget.dataset.index]
+        setSelectedApp(_selectedApp)
+        setCurrentAppReleaseTags(_selectedApp.appReleaseTags)
+        setCurrentAppTagsEditable(_selectedApp.tagsEditable)
     }
 
     const renderEmptyView = (): JSX.Element => {
@@ -173,15 +211,158 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
+
+        const updateCurrentAppMaterial = (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => {
+            let updatedCurrentApp = selectedApp
+            updatedCurrentApp?.material.forEach((mat)=>{
+                if(mat.id === matId){
+                    if(releaseTags)mat.imageReleaseTags = releaseTags
+                    if(imageComment)mat.imageComment = imageComment
+                }
+            })
+            updatedCurrentApp && setSelectedApp(updatedCurrentApp)
+        }
+
         const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
+        uniqueReleaseTags.sort((a, b) => a.localeCompare(b))
+        let tagsList = ['latest']
+        tagsList.push(...uniqueReleaseTags)
+        const options = tagsList.map((tag) => {
+            return { label: tag, value: tag }
+        })
+
+        let appWiseTagsToArtifactIdMapMappings = {}
+        appList.forEach((app) => {
+            let tagsToArtifactIdMap = { latest: 0 }
+            for (let i = 0; i < app.material?.length; i++) {
+                const mat = app.material?.[i]
+                mat.imageReleaseTags?.forEach((imageTag) => {
+                    tagsToArtifactIdMap[imageTag.tagName] = i
+                })
+            }
+            appWiseTagsToArtifactIdMapMappings[app.appId] = tagsToArtifactIdMap
+        })
+
+        const selectImageLocal = (
+            index: number,
+            materialType: string,
+            selectedCDDetail?: { id: number; type: DeploymentNodeType },
+            appId?: number,
+        ) => {
+            selectImage(index, materialType, selectedCDDetail)
+            if (appWiseTagsToArtifactIdMapMappings[appId][selectedTagName.value] !== index) {
+                let _tagNotFoundWarningsMap = tagNotFoundWarningsMap
+                _tagNotFoundWarningsMap.delete(appId)
+                setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
+                setSelectedTagName({ value: 'Multiple tags', label: 'Multiple tags' })
+            }
+        }
+
+        const handleTagChange = (selectedTag) => {
+            setSelectedTagName(selectedTag)
+            const _tagNotFoundWarningsMap = new Map()
+            for (let i = 0; i < appList?.length ?? 0; i++) {
+                const app = appList[i]
+                const tagsToArtifactIdMap = appWiseTagsToArtifactIdMapMappings[app.appId]
+                let artifactIndex = -1
+                if (typeof tagsToArtifactIdMap[selectedTag.value] !== 'undefined') {
+                    artifactIndex = tagsToArtifactIdMap[selectedTag.value]
+                }
+                if (artifactIndex === -1) {
+                    _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' not found")
+                }
+
+                if (artifactIndex !== -1 && selectedTag.value !== 'latest') {
+                    const releaseTag = app.material[artifactIndex]?.imageReleaseTags.find(
+                        (releaseTag) => releaseTag.tagName === selectedTag.value,
+                    )
+                    if (releaseTag?.deleted) {
+                        artifactIndex = -1
+                        _tagNotFoundWarningsMap.set(app.appId, "Tag '" + (selectedTag.value?.length > 15 ? selectedTag.value.substring(0,10)+'...' :  selectedTag.value) + "' is soft-deleted")
+                    }
+                }
+
+                selectImage(artifactIndex, MATERIAL_TYPE.inputMaterialList, {
+                    id: +app.cdPipelineId,
+                    type: selectedApp.stageType,
+                })
+            }
+            setTagNotFoundWarningsMap(_tagNotFoundWarningsMap)
+        }
+
+        const imageTaggingControls = {
+            IndicatorSeparator: null,
+            Option: releaseTagOption,
+            Control: (props) => {
+                return (
+                    <components.Control {...props}>
+                        {<Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />}
+                        {props.children}
+                    </components.Control>
+                )
+            },
+        }
+
+        const handleMaterialFilters = (
+            searchText: string,
+            cdNodeId,
+            nodeType: DeploymentNodeType,
+            isApprovalNode: boolean = false,
+        ): void => {
+            setLoading(true)
+            abortControllerRef.current = new AbortController()
+            const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
+            getCDMaterialList(cdNodeId, nodeType, abortControllerRef.current.signal, isApprovalNode, searchText)
+                .then((response) => {
+                    if (response) {
+                        _cdMaterialResponse[selectedApp.appId] = {
+                            approvalUsers: response.approvalUsers,
+                            materials: response.materials,
+                            userApprovalConfig: response.userApprovalConfig,
+                            requestedUserId: response.requestedUserId,
+                            tagsEditable: response.tagsEditable,
+                            appReleaseTagNames: response.appReleaseTagNames,
+                            hideImageTaggingHardDelete: response.hideImageTaggingHardDelete,
+                        }
+                        setCurrentAppTagsEditable(response.tagsEditable ?? false)
+                        setCurrentAppReleaseTags(response.appReleaseTagNames ?? [])
+                        setHideImageTaggingHardDelete(response.hideImageTaggingHardDelete ?? false)
+                        updateBulkInputMaterial(_cdMaterialResponse)
+                        const _appSearchTextMap={...appSearchTextMap}
+                        _appSearchTextMap[selectedApp.appId]=searchText
+                        setAppSearchTextMap(_appSearchTextMap)
+                    }
+                    setLoading(false)
+                })
+                .catch((error) => {
+                    showError(error)
+                })
+        }
+
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
-                    <div
-                        className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 pt-12 pr-16 pb-12 pl-16"
-                        style={{ zIndex: 1 }}
-                    >
-                        Applications
+                    <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
+                        <span className="pl-16 pr-16">Select image by release tag</span>
+                        <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
+                            <ReactSelect
+                                tabIndex={1}
+                                isSearchable={true}
+                                options={options}
+                                value={selectedTagName}
+                                styles={multiSelectStyles}
+                                components={imageTaggingControls}
+                                onChange={handleTagChange}
+                                isDisabled={false}
+                                classNamePrefix="build-config__select-repository-containing-code"
+                            />
+                        </div>
+                        <div
+                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 pt-8 pr-16 pb-8 pl-16"
+                            style={{ zIndex: 0 }}
+                        >
+                            APPLICATIONS
+                        </div>
                     </div>
                     {appList.map((app, index) => (
                         <div
@@ -193,10 +374,20 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
-                            {app.warningMessage && (
-                                <span className="flex left cy-7 fw-4 fs-12">
-                                    <Error className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {app.warningMessage}
+                            {(app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
+                                <span
+                                    className={`flex left fw-4 fs-12 ${
+                                        tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
+                                    }`}
+                                >
+                                    <Error
+                                        className={`icon-dim-12 mr-4 ${
+                                            tagNotFoundWarningsMap.has(app.appId)
+                                                ? 'alert-icon-r5-imp'
+                                                : 'warning-icon-y7'
+                                        }`}
+                                    />
+                                    {app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}
                                 </span>
                             )}
                             {unauthorizedAppList[app.appId] && (
@@ -208,7 +399,7 @@ export default function BulkCDTrigger({
                         </div>
                     ))}
                 </div>
-                <div className="main-content dc__window-bg dc__height-inherit">
+                <div className="main-content dc__window-bg dc__height-inherit w-100">
                     {selectedApp.warningMessage || unauthorizedAppList[selectedApp.appId] ? (
                         renderEmptyView()
                     ) : (
@@ -225,7 +416,7 @@ export default function BulkCDTrigger({
                             triggerDeploy={onClickStartDeploy}
                             onClickRollbackMaterial={noop}
                             closeCDModal={closeBulkCDModal}
-                            selectImage={selectImage}
+                            selectImage={selectImageLocal}
                             toggleSourceInfo={toggleSourceInfo}
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
@@ -233,6 +424,19 @@ export default function BulkCDTrigger({
                             userApprovalConfig={_currentApp.userApprovalConfig}
                             requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
+                            appReleaseTagNames={currentAppReleaseTags ? currentAppReleaseTags : []}
+                            setAppReleaseTagNames={setCurrentAppReleaseTagsWrapper}
+                            tagsEditable={currentAppTagsEditable ? currentAppTagsEditable : false}
+                            setTagsEditable={setCurrentAppTagsEditableWrapper}
+                            ciPipelineId={_currentApp.ciPipelineId}
+                            updateCurrentAppMaterial={updateCurrentAppMaterial}
+                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                            history={history}
+                            location={location}
+                            match={match}
+                            isApplicationGroupTrigger={true}
+                            handleMaterialFilters={handleMaterialFilters}
+                            searchImageTag={appSearchTextMap[selectedApp.appId]}
                         />
                     )}
                 </div>
@@ -240,12 +444,15 @@ export default function BulkCDTrigger({
         )
     }
 
-    const onClickStartDeploy = (): void => {
+    const onClickStartDeploy = (e): void => {
+        stopPropagation(e)
         onClickTriggerBulkCD()
     }
 
     const isDeployDisabled = (): boolean => {
-        return appList.every((app) => app.warningMessage || !app.material?.length)
+        return appList.every(
+            (app) => app.warningMessage || tagNotFoundWarningsMap.has(app.appId) || !app.material?.length,
+        )
     }
 
     const renderFooterSection = (): JSX.Element => {
@@ -280,6 +487,7 @@ export default function BulkCDTrigger({
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal
+                        setDownloadPopupOpen={setDownloadPopupOpen}
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}

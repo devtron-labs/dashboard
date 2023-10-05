@@ -15,7 +15,9 @@ export const MANIFEST_OUTPUT_INFO_TEXT = 'Manifest is generated locally from the
 export const MANIFEST_OUTPUT_TIPPY_CONTENT =
     'This manifest is generated locally from the YAML. Server-side testing of chart validity (e.g. whether an API is supported) is NOT done. K8s version based templating may be different depending on cluster version.'
 export const MANIFEST_TAB_VALIDATION_ERROR = 'Please provide the required inputs to view generated manifest'
-export const DATA_VALIDATION_ERROR_MSG = 'Encountered data validation error while updating.'
+export const UPDATE_DATA_VALIDATION_ERROR_MSG = 'Encountered data validation error while updating.'
+export const SAVE_DATA_VALIDATION_ERROR_MSG = 'Encountered data validation error while saving.'
+export const EMPTY_YAML_ERROR = 'YAML cannot be empty.'
 
 export const DELETE_PRESET_VALUE_DESCRIPTION_LINES = {
     First: 'This will delete the preset value and it will no longer be available to be used for deployment.',
@@ -38,6 +40,7 @@ export const COMPARISON_OPTION_LABELS = {
     CompareDeployed: 'Compare with deployed',
     HideComparison: 'Hide comparison',
     CompareValues: 'Compare values',
+    CompareManifest: 'Compare manifest'
 }
 
 export const COMPARISON_OPTION_TIPPY_CONTENT = {
@@ -48,6 +51,8 @@ export const COMPARISON_OPTION_TIPPY_CONTENT = {
     PreviousDeployments: 'Compare values with previous deployments of this app or other deployments of this chart',
     Fetching: 'Fetching...',
     ReadmeNotAvailable: 'Readme is not available for this chart',
+    DiabledManifest: 'You can compare manifest output of deployments once this chart is deployed',
+    EnabledManifest: 'Compare manifest output with previous deployments of this application'
 }
 
 export const UPDATE_APP_BUTTON_TEXTS = {

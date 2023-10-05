@@ -1,18 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
-import {
-    ButtonWithLoader,
-    copyToClipboard,
-    handleUTCTime,
-    ToastBodyWithButton,
-    filterImageList,
-} from '../common'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { ToastBodyWithButton } from '../common'
 import {
     showError,
     Progressing,
-    BreadCrumb,
-    useBreadcrumb,
     toastAccessDenied,
     ServerErrors,
+    ErrorScreenManager,
+    copyToClipboard,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -28,7 +22,8 @@ import { ReactComponent as DrainIcon } from '../../assets/icons/ic-clean-brush.s
 import { ReactComponent as EditTaintsIcon } from '../../assets/icons/ic-spraycan.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import PageHeader from '../common/header/PageHeader'
+import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
+import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
 import { useParams, useLocation, useHistory } from 'react-router'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
@@ -37,36 +32,43 @@ import YAML from 'yaml'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
-    ImageList,
     NodeDetail,
     NodeDetailResponse,
     PodType,
     ResourceDetail,
-    SelectGroupType,
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
 import { toast } from 'react-toastify'
-import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import { OrderBy } from '../app/list/types'
-import { MODES } from '../../config'
+import { MODES, URLS } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
-import './clusterNodes.scss'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
-import ClusterTerminal from './ClusterTerminal'
+import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
-import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
+import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
+import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { useRouteMatch } from 'react-router-dom'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
+import { getEventObjectTypeGVK } from '../ResourceBrowser/Utils'
+import './clusterNodes.scss'
+import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
+import { GVKType } from '../ResourceBrowser/Types'
+import { Nodes } from '../app/types'
 
-
-export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
-    const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
-    const selectedNodeName: SelectGroupType = {label: '', options:[{label: nodeName,value: nodeName}]}
-    const nodeListRef = useRef([selectedNodeName])
-    const [loader, setLoader] = useState(false)
+export default function NodeDetails({
+  isSuperAdmin,
+  markTabActiveByIdentifier,
+  addTab,
+  updateNodeSelectionData,
+  k8SObjectMapRaw,
+}: ClusterListType) {
+    const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
+    const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
@@ -79,11 +81,8 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [sortedPodList, setSortedPodList] = useState<PodType[]>(null)
     const [sortByColumnName, setSortByColumnName] = useState<string>('name')
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
     const [isShowWarning, setIsShowWarning] = useState(false)
     const [patchData, setPatchData] = useState<jsonpatch.Operation[]>(null)
-    const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const toastId = useRef(null)
     const [showAllLabel, setShowAllLabel] = useState(false)
     const [showAllAnnotations, setShowAllAnnotations] = useState(false)
@@ -92,15 +91,18 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
+    const [isEdit, setIsEdit] = useState(false)
+    const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
+    const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
-        getNodeCapacity(clusterId, nodeName)
+        setErrorResponseCode(null)
+        getNodeCapacity(clusterId, node)
             .then((response: NodeDetailResponse) => {
-                setLastDataSync(!lastDataSync)
                 if (response.result) {
                     setSortedPodList(response.result.pods.sort((a, b) => a['name'].localeCompare(b['name'])))
                     setNodeDetail(response.result)
@@ -129,31 +131,42 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 setLoader(false)
             })
             .catch((error) => {
-                showError(error)
+                setErrorResponseCode(error.code)
+                showError(error, true, true)
                 setLoader(false)
             })
     }
 
+    const handleSelectedTab = (_tabName: string) => {
+        const isTabFound = markTabActiveByIdentifier(
+            K8S_EMPTY_GROUP,
+            node,
+            nodeType,
+            url,
+        )
+
+        if (!isTabFound) {
+            let _urlToCreate = url + '?' + _tabName.toLowerCase()
+
+            const query = new URLSearchParams(window.location.search)
+
+            if (query.get('container')) {
+                _urlToCreate = _urlToCreate + '?container=' + query.get('container')
+            }
+
+            addTab(
+                K8S_EMPTY_GROUP,
+                nodeType,
+                node,
+                _urlToCreate,
+            )
+        }
+    }
+
     useEffect(() => {
         getData(patchData)
-    }, [])
-
-    useEffect(() => {
-        if (imageList?.length && nodeDetail?.k8sVersion) {
-            setNodeImageList(filterImageList(imageList, nodeDetail.k8sVersion))
-        }
-    }, [imageList, nodeDetail?.k8sVersion])
-
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
+        handleSelectedTab(node)
+    }, [node])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -164,91 +177,65 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 setSelectedTabIndex(1)
             } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
                 setSelectedTabIndex(2)
-            } else if (tab === NODE_DETAILS_TABS.debug.toLowerCase()) {
-                setSelectedTabIndex(3)
             }
         }
     }, [location.search])
 
+    const selectedResource = useMemo(():{gvk: GVKType, namespaced: boolean} => {
+      if (!k8SObjectMapRaw) {
+          return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
+      }
+      return { gvk: getEventObjectTypeGVK(k8SObjectMapRaw, 'pod'), namespaced: true }
+  }, [k8SObjectMapRaw])
+
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
-        let _searchParam = '?tab='
-        if (_tabIndex === 0) {
-            _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
-        } else if (_tabIndex === 1) {
-            _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
-        } else if (_tabIndex === 2) {
-            _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
-        } else if (_tabIndex === 3) {
-            _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
+        if (node !== AUTO_SELECT.value) {
+            let _searchParam = '?tab='
+            if (_tabIndex === 0) {
+                _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
+            } else if (_tabIndex === 1) {
+                _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
+            } else if (_tabIndex === 2) {
+                _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
+            }
+            push({
+                pathname: location.pathname,
+                search: _searchParam,
+            })
         }
-        push({
-            pathname: location.pathname,
-            search: _searchParam,
-        })
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
+        const cursorValue = 'cursor'
         return (
-            <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                        {NODE_DETAILS_TABS.summary}
-                    </div>
-                    {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
-                </li>
-                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
-                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
-                        <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
-                        {NODE_DETAILS_TABS.yaml}
-                    </div>
-                    {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                </li>
-                <li className="tab-list__tab pointer" data-tab-index="2" onClick={changeNodeTab}>
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
-                        {NODE_DETAILS_TABS.nodeConditions}
-                    </div>
-                    {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                </li>
-                {isSuperAdmin && (
-                    <li className="tab-list__tab pointer" data-tab-index="3" onClick={changeNodeTab}>
-                        <div
-                            className={`mb-6 flexbox fs-13 tab-hover${
-                                selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
-                            }`}
-                        >
-                            <TerminalIcon className="icon-dim-16 mt-2 mr-5 terminal-icon" />
-                            {NODE_DETAILS_TABS.debug}
-                        </div>
-                        {selectedTabIndex == 3 && <div className="node-details__active-tab" />}
-                    </li>
-                )}
-            </ul>
+            <div className='pl-20 flex dc__border-bottom'>
+                <div className='flex left w-100'>
+                    <ul role="tablist" className="tab-list pt-6">
+                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
+                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 0 ? ' fw-6 active' : ' fw-4'}`}>
+                                {NODE_DETAILS_TABS.summary}
+                            </div>
+                            {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
+                            <div className={`mb-6 flexbox fs-12 tab-hover${selectedTabIndex === 1 ? ' fw-6 active' : ' fw-4'}`}>
+                                <Edit className="icon-dim-14 mr-4 mt-2 edit-yaml-icon" />
+                                {NODE_DETAILS_TABS.yaml}
+                            </div>
+                            {selectedTabIndex === 1 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
+                            <div className={`mb-6 fs-12 tab-hover${selectedTabIndex === 2 ? ' fw-6 active' : ' fw-4'}`}>
+                                {NODE_DETAILS_TABS.nodeConditions}
+                            </div>
+                            {selectedTabIndex === 2 && <div className="node-details__active-tab" />}
+                        </li>
+                    </ul>
+                    {nodeControls()}
+                </div>
+            </div>
         )
-    }
-
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                clusters: {
-                    component: 'Clusters',
-                    linked: true,
-                },
-                ':clusterId': {
-                    component: nodeDetail?.clusterName,
-                    linked: true,
-                },
-                ':nodeName': {
-                    component: nodeName,
-                    linked: false,
-                },
-            },
-        },
-        [clusterId, nodeName, nodeDetail],
-    )
-
-    const renderBreadcrumbs = (): JSX.Element => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
     const noDataInSubTab = (tabName: string): JSX.Element => {
@@ -264,9 +251,8 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         return (
             <div className="flexbox mb-8 hover-trigger dc__position-rel">
                 <div
-                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
-                        !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
-                    }`}
+                    className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${!value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
+                        }`}
                 >
                     {key}
                 </div>
@@ -288,7 +274,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     interactive={true}
                 >
                     <Clipboard
-                        className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
                         onClick={() => {
                             copyToClipboard(`${key}=${value || ''}`, () => {
                                 setCopied(true)
@@ -346,7 +332,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     interactive={true}
                 >
                     <Clipboard
-                        className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
                         onClick={() => {
                             copyToClipboard(key, () => {
                                 setCopied(true)
@@ -369,7 +355,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         <div>Effect</div>
                     </div>
                     {(showAllTaints ? nodeDetail.taints : nodeDetail.taints.slice(0, 10)).map((taint) => (
-                        <div className="subtab-grid">
+                        <div className="subtab-grid" key={taint.key}>
                             {renderKeyValueLabel(taint.key, taint.value)}
                             {renderWithCopy(taint['effect'])}
                         </div>
@@ -386,7 +372,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className="cb-5 pointer flexbox fs-13 fw-6"
+                className="cb-5 cursor flexbox fs-13 fw-6"
                 onClick={() => {
                     onClickHandler(!condition)
                 }}
@@ -405,7 +391,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
                 <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(0)
                         }}
@@ -416,7 +402,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(1)
                         }}
@@ -427,7 +413,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
                     </li>
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(2)
                         }}
@@ -475,13 +461,13 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcy-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+                <div className="flexbox bcy-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <AlertTriangle className="alert-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-9">
                         {`${issueCount} Probable issue${issueCount > 1 ? 's' : ''}`}
                     </span>
                 </div>
-                <div className="pt-12 pr-20 pl-20">
+                <div className="pt-12 pr-16 pl-16">
                     {isCPUOverCommitted && (
                         <div>
                             <div className="fw-6 fs-13 cn-9">Resource overcommitted</div>
@@ -508,16 +494,30 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             </div>
         )
     }
+
+    const renderStatus = () => {
+        return <span className="flex left">
+            <span>{nodeDetail.status}</span>
+            {nodeDetail.unschedulable && <><span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                <span className="cr-5"> SchedulingDisabled</span></>}
+        </span>
+    }
+
+
     const renderNodeOverviewCard = (): JSX.Element => {
         return (
-            <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-88">
-                <div className="flexbox pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+            <div className="en-2 bw-1 br-4 bcn-0 dc__position-sticky  top-10">
+                <div className="flexbox pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <span className="fw-6 fs-14 cn-9">Node overview</span>
                 </div>
-                <div className="pr-20 pl-20">
+                <div className="pr-16 pl-16">
                     <div>
                         <div className="fw-6 fs-13 cn-7">Name</div>
                         <p className="fw-4 fs-13 cn-9 mb-12">{nodeDetail.name}</p>
+                    </div>
+                    <div>
+                        <div className="fw-6 fs-13 cn-7">Status</div>
+                        <p className={`fw-4 fs-13 cn-9 mb-12 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>{renderStatus()}</p>
                     </div>
                     <div>
                         <div className="fw-6 fs-13 cn-7">Role</div>
@@ -583,7 +583,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     </div>
                 )}
                 {nodeDetail.resources.map((resource) => (
-                    <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                    <div key={resource.name} className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
                         <Storage className="mt-2 mb-2 icon-dim-18" />
                         <div>{resource.name || '-'}</div>
                         <div>{resource.requestPercentage || '-'}</div>
@@ -597,6 +597,13 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         )
     }
 
+    const openDebugTerminal = () => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('node', nodeDetail.name)
+        const url = location.pathname
+        push(`${url.split('/').slice(0, -3).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`)
+    }
+
     const handleSortClick = (columnName: string, sortType: string): void => {
         let _sortOrder = OrderBy.ASC
         if (sortByColumnName === columnName) {
@@ -608,25 +615,47 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         const comparatorMethod =
             sortType === 'number'
                 ? (a, b) => {
-                      const sortByColumnArr = columnName.split('.')
-                      let firstValue = 0,
-                          secondValue = 0
-                      if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
-                          firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
-                      }
-                      if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
-                          secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
-                      }
-                      return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
-                  }
+                    const sortByColumnArr = columnName.split('.')
+                    let firstValue = 0,
+                        secondValue = 0
+                    if (a[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                        firstValue = Number(a[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                    }
+                    if (b[sortByColumnArr[0]][sortByColumnArr[1]]) {
+                        secondValue = Number(b[sortByColumnArr[0]][sortByColumnArr[1]].slice(0, -1))
+                    }
+                    return _sortOrder === OrderBy.ASC ? firstValue - secondValue : secondValue - firstValue
+                }
                 : (a, b) => {
-                      return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
-                          (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
-                          ? a[columnName].localeCompare(b[columnName])
-                          : b[columnName].localeCompare(a[columnName])
-                  }
+                    return (_sortOrder === OrderBy.ASC && columnName !== 'createdAt') ||
+                        (_sortOrder === OrderBy.DESC && columnName === 'createdAt')
+                        ? a[columnName].localeCompare(b[columnName])
+                        : b[columnName].localeCompare(a[columnName])
+                }
         setSortedPodList([...nodeDetail.pods].sort(comparatorMethod))
     }
+
+    const handleResourceClick = (e) => {
+      const { name, tab, namespace } = e.currentTarget.dataset
+      let _nodeSelectionData, _group
+      _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+      _nodeSelectionData = { name: 'pod' + '_' + name, namespace, isFromNodeDetails: true }
+      const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
+          tab ? `/${tab.toLowerCase()}` : ''
+      }`
+      const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
+      if (isAdded) {
+          updateNodeSelectionData(_nodeSelectionData, _group)
+          push(_url)
+      } else {
+          toast.error(
+              <div>
+                  <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
+                  <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
+              </div>,
+          )
+      }
+  }
 
     const renderPodHeaderCell = (
         columnName: string,
@@ -636,9 +665,8 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 pointer ${className} ${
-                    sortByColumnName === sortingFieldName ? 'sort-by' : ''
-                } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
+                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${sortByColumnName === sortingFieldName ? 'sort-by' : ''
+                    } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
                 onClick={() => {
                     handleSortClick(sortingFieldName, columnType)
                 }}
@@ -651,9 +679,16 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {columnName}
                     </span>
                 </Tippy>
-                <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />
+                {sortByColumnName === sortingFieldName ? (
+                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`}></span>
+                ) : (
+                    <span className="sort-column dc__opacity-0_5 ml-4"></span>)}
             </div>
         )
+    }
+
+    const getPodListData =async (): Promise<void>=>{
+      getData([])
     }
 
     const renderPodList = (): JSX.Element | null => {
@@ -678,8 +713,8 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         </header>
                         <main>
                             {sortedPodList.map((pod) => (
-                                <div className="row-wrapper">
-                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9">
+                                <div className="row-wrapper" key={pod.name}>
+                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
                                         {pod.namespace}
                                     </div>
                                     <div className="hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
@@ -692,8 +727,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <span
-                                                    className="dc__inline-block dc__ellipsis-right lh-20"
+                                                    className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
                                                     style={{ maxWidth: 'calc(100% - 20px)' }}
+                                                    data-name={pod.name}
+                                                    data-namespace={pod.namespace}
+                                                    onClick={handleResourceClick}
                                                 >
                                                     {pod.name}
                                                 </span>
@@ -710,7 +748,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <Clipboard
-                                                    className="ml-5 mt-5 pointer hover-only icon-dim-14"
+                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
                                                     onClick={() => {
                                                         copyToClipboard(pod.name, () => {
                                                             setCopied(true)
@@ -718,6 +756,13 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                     }}
                                                 />
                                             </Tippy>
+                                            <ResourceBrowserActionMenu
+                                                clusterId={clusterId}
+                                                resourceData={pod}
+                                                selectedResource={selectedResource}
+                                                getResourceListData={getPodListData}
+                                                handleResourceClick={handleResourceClick}
+                                            />
                                         </>
                                     </div>
                                     <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
@@ -744,59 +789,70 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         )
     }
 
+    const setYAMLEdit = () => {
+        setIsEdit(true)
+    }
+
+    const renderTabControls = () => {
+        if (selectedTabIndex == 0) {
+            return <><span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
+                {nodeDetail.unschedulable ? (
+                    <>
+                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                    </>
+                ) : (
+                    <>
+                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
+                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                    </>
+                )}
+            </span>
+                <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showDrainNodeModal}>
+                    <DrainIcon className="icon-dim-16 mr-5 scb-5" />
+                    {CLUSTER_NODE_ACTIONS_LABELS.drain}
+                </span>
+                <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showEditTaintsModal}>
+                    <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
+                    {CLUSTER_NODE_ACTIONS_LABELS.taints}
+                </span></>
+        } else if (selectedTabIndex == 1) {
+            if (!isEdit) {
+                return <span className='cb-5 fs-12 scb-5 fw-6 cursor flex' onClick={setYAMLEdit}><Edit className="icon-dim-16 mr-6" /> Edit YAML</span>
+            }
+            return <>
+                {apiInProgress ? <Progressing /> : <span className="flex scb-5 cb-5 left fw-6 fs-12 cursor" onClick={saveYAML}>{isReviewState ?
+                    <><Check className="icon-dim-16 mr-6" /> Apply changes</> :
+                    <><Review className="icon-dim-16 mr-6" /> Review & Save changes</>}</span>}
+                <span className="flex left fw-6 fs-12 cn-6 cursor ml-12" onClick={cancelYAMLEdit}>
+                    Cancel
+                </span>
+            </>
+        }
+    }
+
+    const nodeControls = () => {
+        return <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
+            <div className="flex left">
+                {isSuperAdmin && <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
+                    <TerminalLineIcon className="icon-dim-16 mr-5" />
+                    {NODE_DETAILS_TABS.debug}
+                </span>}
+                <span className="cn-2 mr-16 ml-16">|</span>
+                {renderTabControls()}
+            </div>
+            <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={showDeleteNodeModal}>
+                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                {CLUSTER_NODE_ACTIONS_LABELS.delete}
+            </span>
+        </div>
+    }
+
+
     const renderSummary = (): JSX.Element | null => {
         if (!nodeDetail) return null
         return (
-            <div className="node-details-container">
-                <div className="ml-20 mr-20 mb-12 mt-16 pl-20 pr-20 pt-16 pb-16 bcn-0 br-4 en-2 bw-1 flexbox dc__content-space">
-                    <div className="fw-6">
-                        <div className="fs-16 cn-9">{nodeDetail.name}</div>
-                        <div className="flex left mt-4">
-                            <span className={`fs-13 ${TEXT_COLOR_CLASS[nodeDetail.status] || 'cn-7'}`}>
-                                {nodeDetail.status}
-                            </span>
-                            <span className="cn-2 mr-16 ml-16">|</span>
-                            <span className="flex left fw-6 cb-5 fs-13 cursor" onClick={showCordonNodeModal}>
-                                {nodeDetail.unschedulable ? (
-                                    <>
-                                        <UncordonIcon className="icon-dim-16 mr-5 scb-5 dc__stroke-width-4" />
-                                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CordonIcon className="icon-dim-16 mr-5 scb-5" />
-                                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                                    </>
-                                )}
-                            </span>
-                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showDrainNodeModal}>
-                                <DrainIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                            </span>
-                            <span className="flex left fw-6 cb-5 ml-16 fs-13 cursor" onClick={showEditTaintsModal}>
-                                <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                            </span>
-                            <span className="flex left fw-6 cr-5 ml-16 fs-13 cursor" onClick={showDeleteNodeModal}>
-                                <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="fs-13">
-                        {lastDataSyncTimeString && (
-                            <span>
-                                {lastDataSyncTimeString}
-                                <button
-                                    className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                    onClick={() => getData(patchData)}
-                                >
-                                    Refresh
-                                </button>
-                            </span>
-                        )}
-                    </div>
-                </div>
+            <div className="node-details-container node-data-wrapper">
                 <div className="ml-20 mr-20 mt-12 node-details-grid">
                     <div className="fw-6 fs-16 cn-9">
                         {renderErrorOverviewCard()}
@@ -815,6 +871,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
 
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
+        setIsEdit(false)
         setModifiedManifest(YAML.stringify(nodeDetail.manifest))
     }
 
@@ -834,18 +891,19 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             const parsedManifest = YAML.parse(modifiedManifest)
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
-                name: nodeName,
+                name: node,
                 manifestPatch: JSON.stringify(parsedManifest),
                 version: nodeDetail.version,
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            updateNodeManifest(clusterId, nodeName, requestData)
+            updateNodeManifest(clusterId, node, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
                         toast.success('Node updated')
                         setIsReviewStates(false)
+                        setIsEdit(false)
                         setIsShowWarning(false)
                         getData([])
                     }
@@ -880,15 +938,24 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
+    const getCodeEditorHeight = (): string=>{
+      if (!isReviewState) {
+          return 'calc(100vh - 115px)'
+      } else if (isShowWarning) {
+          return `calc(100vh - 180px)`
+      }
+      return `calc(100vh - 148px)`
+    }
+
     const renderYAMLEditor = (): JSX.Element => {
         return (
             <div className="node-details-container">
                 <CodeEditor
                     value={modifiedManifest}
                     defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
-                    height={
-                        isReviewState ? `calc( 100vh - ${isShowWarning ? '203px' : '170px'})` : 'calc( 100vh - 137px)'
-                    }
+                    height={getCodeEditorHeight()}
+                    readOnly={!isEdit}
+                    theme="vs-dark--dt"
                     diffView={isReviewState}
                     onChange={handleEditorValueChange}
                     mode={MODES.YAML}
@@ -901,32 +968,17 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         />
                     )}
                     {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader={true}>
-                            <div className="h-32 lh-32 fs-12 fw-6 bcn-1 dc__border-bottom flexbox w-100 cn-7">
-                                <div className="dc__border-right pl-10 w-49">Current node YAML </div>
+                        <CodeEditor.Header hideDefaultSplitHeader={true} className="node-code-editor-header" >
+                            <div className="h-32 lh-32 fs-12 fw-6 flexbox w-100 cn-0">
+                                <div className=" pl-10 w-49">Current node YAML </div>
                                 <div className="pl-25 w-51 flexbox">
-                                    <Edit className="icon-dim-16 mt-7 mr-5" />
+                                    <Edit className="icon-dim-16 scn-0 mt-7 mr-5" />
                                     YAML (Editing)
                                 </div>
                             </div>
                         </CodeEditor.Header>
                     )}
                 </CodeEditor>
-                <div className="bcn-0 dc__border-top p-12 text-right" style={{ height: '60px' }}>
-                    {isReviewState && (
-                        <button type="button" className="cta cta--workflow cancel mr-12" onClick={cancelYAMLEdit}>
-                            Cancel
-                        </button>
-                    )}
-                    <ButtonWithLoader
-                        rootClassName="cta cta--workflow"
-                        onClick={saveYAML}
-                        isLoading={apiInProgress}
-                        loaderColor="white"
-                    >
-                        {isReviewState ? 'Update node' : 'Review changes'}
-                    </ButtonWithLoader>
-                </div>
             </div>
         )
     }
@@ -959,25 +1011,12 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         )
     }
 
-    const renderTerminal = () => {
-        return (
-            <ClusterTerminal
-                clusterId={Number(clusterId)}
-                nodeGroups={nodeListRef.current}
-                clusterImageList={nodeImageList}
-                isNodeDetailsPage={true}
-                namespaceList={namespaceList[nodeDetail.clusterName]}
-            />
-        )
-    }
 
     const renderTabs = (): JSX.Element => {
         if (selectedTabIndex === 1) {
             return renderYAMLEditor()
         } else if (selectedTabIndex === 2) {
             return renderConditions()
-        } else if (selectedTabIndex === 3) {
-            return renderTerminal()
         } else {
             return renderSummary()
         }
@@ -1043,54 +1082,56 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         }
     }
 
-    if (loader) {
-        return <Progressing pageLoader />
+    if (errorResponseCode) {
+        return (
+            <div className="bcn-0 node-data-container flex">
+                <ErrorScreenManager
+                    code={errorResponseCode}
+                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                />
+            </div>
+        )
     }
 
     return (
-        <div>
-            <PageHeader
-                breadCrumbs={renderBreadcrumbs}
-                isBreadcrumbs={true}
-                showTabs={true}
-                renderHeaderTabs={renderNodeDetailsTabs}
-            />
-            {renderTabs()}
-
-            {showCordonNodeDialog && (
-                <CordonNodeModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    unschedulable={nodeDetail.unschedulable}
-                    closePopup={hideCordonNodeModal}
-                />
-            )}
-            {showDrainNodeDialog && (
-                <DrainNodeModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    closePopup={hideDrainNodeModal}
-                />
-            )}
-            {showDeleteNodeDialog && (
-                <DeleteNodeModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    closePopup={hideDeleteNodeModal}
-                />
-            )}
-            {showEditTaints && (
-                <EditTaintsModal
-                    name={nodeName}
-                    version={nodeDetail.version}
-                    kind={nodeDetail.kind}
-                    taints={nodeDetail.taints}
-                    closePopup={hideEditTaintsModal}
-                />
-            )}
+        <div className='bcn-0 node-data-container'>
+            {loader ? <Progressing pageLoader /> : <>
+                {renderNodeDetailsTabs()}
+                {renderTabs()}
+                {showCordonNodeDialog && (
+                    <CordonNodeModal
+                        name={node}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        unschedulable={nodeDetail.unschedulable}
+                        closePopup={hideCordonNodeModal}
+                    />
+                )}
+                {showDrainNodeDialog && (
+                    <DrainNodeModal
+                        name={node}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        closePopup={hideDrainNodeModal}
+                    />
+                )}
+                {showDeleteNodeDialog && (
+                    <DeleteNodeModal
+                        name={node}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        closePopup={hideDeleteNodeModal}
+                    />
+                )}
+                {showEditTaints && (
+                    <EditTaintsModal
+                        name={node}
+                        version={nodeDetail.version}
+                        kind={nodeDetail.kind}
+                        taints={nodeDetail.taints}
+                        closePopup={hideEditTaintsModal}
+                    />
+                )}</>}
         </div>
     )
 }

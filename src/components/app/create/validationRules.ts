@@ -1,4 +1,5 @@
 import { PATTERNS } from '../../../config'
+import { MAX_LENGTH_30 } from '../../../config/constantMessaging'
 
 const validateTagValue = (value: string): string[] => {
     const errorList = []
@@ -22,12 +23,12 @@ export class ValidationRules {
         const test = regExp.test(value)
         if (value.length === 0) return { isValid: false, message: 'Please provide app name' }
         if (value.length < 3) return { isValid: false, message: 'Atleast 3 characters required' }
-        if (value.length > 30) return { isValid: false, message: 'Max 30 characters allowed' }
+        if (value.length > 30) return { isValid: false, message: MAX_LENGTH_30 }
         else if (!test)
             return {
                 isValid: false,
                 message:
-                    "Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'",
+                    "Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
             }
         else return { isValid: true, message: '' }
     }

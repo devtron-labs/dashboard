@@ -9,8 +9,8 @@ import {
     toastAccessDenied,
     PopupMenu,
     Checkbox,
-    EmptyState,
     Reload,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getNotificationConfigurations,
@@ -28,6 +28,7 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
@@ -37,6 +38,7 @@ import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import { renderPipelineTypeIcon } from './notifications.util';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
@@ -138,6 +140,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.updateNotificationEvents = this.updateNotificationEvents.bind(this);
         this.changePageSize = this.changePageSize.bind(this);
         this.changePage = this.changePage.bind(this);
+        this.onChangePipelineCheckbox = this.onChangePipelineCheckbox.bind(this);
     }
 
     componentDidMount() {
@@ -377,15 +380,28 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-    renderEmptyState() {
-        return <EmptyState>
-            <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
-            <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
-            <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <div data-testid="add-notification-button" onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
-                <Add className="icon-dim-20 mr-5" />Add Notification
-            </div>
-        </EmptyState>
+    renderGenericState() {
+        const renderGenericStateButton = () => {
+            return (
+                <button
+                    data-testid="add-notification-button"
+                    onClick={this.CreateNewNotification}
+                    className="cta flex dc__no-decor"
+                >
+                    <Add className="icon-dim-20 mr-5" />
+                    Add Notification
+                </button>
+            )
+        }
+        return (
+            <GenericEmptyState
+                image={EmptyImage}
+                title={EMPTY_STATE_STATUS.NOTIFICATION_TAB.TITLE}
+                subTitle={EMPTY_STATE_STATUS.NOTIFICATION_TAB.SUBTITL}
+                isButtonAvailable={true}
+                renderButton={renderGenericStateButton}
+            />
+        )
     }
 
     validateAccess = (updateState): void => {
@@ -417,7 +433,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return <div className="dc__block mt-20 mb-20">
                 <Tippy placement="top" content="Delete" >
                     <Delete className="icon-dim-24 mr-20 notification-tab__option"
-                        onClick={this.showDeleteModal} />
+                        onClick={this.showDeleteModal} 
+                        data-testid="notification-delete-button"/>
                 </Tippy>
                 <PopupMenu onToggleCallback={(isOpen) => {
                     if (isOpen) {
@@ -475,6 +492,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
+    onChangePipelineCheckbox(e) {
+        e.stopPropagation(); 
+        this.toggleAllNotification()
+    }
+
     renderPipelineList() {
         return <table className="pipeline-list__table">
             <tbody>
@@ -483,7 +505,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         <Checkbox rootClassName=""
                             isChecked={this.state.headerCheckbox.isChecked}
                             value={this.state.headerCheckbox.value}
-                            onChange={(e) => { e.stopPropagation(); this.toggleAllNotification() }} >
+                            onChange={this.onChangePipelineCheckbox} 
+                            dataTestId="notification-list">
                             <span></span>
                         </Checkbox>
                     </th>
@@ -562,6 +585,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                         {p.dest === "slack" ? <Slack className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "email" ? <Email className="icon-dim-20 mr-5" /> : null}
                                         {p.dest === "smtp" ? <Email className="icon-dim-20 mr-5" /> : null}
+                                        {p.dest === "webhook" ? <Webhook className="icon-dim-20 mr-5" /> : null}
                                         {p.recipient ? p.recipient : p.name}
                                     </div>
                                 })}
@@ -660,7 +684,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         else if (!this.state.notificationList.length) {
             return <div className="pt-16" style={{ "height": "calc(100vh - 215px)" }}>
                 {this.renderHostErrorMessage()}
-                {this.renderEmptyState()}
+                {this.renderGenericState()}
             </div>
         }
         else return <div className="bcn-0 pt-16" style={{ "minHeight": "calc(100vh - 215px)" }}>

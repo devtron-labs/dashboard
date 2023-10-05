@@ -14,10 +14,10 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
+import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -25,6 +25,7 @@ import {
 } from '../../../../../../config/constantMessaging'
 import { MANIFEST_KEY_FIELDS } from '../../../../../../config/constants'
 import { MODES } from '../../../../../../config'
+import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 
 function ManifestComponent({
     selectedTab,
@@ -38,7 +39,7 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string, namespace: string }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -83,7 +84,7 @@ function ManifestComponent({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
             appDetails.deploymentAppDeleteRequest)
         ) {
             markActiveTab('Live manifest')
@@ -102,17 +103,11 @@ function ManifestComponent({
                     getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
-                    let _manifest
-                    if (
-                        appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-                        appDetails.deploymentAppType === DeploymentAppType.helm ||
-                        isResourceBrowserView
-                    ) {
-                        _manifest = JSON.stringify(response[0]?.result?.manifest)
-                        setDesiredManifest(response[1]?.result?.manifest || '')
-                    } else {
-                        _manifest = response[0]?.result?.manifest
-                    }
+                    let _manifest: string
+
+                    _manifest = JSON.stringify(response[0]?.result?.manifest)
+                    setDesiredManifest(response[1]?.result?.manifest || '')
+
                     if (_manifest) {
                         setManifest(_manifest)
                         setActiveManifestEditorData(_manifest)
@@ -133,7 +128,7 @@ function ManifestComponent({
         } catch (err) {
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType, params.group])
+    }, [params.podName, params.node, params.nodeType, params.group, params.namespace])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
@@ -196,9 +191,15 @@ function ManifestComponent({
 
         let manifestString
         try {
-            manifestString = JSON.stringify(YAML.parse(modifiedManifest))
+            if (!modifiedManifest) {
+                setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                // Handled for blocking API call
+                manifestString = ""
+            } else {
+                manifestString = JSON.stringify(YAML.parse(modifiedManifest))
+            }
         } catch (err2) {
-            setErrorText(`Encountered data validation error while saving. “${err2}”`)
+            setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} “${err2}”`)
         }
         if (!manifestString) {
             setLoading(false)
@@ -335,7 +336,7 @@ function ManifestComponent({
                     <div className="bcn-0">
                         {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
                             isResourceBrowserView ||
-                            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+                            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                                 appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {

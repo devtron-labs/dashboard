@@ -225,8 +225,8 @@ p.sentence-case:first-letter {
     border-radius: 4px;
     background-color: var(--white);
 
-    &.ecr-authType__radio-group,
     &.permission-type__radio-group,
+    &.regisrty-form__radio-group,
     &.chartrepo-type__radio-group,
     &.external-link-scope__radio-group {
         border: none;
@@ -239,12 +239,27 @@ p.sentence-case:first-letter {
                 padding: 12px 16px 12px 0;
             }
 
+            &.form__radio-item-content {
+                padding: 16px 16px 16px 0;
+            }
+
             input:checked ~ .form__radio-item-content .radio__button {
                 background: radial-gradient(var(--B500) 0, var(--B500) 40%, var(--white) 45%, var(--white) 100%);
                 border: 1.5px solid var(--B500);
             }
         }
     }
+
+    &.regisrty-form__radio-group {
+        .form__radio-item.disabled {
+            background-color: var(--N000) !important;
+            opacity: 0.5;
+        }
+        .form__radio-item .form__radio-item-content {
+            padding: 16px 16px 16px 0;
+        }
+    }
+
 }
 
 .form__checkbox {
@@ -532,7 +547,11 @@ p.sentence-case:first-letter {
 
 .search__input:focus {
     outline: none;
-    border: solid 1px var(--N400);
+    border: solid 1px var(--B500);
+}
+
+.search-input::placeholder{
+    font-weight: 400;
 }
 
 .search__clear-button {

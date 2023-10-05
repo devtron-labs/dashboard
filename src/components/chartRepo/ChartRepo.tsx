@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useForm, useAsync } from '../common'
 import {
     showError,
     Progressing,
@@ -7,29 +6,30 @@ import {
     ErrorScreenNotAuthorized,
     Checkbox,
     CHECKBOX_VALUE,
-    useEffectAfterMount,
+    useAsync,
+    RadioGroup, 
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useForm, getNonEditableChartRepoText } from '../common'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
+import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL } from '../../config'
+import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
-import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
-import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import TippyCustomized from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
+import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName} from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import {ChartRepoType} from "./chartRepo.types";
+import { NavLink } from 'react-router-dom'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
-    const [fetching, setFetching] = useState(false)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -45,22 +45,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
         const maxRange = 4294967296
         const num = randomBytes[0] / maxRange
         return Math.floor(num * range) + min
-    }
-
-    async function refetchCharts(e) {
-        if (fetching) {
-            return
-        }
-        setFetching(true)
-        toast.success(TOAST_INFO.RE_SYNC)
-        await reSyncChartRepo()
-            .then((response) => {
-                setFetching(false)
-            })
-            .catch((error) => {
-                showError(error)
-                setFetching(false)
-            })
     }
 
     if (!isSuperAdmin) {
@@ -98,21 +82,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 <div className="chartRepo_form__subtitle dc__float-left dc__bold">
                     Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
                 </div>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
-                    <div className="chartRepo_form__subtitle dc__float-right">
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
-                            onClick={refetchCharts}
-                        >
-                            <span>
-                                <SyncIcon />
-                            </span>
-                            <span>Refetch Charts</span>
-                        </a>
-                    </div>
-                </Tippy>
                 {[]
                     .concat(result && Array.isArray(result.result) ? result.result : [])
                     .sort((a, b) => a.name.localeCompare(b.name))
@@ -126,30 +95,6 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
 
 function CollapsedList({ id, name, active, url, authMode, isEditable, accessToken = "", userName = "", password = "", reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
-    const [enabled, toggleEnabled] = useState(active);
-    const [loading, setLoading] = useState(false);
-
-    useEffectAfterMount(() => {
-        if (!collapsed) return
-        async function update() {
-            let payload = {
-                id: id || 0, name, url, authMode, active: enabled,
-                ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? { username: userName, password } : {}),
-                ...(authMode === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken } : {})
-            }
-            try {
-                setLoading(true);
-                await updateChartProviderConfig(payload, id);
-                await reload();
-                toast.success(`Repository ${enabled ? 'enabled' : 'disabled'}.`)
-            } catch (err) {
-                showError(err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        update()
-    }, [enabled])
 
     const setToggleCollapse = () => {
         if (!id){
@@ -163,10 +108,11 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
             toggleCollapse((t) => !t)
         } else {
             toast.info(
-                `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`,
+                getNonEditableChartRepoText(name),
             )
         }
     }
+
     return (
         <article
             className={`collapsed-list dc__clear-both ${
@@ -193,22 +139,6 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                         title={id && !collapsed ? 'Edit repository' : name || 'Add repository'}
                         subtitle={collapsed ? url : null}
                     />
-                    {id && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
-                        >
-                            <span data-testid={`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
-                                {loading ? (
-                                    <Progressing />
-                                ) : (
-                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                )}
-                            </span>
-                        </Tippy>
-                    )}
                 </div>
                 {id && (
                     <List.DropDown
@@ -440,6 +370,7 @@ function ChartForm({
                 name={isNameField ? 'name' : 'url'}
                 error={isNameField ? state.name.error : state.url.error}
                 label={isNameField ? 'Name*' : 'URL*'}
+                placeholder={isNameField ? 'Enter Repository name' : 'Enter repo URL'}
                 disabled={!isEditable}
             />
         )
@@ -472,7 +403,7 @@ function ChartForm({
                     onChange={toggleIsPublicChartType}
                 >
                     {CHART_REPO_LABEL.map(({ label, value }) => (
-                        <RadioGroupItem value={value}>
+                        <RadioGroupItem dataTestId={`${label}`} value={value}>
                             <span className={`dc__no-text-transform ${chartRepoType === value ? 'fw-6' : 'fw-4'}`}>
                                 {label}
                             </span>
@@ -489,9 +420,9 @@ function ChartForm({
                 configName="chart repo"
             />
 
-            <div className="form__row form__row--two-third">
-                { renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
-                { renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
+            <div className="form__row--two-third mb-16">
+                {renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
+                {renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
                 {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
@@ -525,24 +456,43 @@ function ChartForm({
                     </>
                 )}
             </div>
-
-            <div className="form__row form__buttons">
-                {id && (
-                    <button
-                        data-testid="chart-repo-delete-button"
-                        className="cta delete dc__m-auto chart_repo__delete-button"
-                        type="button"
-                        onClick={handleDeleteClick}
-                    >
-                        {deleting ? <Progressing /> : 'Delete'}
-                    </button>
+            <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
+                {!id && (
+                    <div className="form-row flex left fs-13">
+                         <Question className="icon-dim-16 mr-8" />
+                        Looking to add OCI-based registry?
+                        <NavLink
+                            className="dc__no-decor pl-8 pr-8 flex left cb-5"
+                            to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}
+                        >
+                            Add OCI Registry
+                        </NavLink>
+                    </div>
                 )}
-                <button data-testid="chart-repo-cancel-button" className="cta cancel" type="button" onClick={handleCancelClick}>
-                    Cancel
-                </button>
-                <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
-                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                </button>
+
+                <div className=" form__buttons">
+                    {id && (
+                        <button
+                            data-testid="chart-repo-delete-button"
+                            className="cta delete dc__m-auto chart_repo__delete-button"
+                            type="button"
+                            onClick={handleDeleteClick}
+                        >
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
+                    )}
+                    <button
+                        data-testid="chart-repo-cancel-button"
+                        className="cta cancel"
+                        type="button"
+                        onClick={handleCancelClick}
+                    >
+                        Cancel
+                    </button>
+                    <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
+                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                    </button>
+                </div>
             </div>
             {confirmation && (
                 <DeleteComponent

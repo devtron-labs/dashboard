@@ -193,7 +193,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView)
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView, false)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
@@ -306,7 +306,7 @@ export default function GitInfoMaterial({
                 selectedMaterial.isBranchError ||
                 selectedMaterial.noSearchResult ||
                 !anyCommit ? (
-                    <div className="select-material__empty-state-container flex">
+                    <div className="select-material__empty-state-container flex dc__position-rel">
                         <EmptyStateCIMaterial
                             isRepoError={selectedMaterial.isRepoError}
                             isBranchError={selectedMaterial.isBranchError}

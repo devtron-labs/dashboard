@@ -24,6 +24,7 @@ import {
 } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
 import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
+import { DEFAULT_ENV } from '../triggerView/Constants'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -57,6 +58,8 @@ export const TriggerDetails = React.memo(
         type,
         stage,
         artifact,
+        environmentName,
+        isJobView,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -72,6 +75,8 @@ export const TriggerDetails = React.memo(
                         gitTriggers={gitTriggers}
                         artifact={artifact}
                         type={type}
+                        environmentName={environmentName}
+                        isJobView={isJobView}
                     />
                     <CurrentStatus
                         status={status}
@@ -81,6 +86,7 @@ export const TriggerDetails = React.memo(
                         podStatus={podStatus}
                         stage={stage}
                         type={type}
+                        isJobView={isJobView}
                     />
                 </div>
             </div>
@@ -167,7 +173,7 @@ const ProgressingStatus = React.memo(
         }
         return (
             <>
-                <div className="flex left">
+                <div className="flex left mb-24">
                     <div className="dc__min-width-fit-content">
                         <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                             In progress
@@ -215,14 +221,14 @@ const ProgressingStatus = React.memo(
 )
 
 const CurrentStatus = React.memo(
-    ({ status, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
+    ({ status, finishedOn, artifact, message, podStatus, stage, type, isJobView }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
                 <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
-                <div className="flex left">
+                <div className={`flex left ${ isJobView ? "mb-24" : ""}`}>
                     <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
@@ -239,11 +245,13 @@ const StartDetails = ({
     gitTriggers,
     artifact,
     type,
+    environmentName,
+    isJobView,
 }: StartDetailsType): JSX.Element => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
     return (
-        <div className="trigger-details__start flex column left">
+        <div className={`trigger-details__start flex column left ${isJobView ? 'mt-4' : ''}`}>
             <div className="cn-9 fs-14 fw-6" data-testid="deployment-history-start-heading">
                 Start
             </div>
@@ -265,6 +273,7 @@ const StartDetails = ({
                         )}
                     </>
                 ) : (
+                    Object.keys(gitTriggers ?? {}).length > 0 &&
                     ciMaterials?.map((ciMaterial) => {
                         const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
                         return gitDetail ? (
@@ -298,6 +307,15 @@ const StartDetails = ({
                     </Link>
                 )}
             </div>
+            {isJobView && (
+                <div className="pt-4 pb-4 pr-0 pl-0">
+                    <span className="fw-6 fs-14">Env</span>
+                    <span className="fs-12 mb-4 ml-8">{environmentName !== '' ? environmentName : DEFAULT_ENV}</span>
+                    {environmentName === '' && (
+                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

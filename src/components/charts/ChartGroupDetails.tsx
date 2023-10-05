@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    ConditionalWrap,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
 import { URLS } from '../../config'
-import { Pencil, useAsync } from '../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { Pencil } from '../common'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import {
     deployChartGroup,
@@ -265,6 +272,7 @@ export default function ChartGroupDetails() {
                                         }*/
                                         onClick={handleAdvancedButtonClick}
                                         className="cta cancel dc__ellipsis-right w-100"
+                                        data-testid="advanced-options-button"
                                     >
                                         Advanced Options
                                     </button>

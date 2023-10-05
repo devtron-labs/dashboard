@@ -1,8 +1,8 @@
-import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
-import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
+import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -46,6 +46,8 @@ export interface AddNewAppState {
         appName: boolean
         cloneAppId: boolean
     }
+    createAppLoader: boolean
+    showClusterDescription: boolean
 }
 
 export interface AppDetails {
@@ -65,7 +67,7 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppType
+    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
     imageTag?: string
 }
@@ -78,14 +80,21 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
-    description: string
+    description: Description
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
 }
 
-export interface AppHeaderType {
+interface Description{
+    id: number
+    description: string
+    updatedBy: string
+    updatedOn: string
+}
+
+export interface AppHeaderType extends GroupFilterType {
     appName: string
     appMetaInfo: AppMetaInfo
     reloadMandatoryProjects: boolean
@@ -300,6 +309,11 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
+export enum AppListColumnSort {
+    appNameSort = 'appName',
+    lastDeployedSort = 'lastDeployedAt'
+}
+
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -340,6 +354,8 @@ export enum Nodes {
     VolumeSnapshotClass = 'VolumeSnapshotClass',
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
+    Namespace = 'Namespace',
+    ClusterOverview = 'ClusterOverview'
 }
 export type NodeType = keyof typeof Nodes
 
@@ -352,6 +368,7 @@ export enum AggregationKeys {
     'Custom Resource' = 'Custom Resource',
     'Other Resources' = 'Other Resources',
     Events = 'Events',
+    Namespaces = 'Namespaces',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
 
@@ -411,6 +428,7 @@ export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     isJobOverview?: boolean
+    filteredEnvIds?: string
 }
 
 export interface AboutAppInfoModalProps {
@@ -449,11 +467,14 @@ export interface AppStatusType {
     isVirtualEnv?: boolean
 }
 export interface JobPipeline {
-    ci_pipeline_id: number
-    ci_pipeline_name: string
-    started_on: string
+    ciPipelineID: number
+    ciPipelineName: string
+    startedOn: string
     status: string
     dataTestId?: string
+    environmentName?: string
+    environmentId?: string
+    lastTriggeredEnvironmentName?: string
 }
 
 export interface TagChipsContainerType {
@@ -472,6 +493,7 @@ export interface SourceInfoType {
   loadingResourceTree?: boolean
   isVirtualEnvironment?: boolean
   setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+  refetchDeploymentStatus: (showTimeline?: boolean)=> void
 }
 
 export interface EnvironmentListMinType {
@@ -486,5 +508,6 @@ export interface EnvironmentListMinType {
     isClusterCdActive?: boolean
     isVirtualEnvironment?: boolean
     namespace?: string
+    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
+import { getDeploymentAppType, importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -10,6 +10,9 @@ import {
     InfoColourBar,
     ServerErrors,
     ForceDeleteDialog,
+    GenericEmptyState,
+    ResponseType,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,
@@ -33,7 +36,13 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import {
+    ConfigurationType,
+    DELETE_ACTION,
+    SERVER_MODE,
+    URLS,
+    checkIfDevtronOperatorHelmRelease,
+} from '../../../../config'
 import YAML from 'yaml'
 import {
     ChartEnvironmentSelector,
@@ -44,7 +53,6 @@ import {
     DeleteApplicationButton,
     UpdateApplicationButton,
     AppNameInput,
-    ErrorScreenWithInfo,
     ValueNameInput,
     DeploymentAppSelector,
 } from './ChartValuesView.component'
@@ -62,6 +70,7 @@ import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-lef
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import {
@@ -96,11 +105,13 @@ import {
     COMPARISON_OPTION_LABELS,
     COMPARISON_OPTION_TIPPY_CONTENT,
     CONNECT_TO_HELM_CHART_TEXTS,
-    DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO,
+    UPDATE_DATA_VALIDATION_ERROR_MSG,
+    EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
-import { DeploymentAppType } from '../../appDetails/appDetails.type'
+import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -133,8 +144,9 @@ function ChartValuesView({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
+    const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -350,7 +362,7 @@ function ChartValuesView({
                                 commonState.installedConfig) ||
                             (isDeployChartView && commonState.selectedEnvironment)
                         ) {
-                            updateGeneratedManifest(
+                            commonState.chartValues.appStoreVersionId && updateGeneratedManifest(
                                 isCreateValueView,
                                 isUnlinkedCLIApp,
                                 isExternalApp,
@@ -358,7 +370,7 @@ function ChartValuesView({
                                 appName,
                                 _valueName,
                                 commonState,
-                                commonState.chartValues.appStoreVersionId || commonState.chartValues.id,
+                                commonState.chartValues.appStoreVersionId,
                                 appId,
                                 deploymentVersion,
                                 response.result.values,
@@ -564,34 +576,69 @@ function ChartValuesView({
         }
     }
 
-    const deleteApplication = (force?: boolean) => {
+    const deleteApplication = (deleteAction: DELETE_ACTION) => {
         if (commonState.isDeleteInProgress) {
             return
         }
-
+        // updating the delete state to progressing
         dispatch({
-            type: ChartValuesViewActionTypes.multipleOptions,
-            payload: {
-                isDeleteInProgress: true,
-                showDeleteAppConfirmationDialog: false,
-            },
+            type: ChartValuesViewActionTypes.isDeleteInProgress,
+            payload: true,
         })
-        getDeleteApplicationApi(force)
-            .then(() => {
-                dispatch({
-                    type: ChartValuesViewActionTypes.isDeleteInProgress,
-                    payload: false,
-                })
-                toast.success(TOAST_INFO.DELETION_INITIATED)
-                init && init()
-                history.push(
-                    isCreateValueView
-                        ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                        : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
-                )
+
+        // initiating deletion (External Helm App/ Helm App/ Preset Value)
+        getDeleteApplicationApi(deleteAction)
+            .then((response: ResponseType) => {
+                //preset value deleted successfully
+                if (isCreateValueView) {
+                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    init && init()
+                    history.push(
+                        getSavedValuesListURL(installedConfigFromParent.appStoreId)
+                    )
+                    return
+                }
+                // ends
+
+                // helm app OR external helm app delete initiated
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    init && init()
+                    history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
+                    return
+                } 
+
+                // helm app delete failed due to cluster not reachable (ArgoCD installed)
+                if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                    dispatch({
+                        type: ChartValuesViewActionTypes.multipleOptions,
+                        payload: {
+                            isDeleteInProgress: true,
+                            showDeleteAppConfirmationDialog: false,
+                        },
+                    })
+                    dispatch({
+                        type: ChartValuesViewActionTypes.nonCascadeDeleteData,
+                        payload: {
+                            nonCascade: true,
+                            clusterName: response.result.deleteResponse?.clusterName
+                        },
+                    })
+                    dispatch({
+                        type: ChartValuesViewActionTypes.isDeleteInProgress,
+                        payload: false,
+                    })
+                }
             })
             .catch((error) => {
-                if (!force && error.code !== 403) {
+                /*
+                helm app delete failed due to:
+                1. cluster not reachable (Helm installed) 
+                2. ArgoCD dashboard not reachable
+                3. any other event loss
+                */
+                // updating state for force delete dialog box
+                if (deleteAction !== DELETE_ACTION.FORCE_DELETE && error.code !== 403) {
                     let forceDeleteTitle = '',
                         forceDeleteMessage = ''
                     if (error instanceof ServerErrors && Array.isArray(error.errors)) {
@@ -600,7 +647,20 @@ function ChartValuesView({
                             forceDeleteMessage = internalMessage
                         })
                     }
-
+                    dispatch({
+                        type: ChartValuesViewActionTypes.multipleOptions,
+                        payload: {
+                            isDeleteInProgress: true,
+                            showDeleteAppConfirmationDialog: false,
+                        },
+                    })
+                    dispatch({
+                        type: ChartValuesViewActionTypes.nonCascadeDeleteData,
+                        payload: {
+                            nonCascade: false,
+                            clusterName: ''
+                        },
+                    })
                     dispatch({
                         type: ChartValuesViewActionTypes.forceDeleteData,
                         payload: {
@@ -620,13 +680,18 @@ function ChartValuesView({
             })
     }
 
-    const getDeleteApplicationApi = (force?: boolean): Promise<any> => {
+    const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
+        // Delete: external helm app
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
-        } else if (isCreateValueView) {
+        }
+        // Delete: helm chart preset values
+        else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
-        } else {
-            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, force)
+        } 
+        // Delete: helm app
+        else {
+            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, deleteAction)
         }
     }
 
@@ -714,9 +779,13 @@ function ChartValuesView({
 
         // validate data
         try {
+            if (!commonState.modifiedValuesYaml) {
+                toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                return false
+            }
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`${DATA_VALIDATION_ERROR_MSG} “${err}”`)
+            toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
             return false
         }
 
@@ -799,7 +868,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
-                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppType.manifest_download : commonState.deploymentAppType,
+                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppTypes.MANIFEST_DOWNLOAD : commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -960,7 +1029,7 @@ function ChartValuesView({
     const renderReadMeOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ml-8 ${
                     commonState.openReadMe ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleReadMeOptionClick(disabled)}
@@ -995,7 +1064,7 @@ function ChartValuesView({
     const renderComparisonOption = (disabled?: boolean) => {
         return (
             <span
-                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 mr-8 ${
+                className={`chart-values-view__option flex cursor fs-13 fw-6 cn-7 ${
                     commonState.openComparison ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleComparisonOptionClick(disabled)}
@@ -1006,11 +1075,11 @@ function ChartValuesView({
                 ) : (
                     <Arrows className="option-open__icon icon-dim-16 mr-8" />
                 )}
-                {commonState.activeTab === 'manifest'
-                    ? COMPARISON_OPTION_LABELS.CompareDeployed
-                    : commonState.openComparison
+                {commonState.openComparison
                     ? COMPARISON_OPTION_LABELS.HideComparison
-                    : COMPARISON_OPTION_LABELS.CompareValues}
+                    : commonState.activeTab === 'yaml'
+                    ? COMPARISON_OPTION_LABELS.CompareValues
+                    : COMPARISON_OPTION_LABELS.CompareManifest}
             </span>
         )
     }
@@ -1054,6 +1123,9 @@ function ChartValuesView({
 
     const getComparisonTippyContent = () => {
         if (commonState.isComparisonAvailable) {
+            if (commonState.activeTab === 'manifest'){
+                return commonState.deploymentHistoryArr && commonState.deploymentHistoryArr.length ? COMPARISON_OPTION_TIPPY_CONTENT.EnabledManifest : COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+            }
             return isCreateValueView
                 ? COMPARISON_OPTION_TIPPY_CONTENT.OtherValues
                 : isDeployChartView
@@ -1064,7 +1136,11 @@ function ChartValuesView({
         return (
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.Heading}</h2>
-                <p className="fs-12 fw-4 lh-18 m-0">{COMPARISON_OPTION_TIPPY_CONTENT.InfoText}</p>
+                <p className="fs-12 fw-4 lh-18 m-0">
+                    {commonState.activeTab === 'manifest'
+                        ? COMPARISON_OPTION_TIPPY_CONTENT.DiabledManifest
+                        : COMPARISON_OPTION_TIPPY_CONTENT.InfoText}
+                </p>
             </>
         )
     }
@@ -1074,47 +1150,33 @@ function ChartValuesView({
             <div className="chart-values-view__tabs-container flex dc__content-space">
                 {renderValuesTabs()}
                 <div className="flex">
-                    {(commonState.activeTab === 'yaml' || (commonState.activeTab === 'manifest' && isExternalApp)) && (
-                        <ConditionalWrap
-                            condition={commonState.activeTab === 'manifest'}
-                            wrap={() => renderComparisonOption()}
-                        >
+                    <ConditionalWrap
+                        condition={
+                            !commonState.openReadMe &&
+                            (commonState.fetchingReadMe ||
+                                !commonState.isReadMeAvailable ||
+                                !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0))
+                        }
+                        wrap={() => renderComparisonOption(isDeployChartView)}
+                    >
+                        {commonState.activeTab !== VIEW_MODE.GUI && (
                             <Tippy
                                 className="default-tt w-200"
                                 arrow={false}
                                 placement="bottom"
                                 content={getComparisonTippyContent()}
                             >
-                                {renderComparisonOption(!commonState.isComparisonAvailable)}
+                                {renderComparisonOption(
+                                    commonState.activeTab === VIEW_MODE.MANIFEST
+                                        ? !commonState.isComparisonAvailable ||
+                                              !commonState.deploymentHistoryArr ||
+                                              commonState.deploymentHistoryArr.length === 0
+                                        : !commonState.isComparisonAvailable,
+                                )}
                             </Tippy>
-                        </ConditionalWrap>
-                    )}
-                    {commonState.activeTab !== 'manifest' && (
-                        <ConditionalWrap
-                            condition={
-                                !commonState.openReadMe &&
-                                (commonState.fetchingReadMe ||
-                                    !commonState.isReadMeAvailable ||
-                                    !commonState.fetchedReadMe.get(commonState.selectedVersionUpdatePage?.id || 0))
-                            }
-                            wrap={() => (
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={
-                                        commonState.fetchingReadMe
-                                            ? COMPARISON_OPTION_TIPPY_CONTENT.Fetching
-                                            : COMPARISON_OPTION_TIPPY_CONTENT.ReadmeNotAvailable
-                                    }
-                                >
-                                    {renderReadMeOption(true)}
-                                </Tippy>
-                            )}
-                        >
-                            {renderReadMeOption()}
-                        </ConditionalWrap>
-                    )}
+                        )}
+                        {commonState.activeTab !== VIEW_MODE.MANIFEST && renderReadMeOption()}
+                    </ConditionalWrap>
                 </div>
             </div>
         )
@@ -1132,14 +1194,29 @@ function ChartValuesView({
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
-        dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-        setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
-        if (commonState.invalidaEnvironment) {
-            dispatch({
-                type: ChartValuesViewActionTypes.invalidaEnvironment,
-                payload: false,
-            })
-        }
+      if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
+          dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
+      } else {
+          dispatch({
+              type: ChartValuesViewActionTypes.multipleOptions,
+              payload: {
+                  selectedEnvironment: selected,
+                  deploymentAppType: getDeploymentAppType(
+                      selected.allowedDeploymentTypes,
+                      commonState.deploymentAppType,
+                      selected.isVirtualEnvironment
+                  ),
+              },
+          })
+      }
+      setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
+      setAllowedDeploymentTypes(selected.allowedDeploymentTypes ?? [])
+      if (commonState.invalidaEnvironment) {
+          dispatch({
+              type: ChartValuesViewActionTypes.invalidaEnvironment,
+              payload: false,
+          })
+      }
     }
 
     const handleDeploymentAppTypeSelection = (event) => {
@@ -1204,15 +1281,37 @@ function ChartValuesView({
         }
     }
 
+    const onClickHideNonCascadeDeletePopup = () => {
+        dispatch({
+            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
+            payload: {
+                nonCascade: false,
+                clusterName: ''
+            },
+        })
+    }
+
+    const onClickNonCascadeDelete = () => {
+        dispatch({
+            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
+            payload: {
+                nonCascade: false,
+                clusterName: ''
+            },
+        })
+        deleteApplication(DELETE_ACTION.NONCASCADE_DELETE)
+    }
+
     const renderChartValuesEditor = () => {
         return (
             <div
-                className={`chart-values-view__editor ${
+                className={`chart-values-view__editor dc__position-rel ${
                     commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
                 }`}
             >
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
-                    <ErrorScreenWithInfo info={commonState.valuesEditorError} />
+                    <GenericEmptyState SvgImage={ErrorExclamation} classname="dc__align-reload-center" title="" subTitle={commonState.valuesEditorError} />
+
                 ) : (
                     <ChartValuesEditor
                         loading={
@@ -1422,18 +1521,21 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
+                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !isExternalApp &&
                             !isCreateValueView &&
                             !isVirtualEnvironmentOnSelector &&
-                            !appDetails?.isVirtualEnvironment && (
+                            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
+                            !appDetails?.isVirtualEnvironment && !commonState.installedConfig?.isOCICompliantChart &&(
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}
                                     handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
                                     isDeployChartView={isDeployChartView}
+                                    allowedDeploymentTypes={allowedDeploymentTypes}
                                 />
                             )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
@@ -1546,21 +1648,22 @@ function ChartValuesView({
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
-                        handleDelete={deleteApplication}
+                        handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
                         toggleConfirmation={() => {
                             dispatch({
                                 type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
                                 payload: false,
                             })
                         }}
-                        isCreateValueView
+                        disableButton={commonState.isDeleteInProgress}
+                        isCreateValueView={isCreateValueView}
                     />
                 )}
                 {commonState.forceDeleteData.forceDelete && (
                     <ForceDeleteDialog
                         forceDeleteDialogTitle={commonState.forceDeleteData.title}
                         forceDeleteDialogMessage={commonState.forceDeleteData.message}
-                        onClickDelete={() => deleteApplication(true)}
+                        onClickDelete={() => deleteApplication(DELETE_ACTION.FORCE_DELETE)}
                         closeDeleteModal={() => {
                             dispatch({
                                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -1574,6 +1677,13 @@ function ChartValuesView({
                                 },
                             })
                         }}
+                    />
+                )}
+                {commonState.nonCascadeDeleteData.nonCascade && (
+                    <ClusterNotReachableDailog
+                        clusterName={commonState.nonCascadeDeleteData.clusterName}
+                        onClickCancel={onClickHideNonCascadeDeletePopup}
+                        onClickDelete={onClickNonCascadeDelete}
                     />
                 )}
                 {commonState.showNoGitOpsWarning && (

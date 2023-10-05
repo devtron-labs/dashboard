@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
-import { useJsonYaml, Select, RadioGroup, useWindowSize, copyToClipboard } from '../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, Select, RadioGroup, useWindowSize } from '../common'
+import { Progressing, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
@@ -66,10 +66,12 @@ interface CodeEditorInterface {
     validatorSchema?: any;
     isKubernetes?: boolean;
     cleanData?: boolean;
+    chartVersion?: any; 
 }
 
 interface CodeEditorHeaderInterface {
     children?: any;
+    className?: string
     hideDefaultSplitHeader?: boolean;
 }
 interface CodeEditorComposition {
@@ -114,7 +116,7 @@ interface CodeEditorState {
     code: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema, chartVersion ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
     if (cleanData) {
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
@@ -161,6 +163,27 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
     });
 
+    monaco.editor.defineTheme('delete-draft', {
+        base: 'vs',
+        inherit: true,
+        rules: [],
+        colors: {
+            'diffEditor.insertedTextBackground': '#ffd4d1',
+            'diffEditor.removedTextBackground': '#ffffff33',
+        },
+    })
+
+    monaco.editor.defineTheme('unpublished', {
+        base: 'vs',
+        inherit: true,
+        rules: [],
+        colors: {
+            'diffEditor.insertedTextBackground': '#eaf1dd',
+            'diffEditor.removedTextBackground': '#ffffff33',
+        },
+    })
+
+
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -198,14 +221,13 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                 format: true,
                 schemas:[
                     {
-                        uri: 'https://devtron.ai/schema.json', // id of the first schema
+                        uri: `https://github.com/devtron-labs/devtron/tree/main/scripts/devtron-reference-helm-charts/reference-chart_${chartVersion}/schema.json`, // id of the first schema
                         fileMatch: ['*'], // associate with our model
                         schema: validatorSchema,
                     }]
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [validatorSchema]);
-
+    }, [validatorSchema, chartVersion]);
     useEffect(() => {
         if (!editorRef.current) return
         editorRef.current.updateOptions({ readOnly })
@@ -321,12 +343,14 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     );
 })
 
-const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, hideDefaultSplitHeader }) => {
+const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, className, hideDefaultSplitHeader }) => {
     const { defaultValue } = useCodeEditorContext()
-    return <div className="code-editor__header flex left">
-        {children}
-        {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
-    </div>
+    return (
+        <div className={className || 'code-editor__header flex left'}>
+            {children}
+            {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
+        </div>
+    )
 }
 
 function ThemeChanger({ }) {

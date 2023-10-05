@@ -20,7 +20,7 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                     to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
                     className="dc__devtron-breadcrumb__item"
                 >
-                    <span className="cb-5 fs-16">Helm Apps </span>
+                    <span className="cb-5 fs-16 cursor">Helm Apps </span>
                 </Link>
                 {Object.keys(appDetails).length > 0 && (
                     <>
@@ -63,6 +63,7 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                                         action: 'Values Clicked',
                                     })
                                 }}
+                                data-testid="helm-configure-link"
                             >
                                 <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
                                 Configure

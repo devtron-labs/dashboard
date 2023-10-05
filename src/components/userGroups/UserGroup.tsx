@@ -1,9 +1,25 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useContext } from 'react'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    ErrorScreenNotAuthorized,
+    get,
+    InfoColourBar,
+    Option,
+    MultiValueContainer,
+    MultiValueRemove,
+    multiSelectStyles,
+    getRandomColor,
+    not,
+    noop,
+    useEffectAfterMount,
+    GenericEmptyState,
     useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
     NavigationArrow,
     useKeyDown,
     removeItemsFromArray,
@@ -14,23 +30,7 @@ import {
     importComponentFromFELibrary,
     createClusterEnvGroup,
 } from '../common'
-import {
-    showError,
-    Progressing,
-    ConditionalWrap,
-    ErrorScreenNotAuthorized,
-    get,
-    InfoColourBar,
-    EmptyState,
-    Option,
-    MultiValueContainer,
-    MultiValueRemove,
-    multiSelectStyles,
-    getRandomColor,
-    not,
-    noop,
-    useEffectAfterMount,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import {
     getUserList,
     getGroupList,
@@ -77,6 +77,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import {
+    EMPTY_STATE_STATUS,
     ERROR_EMPTY_SCREEN,
     SSO_NOT_CONFIGURED_STATE_TEXTS,
     TOAST_ACCESS_DENIED,
@@ -789,6 +790,7 @@ const allEnvironmentsOption = {
 }
 
 export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
+export const CONFIG_APPROVER_ACTION = { label: 'configApprover', value: 'configApprover' }
 
 interface DirectPermissionRow {
     permission: DirectPermissionsRoleFilter
@@ -809,8 +811,18 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
+    const multiRole = permission.action.value.split(',')
+    const configApproverRoleIndex = multiRole.indexOf(CONFIG_APPROVER_ACTION.value)
+    const primaryActionRoleIndex = configApproverRoleIndex === 0 ? 1 : 0
+    const primaryActionRole = {
+        label: multiRole[primaryActionRoleIndex],
+        value: multiRole[primaryActionRoleIndex],
+        configApprover: multiRole[configApproverRoleIndex]
+            ? !!multiRole[configApproverRoleIndex]
+            : permission.action.configApprover,
+    }
 
-    const [possibleRoles, setPossibleRoles] = useState([])    
+    const [possibleRoles, setPossibleRoles] = useState([])
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
@@ -865,7 +877,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? customRoles.possibleRolesMetaForHelm[value].value
                     : customRoles.possibleRolesMeta[value].value}
-                {ApproverPermission && permission.approver && ', Approver'}
+                {ApproverPermission && (permission.approver || primaryActionRole.configApprover) && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
         )
@@ -879,6 +891,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     <ApproverPermission
                         optionProps={props}
                         approver={permission.approver}
+                        configApprover={primaryActionRole.configApprover}
                         handleDirectPermissionChange={(...rest: any[]) => {
                             props.selectOption(props.selectProps.value)
                             handleDirectPermissionChange(...rest)
@@ -891,8 +904,13 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        const  envOptions = createClusterEnvGroup(environmentsList,'cluster_name','environment_name','environmentIdentifier')
-        setEnvironments(envOptions)  
+        const envOptions = createClusterEnvGroup(
+            environmentsList,
+            'cluster_name',
+            'environment_name',
+            'environmentIdentifier',
+        )
+        setEnvironments(envOptions)
     }, [environmentsList])
 
     useEffect(() => {
@@ -929,9 +947,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     clusterName: cluster.clusterName,
                 })),
             ],
-            isVirtualEnvironment: cluster?.isVirtualCluster
+            isVirtualEnvironment: cluster?.isVirtualCluster,
         }))
-        
+
         setEnvClusters(envOptions)
     }, [envClustersList])
 
@@ -994,7 +1012,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     <>
                         <span>{option.label}</span>
                         <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
-                            {option.clusterName + ((option.clusterName && option.namespace) ? '/' : '') + (option.namespace || '')}
+                            {option.clusterName +
+                                (option.clusterName && option.namespace ? '/' : '') +
+                                (option.namespace || '')}
                         </small>
                     </>
                 ) : (
@@ -1131,7 +1151,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer: clusterValueContainer,
                             IndicatorSeparator: null,
                             Option,
-                            GroupHeading
+                            GroupHeading,
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1156,7 +1176,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         onFocus={() => onFocus('environment')}
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
-                        options={[{label: '', options: [allEnvironmentsOption]}, ...environments]}
+                        options={[{ label: '', options: [allEnvironmentsOption] }, ...environments]}
                         className="basic-multi-select"
                         menuPlacement="auto"
                         classNamePrefix="select-devtron-app-environment-dropdown"
@@ -1167,7 +1187,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer,
                             IndicatorSeparator: null,
                             Option,
-                            GroupHeading
+                            GroupHeading,
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1224,7 +1244,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 {permission.entityNameError && <span className="form__error">{permission.entityNameError}</span>}
             </div>
             <Select
-                value={permission.action}
+                value={primaryActionRole}
                 name="action"
                 placeholder="Select role"
                 options={ParseData(possibleRoles, permission.entity, permission.accessType)}
@@ -1433,14 +1453,14 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 const ValueContainer = (props) => {
     let length = props.getValue().length
     let optionLength = props.options.length
-    if( props.selectProps.name === 'environment'){
+    if (props.selectProps.name === 'environment') {
         let _optionLength = 0
         props.options.forEach((option) => {
             _optionLength += option.options?.length
         })
         optionLength = _optionLength
     }
-    
+
     let count = ''
     if (
         length === optionLength &&
@@ -1521,22 +1541,22 @@ export function GroupRow({ name, description, removeRow }) {
 }
 
 function NoUsers({ onClick }) {
+    const handleNoUserButton = () => {
+        return (
+            <button onClick={onClick} className="cta flex">
+                <AddIcon className="mr-5" />
+                Add user
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No users</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>Add users and assign group or direct permissions</EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={onClick} className="cta flex">
-                    <AddIcon className="mr-5" />
-                    Add user
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            title={EMPTY_STATE_STATUS.NO_USER.TITLE}
+            subTitle={EMPTY_STATE_STATUS.NO_USER.SUBTITLE}
+            isButtonAvailable={true}
+            renderButton={handleNoUserButton}
+        />
     )
 }
 
@@ -1551,70 +1571,69 @@ const renderEmptySSOMessage = (): JSX.Element => {
 
 function SSONotConfiguredState() {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">
-                    {SSO_NOT_CONFIGURED_STATE_TEXTS.title}
-                </h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle className="w-300 fw-400 fs-13">
-                {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
-                <InfoColourBar
-                    message={renderEmptySSOMessage()}
-                    classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
-                    linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
-                    redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
-                    internalLink={true}
-                    Icon={ErrorIcon}
-                />
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            classname="fs-16 dc__align-center lh-24 mb-8-imp mt-20"
+            title={SSO_NOT_CONFIGURED_STATE_TEXTS.title}
+            subTitle={
+                <>
+                    {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
+                    <InfoColourBar
+                        message={renderEmptySSOMessage()}
+                        classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
+                        linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
+                        redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
+                        internalLink={true}
+                        Icon={ErrorIcon}
+                    />
+                </>
+            }
+        />
     )
 }
 
 function NoGroups({ onClick }) {
+    const handleButton = () => {
+        return (
+            <button onClick={onClick} className="cta flex">
+                <AddIcon className="mr-5" />
+                Add group
+            </button>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptyImage} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 data-testid="empty-permission-groups-title">No groups</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Groups allow you to combine permissions and easily assign them to users
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button data-testid="add-first-permission-group-button" onClick={onClick} className="cta flex">
-                    <AddIcon className="mr-5" />
-                    Add group
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptyImage}
+            title={EMPTY_STATE_STATUS.NO_GROUPS.TITLE}
+            subTitle={EMPTY_STATE_STATUS.NO_GROUPS.SUBTITLE}
+            isButtonAvailable={true}
+            renderButton={handleButton}
+        />
     )
 }
 
 function SearchEmpty({ searchString, setSearchString }) {
+    const handleSearchEmptyButton = () => {
+        return (
+            <button onClick={(e) => setSearchString('')} className="cta secondary">
+                Clear search
+            </button>
+        )
+    }
+
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={EmptySearch} alt="so empty" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>No matching results</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                We couldn’t find any result for ”<b>{searchString}</b>”
-            </EmptyState.Subtitle>
-            <EmptyState.Button>
-                <button onClick={(e) => setSearchString('')} className="cta secondary">
-                    Clear search
-                </button>
-            </EmptyState.Button>
-        </EmptyState>
+        <GenericEmptyState
+            image={EmptySearch}
+            title={EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
+            subTitle={
+                <>
+                    We couldn’t find any result for
+                    {<b>{searchString}</b>}
+                </>
+            }
+            isButtonAvailable={true}
+            renderButton={handleSearchEmptyButton}
+        />
     )
 }
 
@@ -1622,7 +1641,10 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
     switch (entity) {
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
+                return dataList.filter(
+                    (role) =>
+                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                )
             } else {
                 return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
             }

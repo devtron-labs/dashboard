@@ -7,11 +7,13 @@ import {
     ServerErrors,
     GenericEmptyState,
     DetailsProgressing,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
+import DataNotFound from '../../../assets/img/app-not-deployed.png';
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DeploymentAppTypes, DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
+import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -71,6 +73,7 @@ function ChartDeploymentHistory({
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
     const [showDockerInfo, setShowDockerInfo] = useState(false)
+    const [showReleaseNotFound, setReleaseNotFound] = useState<boolean>(false)
     const history = useHistory()
     const { url } = useRouteMatch()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
@@ -107,6 +110,7 @@ function ChartDeploymentHistory({
     const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
             .then((deploymentHistoryResponse: ChartDeploymentHistoryResponse) => {
+                setReleaseNotFound(false)
                 const _deploymentHistoryArr =
                     deploymentHistoryResponse.result?.deploymentHistory?.sort(
                         (a, b) => b.deployedAt.seconds - a.deployedAt.seconds,
@@ -163,8 +167,12 @@ function ChartDeploymentHistory({
                 }
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (Array.isArray(errors.errors) && String(errors.errors[0].code) === SERVER_ERROR_CODES.RELEASE_NOT_FOUND) {
+                    setReleaseNotFound(true)
+                } else {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
                 setIsLoading(false)
             })
     }
@@ -264,6 +272,7 @@ function ChartDeploymentHistory({
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
+                    const helmDeploymentStatus: string = deployment?.status ? deployment.status.toLowerCase() : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
@@ -291,7 +300,7 @@ function ChartDeploymentHistory({
                                                 : ''
                                         } ${
                                             installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
-                                                ? 'succeeded'
+                                                ? helmDeploymentStatus
                                                 : ''
                                         }`}
                                     ></div>
@@ -374,7 +383,7 @@ function ChartDeploymentHistory({
      * @returns parsed value if it's a JSON string or passed value without parsing
      */
     function getEditorValue(value: string): string {
-        if (isExternal) {
+        if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
                 return YAML.stringify(parsedJson, { indent: 2 })
@@ -723,7 +732,15 @@ function ChartDeploymentHistory({
     if(isLoadingDetails){
         return <DetailsProgressing loadingText="Please wait…" size={24} />
     }
-
+    if (showReleaseNotFound) {
+        return (
+            <GenericEmptyState
+                image={DataNotFound}
+                title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                subTitle="We could not find any deployment history for this application."
+            />
+        )
+    }
     return (
         <>
             {isLoading ? (

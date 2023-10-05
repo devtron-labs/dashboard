@@ -5,6 +5,8 @@ import {
     CHARACTER_ERROR_MAX,
     REQUIRED_FIELD_MSG,
     ERROR_MESSAGE_FOR_VALIDATION,
+    MAX_LENGTH_30,
+    REPO_NAME_VALIDATION,
 } from '../../config/constantMessaging'
 
 export class ValidationRules {
@@ -19,6 +21,23 @@ export class ValidationRules {
                 message: ERROR_MESSAGE_FOR_VALIDATION,
             }
         else return { isValid: true, message: '' }
+    }
+
+    namespace = (name: string): { isValid: boolean; message: string } => {
+        const regExp = new RegExp(PATTERNS.NAMESPACE)
+        if (!(name?.length)) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        if (name.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
+        else if (!regExp.test(name))
+            return {
+                isValid: false,
+                message: ERROR_MESSAGE_FOR_VALIDATION,
+            }
+        else return { isValid: true, message: '' }
+    }
+
+    environment = (id: number): { isValid: boolean; message: string } => {
+        if (!id) return { isValid: false, message:REQUIRED_FIELD_MSG  }
+        else return { isValid: true, message: null }
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
@@ -117,5 +136,17 @@ export class ValidationRules {
         } else {
             return { message: null, isValid: true }
         }
+    }
+
+    containerRegistry = (containerRegistry: string): { isValid: boolean; message: string } => {
+        if (!containerRegistry.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        else return { isValid: true, message: null }
+    }
+
+    repository = (repository: string): { isValid: boolean; message: string } => {
+        if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        if (repository.split('/').slice(-1)[0].length > 30) return { isValid: false, message: MAX_LENGTH_30 }
+        if (repository.split('/').slice(-1)[0].includes("_")) return { isValid: false, message: REPO_NAME_VALIDATION }
+        return { isValid: true, message: null }
     }
 }

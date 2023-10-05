@@ -9,6 +9,8 @@ import {
     DeploymentNodeType,
     CDModalTab,
     CDMaterialResponseType,
+    FilterStates,
+    put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
@@ -87,6 +89,11 @@ export function getCITriggerInfoModal(
                 environmentName: response.result.environmentName || '',
                 environmentId: response.result.environmentId || 0,
                 appName: response.result.appName || '',
+                appReleaseTags: response?.result?.imageTaggingData?.appReleaseTags,
+                imageComment: response?.result?.imageTaggingData?.imageComment,
+                imageReleaseTags: response?.result?.imageTaggingData?.imageReleaseTags,
+                image: response?.result?.image,
+                tagsEditable: response?.result?.imageTaggingData?.tagsEditable,
             },
         }
     })
@@ -167,6 +174,11 @@ interface CIHistoricalStatus extends ResponseType {
 
 export const getCIHistoricalStatus = (params): Promise<CIHistoricalStatus> => {
     let URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/${params.buildId}`
+    return get(URL)
+}
+
+export const getTagDetails = (params) => {
+    const URL = `${Routes.IMAGE_TAGGING}/${params.pipelineId}/${params.artifactId}`
     return get(URL)
 }
 
@@ -268,10 +280,16 @@ export function getCDMaterialList(
     stageType: DeploymentNodeType,
     abortSignal: AbortSignal,
     isApprovalNode?: boolean,
+    searchParam?: string,
 ): Promise<CDMaterialResponseType> {
-    const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
-        isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-    }`
+    const URL = searchParam
+        ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+          }&search=${searchParam}`
+        : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+          }`
+
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
@@ -281,30 +299,39 @@ export function getCDMaterialList(
                 materials: [],
                 userApprovalConfig: null,
                 requestedUserId: 0,
+                tagsEditable: false,
+                appReleaseTagNames: [],
+                hideImageTaggingHardDelete: false,
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
                 approvalUsers: response.result.approvalUsers,
                 materials: cdMaterialListModal(
                     response.result.ci_artifacts,
-                    true,
+                    1,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
                 ),
                 userApprovalConfig: response.result.userApprovalConfig,
                 requestedUserId: response.result.requestedUserId,
+                appReleaseTagNames: response.result.appReleaseTagNames,
+                tagsEditable: response.result.tagsEditable,
+                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
             }
         } else {
             return {
                 approvalUsers: [],
                 materials: cdMaterialListModal(
                     response.result.ci_artifacts,
-                    true,
+                    1,
                     response.result.latest_wf_artifact_id,
                     response.result.latest_wf_artifact_status,
                 ),
                 userApprovalConfig: null,
                 requestedUserId: 0,
+                appReleaseTagNames: response.result.appReleaseTagNames,
+                tagsEditable: response.result.tagsEditable,
+                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
             }
         }
     })
@@ -324,7 +351,7 @@ export function getRollbackMaterialList(
             code: response.code,
             status: response.status,
             result: {
-                materials: cdMaterialListModal(response.result?.ci_artifacts, offset === 1 ? true : false),
+                materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
                 requestedUserId: response.result?.requestedUserId,
             },
         }
@@ -337,20 +364,24 @@ export function extractImage(image: string): string {
 
 function cdMaterialListModal(
     artifacts: any[],
-    markFirstSelected: boolean,
+    offset: number,
     artifactId?: number,
     artifactStatus?: string,
 ) {
     if (!artifacts || !artifacts.length) return []
 
+    const markFirstSelected = offset===1
+    const startIndex = offset-1
     const materials = artifacts.map((material, index) => {
         let artifactStatusValue = ''
+        const filterState = material.filterState ?? FilterStates.ALLOWED
+
         if (artifactId && artifactStatus && material.id === artifactId) {
             artifactStatusValue = artifactStatus
         }
 
         return {
-            index,
+            index: startIndex+index,
             id: material.id,
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
@@ -362,7 +393,7 @@ function cdMaterialListModal(
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
-            isSelected: markFirstSelected ? !material.vulnerable && index === 0 : false,
+            isSelected: markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable && index === 0 : false,
             showSourceInfo: false,
             deployed: material.deployed || false,
             latest: material.latest || false,
@@ -375,6 +406,8 @@ function cdMaterialListModal(
             userApprovalMetadata: material.userApprovalMetadata,
             triggeredBy: material.triggeredBy,
             isVirtualEnvironment: material.isVirtualEnvironment,
+            imageComment: material.imageComment,
+            imageReleaseTags: material.imageReleaseTags,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {
@@ -394,6 +427,7 @@ function cdMaterialListModal(
                       }
                   })
                 : [],
+            filterState,
         }
     })
     return materials
@@ -454,6 +488,15 @@ export const triggerCDNode = (
     return post(Routes.CD_TRIGGER_POST, request)
 }
 
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
+    const request = {
+        appIds: appIds,
+        environmentId: envId,
+        value: value,
+    }
+    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
+}
+
 export const getPrePostCDTriggerStatus = (params) => {
     const URL = `${Routes.APP}/cd-pipeline/workflow/status/${params.appId}/${params.environmentId}/${params.pipelineId}`
     return get(URL)
@@ -464,9 +507,13 @@ export const getWorkflowStatus = (appId: string) => {
     return get(URL)
 }
 
-export const getCIPipelines = (appId) => {
-    let URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}`
-    return get(URL)
+export const getCIPipelines = (appId, filteredEnvIds?: string) => {
+  let filteredEnvParams = ''
+  if (filteredEnvIds) {
+      filteredEnvParams = `?envIds=${filteredEnvIds}`
+  }
+  const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
+  return get(URL)
 }
 
 export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {
@@ -513,6 +560,13 @@ export const getCDTriggerStatus = (appId) => {
 export function getTriggerHistory(pipelineId, params) {
     let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
+}
+export function setImageTags(request, pipelineId: number, artifactId: number) {
+    return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`, request)
+}
+
+export function getImageTags(pipelineId: number, artifactId: number) {
+    return get(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
 }
 
 function handleTime(ts: string) {

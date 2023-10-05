@@ -1,4 +1,4 @@
-import { History } from '../cicdHistory/types'
+import { FetchIdDataStatus, History } from '../cicdHistory/types'
 
 export interface CIPipeline {
     name: string
@@ -10,18 +10,27 @@ export interface CIPipeline {
 export interface BuildDetails {
     triggerHistory: Map<number, History>
     fullScreenView: boolean
-    synchroniseState: (triggerId: number, triggerDetails: History) => void
+    synchroniseState: (triggerId: number, triggerDetails: History, triggerDetailsError: any) => void
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
     isJobView?: boolean
+    isJobCI?: boolean
     appIdFromParent?: string
+    appReleaseTags?: []
+    tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
+    fetchIdData: FetchIdDataStatus
 }
 
 export interface HistoryLogsType {
     triggerDetails: History
     isBlobStorageConfigured?: boolean
     isJobView?: boolean
+    isJobCI?: boolean
     appIdFromParent?: string
+    appReleaseTags?: []
+    tagsEditable: boolean
+    hideImageTaggingHardDelete: boolean
 }
 
 export interface SecurityTabType {

@@ -11,13 +11,14 @@ import {
     showError,
     Progressing,
     ErrorScreenManager as ErrorScreen,
-    EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
 import ReactSelect from 'react-select';
 import AppNotDeployed from '../../assets/img/app-not-deployed.png';
 import NoResults from '../../assets/img/empty-noresult@2x.png';
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging';
 
 export class SecurityScansTab extends Component<RouteComponentProps<{}>, SecurityScansTabState> {
 
@@ -98,9 +99,11 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     let searchStr = new URLSearchParams(this.props.location.search);
     let pageSize = searchStr.get('size');
     let offset = searchStr.get('offset');
+    let search = searchStr.get('search')
     let payload = {
       offset: Number(offset) || 0,
       size: Number(pageSize) || 20,
+      search: search || "", 
       cveName: "",
       appName: "",
       objectName: "",
@@ -190,7 +193,11 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     });
   }
 
-  search() {
+  search(e) {
+    const searchParams = new URLSearchParams(this.props.location.search)
+    searchParams.set('search', e.target.value)
+    searchParams.set('offset', '0')
+    this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
     this.setState({ searchApplied: true }, () => {
       this.callGetSecurityScanList();
     });
@@ -200,17 +207,14 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     let newOffset = (this.state.pageSize * (newPageNo - 1));
     let searchStr = new URLSearchParams(this.props.location.search);
     let pageSize = searchStr.get('size');
-    let newSearchStr = '';
+    let newSearchStr = ''
     if (newOffset) newSearchStr = `offset=${newOffset}`;
     if (pageSize) newSearchStr = `${newSearchStr}&&size=${pageSize}`;
     this.props.history.push(`${this.props.match.url}?${newSearchStr}`)
   }
 
   changePageSize(newPageSize: number): void {
-    let searchStr = new URLSearchParams(this.props.location.search);
-     let offset = searchStr.get('offset');
     let newSearchStr = `size=${newPageSize}`;
-    if (offset) newSearchStr = `offset=${offset}&&${newSearchStr}`;
     this.props.history.push(`${this.props.match.url}?${newSearchStr}`);
   }
 
@@ -245,7 +249,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
               <form
                   onSubmit={(e) => {
                       e.preventDefault()
-                      this.search()
+                      this.search(e)
                   }}
                   className="flex-1 flex mr-24"
               >
@@ -293,7 +297,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                           placeholder={`Search ${this.state.searchObject.label}`}
                           onKeyDown={(e) => {
                               if (e.keyCode === 13) {
-                                  this.search()
+                                  this.search(e)
                               }
                           }}
                           onChange={this.handleSearchChange}
@@ -380,31 +384,33 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     }
     else if ((this.state.view === ViewType.FORM && this.state.size === 0) && (this.state.searchApplied || this.state.filtersApplied.severity.length
       || this.state.filtersApplied.environments.length || this.state.filtersApplied.clusters.length)) {
-      return <div style={{ height: 'calc(100vh - 200px)' }}>
-        <EmptyState >
-          <EmptyState.Image><img src={NoResults} alt="" /></EmptyState.Image>
-          <EmptyState.Title><h4>No Matching Results</h4></EmptyState.Title>
-          <EmptyState.Subtitle>No results found for the applied filters.</EmptyState.Subtitle>
-          <EmptyState.Button>
-            <button type="button" className="cta ghosted" onClick={this.removeFiltersAndSearch}>Clear all Filters</button>
-          </EmptyState.Button>
-        </EmptyState>
-      </div>
+        const handleButton = () => {
+            return (
+                <button type="button" className="cta ghosted" onClick={this.removeFiltersAndSearch}>
+                    Clear all Filters
+                </button>
+            )
+        }
+        return (
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
+                <GenericEmptyState
+                    image={NoResults}
+                    title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.SECURITY_SCANS.SUBTITLE}
+                    isButtonAvailable={true}
+                    renderButton={handleButton}
+                />
+            </div>
+        )
     }
     else if (this.state.view === ViewType.FORM && this.state.size === 0) {
       return (
-          <div style={{ height: 'calc(100vh - 175px)' }}>
-              <EmptyState>
-                  <EmptyState.Image>
-                      <img src={AppNotDeployed} data-testid="no-scan-performed-image" alt="" />
-                  </EmptyState.Image>
-                  <EmptyState.Title>
-                      <h4>No Scans Performed</h4>
-                  </EmptyState.Title>
-                  <EmptyState.Subtitle>
-                      <span></span>
-                  </EmptyState.Subtitle>
-              </EmptyState>
+          <div className="dc__position-rel" style={{ height: 'calc(100vh - 175px)' }}>
+              <GenericEmptyState
+                image={AppNotDeployed}
+                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+              />
+
           </div>
       )
     }

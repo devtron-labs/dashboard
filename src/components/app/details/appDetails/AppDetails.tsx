@@ -8,7 +8,9 @@ import {
     stopPropagation,
     multiSelectStyles,
     useEffectAfterMount,
-    Drawer,
+    DeploymentAppTypes,
+    useSearchString,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -20,14 +22,13 @@ import {
     DEPLOYMENT_STATUS_QUERY_PARAM,
     DEPLOYMENT_STATUS,
     HELM_DEPLOYMENT_STATUS_TEXT,
+    RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import {
     NavigationArrow,
     useAppContext,
     useEventSource,
     FragmentHOC,
-    useSearchString,
-    useAsync,
     ScanDetailsModal,
 } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
@@ -78,10 +79,11 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appDetails.type'
+import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
+    DeletedAppComponentType,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
     DetailsType,
@@ -92,6 +94,7 @@ import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentS
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
+import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
@@ -100,8 +103,9 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     null,
     'function',
 )
+let deploymentStatusTimer = null
 
-export default function AppDetail() {
+export default function AppDetail({filteredEnvIds}:{filteredEnvIds?: string}) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
@@ -111,20 +115,42 @@ export default function AppDetail() {
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const isVirtualEnvRef = useRef(false)
 
-    useEffect(() => {
-        if (otherEnvsLoading) return
-        if (
-            !params.envId &&
-            environmentId &&
-            otherEnvsResult?.result?.map((env) => env.environmentId).includes(environmentId)
-        ) {
-            const newUrl = getAppDetailsURL(params.appId, environmentId)
-            push(newUrl)
-        } else if (!otherEnvsResult?.result?.map((env) => env.environmentId).includes(+params.envId)) {
-            setEnvironmentId(null)
-            return
-        }
-    }, [otherEnvsLoading])
+    const envList = useMemo(() => {
+      if (otherEnvsResult?.result?.length > 0) {
+          const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+          const _envList =
+              otherEnvsResult.result
+                  .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
+                  ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+
+          if (_envList.length > 0) {
+              let _envId
+              if (!params.envId && _envList.length === 1) {
+                  _envId = _envList[0].environmentId
+              } else if (
+                  !params.envId &&
+                  environmentId &&
+                  _envList.map((env) => env.environmentId).includes(environmentId)
+              ) {
+                  _envId = environmentId
+              } else if (!_envList.map((env) => env.environmentId).includes(+params.envId)) {
+                  _envId = _envList[0].environmentId
+              }
+              if (_envId) {
+                  const newUrl = getAppDetailsURL(params.appId, _envId)
+                  push(newUrl)
+              } else{
+                setEnvironmentId(null)
+              }
+          } else {
+              setEnvironmentId(null)
+          }
+          return _envList
+      } else {
+          setEnvironmentId(null)
+      }
+      return []
+  }, [filteredEnvIds, otherEnvsResult])
 
     useEffect(() => {
         if (!params.envId) return
@@ -137,24 +163,31 @@ export default function AppDetail() {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&
+                    {(envList.length === 0) &&
                         !isAppDeleted &&
                         !isVirtualEnvRef.current && <AppNotConfigured />}
-                    {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvRef.current && (
-                        <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
+                    {!params.envId && envList.length > 0 && !isVirtualEnvRef.current && (
+                        <EnvironmentNotConfigured environments={envList} />
                     )}
                 </>
             )
         )
     }
 
-    const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
+    const environment = useMemo(() => {
+        return envList.find((env) => env.environmentId === +params.envId)
+    }, [envList, params.envId])
 
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
-            {!params.envId && otherEnvsResult?.result?.length > 0 && (
+            {!params.envId && envList.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
-                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
+                    <SourceInfo
+                        appDetails={null}
+                        environments={envList}
+                        environment={environment}
+                        refetchDeploymentStatus={noop}
+                    />
                 </div>
             )}
             {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
@@ -164,7 +197,7 @@ export default function AppDetail() {
                     appDetailsAPI={fetchAppDetailsInTime}
                     isAppDeployment
                     environment={environment}
-                    environments={otherEnvsResult?.result}
+                    environments={envList}
                     setIsAppDeleted={setIsAppDeleted}
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
@@ -194,6 +227,7 @@ export const Details: React.FC<DetailsType> = ({
     const location = useLocation()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
+    const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [rotateModal, setRotateModal] = useState<boolean>(false)
@@ -215,17 +249,18 @@ export const Details: React.FC<DetailsType> = ({
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
+    const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
+    const pollResourceTreeRef = useRef(true)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...((isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData)
+            ...(isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS,
         })
-    let deploymentStatusTimer = null
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
@@ -237,7 +272,7 @@ export const Details: React.FC<DetailsType> = ({
         appDetails &&
             !!appDetails.appName &&
             !!appDetails.environmentName &&
-            appDetails.deploymentAppType !== DeploymentAppType.helm,
+            appDetails.deploymentAppType !== DeploymentAppTypes.HELM,
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
@@ -245,19 +280,38 @@ export const Details: React.FC<DetailsType> = ({
         return aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || [])
     }, [appDetails])
 
-    const getDeploymentDetailStepsData = (): void => {
+    useEffect(() => {
+        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
+            deploymentModalShownRef.current = true
+        } else {
+            deploymentModalShownRef.current = false
+        }
+    }, [location.search])
+
+    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
         // Deployments status details for Devtron apps
-        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
-            processDeploymentStatusData(deploymentStatusDetailRes.result)
-        })
+        getDeploymentStatusDetail(params.appId, params.envId, showTimeline ?? deploymentModalShownRef.current).then(
+            (deploymentStatusDetailRes) => {
+                processDeploymentStatusData(deploymentStatusDetailRes.result)
+            },
+        )
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = (isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData)
-            ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-            : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData =
+            isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
+                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
-        if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
+        if (
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.TIMED_OUT ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ||
+            processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED
+        ) {
+            deploymentModalShownRef.current = false
+        }
+        if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
             deploymentStatusTimer = setTimeout(() => {
                 getDeploymentDetailStepsData()
             }, 10000)
@@ -282,7 +336,12 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            setAppDetails(null)
+            if (error['code'] === 408) {
+                setResourceTreeFetchTimeOut(true)
+            } else {
+                setResourceTreeFetchTimeOut(false)
+                setAppDetails(null)
+            }
             clearPollingInterval()
         } else if (!appDetails) {
             setAppDetailsError(error)
@@ -292,6 +351,13 @@ export const Details: React.FC<DetailsType> = ({
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, 25000)
             .then((response) => {
+                if (!response.result.appName && !response.result.environmentName) {
+                    setResourceTreeFetchTimeOut(false)
+                    setLoadingResourceTree(false)
+                    setAppDetails(null)
+                    pollResourceTreeRef.current = false
+                    return
+                }
                 appDetailsRef.current = {
                     ...appDetailsRef.current,
                     ...response.result,
@@ -304,19 +370,39 @@ export const Details: React.FC<DetailsType> = ({
                 if (fetchExternalLinks && response.result?.clusterId) {
                     getExternalLinksAndTools(response.result.clusterId)
                 }
+                pollResourceTreeRef.current = true
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
                 setLoadingDetails(false)
             })
+        if (pollResourceTreeRef.current) {
+            fetchResourceTree()
+        }
+    }
+
+    const fetchResourceTree = () => {
         fetchResourceTreeInTime(params.appId, params.envId, 25000)
             .then((response) => {
-                appDetailsRef.current = {
-                    ...appDetailsRef.current,
-                    resourceTree: response.result,
+                if (
+                    response.errors &&
+                    response.errors.length === 1 &&
+                    response.errors[0].code === '7000' &&
+                    appDetailsRequestRef.current
+                ) {
+                    if (setIsAppDeleted) {
+                        setIsAppDeleted(true)
+                    }
+                    setResourceTreeFetchTimeOut(true)
+                    clearPollingInterval()
+                } else {
+                    appDetailsRef.current = {
+                        ...appDetailsRef.current,
+                        resourceTree: response.result,
+                    }
+                    IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
+                    setAppDetails(appDetailsRef.current)
                 }
-                IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
-                setAppDetails(appDetailsRef.current)
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
@@ -324,11 +410,11 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
-        getDeploymentStatusDetail(params.appId, params.envId)
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppTypes) {
+        getDeploymentStatusDetail(params.appId, params.envId, deploymentModalShownRef.current)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
-                    if (deploymentAppType === DeploymentAppType.helm) {
+                    if (deploymentAppType === DeploymentAppTypes.HELM) {
                         setDeploymentStatusDetailsBreakdownData({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
@@ -446,6 +532,10 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
+    const showApplicationDetailedModal = (): void => {
+        toggleDetailedStatus(true)
+    }
+
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
@@ -464,7 +554,11 @@ export const Details: React.FC<DetailsType> = ({
                 )}
 
                 {isAppDeleted ? (
-                    <AppDetailsEmptyState envType={EnvType.APPLICATION} />
+                    <DeletedAppComponent
+                        resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
+                        showApplicationDetailedModal={showApplicationDetailedModal}
+                        appStreamData={streamData}
+                    />
                 ) : (
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
@@ -477,10 +571,6 @@ export const Details: React.FC<DetailsType> = ({
                 )}
             </>
         )
-    }
-
-    const showApplicationDetailedModal = (): void => {
-        toggleDetailedStatus(true)
     }
 
     const environmentsMap = Array.isArray(environments)
@@ -519,14 +609,18 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
                     setRotateModal={isAppDeployment ? setRotateModal : null}
+                    loadingDetails={loadingDetails}
+                    loadingResourceTree={loadingResourceTree}
+                    refetchDeploymentStatus={getDeploymentDetailStepsData}
                 />
             </div>
-            <SyncErrorComponent
-                showApplicationDetailedModal={showApplicationDetailedModal}
-                appStreamData={streamData}
-            />
-
-            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
+            {!loadingResourceTree && (
+                <SyncErrorComponent
+                    showApplicationDetailedModal={showApplicationDetailedModal}
+                    appStreamData={streamData}
+                />
+            )}
+            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (
                 <>
                     <SecurityVulnerabilitites
                         imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
@@ -552,6 +646,8 @@ export const Details: React.FC<DetailsType> = ({
                         />
                     )}
                 </>
+            ) : (
+                <div className="mb-9"></div>
             )}
             {loadingResourceTree ? (
                 <div className="bcn-0 dc__border-top h-100">
@@ -650,14 +746,32 @@ export const Details: React.FC<DetailsType> = ({
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
-                    {rotateModal && (
-                        <RotatePodsModal
-                            onClose={() => setRotateModal(false)}
-                            callAppDetailsAPI={callAppDetailsAPI}
-                        />
-                    )}
+            {rotateModal && (
+                <RotatePodsModal onClose={() => setRotateModal(false)} callAppDetailsAPI={callAppDetailsAPI} />
+            )}
         </React.Fragment>
     )
+}
+
+const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
+    resourceTreeFetchTimeOut,
+    showApplicationDetailedModal,
+    appStreamData,
+}) => {
+    if (resourceTreeFetchTimeOut) {
+        return (
+            <>
+                <div className="mt-16 mb-9">
+                    <SyncErrorComponent
+                        showApplicationDetailedModal={showApplicationDetailedModal}
+                        appStreamData={appStreamData}
+                    />
+                </div>
+                <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />
+            </>
+        )
+    }
+    return <AppDetailsEmptyState envType={EnvType.APPLICATION} />
 }
 
 export function EnvSelector({
@@ -705,7 +819,6 @@ export function EnvSelector({
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
-
 
     const formatOptionLabel = (option): JSX.Element => {
         return (

@@ -1,11 +1,13 @@
 import React from 'react'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config'
 import {
+    ActionTypes,
     ChartGroupPermissionsFilter,
     CreateUser,
     DirectPermissionsRoleFilter,
     EntityTypes,
     OptionType,
+    ViewChartGroupPermission,
 } from '../userGroups/userGroups.types'
 
 export function getOptions(customDate) {
@@ -32,15 +34,7 @@ export const getDateInMilliseconds = (days) => {
 
 export const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-        let env = ''
-        for (let _env of permission.environment) {
-            if (_env.value === '*') {
-                break
-            } else {
-                env = !env ? _env.value : `,${_env.value}`
-            }
-        }
-        return env
+       return getSelectedPermissionValues(permission.environment)
     } else {
         let allFutureCluster = {}
         let envList = ''
@@ -57,13 +51,13 @@ export const getSelectedEnvironments = (permission) => {
     }
 }
 
-const getSelectedEntityName = (permission) => {
+const getSelectedPermissionValues = (permissionLabel: OptionType[]) => {
     let entityName = ''
-    for (let _entityName of permission.entityName) {
+    for (let _entityName of permissionLabel) {
         if (_entityName.value === '*') {
             break
         } else {
-            entityName = !entityName ? _entityName.value : `,${_entityName.value}`
+            entityName += !entityName ? _entityName.value : `,${_entityName.value}`
         }
     }
     return entityName
@@ -94,7 +88,7 @@ export const createUserPermissionPayload = (
                     action: permission.action.value,
                     team: permission.team.value,
                     environment: getSelectedEnvironments(permission),
-                    entityName: getSelectedEntityName(permission),
+                    entityName: getSelectedPermissionValues(permission.entityName),
                 })),
                 ...k8sPermission.map((permission) => ({
                     ...permission,
@@ -118,6 +112,13 @@ export const createUserPermissionPayload = (
             environment: '',
             entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
         })
+        if (chartPermission.action != ActionTypes.VIEW) {
+            userPermissionPayload.roleFilters.push({
+                ...ViewChartGroupPermission,
+                team: '',
+                environment: '',
+            })
+        }
     }
 
     return userPermissionPayload

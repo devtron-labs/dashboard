@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
-import { Option } from '../../../components/v2/common/ReactSelect.utils'
+import { Option } from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
+import {
+    ALL_NAMESPACE_OPTION,
+    FILTER_SELECT_COMMON_STYLES,
+    NAMESPACE_NOT_APPLICABLE_OPTION
+} from '../Constants'
 import { ConditionalWrap } from '../../common'
 import { OptionType } from '../../app/types'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -15,9 +19,6 @@ import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 function ResourceFilterOptions({
     selectedResource,
     resourceList,
-    clusterOptions,
-    selectedCluster,
-    onChangeCluster,
     namespaceOptions,
     selectedNamespace,
     setSelectedNamespace,
@@ -32,6 +33,7 @@ function ResourceFilterOptions({
     isSearchInputDisabled,
     shortcut,
     isCreateModalOpen,
+    renderCallBackSync
 }: ResourceFilterOptionsProps & IWithShortcut) {
     const { push } = useHistory()
     const location = useLocation()
@@ -40,7 +42,6 @@ function ResourceFilterOptions({
     }>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
     const searchInputRef = useRef<HTMLInputElement>(null)
-
     useEffect(() => {
         if (!isCreateModalOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
@@ -72,10 +73,6 @@ function ResourceFilterOptions({
         setSearchText(event.target.value)
     }
 
-    const handleClusterChange = (selected: OptionType): void => {
-        onChangeCluster(selected)
-    }
-
     const handleNamespaceChange = (selected: OptionType): void => {
         if (selected.value === selectedNamespace?.value) {
             return
@@ -101,10 +98,9 @@ function ResourceFilterOptions({
     }
 
     return (
-        <div
-            className={`resource-filter-options-container flexbox ${
-                hideSearchInput ? 'dc__content-end' : 'dc__content-space'
-            } pt-16 pr-20 pb-12 pl-20 w-100`}
+        <>{typeof renderCallBackSync === 'function' && renderCallBackSync()}<div
+            className={`resource-filter-options-container flexbox ${hideSearchInput ? 'dc__content-end' : 'dc__content-space'
+                } pt-16 pr-20 pb-12 pl-20 w-100`}
         >
             {!hideSearchInput && (
                 <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
@@ -137,21 +133,6 @@ function ResourceFilterOptions({
                 </div>
             )}
             <div className="resource-filter-options-wrapper flex">
-                <ReactSelect
-                    className="w-220"
-                    classNamePrefix="resource-filter-select"
-                    placeholder="Select Cluster"
-                    options={clusterOptions}
-                    value={selectedCluster}
-                    onChange={handleClusterChange}
-                    blurInputOnSelect={true}
-                    styles={FILTER_SELECT_COMMON_STYLES}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: ClusterOptionWithIcon,
-                        ValueContainer: ResourceValueContainerWithIcon,
-                    }}
-                />
                 <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
                     <ReactSelect
                         placeholder="Select Namespace"
@@ -162,8 +143,8 @@ function ResourceFilterOptions({
                             isNamespaceSelectDisabled
                                 ? ALL_NAMESPACE_OPTION
                                 : selectedResource?.namespaced
-                                ? selectedNamespace
-                                : NAMESPACE_NOT_APPLICABLE_OPTION
+                                    ? selectedNamespace
+                                    : NAMESPACE_NOT_APPLICABLE_OPTION
                         }
                         onChange={handleNamespaceChange}
                         blurInputOnSelect={true}
@@ -177,7 +158,7 @@ function ResourceFilterOptions({
                     />
                 </ConditionalWrap>
             </div>
-        </div>
+        </div></>
     )
 }
 

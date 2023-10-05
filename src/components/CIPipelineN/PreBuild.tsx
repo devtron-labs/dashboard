@@ -1,32 +1,34 @@
 import React, { useState, useEffect, useContext } from 'react'
 import {
-    FormType,
     PluginType,
     ScriptType,
-    FormErrorObjectType,
     VariableType,
     RefVariableType,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
+import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
+import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
 import { PluginCardListContainer } from './PluginCardListContainer'
-import { BuildStageVariable, ConfigurationType } from '../../config'
+import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
 import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
-import { ciPipelineContext } from './CIPipeline'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
+import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
     const {
         formData,
+        isCdPipeline,
         setFormData,
         addNewTask,
         selectedTaskIndex,
@@ -38,28 +40,8 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setFormDataErrorObj,
         calculateLastStepDetail,
         validateStage,
-    }: {
-        formData: FormType
-        setFormData: React.Dispatch<React.SetStateAction<FormType>>
-        addNewTask: () => void
-        selectedTaskIndex: number
-        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-        configurationType: string
-        setConfigurationType: React.Dispatch<React.SetStateAction<string>>
-        activeStageName: string
-        formDataErrorObj: FormErrorObjectType
-        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
-        validateStage: (stageName: string, _formData: FormType, formDataErrorObject?: FormErrorObjectType) => void
-    } = useContext(ciPipelineContext)
+        pageState
+    } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
     useEffect(() => {
         if (configurationType === ConfigurationType.YAML) {
@@ -76,6 +58,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         variable.refVariableStepIndex = 0
         variable.refVariableName = ''
         variable.variableType = RefVariableType.NEW
+        variable.variableStepIndexInPlugin = variable.variableStepIndex
         delete variable.refVariableStage
         delete variable.variableStepIndex
         return variable
@@ -116,7 +99,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             }
         } else {
             isPluginRequired =
-                !isJobView && isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+                !isJobView && isRequired && !isCdPipeline && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -182,20 +165,22 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         if (isJobView) {
             return nojobs
         } else if (activeStageName === BuildStageVariable.PreBuild) {
-            return EmptyPreBuild
+            return isCdPipeline ? EmptyPreDeployment : EmptyPreBuild
         } else {
-            return EmptyPostBuild
+            return isCdPipeline ? EmptyPostDeployment : EmptyPostBuild
         }
     }
 
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
-            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
+            const _postText = isCdPipeline ? 'deployment' : 'build'
+            const _postSubtitleText = isCdPipeline ? 'deployment' : 'the container image is built'
+            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? `pre-${_postText}` : `post-${_postText}`
             const _execOrderText = activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
             const _title = isJobView ? 'No tasks configured' : `No ${_preBuildText} tasks configured`
             const _subtitle = isJobView
                 ? 'Configure tasks to be executed by this job.'
-                : `Here, you can configure tasks to be executed ${_execOrderText} the container image is built.`
+                : `Here, you can configure tasks to be executed ${_execOrderText} ${_postSubtitleText}.`
 
             return (
                 <CDEmptyState
@@ -221,13 +206,25 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         }
     }
 
-    return configurationType === ConfigurationType.GUI ? (
-        renderGUI()
-    ) : (
-        <YAMLScriptComponent
-            editorValue={editorValue}
-            handleEditorValueChange={handleEditorValueChange}
-            showSample={true}
-        />
-    )
+    const renderComponent = () => {
+        if (pageState === ViewType.LOADING.toString()) {
+            return (
+                <div style={{ minHeight: '200px' }} className="flex">
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (configurationType === ConfigurationType.GUI) {
+            return renderGUI()
+        } else {
+            return (
+                <YAMLScriptComponent
+                    editorValue={editorValue}
+                    handleEditorValueChange={handleEditorValueChange}
+                    showSample={true}
+                />
+            )
+        }
+    }
+
+    return renderComponent()
 }

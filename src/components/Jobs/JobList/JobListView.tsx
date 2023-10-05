@@ -12,6 +12,8 @@ import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
 import { URLS } from '../../../config'
+import { environmentName } from '../Utils'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export default function JobListView(props: JobListViewProps) {
     const history = useHistory()
@@ -80,7 +82,7 @@ export default function JobListView(props: JobListViewProps) {
                                 )}
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0 value" data-testid="job-list-for-sort">
+                                <p className="dc__truncate-text m-0 value cb-5" data-testid="job-list-for-sort">
                                     {job.name}
                                 </p>
                             </div>
@@ -88,15 +90,16 @@ export default function JobListView(props: JobListViewProps) {
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
+                                <p className="dc__truncate-text m-0">
+                                    {environmentName(job.defaultPipeline)}
+                                    {environmentName(job.defaultPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                                </p>
+                            </div>
+                            <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
-                            </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
-                                <p data-testid="description" className="dc__truncate-text m-0">
-                                    {job.description ? job.description : '-'}
-                                </p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
                                 <button
@@ -127,7 +130,7 @@ export default function JobListView(props: JobListViewProps) {
         const icon = props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
         return (
             <div className="app-list" data-testid="job-list-container">
-                <div className="app-list__header dc__border-bottom">
+                <div className="app-list__header dc__border-bottom dc__position-sticky dc__top-47">
                     <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
                         <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
                     </div>
@@ -149,13 +152,13 @@ export default function JobListView(props: JobListViewProps) {
                         <span className="app-list__cell-header" data-testid="last-run-header">{JOB_LIST_HEADERS.LastJobStatus}</span>
                     </div>
                     <div className="app-list__cell">
+                        <span className="app-list__cell-header" data-testid="run-environment-header">{JOB_LIST_HEADERS.RUN_IN_ENVIRONMENT}</span>
+                    </div>
+                    <div className="app-list__cell">
                         <span className="app-list__cell-header" data-testid="last-run-at-header">{JOB_LIST_HEADERS.LastRunAt}</span>
                     </div>
                     <div className="app-list__cell">
                         <span className="app-list__cell-header" data-testid="last-success-at-header">{JOB_LIST_HEADERS.LastSuccessAt}</span>
-                    </div>
-                    <div className="app-list__cell">
-                        <span className="app-list__cell-header" data-testid="description-header">{JOB_LIST_HEADERS.Description}</span>
                     </div>
                     <div className="app-list__cell app-list__cell--action" />
                 </div>

@@ -17,20 +17,23 @@ import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 export const getTriggerWorkflows = (
     appId,
     useAppWfViewAPI: boolean,
     isJobView: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
 }
 
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
-): Promise<{ appName: string; workflows: WorkflowType[] }> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
+    filteredEnvIds?: string
+): Promise<{ appName: string; workflows: WorkflowType[], filteredCIPipelines }> => {
+    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView, filteredEnvIds)
 }
 
 const getInitialWorkflows = (
@@ -39,9 +42,10 @@ const getInitialWorkflows = (
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
+    filteredEnvIds?: string
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
     if (useAppWfViewAPI) {
-        return getWorkflowViewList(id).then((response) => {
+        return getWorkflowViewList(id, filteredEnvIds).then((response) => {
             const workflows = {
                 appId: id,
                 workflows: response.result?.workflows as Workflow[],
@@ -74,7 +78,7 @@ const getInitialWorkflows = (
             )
         })
     } else {
-        return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+        return Promise.all([getWorkflowList(id, filteredEnvIds), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
             ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
                 return processWorkflow(
                     workflow.result as WorkflowResult,
@@ -190,7 +194,7 @@ export function processWorkflow(
                             cdPipeline.parentPipelineType = branch.parentType
                         }
 
-                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
+                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
                         if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
@@ -438,6 +442,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
             regex: ciMaterial?.source?.regex,
             isRegex: ciMaterial?.isRegex,
             primaryBranchAfterRegex: ciMaterial?.source?.value,
+            cipipelineId: ciMaterial?.id
         } as NodeAttr
     })
     let trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
@@ -461,6 +466,7 @@ function ciPipelineToNode(ciPipeline: CiPipeline, dimensions: WorkflowDimensions
         downstreams: [],
         isExternalCI: ciPipeline.isExternal,
         isLinkedCI: !!ciPipeline.parentCiPipeline,
+        isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes: sourceNodes,
         downstreamNodes: new Array<NodeAttr>(),
@@ -494,18 +500,18 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
     } as NodeAttr
 }
 
-function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {
+function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number, isLast: boolean): NodeAttr {
     let trigger = cdPipeline.triggerType?.toLowerCase() ?? ''
     let preCD: NodeAttr | undefined = undefined,
         postCD: NodeAttr | undefined = undefined
     let stageIndex = 1
-    if (!isEmpty(cdPipeline?.preStage?.config)) {
-        let trigger = cdPipeline.preStage?.triggerType?.toLowerCase() ?? ''
+    if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
+        let trigger = cdPipeline.preDeployStage?.triggerType?.toLowerCase() || cdPipeline.preStage?.triggerType?.toLowerCase() || ''
         preCD = {
             parents: [String(parentId)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
-            title: cdPipeline.preStage?.name ?? '',
+            title: cdPipeline.preDeployStage?.name || cdPipeline.preStage.name || '',
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
@@ -513,9 +519,11 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeOut: false,
             downstreams: [`${WorkflowNodeType.CD}-${cdPipeline.id}`],
             type: WorkflowNodeType.PRE_CD,
-            status: cdPipeline.preStage?.status || DEFAULT_STATUS,
+            status: cdPipeline.preDeployStage?.status || cdPipeline.preStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
+            isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+            deploymentAppType: cdPipeline.deploymentAppType,
             description: cdPipeline.description || '',
             environmentId: cdPipeline.environmentId,
             deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',
@@ -530,7 +538,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         stageIndex++
     }
     let cdDownstreams = []
-    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postStage?.config)) {
+    if (dimensions.type === WorkflowDimensionType.TRIGGER && !isEmpty(cdPipeline.postDeployStage?.steps || cdPipeline.postStage?.config)) {
         cdDownstreams = [`${WorkflowNodeType.POST_CD}-${cdPipeline.id}`]
     }
 
@@ -567,17 +575,19 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
         userApprovalConfig: cdPipeline.userApprovalConfig,
         isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+        deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
+        isLast: isLast
     } as NodeAttr
     stageIndex++
 
-    if (!isEmpty(cdPipeline?.postStage?.config)) {
-        let trigger = cdPipeline.postStage?.triggerType?.toLowerCase() ?? ''
+    if (!isEmpty(cdPipeline?.postDeployStage?.steps || cdPipeline?.postStage?.config)) {
+        let trigger = cdPipeline.postDeployStage?.triggerType?.toLowerCase() || cdPipeline.postStage?.triggerType?.toLowerCase() || ''
         postCD = {
             parents: [String(cdPipeline.id)],
             height: dimensions.cDNodeSizes.nodeHeight,
             width: dimensions.cDNodeSizes.nodeWidth,
-            title: cdPipeline.postStage?.name ?? '',
+            title: cdPipeline.postDeployStage?.name || cdPipeline.postStage?.name  || '',
             isSource: false,
             isGitSource: false,
             id: String(cdPipeline.id),
@@ -585,9 +595,11 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             activeOut: false,
             downstreams: [],
             type: WorkflowNodeType.POST_CD,
-            status: cdPipeline.postStage?.status || DEFAULT_STATUS,
+            status: cdPipeline.postDeployStage?.status || cdPipeline.postStage?.status || DEFAULT_STATUS,
             triggerType: TriggerTypeMap[trigger],
             environmentName: cdPipeline.environmentName || '',
+            isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+            deploymentAppType: cdPipeline.deploymentAppType,
             description: cdPipeline.description || '',
             environmentId: cdPipeline.environmentId,
             deploymentStrategy: cdPipeline.deploymentTemplate?.toLowerCase() ?? '',
