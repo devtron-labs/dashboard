@@ -2,6 +2,7 @@ import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-com
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
+import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -93,7 +94,7 @@ interface Description{
     updatedOn: string
 }
 
-export interface AppHeaderType {
+export interface AppHeaderType extends GroupFilterType {
     appName: string
     appMetaInfo: AppMetaInfo
     reloadMandatoryProjects: boolean
@@ -308,6 +309,11 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
+export enum AppListColumnSort {
+    appNameSort = 'appName',
+    lastDeployedSort = 'lastDeployedAt'
+}
+
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -348,6 +354,8 @@ export enum Nodes {
     VolumeSnapshotClass = 'VolumeSnapshotClass',
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
+    Namespace = 'Namespace',
+    ClusterOverview = 'ClusterOverview'
 }
 export type NodeType = keyof typeof Nodes
 
@@ -360,6 +368,7 @@ export enum AggregationKeys {
     'Custom Resource' = 'Custom Resource',
     'Other Resources' = 'Other Resources',
     Events = 'Events',
+    Namespaces = 'Namespaces',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
 
@@ -419,6 +428,7 @@ export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     isJobOverview?: boolean
+    filteredEnvIds?: string
 }
 
 export interface AboutAppInfoModalProps {

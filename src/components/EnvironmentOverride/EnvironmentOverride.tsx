@@ -19,7 +19,7 @@ export default function EnvironmentOverride({
 }: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
-    const { path } = useRouteMatch()
+    const { path, url } = useRouteMatch()
     const { push } = useHistory()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
@@ -67,6 +67,14 @@ export default function EnvironmentOverride({
                 }}
             />
         )
+    }
+
+    if (params.envId && !environmentsMap.has(+params.envId) && environments.length) {
+        const newUrl = url.replace(
+            `${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`,
+            `${URLS.APP_ENV_OVERRIDE_CONFIG}/${environments[0].environmentId}`,
+        )
+        push(newUrl)
     }
 
     const getParentName = (): string => {

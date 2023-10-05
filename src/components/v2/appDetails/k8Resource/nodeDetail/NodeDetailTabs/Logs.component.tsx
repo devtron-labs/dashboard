@@ -1,7 +1,8 @@
 import Tippy from '@tippyjs/react'
 import React, { useEffect, useRef, useState } from 'react'
-import { ReactComponent as PlayButton } from '../../../../assets/icons/ic-play.svg'
-import { ReactComponent as StopButton } from '../../../../assets/icons/ic-stop.svg'
+import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play-filled.svg'
+import { ReactComponent as StopButton } from '../../../../../../assets/icons/ic-stop-filled.svg'
+import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
@@ -52,6 +53,7 @@ function LogsComponent({
         clusterId: string
         nodeType: string
         node: string
+        namespace: string
     }>()
     const key = useKeyDown()
     const [logsPaused, setLogsPaused] = useState(false)
@@ -67,8 +69,8 @@ function LogsComponent({
     const [logState, setLogState] = useState(() =>
         getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
     )
-    const[prevContainer, setPrevContainer] = useState(false)
-    const[showNoPrevContainer, setNoPrevContainer] = useState('')
+    const [prevContainer, setPrevContainer] = useState(false)
+    const [showNoPrevContainer, setNoPrevContainer] = useState('')
 
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -308,7 +310,7 @@ function LogsComponent({
             }
         }
         //TODO: reset pauseLog and grepToken
-    }, [params.podName, params.node])
+    }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
         //Values are already set once we reach here
@@ -366,11 +368,8 @@ function LogsComponent({
     ) : (
         <React.Fragment>
             <div className="node-container-fluid bcn-0">
-                <div
-                    data-testid="logs-container-header"
-                    className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}
-                >
-                    <div className="col-6 flexbox flex-align-center">
+                <div data-testid="logs-container-header" className={`pl-16 h-32 flexbox`}>
+                    <div className="w-70 flexbox flex-align-center pt-2 pb-2">
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -383,84 +382,108 @@ function LogsComponent({
                                 data-testid="logs-stop-button"
                             >
                                 {logsPaused ? (
-                                    <PlayButton className="icon-dim-16 cursor" />
+                                    <PlayButton className="icon-dim-16 fcg-5 cursor" />
                                 ) : (
-                                    <StopButton className="icon-dim-16 cursor" />
+                                    <StopButton className="icon-dim-16 fcr-5 cursor" />
                                 )}
                             </div>
                         </Tippy>
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
-                            <Abort
-                                data-testid="clear-logs-container"
-                                onClick={(e) => {
-                                    onLogsCleared()
-                                }}
-                                className="icon-dim-20 ml-8 cursor"
-                            />
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+                            <div className="ml-8 flex">
+                                <Abort
+                                    data-testid="clear-logs-container"
+                                    onClick={(e) => {
+                                        onLogsCleared()
+                                    }}
+                                    className="icon-dim-16 cursor"
+                                />
+                            </div>
                         </Tippy>
-                        <div
-                            className="cn-2 ml-8 mr-8 "
-                            style={{ width: '1px', height: '16px', background: '#0b0f22' }}
-                        ></div>
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
-                            <React.Fragment>
-                                <div className="cn-6 ml-8 mr-10 ">Pods</div>
-                                <div className="cn-6 flex left">
-                                    <div style={{ width: '200px' }}>
-                                        <Select
-                                            placeholder="Select Pod"
-                                            options={getPodGroups()}
-                                            defaultValue={getFirstOrNull(
-                                                podContainerOptions.podOptions
-                                                    .filter((_pod) => _pod.selected)
-                                                    .map((_pod) => ({ label: _pod.name, value: _pod.name })),
-                                            )}
-                                            onChange={(selected) => handlePodSelection(selected.value)}
-                                            styles={{
-                                                ...multiSelectStyles,
-                                                menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
-                                                control: (base, state) => ({
-                                                    ...base,
-                                                    borderColor: 'transparent',
-                                                    backgroundColor: 'transparent',
-                                                    minHeight: '24px !important',
-                                                    cursor: 'pointer',
-                                                }),
-                                                groupHeading: (base) => ({
-                                                    ...base,
-                                                    fontWeight: 600,
-                                                    fontSize: '10px',
-                                                    color: 'var(--n-700)',
-                                                    marginLeft: 0,
-                                                }),
-                                                singleValue: (base, state) => ({
-                                                    ...base,
-                                                    fontWeight: 600,
-                                                    color: '#06c',
-                                                    direction: 'rtl',
-                                                    textAlign: 'left',
-                                                    marginLeft: '2px',
-                                                }),
-                                                indicatorsContainer: (provided, state) => ({
-                                                    ...provided,
-                                                }),
-                                            }}
-                                            components={{
-                                                IndicatorSeparator: null,
-                                                Option: (props) => (
-                                                    <Option {...props} showTippy={true} style={{ direction: 'rtl' }} />
-                                                ),
-                                            }}
-                                        />
+                            <>
+                                <div className="h-16 dc__border-right ml-8 mr-8"></div>
+
+                                <React.Fragment>
+                                    <div className="cn-6 ml-8 mr-10 ">Pods</div>
+                                    <div className="cn-6 flex left">
+                                        <div style={{ width: '200px' }}>
+                                            <Select
+                                                placeholder="Select Pod"
+                                                options={getPodGroups()}
+                                                defaultValue={getFirstOrNull(
+                                                    podContainerOptions.podOptions
+                                                        .filter((_pod) => _pod.selected)
+                                                        .map((_pod) => ({ label: _pod.name, value: _pod.name })),
+                                                )}
+                                                onChange={(selected) => handlePodSelection(selected.value)}
+                                                styles={{
+                                                    ...multiSelectStyles,
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                        textAlign: 'left',
+                                                    }),
+                                                    control: (base, state) => ({
+                                                        ...base,
+                                                        borderColor: 'transparent',
+                                                        backgroundColor: 'transparent',
+                                                        minHeight: '24px !important',
+                                                        cursor: 'pointer',
+                                                    }),
+                                                    valueContainer: (base) => ({
+                                                        ...base,
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (base) => ({
+                                                        ...base,
+                                                        margin: '0',
+                                                        paddingTop: '0',
+                                                    }),
+                                                    groupHeading: (base) => ({
+                                                        ...base,
+                                                        fontWeight: 600,
+                                                        fontSize: '10px',
+                                                        color: 'var(--n-700)',
+                                                        marginLeft: 0,
+                                                    }),
+                                                    singleValue: (base, state) => ({
+                                                        ...base,
+                                                        fontWeight: 600,
+                                                        color: '#000A14',
+                                                        direction: 'rtl',
+                                                        textAlign: 'left',
+                                                        marginLeft: '2px',
+                                                    }),
+                                                    indicatorsContainer: (provided, state) => ({
+                                                        ...provided,
+                                                    }),
+                                                    dropdownIndicator: (base, state) => ({
+                                                        ...base,
+                                                        padding: '0',
+                                                    }),
+                                                }}
+                                                components={{
+                                                    IndicatorSeparator: null,
+                                                    Option: (props) => (
+                                                        <Option
+                                                            {...props}
+                                                            showTippy={true}
+                                                            style={{ direction: 'rtl' }}
+                                                        />
+                                                    ),
+                                                }}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            </React.Fragment>
+                                </React.Fragment>
+                            </>
                         )}
 
                         {(podContainerOptions?.containerOptions ?? []).length > 0 && (
                             <React.Fragment>
+                                <div className="h-16 dc__border-right ml-8 mr-8"></div>
                                 <div className="cn-6 ml-8 mr-10">Container </div>
-                                <div style={{ width: '150px' }}>
+                                <div className="dc__mxw-200">
                                     <Select
                                         placeholder="Select Containers"
                                         classNamePrefix="containers-select"
@@ -478,7 +501,12 @@ function LogsComponent({
                                         }}
                                         styles={{
                                             ...multiSelectStyles,
-                                            menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                            menu: (base) => ({
+                                                ...base,
+                                                zIndex: 9999,
+                                                textAlign: 'left',
+                                                width: '150px',
+                                            }),
                                             menuList: (base) => ({
                                                 ...base,
                                                 paddingTop: 0,
@@ -490,16 +518,29 @@ function LogsComponent({
                                                 minHeight: '24px !important',
                                                 cursor: 'pointer',
                                             }),
+                                            valueContainer: (base) => ({
+                                                ...base,
+                                                padding: '0 8px',
+                                            }),
+                                            input: (base) => ({
+                                                ...base,
+                                                margin: '0',
+                                                paddingTop: '0',
+                                            }),
                                             singleValue: (base, state) => ({
                                                 ...base,
                                                 fontWeight: 600,
-                                                color: '#06c',
+                                                color: '#000A14',
                                                 direction: 'rtl',
                                                 textAlign: 'left',
                                                 marginLeft: '2px',
                                             }),
                                             indicatorsContainer: (provided, state) => ({
                                                 ...provided,
+                                            }),
+                                            dropdownIndicator: (base, state) => ({
+                                                ...base,
+                                                padding: '0',
                                             }),
                                         }}
                                         components={{
@@ -512,24 +553,23 @@ function LogsComponent({
                                 </div>
                             </React.Fragment>
                         )}
-                            <div
-                                className="cn-2 ml-8 mr-12 line_separator"
-                            ></div>
-                            <Checkbox
-                                dataTestId="prev-container-logs"
-                                isChecked={prevContainer}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={getPrevContainerLogs}
-                                rootClassName="fs-12 cn-9 mt-4"
-                            >
-                                <span className="fs-12">Prev. container</span>
-                            </Checkbox>
+                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                        <Checkbox
+                            dataTestId="prev-container-logs"
+                            isChecked={prevContainer}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={getPrevContainerLogs}
+                            rootClassName="fs-12 cn-9 mt-4"
+                        >
+                            <span className="fs-12 ">Prev. container</span>
+                        </Checkbox>
                     </div>
-
+                    <div className="dc__border-right "></div>
                     <form
-                        className="col-6 flex flex-justify left w-100 bcn-1 en-2 bw-1 br-4 pl-12 pr-12"
+                        className="w-30 flex flex-justify left bcn-1 pl-10 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
                     >
+                        <Search className="icon-dim-16 mr-4" />
                         <input
                             value={tempSearch}
                             className="bw-0 w-100"
@@ -552,6 +592,7 @@ function LogsComponent({
                                 }}
                             />
                         )}
+                        <div className="dc__border-right h-100"></div>
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -567,7 +608,9 @@ function LogsComponent({
                                 </div>
                             }
                         >
-                            <Question className="icon-dim-24 cursor" />
+                            <div className="w-16 bcn-0 h-100 flexbox flex-align-center">
+                                <Question className="icon-dim-18 cursor ml-8 mr-8" />
+                            </div>
                         </Tippy>
                     </form>
                 </div>
@@ -606,7 +649,7 @@ function LogsComponent({
                             )}
                         </div>
 
-                        {(prevContainer && showNoPrevContainer != '') ? (
+                        {prevContainer && showNoPrevContainer != '' ? (
                             <MessageUI
                                 dataTestId="no-prev-container-logs"
                                 msg={showNoPrevContainer}
@@ -614,7 +657,7 @@ function LogsComponent({
                                 minHeight={isResourceBrowserView ? '200px' : ''}
                                 msgStyle={{ maxWidth: '300px', margin: '8px auto' }}
                             />
-                        ) :
+                        ) : (
                             <div className="log-viewer">
                                 <LogViewerComponent
                                     subject={subject}
@@ -623,7 +666,7 @@ function LogsComponent({
                                     reset={logsCleared}
                                 />
                             </div>
-                        }
+                        )}
 
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${

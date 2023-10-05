@@ -25,6 +25,7 @@ import {
 } from '../../../../../../config/constantMessaging'
 import { MANIFEST_KEY_FIELDS } from '../../../../../../config/constants'
 import { MODES } from '../../../../../../config'
+import { EMPTY_YAML_ERROR, SAVE_DATA_VALIDATION_ERROR_MSG } from '../../../../values/chartValuesDiff/ChartValuesView.constants'
 
 function ManifestComponent({
     selectedTab,
@@ -38,7 +39,7 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string, namespace: string }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -127,7 +128,7 @@ function ManifestComponent({
         } catch (err) {
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType, params.group])
+    }, [params.podName, params.node, params.nodeType, params.group, params.namespace])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
@@ -190,9 +191,15 @@ function ManifestComponent({
 
         let manifestString
         try {
-            manifestString = JSON.stringify(YAML.parse(modifiedManifest))
+            if (!modifiedManifest) {
+                setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                // Handled for blocking API call
+                manifestString = ""
+            } else {
+                manifestString = JSON.stringify(YAML.parse(modifiedManifest))
+            }
         } catch (err2) {
-            setErrorText(`Encountered data validation error while saving. “${err2}”`)
+            setErrorText(`${SAVE_DATA_VALIDATION_ERROR_MSG} “${err2}”`)
         }
         if (!manifestString) {
             setLoading(false)

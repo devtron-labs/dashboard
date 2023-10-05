@@ -9,8 +9,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
+import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { TriggerType, ViewType } from '../../config'
+import { ENV_ALREADY_EXIST_ERROR, TriggerType, ViewType } from '../../config'
 import { Environment, GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
@@ -46,7 +47,8 @@ export default function BuildCD({
     allStrategies,
     parentPipelineId,
     isWebhookCD,
-    dockerRegistries
+    dockerRegistries,
+    envIds
 }) {
     const {
         formData,
@@ -58,6 +60,8 @@ export default function BuildCD({
         getPrePostStageInEnv,
         isVirtualEnvironment,
         pageState,
+        isEnvUsedState,
+        setIsEnvUsedState
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     let { cdPipelineId } = useParams<{
@@ -102,6 +106,11 @@ export default function BuildCD({
         const _formDataErrorObj = { ...formDataErrorObj }
 
         if (selection) {
+            if (envIds.includes(selection.id)) {
+                setIsEnvUsedState(true)
+            } else {
+                setIsEnvUsedState(false)
+            }
             _form.environmentId = selection.id
             _form.environmentName = selection.name
             _form.namespace = selection.namespace
@@ -131,7 +140,9 @@ export default function BuildCD({
                 _form.deploymentAppType,
                 selection.isVirtualEnvironment,
             )
-            _form.generatedHelmPushAction = selection.isVirtualEnvironment ? GeneratedHelmPush.DO_NOT_PUSH : GeneratedHelmPush.PUSH
+            _form.generatedHelmPushAction = selection.isVirtualEnvironment
+                ? GeneratedHelmPush.DO_NOT_PUSH
+                : GeneratedHelmPush.PUSH
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
@@ -344,6 +355,12 @@ export default function BuildCD({
                             }}
                             formatOptionLabel={handleFormatHighlightedText}
                         />
+                        {isEnvUsedState && (
+                            <span className="form__error">
+                                <img src={error} className="form__icon" />
+                                {ENV_ALREADY_EXIST_ERROR}
+                            </span>
+                        )}
                         {!formDataErrorObj.envNameError.isValid ? (
                             <span className="form__error">
                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />

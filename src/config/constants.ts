@@ -20,6 +20,7 @@ export const Routes = {
     IMAGE_TAGGING: 'app/image-tagging',
     CI_PIPELINE_PATCH: 'app/ci-pipeline/patch',
     CI_CONFIG_OVERRIDE_GET: 'app/wf/all/component-names',
+    CI_PIPELINE_SOURCE_BULK_PATCH: 'app/ci-pipeline/bulk/branch-update',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
@@ -237,6 +238,9 @@ export const Routes = {
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
+    SCOPED_GLOBAL_VARIABLES: 'global/variables',
+    SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
+    GVK: 'gvk'
 }
 
 export const ViewType = {
@@ -349,6 +353,7 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -713,8 +718,9 @@ export const DEPLOYMENT_STATUS = {
     TIMED_OUT: 'timed_out',
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
-    PROGRESSING: 'inprogress',
+    PROGRESSING: 'progressing',
     SUPERSEDED: 'superseded',
+    UNKNOWN: 'unknown',
 }
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
@@ -775,3 +781,5 @@ export const SERVER_ERROR_CODES = {
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
+
+export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'

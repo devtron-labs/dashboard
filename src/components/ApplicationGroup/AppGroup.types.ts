@@ -31,9 +31,9 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     filteredCIPipelines: any
 }
 
-export interface BulkCDDetailTypeResponse{
-    bulkCDDetailType: BulkCDDetailType[],
-    uniqueReleaseTags: string[],
+export interface BulkCDDetailTypeResponse {
+    bulkCDDetailType: BulkCDDetailType[]
+    uniqueReleaseTags: string[]
 }
 
 export interface BulkCDDetailType extends BulkTriggerAppDetailType {
@@ -233,11 +233,7 @@ export interface AppOverridesType {
     setEnvironments: any
 }
 
-export interface EnvHeaderType {
-    envName: string
-    setEnvName: (label: string) => void
-    setShowEmpty: (empty: boolean) => void
-    showEmpty: boolean
+export interface GroupFilterType {
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
@@ -249,6 +245,13 @@ export interface EnvHeaderType {
     openCreateGroup: (e, groupId?: string) => void
     openDeleteGroup: (e, groupId: string) => void
     isSuperAdmin: boolean
+}
+
+export interface EnvHeaderType extends GroupFilterType {
+    envName: string
+    setEnvName: (label: string) => void
+    setShowEmpty: (empty: boolean) => void
+    showEmpty: boolean
 }
 
 export interface AppGroupAdminType {
@@ -289,6 +292,7 @@ export interface AppGroupAppFilterContextType {
     openCreateGroup: (e, groupId?: string, _edit?: boolean) => void
     openDeleteGroup: (e, groupId: string, _delete?: boolean) => void
     isSuperAdmin: boolean
+    filterParentType: FilterParentType
 }
 
 export interface CreateGroupAppListType {
@@ -297,7 +301,7 @@ export interface CreateGroupAppListType {
     isSelected: boolean
 }
 
-export interface CreateTypeOfAppListType{
+export interface CreateTypeOfAppListType {
     id: number
     appName: string
 }
@@ -307,6 +311,7 @@ export interface CreateGroupType {
     selectedAppGroup: GroupOptionType
     unAuthorizedApps?: Map<string, boolean>
     closePopup: (e, groupId?: number) => void
+    filterParentType: FilterParentType
 }
 
 export interface ApplistEnvType {
@@ -345,7 +350,7 @@ export interface EnvGroupListType {
     description: string
 }
 
-export interface CheckPermissionType{
+export interface CheckPermissionType {
     id?: number
     appIds: number[]
     name?: string
@@ -377,4 +382,9 @@ export interface SearchBarType {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export enum FilterParentType {
+    app = 'env-group',
+    env = 'app-group',
 }

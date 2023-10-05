@@ -4,13 +4,9 @@
     min-width: 1024px;
 
     .resource-browser-tab {
-        max-width: calc(100% - 280px);
-
         .dynamic-tabs-section {
-
             .dynamic-tabs-container,
             .fixed-tabs-container {
-
                 .dynamic-tabs-wrapper,
                 .fixed-tabs-wrapper {
                     .dynamic-tab-selected {
@@ -118,16 +114,21 @@
                     }
                 }
             }
-
             .scrollable-resource-list {
-                height: calc(100vh - 180px);
                 overflow: auto;
                 width: calc(100vw - 277px);
-
+                height: calc(100vh - 144px);
                 &.paginated-list-view {
                     height: calc(100vh - 201px);
                 }
 
+                &.sync-error {
+                    height: calc(100vh - 176px);
+                }
+
+                &.paginated-list-view-with-sync-error {
+                    height: calc(100vh - 233px);
+                }
                 .list-header {
                     width: max-content;
                     min-width: calc(100vw - 277px);
@@ -137,11 +138,30 @@
             }
 
             .scrollable-event-list {
-                height: calc(100vh - 247.66px);
                 overflow: hidden auto;
-
+                height: calc(100vh - 180px);
                 &.paginated-list-view {
-                    height: calc(100vh - 255.66px);
+                    height: calc(100vh - 237px);
+                }
+
+                &.sync-error {
+                    height: calc(100vh - 212px);
+                }
+
+                &.paginated-list-view-with-sync-error {
+                    height: calc(100vh - 269px);
+                }
+            }
+
+            .scrollable-resource-list,
+            .scrollable-event-list {
+                .hover-class {
+                    &:hover {
+                        background-color: var(--N50);
+                        .sticky-column {
+                            background-color: var(--N50);
+                        }
+                    }
                 }
             }
 
@@ -179,7 +199,7 @@
     }
 
     .log-viewer-container {
-        height: calc(100vh - 161px);
+        height: calc(100vh - 150px);
     }
 
     .terminal-container {
@@ -212,5 +232,5 @@
 }
 
 .resource-details-container {
-    height: calc(100vh - 84px)
+    height: calc(100vh - 84px);
 }

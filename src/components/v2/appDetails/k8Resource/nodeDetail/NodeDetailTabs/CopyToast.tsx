@@ -1,5 +1,5 @@
 import React from 'react';
-import { copyToClipboard } from '../../../../../common';
+import { copyToClipboard } from '@devtron-labs/devtron-fe-common-lib';
 import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg';
 import '../../../../../../../node_modules/xterm/css/xterm.css';
 import '../../../../../LogViewer/LogViewer.scss';

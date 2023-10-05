@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { getLoginInfo, showError, Progressing, Host, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { getLoginInfo, showError, Progressing, Host, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, AppContext } from '../../common'
 import Navigation from './Navigation'
@@ -23,7 +23,7 @@ import {
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { importComponentFromFELibrary, useAsync } from '../helpers/Helpers'
+import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
@@ -62,7 +62,6 @@ export default function NavigationRoutes() {
     )
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
-    const [expiryDate, setExpiryDate] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
@@ -80,7 +79,6 @@ export default function NavigationRoutes() {
     const getInit = async (_serverMode: string) => {
         setLoginLoader(true)
         const _expDate = localStorage.getItem('clickedOkay')
-        setExpiryDate(!!_expDate ? +_expDate : 0)
         try {
             const [userRole, appList, loginData] = await Promise.all([
                 getUserRole(),
