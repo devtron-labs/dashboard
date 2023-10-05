@@ -777,7 +777,7 @@ function Cluster({
                                 config={{}}
                                 reload={reload}
                                 prometheus_url={prometheus_url}
-                                prometheusAuth={state.prometheus} 
+                                prometheusAuth={prometheusAuth} 
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
