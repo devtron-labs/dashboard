@@ -70,7 +70,6 @@ export default function DeploymentConfig({
         initialise()
 
         return () => {
-            // if(baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted){
            abortController.abort()
         }
     }, [])
