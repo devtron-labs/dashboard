@@ -1,6 +1,7 @@
 import React from 'react'
 import { PluginType, PluginDetailType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginCard } from './PluginCard'
+import { VulnerabilityScanning } from './ciPipeline.utils'
 
 export function PluginCardListContainer({
     pluginListTitle,
@@ -28,7 +29,7 @@ export function PluginCardListContainer({
                 </div>
                 {pluginList.map(
                     (pluginDetails) =>
-                        (pluginDetails.name !== 'Image Scanning' || isSecurityModuleInstalled) && (
+                        (pluginDetails.name !== VulnerabilityScanning || isSecurityModuleInstalled) && (
                             <div
                                 key={pluginDetails.id}
                                 onClick={() =>
