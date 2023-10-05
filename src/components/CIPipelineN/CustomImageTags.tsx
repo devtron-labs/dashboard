@@ -113,7 +113,7 @@ function CustomImageTags({
                                 Tag Preview:
                                 <div className="ml-4 dc__bg-n50 dc__ff-monospace flexbox dc__w-fit-content pl-4 pr-4 br-4">
                                     <div className={'dc__registry-icon mr-5 '}></div>
-                                    {formData.customTag?.tagPattern.replace('{x}', formData.customTag?.counterX.toString())}
+                                    {formData.customTag?.tagPattern?.replace('{x}', formData.customTag?.counterX?.toString())}
                                 </div>
                             </div>
                         )}
