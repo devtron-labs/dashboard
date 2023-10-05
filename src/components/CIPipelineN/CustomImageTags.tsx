@@ -186,7 +186,7 @@ function CustomImageTags({
             if (isCustomTagError) {
                 return renderInputErrorMessage(getCustomTagCollapsedErrorText())
             }
-            if (formData.customTag.tagPattern.length > 0) {
+            if (formData.customTag?.tagPattern?.length > 0) {
                 return renderCustomTagCollapsedValue()
             } else {
                 return getDefaultTagValue()
