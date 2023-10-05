@@ -25,7 +25,7 @@ import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
+export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView, isSecurityModuleInstalled}: PreBuildType) {
     const {
         formData,
         isCdPipeline,
@@ -151,11 +151,13 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                     setPluginType={setPluginType}
                     pluginListTitle="PRESET PLUGINS"
                     pluginList={presetPlugins}
+                    isSecurityModuleInstalled={isSecurityModuleInstalled}
                 />
                 <PluginCardListContainer
                     setPluginType={setPluginType}
                     pluginListTitle="SHARED PLUGINS"
                     pluginList={sharedPlugins}
+                    isSecurityModuleInstalled={isSecurityModuleInstalled}
                 />
             </>
         )

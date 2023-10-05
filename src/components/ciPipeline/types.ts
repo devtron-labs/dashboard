@@ -395,6 +395,7 @@ export interface PreBuildType {
   sharedPlugins: PluginDetailType[]
   mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
   isJobView?: boolean
+  isSecurityModuleInstalled?: boolean
 }
 
 export enum CIPipelineBuildType {

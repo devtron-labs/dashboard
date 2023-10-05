@@ -773,6 +773,7 @@ export default function CIPipeline({
                                         sharedPlugins={sharedPlugins}
                                         isJobView={isJobCard}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
+                                        isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     />
                                 </Route>
                             )}
@@ -782,6 +783,7 @@ export default function CIPipeline({
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
+                                        isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     />
                                 </Route>
                             )}

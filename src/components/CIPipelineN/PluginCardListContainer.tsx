@@ -6,6 +6,7 @@ export function PluginCardListContainer({
     pluginListTitle,
     pluginList,
     setPluginType,
+    isSecurityModuleInstalled
 }: {
     pluginListTitle: string
     pluginList: PluginDetailType[]
@@ -17,6 +18,7 @@ export function PluginCardListContainer({
         inputVariables: VariableType[],
         outputVariables: VariableType[],
     ) => void
+    isSecurityModuleInstalled: boolean
 }) {
     return (
         pluginList.length > 0 && (
@@ -24,29 +26,32 @@ export function PluginCardListContainer({
                 <div data-testid="preset-plugin-heading" className="cn-5 fw-6 fs-13 mt-20 mb-8">
                     {pluginListTitle}
                 </div>
-                {pluginList.map((pluginDetails) => (
-                    <div
-                        key={pluginDetails.id}
-                        onClick={() =>
-                            setPluginType(
-                                PluginType.PLUGIN_REF,
-                                pluginDetails.id,
-                                pluginDetails.name,
-                                pluginDetails.description,
-                                pluginDetails.inputVariables ?? [],
-                                pluginDetails.outputVariables ?? [],
-                            )
-                        }
-                    >
-                        <PluginCard
-                            dataTestId={`${pluginDetails.name}-button`}
-                            imgSource={pluginDetails.icon}
-                            title={pluginDetails.name}
-                            subTitle={pluginDetails.description}
-                            tags={pluginDetails.tags}
-                        />
-                    </div>
-                ))}
+                {pluginList.map(
+                    (pluginDetails) =>
+                        (pluginDetails.name !== 'Image Scanning' || isSecurityModuleInstalled) && (
+                            <div
+                                key={pluginDetails.id}
+                                onClick={() =>
+                                    setPluginType(
+                                        PluginType.PLUGIN_REF,
+                                        pluginDetails.id,
+                                        pluginDetails.name,
+                                        pluginDetails.description,
+                                        pluginDetails.inputVariables ?? [],
+                                        pluginDetails.outputVariables ?? [],
+                                    )
+                                }
+                            >
+                                <PluginCard
+                                    dataTestId={`${pluginDetails.name}-button`}
+                                    imgSource={pluginDetails.icon}
+                                    title={pluginDetails.name}
+                                    subTitle={pluginDetails.description}
+                                    tags={pluginDetails.tags}
+                                />
+                            </div>
+                        ),
+                )}
             </div>
         )
     )
