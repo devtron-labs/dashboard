@@ -203,6 +203,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         const additionalTippyContent = (node) => {
             const portSet = new Set(node?.port)
             const portList = [...portSet]
+            portList.splice(0, 1)
             return (
                 <>
                     {portList.map((val) => {
@@ -255,7 +256,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         >
                             <div>
                                 <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
-                                    +{portList.length} more
+                                    +{portList.length - 1} more
                                 </span>
                             </div>
                         </TippyCustomized>
