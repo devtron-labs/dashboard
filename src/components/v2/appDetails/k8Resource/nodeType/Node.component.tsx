@@ -214,7 +214,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, node.name.node.namespace.concat(":",val))
+                                        toggleClipBoardPort(event, `${node.name}.${node.namespace}:${val}`)
                                     }}
                                 />
                                 </div>
@@ -239,7 +239,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             <Clipboard
                                 className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                 onClick={(event) => {
-                                    toggleClipBoardPort(event, node.name.concat(":", node.port[0]))
+                                    toggleClipBoardPort(event, `${node.name}.${node.namespace}:${node.port[0]}`)
                                 }}
                             />
                         </span>
