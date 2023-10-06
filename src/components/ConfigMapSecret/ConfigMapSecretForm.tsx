@@ -57,6 +57,7 @@ import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorC
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import '../EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
+import { abort } from 'process'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
@@ -96,6 +97,7 @@ export const ConfigMapSecretForm = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
+        const configMapSecretAbortRef = useRef(null)
 
         useEffect(() => {
             if (isESO && !state.yamlMode) {
@@ -106,6 +108,7 @@ export const ConfigMapSecretForm = React.memo(
         }, [isESO, state.yamlMode])
 
         useEffect(() => {
+            configMapSecretAbortRef.current = new AbortController()
             dispatch({
                 type: ConfigMapActionTypes.reInit,
                 payload: initState(
@@ -115,6 +118,9 @@ export const ConfigMapSecretForm = React.memo(
                     draftMode || latestDraftData?.draftId,
                 ),
             })
+            return()=>{
+                configMapSecretAbortRef.current.abort()
+            }
         }, [configMapSecretData])
 
         async function handleOverride(e) {
