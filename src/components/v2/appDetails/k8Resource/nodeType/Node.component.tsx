@@ -206,8 +206,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     {node?.port.map((val) => {
                         return (
                             <div className="flex left cn-9 m-0 dc__no-decore">
-                                <div className="" key={node.name}>
-                                    {node.name}:{val}
+                                <div key={node.name}>
+                                    {node.name}.{node.namespace}:{val}
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
@@ -234,7 +234,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             <Clipboard
                                 className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                 onClick={(event) => {
-                                    toggleClipBoardPort(event, node.name.concat(":", node.port))
+                                    toggleClipBoardPort(event, node.name.concat(":", node.port[0]))
                                 }}
                             />
                         </span>
@@ -486,7 +486,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         )}
                     </div>
-
+                    {console.log(node.childNodes)}
                     {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
