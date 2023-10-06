@@ -14,6 +14,10 @@ export interface OptionType {
     value: string
 }
 
+export interface ExtendedOptionType extends OptionType {
+    format?: string
+}
+
 export interface NumberOptionType {
     label: string
     value: number
