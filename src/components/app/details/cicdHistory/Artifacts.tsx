@@ -36,7 +36,7 @@ export default function Artifacts({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
-    jobCiClass
+    jobCIClass
 }: ArtifactType) {
     const { triggerId, buildId } = useParams<{
         triggerId: string
@@ -121,7 +121,7 @@ export default function Artifacts({
         )
     } else {
         return (
-            <div className={`flex left column p-16 ${jobCiClass}`}>
+            <div className={`flex left column p-16 ${jobCIClass}`}>
                 {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem
                         type="artifact"

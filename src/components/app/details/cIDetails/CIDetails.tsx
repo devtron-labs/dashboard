@@ -496,7 +496,7 @@ const HistoryLogs = ({
                 appReleaseTagNames={appReleaseTags}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 type={HistoryComponentType.CI}
-                jobCiClass="pb-0-imp"
+                jobCIClass="pb-0-imp"
             />
         )
     })
