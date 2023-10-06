@@ -464,7 +464,7 @@ const HistoryLogs = ({
             setLoading(true)
             getArtifactsForCiJobRes()
         }
-    }, [])
+    }, [triggerDetails])
     const getArtifactsForCiJobRes = async () => {
         try {
             const { result } = await getArtifactForJobCi(pipelineId, buildId)
