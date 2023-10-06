@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, Reducer } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer, useRef } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
@@ -44,12 +44,19 @@ export default function DeploymentTemplateOverride({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
-    const baseDeploymentAbortController = new AbortController()
+    const baseDeploymentAbortController = useRef(null)
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
         reloadEnvironments()
-        initialise()
+        setTimeout(()=>{
+            baseDeploymentAbortController.current = new AbortController()
+            initialise()
+        },100)
+
+        return () => {
+            baseDeploymentAbortController.current.abort();
+        }
     }, [envId, appId])
 
     useEffect(() => {
@@ -91,7 +98,7 @@ export default function DeploymentTemplateOverride({
                 loading: true,
             },
         })
-        chartRefAutocomplete(Number(appId), Number(envId))
+        chartRefAutocomplete(Number(appId), Number(envId), baseDeploymentAbortController.current.signal)
             .then((chartRefResp) => {
                 // Use other latest ref id instead of selectedChartRefId on delete override action
                 const _selectedChartId =
@@ -119,8 +126,10 @@ export default function DeploymentTemplateOverride({
                 }
             })
             .catch((e) => {
-                setParentState(ComponentStates.failed)
-                showError(e)
+                if (!baseDeploymentAbortController.current.signal.aborted) {
+                    setParentState(ComponentStates.failed)
+                    showError(e)
+                }
             })
             .finally(() => {
                 dispatch({
@@ -350,7 +359,7 @@ export default function DeploymentTemplateOverride({
                 } = await getBaseDeploymentTemplate(
                     +appId,
                     state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-                    baseDeploymentAbortController.signal,
+                    baseDeploymentAbortController.current.signal,
                     true,
                 )
                 _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)

@@ -29,7 +29,7 @@ export function overRideConfigMap(id, appId, environmentId, configData) {
 
 export function getConfigMapList(appId, envId?, signal?) {
     if (envId) {
-        return getEnvironmentConfigs(appId, envId)
+        return getEnvironmentConfigs(appId, envId, { signal })
     } else {
         return get(`${Routes.APP_CREATE_CONFIG_MAP}/${appId}`, { signal })
     }
