@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { showError, Progressing, Reload, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails } from '../../service'
+import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi } from '../../service'
 import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -457,7 +457,49 @@ const HistoryLogs = ({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
     const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
+    const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
+    const [loading, setLoading] = useState<boolean>(false)
+    useEffect(() => {
+        if (isJobCI) {
+            setLoading(true)
+            getArtifactsForCiJobRes()
+        }
+    }, [])
+    const getArtifactsForCiJobRes = async () => {
+        try {
+            const { result } = await getArtifactForJobCi(pipelineId, buildId)
+            if (result) {
+                setciJobArtifact(result.artifacts)
+            }
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
+    const CiArtifactsArrayCards = Array.from({ length: ciJobArtifact?.length }, (_, index) => {
+        return (
+            <Artifacts
+                status={triggerDetails.status}
+                artifact={ciJobArtifact[index]}
+                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                getArtifactPromise={_getArtifactPromise}
+                isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                isJobView={isJobView}
+                isJobCI={isJobCI}
+                imageComment={triggerDetails.imageComment}
+                imageReleaseTags={triggerDetails.imageReleaseTags}
+                ciPipelineId={triggerDetails.ciPipelineId}
+                artifactId={triggerDetails.artifactId}
+                tagsEditable={tagsEditable}
+                appReleaseTagNames={appReleaseTags}
+                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                type={HistoryComponentType.CI}
+                jobCiClass="pb-0-imp"
+            />
+        )
+    })
     return (
         <div className="trigger-outputs-container">
             <Switch>
@@ -480,23 +522,27 @@ const HistoryLogs = ({
                     <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
                 </Route>
                 <Route path={`${path}/artifacts`}>
-                    <Artifacts
-                        status={triggerDetails.status}
-                        artifact={triggerDetails.artifact}
-                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                        getArtifactPromise={_getArtifactPromise}
-                        isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                        isJobView={isJobView}
-                        isJobCI={isJobCI}
-                        imageComment={triggerDetails.imageComment}
-                        imageReleaseTags={triggerDetails.imageReleaseTags}
-                        ciPipelineId={triggerDetails.ciPipelineId}
-                        artifactId={triggerDetails.artifactId}
-                        tagsEditable={tagsEditable}
-                        appReleaseTagNames={appReleaseTags}
-                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                        type={HistoryComponentType.CI}
-                    />
+                    {loading && <Progressing pageLoader />}
+                    {isJobCI && !loading && CiArtifactsArrayCards}
+                    {!loading && (
+                        <Artifacts
+                            status={triggerDetails.status}
+                            artifact={triggerDetails.artifact}
+                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                            getArtifactPromise={_getArtifactPromise}
+                            isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                            isJobView={isJobView}
+                            isJobCI={isJobCI}
+                            imageComment={triggerDetails.imageComment}
+                            imageReleaseTags={triggerDetails.imageReleaseTags}
+                            ciPipelineId={triggerDetails.ciPipelineId}
+                            artifactId={triggerDetails.artifactId}
+                            tagsEditable={tagsEditable}
+                            appReleaseTagNames={appReleaseTags}
+                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                            type={HistoryComponentType.CI}
+                        />
+                    )}
                 </Route>
                 {!isJobCard && (
                     <Route path={`${path}/security`}>
