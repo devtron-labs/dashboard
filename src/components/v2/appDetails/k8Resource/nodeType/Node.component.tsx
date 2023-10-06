@@ -486,7 +486,6 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             </div>
                         )}
                     </div>
-                    {console.log(node.childNodes)}
                     {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>
