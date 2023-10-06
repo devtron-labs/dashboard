@@ -214,7 +214,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, node.name.concat(":",val))
+                                        toggleClipBoardPort(event, node.name.node.namespace.concat(":",val))
                                     }}
                                 />
                                 </div>
