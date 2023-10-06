@@ -969,7 +969,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className="h-100">
+        <div>
             {dataStateType === AppListViewType.ERROR ? (
                 <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />
