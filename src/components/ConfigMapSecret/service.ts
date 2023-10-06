@@ -2,12 +2,12 @@ import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { getEnvironmentConfigs, getEnvironmentSecrets } from '../../services/service'
 
-export function updateConfig(id, appId, configData) {
+export function updateConfig(id, appId, configData, signal?) {
     return post(`${Routes.APP_CREATE_CONFIG_MAP}`, {
         ...(id && { id }),
         appId,
         configData: [configData],
-    })
+    }, {signal})
 }
 
 export function deleteConfig(id, appId, name) {
@@ -18,13 +18,13 @@ export function deleteEnvConfigMap(id, appId, envId, name) {
     return trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
 }
 
-export function overRideConfigMap(id, appId, environmentId, configData) {
+export function overRideConfigMap(id, appId, environmentId, configData, signal?) {
     return post(`${Routes.APP_CREATE_ENV_CONFIG_MAP}`, {
         id,
         appId,
         environmentId,
         configData,
-    })
+    }, {signal})
 }
 
 export function getConfigMapList(appId, envId?, signal?) {
@@ -35,12 +35,12 @@ export function getConfigMapList(appId, envId?, signal?) {
     }
 }
 
-export function updateSecret(id, appId, configData) {
+export function updateSecret(id, appId, configData, signal?) {
     return post(`${Routes.APP_CREATE_SECRET}`, {
         ...(id && { id }),
         appId,
         configData: [configData],
-    })
+    }, {signal})
 }
 
 export function deleteSecret(id, appId, name) {
@@ -71,11 +71,11 @@ export function getSecretList(appId, envId?, signal?) {
     }
 }
 
-export function overRideSecret(id, appId, environmentId, configData) {
+export function overRideSecret(id, appId, environmentId, configData, signal?) {
     return post(`${Routes.APP_CREATE_ENV_SECRET}`, {
         id,
         appId,
         environmentId,
-        configData,
-    })
+        configData
+    },{signal})
 }
