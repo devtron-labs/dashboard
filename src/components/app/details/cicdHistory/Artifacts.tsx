@@ -121,7 +121,7 @@ export default function Artifacts({
         )
     } else {
         return (
-            <div className={`flex left column p-16 ${jobCIClass}`}>
+            <div className={`flex left column p-16 ${jobCIClass??''}`}>
                 {!isJobView && type !== HistoryComponentType.CD && (
                     <CIListItem
                         type="artifact"
