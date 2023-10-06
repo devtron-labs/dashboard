@@ -201,9 +201,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
+            const portSet = new Set(node?.port)
+            const portList = [...portSet]
             return (
                 <>
-                    {node?.port.map((val) => {
+                    {portList.map((val) => {
                         return (
                             <div className="flex left cn-9 m-0 dc__no-decore">
                                 <div key={node.name}>
@@ -217,11 +219,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         )
-                    })}
+                    })} 
             </>
             )
         }
         const portNumberPlaceHolder = (node) => {
+            const portSet = new Set(node?.port)
+            const portList = [...portSet]
             if (node.port?.length > 1) {
                 return (
                     <>
@@ -251,7 +255,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         >
                             <div>
                                 <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
-                                    +{node.port.length - 1} more
+                                    +{portList.length} more
                                 </span>
                             </div>
                         </TippyCustomized>
