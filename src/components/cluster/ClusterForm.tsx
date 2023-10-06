@@ -147,7 +147,6 @@ export default function ClusterForm({
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
-
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -208,8 +207,8 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: (id && KubectlConnectionRadio) && isConnectedViaProxyTemp,
-                validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
+                required: (id && KubectlConnectionRadio && isConnectedViaProxyTemp),
+                validator: (isConnectedViaProxyTemp) ? { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ } : {error: '', regex: /^(?!\s*$).+/ },
             },
             sshTunnelUser: {
                 required: isConnectedViaSSHTunnelTemp,
@@ -225,7 +224,7 @@ export default function ClusterForm({
             },
             sshTunnelUrl: {
                 required: isConnectedViaSSHTunnelTemp,
-                validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
+                validator: (isConnectedViaSSHTunnelTemp) ? { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ } : {error: '', regex: /^(?!\s*$).+/ },
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
