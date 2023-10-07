@@ -1281,11 +1281,7 @@ function ChartValuesView({
 
     const renderChartValuesEditor = () => {
         return (
-            <div
-                className={`chart-values-view__editor dc__position-rel ${
-                    commonState.openReadMe || commonState.openComparison ? 'chart-values-view__full-mode' : ''
-                }`}
-            >
+            <div className="chart-values-view__editor">
                 {commonState.activeTab === 'manifest' && commonState.valuesEditorError ? (
                     <GenericEmptyState SvgImage={ErrorExclamation} classname="dc__align-reload-center" title="" subTitle={commonState.valuesEditorError} />
 
@@ -1408,8 +1404,16 @@ function ChartValuesView({
         )
     }
 
+    const getDynamicWrapperClassName = (): string => {
+        if (isDeployChartView) {
+            return 'sub162-vh'
+        }
+        return 'sub189-vh'
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
+        const wrapperClassName = getDynamicWrapperClassName();
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1420,7 +1424,7 @@ function ChartValuesView({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__hr-divider bcn-2" />
-                <div className="chart-values-view__wrapper">
+                <div className={`chart-values-view__wrapper ${wrapperClassName}`}>
                     <div className="chart-values-view__details">
                         {isCreateValueView && (
                             <ValueNameInput
