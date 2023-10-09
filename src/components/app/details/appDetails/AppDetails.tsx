@@ -357,7 +357,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, 25000)
+        appDetailsAPI(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (!response.result.appName && !response.result.environmentName) {
                     setResourceTreeFetchTimeOut(false)
