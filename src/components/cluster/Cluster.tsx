@@ -574,7 +574,7 @@ function Cluster({
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
             proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
-            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : '',
+            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
             sshTunnelConfig: {
                 user: state.sshTunnelUser?.value,
                 password: state.sshTunnelPassword?.value,
@@ -870,7 +870,7 @@ function Cluster({
                                 isConnectedViaProxy={state.isConnectedViaProxy}                       
                                 pinnipedConfig={pinnipedConfig}
                                 isConnectedViaPinniped={state.isConnectedViaPinniped}
-                                isConnectedViaSSHTunnel={state.isConnectedViaSSHTunnel}
+                                isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
                                 toggleShowAddCluster={toggleShowAddCluster}
