@@ -96,7 +96,7 @@ function CustomImageTags({
                         className="form__input form__input-no-bottom-radius"
                         placeholder="Example: v1.2.{x}"
                         name="image_tag"
-                        autoComplete={'off'}
+                        autoComplete="off"
                         autoFocus={true}
                         data-testid="container-repository-textbox"
                         value={formData.customTag?.tagPattern}
@@ -119,7 +119,7 @@ function CustomImageTags({
                         )}
                     </div>
                     <div className="mt-4 cn-7 fs-11 flex left">
-                        <Warning className="mr-4 icon-dim-16 alert-icon-c9-imp" />
+                        <Warning className="mr-4 icon-dim-16 image-tag-alert-icon" />
                         Build will fail if resulting image tag has already been built
                     </div>
                     <hr />
@@ -130,7 +130,7 @@ function CustomImageTags({
                             type="number"
                             className="form__input form__input-p-2 w-80px-imp ml-8 dc__bg-n50"
                             name="image_counter"
-                            autoComplete={'off'}
+                            autoComplete="off"
                             value={formData.customTag?.counterX}
                             onChange={onChangeCustomImageCounter}
                         />
