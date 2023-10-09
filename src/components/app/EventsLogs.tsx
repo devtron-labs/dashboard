@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { showError, Progressing, get, Host, useSearchString, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
-import { Spinner } from 'patternfly-react';
+// import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
 import { getNodeStatus } from './service'

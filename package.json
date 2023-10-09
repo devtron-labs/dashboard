@@ -11,7 +11,6 @@
         "@tippyjs/react": "4.2.6",
         "@typeform/embed-react": "2.20.0",
         "@types/marked": "4.0.8",
-        "@types/react-select": "5.0.1",
         "@vitejs/plugin-react": "^4.0.0",
         "ansi_up": "^5.2.1",
         "command-line-parser": "^0.2.10",
@@ -22,10 +21,9 @@
         "http-proxy-middleware": "^2.0.6",
         "marked": "4.3.0",
         "moment": "^2.29.4",
-        "monaco-editor": "^0.19.3",
-        "monaco-editor-webpack-plugin": "^1.8.2",
-        "monaco-yaml": "^3.2.1",
-        "patternfly-react": "^2.40.0",
+        "monaco-editor-webpack-plugin": "^7.1.0",
+        "monaco-editor": "0.38.0",
+        "monaco-yaml": "4.0.4",
         "query-string": "^7.1.1",
         "react": "^17.0.2",
         "react-app-rewired": "^2.2.1",
@@ -37,7 +35,7 @@
         "react-gtm-module": "^2.0.11",
         "react-keybind": "^0.9.4",
         "react-mde": "^11.5.0",
-        "react-monaco-editor": "^0.33.0",
+        "react-monaco-editor": "^0.54.0",
         "react-router-dom": "^5.3.4",
         "react-select": "^5.2.2",
         "react-toastify": "^8.2.0",
@@ -47,13 +45,16 @@
         "vite": "^4.3.3",
         "vite-plugin-svgr": "^2.4.0",
         "vite-tsconfig-paths": "^4.2.0",
+        "vite-plugin-require-transform": "1.0.21",
         "xterm": "^4.19.0",
         "xterm-addon-fit": "^0.5.0",
         "xterm-addon-search": "^0.9.0",
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
         "yamljs": "^0.3.0",
-        "sockjs-client": "1.6.1"
+        "sockjs-client": "1.6.1",
+        "@esbuild-plugins/node-globals-polyfill": "0.2.3",
+        "rollup-plugin-node-polyfills": "0.2.1"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
@@ -136,7 +137,6 @@
     },
     "resolutions": {
         "**/@typescript-eslint/eslint-plugin": "^5.15.0",
-        "**/@typescript-eslint/parser": "^5.15.0",
-        "@types/react": "17.0.30"
+        "**/@typescript-eslint/parser": "^5.15.0"
     }
 }

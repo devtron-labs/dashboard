@@ -1,6 +1,6 @@
 import { get } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../../../config'
-import moment from 'moment-timezone';
+import moment from 'moment';
 import metrics from './deploymentMetrics.data.json';
 
 export function getDeploymentMetrics(startTime, endTime, appId: string | number, envId: string | number): Promise<any> {

@@ -1,4 +1,4 @@
-import moment from 'moment-timezone';
+import moment from 'moment';
 import { ZERO_TIME_STRING } from '../../../config';
 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
@@ -38,7 +38,7 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
 
 export const formatDurationDiff = (startedOn: string, finishedOn: string) => {
    const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
-   return `${diff.hours() > 0 ? `${diff.hours()}h ` : ''}${diff.minutes() >0 ? `${diff.minutes()}m ` : ''}${diff.seconds()}s` 
+   return `${diff.hours() > 0 ? `${diff.hours()}h ` : ''}${diff.minutes() >0 ? `${diff.minutes()}m ` : ''}${diff.seconds()}s`
 }
 
 export const processDeployedTime = (lastDeployed, isAgroInstalled) => {

@@ -1,4 +1,4 @@
-import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
+import {DOCUMENTATION_HOME_PAGE} from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'Checking Status...'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'

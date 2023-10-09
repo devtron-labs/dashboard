@@ -13,7 +13,7 @@ import {
     put,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
-import moment from 'moment-timezone'
+import moment from 'moment'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'

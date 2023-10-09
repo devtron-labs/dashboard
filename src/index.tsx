@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
-
+const process= {env:{}}
 interface customEnv {
     SENTRY_ENV?: string
     SENTRY_ERROR_ENABLED?: boolean
@@ -125,7 +125,7 @@ if (!window || !window._env_) {
         POSTHOG_TOKEN: '',
         RECOMMEND_SECURITY_SCANNING: false,
         FORCE_SECURITY_SCANNING: false,
-        ENABLE_CI_JOB: false, 
+        ENABLE_CI_JOB: false,
         HIDE_DISCORD: true,
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
@@ -150,7 +150,7 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={`${process.env.PUBLIC_URL}/`}>
+            <BrowserRouter basename={'local/'}>
                 <App />
             </BrowserRouter>
         ) : null}
@@ -158,6 +158,6 @@ ReactDOM.render(
     root,
 )
 
-if (process.env.NODE_ENV === 'development') {
-    (module as any).hot.accept()
-}
+// if (process.env.NODE_ENV === 'development') {
+//     (module as any).hot.accept()
+// }

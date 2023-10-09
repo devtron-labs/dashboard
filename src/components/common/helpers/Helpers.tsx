@@ -19,6 +19,11 @@ import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 
+// import { createRequire } from 'node:module'
+
+// const require = createRequire(import.meta.url)
+
+
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
 export type IntersectionOptions = {
@@ -837,10 +842,10 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
-  return defaultComponent
+export const importComponentFromFELibrary = async(componentName: string, defaultComponent?, type?: string) => {
+  //return defaultComponent
     try {
-        const module = require('@devtron-labs/devtron-fe-lib')
+       let module={} //= await import('@devtron-labs/devtron-fe-lib')
         if (type === 'function') {
             return module[componentName] || defaultComponent || null
         }
