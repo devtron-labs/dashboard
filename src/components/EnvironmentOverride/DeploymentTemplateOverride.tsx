@@ -354,15 +354,19 @@ export default function DeploymentTemplateOverride({
     ): Promise<void> => {
         if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             if (!envOverrideValues) {
-                const {
-                    result: { defaultAppOverride },
-                } = await getBaseDeploymentTemplate(
-                    +appId,
-                    state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-                    baseDeploymentAbortController.current.signal,
-                    true,
-                )
-                _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
+                try {
+                    const {
+                        result: { defaultAppOverride },
+                    } = await getBaseDeploymentTemplate(
+                        +appId,
+                        state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
+                        baseDeploymentAbortController.current.signal,
+                        true,
+                    )
+                    _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
+                } catch(err) {
+                    _isBasicLocked=true
+                }
             } else {
                 _isBasicLocked = isBasicValueChanged(baseTemplate, envOverrideValues)
             }

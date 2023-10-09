@@ -121,7 +121,6 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
                 .catch((err) => {
-                    showError(err)
                     setFetchingValues(false)
                     if (!baseDeploymentAbortController.current.signal.aborted) {
                         showError(err)
