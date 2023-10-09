@@ -427,4 +427,4 @@ function NodeDetailComponent({
     )
 }
 
-export default NodeDetailComponent
+export default React.memo(NodeDetailComponent)

@@ -29,7 +29,7 @@ export default () => {
          * Verifying the origin of the received message to be similar to 
          * from what our page is served on
          */
-        if (e.data.payload.origin !== self.location.origin) {
+        if (e.data.payload?.origin !== self.location.origin) {
             return
         }
 
