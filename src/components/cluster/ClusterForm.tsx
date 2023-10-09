@@ -372,7 +372,7 @@ export default function ClusterForm({
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
                             id: _cluster['id'],
                             proxyUrl: _cluster['proxyUrl'],
-                            isConnectedViaSSHTunnel: _cluster['isConnectedViaSSHTunnel'],
+                            isConnectedViaSSHTunnel: _cluster['toConnectWithSSHTunnel'],
                             sshTunnelConfig: _cluster['sshTunnelConfig']
                         }
                     }),
@@ -417,7 +417,7 @@ export default function ClusterForm({
             },
             active,
             proxyUrl: state.proxyUrl?.value,
-            isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
+            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
             sshTunnelConfig: {
                 user: state.sshTunnelUser,
                 password: state.sshTunnelPassword,
