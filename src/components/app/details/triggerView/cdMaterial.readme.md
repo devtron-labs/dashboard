@@ -1,7 +1,7 @@
 # CDMaterials Documentation
 
 -   Step - 1 : Computes Render
--   Step - 2: Computes **************\*\*\*\***************isApprovalConfigured**************\*\*\*\***************
+-   Step - 2: Computes **isApprovalConfigured**
 -   Step - 3: If materials.length>0 then **Flow - 1** else **Flow -2**
 
 ## Flow-1
@@ -25,7 +25,7 @@ Coming to each components:
     ![Screenshot of Config View](./assets/configDiff.png)
 
 -   **renderMaterialList:** This is a function returning JSX.Element containing list of materials, This function internally calls another function called **getConsumedAndAvailableMaterialList** which would contain the list of materials after filtering all the materials according to constraints. After that we compute the text to be shown on header and calls the renderMaterial function to render the material items with their detailing like Excluded state, add action button like expire approval, etc.
--   **********\*\***********Load more:**********\*\*********** This section aims to fetch more images from the server. This will be beneficial in case user wants more than N latest images, we will trigger load more function from which we will be fetching images from server, minding the fact that user can’t get images more than the configured set of number set in config map of devtron image. For that we will also be putting a check on the current length of materials and the limit we get from the API.
+-   **Load more:** This section aims to fetch more images from the server. This will be beneficial in case user wants more than N latest images, we will trigger load more function from which we will be fetching images from server, minding the fact that user can’t get images more than the configured set of number set in config map of devtron image. For that we will also be putting a check on the current length of materials and the limit we get from the API.
 
 ### renderCDModal:
 

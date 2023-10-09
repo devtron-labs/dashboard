@@ -17,10 +17,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
-interface SearchParams {
-    search: string
-}
-
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
@@ -112,6 +108,7 @@ export interface CDMaterialState {
     areMaterialsPassingFilters: boolean
     searchApplied: boolean
     searchText: string
+    showConfiguredFilters: boolean
 }
 
 export interface MaterialInfo {

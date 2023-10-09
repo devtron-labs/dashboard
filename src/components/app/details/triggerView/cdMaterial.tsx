@@ -70,6 +70,8 @@ const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
 const ApprovedImagesMessage = importComponentFromFELibrary('ApprovedImagesMessage')
 const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
+const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
+const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -102,6 +104,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     .length > 0,
             searchApplied: !!this.props.searchImageTag,
             searchText: this.props.searchImageTag,
+            showConfiguredFilters: false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -956,6 +959,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
+    handleEnableFiltersView = () => {
+        this.setState({
+            showConfiguredFilters: true,
+        })
+    }
+
     renderSearch = (): JSX.Element => {
         return (
             <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
@@ -978,6 +987,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    getFilterActionBarTabs = () => (
+        [
+            {
+                label: `Eligible images 0/${this.props.material.length}`,
+                value: 'Eligible'
+            },
+            {
+                label: `Latest ${this.props.material.length} images`,
+                value: `Latest ${this.props.material.length} images`
+            },
+        ]
+    )
+
     renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList } = this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
         const selectImageTitle = this.state.isRollbackTrigger
@@ -988,7 +1010,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
                 <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                    <span className="flex dc__align-start">{titleText}</span>
+                    {FilterActionBar ? (
+                        <FilterActionBar tabs={this.getFilterActionBarTabs()} onChange={()=>null} handleEnableFiltersView={this.handleEnableFiltersView}/>
+                    ):(
+                        <span className="flex dc__align-start">{titleText}</span>
+                    )}
                     <span className="flexbox dc__align-items-center h-32 dc__gap-16">
                         {!this.state.isRollbackTrigger && ( // remove this condition when search/refresh for rollback is implemented
                             <>
@@ -1557,6 +1583,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     render() {
         const isApprovalConfigured = this.props.userApprovalConfig?.requiredCount > 0
+        
+        if (this.state.showConfiguredFilters && ConfiguredFilters) {
+            return <ConfiguredFilters isFromBulkCD={this.props.isFromBulkCD} pipelineId={this.props.pipelineId}/>
+        }
 
         if (this.props.material.length > 0) {
             return this.props.isFromBulkCD
