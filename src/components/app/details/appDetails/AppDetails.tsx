@@ -544,10 +544,10 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    if ((!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
+    if (!loadingResourceTree && (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
         return (
             <>
-                {environments?.length > 0 && (
+            {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
@@ -556,9 +556,7 @@ export const Details: React.FC<DetailsType> = ({
                         />
                     </div>
                 )}
-
-                {!loadingResourceTree && (
-                    isAppDeleted ? (
+                {isAppDeleted ? (
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
                         showApplicationDetailedModal={showApplicationDetailedModal}
@@ -573,7 +571,7 @@ export const Details: React.FC<DetailsType> = ({
                         buttonTitle={ERROR_EMPTY_SCREEN.GO_TO_DEPLOY}
                         appConfigTabs={URLS.APP_TRIGGER}
                     />
-                ))}
+                )}
             </>
         )
     }
@@ -892,11 +890,10 @@ export function EnvSelector({
                         IndicatorSeparator: null,
                         Option,
                         GroupHeading: (props) => <GroupHeading {...props} hideClusterName={true} />,
-                        DropdownIndicator: disabled ? null : components.DropdownIndicator,
+                        DropdownIndicator: components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}
                     styles={envSelectorStyle}
-                    isDisabled={disabled}
                     isSearchable={true}
                     classNamePrefix="app-environment-select"
                     formatOptionLabel={formatOptionLabel}
