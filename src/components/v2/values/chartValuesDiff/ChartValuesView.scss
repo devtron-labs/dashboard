@@ -99,7 +99,6 @@
         display: grid;
         grid-template-columns: 300px 1px calc(100% - 301px);
         transition: all 0.2s ease-out;
-        // position: relative;
 
         .compare-values-select__group,
         .values-environment-select__group {
