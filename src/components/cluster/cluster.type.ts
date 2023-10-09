@@ -40,6 +40,8 @@ export interface DataListType {
     proxyUrl: string
     isConnectedViaSSHTunnel: boolean
     sshTunnelConfig: Record<string, string>
+    pinnipedConciergeUrl: string
+    toConnectWithPinniped: boolean
 }
 
 export interface SaveClusterPayloadType {
@@ -54,6 +56,8 @@ export interface SaveClusterPayloadType {
     proxyUrl: string,
     isConnectedViaSSHTunnel: boolean
     sshTunnelConfig: Record<string, string>,
+    pinnipedConfig: Record<string, string>,
+    toConnectWithPinniped: boolean,
 }
 
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'

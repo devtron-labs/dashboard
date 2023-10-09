@@ -283,7 +283,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 sshTunnelUrl={this.state.sshTunnelUrl}
                                 isConnectedViaProxy={this.state.isConnectedViaProxy}
                                 isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
-                                //@ts-ignore
                                 isConnectedViaPinniped={this.state.isConnectViaPinniped}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 setTlsConnectionFalse={this.setTlsConnectionFalse}
@@ -868,10 +867,8 @@ function Cluster({
                                 sshTunnelPassword={sshTunnelConfig.password}
                                 sshTunnelPrivateKey={sshTunnelConfig.authKey}
                                 sshTunnelUrl={sshTunnelConfig.sshServerAddress}
-                                isConnectedViaProxy={state.isConnectedViaProxy}
-                                //@ts-ignore
+                                isConnectedViaProxy={state.isConnectedViaProxy}                       
                                 pinnipedConfig={pinnipedConfig}
-                                //@ts-ignore
                                 isConnectedViaPinniped={state.isConnectedViaPinniped}
                                 isConnectedViaSSHTunnel={state.isConnectedViaSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}

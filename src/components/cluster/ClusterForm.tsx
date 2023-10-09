@@ -311,9 +311,7 @@ export default function ClusterForm({
                     isConnectedViaSSHTunnel: _dataList.isConnectedViaSSHTunnel,
                     sshTunnelConfig: _dataList.sshTunnelConfig,
                     server_url: _dataList.server_url,
-                    // @ts-ignore
                     pinnipedConfig: { conciergeUrl: _dataList.pinnipedConciergeUrl },
-                    // @ts-ignore
                     toConnectWithPinniped: _dataList.toConnectWithPinniped,
                 }
                 saveClusterPayload.push(_clusterDetails)
@@ -385,6 +383,7 @@ export default function ClusterForm({
             await validateCluster(payload).then((response) => {
                 const defaultUserNameSelections: Record<string, any> = {}
                 const _clusterSelections: Record<string, boolean> = {}
+                console.log(response)
                 setDataList([
                     ...Object.values(response.result).map((_cluster) => {
                         const _userInfoList = [...Object.values(_cluster['userInfos'] as UserDetails[])]
@@ -407,7 +406,8 @@ export default function ClusterForm({
                             proxyUrl: _cluster['proxyUrl'],
                             isConnectedViaSSHTunnel: _cluster['isConnectedViaSSHTunnel'],
                             sshTunnelConfig: _cluster['sshTunnelConfig'],
-                            pinnipedConfig: _cluster['pinnipedConfig'],
+                            pinnipedConciergeUrl: _cluster['pinnipedConfig']['conciergeUrl'],
+                            toConnectWithPinniped: _cluster['toConnectWithPinniped'],
                         }
                     }),
                 ])
