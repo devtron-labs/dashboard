@@ -408,7 +408,7 @@ a:focus {
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-column-gap: 16px;
-  }
+}
 
 // ClassName of text area
 .dc__code-textarea {
@@ -2969,7 +2969,7 @@ textarea,
 }
 
 .mh-400 {
-  min-height: 400px;
+    min-height: 400px;
 }
 
 .mh-600 {
@@ -3020,6 +3020,10 @@ textarea,
 // Line height
 .lh-1-4 {
     line-height: 1.4;
+}
+
+.lh-0 {
+    line-height: 0;
 }
 
 .lh-14 {

@@ -114,7 +114,6 @@ export default function ClusterForm({
     toggleClusterDetails,
     isVirtualCluster,
 }) {
-    console.log(pinnipedConfig, 'pinnipedConfig-clusterform')
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -331,9 +330,7 @@ export default function ClusterForm({
     async function saveClustersDetails() {
         try {
             let payload = getSaveClusterPayload(dataList)
-            console.log(payload)
             await saveClusters(payload).then((response) => {
-                console.log('mukul')
                 const _clusterList = response.result.map((_clusterSaveDetails, index) => {
                     let status
                     let message
@@ -602,8 +599,6 @@ export default function ClusterForm({
         insecureSkipTlsVerify: !isTlsConnection,
         pinnipedConciergeUrl: state.pinnipedConciergeUrl.value,
     }
-
-    console.log(state.pinnipedConciergeUrl, 'state.pinnipedConciergeUrl-clusterform')
 
     const ClusterInfoComponent = () => {
         const k8sClusters = Object.values(CLUSTER_COMMAND)
@@ -1163,7 +1158,6 @@ export default function ClusterForm({
     }
 
     const handleClusterDetailCall = async () => {
-        console.log('handleClusterDetailCall')
         setLoadingState(true)
         await saveClustersDetails()
         toggleKubeConfigFile(false)

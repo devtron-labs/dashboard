@@ -326,7 +326,6 @@ function Cluster({
     setTlsConnectionFalse,
     isVirtualCluster,
 }) {
-    console.log(toConnectWithPinniped, 'toConnectWithPinniped')
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
@@ -480,10 +479,8 @@ function Cluster({
     }, [environments])
 
     async function handleEdit(e) {
-        console.log('handleEdit')
         try {
             const { result } = await getCluster(clusterId)
-            console.log(result)
             setPrometheusAuth(result.prometheusAuth)
             setConfig({ ...result.config, ...(clusterId != 1 ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
             toggleEditMode((t) => !t)
@@ -673,10 +670,6 @@ function Cluster({
     }
 
     const subTitle: string = isVirtualCluster ? 'Virtual cluster' : server_url
-
-    console.log(state.isConnectedViaPinniped, 'state.isConnectedViaPinniped')
-    console.log(state.pinnipedConciergeUrl, 'state.pinnipedConciergeUrl')
-    console.log(pinnipedConfig, 'pinnipedConfig')
 
     return (
         <>
@@ -894,7 +887,6 @@ function Cluster({
                     </Drawer>
                 )}
             </article>
-            {console.log('environments = ', environments)}
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0" ref={editLabelRef}>
