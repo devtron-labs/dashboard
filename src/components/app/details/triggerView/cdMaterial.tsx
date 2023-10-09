@@ -70,7 +70,7 @@ const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
 const ApprovedImagesMessage = importComponentFromFELibrary('ApprovedImagesMessage')
 const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
-let timeoutId
+
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
@@ -1306,6 +1306,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         data-testid="cd-trigger-deploy-button"
                         className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
+                        type="button"
                     >
                         {this.props.isSaveLoading ? (
                             <Progressing />
@@ -1449,6 +1450,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             <button
                                 className="show-older-images-cta cta ghosted flex h-32"
                                 onClick={this.loadOlderImages}
+                                type="button"
                             >
                                 {this.state.loadingMore ? (
                                     <Progressing styles={{ height: '32px' }} />
@@ -1510,7 +1512,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderGenerateButton = () => {
         return (
-            <button className="flex cta h-32" onClick={this.clearSearch}>
+            <button className="flex cta h-32" onClick={this.clearSearch} type="button">
                 Clear filter
             </button>
         )
@@ -1523,7 +1525,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     image={noartifact}
                     title="No matching image available"
                     subTitle="We couldn't find any matching image"
-                    isButtonAvailable={true}
+                    isButtonAvailable
                     renderButton={this.renderGenerateButton}
                 />
             )
