@@ -864,10 +864,10 @@ function Cluster({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={state.proxyUrl}
-                                sshTunnelUser={state.sshTunnelUser}
-                                sshTunnelPassword={state.sshTunnelPassword}
-                                sshTunnelPrivateKey={state.sshTunnelPrivateKey}
-                                sshTunnelUrl={state.sshTunnelUrl}
+                                sshTunnelUser={sshTunnelConfig.user}
+                                sshTunnelPassword={sshTunnelConfig.password}
+                                sshTunnelPrivateKey={sshTunnelConfig.authKey}
+                                sshTunnelUrl={sshTunnelConfig.sshServerAddress}
                                 isConnectedViaProxy={state.isConnectedViaProxy}
                                 //@ts-ignore
                                 pinnipedConfig={pinnipedConfig}

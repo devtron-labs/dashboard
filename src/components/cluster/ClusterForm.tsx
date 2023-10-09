@@ -143,10 +143,9 @@ export default function ClusterForm({
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
     const [isConnectedWithPinniped, setIsConnectedWithPinniped] = useState(isConnectedViaPinniped)
-    const initialSSHAuthenticationType =
-        sshTunnelPassword?.value && sshTunnelPrivateKey?.value
-            ? SSHAuthenticationType.Password_And_SSH_Private_Key
-            : sshTunnelPrivateKey?.value
+    const initialSSHAuthenticationType = (sshTunnelPassword && sshTunnelPrivateKey)
+        ? SSHAuthenticationType.Password_And_SSH_Private_Key
+        : sshTunnelPrivateKey
             ? SSHAuthenticationType.SSH_Private_Key
             : SSHAuthenticationType.Password
     const [SSHConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
@@ -155,7 +154,6 @@ export default function ClusterForm({
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
-
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -247,17 +245,15 @@ export default function ClusterForm({
             },
             sshTunnelUrl: {
                 required: isConnectedViaSSHTunnelTemp,
-                validator: {
-                    error: 'Please provide a valid URL. URL must start with http:// or https://',
-                    regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
-                },
+                validator: (isConnectedViaSSHTunnelTemp) ? { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ } : {error: '', regex: /^(?!\s*$).+/ },
             },
             pinnipedConciergeUrl: {
-                required: id && KubectlConnectionRadio && isConnectedViaPinniped,
+                required: isConnectedWithPinniped,
                 validator: {
                     error: 'Please provide a valid URL. URL must start with http:// or https://',
                     regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
                 },
+                
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
@@ -457,10 +453,10 @@ export default function ClusterForm({
             proxyUrl: state.proxyUrl?.value,
             isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
             sshTunnelConfig: {
-                user: state.sshTunnelUser?.value,
-                password: state.sshTunnelPassword?.value,
-                authKey: state.sshTunnelPrivateKey?.value,
-                sshServerAddress: state.sshTunnelUrl?.value,
+                user: state.sshTunnelUser,
+                password: state.sshTunnelPassword,
+                authKey: state.sshTunnelPrivateKey,
+                sshServerAddress: state.sshTunnelUrl
             },
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
@@ -588,10 +584,10 @@ export default function ClusterForm({
         proxyUrl: state.proxyUrl.value,
         toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
         sshTunnelConfig: {
-            user: state.sshTunnelUser.value,
-            password: state.sshTunnelPassword.value,
-            authKey: state.sshTunnelPrivateKey.value,
-            sshServerAddress: state.sshTunnelUrl.value,
+            user: state.sshTunnelUser,
+            password: state.sshTunnelPassword,
+            authKey: state.sshTunnelPrivateKey,
+            sshServerAddress: state.sshTunnelUrl
         },
         server_url,
         defaultClusterComponent: defaultClusterComponent,
