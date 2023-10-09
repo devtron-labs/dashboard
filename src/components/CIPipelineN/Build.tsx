@@ -26,8 +26,6 @@ export function Build({
         formData,
         setFormData,
         formDataErrorObj,
-        loadingState,
-        setLoadingState,
         setFormDataErrorObj,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
