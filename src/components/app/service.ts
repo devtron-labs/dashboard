@@ -129,8 +129,9 @@ export function fetchResourceTreeInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
+    signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
 }
 
 export function getEvents(pathParams) {

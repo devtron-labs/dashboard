@@ -252,6 +252,7 @@ export const Details: React.FC<DetailsType> = ({
     const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
+    const appDetailsAbortRef = useRef(null)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -331,6 +332,13 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [])
 
+    useEffect(() => {
+        appDetailsAbortRef.current = new AbortController()
+        return () => {
+            appDetailsAbortRef.current.abort()
+        }
+    }, [params.envId])
+
     const handleAppDetailsCallError = (error) => {
         if (error['code'] === 404 || appDetailsRequestRef.current) {
             if (setIsAppDeleted) {
@@ -382,7 +390,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () => {
-        fetchResourceTreeInTime(params.appId, params.envId, 25000)
+        fetchResourceTreeInTime(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
                     response.errors &&
@@ -536,11 +544,7 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    if (
-        !loadingResourceTree &&
-        (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !isVirtualEnvRef.current
-    ) {
+    if ((!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
         return (
             <>
                 {environments?.length > 0 && (
@@ -553,7 +557,8 @@ export const Details: React.FC<DetailsType> = ({
                     </div>
                 )}
 
-                {isAppDeleted ? (
+                {!loadingResourceTree && (
+                    isAppDeleted ? (
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
                         showApplicationDetailedModal={showApplicationDetailedModal}
@@ -568,7 +573,7 @@ export const Details: React.FC<DetailsType> = ({
                         buttonTitle={ERROR_EMPTY_SCREEN.GO_TO_DEPLOY}
                         appConfigTabs={URLS.APP_TRIGGER}
                     />
-                )}
+                ))}
             </>
         )
     }
