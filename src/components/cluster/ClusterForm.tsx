@@ -451,7 +451,7 @@ export default function ClusterForm({
             },
             active,
             proxyUrl: state.proxyUrl?.value,
-            isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
+            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
             sshTunnelConfig: {
                 user: state.sshTunnelUser,
                 password: state.sshTunnelPassword,
