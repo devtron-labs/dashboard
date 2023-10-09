@@ -832,10 +832,10 @@ function Cluster({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={state.proxyUrl}
-                                sshTunnelUser={state.sshTunnelUser}
-                                sshTunnelPassword={state.sshTunnelPassword}
-                                sshTunnelPrivateKey={state.sshTunnelPrivateKey}
-                                sshTunnelUrl={state.sshTunnelUrl}
+                                sshTunnelUser={sshTunnelConfig.user}
+                                sshTunnelPassword={sshTunnelConfig.password}
+                                sshTunnelPrivateKey={sshTunnelConfig.authKey}
+                                sshTunnelUrl={sshTunnelConfig.sshServerAddress}
                                 isConnectedViaProxy={state.isConnectedViaProxy}
                                 isConnectedViaSSHTunnel={state.isConnectedViaSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
@@ -851,7 +851,6 @@ function Cluster({
                     </Drawer>
                 )}
             </article>
-            {console.log('environments = ', environments)}
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0" ref={editLabelRef}>

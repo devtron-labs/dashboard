@@ -136,9 +136,9 @@ export default function ClusterForm({
     const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
-    const initialSSHAuthenticationType = (sshTunnelPassword?.value && sshTunnelPrivateKey?.value)
+    const initialSSHAuthenticationType = (sshTunnelPassword && sshTunnelPrivateKey)
         ? SSHAuthenticationType.Password_And_SSH_Private_Key
-        : sshTunnelPrivateKey?.value
+        : sshTunnelPrivateKey
             ? SSHAuthenticationType.SSH_Private_Key
             : SSHAuthenticationType.Password
     const [SSHConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
@@ -157,10 +157,10 @@ export default function ClusterForm({
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: { value: proxyUrl?.value, error: '' },
             isConnectedViaSSHTunnel: isConnectedViaSSHTunnel ? isConnectedViaSSHTunnel : false,
-            sshTunnelUser: { value: sshTunnelUser?.value, error: '' },
-            sshTunnelPassword: { value: sshTunnelPassword?.value, error: '' },
-            sshTunnelPrivateKey: { value: sshTunnelPrivateKey?.value, error: '' },
-            sshTunnelUrl: { value: sshTunnelUrl?.value, error: '' },
+            sshTunnelUser: { value: sshTunnelUser, error: '' },
+            sshTunnelPassword: { value: sshTunnelPassword, error: '' },
+            sshTunnelPrivateKey: { value: sshTunnelPrivateKey, error: '' },
+            sshTunnelUrl: { value: sshTunnelUrl, error: '' },
             tlsClientKey: { value: config?.tls_key, error: '' },
             tlsClientCert: { value: config?.cert_data, error: '' },
             certificateAuthorityData: { value: config?.cert_auth_data, error: '' },
@@ -207,8 +207,8 @@ export default function ClusterForm({
                 required: false,
             },
             proxyUrl: {
-                required: (id && KubectlConnectionRadio && isConnectedViaProxyTemp),
-                validator: (isConnectedViaProxyTemp) ? { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ } : {error: '', regex: /^(?!\s*$).+/ },
+                required: (id && KubectlConnectionRadio) && isConnectedViaProxyTemp,
+                validator: { error: 'Please provide a valid URL. URL must start with http:// or https://', regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/ },
             },
             sshTunnelUser: {
                 required: isConnectedViaSSHTunnelTemp,
@@ -419,10 +419,10 @@ export default function ClusterForm({
             proxyUrl: state.proxyUrl?.value,
             isConnectedViaSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
             sshTunnelConfig: {
-                user: state.sshTunnelUser?.value,
-                password: state.sshTunnelPassword?.value,
-                authKey: state.sshTunnelPrivateKey?.value,
-                sshServerAddress: state.sshTunnelUrl?.value
+                user: state.sshTunnelUser,
+                password: state.sshTunnelPassword,
+                authKey: state.sshTunnelPrivateKey,
+                sshServerAddress: state.sshTunnelUrl
             },
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
@@ -536,10 +536,10 @@ export default function ClusterForm({
         proxyUrl: state.proxyUrl.value,
         toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
         sshTunnelConfig: {
-            user: state.sshTunnelUser.value,
-            password: state.sshTunnelPassword.value,
-            authKey: state.sshTunnelPrivateKey.value,
-            sshServerAddress: state.sshTunnelUrl.value
+            user: state.sshTunnelUser,
+            password: state.sshTunnelPassword,
+            authKey: state.sshTunnelPrivateKey,
+            sshServerAddress: state.sshTunnelUrl
         },
         server_url,
         defaultClusterComponent: defaultClusterComponent,
