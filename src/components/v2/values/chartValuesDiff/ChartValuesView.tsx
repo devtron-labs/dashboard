@@ -105,9 +105,10 @@ import {
     COMPARISON_OPTION_LABELS,
     COMPARISON_OPTION_TIPPY_CONTENT,
     CONNECT_TO_HELM_CHART_TEXTS,
-    DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO,
+    UPDATE_DATA_VALIDATION_ERROR_MSG,
+    EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
@@ -579,21 +580,36 @@ function ChartValuesView({
         if (commonState.isDeleteInProgress) {
             return
         }
+        // updating the delete state to progressing
         dispatch({
             type: ChartValuesViewActionTypes.isDeleteInProgress,
             payload: true,
         })
+
+        // initiating deletion (External Helm App/ Helm App/ Preset Value)
         getDeleteApplicationApi(deleteAction)
             .then((response: ResponseType) => {
-                if (response.result.deleteResponse?.deleteInitiated) {
+                //preset value deleted successfully
+                if (isCreateValueView) {
                     toast.success(TOAST_INFO.DELETION_INITIATED)
                     init && init()
                     history.push(
-                        isCreateValueView
-                            ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                            : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
+                        getSavedValuesListURL(installedConfigFromParent.appStoreId)
                     )
-                } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                    return
+                }
+                // ends
+
+                // helm app OR external helm app delete initiated
+                if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && !commonState.installedAppInfo)) {
+                    toast.success(TOAST_INFO.DELETION_INITIATED)
+                    init && init()
+                    history.push( `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`)
+                    return
+                } 
+
+                // helm app delete failed due to cluster not reachable (ArgoCD installed)
+                if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
                         payload: {
@@ -615,6 +631,13 @@ function ChartValuesView({
                 }
             })
             .catch((error) => {
+                /*
+                helm app delete failed due to:
+                1. cluster not reachable (Helm installed) 
+                2. ArgoCD dashboard not reachable
+                3. any other event loss
+                */
+                // updating state for force delete dialog box
                 if (deleteAction !== DELETE_ACTION.FORCE_DELETE && error.code !== 403) {
                     let forceDeleteTitle = '',
                         forceDeleteMessage = ''
@@ -658,11 +681,16 @@ function ChartValuesView({
     }
 
     const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
+        // Delete: external helm app
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
-        } else if (isCreateValueView) {
+        }
+        // Delete: helm chart preset values
+        else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
-        } else {
+        } 
+        // Delete: helm app
+        else {
             return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, deleteAction)
         }
     }
@@ -751,9 +779,13 @@ function ChartValuesView({
 
         // validate data
         try {
+            if (!commonState.modifiedValuesYaml) {
+                toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} "${EMPTY_YAML_ERROR}"`)
+                return false
+            }
             JSON.stringify(YAML.parse(commonState.modifiedValuesYaml))
         } catch (err) {
-            toast.error(`${DATA_VALIDATION_ERROR_MSG} “${err}”`)
+            toast.error(`${UPDATE_DATA_VALIDATION_ERROR_MSG} “${err}”`)
             return false
         }
 
@@ -1627,7 +1659,7 @@ function ChartValuesView({
                             (isExternalApp && commonState.releaseInfo.deployedAppDetail.appName) ||
                             commonState.installedConfig?.appName
                         }
-                        handleDelete={deleteApplication}
+                        handleDelete={() => deleteApplication(DELETE_ACTION.DELETE)}
                         toggleConfirmation={() => {
                             dispatch({
                                 type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
@@ -1635,7 +1667,7 @@ function ChartValuesView({
                             })
                         }}
                         disableButton={commonState.isDeleteInProgress}
-                        isCreateValueView
+                        isCreateValueView={isCreateValueView}
                     />
                 )}
                 {commonState.forceDeleteData.forceDelete && (

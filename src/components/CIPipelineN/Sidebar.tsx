@@ -4,7 +4,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     Option,
-    multiSelectStyles,
+    multiSelectStyles, 
     CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
@@ -27,6 +27,7 @@ const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarn
 
 export function Sidebar({
     isJobView,
+    isJobCI,
     mandatoryPluginData,
     pluginList,
     mandatoryPluginsMap,
@@ -62,9 +63,9 @@ export function Sidebar({
         _formData.triggerType = appCreationType
         setFormData(_formData)
     }
-
+    const isJobCard = isJobCI || isJobView // common constant for both job and CI_JOB
     useEffect(() => {
-        if (isJobView) {
+        if (isJobCard) {
             setHelpData({ helpText: 'Docs: Configure job', docLink: DOCUMENTATION.JOB_WORKFLOW_EDITOR })
         } else if (activeStageName === BuildStageVariable.Build) {
             setHelpData({ helpText: 'Docs: Configure build stage', docLink: DOCUMENTATION.BUILD_STAGE })
@@ -327,7 +328,7 @@ export function Sidebar({
                 <div className="sidebar-action-container">
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            {!isCdPipeline && !isJobView && MandatoryPluginWarning && showMandatoryWarning() && (
+                            {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
                                 <MandatoryPluginWarning
                                     stage={activeStageName}
                                     mandatoryPluginData={mandatoryPluginData}
@@ -345,7 +346,7 @@ export function Sidebar({
                                     withWarning={showMandatoryWarning()}
                                     mandatoryPluginsMap={mandatoryPluginsMap}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    isJobView={isJobView}
+                                    isJobView={isJobCard}
                                 />
                             </div>
                             {isCdPipeline && (!isVirtualEnvironment || formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) && triggerPipelineMode()}
@@ -356,7 +357,7 @@ export function Sidebar({
             ) : (
                 <div className="sidebar-action-container pr-20">
                     <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">
-                        Trigger {isJobView ? 'JOB' : 'BUILD'} PIPELINE
+                        Trigger {isJobCard ? 'JOB' : 'BUILD'} PIPELINE
                     </div>
                     <div>
                         <RadioGroup

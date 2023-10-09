@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { copyToClipboard } from '../../common'
-import { Progressing, VisibleModal, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, VisibleModal, GenericEmptyState, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as CopyText } from '../../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
@@ -112,9 +111,14 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 arrow={false}
                                                                 placement="top"
                                                             >
-                                                                <span className="url-box dc__ellipsis-right mr-6">
+                                                                <a
+                                                                    href={'//' + url}
+                                                                    className="url-box dc__ellipsis-right mr-6"
+                                                                    target="_blank"
+                                                                    rel="noreferrer noopener"
+                                                                >
                                                                     {url}
-                                                                </span>
+                                                                </a>
                                                             </Tippy>
                                                             <span className="icon-dim-16">
                                                                 <CopyToClipboardTextWithTippy
@@ -134,7 +138,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                         arrow={false}
                                                         placement="top"
                                                     >
-                                                        <span className="url-box dc__ellipsis-right mr-6">
+                                                        <span className="dc__ellipsis-right mr-6">
                                                             {value.pointsTo}
                                                         </span>
                                                     </Tippy>

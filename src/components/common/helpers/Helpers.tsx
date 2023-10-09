@@ -3,7 +3,6 @@ import {
     showError,
     useThrottledEffect,
     OptionType,
-    noop,
     DeploymentAppTypes,
     getLoginInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -19,8 +18,6 @@ import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
-
-const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
@@ -193,95 +190,6 @@ export function useWhyDidYouUpdate(name, props) {
         // Finally update previousProps with current props for next hook call
         previousProps.current = props
     })
-}
-
-interface AsyncState<T> {
-    loading: boolean
-    result: T
-    error: null
-    dependencies: any[]
-}
-
-interface AsyncOptions {
-    resetOnChange: boolean
-}
-
-export function useAsync<T>(
-    func: (...rest) => Promise<T>,
-    dependencyArray: any[] = [],
-    shouldRun = true,
-    options: AsyncOptions = { resetOnChange: true },
-): [boolean, T, any | null, () => void, React.Dispatch<any>, any[]] {
-    const [state, setState] = useState<AsyncState<T>>({
-        loading: true,
-        result: null,
-        error: null,
-        dependencies: dependencyArray,
-    })
-    const mounted = useRef(true)
-    const dependencies: any[] = useMemo(() => {
-        return [...dependencyArray, shouldRun]
-    }, [...dependencyArray, shouldRun])
-
-    const reload = () => {
-        async function call() {
-            try {
-                setState((state) => ({
-                    ...state,
-                    loading: true,
-                }))
-                const result = await func()
-                if (mounted.current)
-                    setState((state) => ({
-                        ...state,
-                        result,
-                        error: null,
-                        loading: false,
-                    }))
-            } catch (error: any) {
-                if (mounted.current)
-                    setState((state) => ({
-                        ...state,
-                        error,
-                        loading: false,
-                    }))
-            }
-        }
-        call()
-    }
-
-    useEffect(() => {
-        if (!shouldRun) {
-            setState((state) => ({ ...state, loading: false }))
-            return
-        }
-        setState((state) => ({ ...state, dependencies: dependencyArray }))
-        reload()
-        return () =>
-            setState((state) => ({
-                ...state,
-                loading: false,
-                error: null,
-                ...(options.resetOnChange ? { result: null } : {}),
-            }))
-    }, dependencies)
-
-    useEffect(() => {
-        mounted.current = true
-        return () => {
-            mounted.current = false
-        }
-    }, [])
-
-    const setResult = (param) => {
-        if (typeof param === 'function') {
-            setState((state) => ({ ...state, result: param(state.result) }))
-        } else {
-            setState((state) => ({ ...state, result: param }))
-        }
-    }
-
-    return [state.loading, state.result, state.error, reload, setResult, state.dependencies]
 }
 
 export const useIntersection = (
@@ -701,7 +609,7 @@ export function useEventSource(
     return eventSourceRef.current
 }
 
-export function useDebouncedEffect(callback, delay, deps = []) {
+export function useDebouncedEffect(callback, delay, deps: unknown[] = [] ) {
     // function will be executed only after the specified time once the user stops firing the event.
     const firstUpdate = useRef(true)
     useEffect(() => {
@@ -767,21 +675,6 @@ export function useSize(): UseSize {
         top: dimension.right,
         bottom: dimension.bottom,
     }
-}
-
-export function copyToClipboard(str, callback = noop) {
-    if (!str) {
-        return
-    }
-
-    const listener = function (ev) {
-        ev.preventDefault()
-        ev.clipboardData.setData('text/plain', str)
-    }
-    document.addEventListener('copy', listener)
-    document.execCommand('copy')
-    document.removeEventListener('copy', listener)
-    callback()
 }
 
 export function getRandomString() {
