@@ -57,7 +57,6 @@ import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorC
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import '../EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
-import { abort } from 'process'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
