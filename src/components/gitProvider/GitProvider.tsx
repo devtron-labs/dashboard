@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import { useForm, handleOnBlur, handleOnFocus, parsePassword } from '../common'
 import {
     showError,
     Progressing,
@@ -11,7 +11,8 @@ import {
     VisibleModal,
     multiSelectStyles,
     useEffectAfterMount,
-    stopPropagation
+    stopPropagation,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';

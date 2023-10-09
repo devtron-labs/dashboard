@@ -17,6 +17,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
+interface SearchParams {
+    search: string
+}
+
 export interface CDMaterialProps extends RouteComponentProps<{}> {
     material: CDMaterialType[]
     isLoading: boolean
@@ -71,6 +75,10 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
+    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
+    searchImageTag?: string
+    isSuperAdmin?:boolean
+    
 }
 
 export enum DeploymentWithConfigType {
@@ -88,6 +96,7 @@ export interface ConfigToDeployOptionType {
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
+    showSearch:boolean
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
@@ -102,6 +111,10 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
     materialInEditModeMap: Map<number,boolean>
+    areMaterialsPassingFilters: boolean
+    searchApplied: boolean
+    searchText: string
+    isSuperAdmin?:boolean
 }
 
 export interface MaterialInfo {
@@ -287,6 +300,7 @@ export interface TriggerViewProps extends RouteComponentProps<{
     envId: string
 }> {
     isJobView?: boolean
+    filteredEnvIds?: string
 }
 
 export interface WorkflowType {
@@ -356,6 +370,7 @@ export interface TriggerViewState {
     hideImageTaggingHardDelete?: boolean
     configs?: boolean
     isDefaultConfigPresent?: boolean
+    searchImageTag?: string
 }
 
 //-- begining of response type objects for trigger view
@@ -390,6 +405,7 @@ export enum CIPipelineNodeType {
     EXTERNAL_CI = 'EXTERNAL-CI',
     CI = 'CI',
     LINKED_CI = 'LINKED-CI',
+    JOB_CI = 'JOB-CI',
 }
 
 export enum WorkflowNodeType {
@@ -416,6 +432,7 @@ export interface Tree {
     componentId: number
     parentId: number
     parentType: PipelineType
+    isLast?: boolean
 }
 
 export interface Workflow {
@@ -500,6 +517,7 @@ export interface CiPipeline {
         metadataField: string
     }
     isOffendingMandatoryPlugin?: boolean
+    pipelineType?: string
 }
 
 export interface Material {
@@ -544,7 +562,7 @@ export interface CDStageConfigMapSecretNames {
     secrets: any[]
 }
 
-export interface PrePostDeployStageType {  
+export interface PrePostDeployStageType {
     isValid: boolean;
     steps: TaskErrorObj[];
     triggerType: string

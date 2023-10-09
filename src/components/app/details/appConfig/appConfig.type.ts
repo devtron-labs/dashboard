@@ -18,6 +18,7 @@ export type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'S
 export interface AppConfigProps {
     appName: string
     isJobView?: boolean
+    filteredEnvIds?: string
 }
 export interface AppConfigState {
     view: string
@@ -94,6 +95,7 @@ export interface AppComposeRouterProps {
     isBaseConfigProtected?: boolean
     reloadEnvironments:()=> void
     configProtectionData: any[]
+    filteredEnvIds?: string
 }
 
 export interface EnvironmentOverridesProps {

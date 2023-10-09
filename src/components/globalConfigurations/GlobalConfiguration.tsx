@@ -39,6 +39,7 @@ const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
+const FilterConditions = importComponentFromFELibrary('FilterConditions')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -411,6 +412,15 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Tags</div>
                         </NavLink>
                     )}
+                    {FilterConditions && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
+                            key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Filter condition</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -566,6 +576,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             {TagListContainer && (
                 <Route path={URLS.GLOBAL_CONFIG_TAGS}>
                     <TagListContainer />
+                </Route>
+            )}
+            {FilterConditions && (
+                <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
+                    <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
