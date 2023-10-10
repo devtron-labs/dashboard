@@ -536,10 +536,10 @@ export default function ClusterForm({
         proxyUrl: state.proxyUrl.value,
         toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
         sshTunnelConfig: {
-            user: state.sshTunnelUser,
-            password: state.sshTunnelPassword,
-            authKey: state.sshTunnelPrivateKey,
-            sshServerAddress: state.sshTunnelUrl
+            user: state.sshTunnelUser.value,
+            password: state.sshTunnelPassword.value,
+            authKey: state.sshTunnelPrivateKey.value,
+            sshServerAddress: state.sshTunnelUrl.value
         },
         server_url,
         defaultClusterComponent: defaultClusterComponent,
