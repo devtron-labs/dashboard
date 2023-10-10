@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import * as DOMPurify from 'dompurify'
+import DOMPurify from 'dompurify'
 import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { SuggestionsItemProps } from './types'
 import { NO_DEFINED_DESCRIPTION } from './constants'

@@ -10,7 +10,7 @@ import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
 import { marked } from 'marked'
-import * as DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
@@ -378,8 +378,8 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     )
 }
 
-function isReadmeInputCheckbox(text: string) { 
-    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) { 
+function isReadmeInputCheckbox(text: string) {
+    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) {
         return true;
     }
     return false;
@@ -394,12 +394,12 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
             text = text
             .replace(uncheckedCheckboxInputElement , '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>')
             .replace(checkedCheckboxInputElement, '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>');
-            return `<li style="list-style: none">${text}</li>`     
-        } 
-        return `<li>${text}</li>`;     
+            return `<li style="list-style: none">${text}</li>`
+        }
+        return `<li>${text}</li>`;
     };
 
-    renderer.image = function (href: string, title: string, text: string) { 
+    renderer.image = function (href: string, title: string, text: string) {
         return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
     }
 
@@ -416,7 +416,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, disabl
 
     renderer.heading = function (text, level) {
         const escapedText = disableEscapedText? "" :text.toLowerCase().replace(/[^\w]+/g, '-')
-          
+
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
                 <h${level} data-testid="deployment-template-readme-version">
