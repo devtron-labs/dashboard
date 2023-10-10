@@ -339,27 +339,54 @@ const getPathKeyAndPropsPair = (
         Object.keys(properties).forEach((propertyKey) => {
             const propertyPath = `${parentRef}${parentRef ? '/' : ''}${propertyKey}`
             const property = properties[propertyKey]
-            const haveChildren = property.type === 'object' && property.properties
-            const newProps = {
-                ...property,
-                key: propertyPath,
-                type: getFieldType(property.type, property.render, !!property.enum),
-                showBox: property.type === 'object' && property.form,
-                value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
-                showField: property.required || isFieldEnabled(property, !!parentRef),
-                parentRef: parentRef,
-                children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
-            }
+            if (properties[propertyKey].type === 'array' && properties[propertyKey].items) {
+                const newProps={
+                    ...property,
+                    type: 'array',
+                    key: propertyPath,
+                    showBox: false,
+                    showField: true,
+                    parentRef: parentRef,
+                    value:property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
+                    itemType: arrayItemType(property.items, property.items?.title),
+                    items:[]
+                }
+                pathKeyAndPropsPair.set(propertyPath, newProps)
+                
+            } else {
+                const haveChildren = property.type === 'object' && property.properties
+                
+                const newProps = {
+                    ...property,
+                    key: propertyPath,
+                    type: getFieldType(property.type, property.render, !!property.enum),
+                    showBox: property.type === 'object' && property.form,
+                    value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
+                    showField: property.required || isFieldEnabled(property, !!parentRef),
+                    parentRef: parentRef,
+                    children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
+                }
 
-            delete newProps['properties'] // Don't need properties as they're already being flatten
-            pathKeyAndPropsPair.set(propertyPath, newProps)
+                delete newProps['properties'] // Don't need properties as they're already being flatten
+                pathKeyAndPropsPair.set(propertyPath, newProps)
+                if (haveChildren) {
+                    getPathKeyAndPropsPair(property, propertyPath, pathKeyAndPropsPair)
+                }
 
-            if (haveChildren) {
-                getPathKeyAndPropsPair(property, propertyPath, pathKeyAndPropsPair)
             }
+            
+
         })
     }
 
+    return pathKeyAndPropsPair
+}
+
+const arrayItemType=(property,propertyKey)=>{
+    const pathKeyAndPropsPair=new Map<string, any>()
+    const newSchema={}
+    newSchema['properties']={[propertyKey]:property}
+    getPathKeyAndPropsPair(newSchema, '', pathKeyAndPropsPair)
     return pathKeyAndPropsPair
 }
 

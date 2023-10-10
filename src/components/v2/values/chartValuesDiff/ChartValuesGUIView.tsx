@@ -9,11 +9,15 @@ import {
 import { UpdateApplicationButton } from './ChartValuesView.component'
 import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
 import YAML from 'yaml'
-import { Progressing, CHECKBOX_VALUE, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, CHECKBOX_VALUE, GenericEmptyState, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+
+
 
 const getGUIWidget = (
     props: any,
@@ -92,34 +96,38 @@ const updateYamlDocument = (
     schemaJson: Map<string, any>,
     valuesYamlDocument: YAML.Document.Parsed,
     dispatch: React.Dispatch<ChartValuesViewAction>,
+    type: string='',
 ): void => {
+    const index=type?property.key.split('-')[1]:null
+    const arraySchema = type ? schemaJson.get(type).items[index] : null
+    const originalSchemaJson=new Map<string, any>(schemaJson)
+    schemaJson = type ? arraySchema : schemaJson
     schemaJson.set(property.key, {
         ...property,
         value: _newValue,
     })
+    if(type)originalSchemaJson.set(type,schemaJson)
 
     const pathKey = property.key.split('/')
-
     if (valuesYamlDocument.hasIn(pathKey)) {
         valuesYamlDocument.setIn(pathKey, property.type === 'select' ? _newValue.value : _newValue)
     } else {
         const { pathToSetIn, valueToSetIn } = getPathAndValueToSetIn(pathKey, valuesYamlDocument, _newValue)
-
         if (typeof valueToSetIn !== 'undefined' && valueToSetIn !== null && valuesYamlDocument.contents) {
             valuesYamlDocument.setIn(pathToSetIn, valueToSetIn)
         }
     }
 
-    dispatch({
-        type: ChartValuesViewActionTypes.multipleOptions,
-        payload: {
-            schemaJson,
-            ...(valuesYamlDocument.contents && {
-                valuesYamlDocument,
-                modifiedValuesYaml: valuesYamlDocument.toString(),
-            }),
-        },
-    })
+    // dispatch({
+    //     type: ChartValuesViewActionTypes.multipleOptions,
+    //     payload: {
+    //         schemaJson: type === 'array' ? originalSchemaJson : schemaJson,
+    //         ...(valuesYamlDocument.contents && {
+    //             valuesYamlDocument,
+    //             modifiedValuesYaml: valuesYamlDocument.toString(),
+    //         }),
+    //     },
+    // })
 }
 
 const renderChildGUIWidget = (
@@ -128,21 +136,28 @@ const renderChildGUIWidget = (
     valuesYamlDocument: YAML.Document.Parsed,
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
+    fromParent?: boolean,
+    type: string='',
 ): JSX.Element | null => {
+    const index=type?_childKey.split('-')[1]:null
+    const arraySchema = type ? schemaJson.get(type).items[index] : null
+    const originalSchemaJson=new Map<string, any>(schemaJson)
+    schemaJson = type ? arraySchema : schemaJson
     const _childProps = schemaJson.get(_childKey)
     if (_childProps.type === 'formBox' && _childProps.children) {
-        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch, true)
+        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch,true,type)
     } else {
         if (isFieldHidden(_childProps, schemaJson)) {
             return null
         }
+
         const isRequired = isRequiredField(_childProps, true, schemaJson)
         if (_childProps.showField || isRequired) {
             _childProps['isRequired'] = isRequired
             return getGUIWidget(
                 _childProps,
                 (_newValue) => {
-                    updateYamlDocument(_newValue, _childProps, schemaJson, valuesYamlDocument, dispatch)
+                    updateYamlDocument(_newValue, _childProps, originalSchemaJson, valuesYamlDocument, dispatch,type)
                 },
                 formValidationError,
             )
@@ -183,6 +198,78 @@ const isFieldHidden = (props: any, schemaJson: Map<string, any>): boolean => {
 
     return props.parentRef && checkIfChildIsHidden(props, schemaJson)
 }
+const addRow=(props,dispatch: React.Dispatch<ChartValuesViewAction>,schemaJson:Map<string, any>,)=>{
+    // newItemSchema.key=`${props.title}/${props.title}-${(props.items.size() || 0) + 1}`
+    const newItemSchema=new Map<string, any>()
+    props.itemType.forEach((value,key)=>{
+        const newValue=structuredClone(value)
+        if(newValue.type==='formBox'){
+            newValue.children=newValue.children.map((childKey)=>`${childKey}-${props.items.length}`)
+            newValue.required=newValue.required.map((childKey)=>`${childKey}-${props.items.length}`)
+            newValue.showField=newValue.showField.map((childKey)=>`${childKey}-${props.items.length}`)
+        }
+        const newKey=`${key}-${props.items.length}`
+        newValue.key=`${value.key}-${props.items.length}`
+        newValue.parentRef=newValue.parentRef?`${newValue.parentRef}-${props.items.length}`:newValue.parentRef
+        newItemSchema.set(newKey,newValue)
+    })
+    const newArray=[...props.items,newItemSchema]
+    schemaJson.set(props.key, {
+        ...props,
+        items: newArray,
+    })
+
+    dispatch({
+        type: ChartValuesViewActionTypes.multipleOptions,
+        payload: {
+            schemaJson
+        },
+    })
+    // props.set(title, (newArrayFieldCount.get(title) || 0) + 1)
+    // setArrayFieldCount(newArrayFieldCount)
+}
+
+const removeRow=(title:string,setArrayFieldCount,arrayFieldCount)=>{
+    const newArrayFieldCount=new Map<string, number>(arrayFieldCount)
+    newArrayFieldCount.set(title, (Math.max(newArrayFieldCount.get(title) - 1,0)))
+    setArrayFieldCount(newArrayFieldCount)
+}
+
+const getArrayElements = (
+    props: any,
+    schemaJson: Map<string, any>,
+    valuesYamlDocument: YAML.Document.Parsed,
+    formValidationError: Record<string, boolean>,
+    dispatch: React.Dispatch<ChartValuesViewAction>,
+    setArrayFieldCount?: React.Dispatch<React.SetStateAction<Map<string, number>>>,
+    arrayFieldCount?: Map<string, number>,
+): JSX.Element[] => {
+    const arrayElements = []
+    for (let i = 0; i < props.items.length; i++) {
+        arrayElements.push(
+            <div className="flexbox" key={props.items[i].key}>
+                {[...props.items[i].values()].map((value) => {
+                     return renderGUIWidget(
+                        value,
+                        schemaJson,
+                        valuesYamlDocument,
+                        formValidationError,
+                        dispatch,
+                        false,
+                        props.key,
+                    )
+                })}
+                {props.items.length >= 1 && (
+                    <Close
+                        className="option-close-icon icon-dim-16 pointer scr-5 bw-1 br-4 en-2"
+                        onClick={() => removeRow(props.title, setArrayFieldCount, arrayFieldCount)}
+                    />
+                )}
+            </div>,
+        )
+    }
+    return arrayElements
+}
 
 const renderGUIWidget = (
     props: any,
@@ -191,21 +278,57 @@ const renderGUIWidget = (
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
+    type: string='',
+    
+   
 ): JSX.Element | null => {
     if (!isFieldHidden(props, schemaJson) && (!props.parentRef || fromParent)) {
         if (props.type === 'formBox' && props.children) {
             return props.showField ? (
                 <StyledFormBox key={props.key} {...props}>
-                    {props.children.map((_childKey) =>
-                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, formValidationError, dispatch),
+                    {props.children.map((_childKey) =>{
+                        const x=renderChildGUIWidget(
+                            _childKey,
+                            schemaJson,
+                            valuesYamlDocument,
+                            formValidationError,
+                            dispatch,
+                            false,
+                            type)
+                      
+                        return x
+                        },
+                        
                     )}
                 </StyledFormBox>
             ) : (
                 <Fragment key={props.key}>
                     {props.children.map((_childKey) =>
-                        renderChildGUIWidget(_childKey, schemaJson, valuesYamlDocument, formValidationError, dispatch),
+                        renderChildGUIWidget(
+                            _childKey,
+                            schemaJson,
+                            valuesYamlDocument,
+                            formValidationError,
+                            dispatch,
+                            false,
+                            type
+                        ),
                     )}
                 </Fragment>
+            )
+        } else if (props.type == 'array') {
+
+            return (
+                <StyledFormBox key={props.key} {...props}>
+                    {getArrayElements(props, schemaJson, valuesYamlDocument, formValidationError, dispatch)}
+                    <div
+                        className="flexbox flex-align-center pointer cb-5 fw-6 fs-13 lh-32 w-120"
+                        onClick={() => addRow(props,dispatch,schemaJson)}
+                    >
+                        <Add className="icon-dim-20 fcb-5 mr-6" />
+                        <div>Add Item</div>
+                    </div>
+                </StyledFormBox>
             )
         } else {
             props['isRequired'] = isRequiredField(props, fromParent, schemaJson)
@@ -218,7 +341,6 @@ const renderGUIWidget = (
             )
         }
     }
-
     return null
 }
 
