@@ -133,6 +133,7 @@ function CustomImageTags({
                             autoComplete="off"
                             value={formData.customTag?.counterX}
                             onChange={onChangeCustomImageCounter}
+                            min="0"
                         />
                         <div></div>
                     </div>
@@ -207,7 +208,7 @@ function CustomImageTags({
                         <GeneratedImage className="mr-12" />
                         <div>
                             <span className="fw-6">Pattern for generated image tag</span>
-                            <span className="dc__italic-font-style ml-4">(Using default)</span>
+                           { imageTagValue === ImageTagType.Default  ? <span className="dc__italic-font-style ml-4">(Using default)</span> : ''}
                             {getGeneratedTagDescription()}
                         </div>
                     </div>
