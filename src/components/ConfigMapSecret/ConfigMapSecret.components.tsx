@@ -119,6 +119,7 @@ export function ConfigMapSecretContainer({
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
     const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
+    const [abortController, setAbortController] = useState(new AbortController());
 
     let cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.BASE : CM_SECRET_STATE.UNPUBLISHED
     if (isOverrideView) {
@@ -131,12 +132,15 @@ export function ConfigMapSecretContainer({
 
     const getData = async () => {
         try {
+            abortController.abort()
+            const newAbortController = new AbortController();
+            setAbortController(newAbortController);
             setLoader(true)
             const [_draftData, _cmSecretData] = await Promise.allSettled([
                 isProtected && getDraftByResourceName
-                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name)
+                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name, newAbortController.signal )
                     : null,
-                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId) : null,
+                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId, newAbortController.signal ) : null,
             ])
             let draftId, draftState
             if (
@@ -191,7 +195,9 @@ export function ConfigMapSecretContainer({
                     update(index, null)
                 }
             }
-            toggleCollapse(false)
+            if((_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) || (_draftData?.status === 'fulfilled' && _draftData?.value !== null)) {
+                toggleCollapse(false)
+            }
             if (
                 (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
                 (_draftData?.status === 'rejected' && _draftData?.reason?.code === 403)
@@ -396,11 +402,16 @@ export function ProtectedConfigMapSecretDetails({
     const { appId, envId } = useParams<{ appId; envId }>()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
+    const [abortController, setAbortController] = useState(new AbortController());
+    
 
     const getBaseData = async () => {
         try {
+            abortController.abort()
+            let newAbortController = new AbortController()
+            setAbortController(newAbortController)
             setLoader(true)
-            const { result } = await(componentType === 'secret' ? getSecretList(appId) : getConfigMapList(appId))
+            const { result } = await(componentType === 'secret' ? getSecretList(appId, {signal: newAbortController.signal}) : getConfigMapList(appId, {signal: newAbortController.signal}))
             let _baseData
             if (result?.configData?.length) {
                 _baseData = result.configData.find((config) => config.name === data.name)
@@ -408,7 +419,7 @@ export function ProtectedConfigMapSecretDetails({
                     _baseData.unAuthorized = data.unAuthorized
                 }
                 if (componentType === 'secret' && !data.unAuthorized) {
-                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name)
+                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name, {signal: newAbortController.signal})
                     if (secretResult?.configData?.length) {
                         _baseData = { ...secretResult.configData[0], unAuthorized: false }
                     }
@@ -423,7 +434,7 @@ export function ProtectedConfigMapSecretDetails({
 
     useEffect(() => {
         if (draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN) {
-            getBaseData()
+            getBaseData()   
         }
     }, [])
 
