@@ -831,12 +831,12 @@ function Cluster({
                                 defaultClusterComponent={state.defaultClusterComponent}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
-                                proxyUrl={state.proxyUrl}
+                                proxyUrl={proxyUrl}
                                 sshTunnelUser={sshTunnelConfig.user}
                                 sshTunnelPassword={sshTunnelConfig.password}
                                 sshTunnelPrivateKey={sshTunnelConfig.authKey}
                                 sshTunnelUrl={sshTunnelConfig.sshServerAddress}
-                                isConnectedViaProxy={state.isConnectedViaProxy}
+                                isConnectedViaProxy={proxyUrl ? true : false}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
