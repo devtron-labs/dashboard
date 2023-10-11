@@ -1293,10 +1293,10 @@
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   integrity sha512-6It2EVfGskxZCQhuykrfnALg7oVeiI6KclWSmGDqB0AiInVrTGB9Jp9i4/Ad21u9Jde/voVQz6eFX/eSg/UsPA==
 
-"@devtron-labs/devtron-fe-common-lib@0.0.26":
-  version "0.0.26"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.26.tgz#beca8b9c37c174f9908722b14b4f47c7f5e30934"
-  integrity sha512-pj5Zh0qYIcN+RkjjMgXra0fZfMdpkdnTem2C3tN4M/A6+cAPJEtDTZ7pxxAiEbGNQTmVipUl5OM1shfbSs4BOg==
+"@devtron-labs/devtron-fe-common-lib@0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.29.tgz#e790da5bba80bdbfb2ddc6e14185a13c4b3cc663"
+  integrity sha512-nM5QT+pjGjDHviLP7Ezaw1riBC/Nx8m6cPTCR74FQTQYvf/ATnvSdjK8fdPckCepiqw7iSGQjpPvZ3+ipwQbmg==
   dependencies:
     sass "^1.56.2"
     tslib "^2.4.1"
@@ -12429,7 +12429,7 @@ prop-types-extra@^1.0.1:
     react-is "^16.3.2"
     warning "^4.0.0"
 
-prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -12807,6 +12807,14 @@ react-dom@^17.0.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     scheduler "^0.20.2"
+
+react-draggable@^4.4.5:
+  version "4.4.6"
+  resolved "https://registry.yarnpkg.com/react-draggable/-/react-draggable-4.4.6.tgz#63343ee945770881ca1256a5b6fa5c9f5983fe1e"
+  integrity sha512-LtY5Xw1zTPqHkVmtM3X8MUOxNDOUhv/khTgBgrUvwaS064bwVvxT+q5El0uUFNx5IEPKXuRejr7UqLwBIg5pdw==
+  dependencies:
+    clsx "^1.1.1"
+    prop-types "^15.8.1"
 
 react-ellipsis-with-tooltip@^1.0.8:
   version "1.1.1"

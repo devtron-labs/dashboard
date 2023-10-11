@@ -54,6 +54,7 @@ export interface Environment {
     namespace: string
     active: boolean
     clusterName: string
+    clusterId: string
     isClusterCdActive: boolean
     isVirtualEnvironment?: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
@@ -215,6 +216,7 @@ export interface CDFormType {
     }
     isClusterCdActive: boolean
     deploymentAppCreated: boolean,
+    clusterId: string,
     clusterName: string
     runPreStageInEnv: boolean,
     runPostStageInEnv: boolean,

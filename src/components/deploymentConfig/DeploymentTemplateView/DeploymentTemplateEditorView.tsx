@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -38,6 +38,7 @@ export default function DeploymentTemplateEditorView({
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+    const baseDeploymentAbortController = useRef(null)
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -82,6 +83,7 @@ export default function DeploymentTemplateEditorView({
     }, [state.selectedChart, state.charts])
 
     useEffect(() => {
+        baseDeploymentAbortController.current = new AbortController()
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
@@ -103,7 +105,7 @@ export default function DeploymentTemplateEditorView({
                       isEnvOption ? state.selectedCompareOption.id : envId,
                       state.selectedCompareOption.value,
                   )
-                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value)
+                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value, baseDeploymentAbortController.current.signal)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
@@ -119,9 +121,14 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
                 .catch((err) => {
-                    showError(err)
                     setFetchingValues(false)
+                    if (!baseDeploymentAbortController.current.signal.aborted) {
+                        showError(err)
+                    }
                 })
+        }
+        return () => {
+            baseDeploymentAbortController.current.abort();
         }
     }, [state.selectedCompareOption, state.chartConfigLoading])
 
@@ -184,6 +191,7 @@ export default function DeploymentTemplateEditorView({
                             : state.fetchedValues[state.selectedCompareOption?.id]) || ''
                     }
                     value={value}
+                    chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
                     onChange={editorOnChange}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
@@ -217,6 +225,7 @@ export default function DeploymentTemplateEditorView({
                     )}
                     {state.openComparison && (
                         <CodeEditor.Header className="w-100 p-0-imp" hideDefaultSplitHeader={true}>
+
                             <div className="flex column">
                                 <div className="code-editor__header flex left w-100 p-0-imp">
                                     <div className="flex left fs-12 fw-6 cn-9 dc__border-right h-32 pl-12 pr-12">
