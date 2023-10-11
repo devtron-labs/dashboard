@@ -3,11 +3,20 @@ import { get, put, post } from '@devtron-labs/devtron-fe-common-lib';
 import { ConfigMapRequest } from './types';
 import yamlJsParser from 'yamljs';
 
-export function getDeploymentTemplate(id: number, chartRefId: number, isDefaultTemplate?: boolean) {
-    if(isDefaultTemplate){
-      return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`)
-    } else{
-      return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`)
+export function getDeploymentTemplate(
+    id: number,
+    chartRefId: number,
+    abortSignal: AbortSignal,
+    isDefaultTemplate?: boolean,
+) {
+    if (isDefaultTemplate) {
+        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
+            signal: abortSignal,
+        })
+    } else {
+        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+            signal: abortSignal,
+        })
     }
 }
 
@@ -15,14 +24,14 @@ export function getDefaultDeploymentTemplate(appId, chartId){
     return get(`${Routes.DEPLOYMENT_TEMPLATE}/default/${appId}/${chartId}`)
 }
 
-export const updateDeploymentTemplate = (request) => {
+export const updateDeploymentTemplate = (request, abortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE_UPDATE}`;
-    return post(URL, request);
+    return post(URL, request, {signal: abortSignal});
 }
 
-export const saveDeploymentTemplate = (request) => {
+export const saveDeploymentTemplate = (request, abortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE}`;
-    return post(URL, request)
+    return post(URL, request, {signal: abortSignal})
 }
 
 export function getConfigmap(appId: number) {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -38,6 +38,7 @@ export default function DeploymentTemplateEditorView({
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+    const baseDeploymentAbortController = useRef(null)
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -82,6 +83,7 @@ export default function DeploymentTemplateEditorView({
     }, [state.selectedChart, state.charts])
 
     useEffect(() => {
+        baseDeploymentAbortController.current = new AbortController()
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
@@ -103,7 +105,7 @@ export default function DeploymentTemplateEditorView({
                       isEnvOption ? state.selectedCompareOption.id : envId,
                       state.selectedCompareOption.value,
                   )
-                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value)
+                : getDeploymentTemplate(+appId, +state.selectedCompareOption.value, baseDeploymentAbortController.current.signal)
 
             _getDeploymentTemplate
                 .then(({ result }) => {
@@ -121,7 +123,13 @@ export default function DeploymentTemplateEditorView({
                 .catch((err) => {
                     showError(err)
                     setFetchingValues(false)
+                    if (!baseDeploymentAbortController.current.signal.aborted) {
+                        showError(err)
+                    }
                 })
+        }
+        return () => {
+            baseDeploymentAbortController.current.abort();
         }
     }, [state.selectedCompareOption, state.chartConfigLoading])
 
