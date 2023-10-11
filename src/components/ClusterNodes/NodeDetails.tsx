@@ -66,6 +66,7 @@ export default function NodeDetails({
   addTab,
   updateNodeSelectionData,
   k8SObjectMapRaw,
+  lastDataSync
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -166,7 +167,7 @@ export default function NodeDetails({
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node])
+    }, [node,lastDataSync])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -437,13 +438,13 @@ export default function NodeDetails({
         if (!nodeErrorKeys.length) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
-                <div className="flexbox bcr-5 pt-12 pb-12 pr-10 pl-20 dc__top-radius-4">
+                <div className="flexbox bcr-5 pt-12 pb-12 pr-16 pl-16 dc__top-radius-4">
                     <Error className="error-icon-white mt-2 mb-2 mr-8 icon-dim-18" />
                     <span className="fw-6 fs-14 cn-0">
                         {`${nodeErrorKeys.length} Error${nodeErrorKeys.length > 1 ? 's' : ''}`}
                     </span>
                 </div>
-                <div className="pt-12 pr-20 pl-20">
+                <div className="pt-12 pr-16 pl-16">
                     {nodeErrorKeys.map((key) => (
                         <>
                             <div className="fw-6 fs-13 cn-9">{key}</div>

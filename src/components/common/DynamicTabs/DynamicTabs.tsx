@@ -1,10 +1,11 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
@@ -12,7 +13,13 @@ import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData } from './Util
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
 import Select from 'react-select/dist/declarations/src/Select'
+import { AppDetailsTabs } from '../../../components/v2/appDetails/appDetails.store'
 import './DynamicTabs.scss'
+import moment from 'moment'
+import { handleUTCTime,getTimeElapsed } from '../helpers/time'
+import {checkIfDataIsStale
+} from '../../ResourceBrowser/Utils'
+let interval
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -29,6 +36,12 @@ function DynamicTabs({
     stopTabByIdentifier,
     enableShortCut,
     shortcut,
+    refreshData,
+    loader,
+    isOverview,
+    lastDataSync,
+    setLastDataSyncTimeString,
+    isStaleDataRef
 }: DynamicTabsProps & IWithShortcut) {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -41,6 +54,25 @@ function DynamicTabs({
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const tabPopupMenuRef = useRef(null)
+    const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
+    const [timeElapsedLastSync, setTimeElapsedLastSync] = useState('')
+
+
+    useEffect(() => {
+        const _lastDataSyncTime = Date()
+        const _staleDataCheckTime = moment()
+        isStaleDataRef.current = false
+        setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
+        interval = setInterval(() => {
+            checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
+            setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
+            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime, moment()))
+        }, 1000)
+        return () => {
+            setTimeElapsedLastSync('')
+            clearInterval(interval)
+        }
+    }, [lastDataSync])
 
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
@@ -258,7 +290,37 @@ function DynamicTabs({
             closeMenu()
         }
     }
-
+    
+    const timerForSync = () => {
+        if (loader || !timeElapsedLastSync) {
+            return (
+                <div className="ml-12 mr-4 flex">
+                    <Progressing size={18} />
+                    <div className="fs-13 ml-8">Syncing...</div>
+                </div>
+            )
+        } else {
+            return (
+                <>
+                    <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
+                        <div>
+                            <RefreshIcon
+                                className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                                onClick={() => {
+                                    clearInterval(interval)
+                                    setTimeElapsedLastSync('')
+                                    refreshData()
+                                }}
+                            />
+                        </div>
+                    </Tippy>
+                    {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
+                        <div className="flex">{timeElapsedLastSync} ago </div>
+                    )}
+                </>
+            )
+        }
+    }
     return (
         <div ref={tabsSectionRef} className="dynamic-tabs-section flex left pl-12 pr-12 w-100 dc__outline-none-imp">
             {tabsData.fixedTabs.length > 0 && (
@@ -269,61 +331,69 @@ function DynamicTabs({
                 </div>
             )}
             {tabsData.dynamicTabs.length > 0 && (
-                <>
-                    <div
-                        className="dynamic-tabs-container dc__border-left dc__border-right"
-                        style={{
-                            width: fixedContainerRef.current
-                                ? `calc(100% - ${fixedContainerRef.current.offsetWidth + 32}px)`
-                                : 'calc(100% - 32px)',
-                        }}
-                    >
-                        <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
-                            {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
-                        </ul>
-                    </div>
-                    <MoreButtonWrapper
-                        tabPopupMenuRef={tabPopupMenuRef}
-                        isMenuOpen={isMenuOpen}
-                        onClose={closeMenu}
-                        toggleMenu={toggleMenu}
-                    >
-                        <div className="more-tabs__search-icon icon-dim-16 cursor-text" onClick={focusSearchTabInput}>
-                            <SearchIcon className="icon-dim-16" />
-                        </div>
-                        <ReactSelect
-                            ref={moreButtonRef}
-                            placeholder="Search tabs"
-                            classNamePrefix="tab-search-select"
-                            options={tabsData.dynamicTabs}
-                            value={selectedTab}
-                            inputValue={tabSearchText}
-                            onChange={onChangeTab}
-                            onKeyDown={escHandler}
-                            onInputChange={handleOnChangeSearchText}
-                            tabSelectsValue={false}
-                            backspaceRemovesValue={false}
-                            controlShouldRenderValue={false}
-                            hideSelectedOptions={false}
-                            menuIsOpen
-                            autoFocus
-                            noOptionsMessage={noMatchingTabs}
-                            components={{
-                                IndicatorSeparator: null,
-                                DropdownIndicator: null,
-                                Option: tabsOption,
-                                Menu: TabsMenu,
-                            }}
-                            styles={COMMON_TABS_SELECT_STYLES}
-                        />
-                        <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
-                            {tabSearchText && (
-                                <ClearIcon className="clear-tab-search-icon icon-dim-16" onClick={clearSearchInput} />
-                            )}
-                        </div>
-                    </MoreButtonWrapper>
-                </>
+                <div className="dynamic-tabs-container dc__border-left">
+                    <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
+                        {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
+                    </ul>
+                </div>
             )}
+            {(tabsData.dynamicTabs.length > 0 ||
+                !isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB )&& (
+                    <div className="ml-auto flexbox dc__no-shrink dc__align-self-stretch dc__border-left">
+                        {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
+                            <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
+                        )}
+
+                        {tabsData.dynamicTabs.length > 0 && (
+                            <MoreButtonWrapper
+                                tabPopupMenuRef={tabPopupMenuRef}
+                                isMenuOpen={isMenuOpen}
+                                onClose={closeMenu}
+                                toggleMenu={toggleMenu}
+                            >
+                                <div
+                                    className="more-tabs__search-icon icon-dim-16 cursor-text"
+                                    onClick={focusSearchTabInput}
+                                >
+                                    <SearchIcon className="icon-dim-16" />
+                                </div>
+                                <ReactSelect
+                                    ref={moreButtonRef}
+                                    placeholder="Search tabs"
+                                    classNamePrefix="tab-search-select"
+                                    options={tabsData.dynamicTabs}
+                                    value={selectedTab}
+                                    inputValue={tabSearchText}
+                                    onChange={onChangeTab}
+                                    onKeyDown={escHandler}
+                                    onInputChange={handleOnChangeSearchText}
+                                    tabSelectsValue={false}
+                                    backspaceRemovesValue={false}
+                                    controlShouldRenderValue={false}
+                                    hideSelectedOptions={false}
+                                    menuIsOpen
+                                    autoFocus
+                                    noOptionsMessage={noMatchingTabs}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator: null,
+                                        Option: tabsOption,
+                                        Menu: TabsMenu,
+                                    }}
+                                    styles={COMMON_TABS_SELECT_STYLES}
+                                />
+                                <div className="more-tabs__clear-tab-search icon-dim-16 cursor">
+                                    {tabSearchText && (
+                                        <ClearIcon
+                                            className="clear-tab-search-icon icon-dim-16"
+                                            onClick={clearSearchInput}
+                                        />
+                                    )}
+                                </div>
+                            </MoreButtonWrapper>
+                        )}
+                    </div>
+                )}
         </div>
     )
 }

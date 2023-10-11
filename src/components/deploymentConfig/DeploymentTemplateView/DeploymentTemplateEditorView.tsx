@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     DeploymentChartOptionType,
     DeploymentConfigContextType,
@@ -45,6 +45,7 @@ export default function DeploymentTemplateEditorView({
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+    const baseDeploymentAbortController = useRef(null)
 
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
@@ -131,6 +132,7 @@ export default function DeploymentTemplateEditorView({
 
     // fetch values for LHS (values/manifest) and save in corresponding caching stores, if not already fetched and in cache.
     useEffect(() => {
+        baseDeploymentAbortController.current = new AbortController()
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
@@ -152,6 +154,7 @@ export default function DeploymentTemplateEditorView({
                       +appId,
                       +state.selectedCompareOption.chartRefId,
                       isValues,
+                      baseDeploymentAbortController.current.signal,
                       +state.selectedCompareOption.environmentId,
                       +state.selectedCompareOption.type,
                       +state.selectedCompareOption.deploymentTemplateHistoryId,
@@ -185,9 +188,14 @@ export default function DeploymentTemplateEditorView({
                     setFetchingValues(false)
                 })
                 .catch((err) => {
-                    showError(err)
                     setFetchingValues(false)
+                    if (!baseDeploymentAbortController.current.signal.aborted) {
+                        showError(err)
+                    }
                 })
+        }
+        return () => {
+            baseDeploymentAbortController.current.abort()
         }
     }, [state.selectedCompareOption, state.chartConfigLoading])
 
