@@ -252,6 +252,7 @@ export const Details: React.FC<DetailsType> = ({
     const deploymentModalShownRef = useRef(false)
     const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
+    const appDetailsAbortRef = useRef(null)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -331,6 +332,13 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [])
 
+    useEffect(() => {
+        appDetailsAbortRef.current = new AbortController()
+        return () => {
+            appDetailsAbortRef.current.abort()
+        }
+    }, [params.envId])
+
     const handleAppDetailsCallError = (error) => {
         if (error['code'] === 404 || appDetailsRequestRef.current) {
             if (setIsAppDeleted) {
@@ -349,7 +357,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, 25000)
+        appDetailsAPI(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (!response.result.appName && !response.result.environmentName) {
                     setResourceTreeFetchTimeOut(false)
@@ -382,7 +390,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () => {
-        fetchResourceTreeInTime(params.appId, params.envId, 25000)
+        fetchResourceTreeInTime(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
                     response.errors &&
@@ -536,14 +544,10 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    if (
-        !loadingResourceTree &&
-        (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !isVirtualEnvRef.current
-    ) {
+    if (!loadingResourceTree && (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) && !isVirtualEnvRef.current) {
         return (
             <>
-                {environments?.length > 0 && (
+            {environments?.length > 0 && (
                     <div className="flex left ml-20 mt-16">
                         <EnvSelector
                             environments={environments}
@@ -552,7 +556,6 @@ export const Details: React.FC<DetailsType> = ({
                         />
                     </div>
                 )}
-
                 {isAppDeleted ? (
                     <DeletedAppComponent
                         resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
@@ -887,11 +890,10 @@ export function EnvSelector({
                         IndicatorSeparator: null,
                         Option,
                         GroupHeading: (props) => <GroupHeading {...props} hideClusterName={true} />,
-                        DropdownIndicator: disabled ? null : components.DropdownIndicator,
+                        DropdownIndicator: components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}
                     styles={envSelectorStyle}
-                    isDisabled={disabled}
                     isSearchable={true}
                     classNamePrefix="app-environment-select"
                     formatOptionLabel={formatOptionLabel}

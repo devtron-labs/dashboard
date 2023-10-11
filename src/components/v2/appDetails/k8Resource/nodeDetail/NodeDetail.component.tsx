@@ -418,7 +418,7 @@ function NodeDetailComponent({
                         },
                         namespaced: false,
                     }}
-                    getResourceListData={noop}
+                    getResourceListData={getContainersFromManifest}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
                 />
