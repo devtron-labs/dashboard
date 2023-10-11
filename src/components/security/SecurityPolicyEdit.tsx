@@ -21,6 +21,7 @@ import { ViewType } from '../../config';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { NavLink } from 'react-router-dom';
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
+import { toast } from 'react-toastify';
 
 export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean, view: string; }> {
 
@@ -77,6 +78,18 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         this.fetchVulnerabilities(this.props.level, this.props.id);
     }
 
+    handleDelete() {
+        return toast.error("You don't have permission to add CVE policy")
+    }
+
+    handleErrorResponse(error) {
+        showError(error)
+        if (error.code === 403) {
+            this.handleDelete()
+        }
+        this.setState({ view: ViewType.ERROR })
+    }
+
     private fetchVulnerabilities(level: string, id?: number): void {
         this.setState({ view: ViewType.LOADING });
         getVulnerabilities(this.props.level, this.props.id).then((response) => {
@@ -86,8 +99,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                 showWhitelistModal: false,
             })
         }).catch((error) => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR });
+            this.handleErrorResponse(error)
         })
     }
 
@@ -98,8 +110,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                 this.fetchVulnerabilities(this.props.level, this.props.id);
             }
         }).catch(error => {
-            showError(error);
-            this.setState({ view: ViewType.ERROR });
+            this.handleErrorResponse(error)
         })
     }
 
@@ -123,7 +134,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                 this.fetchVulnerabilities(this.props.level, this.props.id);
             }
         }).catch(error => {
-            showError(error);
+            this.handleErrorResponse(error)
         })
     }
 
@@ -137,8 +148,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                 this.fetchVulnerabilities(this.props.level, this.props.id);
             }
         }).catch(error => {
-            this.setState({ view: ViewType.ERROR });
-            showError(error);
+            this.handleErrorResponse(error)
         })
     }
 
