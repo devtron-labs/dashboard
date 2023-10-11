@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Switch, Route } from 'react-router-dom'
-import { Filter, FilterOption, handleUTCTime, useAsync } from '../../common'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
     stopPropagation,
     ServerErrors,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Filter, FilterOption, handleUTCTime } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
@@ -968,7 +969,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className="h-100">
+        <div>
             {dataStateType === AppListViewType.ERROR ? (
                 <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />

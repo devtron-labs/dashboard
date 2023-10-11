@@ -354,6 +354,7 @@ export interface BuildContextProps {
 
 export interface CIPipelineSidebarType {
     isJobView?: boolean
+    isJobCI?: boolean
     mandatoryPluginData?: MandatoryPluginDataType
     pluginList: PluginDetailType[]
     mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>

@@ -251,7 +251,7 @@ const StartDetails = ({
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
     return (
-        <div className={`trigger-details__start flex column left ${isJobView ? "mt-4" : ""}`}>
+        <div className={`trigger-details__start flex column left ${isJobView ? 'mt-4' : ''}`}>
             <div className="cn-9 fs-14 fw-6" data-testid="deployment-history-start-heading">
                 Start
             </div>
@@ -273,6 +273,7 @@ const StartDetails = ({
                         )}
                     </>
                 ) : (
+                    Object.keys(gitTriggers ?? {}).length > 0 &&
                     ciMaterials?.map((ciMaterial) => {
                         const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
                         return gitDetail ? (
@@ -306,12 +307,15 @@ const StartDetails = ({
                     </Link>
                 )}
             </div>
-            {isJobView && <div className="pt-4 pb-4 pr-0 pl-0">
-                <span className="fw-6 fs-14">Env</span>
-                <span className="fs-12 mb-4 ml-8">{environmentName !== "" ? environmentName : DEFAULT_ENV}</span>
-                {environmentName === "" && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
-            </div>}
-
+            {isJobView && (
+                <div className="pt-4 pb-4 pr-0 pl-0">
+                    <span className="fw-6 fs-14">Env</span>
+                    <span className="fs-12 mb-4 ml-8">{environmentName !== '' ? environmentName : DEFAULT_ENV}</span>
+                    {environmentName === '' && (
+                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

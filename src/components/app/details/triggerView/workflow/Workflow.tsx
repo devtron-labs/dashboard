@@ -26,6 +26,7 @@ export class Workflow extends Component<WorkflowProps> {
                 true,
                 node.downstreams[0].split('-')[1],
                 this.props.isJobView,
+                false,
             )
             if (this.props.fromAppGrouping) {
                 window.open(
@@ -163,6 +164,7 @@ export class Workflow extends Component<WorkflowProps> {
                     colorCode={node.colorCode}
                     isExternalCI={node.isExternalCI}
                     isLinkedCI={node.isLinkedCI}
+                    isJobCI={node.isJobCI}
                     description={node.description}
                     linkedCount={node.linkedCount}
                     inputMaterialsNew={[]}
