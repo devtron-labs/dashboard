@@ -58,7 +58,7 @@ export default function DeploymentTemplateEditorView({
         const request = {
             appId: +appId,
             chartRefId: state.selectedChartRefId,
-            getValues: false,
+            valuesAndManifestFlag: 2,
             values: state.tempFormData ? state.tempFormData : state.draftValues,
         }
 
