@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getChartReferences } from '../../services/service'
-import { useJsonYaml, importComponentFromFELibrary } from '../common'
+import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
 import { showError, useEffectAfterMount, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
@@ -65,12 +65,12 @@ export default function DeploymentConfig({
     const baseDeploymentAbortController = new AbortController()
 
     useEffect(() => {
-       const abortController = new AbortController()
+        const abortController = new AbortController()
         reloadEnvironments()
         initialise()
 
         return () => {
-           abortController.abort()
+            abortController.abort()
         }
     }, [])
 
@@ -228,8 +228,8 @@ export default function DeploymentConfig({
             _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
 
-        if(abortController && !abortController.signal.aborted){
-             abortController.abort()
+        if (abortController && !abortController.signal.aborted) {
+            abortController.abort()
         }
 
         const statesToUpdate = {}
@@ -309,7 +309,7 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled: isAppMetricsEnabled,
                 tempFormData: YAML.stringify(defaultAppOverride, { indent: 2 }),
-                data: YAML.stringify(defaultAppOverride, { indent: 2 })
+                data: YAML.stringify(defaultAppOverride, { indent: 2 }),
             }
 
             let payload = {}
@@ -340,7 +340,7 @@ export default function DeploymentConfig({
             }
         } catch (err) {
             showError(err)
-            if(baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted){
+            if (baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted) {
                 baseDeploymentAbortController.abort()
             }
         } finally {
@@ -470,6 +470,14 @@ export default function DeploymentConfig({
                 showReadme: !state.showReadme,
                 openComparison: state.showReadme && state.selectedTabIndex === 2,
             },
+        })
+    }
+
+    const handleViewVariablesClick = () => {
+        console.log('handleViewVariablesClick')
+        dispatch({
+            type: DeploymentConfigStateActionTypes.convertVariables,
+            payload: true,
         })
     }
 
@@ -603,6 +611,9 @@ export default function DeploymentConfig({
                 }`}
                 onSubmit={handleSubmit}
             >
+                <div style={{ position: 'absolute', left: '1337px', bottom: '115px' }}>
+                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} />
+                </div>
                 <DeploymentTemplateOptionsTab
                     codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                     disableVersionSelect={readOnlyPublishedMode}
@@ -669,6 +680,8 @@ export default function DeploymentConfig({
                         showReadme={state.showReadme}
                         isReadmeAvailable={!!state.readme}
                         handleReadMeClick={handleReadMeClick}
+                        convertVariables={state.convertVariables}
+                        handleViewVariablesClick={handleViewVariablesClick}
                         handleCommentClick={toggleDraftComments}
                         commentsPresent={state.latestDraft?.commentsCount > 0}
                         isDraftMode={isProtected && !!state.latestDraft}

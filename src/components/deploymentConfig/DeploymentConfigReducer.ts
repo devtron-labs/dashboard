@@ -41,6 +41,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     isDraftOverriden: false,
     unableToParseYaml: false,
     selectedCompareOption: null,
+    convertVariables: false,
 }
 
 export const deploymentConfigReducer = (
@@ -126,6 +127,8 @@ export const deploymentConfigReducer = (
             return { ...state, unableToParseYaml: action.payload }
         case DeploymentConfigStateActionTypes.selectedCompareOption:
             return { ...state, selectedCompareOption: action.payload }
+        case DeploymentConfigStateActionTypes.convertVariables:
+            return { ...state, convertVariables: action.payload }    
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

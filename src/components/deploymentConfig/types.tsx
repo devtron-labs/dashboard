@@ -73,7 +73,7 @@ export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps
     isCiPipeline: boolean
     environments: AppEnvironment[]
     isProtected: boolean
-    reloadEnvironments: ()=> void
+    reloadEnvironments: () => void
 }
 
 export interface DeploymentChartVersionType {
@@ -117,7 +117,9 @@ export interface CompareWithDropdownProps {
     charts: DeploymentChartOptionType[]
     globalChartRef?: any
     selectedOption: DeploymentChartOptionType
-    setSelectedOption: (selectedOption: DeploymentChartOptionType) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
+    setSelectedOption: (
+        selectedOption: DeploymentChartOptionType,
+    ) => void | React.Dispatch<React.SetStateAction<DeploymentChartOptionType>>
 }
 
 export interface ChartTypeVersionOptionsProps {
@@ -272,6 +274,8 @@ export interface DeploymentConfigToolbarProps {
     noReadme?: boolean
     showReadme: boolean
     handleReadMeClick: () => void
+    convertVariables: boolean
+    handleViewVariablesClick: () => void
 }
 
 export interface DeploymentConfigStateType {
@@ -304,11 +308,12 @@ export interface DeploymentConfigStateType {
     latestAppChartRef: any
     latestChartRef: any
     isOverride: boolean
+    convertVariables: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
-    draftValues: string,
+    draftValues: string
     showSaveChangsModal: boolean
     allDrafts: any[]
     latestDraft: any
@@ -358,6 +363,7 @@ export enum DeploymentConfigStateActionTypes {
     isDraftOverriden = 'isDraftOverriden',
     unableToParseYaml = 'unableToParseYaml',
     selectedCompareOption = 'selectedCompareOption',
+    convertVariables = 'convertVariables',
     multipleOptions = 'multipleOptions',
 }
 
