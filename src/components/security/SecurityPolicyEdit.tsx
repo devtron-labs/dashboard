@@ -78,17 +78,13 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         this.fetchVulnerabilities(this.props.level, this.props.id);
     }
 
-    handleDelete() {
-        return toast.error("You don't have permission to add CVE policy")
-    }
-
     handleErrorResponse(error) {
         if (error.code === 403) {
-            this.handleDelete()
+            toast.error("You don't have permission to add CVE policy")
         } else {
             showError(error)
+            this.setState({ view: ViewType.ERROR })
         }
-        this.setState({ view: ViewType.ERROR })
     }
 
     private fetchVulnerabilities(level: string, id?: number): void {
@@ -474,7 +470,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        // else if (this.state.view === ViewType.ERROR) return <Reload />;
+        else if (this.state.view === ViewType.ERROR) return <Reload />;
         else {
             let isCollapsible = this.props.level === "application";
             return <>
