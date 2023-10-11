@@ -502,7 +502,6 @@ export default function DeploymentTemplateOverride({
                         setManifestDataLHS={setManifestDataLHSOverride}
                     />
                 )}
-                {/* <FloatingVariablesSuggestions zIndex={1000} appId={appId} envId="-1" /> */}
             </div>
             {DraftComments && state.showComments && (
                 <DraftComments

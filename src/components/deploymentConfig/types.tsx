@@ -304,8 +304,6 @@ export interface DeploymentConfigToolbarProps {
     handleReadMeClick: () => void
     isValues?: boolean
     setIsValues?: (isValues: boolean) => void
-    convertVariables: boolean
-    handleViewVariablesClick: () => void
 }
 
 export interface DeploymentConfigStateType {
@@ -349,7 +347,6 @@ export interface DeploymentConfigStateType {
     manifestDataLHSOverride: string
     groupedOptionsDataOverride: Array<Object>
     loadingManifestOverride: boolean
-    convertVariables: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
@@ -405,7 +402,6 @@ export enum DeploymentConfigStateActionTypes {
     isDraftOverriden = 'isDraftOverriden',
     unableToParseYaml = 'unableToParseYaml',
     selectedCompareOption = 'selectedCompareOption',
-    convertVariables = 'convertVariables',
     multipleOptions = 'multipleOptions',
     groupedOptionsData = 'groupedOptionsData',
     loadingManifest = 'loadingManifest',
