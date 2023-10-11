@@ -49,13 +49,13 @@ export default function DeploymentTemplateOverride({
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
         reloadEnvironments()
-        setTimeout(()=>{
+        setTimeout(() => {
             baseDeploymentAbortController.current = new AbortController()
             initialise()
-        },100)
+        }, 100)
 
         return () => {
-            baseDeploymentAbortController.current.abort();
+            baseDeploymentAbortController.current.abort()
         }
     }, [envId, appId])
 
@@ -364,8 +364,8 @@ export default function DeploymentTemplateOverride({
                         true,
                     )
                     _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
-                } catch(err) {
-                    _isBasicLocked=true
+                } catch (err) {
+                    _isBasicLocked = true
                 }
             } else {
                 _isBasicLocked = isBasicValueChanged(baseTemplate, envOverrideValues)
@@ -458,6 +458,7 @@ export default function DeploymentTemplateOverride({
                         }
                     />
                 )}
+                {/* <FloatingVariablesSuggestions zIndex={1000} appId={appId} envId="-1" /> */}
             </div>
             {DraftComments && state.showComments && (
                 <DraftComments

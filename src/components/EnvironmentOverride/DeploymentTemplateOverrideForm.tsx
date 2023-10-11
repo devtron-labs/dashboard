@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary, useJsonYaml } from '../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../config'
@@ -391,6 +391,11 @@ export default function DeploymentTemplateOverrideForm({
         initialise(state.selectedChartRefId, true, false)
     }
 
+    const clusterId = useMemo(
+        () => environments.find((env) => env.environmentId === Number(envId))?.clusterId,
+        [environments, envId],
+    )
+
     const renderValuesView = () => {
         return (
             <form
@@ -399,6 +404,9 @@ export default function DeploymentTemplateOverrideForm({
                 }`}
                 onSubmit={handleSubmit}
             >
+                <div style={{ position: 'absolute', left: '1337px', bottom: '115px' }}>
+                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
+                </div>
                 <DeploymentTemplateOptionsTab
                     isEnvOverride={true}
                     disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
