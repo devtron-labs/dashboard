@@ -42,11 +42,11 @@ export default function DeploymentHistoryDiffView({
     }
 
     const editorValuesRHS = convertVariables
-        ? baseTemplateConfiguration?.resolvedTemplate
+        ? baseTemplateConfiguration?.resolvedTemplateData
         : baseTemplateConfiguration?.codeEditorValue?.value
 
     const editorValuesLHS = convertVariables
-        ? currentConfiguration?.resolvedTemplate
+        ? currentConfiguration?.resolvedTemplateData
         : currentConfiguration?.codeEditorValue?.value
 
     const renderDeploymentDiffViaCodeEditor = () => {
@@ -73,7 +73,6 @@ export default function DeploymentHistoryDiffView({
     }
 
     const handleShowVariablesClick = () => {
-        console.log('handleShowVariablesClick')
         setConvertVariables(!convertVariables)
     }
 
