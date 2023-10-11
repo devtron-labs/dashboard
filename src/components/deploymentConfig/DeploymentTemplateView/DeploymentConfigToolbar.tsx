@@ -4,7 +4,6 @@ import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-l
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variables.svg'
 import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
 import { DropdownContainer, DropdownItem } from './DeploymentTemplateView.component'
@@ -17,8 +16,6 @@ export default function DeploymentConfigToolbar({
     handleReadMeClick,
     isValues,
     setIsValues,
-    convertVariables,
-    handleViewVariablesClick,
 }: DeploymentConfigToolbarProps) {
     const [openDropdown, setOpenDropdown] = useState(false)
 
@@ -35,7 +32,6 @@ export default function DeploymentConfigToolbar({
         setIsValues(newValue)
         setOpenDropdown(false)
     }
-    console.log(convertVariables)
 
     return (
         <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
@@ -83,12 +79,11 @@ export default function DeploymentConfigToolbar({
                     </ol>
                 </div>
             )}
-            <div className="flex right pb-8 dc__gap-12">
-                {!noReadme && !showReadme && (
+            {!noReadme && !showReadme && (
+                <div className="flex right pb-8">
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
-                )}
-                <ViewVariablesIcon className="icon-dim-20 p-2 cursor " onClick={handleViewVariablesClick} />
-            </div>
+                </div>
+            )}
         </div>
     )
 }

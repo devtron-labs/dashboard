@@ -464,65 +464,6 @@ export default function DeploymentTemplateOverrideForm({
         setLoadingManifestOverride(false)
         return response.result.data
     }
-    const clusterId = useMemo(
-        () => environments.find((env) => env.environmentId === Number(envId))?.clusterId,
-        [environments, envId],
-    )
-
-    // const renderValuesView = () => {
-    //     return (
-    //         <form
-    //             className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
-    //                 state.showReadme ? 'readme-view' : ''
-    //             }`}
-    //             onSubmit={handleSubmit}
-    //         >
-    //             <div style={{ position: 'absolute', left: '1337px', bottom: '115px' }}>
-    //                 <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
-    //             </div>
-    //             <DeploymentTemplateOptionsTab
-    //                 isEnvOverride={true}
-    //                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-    //                 codeEditorValue={getCodeEditorValue(readOnlyPublishedMode)}
-    //             />
-    //             {readOnlyPublishedMode && !state.showReadme ? (
-    //                 <DeploymentTemplateReadOnlyEditorView value={getCodeEditorValue(true)} isEnvOverride={true} />
-    //             ) : (
-    //                 <DeploymentTemplateEditorView
-    //                     isEnvOverride={true}
-    //                     value={getCodeEditorValue(false)}
-    //                     defaultValue={state.data && state.openComparison ? getCodeEditorValue(true) : ''}
-    //                     editorOnChange={editorOnChange}
-    //                     environmentName={environmentName}
-    //                     readOnly={!state.duplicate || isCompareAndApprovalState || !overridden}
-    //                     globalChartRefId={state.data.globalChartRefId}
-    //                     handleOverride={handleOverride}
-    //                 />
-    //             )}
-    //             <DeploymentConfigFormCTA
-    //                 loading={state.loading || state.chartConfigLoading}
-    //                 isEnvOverride={true}
-    //                 disableButton={!state.duplicate}
-    //                 disableCheckbox={!state.duplicate}
-    //                 showAppMetricsToggle={
-    //                     state.charts &&
-    //                     state.selectedChart &&
-    //                     window._env_?.APPLICATION_METRICS_ENABLED &&
-    //                     isGrafanaModuleInstalled &&
-    //                     state.yamlMode
-    //                 }
-    //                 isAppMetricsEnabled={
-    //                     !!state.latestDraft && state.selectedTabIndex !== 1
-    //                         ? state.isAppMetricsEnabled
-    //                         : state.data.appMetrics
-    //                 }
-    //                 toggleAppMetrics={handleAppMetrics}
-    //                 isPublishedMode={readOnlyPublishedMode}
-    //                 reload={reload}
-    //             />
-    //         </form>
-    //     )
-    // }
 
     function renderEditorComponent() {
         if (readOnlyPublishedMode && !state.showReadme) {
@@ -569,9 +510,6 @@ export default function DeploymentTemplateOverrideForm({
             }`}
             onSubmit={handleSubmit}
         >
-            <div style={{ position: 'absolute', left: '1337px', bottom: '115px' }}>
-                <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
-            </div>
             <DeploymentTemplateOptionsTab
                 isEnvOverride={true}
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
