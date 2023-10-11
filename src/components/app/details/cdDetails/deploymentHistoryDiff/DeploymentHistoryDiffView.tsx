@@ -41,18 +41,26 @@ export default function DeploymentHistoryDiffView({
         }
     }
 
+    const editorValuesRHS = convertVariables
+        ? baseTemplateConfiguration?.resolvedTemplate
+        : baseTemplateConfiguration?.codeEditorValue?.value
+
+    const editorValuesLHS = convertVariables
+        ? currentConfiguration?.resolvedTemplate
+        : currentConfiguration?.codeEditorValue?.value
+
     const renderDeploymentDiffViaCodeEditor = () => {
         return (
             <CodeEditor
                 value={
                     !baseTemplateConfiguration?.codeEditorValue?.value || isDeleteDraft
                         ? ''
-                        : YAML.stringify(JSON.parse(baseTemplateConfiguration.codeEditorValue.value))
+                        : YAML.stringify(JSON.parse(editorValuesRHS))
                 }
                 defaultValue={
                     !currentConfiguration?.codeEditorValue?.value || isUnpublished
                         ? ''
-                        : YAML.stringify(JSON.parse(currentConfiguration.codeEditorValue.value))
+                        : YAML.stringify(JSON.parse(editorValuesLHS))
                 }
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}
