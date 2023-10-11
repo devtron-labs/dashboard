@@ -121,6 +121,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     true,
                     node.downstreams[0].split('-')[1],
                     this.props.isJobView,
+                    node.isJobCI
                 ),
             )
         }
@@ -286,14 +287,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         } else if (node.isExternalCI) {
             url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
         } else {
-            const currPipeline = (this.props.filteredCIPipelines ?? []).find((pipeline) => +pipeline.id === +node.id)
             url = getCIPipelineURL(
                 appId,
                 this.props.id.toString(),
                 node.branch === GIT_BRANCH_NOT_CONFIGURED,
                 node.id,
                 this.props.isJobView,
-                currPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
+                node.isJobCI,
             )
         }
         return `${this.props.match.url}/${url}`
