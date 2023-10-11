@@ -23,39 +23,40 @@ import { NavLink } from 'react-router-dom';
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils';
 import { toast } from 'react-toastify';
 
-export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean, view: string; }> {
-
+export class SecurityPolicyEdit extends Component<
+    FetchPolicyQueryParams,
+    GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean; view: string }
+> {
     private vulnerabilityMetaData: VulnerabilityUIMetaData[] = [
         {
-            className: "critical",
-            title: "Critical Vulnerabilities",
-            subTitle: "Exploitation is straightforward and usually results in system-level compromise."
+            className: 'critical',
+            title: 'Critical Vulnerabilities',
+            subTitle: 'Exploitation is straightforward and usually results in system-level compromise.',
         },
         {
-            className: "moderate",
-            title: "Moderate Vulnerabilities",
-            subTitle: "Vulnerabilities exist but are not exploitable or require extra step such as social engineering."
+            className: 'moderate',
+            title: 'Moderate Vulnerabilities',
+            subTitle: 'Vulnerabilities exist but are not exploitable or require extra step such as social engineering.',
         },
         {
-            className: "low",
-            title: "Low Vulnerabilities",
-            subTitle: "Vulnerabilities are non-exploitable but would reduce your organization's attack surface."
-
-        }
+            className: 'low',
+            title: 'Low Vulnerabilities',
+            subTitle: "Vulnerabilities are non-exploitable but would reduce your organization's attack surface.",
+        },
     ]
 
     private permissionText = {
-        "block": "Blocked always",
-        "allow": "Allowed",
-        "blockiffixed": "Blocked if fix is available"
+        block: 'Blocked always',
+        allow: 'Allowed',
+        blockiffixed: 'Blocked if fix is available',
     }
 
-    private inheritAction = { label: "Inherit", value: VulnerabilityAction.inherit }
+    private inheritAction = { label: 'Inherit', value: VulnerabilityAction.inherit }
 
     private actions = [
-        { label: "Block always", value: VulnerabilityAction.block },
-        { label: "Block if fix is available", value: VulnerabilityAction.blockiffixed },
-        { label: "Allow", value: VulnerabilityAction.allow },
+        { label: 'Block always', value: VulnerabilityAction.block },
+        { label: 'Block if fix is available', value: VulnerabilityAction.blockiffixed },
+        { label: 'Allow', value: VulnerabilityAction.allow },
     ]
 
     constructor(props: FetchPolicyQueryParams) {
@@ -65,81 +66,83 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             showWhitelistModal: false,
             result: {
                 level: this.props.level,
-                policies: []
-            }
+                policies: [],
+            },
         }
-        this.toggleAddCveModal = this.toggleAddCveModal.bind(this);
-        this.updateSeverity = this.updateSeverity.bind(this);
-        this.saveCVE = this.saveCVE.bind(this);
-        this.updateCVE = this.updateCVE.bind(this);
+        this.toggleAddCveModal = this.toggleAddCveModal.bind(this)
+        this.updateSeverity = this.updateSeverity.bind(this)
+        this.saveCVE = this.saveCVE.bind(this)
+        this.updateCVE = this.updateCVE.bind(this)
     }
 
     componentDidMount() {
-        this.fetchVulnerabilities(this.props.level, this.props.id);
+        this.fetchVulnerabilities(this.props.level, this.props.id)
     }
-    
+
     handleDelete() {
         return toast.error("You don't have permission to add CVE policy")
     }
 
+    handleErrorResponse(error) {
+        showError(error)
+        if (error.code === 403) {
+            this.handleDelete()
+        }
+        this.setState({ view: ViewType.ERROR })
+    }
+
     private fetchVulnerabilities(level: string, id?: number): void {
-        this.setState({ view: ViewType.LOADING });
-        getVulnerabilities(this.props.level, this.props.id).then((response) => {
-            this.setState({
-                view: ViewType.FORM,
-                result: response.result,
-                showWhitelistModal: false,
+        this.setState({ view: ViewType.LOADING })
+        getVulnerabilities(this.props.level, this.props.id)
+            .then((response) => {
+                this.setState({
+                    view: ViewType.FORM,
+                    result: response.result,
+                    showWhitelistModal: false,
+                })
             })
-        }).catch((error) => {
-            showError(error);
-            if(error.code === 403) {
-                this.handleDelete();
-            }
-            this.setState({ view: ViewType.ERROR });
-        })
+            .catch((error) => {
+                this.handleErrorResponse(error)
+            })
     }
 
     saveCVE(cveId: string, action, envId?: number): void {
-        let payload = this.createCVEPayload(this.props.level, cveId, action, envId);
-        savePolicy(payload).then((response) => {
-            if (response.result) {
-                this.fetchVulnerabilities(this.props.level, this.props.id);
-            }
-        }).catch(error => {
-            showError(error);
-            if(error.code === 403) {
-                this.handleDelete();
-            }
-            this.setState({ view: ViewType.ERROR });
-        })
+        let payload = this.createCVEPayload(this.props.level, cveId, action, envId)
+        savePolicy(payload)
+            .then((response) => {
+                if (response.result) {
+                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                }
+            })
+            .catch((error) => {
+                this.handleErrorResponse(error)
+            })
     }
 
     updateCVE(action: string, cve: CvePolicy, envId?: number): void {
-        let payload = {};
-        let promise;
-        if (cve.policy.inherited) { //create
-            payload = this.createCVEPayload(this.props.level, cve.name, action, envId);
+        let payload = {}
+        let promise
+        if (cve.policy.inherited) {
+            //create
+            payload = this.createCVEPayload(this.props.level, cve.name, action, envId)
             promise = savePolicy(payload)
-        }
-        else {
+        } else {
             payload = {
                 id: cve.id,
-                action: action.toLowerCase()
+                action: action.toLowerCase(),
             }
-            promise = updatePolicy(payload);
+            promise = updatePolicy(payload)
         }
 
-        promise.then((response) => {
-            if (response.result) {
-                this.fetchVulnerabilities(this.props.level, this.props.id);
-            }
-        }).catch(error => {
-            showError(error);
-            if(error.code === 403) {
-                this.handleDelete();
-            }
-            this.setState({ view: ViewType.ERROR });
-        })
+        promise
+            .then((response) => {
+                if (response.result) {
+                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                }
+            })
+            .catch((error) => {
+                this.handleErrorResponse(error)
+            })
     }
 
     deleteCve(id: number): void {
@@ -147,17 +150,15 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             id,
             action: VulnerabilityAction.inherit,
         }
-        updatePolicy(payload).then((response) => {
-            if (response.result) {
-                this.fetchVulnerabilities(this.props.level, this.props.id);
-            }
-        }).catch(error => {
-            this.setState({ view: ViewType.ERROR });
-            if(error.code === 403) {
-                this.handleDelete();
-            }
-            showError(error);
-        })
+        updatePolicy(payload)
+            .then((response) => {
+                if (response.result) {
+                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                }
+            })
+            .catch((error) => {
+                this.handleErrorResponse(error)
+            })
     }
 
     updateSeverity(action: VulnerabilityAction, policy: SeverityPolicy, envId?: number): void {
@@ -169,39 +170,43 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             return
         }
 
-        let payload = {};
-        let promise;
+        let payload = {}
+        let promise
 
-        if (actionLowerCase === VulnerabilityAction.inherit) { //update
+        if (actionLowerCase === VulnerabilityAction.inherit) {
+            //update
             payload = {
                 id: policy.id,
-                action: actionLowerCase
+                action: actionLowerCase,
             }
-            promise = updatePolicy(payload);
-        } else if (policy.policy.inherited) { //Create if inherited from higher
-            payload = this.createSeverityPayload(this.props.level, policy.severity, action, envId);
-            promise = savePolicy(payload);
+            promise = updatePolicy(payload)
+        } else if (policy.policy.inherited) {
+            //Create if inherited from higher
+            payload = this.createSeverityPayload(this.props.level, policy.severity, action, envId)
+            promise = savePolicy(payload)
         } else {
             payload = {
                 id: policy.id,
-                action: actionLowerCase
+                action: actionLowerCase,
             }
-            promise = updatePolicy(payload);
+            promise = updatePolicy(payload)
         }
-        promise.then((response) => {
-            if (response.result) {
-                this.fetchVulnerabilities(this.props.level, this.props.id);
-            }
-        }).catch(error => {
-            showError(error);
-        })
+        promise
+            .then((response) => {
+                if (response.result) {
+                    this.fetchVulnerabilities(this.props.level, this.props.id)
+                }
+            })
+            .catch((error) => {
+                showError(error)
+            })
     }
 
     toggleCollapse(cardIndex: number): void {
         if (this.state.result.policies[cardIndex]) {
-            let result = this.state.result;
-            result.policies[cardIndex].isCollapsed = !result.policies[cardIndex].isCollapsed;
-            this.setState({ result: result });
+            let result = this.state.result
+            result.policies[cardIndex].isCollapsed = !result.policies[cardIndex].isCollapsed
+            this.setState({ result: result })
         }
     }
 
@@ -209,75 +214,97 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         this.setState({ showWhitelistModal: !this.state.showWhitelistModal })
     }
 
-    createCVEPayload(level: ResourceLevel, cveId: string, action: string, envId?: number): { action, cveId: string, appId?: number, envId?: number, clusterId?: number } {
-        cveId = cveId.trim();
+    createCVEPayload(
+        level: ResourceLevel,
+        cveId: string,
+        action: string,
+        envId?: number,
+    ): { action; cveId: string; appId?: number; envId?: number; clusterId?: number } {
+        cveId = cveId.trim()
         switch (level) {
-            case 'global': return {
-                action: action.toLowerCase(),
-                cveId: cveId.toUpperCase(),
-            }
-            case 'cluster': return {
-                clusterId: this.props.id,
-                action: action.toLowerCase(),
-                cveId: cveId.toUpperCase(),
-            }
-            case 'environment': return {
-                envId: this.props.id,
-                action: action.toLowerCase(),
-                cveId: cveId.toUpperCase(),
-            }
-            case 'application': return {
-                appId: this.props.id,
-                envId: envId,
-                action: action.toLowerCase(),
-                cveId: cveId.toUpperCase(),
-            }
+            case 'global':
+                return {
+                    action: action.toLowerCase(),
+                    cveId: cveId.toUpperCase(),
+                }
+            case 'cluster':
+                return {
+                    clusterId: this.props.id,
+                    action: action.toLowerCase(),
+                    cveId: cveId.toUpperCase(),
+                }
+            case 'environment':
+                return {
+                    envId: this.props.id,
+                    action: action.toLowerCase(),
+                    cveId: cveId.toUpperCase(),
+                }
+            case 'application':
+                return {
+                    appId: this.props.id,
+                    envId: envId,
+                    action: action.toLowerCase(),
+                    cveId: cveId.toUpperCase(),
+                }
         }
     }
 
-    createSeverityPayload(level: ResourceLevel, severity: Severity, action: VulnerabilityAction, envId?: number): { action, severity: Severity, appId?: number, envId?: number, clusterId?: number } {
+    createSeverityPayload(
+        level: ResourceLevel,
+        severity: Severity,
+        action: VulnerabilityAction,
+        envId?: number,
+    ): { action; severity: Severity; appId?: number; envId?: number; clusterId?: number } {
         switch (level) {
-            case 'global': return {
-                action: action.toLowerCase(),
-                severity,
-            }
-            case 'cluster': return {
-                clusterId: this.props.id,
-                action: action.toLowerCase(),
-                severity,
-            }
-            case 'environment': return {
-                envId: this.props.id,
-                action: action.toLowerCase(),
-                severity
-            }
-            case 'application': return {
-                appId: this.props.id,
-                envId: envId,
-                action: action.toLowerCase(),
-                severity,
-            }
+            case 'global':
+                return {
+                    action: action.toLowerCase(),
+                    severity,
+                }
+            case 'cluster':
+                return {
+                    clusterId: this.props.id,
+                    action: action.toLowerCase(),
+                    severity,
+                }
+            case 'environment':
+                return {
+                    envId: this.props.id,
+                    action: action.toLowerCase(),
+                    severity,
+                }
+            case 'application':
+                return {
+                    appId: this.props.id,
+                    envId: envId,
+                    action: action.toLowerCase(),
+                    severity,
+                }
         }
     }
 
     private renderVulnerabilitiesCard(v: VulnerabilityPolicy, severities: SeverityPolicy[]) {
-        let critical = severities.filter(s => s.severity === "critical")[0]
-        let moderate = severities.filter(s => s.severity === "moderate")[0]
-        let low = severities.filter(s => s.severity === "low")[0]
-        return <>
-            {this.renderVulnerability(this.vulnerabilityMetaData[0], v, critical)}
-            {this.renderVulnerability(this.vulnerabilityMetaData[1], v, moderate)}
-            {this.renderVulnerability(this.vulnerabilityMetaData[2], v, low)}
-        </ >
+        let critical = severities.filter((s) => s.severity === 'critical')[0]
+        let moderate = severities.filter((s) => s.severity === 'moderate')[0]
+        let low = severities.filter((s) => s.severity === 'low')[0]
+        return (
+            <>
+                {this.renderVulnerability(this.vulnerabilityMetaData[0], v, critical)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, moderate)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[2], v, low)}
+            </>
+        )
     }
 
     private renderVulnerability(props: VulnerabilityUIMetaData, v: VulnerabilityPolicy, severity: SeverityPolicy) {
-        let actions = this.actions;
-        if (this.props.level !== "global") {
-            actions = this.actions.concat(this.inheritAction);
+        let actions = this.actions
+        if (this.props.level !== 'global') {
+            actions = this.actions.concat(this.inheritAction)
         }
-        const selectedValue =  severity.policy.inherited && !severity.policy.isOverriden
-        ? this.inheritAction : this.actions.find(data=> data.value===severity.policy.action)
+        const selectedValue =
+            severity.policy.inherited && !severity.policy.isOverriden
+                ? this.inheritAction
+                : this.actions.find((data) => data.value === severity.policy.action)
         let permission = this.permissionText[severity.policy.action]
         return (
             <div key={severity.id} className="vulnerability">
@@ -367,8 +394,8 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
                         </thead>
                         <tbody>
                             {cves.map((cve) => {
-                                const selectedValue = this.actions.find(data=> data.value===cve.policy.action)
-                                    
+                                const selectedValue = this.actions.find((data) => data.value === cve.policy.action)
+
                                 //inherited is created at parent level
                                 return (
                                     <tr key={cve.name} className="security-policy__table-row">
@@ -436,76 +463,111 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
     }
 
     renderEmptyPolicyList() {
-        return <div className="br-4 en-1 bw-1 w-100 cn-5 flex mt-10" style={{ height: "100px", backgroundColor: "#f7fafc" }}>
-            No specific CVEs blocked or allowed.
-        </div>
+        return (
+            <div
+                className="br-4 en-1 bw-1 w-100 cn-5 flex mt-10"
+                style={{ height: '100px', backgroundColor: '#f7fafc' }}
+            >
+                No specific CVEs blocked or allowed.
+            </div>
+        )
     }
 
     renderHeader() {
         switch (this.props.level) {
-            case 'global': return (
-                <div className="ml-24 mr-24 mt-20 mb-20">
-                    <h1 className="form__title" data-testid="global-security-policy">
-                        Global Security Policies
-                    </h1>
-                    <p className="form__subtitle" data-testid="global-security-policy-subtitle">
-                        Security policies defined at global level will be applicable to all deployments unless overriden
-                        for specific clusters or environments.
-                    </p>
-                </div>
-            )
-            case 'cluster': return <div className="ml-24 mr-24 mt-20 mb-20">
-                <h1 className="form__title">
-                    <NavLink to={`/security/policies/clusters`}>Clusters</NavLink>
-                    <span className="ml-5 mr-5">/</span>
-                    {this.state.result?.policies[0].name}
-                </h1>
-            </div>
-            case 'environment': return <div className="ml-24 mr-24 mt-20 mb-20">
-                <h1 className="form__title">
-                    <NavLink to={`/security/policies/environments`}>Environments</NavLink>
-                    <span className="ml-5 mr-5">/</span>
-                    {this.state.result?.policies[0].name}
-                </h1>
-            </div>
-            case 'application': let i = this.state.result?.policies[0]?.name?.search('/');
-                return <div className="ml-24 mr-24 mt-20 mb-20">
-                    <h1 className="form__title">
-                        <NavLink to={`/security/policies/apps`}>Applications</NavLink>
-                        <span className="ml-5 mr-5">/</span>
-                        {this.state.result?.policies[0]?.name.substring(0, i)}
-                    </h1>
-                </div>
+            case 'global':
+                return (
+                    <div className="ml-24 mr-24 mt-20 mb-20">
+                        <h1 className="form__title" data-testid="global-security-policy">
+                            Global Security Policies
+                        </h1>
+                        <p className="form__subtitle" data-testid="global-security-policy-subtitle">
+                            Security policies defined at global level will be applicable to all deployments unless
+                            overriden for specific clusters or environments.
+                        </p>
+                    </div>
+                )
+            case 'cluster':
+                return (
+                    <div className="ml-24 mr-24 mt-20 mb-20">
+                        <h1 className="form__title">
+                            <NavLink to={`/security/policies/clusters`}>Clusters</NavLink>
+                            <span className="ml-5 mr-5">/</span>
+                            {this.state.result?.policies[0].name}
+                        </h1>
+                    </div>
+                )
+            case 'environment':
+                return (
+                    <div className="ml-24 mr-24 mt-20 mb-20">
+                        <h1 className="form__title">
+                            <NavLink to={`/security/policies/environments`}>Environments</NavLink>
+                            <span className="ml-5 mr-5">/</span>
+                            {this.state.result?.policies[0].name}
+                        </h1>
+                    </div>
+                )
+            case 'application':
+                let i = this.state.result?.policies[0]?.name?.search('/')
+                return (
+                    <div className="ml-24 mr-24 mt-20 mb-20">
+                        <h1 className="form__title">
+                            <NavLink to={`/security/policies/apps`}>Applications</NavLink>
+                            <span className="ml-5 mr-5">/</span>
+                            {this.state.result?.policies[0]?.name.substring(0, i)}
+                        </h1>
+                    </div>
+                )
         }
     }
 
     render() {
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR && this.state.error.code !== 403) return <Reload />;
+        else if (this.state.view === ViewType.ERROR && this.state.error.code !== 403) return <Reload />
         else {
-            let isCollapsible = this.props.level === "application";
-            return <>
-                {this.renderHeader()}
-                {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
-                    const showCardContent = isCollapsible ? !v.isCollapsed : true;
-                    let envNameIndex = v?.name?.search('/');
-                    return <div key={v.name} className="security-policy__card mb-20" >
-                        <div className="flexbox flex-justify">
-                            {isCollapsible ? <p className="security-polic__app-env-name">env{v?.name.substr(envNameIndex)}</p> : null}
-                            {isCollapsible ? <Arrow className="icon-dim-24 cursor fwn-9 rotate"
-                                style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
-                                onClick={() => { this.toggleCollapse(cardIndex); }} /> : null}
-                        </div>
-                        {showCardContent ? <>
-                            {isCollapsible ? <div className="mb-20"></div> : null}
-                            {this.renderVulnerabilitiesCard(v, v.severities)}
-                            {this.renderPolicyListHeader()}
-                            {v.cves.length ? this.renderPolicyList(v.cves, v.envId) : this.renderEmptyPolicyList()}
-                        </> : null}
-                    </div>
-                })}
-                {this.state.showWhitelistModal ? <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} /> : null}
-            </>
+            let isCollapsible = this.props.level === 'application'
+            return (
+                <>
+                    {this.renderHeader()}
+                    {this.state.result?.policies.map((v: VulnerabilityPolicy, cardIndex) => {
+                        const showCardContent = isCollapsible ? !v.isCollapsed : true
+                        let envNameIndex = v?.name?.search('/')
+                        return (
+                            <div key={v.name} className="security-policy__card mb-20">
+                                <div className="flexbox flex-justify">
+                                    {isCollapsible ? (
+                                        <p className="security-polic__app-env-name">
+                                            env{v?.name.substr(envNameIndex)}
+                                        </p>
+                                    ) : null}
+                                    {isCollapsible ? (
+                                        <Arrow
+                                            className="icon-dim-24 cursor fwn-9 rotate"
+                                            style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
+                                            onClick={() => {
+                                                this.toggleCollapse(cardIndex)
+                                            }}
+                                        />
+                                    ) : null}
+                                </div>
+                                {showCardContent ? (
+                                    <>
+                                        {isCollapsible ? <div className="mb-20"></div> : null}
+                                        {this.renderVulnerabilitiesCard(v, v.severities)}
+                                        {this.renderPolicyListHeader()}
+                                        {v.cves.length
+                                            ? this.renderPolicyList(v.cves, v.envId)
+                                            : this.renderEmptyPolicyList()}
+                                    </>
+                                ) : null}
+                            </div>
+                        )
+                    })}
+                    {this.state.showWhitelistModal ? (
+                        <AddCveModal saveCVE={this.saveCVE} close={this.toggleAddCveModal} />
+                    ) : null}
+                </>
+            )
         }
     }
 }
