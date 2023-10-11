@@ -9,8 +9,9 @@ import {
     getOptions,
 } from './service'
 import { getChartReferences } from '../../services/service'
-import { useJsonYaml, importComponentFromFELibrary } from '../common'
 import { showError, useEffectAfterMount, useAsync, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
+
 import {
     DeploymentConfigContextType,
     DeploymentConfigProps,
@@ -541,6 +542,14 @@ export default function DeploymentConfig({
         })
     }
 
+    const handleViewVariablesClick = () => {
+        console.log('handleViewVariablesClick')
+        dispatch({
+            type: DeploymentConfigStateActionTypes.convertVariables,
+            payload: true,
+        })
+    }
+
     const handleComparisonClick = () => {
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
@@ -746,6 +755,9 @@ export default function DeploymentConfig({
             }`}
             onSubmit={handleSubmit}
         >
+            <div style={{ position: 'absolute', left: '1337px', bottom: '115px' }}>
+                <FloatingVariablesSuggestions zIndex={1004} appId={appId} />
+            </div>
             <DeploymentTemplateOptionsTab
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
@@ -801,6 +813,8 @@ export default function DeploymentConfig({
                         showReadme={state.showReadme}
                         isReadmeAvailable={!!state.readme}
                         handleReadMeClick={handleReadMeClick}
+                        convertVariables={state.convertVariables}
+                        handleViewVariablesClick={handleViewVariablesClick}
                         handleCommentClick={toggleDraftComments}
                         commentsPresent={state.latestDraft?.commentsCount > 0}
                         isDraftMode={isProtected && !!state.latestDraft}
