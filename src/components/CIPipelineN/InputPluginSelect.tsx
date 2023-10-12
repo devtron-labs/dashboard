@@ -17,6 +17,7 @@ export const InputPluginSelection = ({
     const [selectedValue, setSelectedValue] = useState('')
     const [highlightedIndex, setHighlightedIndex] = useState(-1)
     const [filteredArray, setFilteredArray] = useState([])
+    const variableMap = new Map()
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -35,10 +36,19 @@ export const InputPluginSelection = ({
 
     const handleInputChange = (event): void => {
         setSelectedValue(event.target.value)
-        setVariableData({
-            label: event.target.value,
-            value: event.target.value,
-        })
+        if(variableMap.has(event.target.value)) {
+            const updatedTagData = {
+                ...variableMap.get(event.target.value), 
+                label: event.target.value,
+                value: event.target.value
+            };
+            setVariableData(updatedTagData)
+        } else {
+            setVariableData({
+                label: event.target.value,
+                value: event.target.value,
+            })
+        }
     }
 
     const handleOnKeyDown = (e) => {
@@ -72,7 +82,6 @@ export const InputPluginSelection = ({
     const onSelectValue = (e, tag): void => {
         let _tagData = variableData
         const updatedTagData = {
-            ..._tagData, 
             ...tag, 
             label: e.currentTarget.dataset.key,
             value: e.currentTarget.dataset.key
@@ -99,28 +108,34 @@ export const InputPluginSelection = ({
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
-            setVariableData(_tagData)
+            if(variableMap.has(_tagData.value)) {
+                const updatedTagData = {
+                    ...variableMap.get(_tagData.value), 
+                    label: variableData.label,
+                    value: variableData.value
+                };
+                setVariableData(updatedTagData)
+            } else {
+                setVariableData(_tagData)
+            }
         }
     }
 
     const renderOutputOptions = (tag: OptionsListType, index: number): JSX.Element => {
         const isHighlighted = index === highlightedIndex
-        const handleOnSelectValue = (e) => {
-            onSelectValue(e, tag)
-        }
         return (
             <div
                 key={index}
-                data-key={tag?.label || ""}
+                data-key={tag?.label || ''}
                 className={
                     isHighlighted
                         ? 'dc__bg-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8'
                         : 'dc__hover-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8 cursor'
                 }
-                onClick={handleOnSelectValue}
+                onClick={(e) => onSelectValue(e, tag)}
                 data-testid={`tag-label-value-${index}`}
             >
-                {tag?.label || ""}
+                {tag?.label || ''}
             </div>
         )
     }
@@ -129,6 +144,9 @@ export const InputPluginSelection = ({
         return (
             <>
                 {filteredArray.map((_tag, idx) => {
+                    if(!variableMap.has(_tag.value)) {
+                        variableMap.set(_tag.value, _tag)
+                    }
                     return (
                         <div>
                             {_tag.description ? (
