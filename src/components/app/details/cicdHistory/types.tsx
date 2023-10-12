@@ -282,4 +282,6 @@ export const PROGRESSING_STATUS = {
     [TERMINAL_STATUS_MAP.RUNNING]: 'running',
     [TERMINAL_STATUS_MAP.PROGRESSING]: 'progressing',
     [TERMINAL_STATUS_MAP.STARTING]: 'starting',
+    [TERMINAL_STATUS_MAP.INITIATING]: 'initiating',
+    [TERMINAL_STATUS_MAP.QUEUED]: 'queued',
 }

@@ -671,6 +671,8 @@ button.anchor {
         color: var(--G500);
     }
 
+    &.f-starting,
+    &.f-initiating,
     &.f-suspended,
     &.f-switchedtoactiveservice,
     &.f-containercreating,
@@ -1085,6 +1087,7 @@ button.anchor {
     width: 24px;
     z-index: 2;
 
+    &.queued,
     &.pending {
         background: url('../assets/icons/ic-clock.svg'), $background;
         background-size: contain, contain;
@@ -1146,6 +1149,7 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.initiating,
     &.progressing,
     &.running,
     &.request_accepted,

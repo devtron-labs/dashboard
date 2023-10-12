@@ -32,6 +32,8 @@
     color: var(--green);
 }
 
+.f-starting,
+.f-initiating,
 .f-suspended,
 .f-switchedtoactiveservice {
     color: var(--orange);
@@ -64,6 +66,7 @@
     color: var(--yellow);
 }
 
+.f-queued,
 .f-missing,
 .f-unknown {
     color: var(--N700);
