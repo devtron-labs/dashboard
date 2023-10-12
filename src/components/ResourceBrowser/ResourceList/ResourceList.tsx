@@ -4,7 +4,6 @@ import {
     convertToOptionsList,
     createGroupSelectList,
     filterImageList,
-    handleUTCTime,
     processK8SObjects,
     sortObjectArrayAlphabetically,
 } from '../../common'
@@ -24,7 +23,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
-import { OptionType } from '../../app/types'
+import { Nodes, OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
     EVENT_LIST,
@@ -42,7 +41,6 @@ import { CreateResource } from './CreateResource'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
-import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import searchWorker from '../../../config/searchWorker'
@@ -50,13 +48,13 @@ import WebWorker from '../../app/WebWorker'
 import { ShortcutProvider } from 'react-keybind'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
-    checkIfDataIsStale,
     getEventObjectTypeGVK,
     getGroupedK8sObjectMap,
     getK8SObjectMapAfterGroupHeadingClick,
     getParentAndChildNodes,
     getUpdatedNodeSelectionData,
     getUpdatedResourceSelectionData,
+    removeDefaultForStorageClass,
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
@@ -71,6 +69,7 @@ import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createTaintsList } from '../../cluster/cluster.util'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
+
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -278,7 +277,7 @@ export default function ResourceList() {
                         _errorList.push({
                             errorText: `${_nodeError} on ${_errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
                                 }`,
-                            errorType: ERROR_TYPE.OTHER,
+                            errorType: _nodeError,
                             filterText: result.nodeErrors[_nodeError],
                         })
                     }
@@ -307,6 +306,9 @@ export default function ResourceList() {
                 dynamicTitle: selectedResource.gvk.Kind
             }]
             updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
+        }
+        return (): void => {
+            resourceListAbortController.abort()
         }
     }, [selectedCluster, selectedNamespace, selectedResource])
 
@@ -338,40 +340,19 @@ export default function ResourceList() {
             getResourceListData()
             setSearchText('')
             setSearchApplied(false)
-
-            return (): void => {
-                resourceListAbortController.abort()
-            }
         } else if (isNodes) {
             setResourceListLoader(false)
+            setLastDataSync(!lastDataSync)
         }
     }, [selectedResource])
 
     useEffect(() => {
         if (!loader && clusterId && selectedResource?.namespaced && !isOverview && !isNodes) {
             getResourceListData(true)
-
-            return (): void => {
-                resourceListAbortController.abort()
-            }
         }
     }, [selectedNamespace])
 
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        const _staleDataCheckTime = moment()
-        isStaleDataRef.current = false
-
-        setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-        const interval = setInterval(() => {
-            checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
-            setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-        }, 1000)
-
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
+   
 
     const getDetailsClusterList = async () => {
         setTerminalLoader(true)
@@ -658,6 +639,9 @@ export default function ResourceList() {
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
             }
+            if (selectedResource?.gvk.Kind === Nodes.StorageClass) {
+                result.data = removeDefaultForStorageClass(result.data)
+            }
             setResourceList(result)
 
             if (retainSearched) {
@@ -836,6 +820,7 @@ export default function ResourceList() {
                     clusterErrorList={clusterErrorList}
                     clusterErrorTitle={clusterErrorTitle}
                     errorStatusCode={errorStatusCode}
+                    setSelectedResource={setSelectedResource}
                 />
             )
         } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
@@ -890,6 +875,7 @@ export default function ResourceList() {
                     addTab={addTab}
                     updateNodeSelectionData={updateNodeSelectionData}
                     k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
+                    lastDataSync={lastDataSync}
                 />
             )
         }
@@ -1028,7 +1014,7 @@ export default function ResourceList() {
                     }}
                 >
                     <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal}/>
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} stopTabByIdentifier={stopTabByIdentifier} enableShortCut={!showCreateResourceModal} refreshData={refreshData} lastDataSync={lastDataSync} loader={loader||rawGVKLoader||clusterLoader||resourceListLoader} isOverview={isOverview} isStaleDataRef={isStaleDataRef} setLastDataSyncTimeString={setLastDataSyncTimeString}/>
                     </div>
                 </div>
                 {renderResourceBrowser()}

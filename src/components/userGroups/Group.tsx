@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { deepEqual } from '../common';
+import React, { useState, useEffect, useContext, useRef } from 'react'
+import { deepEqual } from '../common'
 import { showError, Progressing, DeleteDialog, ResizableTextarea } from '@devtron-labs/devtron-fe-common-lib'
-import { saveGroup, deleteGroup } from './userGroup.service';
+import { saveGroup, deleteGroup } from './userGroup.service'
 
 import {
     DirectPermissionsRoleFilter,
@@ -9,14 +9,14 @@ import {
     EntityTypes,
     ActionTypes,
     CreateGroup,
-} from './userGroups.types';
-import './UserGroup.scss';
-import { toast } from 'react-toastify';
-import AppPermissions from './AppPermissions';
-import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
-import { mainContext } from '../common/navigation/NavigationRoutes';
+} from './userGroups.types'
+import './UserGroup.scss'
+import { toast } from 'react-toastify'
+import AppPermissions from './AppPermissions'
+import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
-import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
+import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils'
 
 export default function GroupForm({
     id = null,
@@ -28,72 +28,72 @@ export default function GroupForm({
     cancelCallback,
 }) {
     // id null is for create
-    const { serverMode } = useContext(mainContext);
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([]);
+    const { serverMode } = useContext(mainContext)
+    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
     const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
         entity: EntityTypes.CHART_GROUP,
         action: ActionTypes.VIEW,
         entityName: [],
-    });
-    const [submitting, setSubmitting] = useState(false);
-    const [k8sPermission, setK8sPermission] = useState<any[]>([]);
-    const [name, setName] = useState({ value: '', error: '' });
-    const [description, setDescription] = useState('');
-    const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false);
+    })
+    const [submitting, setSubmitting] = useState(false)
+    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+    const [name, setName] = useState({ value: '', error: '' })
+    const [description, setDescription] = useState('')
+    const [deleteConfirmationModal, setDeleteConfirmationModal] = useState(false)
     const currentK8sPermissionRef = useRef<any[]>([])
 
     function isFormComplete(): boolean {
-        let isComplete: boolean = true;
+        let isComplete: boolean = true
         const tempPermissions = directPermission.reduce((agg, curr) => {
             if (curr.team && curr.entityName.length === 0) {
-                isComplete = false;
-                curr.entityNameError = 'Applications are mandatory';
+                isComplete = false
+                curr.entityNameError = 'Applications are mandatory'
             }
             if (curr.team && curr.environment.length === 0) {
-                isComplete = false;
-                curr.environmentError = 'Environments are mandatory';
+                isComplete = false
+                curr.environmentError = 'Environments are mandatory'
             }
-            agg.push(curr);
-            return agg;
-        }, []);
+            agg.push(curr)
+            return agg
+        }, [])
 
         if (!isComplete) {
-            setDirectPermission(tempPermissions);
+            setDirectPermission(tempPermissions)
         }
 
-        return isComplete;
+        return isComplete
     }
 
     function getSelectedEnvironments(permission) {
-      if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
-          return permission.environment.find((env) => env.value === '*')
-              ? ''
-              : permission.environment.map((env) => env.value).join(',');
-      } else {
-          let allFutureCluster = {};
-          let envList = '';
-          permission.environment.forEach((element) => {
-              if (element.clusterName === '' && element.value.startsWith('#')) {
-                  const clusterName = element.value.substring(1);
-                  allFutureCluster[clusterName] = true;
-                  envList += (envList !== '' ? ',' : '') + clusterName + '__*';
-              } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
-                  envList += (envList !== '' ? ',' : '') + element.value;
-              }
-          });
-          return envList;
-      }
-  }
+        if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+            return permission.environment.find((env) => env.value === '*')
+                ? ''
+                : permission.environment.map((env) => env.value).join(',')
+        } else {
+            let allFutureCluster = {}
+            let envList = ''
+            permission.environment.forEach((element) => {
+                if (element.clusterName === '' && element.value.startsWith('#')) {
+                    const clusterName = element.value.substring(1)
+                    allFutureCluster[clusterName] = true
+                    envList += (envList !== '' ? ',' : '') + clusterName + '__*'
+                } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+                    envList += (envList !== '' ? ',' : '') + element.value
+                }
+            })
+            return envList
+        }
+    }
 
     async function handleSubmit(e) {
         if (!name.value) {
-            setName((name) => ({ ...name, error: 'Group name is mandatory' }));
-            return;
+            setName((name) => ({ ...name, error: 'Group name is mandatory' }))
+            return
         }
         if (!isFormComplete()) {
-            return;
+            return
         }
-        setSubmitting(true);
+        setSubmitting(true)
         const payload: CreateGroup = {
             id: id || 0,
             name: name.value,
@@ -106,72 +106,74 @@ export default function GroupForm({
                     )
                     .map((permission) => ({
                         ...permission,
-                        action: permission.action.value,
+                        action: permission.action.configApprover
+                            ? `${permission.action.value},configApprover`
+                            : permission.action.value,
                         team: permission.team.value,
                         environment: getSelectedEnvironments(permission),
                         entityName: permission.entityName.find((entity) => entity.value === '*')
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
                     })),
-                    ...k8sPermission.map((permission) => ({
-                        ...permission,
-                        entity: EntityTypes.CLUSTER,
-                        action: permission.action.value,
-                        cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value,
-                        kind: permission.kind.value === '*' ? '' : permission.kind.label,
-                        namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
-                        resource: permission.resource.find((entity) => entity.value === '*')
+                ...k8sPermission.map((permission) => ({
+                    ...permission,
+                    entity: EntityTypes.CLUSTER,
+                    action: permission.action.value,
+                    cluster: permission.cluster.label,
+                    group: permission.group.value === '*' ? '' : permission.group.value,
+                    kind: permission.kind.value === '*' ? '' : permission.kind.label,
+                    namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
+                    resource: permission.resource.find((entity) => entity.value === '*')
                         ? ''
-                        : permission.resource.map((entity) => entity.value).join(',')
-                    }))
+                        : permission.resource.map((entity) => entity.value).join(','),
+                })),
             ],
-        };
+        }
         if (serverMode !== SERVER_MODE.EA_ONLY) {
             payload.roleFilters.push({
                 ...chartPermission,
                 team: '',
                 environment: '',
                 entityName: chartPermission.entityName.map((entity) => entity.value).join(','),
-            });
+            })
         }
 
         try {
-            const { result } = await saveGroup(payload);
+            const { result } = await saveGroup(payload)
             if (id) {
                 currentK8sPermissionRef.current = [...k8sPermission].map(excludeKeyAndClusterValue)
-                updateCallback(index, result);
-                toast.success('Group updated');
+                updateCallback(index, result)
+                toast.success('Group updated')
             } else {
-                createCallback(result);
-                toast.success('Group createed');
+                createCallback(result)
+                toast.success('Group createed')
             }
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setSubmitting(false);
+            setSubmitting(false)
         }
     }
     useEffect(() => {
-        groupData && populateDataFromAPI(groupData);
-    }, [groupData]);
+        groupData && populateDataFromAPI(groupData)
+    }, [groupData])
 
     async function populateDataFromAPI(data: CreateGroup) {
-        const { id, name, description } = data;
-        setName({ value: name, error: '' });
-        setDescription(description);
+        const { id, name, description } = data
+        setName({ value: name, error: '' })
+        setDescription(description)
     }
 
     async function handleDelete() {
-        setSubmitting(true);
+        setSubmitting(true)
         try {
-            await deleteGroup(id);
-            toast.success('Group deleted');
-            deleteCallback(index);
+            await deleteGroup(id)
+            toast.success('Group deleted')
+            deleteCallback(index)
         } catch (err) {
-            showError(err);
+            showError(err)
         } finally {
-            setSubmitting(false);
+            setSubmitting(false)
         }
     }
     return (

@@ -111,7 +111,8 @@ export function K8SResourceList({
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
-        const isAdded = addTab(`${_group}_${_namespace}`, kind, resourceName, _url)
+        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
+        const isAdded = addTab(idPrefix, kind, resourceName, _url)
 
         if (isAdded) {
             updateNodeSelectionData(_nodeSelectionData, _group)
@@ -127,7 +128,7 @@ export function K8SResourceList({
     }
 
     const handleNodeClick = (e) => {
-        const {name} = e.currentTarget.dataset
+        const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
         const isAdded = addTab(K8S_EMPTY_GROUP, 'node', name, _url)
         if (isAdded) {

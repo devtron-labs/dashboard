@@ -96,6 +96,7 @@ export const ConfigMapSecretForm = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
         const isESO = componentType === 'secret' && hasESO(state.externalType)
+        const configMapSecretAbortRef = useRef(null)
 
         useEffect(() => {
             if (isESO && !state.yamlMode) {
@@ -116,6 +117,14 @@ export const ConfigMapSecretForm = React.memo(
                 ),
             })
         }, [configMapSecretData])
+
+        useEffect(() => {
+            configMapSecretAbortRef.current = new AbortController()
+
+            return () => {
+                configMapSecretAbortRef.current.abort()
+            }
+        }, [envId])
 
         async function handleOverride(e) {
             e.preventDefault()
@@ -431,13 +440,13 @@ export const ConfigMapSecretForm = React.memo(
                     let toastTitle = ''
                     if (!envId) {
                         componentType === 'secret'
-                            ? await updateSecret(id, +appId, payloadData)
-                            : await updateConfig(id, +appId, payloadData)
+                            ? await updateSecret(id, +appId, payloadData, configMapSecretAbortRef.current.signal)
+                            : await updateConfig(id, +appId, payloadData, configMapSecretAbortRef.current.signal)
                         toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
                     } else {
                         componentType === 'secret'
-                            ? await overRideSecret(id, +appId, +envId, [payloadData])
-                            : await overRideConfigMap(id, +appId, +envId, [payloadData])
+                            ? await overRideSecret(id, +appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
+                            : await overRideConfigMap(id, +appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
                         toastTitle = 'Overridden'
                     }
                     toast.success(
@@ -446,12 +455,16 @@ export const ConfigMapSecretForm = React.memo(
                             <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                         </div>,
                     )
-                    update()
+                    if(!configMapSecretAbortRef.current.signal.aborted) {
+                        update()
+                    }
                     updateCollapsed()
                     dispatch({ type: ConfigMapActionTypes.success })
                 }
             } catch (err) {
-                handleError(2, err, payloadData)
+                if(!configMapSecretAbortRef.current.signal.aborted) {
+                    handleError(2, err, payloadData)
+                }
             }
         }
 
@@ -651,7 +664,12 @@ export const ConfigMapSecretForm = React.memo(
             }
             return null
         }
-
+        const trimConfigMapName = (): void => {
+            dispatch({
+                type: ConfigMapActionTypes.setConfigName,
+                payload: { value: state.configName.value.trim() },
+            })
+        }
         const renderRollARN = (): JSX.Element => {
             if (isHashiOrAWS || isESO) {
                 return (
@@ -890,6 +908,7 @@ export const ConfigMapSecretForm = React.memo(
                         autoComplete="off"
                         autoFocus
                         onChange={onConfigNameChange}
+                        onBlur={trimConfigMapName}
                         type="text"
                         className={`form__input`}
                         placeholder={componentType === 'secret' ? 'random-secret' : 'random-configmap'}
