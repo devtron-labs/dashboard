@@ -503,6 +503,11 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
+    const clusterId = useMemo(
+        () => environments.find((env) => env.environmentId === Number(envId))?.clusterId,
+        [environments, envId],
+    )
+
     const renderValuesView = () => (
         <form
             className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
@@ -510,6 +515,9 @@ export default function DeploymentTemplateOverrideForm({
             }`}
             onSubmit={handleSubmit}
         >
+            <div className="variables-widget-position">
+                <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
+            </div>
             <DeploymentTemplateOptionsTab
                 isEnvOverride={true}
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}

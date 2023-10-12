@@ -3,11 +3,10 @@
     width: 100%;
 }
 
-
 .variables-widget-position {
     position: absolute;
-    left: '1337px';
-    bottom: '115px'
+    bottom: 120px;
+    right: 110px;
 }
 
 #deployment-config {
@@ -499,5 +498,5 @@
 }
 
 .config-toolbar-dropdown-shadow {
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
 }

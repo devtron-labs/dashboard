@@ -160,6 +160,8 @@ export default function TriggerViewConfigDiff({
         return navOptions
     }
 
+    const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
+
     const renderAvailableDiffColumn = () => {
         return (
             <div className="trigger-view-config-diff__side-nav pt-8 pb-8 bcn-0 dc__border-right h-100 dc__overflow-scroll">
@@ -427,12 +429,7 @@ export default function TriggerViewConfigDiff({
                     <div className="en-2 bw-1 br-4">
                         <div className="code-editor-header-value left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
                             <span>{editorValues.displayName}</span>
-                            <Tippy
-                                content={'Show Variables value'}
-                                placement="bottom-start"
-                                animation="shift-away"
-                                arrow={false}
-                            >
+                            <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
                                 <span className="icon-dim-16" onClick={handleShowVariablesClick}>
                                     <ViewVariablesIcon
                                         className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 cursor`}
