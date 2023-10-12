@@ -69,11 +69,15 @@ export const InputPluginSelection = ({
         }
     }
 
-    const onSelectValue = (e): void => {
+    const onSelectValue = (e, tag): void => {
         let _tagData = variableData
-        _tagData.label = e.currentTarget.dataset.key
-        _tagData.value = e.currentTarget.dataset.key
-        setVariableData(_tagData)
+        const updatedTagData = {
+            ..._tagData, // Spread all properties from _tagData
+            ...tag, // Spread all properties from the tag
+            label: e.currentTarget.dataset.key,
+            value: e.currentTarget.dataset.key
+        };
+        setVariableData(updatedTagData)
         setSelectedValue(_tagData.value)
     }
 
@@ -101,6 +105,9 @@ export const InputPluginSelection = ({
 
     const renderOutputOptions = (tag: OptionsListType, index: number): JSX.Element => {
         const isHighlighted = index === highlightedIndex
+        const handleOnSelectValue = (e) => {
+            onSelectValue(e, tag)
+        }
         return (
             <div
                 key={index}
@@ -110,7 +117,7 @@ export const InputPluginSelection = ({
                         ? 'dc__bg-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8'
                         : 'dc__hover-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8 cursor'
                 }
-                onClick={onSelectValue}
+                onClick={handleOnSelectValue}
                 data-testid={`tag-label-value-${index}`}
             >
                 {tag?.label || ""}
