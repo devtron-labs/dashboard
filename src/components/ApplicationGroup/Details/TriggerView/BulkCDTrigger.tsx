@@ -10,7 +10,6 @@ import {
     ImageComment,
     showError,
     stopPropagation,
-    FilterConditionsListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
