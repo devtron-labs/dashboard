@@ -1,5 +1,7 @@
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CM_SECRET_STATE } from './Constants'
+import { ExtendedOptionType } from '../app/types'
 
 export interface KeyValueInputInterface {
     keyLabel: string
@@ -12,6 +14,31 @@ export interface KeyValueInputInterface {
     keyError?: string
     valueError?: string
     valueType?: string
+}
+
+export interface SuggestedTagOptionType {
+    label: string
+    options: OptionsListType[]
+}
+
+export interface OptionsListType {
+    value: string 
+    description: string
+    format: string 
+    label: string
+    stageType: string
+    variableType: string
+}
+
+export interface InputPluginSelectionType { 
+    selectedOutputVariable: ExtendedOptionType
+    variableOptions?: SuggestedTagOptionType[]
+    variableData?: OptionType
+    setVariableData?: (tagData:ExtendedOptionType ) => void
+    refVar?: React.MutableRefObject<HTMLTextAreaElement>
+    noBackDrop?: boolean
+    placeholder: string
+    selectedVariableIndex: number
 }
 
 export interface ResizableTextareaProps {
