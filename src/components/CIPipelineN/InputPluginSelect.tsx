@@ -72,8 +72,8 @@ export const InputPluginSelection = ({
     const onSelectValue = (e, tag): void => {
         let _tagData = variableData
         const updatedTagData = {
-            ..._tagData, // Spread all properties from _tagData
-            ...tag, // Spread all properties from the tag
+            ..._tagData, 
+            ...tag, 
             label: e.currentTarget.dataset.key,
             value: e.currentTarget.dataset.key
         };
