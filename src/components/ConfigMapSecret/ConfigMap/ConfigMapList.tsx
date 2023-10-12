@@ -31,7 +31,6 @@ export default function ConfigMapList({
     const [showComments, setShowComments] = useState(false)
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
     const configMapListAbortRef = useRef(null)
-
     useEffect(() => {
         setConfigMapLoading(true)
         setConfigMap(null)
