@@ -28,6 +28,7 @@ function DeploymentStatusCard({
             search: DEPLOYMENT_STATUS_QUERY_PARAM,
         })
     }
+    const ProgressingStateList:string[] = [DEPLOYMENT_STATUS.INPROGRESS, DEPLOYMENT_STATUS.STARTING, DEPLOYMENT_STATUS.INITIATING]
     const renderDeploymentStatus = () => {
         return (
             <>
@@ -51,7 +52,7 @@ function DeploymentStatusCard({
                         <span
                             data-testid="deployment-status-name"
                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatusDetailsBreakdownData?.deploymentStatus?.toLowerCase()} ${
-                                [DEPLOYMENT_STATUS.INPROGRESS, DEPLOYMENT_STATUS.STARTING, DEPLOYMENT_STATUS.INITIATING].includes(deploymentStatusDetailsBreakdownData?.deploymentStatus)
+                                ProgressingStateList.includes(deploymentStatusDetailsBreakdownData?.deploymentStatus)
                                     ? 'dc__loading-dots'
                                     : ''
                             }`}
