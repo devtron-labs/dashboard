@@ -10,6 +10,7 @@ export interface DeploymentHistoryDetail {
     values: Record<string, DeploymentHistorySingleValue>
     codeEditorValue: DeploymentHistorySingleValue
     resolvedTemplateData: string
+    variableSnapshot: object
 }
 export interface HistoryDiffSelectorList {
     id: number

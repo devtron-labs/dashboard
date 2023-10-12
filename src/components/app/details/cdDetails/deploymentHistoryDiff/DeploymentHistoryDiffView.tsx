@@ -41,6 +41,10 @@ export default function DeploymentHistoryDiffView({
         }
     }
 
+    const isVariablesAvailable: boolean = 
+        Object.keys(baseTemplateConfiguration?.variableSnapshot).length !== 0 ||
+        Object.keys(currentConfiguration?.variableSnapshot).length !== 0
+
     const editorValuesRHS = convertVariables
         ? baseTemplateConfiguration?.resolvedTemplateData
         : baseTemplateConfiguration?.codeEditorValue?.value
@@ -156,13 +160,15 @@ export default function DeploymentHistoryDiffView({
                         data-testid="configuration-link-comparison-body-heading"
                     >
                         <span>{baseTemplateConfiguration?.codeEditorValue?.['displayName']}</span>
-                        <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
-                            <span className="icon-dim-16" onClick={handleShowVariablesClick}>
-                                <ViewVariablesIcon
-                                    className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 cursor`}
-                                />
-                            </span>
-                        </Tippy>
+                        {isVariablesAvailable ? (
+                            <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                                <span className="icon-dim-16" onClick={handleShowVariablesClick}>
+                                    <ViewVariablesIcon
+                                        className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 cursor`}
+                                    />
+                                </span>
+                            </Tippy>
+                        ) : null}
                     </div>
 
                     {renderDeploymentDiffViaCodeEditor()}
