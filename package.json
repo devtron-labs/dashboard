@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "v0.0.32",
+        "@devtron-labs/devtron-fe-common-lib": "v0.0.33",
         "@sentry/browser": "7.50.0",
         "@sentry/integrations": "7.50.0",
         "@sentry/tracing": "7.50.0",
