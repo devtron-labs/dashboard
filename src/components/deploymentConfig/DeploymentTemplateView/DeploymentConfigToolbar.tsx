@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as FileCode } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { DeploymentConfigToolbarProps } from '../types'
+import '../deploymentConfig.scss'
+import { DropdownContainer, DropdownItem } from './DeploymentTemplateView.component'
 
 export default function DeploymentConfigToolbar({
     selectedTabIndex,
@@ -11,17 +14,24 @@ export default function DeploymentConfigToolbar({
     noReadme,
     showReadme,
     handleReadMeClick,
+    isValues,
+    setIsValues,
 }: DeploymentConfigToolbarProps) {
-    const getTabClassName = (index: number) => {
-        return `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
-    }
+    const [openDropdown, setOpenDropdown] = useState(false)
 
-    const getTabIconClass = (index: number) => {
-        return `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
-    }
+    const getTabClassName = (index: number) => `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
+
+    const getTabIconClass = (index: number) => `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
 
     const changeTab = (e) => {
         handleTabSelection(Number(e.currentTarget.dataset.index))
+    }
+
+
+
+    const handleOptionClick = (newValue) => {
+        setIsValues(newValue)
+        setOpenDropdown(false)
     }
 
     return (
@@ -39,13 +49,33 @@ export default function DeploymentConfigToolbar({
                             Values
                         </li>
                         <li
-                            className={getTabClassName(2)}
+                            className={`${getTabClassName(2)} dc__position-rel`}
                             data-index={2}
                             data-testid="compare-values-tab"
                             onClick={changeTab}
                         >
                             <CompareIcon className={getTabIconClass(2)} />
-                            Compare Values
+                            Compare&nbsp;
+                            <span style={{ color: 'black' }} onClick={() => setOpenDropdown(!openDropdown)}>
+                                {isValues ? 'Values' : 'Manifest'}
+                            </span>
+                            <Dropdown
+                                className="icon-dim-16 ml-4 cursor"
+                                style={{ transform: openDropdown ? "rotate(180deg)" : '' }}
+                                onClick={() => setOpenDropdown(true)}
+                            />
+                            <DropdownContainer isOpen={openDropdown} onClose={() => setOpenDropdown(false)}>
+                                <DropdownItem
+                                    label="Compare values"
+                                    isValues={isValues}
+                                    onClick={() => handleOptionClick(true)}
+                                />
+                                <DropdownItem
+                                    label="Compare generated manifest"
+                                    isValues={!isValues}
+                                    onClick={() => handleOptionClick(false)}
+                                />
+                            </DropdownContainer>
                         </li>
                     </ol>
                 </div>
