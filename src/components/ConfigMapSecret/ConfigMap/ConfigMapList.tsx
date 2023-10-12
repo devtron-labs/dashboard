@@ -40,7 +40,6 @@ export default function ConfigMapList({
             setConfigMapLoading(true)
             init(true)
         }, 100);
-        init(true)
         if (!isJobView) {
             reloadEnvironments()
         }
@@ -102,7 +101,7 @@ export default function ConfigMapList({
             }
             setParentState?.(ComponentStates.loaded)
         } catch (error) {
-            if(!configMapListAbortRef.current.signal.aborted){
+            if(!configMapListAbortRef.current?.signal.aborted){
                 setParentState?.(ComponentStates.failed)
                 showError(error)
             }
