@@ -243,15 +243,17 @@ export const ConfigMapSecretForm = React.memo(
                         payload: { value: state.volumeMountPath.value, error: 'This is a required field' },
                     })
                     isFormValid = false
-                }else {
-                    if (!rules.cmVolumeMountPath(state.volumeMountPath.value).isValid){
-                        dispatch({
-                            type: ConfigMapActionTypes.setVolumeMountPath,
-                            payload: { value: state.volumeMountPath.value, error: rules.cmVolumeMountPath(state.volumeMountPath.value).message },
-                        })
-                        isFormValid = false
-                    }
+                } else if (!rules.cmVolumeMountPath(state.volumeMountPath.value).isValid) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setVolumeMountPath,
+                        payload: {
+                            value: state.volumeMountPath.value,
+                            error: rules.cmVolumeMountPath(state.volumeMountPath.value).message,
+                        },
+                    })
+                    isFormValid = false
                 }
+            
 
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
                     const isFilePermissionValid = validateFilePermission()

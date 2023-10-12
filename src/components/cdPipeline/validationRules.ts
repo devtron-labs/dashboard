@@ -43,11 +43,12 @@ export class ValidationRules {
         const re = PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH
         const regExp = new RegExp(re)
         const test = regExp.test(value)
-        if (!test)
+        if (!test){
             return {
                 isValid: false,
                 message: INVALID_VOLUME_MOUNT_PATH_IN_CM_CS,
             }
-        else return { isValid: true, message: '' }
+        }  
+        return { isValid: true, message: '' }
     }
 }
