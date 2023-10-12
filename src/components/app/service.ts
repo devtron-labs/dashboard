@@ -302,6 +302,7 @@ export function getCDMaterialList(
                 tagsEditable: false,
                 appReleaseTagNames: [],
                 hideImageTaggingHardDelete: false,
+                resourceFilters: [],
             }
         } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
             return {
@@ -317,6 +318,7 @@ export function getCDMaterialList(
                 appReleaseTagNames: response.result.appReleaseTagNames,
                 tagsEditable: response.result.tagsEditable,
                 hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
+                resourceFilters: response.result.resourceFilters ?? [],
             }
         } else {
             return {
@@ -332,6 +334,7 @@ export function getCDMaterialList(
                 appReleaseTagNames: response.result.appReleaseTagNames,
                 tagsEditable: response.result.tagsEditable,
                 hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
+                resourceFilters: response.result.resourceFilters ?? [],
             }
         }
     })

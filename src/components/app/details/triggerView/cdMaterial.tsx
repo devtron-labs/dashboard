@@ -4,6 +4,7 @@ import {
     CDMaterialProps,
     CDMaterialState,
     DeploymentWithConfigType,
+    FilterConditionViews,
     MATERIAL_TYPE,
     STAGE_TYPE,
     TriggerViewContextType,
@@ -103,8 +104,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 props.material.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED)
                     .length > 0,
             searchApplied: !!this.props.searchImageTag,
-            searchText: this.props.searchImageTag,
+            searchText: this.props.searchImageTag ?? '',
             showConfiguredFilters: false,
+            filterView: FilterConditionViews.ELIGIBLE,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -112,6 +114,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.loadOlderImages = this.loadOlderImages.bind(this)
         this.handleOlderImagesLoading = this.handleOlderImagesLoading.bind(this)
         this.isConfigAvailable = this.isConfigAvailable.bind(this)
+        this.handleEnableFiltersView = this.handleEnableFiltersView.bind(this)
+        this.handleDisableFiltersView = this.handleDisableFiltersView.bind(this)
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -144,6 +148,31 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                   searchText: '',
               })
           }
+        }
+
+        if (this.props.material !== prevProps.material) {
+            this.setState({
+                selectedMaterial: this.props.material.find((_mat) => _mat.isSelected),
+                areMaterialsPassingFilters: this.props.material.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED).length > 0
+            })
+        }
+
+        if (this.props.materialType !== prevProps.materialType) {
+            this.setState({
+                isRollbackTrigger: this.props.materialType === MATERIAL_TYPE.rollbackMaterialList,
+                isSelectImageTrigger: this.props.materialType === MATERIAL_TYPE.inputMaterialList,
+                selectedConfigToDeploy: this.props.materialType === MATERIAL_TYPE.rollbackMaterialList ? SPECIFIC_TRIGGER_CONFIG_OPTION : LAST_SAVED_CONFIG_OPTION,
+            })
+        }
+
+        if (this.props.appId !== prevProps.appId) {
+            this.setState({
+                filterView: FilterConditionViews.ELIGIBLE,
+            })
+
+            this.setState({
+                showConfiguredFilters: false,
+            })
         }
     }
 
@@ -746,7 +775,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                             </div>
                         </div>
-                        <div data-testId={`image-tags-container-${mat.index}`}>
+                        <div data-testid={`image-tags-container-${mat.index}`}>
                             <ImageTagsContainer
                                 ciPipelineId={this.props.ciPipelineId}
                                 artifactId={+mat.id}
@@ -954,14 +983,29 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             if (event.target.value !== this.props.searchImageTag) {
                 this.setSearchValue(event.target.value)
             }
-        } else if (theKeyCode === 'Backspace' && this.props.searchImageTag.length === 1) {
+        } else if (theKeyCode === 'Backspace' && this.state.searchText.length === 1) {
             this.clearSearch(event)
         }
     }
 
-    handleEnableFiltersView = () => {
+    handleEnableFiltersView = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
         this.setState({
             showConfiguredFilters: true,
+        })
+    }
+
+    handleDisableFiltersView = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
+        this.setState({
+            showConfiguredFilters: false,
+        })
+    }
+
+    handleFilterTabsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        this.setState({
+            filterView: value as FilterConditionViews,
         })
     }
 
@@ -987,15 +1031,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    // TODO: Have to add filtering for load more state
     getFilterActionBarTabs = () => (
         [
             {
                 label: `Eligible images 0/${this.props.material.length}`,
-                value: 'Eligible'
+                value: FilterConditionViews.ELIGIBLE
             },
             {
                 label: `Latest ${this.props.material.length} images`,
-                value: `Latest ${this.props.material.length} images`
+                value: FilterConditionViews.ALL
             },
         ]
     )
@@ -1006,13 +1051,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
+        
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
                 <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                    {FilterActionBar ? (
-                        <FilterActionBar tabs={this.getFilterActionBarTabs()} onChange={()=>null} handleEnableFiltersView={this.handleEnableFiltersView}/>
-                    ):(
+                    {/* This condition checks if component is available and we have configured some filters then show it  */}
+                    {FilterActionBar && !!this.props.resourceFilters?.length && !this.state.showConfiguredFilters ? (
+                        <FilterActionBar
+                            tabs={this.getFilterActionBarTabs()}
+                            onChange={this.handleFilterTabsChange}
+                            handleEnableFiltersView={this.handleEnableFiltersView}
+                            initialTab={this.state.filterView}
+                        />
+                    ) : (
                         <span className="flex dc__align-start">{titleText}</span>
                     )}
                     <span className="flexbox dc__align-items-center h-32 dc__gap-16">
@@ -1583,11 +1635,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     render() {
         const isApprovalConfigured = this.props.userApprovalConfig?.requiredCount > 0
-        
-        if (this.state.showConfiguredFilters && ConfiguredFilters) {
-            return <ConfiguredFilters isFromBulkCD={this.props.isFromBulkCD} pipelineId={this.props.pipelineId}/>
-        }
+        const resourceFilters = this.props.resourceFilters ?? []
 
+        if (this.state.showConfiguredFilters && ConfiguredFilters) {
+            return (
+                <ConfiguredFilters
+                    isFromBulkCD={this.props.isFromBulkCD}
+                    resourceFilters={resourceFilters}
+                    handleDisableFiltersView={this.handleDisableFiltersView}
+                    envName={this.props.envName}
+                    closeModal={this.props.closeCDModal}
+                />
+            )
+        }
+        
         if (this.props.material.length > 0) {
             return this.props.isFromBulkCD
                 ? this.renderTriggerBody(isApprovalConfigured)

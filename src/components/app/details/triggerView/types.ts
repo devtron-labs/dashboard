@@ -14,6 +14,7 @@ import {
     ImageComment,
     DeploymentAppTypes,
     TaskErrorObj,
+    FilterConditionsListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 
@@ -44,7 +45,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
         appId?:number,
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    closeCDModal: (e) => void
+    closeCDModal: (e: React.MouseEvent) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
         offset?: number,
@@ -73,6 +74,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     isApplicationGroupTrigger?: boolean
     handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
     searchImageTag?: string
+    resourceFilters?: FilterConditionsListType[]
 }
 
 export enum DeploymentWithConfigType {
@@ -85,6 +87,11 @@ export interface ConfigToDeployOptionType {
     label: string
     value: DeploymentWithConfigType
     infoText: string
+}
+
+export enum FilterConditionViews {
+    ELIGIBLE = 'ELIGIBLE',
+    ALL = 'ALL',
 }
 
 export interface CDMaterialState {
@@ -109,6 +116,7 @@ export interface CDMaterialState {
     searchApplied: boolean
     searchText: string
     showConfiguredFilters: boolean
+    filterView: FilterConditionViews
 }
 
 export interface MaterialInfo {
@@ -365,6 +373,7 @@ export interface TriggerViewState {
     configs?: boolean
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
+    resourceFilters?: FilterConditionsListType[]
 }
 
 //-- begining of response type objects for trigger view

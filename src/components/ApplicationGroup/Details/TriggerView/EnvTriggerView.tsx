@@ -18,6 +18,7 @@ import {
     VisibleModal,
     DeploymentAppTypes,
     useSearchString,
+    FilterConditionsListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -145,6 +146,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
     const [searchImageTag, setSearchImageTag] = useState<string>('')
+    const [resourceFilters, setResourceFilters] = useState<FilterConditionsListType[]>([])
 
     const setAppReleaseTagsNames = (appReleaseTags: string[]) => {
         setAppReleaseTags(appReleaseTags)
@@ -813,6 +815,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setShowCDModal(!isApprovalNode)
                 setShowApprovalModal(isApprovalNode)
                 setCDLoading(false)
+                setResourceFilters(data.resourceFilters)
                 preventBodyScroll(true)
             })
             .catch((errors: ServerErrors) => {
@@ -1280,7 +1283,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowMaterialRegexModal(false)
     }
 
-    const closeCDModal = (e): void => {
+    const closeCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         abortControllerRef.current.abort()
         preventBodyScroll(false)
         setCDLoading(false)
@@ -1288,7 +1292,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setSearchImageTag('')
     }
 
-    const closeApprovalModal = (e): void => {
+    const closeApprovalModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         setShowApprovalModal(false)
         history.push({
@@ -1626,6 +1631,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         let uniqueReleaseTags: string[] = []
         let uniqueTagsSet = new Set<string>()
         const _selectedAppWorkflowList: BulkCDDetailType[] = []
+
         filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
                 //extract unique tags for this workflow
@@ -2035,9 +2041,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 history={history}
                                 location={location}
                                 match={match}
-                                isApplicationGroupTrigger={true}
+                                isApplicationGroupTrigger
                                 handleMaterialFilters={handleMaterialFilters}
                                 searchImageTag={searchImageTag}
+                                resourceFilters={resourceFilters}
                             />
                         )}
                     </div>
@@ -2085,6 +2092,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}
+                    resourceFilters={resourceFilters}
                 />
             )
         }

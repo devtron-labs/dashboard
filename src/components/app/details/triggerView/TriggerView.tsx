@@ -47,10 +47,9 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
 import { withRouter, NavLink } from 'react-router-dom'
-import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv } from '../../../../services/service'
+import { getEnvironmentListMinPublic, getLastExecutionByArtifactAppEnv, getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
-import { getHostURLConfiguration } from '../../../../services/service'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
@@ -115,6 +114,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             configs: false,
             isDefaultConfigPresent: false,
             searchImageTag: '',
+            resourceFilters: []
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -140,7 +140,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getEnvironments = () => {
         getEnvironmentListMinPublic()
             .then((response) => {
-                let list = []
+                const list = []
                 list.push({
                     id: 0,
                     clusterName: '',
@@ -169,6 +169,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
+    // FIXME: Seems like its missing a error state
     getConfigs() {
         getDefaultConfig().then((response) => {
             let isConfigPresent = response.result.isConfigured
@@ -706,6 +707,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     appReleaseTags: data.appReleaseTagNames,
                     tagsEditable: data.tagsEditable,
                     hideImageTaggingHardDelete: data.hideImageTaggingHardDelete,
+                    resourceFilters: data.resourceFilters,
                 })
                 preventBodyScroll(true)
             })
@@ -814,7 +816,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ isSaveLoading: true, isLoading: true })
         let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
-            let workflow = this.state.workflows[i]
+            const workflow = this.state.workflows[i]
             node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
             if (node) break
         }
@@ -1199,13 +1201,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
-    closeCDModal = (e): void => {
+    closeCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         this.abortController.abort()
         this.setState({ showCDModal: false, searchImageTag: '' })
     }
 
-    closeApprovalModal = (e): void => {
+    closeApprovalModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         preventBodyScroll(false)
         this.setState({ showApprovalModal: false })
         this.props.history.push({
@@ -1442,6 +1446,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 isApplicationGroupTrigger={false}
                                 handleMaterialFilters={this.handleMaterialFilters}
                                 searchImageTag={this.state.searchImageTag}
+                                resourceFilters={this.state.resourceFilters}
                             />
                         )}
                     </div>
@@ -1477,6 +1482,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
                     configs={this.state.configs}
                     isDefaultConfigPresent={this.state.isDefaultConfigPresent}
+                    resourceFilters={this.state.resourceFilters}
                 />
             )
         }
