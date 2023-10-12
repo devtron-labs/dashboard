@@ -57,6 +57,7 @@ import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorC
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 import '../EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
+import { ValidationRules } from '../cdPipeline/validationRules'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteModal = importComponentFromFELibrary('DeleteModal')
@@ -206,6 +207,7 @@ export const ConfigMapSecretForm = React.memo(
         }
 
         const validateForm = (): KeyValueValidated => {
+            const rules = new ValidationRules()
             const configMapSecretNameRegex = new RegExp(PATTERNS.CONFIGMAP_AND_SECRET_NAME)
             let isFormValid = true
             if (componentType === 'secret' && state.unAuthorized) {
@@ -241,7 +243,16 @@ export const ConfigMapSecretForm = React.memo(
                         payload: { value: state.volumeMountPath.value, error: 'This is a required field' },
                     })
                     isFormValid = false
+                }else {
+                    if (!rules.cmVolumeMountPath(state.volumeMountPath.value).isValid){
+                        dispatch({
+                            type: ConfigMapActionTypes.setVolumeMountPath,
+                            payload: { value: state.volumeMountPath.value, error: rules.cmVolumeMountPath(state.volumeMountPath.value).message },
+                        })
+                        isFormValid = false
+                    }
                 }
+
                 if (state.isFilePermissionChecked && !isChartVersion309OrBelow) {
                     const isFilePermissionValid = validateFilePermission()
                     if (!isFilePermissionValid) {

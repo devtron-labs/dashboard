@@ -38,4 +38,16 @@ export class ValidationRules {
         if (!repository.length) return { isValid: false, message: REQUIRED_FIELD_MSG }
         return { isValid: true, message: null }
     }
+
+    cmVolumeMountPath = (value: string): { isValid: boolean; message: string } => {
+        const re = PATTERNS.ALPHANUMERIC_WITH_DASH_UNDERSCORE_AND_SLASH
+        const regExp = new RegExp(re)
+        const test = regExp.test(value)
+        if (!test)
+            return {
+                isValid: false,
+                message: 'place holder to b',
+            }
+        else return { isValid: true, message: '' }
+    }
 }
