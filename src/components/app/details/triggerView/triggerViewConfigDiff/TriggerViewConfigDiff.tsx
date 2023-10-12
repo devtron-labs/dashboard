@@ -70,7 +70,7 @@ export default function TriggerViewConfigDiff({
             value: YAML.stringify(JSON.parse(editorValuesRHS)),
             defaultValue: YAML.stringify(JSON.parse(editorValuesLHS)),
         })
-    }, [convertVariables])
+    }, [convertVariables, selectedConfigToDeploy])
 
     const handleConfigToDeploySelection = () => {
         if (activeSideNavOption.includes('/')) {
