@@ -30,9 +30,10 @@ export default function TriggerViewConfigDiff({
     )
     const [convertVariables, setConvertVariables] = useState<boolean>(false)
 
+    // check if variable snapshot is {} or not
     const isVariablesAvailable: boolean =
-        Object.keys(baseTemplateConfiguration?.[activeSideNavOption]?.variableSnapshot).length !== 0 ||
-        Object.keys(currentConfiguration?.[activeSideNavOption]?.variableSnapshot).length !== 0
+        Object.keys(baseTemplateConfiguration?.[activeSideNavOption]?.variableSnapshot||{}).length !== 0 ||
+        Object.keys(currentConfiguration?.[activeSideNavOption]?.variableSnapshot||{}).length !== 0
 
     const editorValuesRHS = convertVariables
         ? baseTemplateConfiguration[activeSideNavOption].resolvedTemplateData

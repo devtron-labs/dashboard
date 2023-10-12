@@ -41,9 +41,10 @@ export default function DeploymentHistoryDiffView({
         }
     }
 
+    // check if variable snapshot is {} or not
     const isVariablesAvailable: boolean = 
-        Object.keys(baseTemplateConfiguration?.variableSnapshot).length !== 0 ||
-        Object.keys(currentConfiguration?.variableSnapshot).length !== 0
+        Object.keys(baseTemplateConfiguration?.variableSnapshot|| {}).length !== 0 ||
+        Object.keys(currentConfiguration?.variableSnapshot||{}).length !== 0
 
     const editorValuesRHS = convertVariables
         ? baseTemplateConfiguration?.resolvedTemplateData
