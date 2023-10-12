@@ -40,7 +40,7 @@ export class ValidationRules {
     }
 
     cmVolumeMountPath = (value: string): { isValid: boolean; message: string } => {
-        const re = PATTERNS.ALPHANUMERIC_WITH_DASH_UNDERSCORE_AND_SLASH
+        const re = PATTERNS.ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH
         const regExp = new RegExp(re)
         const test = regExp.test(value)
         if (!test)

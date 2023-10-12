@@ -283,7 +283,7 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
-    ALPHANUMERIC_WITH_DASH_UNDERSCORE_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
+    ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
 }
 
 export const TriggerType = {
