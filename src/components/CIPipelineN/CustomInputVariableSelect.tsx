@@ -110,7 +110,6 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: ExtendedOptionType) => {
-        console.log(inputVariableOptions)
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
