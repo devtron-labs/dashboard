@@ -30,7 +30,6 @@ import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import { CIPipelineBuildType } from '../ciPipeline/types'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
