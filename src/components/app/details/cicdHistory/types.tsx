@@ -83,6 +83,7 @@ export interface ArtifactType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    jobCIClass?: string
 }
 
 export interface CopyTippyWithTextType {
