@@ -33,7 +33,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
     })
 
     const [inputVariableOptions, setInputVariableOptions] = useState<SuggestedTagOptionType[]>([])
-    const varaibleMap = new Map()
+    const variableMap = new Map()
 
     useEffect(() => {
         const previousStepVariables = []
@@ -106,7 +106,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         }
         setSelectedVariableValue()
         for(let i=0;i<inputVariableOptions.length;++i) {
-            varaibleMap.set(inputVariableOptions[i].options['values'], inputVariableOptions[i])
+            variableMap.set(inputVariableOptions[i].options['values'], inputVariableOptions[i])
         }
 
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
@@ -191,7 +191,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             refVar={refVar}
             variableOptions={inputVariableOptions}        
             selectedVariableIndex={selectedVariableIndex}
-            variableMap={varaibleMap}
+            variableMap={variableMap}
         />
     )
 }
