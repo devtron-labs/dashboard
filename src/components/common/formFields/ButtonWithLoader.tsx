@@ -19,7 +19,7 @@ export class ButtonWithLoader extends Component<ButtonProps> {
     }
 
     clickHandler(event) {
-        if (!this.props.isLoading) this.props.onClick(event)
+        if (!this.props.isLoading && this.props.onClick) this.props.onClick(event)
     }
 
     render() {
@@ -29,7 +29,7 @@ export class ButtonWithLoader extends Component<ButtonProps> {
                 data-testid={this.props.dataTestId}
                 disabled={!!this.props.disabled}
                 className={`${this.props.rootClassName}`}
-                onClick={this.props.onClick && this.clickHandler}
+                onClick={this.clickHandler}
             >
                 {this.props.isLoading ? <Progressing /> : this.props.children}
             </button>
