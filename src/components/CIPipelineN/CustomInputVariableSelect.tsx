@@ -105,13 +105,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
             ])
         }
         setSelectedVariableValue()
-        for(let i=0;i<inputVariableOptions.length;++i) {
-            variableMap.set(inputVariableOptions[i].options['values'], inputVariableOptions[i])
-        }
+
 
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: ExtendedOptionType) => {
+        console.log(inputVariableOptions)
         setSelectedOutputVariable(selectedValue)
         const currentStepTypeVariable =
             formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -182,7 +181,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
-    return (
+    return (    
         <InputPluginSelection
             placeholder='Select source or input value'
             selectedOutputVariable={selectedOutputVariable}
