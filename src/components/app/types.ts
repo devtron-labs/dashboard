@@ -91,6 +91,10 @@ export interface AppMetaInfo {
     labels?: TagType[]
 }
 
+export interface ArtifactsCiJob {
+    artifacts?: string[]
+}
+
 interface Description{
     id: number
     description: string
