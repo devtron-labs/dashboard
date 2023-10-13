@@ -6,9 +6,10 @@ export interface ButtonProps {
     rootClassName: string
     isLoading: boolean
     loaderColor: string
-    onClick: (event) => void
+    onClick?: (event) => void
     dataTestId?: string
     children?: React.ReactNode
+    type?: 'submit' | 'reset' | 'button'
 }
 
 export class ButtonWithLoader extends Component<ButtonProps> {
@@ -24,11 +25,11 @@ export class ButtonWithLoader extends Component<ButtonProps> {
     render() {
         return (
             <button
-                type="button"
+                type={this.props.type ?? 'button'}
                 data-testid={this.props.dataTestId}
                 disabled={!!this.props.disabled}
                 className={`${this.props.rootClassName}`}
-                onClick={this.clickHandler}
+                onClick={this.props.onClick && this.clickHandler}
             >
                 {this.props.isLoading ? <Progressing /> : this.props.children}
             </button>
