@@ -1,9 +1,9 @@
-import React, { useEffect, useReducer, useContext, Reducer } from 'react'
+import React, { useEffect, useReducer, useContext, Reducer, useRef } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
-import { getDeploymentTemplate as getBaseDeploymentTemplate } from '../deploymentConfig/service'
+import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
 import { importComponentFromFELibrary } from '../common'
 import '../deploymentConfig/deploymentConfig.scss'
 import {
@@ -17,6 +17,7 @@ import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getBasicFieldValue,
+    groupDataByType,
     isBasicValueChanged,
     updateTemplateFromBasicValue,
     validateBasicView,
@@ -44,11 +45,56 @@ export default function DeploymentTemplateOverride({
         deploymentConfigReducer,
         initDeploymentConfigState,
     )
+    const baseDeploymentAbortController = useRef(null)
+
+    const setIsValuesOverride = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.isValuesOverride,
+            payload: value,
+        })
+    }
+
+    const setManifestDataRHSOverride = (value: string) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.manifestDataRHSOverride,
+            payload: value,
+        })
+    }
+
+    const setManifestDataLHSOverride = (value: string) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.manifestDataLHSOverride,
+            payload: value,
+        })
+    }
+
+    const setGroupedOptionsDataOverride = (value: Array<Object>) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.groupedOptionsDataOverride,
+            payload: value,
+        })
+    }
+
+    useEffect(() => {
+        const fetchOptionsList = async () => {
+            const { result } = await getOptions(+appId, +envId)
+            const _groupedData = groupDataByType(result)
+            setGroupedOptionsDataOverride(_groupedData)
+        }
+        fetchOptionsList()
+    }, [environments])
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })
         reloadEnvironments()
-        initialise()
+        setTimeout(()=>{
+            baseDeploymentAbortController.current = new AbortController()
+            initialise()
+        },100)
+
+        return () => {
+            baseDeploymentAbortController.current.abort();
+        }
     }, [envId, appId])
 
     useEffect(() => {
@@ -65,8 +111,8 @@ export default function DeploymentTemplateOverride({
 
         if (clearPublishedState) {
             payload.publishedState = null
-            payload.selectedTabIndex = 1
-            payload.openComparison = false
+            payload.selectedTabIndex = 2 // to have same behaviour as when we discard draft in base deployment template
+            payload.openComparison = true // to have same behaviour as when we discard draft in base deployment template
             payload.showReadme = false
             payload.showComments = false
             payload.latestDraft = null
@@ -90,7 +136,7 @@ export default function DeploymentTemplateOverride({
                 loading: true,
             },
         })
-        chartRefAutocomplete(Number(appId), Number(envId))
+        chartRefAutocomplete(Number(appId), Number(envId), baseDeploymentAbortController.current.signal)
             .then((chartRefResp) => {
                 // Use other latest ref id instead of selectedChartRefId on delete override action
                 const _selectedChartId =
@@ -118,8 +164,10 @@ export default function DeploymentTemplateOverride({
                 }
             })
             .catch((e) => {
-                setParentState(ComponentStates.failed)
-                showError(e)
+                if (!baseDeploymentAbortController.current.signal.aborted) {
+                    setParentState(ComponentStates.failed)
+                    showError(e)
+                }
             })
             .finally(() => {
                 dispatch({
@@ -138,11 +186,10 @@ export default function DeploymentTemplateOverride({
                     updateRefsData(chartRefsData, !!state.publishedState)
                 }
             })
-            .catch((e) => {
+            .catch(() => {
                 updateRefsData(chartRefsData)
             })
     }
-
     const processDraftData = (latestDraft, chartRefsData) => {
         const {
             envOverrideValues,
@@ -234,7 +281,7 @@ export default function DeploymentTemplateOverride({
                     : null
             const payload = {
                 data: result,
-                duplicate: !!state.latestDraft ? state.duplicate : _duplicateFromResp,
+                duplicate: state.latestDraft ? state.duplicate : _duplicateFromResp,
                 readme: result.readme,
                 schema: result.schema,
                 isBasicLockedInBase:
@@ -344,14 +391,19 @@ export default function DeploymentTemplateOverride({
     ): Promise<void> => {
         if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
             if (!envOverrideValues) {
-                const {
-                    result: { defaultAppOverride },
-                } = await getBaseDeploymentTemplate(
-                    +appId,
-                    state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-                    true,
-                )
-                _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
+                try {
+                    const {
+                        result: { defaultAppOverride },
+                    } = await getBaseDeploymentTemplate(
+                        +appId,
+                        state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
+                        baseDeploymentAbortController.current.signal,
+                        true,
+                    )
+                    _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
+                } catch(err) {
+                    _isBasicLocked=true
+                }
             } else {
                 _isBasicLocked = isBasicValueChanged(baseTemplate, envOverrideValues)
             }
@@ -441,6 +493,13 @@ export default function DeploymentTemplateOverride({
                         isEnterpriseInstallation={
                             currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
                         }
+                        isValuesOverride={state.isValuesOverride}
+                        setIsValuesOverride={setIsValuesOverride}
+                        groupedData={state.groupedOptionsDataOverride}
+                        manifestDataRHS={state.manifestDataRHSOverride}
+                        manifestDataLHS={state.manifestDataLHSOverride}
+                        setManifestDataRHS={setManifestDataRHSOverride}
+                        setManifestDataLHS={setManifestDataLHSOverride}
                     />
                 )}
             </div>

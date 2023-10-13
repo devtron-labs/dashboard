@@ -14,6 +14,10 @@ export interface OptionType {
     value: string
 }
 
+export interface ExtendedOptionType extends OptionType {
+    format?: string
+}
+
 export interface NumberOptionType {
     label: string
     value: number
@@ -85,6 +89,10 @@ export interface AppMetaInfo {
     projectId?: number
     projectName?: string
     labels?: TagType[]
+}
+
+export interface ArtifactsCiJob {
+    artifacts?: string[]
 }
 
 interface Description{
