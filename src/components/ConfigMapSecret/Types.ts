@@ -39,6 +39,7 @@ export interface InputPluginSelectionType {
     noBackDrop?: boolean
     placeholder: string
     selectedVariableIndex: number
+    variableMap: any
 }
 
 export interface ResizableTextareaProps {

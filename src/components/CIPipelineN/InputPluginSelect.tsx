@@ -13,11 +13,11 @@ export const InputPluginSelection = ({
     noBackDrop,
     placeholder,
     selectedVariableIndex,
+    variableMap,
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
     const [highlightedIndex, setHighlightedIndex] = useState(-1)
     const [filteredArray, setFilteredArray] = useState([])
-    const variableMap = new Map()
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -25,13 +25,20 @@ export const InputPluginSelection = ({
 
     useEffect(() => {
         if (variableOptions?.length) {
-            const filtered = variableOptions
-                .filter((tag) => tag.options.length > 0)[0]
-                .options.filter((tag) => tag.label.toLowerCase().indexOf(selectedValue.toLowerCase()) >= 0)
-            setFilteredArray(filtered)
+            const filtered = variableOptions.filter((tag)=> tag.options.length>0).map(_tag => {                                         
+                return _tag.options.filter(val => val.label && val.label.toLowerCase().indexOf(selectedValue.toLowerCase()) >= 0)
+            })
+            const flattened = []
+            for(let i=0;i<filtered.length;++i) {                   
+                for(let j=0;j<filtered[i].length;++j) {
+                    flattened.push(filtered[i][j]);
+                }
+            }
+            setFilteredArray(flattened)
         } else {
-            setFilteredArray([])
+            setFilteredArray([]);
         }
+
     }, [variableOptions, selectedValue])
 
     const handleInputChange = (event): void => {
@@ -143,13 +150,10 @@ export const InputPluginSelection = ({
     const renderSuggestions = () => {
         return (
             <>
-                {filteredArray.map((_tag, idx) => {
-                    if(!variableMap.has(_tag.value)) {
-                        variableMap.set(_tag.value, _tag)
-                    }
+                {filteredArray.map((_tag, idx) => {               
                     return (
                         <div>
-                            {_tag.description ? (
+                            {_tag?.description ? (
                                 <Tippy
                                     key={idx}
                                     className="default-tt"
