@@ -161,6 +161,8 @@ export const InputPluginSelection = ({
             !e?.relatedTarget?.classList?.value.includes(`tag-${selectedOutputVariable.format}-class`)
         ) {
             setHighlightedIndex(-1)
+            setLocalHighlightedIndex(-1)
+            setHighlightedCategoryIndex(0)
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
