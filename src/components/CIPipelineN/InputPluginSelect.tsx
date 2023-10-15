@@ -85,24 +85,20 @@ export const InputPluginSelection = ({
 
             if (e.key === 'ArrowDown') {
                 if (highlightedIndex === totalLength - 1) {
-                    
                     setHighlightedIndex(0)
                     setLocalHighlightedIndex(0)
                     setHighlightedCategoryIndex(0)
                 } else if (localHighlightedIndex === filteredArray[highlightedCategoryIndex]?.options?.length - 1) {
                     if (highlightedCategoryIndex !== categoryLength - 1) {
-                        
                         setHighlightedCategoryIndex(highlightedCategoryIndex + 1)
                         setLocalHighlightedIndex(0)
                         setHighlightedIndex(highlightedIndex + 1)
                     } else {
-                        
                         setHighlightedCategoryIndex(0)
                         setHighlightedIndex(0)
                         setLocalHighlightedIndex(0)
                     }
                 } else {
-                    
                     setHighlightedIndex(highlightedIndex + 1)
                     setLocalHighlightedIndex(localHighlightedIndex + 1)
                 }
@@ -247,7 +243,9 @@ export const InputPluginSelection = ({
 
     return (
         <PopupMenu autoClose autoPosition>
-            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp">
+            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
+                {/* TODO: replace this icon with required icon */}
+                <Clear className="icon-dim-18" />
                 <ResizableTagTextArea
                     className="form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable"
                     minHeight={30}
