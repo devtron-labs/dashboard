@@ -42,9 +42,9 @@ export default function DeploymentHistoryDiffView({
     }
 
     // check if variable snapshot is {} or not
-    const isVariablesAvailable: boolean = 
-        Object.keys(baseTemplateConfiguration?.variableSnapshot|| {}).length !== 0 ||
-        Object.keys(currentConfiguration?.variableSnapshot||{}).length !== 0
+    const isVariablesAvailable: boolean =
+        Object.keys(baseTemplateConfiguration?.variableSnapshot || {}).length !== 0 ||
+        Object.keys(currentConfiguration?.variableSnapshot || {}).length !== 0
 
     const editorValuesRHS = convertVariables
         ? baseTemplateConfiguration?.resolvedTemplateData
@@ -161,7 +161,7 @@ export default function DeploymentHistoryDiffView({
                         data-testid="configuration-link-comparison-body-heading"
                     >
                         <span>{baseTemplateConfiguration?.codeEditorValue?.['displayName']}</span>
-                        {isVariablesAvailable ? (
+                        {isVariablesAvailable && (
                             <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
                                 <span className="icon-dim-16" onClick={handleShowVariablesClick}>
                                     <ViewVariablesIcon
@@ -169,7 +169,7 @@ export default function DeploymentHistoryDiffView({
                                     />
                                 </span>
                             </Tippy>
-                        ) : null}
+                        )}
                     </div>
 
                     {renderDeploymentDiffViaCodeEditor()}
