@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { ReactComponent as Var } from '../../assets/icons/ic-var-initial.svg'
 import Tippy from '@tippyjs/react'
 
 export const InputPluginSelection = ({
@@ -16,9 +17,8 @@ export const InputPluginSelection = ({
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
     const [highlightedIndex, setHighlightedIndex] = useState(-1) // index of the selected option, regardless of category (global index), range: 0 to ListLength - 1
-    const [highlightedCategoryIndex, setHighlightedCategoryIndex] = useState(0) // index of the category
-    const [localHighlightedIndex, setLocalHighlightedIndex] = useState(-1) // index of the element with respect to the category
     const [filteredArray, setFilteredArray] = useState([])
+    const [showVarIcon, setShowVarIcon] = useState(false)
 
     // total length of list.
     const totalLength = useMemo(() => {
@@ -74,60 +74,23 @@ export const InputPluginSelection = ({
 
     const handleOnKeyDown = (e) => {
         if (e.key === 'Backspace' && selectedValue.length === 1) {
+            setShowVarIcon(false)
             handleClear(e)
-        }
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            const categoryLength = filteredArray.length
-
-            if (e.key === 'ArrowDown') {
-                if (highlightedIndex === totalLength - 1) {
-                    setHighlightedIndex(0)
-                    setLocalHighlightedIndex(0)
-                    setHighlightedCategoryIndex(0)
-                } else if (localHighlightedIndex === filteredArray[highlightedCategoryIndex]?.options?.length - 1) {
-                    if (highlightedCategoryIndex !== categoryLength - 1) {
-                        setHighlightedCategoryIndex(highlightedCategoryIndex + 1)
-                        setLocalHighlightedIndex(0)
-                        setHighlightedIndex(highlightedIndex + 1)
-                    } else {
-                        setHighlightedCategoryIndex(0)
-                        setHighlightedIndex(0)
-                        setLocalHighlightedIndex(0)
-                    }
-                } else {
-                    setHighlightedIndex(highlightedIndex + 1)
-                    setLocalHighlightedIndex(localHighlightedIndex + 1)
-                }
-            } else if (e.key === 'ArrowUp') {
-                if (highlightedIndex <= 0) {
-                    setHighlightedIndex(totalLength - 1)
-                    setHighlightedCategoryIndex(categoryLength - 1)
-                    setLocalHighlightedIndex(filteredArray[categoryLength - 1]?.options?.length - 1)
-                } else if (localHighlightedIndex === 0) {
-                    if (highlightedCategoryIndex !== 0) {
-                        setHighlightedCategoryIndex(highlightedCategoryIndex - 1)
-                        setLocalHighlightedIndex(filteredArray[highlightedCategoryIndex - 1]?.options?.length - 1)
-                        setHighlightedIndex(highlightedIndex - 1)
-                    } else {
-                        setHighlightedCategoryIndex(categoryLength - 1)
-                        setHighlightedIndex(totalLength - 1)
-                        setLocalHighlightedIndex(filteredArray[categoryLength - 1]?.options?.length - 1)
-                    }
-                } else {
-                    setHighlightedIndex(highlightedIndex - 1)
-                    setLocalHighlightedIndex(localHighlightedIndex - 1)
-                }
-            }
+        } else if (e.key === 'ArrowDown') {
+            const nextIndex = (highlightedIndex + 1) % totalLength
+            setHighlightedIndex(nextIndex)
+        } else if (e.key === 'ArrowUp') {
+            const prevIndex = (highlightedIndex - 1 + totalLength) % totalLength
+            setHighlightedIndex(prevIndex)
         } else if (e.key === 'Enter' && highlightedIndex !== -1) {
-            const selectedOption = filteredArray[highlightedCategoryIndex]?.options[localHighlightedIndex]
+            const selectedOption = filteredArray.map((val) => val.options).flat()[highlightedIndex]
+            setShowVarIcon(true)
             if (selectedOption) {
                 setSelectedValue(selectedOption.value)
             } else {
                 setSelectedValue(e.target.value)
             }
             setHighlightedIndex(-1)
-            setHighlightedCategoryIndex(0)
-            setLocalHighlightedIndex(-1)
         }
     }
 
@@ -139,6 +102,7 @@ export const InputPluginSelection = ({
             value: e.currentTarget.dataset.key,
         }
         setVariableData(updatedTagData)
+        setShowVarIcon(true)
         setSelectedValue(_tagData.value)
     }
 
@@ -157,8 +121,6 @@ export const InputPluginSelection = ({
             !e?.relatedTarget?.classList?.value.includes(`tag-${selectedOutputVariable.format}-class`)
         ) {
             setHighlightedIndex(-1)
-            setLocalHighlightedIndex(-1)
-            setHighlightedCategoryIndex(0)
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
@@ -224,6 +186,7 @@ export const InputPluginSelection = ({
     }
 
     const handleClear = (e) => {
+        setShowVarIcon(false)
         setVariableData({
             label: '',
             value: '',
@@ -231,13 +194,15 @@ export const InputPluginSelection = ({
         setSelectedValue('')
     }
 
+    // console.log('selectedOutputVariable', selectedOutputVariable)
+
     return (
         <PopupMenu autoClose autoPosition>
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
-                {/* TODO: replace this icon with required icon */}
-                <Clear className="icon-dim-18" />
                 <ResizableTagTextArea
-                    className="form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable"
+                    className={`dc__position-rel ${
+                        selectedValue ? 'pl-28' : ''
+                    } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
                     minHeight={30}
                     maxHeight={80}
                     value={selectedValue}
@@ -248,6 +213,16 @@ export const InputPluginSelection = ({
                     tabIndex={selectedVariableIndex}
                     handleKeyDown={handleOnKeyDown}
                 />
+                {showVarIcon && (
+                    <Tippy
+                        content={'This is a variable. It will be replaced with the value during execution.'}
+                        placement="bottom-start"
+                        animation="shift-away"
+                        arrow={false}
+                    >
+                        <Var className="dc__position-abs dc__left-6 icon-dim-18 icon-n4" />
+                    </Tippy>
+                )}
             </PopupMenu.Button>
             {selectedValue && (
                 <button
