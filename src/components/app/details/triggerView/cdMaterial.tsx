@@ -27,6 +27,7 @@ import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
+import noResults from '../../../../assets/img/empty-noresult@2x.png'
 import { importComponentFromFELibrary } from '../../../common'
 import {
     CDMaterialType,
@@ -135,25 +136,28 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     componentDidUpdate(prevProps) {
         if (this.props.searchImageTag != prevProps.searchImageTag) {
-          if (this.props.searchImageTag) {
-              this.setState({
-                  searchApplied: true,
-                  showSearch: true,
-                  searchText: this.props.searchImageTag,
-              })
-          } else {
-              this.setState({
-                  searchApplied: false,
-                  showSearch: false,
-                  searchText: '',
-              })
-          }
+            if (this.props.searchImageTag) {
+                this.setState({
+                    searchApplied: true,
+                    showSearch: true,
+                    searchText: this.props.searchImageTag,
+                })
+            } else {
+                this.setState({
+                    searchApplied: false,
+                    showSearch: false,
+                    searchText: '',
+                })
+            }
         }
 
         if (this.props.material !== prevProps.material) {
             this.setState({
                 selectedMaterial: this.props.material.find((_mat) => _mat.isSelected),
-                areMaterialsPassingFilters: this.props.material.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED).length > 0
+                areMaterialsPassingFilters:
+                    this.props.material.filter(
+                        (materialDetails) => materialDetails.filterState === FilterStates.ALLOWED,
+                    ).length > 0,
             })
         }
 
@@ -161,7 +165,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.setState({
                 isRollbackTrigger: this.props.materialType === MATERIAL_TYPE.rollbackMaterialList,
                 isSelectImageTrigger: this.props.materialType === MATERIAL_TYPE.inputMaterialList,
-                selectedConfigToDeploy: this.props.materialType === MATERIAL_TYPE.rollbackMaterialList ? SPECIFIC_TRIGGER_CONFIG_OPTION : LAST_SAVED_CONFIG_OPTION,
+                selectedConfigToDeploy:
+                    this.props.materialType === MATERIAL_TYPE.rollbackMaterialList
+                        ? SPECIFIC_TRIGGER_CONFIG_OPTION
+                        : LAST_SAVED_CONFIG_OPTION,
             })
         }
 
@@ -488,12 +495,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     ) => {
         if (mat.filterState !== FilterStates.ALLOWED) {
             return (
-                <Tippy
-                    className="default-tt w-200"
-                    arrow={false}
-                    placement="top"
-                    content={EXCLUDED_IMAGE_TOOLTIP}
-                >
+                <Tippy className="default-tt w-200" arrow={false} placement="top" content={EXCLUDED_IMAGE_TOOLTIP}>
                     <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
                 </Tippy>
             )
@@ -786,7 +788,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 tagsEditable={this.props.tagsEditable}
                                 toggleCardMode={this.toggleCardMode}
                                 setTagsEditable={this.props.setTagsEditable}
-                                forceReInit={true}
+                                forceReInit
                                 hideHardDelete={this.props.hideImageTaggingHardDelete}
                                 updateCurrentAppMaterial={this.props.updateCurrentAppMaterial}
                             />
@@ -923,18 +925,21 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (isApprovalConfigured) {
             const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
             _consumedImage = consumedImage
-            materialList =
-                this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
+            materialList = approvedImages
         } else {
-            materialList =
-                this.state.isRollbackTrigger && this.state.showOlderImages
-                    ? [this.props.material[0]]
-                    : this.props.material
+            materialList = this.props.material
+        }
+
+        const eligibleImagesCount = materialList.filter((mat) => mat.filterState === FilterStates.ALLOWED).length
+
+        if (!this.state.searchApplied && this.props.resourceFilters?.length && this.state.filterView === FilterConditionViews.ELIGIBLE) {
+            materialList = materialList.filter((mat) => mat.filterState === FilterStates.ALLOWED)
         }
 
         return {
             consumedImage: _consumedImage,
             materialList,
+            eligibleImagesCount,
         }
     }
 
@@ -943,7 +948,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return
         }
 
-        this.props.handleMaterialFilters(searchValue, this.props.pipelineId, this.props.stageType, false)
+        this.props.handleMaterialFilters(
+            searchValue,
+            this.props.pipelineId,
+            this.props.stageType,
+            false,
+            this.state.isRollbackTrigger,
+        )
     }
 
     handleRefresh = (e) => {
@@ -951,10 +962,27 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (!this.props.handleMaterialFilters) {
             return
         }
-        this.props.handleMaterialFilters(null, this.props.pipelineId, this.props.stageType, false)
-        this.setState({
-            showSearch: false,
-        })
+
+        if (this.state.searchApplied) {
+            this.props.handleMaterialFilters(
+                this.props.searchImageTag,
+                this.props.pipelineId,
+                this.props.stageType,
+                false,
+                this.state.isRollbackTrigger,
+            )
+        } else {
+            this.props.handleMaterialFilters(
+                null,
+                this.props.pipelineId,
+                this.props.stageType,
+                false,
+                this.state.isRollbackTrigger,
+            )
+            this.setState({
+                showSearch: false,
+            })
+        }
     }
 
     handleSearchClick = (e) => {
@@ -1003,6 +1031,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     handleFilterTabsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation()
         const { value } = e.target
         this.setState({
             filterView: value as FilterConditionViews,
@@ -1031,35 +1060,37 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    // TODO: Have to add filtering for load more state
-    getFilterActionBarTabs = () => (
-        [
-            {
-                label: `Eligible images 0/${this.props.material.length}`,
-                value: FilterConditionViews.ELIGIBLE
-            },
-            {
-                label: `Latest ${this.props.material.length} images`,
-                value: FilterConditionViews.ALL
-            },
-        ]
-    )
+    getFilterActionBarTabs = (filteredImagesCount: number, consumedImageCount: number) => [
+        {
+            label: `Eligible images ${filteredImagesCount}/${this.props.material.length - consumedImageCount}`,
+            value: FilterConditionViews.ELIGIBLE,
+        },
+        {
+            label: `Latest ${this.props.material.length - consumedImageCount} images`,
+            value: FilterConditionViews.ALL,
+        },
+    ]
 
     renderMaterialList = (isApprovalConfigured: boolean) => {
-        const { consumedImage, materialList } = this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
+        const { consumedImage, materialList, eligibleImagesCount } =
+            this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
         const selectImageTitle = this.state.isRollbackTrigger
             ? 'Select from previously deployed images'
             : 'Select Image'
         const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
-        
+        const showActionBar =
+            FilterActionBar &&
+            !this.state.searchApplied &&
+            !!this.props.resourceFilters?.length &&
+            !this.state.showConfiguredFilters
+
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
                 <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                    {/* This condition checks if component is available and we have configured some filters then show it  */}
-                    {FilterActionBar && !!this.props.resourceFilters?.length && !this.state.showConfiguredFilters ? (
+                    {showActionBar ? (
                         <FilterActionBar
-                            tabs={this.getFilterActionBarTabs()}
+                            tabs={this.getFilterActionBarTabs(eligibleImagesCount, consumedImage.length)}
                             onChange={this.handleFilterTabsChange}
                             handleEnableFiltersView={this.handleEnableFiltersView}
                             initialTab={this.state.filterView}
@@ -1067,25 +1098,30 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ) : (
                         <span className="flex dc__align-start">{titleText}</span>
                     )}
+
                     <span className="flexbox dc__align-items-center h-32 dc__gap-16">
-                        {!this.state.isRollbackTrigger && ( // remove this condition when search/refresh for rollback is implemented
-                            <>
-                                {this.state.showSearch ? (
-                                    this.renderSearch()
-                                ) : (
-                                    <SearchIcon
-                                        onClick={this.handleSearchClick}
-                                        className="icon-dim-18 icon-color-n6 cursor"
-                                    />
-                                )}
-                                <RefreshIcon onClick={this.handleRefresh} className="icon-dim-16 scn-6 cursor" />
-                            </>
+                        {this.state.showSearch ? (
+                            this.renderSearch()
+                        ) : (
+                            <SearchIcon onClick={this.handleSearchClick} className="icon-dim-18 icon-color-n6 cursor" />
                         )}
+                        <RefreshIcon onClick={this.handleRefresh} className="icon-dim-16 scn-6 cursor" />
                     </span>
                 </div>
+
                 {materialList.length <= 0
-                    ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
+                    ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
                     : this.renderMaterial(materialList, false, isApprovalConfigured)}
+
+                {!!this.state.isRollbackTrigger && !this.state.noMoreImages && !!materialList?.length && (
+                    <button
+                        className="show-older-images-cta cta ghosted flex h-32"
+                        onClick={this.loadOlderImages}
+                        type="button"
+                    >
+                        {this.state.loadingMore ? <Progressing styles={{ height: '32px' }} /> : 'Show older images'}
+                    </button>
+                )}
             </>
         )
     }
@@ -1243,7 +1279,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {((!this.state.checkingDiff && _canReviewConfig) ||
                         isLastDeployedOption ||
                         !this.state.recentDeploymentConfig) && (
-                        <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
+                        <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>
+                            REVIEW
+                        </span>
                     )}
                 </div>
             </Tippy>
@@ -1297,6 +1335,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    // FIXME: Some issue with this as well since we are showing tippy inside tippy. Need to fix this
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
         const disableDeployButton =
@@ -1458,17 +1497,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     this.props.material.length + 1,
                     20,
                     this.handleOlderImagesLoading,
+                    this.state.searchApplied ? this.props.searchImageTag : null,
                 )
-                this.setState({
-                    showOlderImages: false,
-                    loadingMore: true,
-                })
-            } else {
-                this.setState({
-                    showOlderImages: false,
-                    noMoreImages: true,
-                })
             }
+            this.setState({
+                showOlderImages: false,
+                noMoreImages: true,
+            })
         }
     }
 
@@ -1522,22 +1557,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         isRecentConfigAvailable={this.state.recentDeploymentConfig !== null}
                     />
                 ) : (
-                    <>
-                        {this.renderMaterialList(isApprovalConfigured)}
-                        {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
-                            <button
-                                className="show-older-images-cta cta ghosted flex h-32"
-                                onClick={this.loadOlderImages}
-                                type="button"
-                            >
-                                {this.state.loadingMore ? (
-                                    <Progressing styles={{ height: '32px' }} />
-                                ) : (
-                                    'Show older images'
-                                )}
-                            </button>
-                        )}
-                    </>
+                    this.renderMaterialList(isApprovalConfigured)
                 )}
             </div>
         )
@@ -1596,7 +1616,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
+    renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean, noEligibleImages?: boolean) => {
+        if (this.props.resourceFilters?.length && noEligibleImages && !this.state.searchApplied) {
+            return (
+                <GenericEmptyState
+                    image={noResults}
+                    title="No eligible image found"
+                    subTitle={`Latest ${this.props.material.length} images are not passing the filter conditions`}
+                />
+            )
+        }
+
         if (this.props.searchImageTag) {
             return (
                 <GenericEmptyState
@@ -1607,7 +1637,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     renderButton={this.renderGenerateButton}
                 />
             )
-        } else if (isApprovalConfigured && ApprovalEmptyState) {
+        }
+
+        if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
                     className="dc__skip-align-reload-center"
@@ -1648,7 +1680,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 />
             )
         }
-        
+
         if (this.props.material.length > 0) {
             return this.props.isFromBulkCD
                 ? this.renderTriggerBody(isApprovalConfigured)

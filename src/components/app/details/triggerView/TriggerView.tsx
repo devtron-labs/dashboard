@@ -724,17 +724,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => {
         if (!offset && !size) {
             ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
             this.setState({ isLoading: true })
         }
-
         const _offset = offset || 1
         const _size = size || 20
         this.setState({ showCDModal: true })
         this.abortController = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
+        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal, searchText)
             .then((response) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
@@ -756,11 +756,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState(
                     {
                         workflows: workflows,
+                        // FIXME: Pending enum
                         materialType: 'rollbackMaterialList',
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
                         isLoading: false,
+                        resourceFilters: response.result.resourceFilters,
                     },
                     () => {
                         preventBodyScroll(true)
@@ -1382,8 +1384,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         cdNodeId,
         nodeType: DeploymentNodeType,
         isApprovalNode: boolean = false,
+        fromRollback: boolean = false,
     ) => {
-        this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        if (!fromRollback) {
+            this.onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        } else {
+            // By default setting from 1 to 20
+            this.onClickRollbackMaterial(cdNodeId, null, null, null, searchText)
+        }
         this.setState({ searchImageTag: searchText })
     }
 

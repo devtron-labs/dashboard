@@ -831,6 +831,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => {
         if (!offset && !size) {
             ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
@@ -842,7 +843,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _size = size || 20
 
         abortControllerRef.current = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, abortControllerRef.current.signal)
+        getRollbackMaterialList(cdNodeId, _offset, _size, abortControllerRef.current.signal, searchText)
             .then((response) => {
                 let _selectedNode
                 const _workflows = [...filteredWorkflows].map((workflow) => {
@@ -872,6 +873,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setCDLoading(false)
                 preventBodyScroll(true)
                 getWorkflowStatusData(_workflows)
+                setResourceFilters(response.result.resourceFilters)
                 if (callback && response.result) {
                     callback(false, response.result.length < 20)
                 }
@@ -1954,8 +1956,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         cdNodeId,
         nodeType: DeploymentNodeType,
         isApprovalNode: boolean = false,
+        fromRollback: boolean = false,
     ) => {
-        onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        if (!fromRollback) {
+            onClickCDMaterial(cdNodeId, nodeType, isApprovalNode, searchText)
+        } else {
+            // By default setting from 1 to 20
+            onClickRollbackMaterial(cdNodeId, null, null, null, searchText)
+        }
         setSearchImageTag(searchText)
     }
     

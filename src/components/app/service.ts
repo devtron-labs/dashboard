@@ -345,8 +345,9 @@ export function getRollbackMaterialList(
     offset: number,
     size: number,
     abortSignal: AbortSignal,
+    imageTag?: string,
 ): Promise<ResponseType> {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
+    const URL = imageTag ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}&search=${imageTag}` : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
@@ -356,6 +357,7 @@ export function getRollbackMaterialList(
             result: {
                 materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
                 requestedUserId: response.result?.requestedUserId,
+                resourceFilters: response.result?.resourceFilters ?? [],
             },
         }
     })

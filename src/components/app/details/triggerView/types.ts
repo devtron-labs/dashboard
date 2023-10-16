@@ -51,6 +51,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
         offset?: number,
         size?: number,
         callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
+        searchText?: string,
     ) => void
     parentPipelineId?: string
     parentPipelineType?: string
@@ -72,7 +73,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     setTagsEditable?: (tagsEditable: boolean) => void
     updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
     isApplicationGroupTrigger?: boolean
-    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
+    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
 }
