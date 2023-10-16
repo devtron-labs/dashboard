@@ -36,12 +36,12 @@ export default function TriggerViewConfigDiff({
         Object.keys(currentConfiguration?.[activeSideNavOption]?.variableSnapshot || {}).length !== 0
 
     const editorValuesRHS = convertVariables
-        ? baseTemplateConfiguration[activeSideNavOption].resolvedTemplateData
-        : baseTemplateConfiguration[activeSideNavOption].codeEditorValue.value
+        ? baseTemplateConfiguration[activeSideNavOption]?.resolvedTemplateData
+        : baseTemplateConfiguration[activeSideNavOption]?.codeEditorValue.value
 
     const editorValuesLHS = convertVariables
-        ? currentConfiguration[activeSideNavOption].resolvedTemplateData
-        : currentConfiguration[activeSideNavOption].codeEditorValue.value
+        ? currentConfiguration[activeSideNavOption]?.resolvedTemplateData
+        : currentConfiguration[activeSideNavOption]?.codeEditorValue.value
 
     const [editorValues, setEditorValues] = useState<{
         displayName: string
@@ -78,6 +78,7 @@ export default function TriggerViewConfigDiff({
             const navParentChildKeys = activeSideNavOption.split('/')
 
             if (!getNavOptions(navParentChildKeys[0]).includes(navParentChildKeys[1])) {
+                setConvertVariables(false)
                 setActiveSideNavOption(DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
                 handleNavOptionSelection(null, DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
                 return
@@ -113,6 +114,7 @@ export default function TriggerViewConfigDiff({
     const handleNavOptionSelection = (e, navConfigKey?: string) => {
         const dataValue = navConfigKey || e?.target?.dataset?.value
         if (dataValue) {
+            setConvertVariables(false)
             setActiveSideNavOption(dataValue)
 
             let _value, _defaultValue
