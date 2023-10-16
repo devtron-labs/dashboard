@@ -1113,7 +1113,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
                     : this.renderMaterial(materialList, false, isApprovalConfigured)}
 
-                {!!this.state.isRollbackTrigger && !this.state.noMoreImages && !!materialList?.length && (
+                {this.state.isRollbackTrigger && !this.state.noMoreImages && !!materialList?.length && (
                     <button
                         className="show-older-images-cta cta ghosted flex h-32"
                         onClick={this.loadOlderImages}
@@ -1483,15 +1483,26 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     handleOlderImagesLoading(loadingMore: boolean, noMoreImages?: boolean) {
-        this.setState({
-            loadingMore,
-            noMoreImages,
-        })
+        if (noMoreImages) {
+            this.setState({
+                loadingMore,
+                noMoreImages,
+            })
+        }
+        else {
+            this.setState({
+                loadingMore,
+            })
+        }
     }
 
     loadOlderImages() {
         if (this.props.onClickRollbackMaterial && !this.state.loadingMore) {
             if (this.props.material.length > 19) {
+                this.setState({
+                    loadingMore: true
+                })
+
                 this.props.onClickRollbackMaterial(
                     this.props.pipelineId,
                     this.props.material.length + 1,
@@ -1500,10 +1511,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     this.state.searchApplied ? this.props.searchImageTag : null,
                 )
             }
-            this.setState({
-                showOlderImages: false,
-                noMoreImages: true,
-            })
+            else {
+                this.setState({
+                    showOlderImages: false,
+                    noMoreImages: true,
+                })
+            }
         }
     }
 
