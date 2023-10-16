@@ -224,7 +224,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             )
         }
         const portNumberPlaceHolder = (node) => {
-            if (node?.port[node.name]?.length > 1) {
+            if (node.port && node.port[node.name]?.length > 1) {
                 return (
                     <>
                         <div>
@@ -259,7 +259,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if(node?.port[node.name]?.length ===  1){
+            } else if(node.port && node.port[node.name]?.length ===  1){
                 return `${node.name}.${node.namespace}:${node.port[node.name]}`
             } else {
                 return "Port Number is missing"
@@ -295,7 +295,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         }
 
         return nodes.map((node, index) => {
-            const nodeName = `${node.name}.${node.namespace} : ${node?.port[node.name]}`
+            const nodeName = `${node?.name}.${node.namespace} : ${node.port ? node.port[node?.name] : "null"}`
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
@@ -439,7 +439,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
                             <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                 {portNumberPlaceHolder(node)}
-                                {node.port[node.name] > 1 ? renderClipboardInteraction(nodeName) : null}
+                                {(node.port && node.port[node.name] > 1) ? renderClipboardInteraction(nodeName) : null}
                             </div>
                         )}
 
