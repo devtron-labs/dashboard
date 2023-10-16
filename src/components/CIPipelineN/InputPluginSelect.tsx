@@ -77,8 +77,6 @@ export const InputPluginSelection = ({
             handleClear(e)
         }
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            // total length of list.
-
             const categoryLength = filteredArray.length
 
             if (e.key === 'ArrowDown') {
