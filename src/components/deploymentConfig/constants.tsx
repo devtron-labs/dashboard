@@ -142,3 +142,58 @@ export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {
         noOptions: { label: 'No options', value: 0, kind: 'chartVersion' },
     },
 }
+
+export const getDeploymentConfigDropdownStyles = (overridden:boolean) => {
+    return {
+        control: (base) => ({
+            ...base,
+            backgroundColor: `${overridden ? 'var(--Y100)': 'var(--N100)'}`,
+            border: 'none',
+            boxShadow: 'none',
+            minHeight: '32px',
+            cursor: 'pointer',
+        }),
+        option: (base, state) => ({
+            ...base,
+            color: 'var(--N900)',
+            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
+        }),
+        menu: (base) => ({
+            ...base,
+            marginTop: '2px',
+            minWidth: '240px',
+        }),
+        menuList: (base) => ({
+            ...base,
+            position: 'relative',
+            paddingBottom: 0,
+            paddingTop: 0,
+            maxHeight: '250px',
+        }),
+        dropdownIndicator: (base, state) => ({
+            ...base,
+            padding: 0,
+            color: 'var(--N400)',
+            transition: 'all .2s ease',
+            transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+        }),
+        noOptionsMessage: (base) => ({
+            ...base,
+            color: 'var(--N600)',
+        }),
+    }
+}
+
+export const getApprovalPendingOption = (selectedChartVersion:string) => {
+    return {
+        id: 0,
+        label: `Approval Pending (v${selectedChartVersion})`,
+    }
+}
+
+export const getDraftOption = (selectedChartVersion:string, isValues:boolean) => {
+    return {
+        id: 1,
+        label: `${isValues ? 'Values' : 'Manifest'} from draft (v${selectedChartVersion})`,
+    }
+}
