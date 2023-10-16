@@ -194,7 +194,6 @@ export const InputPluginSelection = ({
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
                 <ResizableTagTextArea
                     className={`dc__position-rel ${
-                        // @ts-ignore
                         variableData?.variableType && variableData.variableType !== 'NEW' ? 'pl-28' : ''
                     } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
                     minHeight={30}
@@ -207,7 +206,6 @@ export const InputPluginSelection = ({
                     tabIndex={selectedVariableIndex}
                     handleKeyDown={handleOnKeyDown}
                 />
-                {/* @ts-ignore */}
                 {variableData?.variableType && variableData.variableType !== 'NEW' && (
                     <Tippy
                         content={'This is a variable. It will be replaced with the value during execution.'}
