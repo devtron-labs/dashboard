@@ -18,7 +18,6 @@ export const InputPluginSelection = ({
     const [selectedValue, setSelectedValue] = useState('')
     const [highlightedIndex, setHighlightedIndex] = useState(-1) // index of the selected option, regardless of category (global index), range: 0 to ListLength - 1
     const [filteredArray, setFilteredArray] = useState([])
-    const [showVarIcon, setShowVarIcon] = useState(false)
 
     // total length of list.
     const totalLength = useMemo(() => {
@@ -74,7 +73,6 @@ export const InputPluginSelection = ({
 
     const handleOnKeyDown = (e) => {
         if (e.key === 'Backspace' && selectedValue.length === 1) {
-            setShowVarIcon(false)
             handleClear(e)
         } else if (e.key === 'ArrowDown') {
             const nextIndex = (highlightedIndex + 1) % totalLength
@@ -84,11 +82,10 @@ export const InputPluginSelection = ({
             setHighlightedIndex(prevIndex)
         } else if (e.key === 'Enter' && highlightedIndex !== -1) {
             const selectedOption = filteredArray.map((val) => val.options).flat()[highlightedIndex]
-            setShowVarIcon(true)
+
             if (selectedOption) {
-                setSelectedValue(selectedOption.value)
-            } else {
-                setSelectedValue(e.target.value)
+                e.preventDefault()
+                setVariableData({ ...selectedOption, label: selectedOption.label, value: selectedOption.value })
             }
             setHighlightedIndex(-1)
         }
@@ -102,7 +99,6 @@ export const InputPluginSelection = ({
             value: e.currentTarget.dataset.key,
         }
         setVariableData(updatedTagData)
-        setShowVarIcon(true)
         setSelectedValue(_tagData.value)
     }
 
@@ -118,7 +114,7 @@ export const InputPluginSelection = ({
         if (
             !e.relatedTarget ||
             !e?.relatedTarget?.classList?.value ||
-            !e?.relatedTarget?.classList?.value.includes(`tag-${selectedOutputVariable.format}-class`)
+            !e?.relatedTarget?.classList?.value.includes(`tag-${selectedVariableIndex}-class`)
         ) {
             setHighlightedIndex(-1)
             let _tagData = { ...variableData }
@@ -186,7 +182,6 @@ export const InputPluginSelection = ({
     }
 
     const handleClear = (e) => {
-        setShowVarIcon(false)
         setVariableData({
             label: '',
             value: '',
@@ -194,14 +189,13 @@ export const InputPluginSelection = ({
         setSelectedValue('')
     }
 
-    // console.log('selectedOutputVariable', selectedOutputVariable)
-
     return (
         <PopupMenu autoClose autoPosition>
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
                 <ResizableTagTextArea
                     className={`dc__position-rel ${
-                        selectedValue ? 'pl-28' : ''
+                        // @ts-ignore
+                        variableData?.variableType && variableData.variableType !== 'NEW' ? 'pl-28' : ''
                     } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
                     minHeight={30}
                     maxHeight={80}
@@ -213,7 +207,8 @@ export const InputPluginSelection = ({
                     tabIndex={selectedVariableIndex}
                     handleKeyDown={handleOnKeyDown}
                 />
-                {showVarIcon && (
+                {/* @ts-ignore */}
+                {variableData?.variableType && variableData.variableType !== 'NEW' && (
                     <Tippy
                         content={'This is a variable. It will be replaced with the value during execution.'}
                         placement="bottom-start"
@@ -235,7 +230,7 @@ export const InputPluginSelection = ({
                 </button>
             )}
             <PopupMenu.Body
-                rootClassName={`mxh-210 dc__overflow-auto tag-${selectedOutputVariable.format}-class`}
+                rootClassName={`mxh-210 dc__overflow-auto tag-${selectedVariableIndex}-class`}
                 autoWidth={true}
                 preventWheelDisable={true}
                 noBackDrop={noBackDrop}
