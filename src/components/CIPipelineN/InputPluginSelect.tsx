@@ -13,7 +13,6 @@ export const InputPluginSelection = ({
     noBackDrop,
     placeholder,
     selectedVariableIndex,
-    variableMap,
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
     const [highlightedIndex, setHighlightedIndex] = useState(-1) // index of the selected option, regardless of category (global index), range: 0 to ListLength - 1
@@ -67,19 +66,10 @@ export const InputPluginSelection = ({
 
     const handleInputChange = (event): void => {
         setSelectedValue(event.target.value)
-        if (variableMap.has(event.target.value)) {
-            const updatedTagData = {
-                ...variableMap.get(event.target.value),
-                label: event.target.value,
-                value: event.target.value,
-            }
-            setVariableData(updatedTagData)
-        } else {
-            setVariableData({
-                label: event.target.value,
-                value: event.target.value,
-            })
-        }
+        setVariableData({
+            label: event.target.value,
+            value: event.target.value,
+        })
     }
 
     const handleOnKeyDown = (e) => {
@@ -174,16 +164,8 @@ export const InputPluginSelection = ({
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
-            if (variableMap.has(_tagData.value)) {
-                const updatedTagData = {
-                    ...variableMap.get(_tagData.value),
-                    label: variableData.label,
-                    value: variableData.value,
-                }
-                setVariableData(updatedTagData)
-            } else {
-                setVariableData(_tagData)
-            }
+
+            setVariableData(_tagData)
         }
     }
 
