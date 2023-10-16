@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -16,10 +16,17 @@ export const InputPluginSelection = ({
     variableMap,
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
-    const [highlightedIndex, setHighlightedIndex] = useState(-1)
-    const [highlightedCategoryIndex, setHighlightedCategoryIndex] = useState(0)
-    const [localHighlightedIndex, setLocalHighlightedIndex] = useState(-1)
+    const [highlightedIndex, setHighlightedIndex] = useState(-1) // index of the selected option, regardless of category (global index), range: 0 to ListLength - 1
+    const [highlightedCategoryIndex, setHighlightedCategoryIndex] = useState(0) // index of the category
+    const [localHighlightedIndex, setLocalHighlightedIndex] = useState(-1) // index of the element with respect to the category
     const [filteredArray, setFilteredArray] = useState([])
+
+    // total length of list.
+    const totalLength = useMemo(() => {
+        return filteredArray.reduce((acc, curr) => {
+            return acc + curr.options.length
+        }, 0)
+    }, [filteredArray])
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -29,8 +36,10 @@ export const InputPluginSelection = ({
         if (variableOptions?.length) {
             let _uniqueIdx = 0
             const filtered = variableOptions
+                // iterate over each category
                 .map((variableType) => {
                     const filteredOptions = variableType.options.filter(
+                        // filter options based on the input value
                         (val) => val.label && val.label.toLowerCase().indexOf(selectedValue.toLowerCase()) >= 0,
                     )
                     if (filteredOptions.length > 0) {
@@ -39,7 +48,7 @@ export const InputPluginSelection = ({
                             options: filteredOptions.map((option) => {
                                 const _option = {
                                     ...option,
-                                    highlightIndex: _uniqueIdx++,
+                                    highlightIndex: _uniqueIdx++, // assign a unique index to each option for keyboard navigation and highlighting
                                 }
                                 return _option
                             }),
@@ -48,7 +57,7 @@ export const InputPluginSelection = ({
                         return null
                     }
                 })
-                .filter((val) => val !== null)
+                .filter((val) => val !== null) // remove empty categories
 
             setFilteredArray(filtered)
         } else {
@@ -78,9 +87,8 @@ export const InputPluginSelection = ({
             handleClear(e)
         }
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            const totalLength = filteredArray.reduce((acc, curr) => {
-                return acc + curr.options.length
-            }, 0)
+            // total length of list.
+
             const categoryLength = filteredArray.length
 
             if (e.key === 'ArrowDown') {
