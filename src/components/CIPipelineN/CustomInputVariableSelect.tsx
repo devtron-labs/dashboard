@@ -49,7 +49,13 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
                     inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
                         (element) => {
-                            preBuildStageVariables.push({ ...element, label: element.name, value: element.name })
+                            preBuildStageVariables.push({
+                                ...element,
+                                label: element.name,
+                                value: element.name,
+                                refVariableTaskName:
+                                    formData[activeStageName]?.steps[element?.refVariableStepIndex - 1].name,
+                            })
                         },
                     )
                 }
