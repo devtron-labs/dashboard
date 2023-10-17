@@ -19,6 +19,7 @@ export const InputPluginSelection = ({
     const [selectedValue, setSelectedValue] = useState('')
     const [highlightedIndex, setHighlightedIndex] = useState(-1) // index of the selected option, regardless of category (global index), range: 0 to ListLength - 1
     const [filteredArray, setFilteredArray] = useState([])
+    const [activeElement, setActiveElement] = useState<string>('')
 
     // total length of list.
     const totalLength = useRef(0)
@@ -86,6 +87,7 @@ export const InputPluginSelection = ({
                 setVariableData({ ...selectedOption, label: selectedOption.label, value: selectedOption.value })
             }
             setHighlightedIndex(-1)
+            setActiveElement('')
         }
     }
 
@@ -98,6 +100,7 @@ export const InputPluginSelection = ({
         }
         setVariableData(updatedTagData)
         setSelectedValue(_tagData.value)
+        setActiveElement('')
     }
 
     const trimLines = (value: string) => {
@@ -115,12 +118,17 @@ export const InputPluginSelection = ({
             !e?.relatedTarget?.classList?.value.includes(`tag-${selectedVariableIndex}-class`)
         ) {
             setHighlightedIndex(-1)
+            setActiveElement('')
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
 
             setVariableData(_tagData)
         }
+    }
+
+    const handleOnFocus = (e) => {
+        setActiveElement(`tag-${selectedVariableIndex}`)
     }
 
     const renderOutputOptions = (tag: OptionsListType, index: number): JSX.Element => {
@@ -193,7 +201,7 @@ export const InputPluginSelection = ({
         })
         setSelectedValue('')
     }
-
+    const popupMenuBody = activeElement === `tag-${selectedVariableIndex}` ? renderSuggestions() : null
     return (
         <PopupMenu autoClose autoPosition>
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
@@ -206,6 +214,7 @@ export const InputPluginSelection = ({
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
+                    onFocus={handleOnFocus}
                     placeholder={placeholder}
                     refVar={refVar}
                     tabIndex={selectedVariableIndex}
@@ -227,14 +236,16 @@ export const InputPluginSelection = ({
                     <Clear className="icon-dim-18 icon-n4" />
                 </button>
             )}
-            <PopupMenu.Body
-                rootClassName={`mxh-210 dc__overflow-auto tag-${selectedVariableIndex}-class`}
-                autoWidth={true}
-                preventWheelDisable={true}
-                noBackDrop={noBackDrop}
-            >
-                {renderSuggestions()}
-            </PopupMenu.Body>
+            {popupMenuBody && (
+                <PopupMenu.Body
+                    rootClassName={`mxh-210 dc__overflow-auto tag-${selectedVariableIndex}-class`}
+                    autoWidth={true}
+                    preventWheelDisable={true}
+                    noBackDrop={noBackDrop}
+                >
+                    {popupMenuBody}
+                </PopupMenu.Body>
+            )}
         </PopupMenu>
     )
 }
