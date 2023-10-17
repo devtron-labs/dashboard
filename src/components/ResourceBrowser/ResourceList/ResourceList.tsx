@@ -290,7 +290,12 @@ export default function ResourceList() {
                 setErrorStatusCode(err['code'])
             }
         } finally {
-          setResourceListLoader(false)
+            if (
+                nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() ||
+                nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+            ) {
+                setResourceListLoader(false)
+            }
         }
     }
 
