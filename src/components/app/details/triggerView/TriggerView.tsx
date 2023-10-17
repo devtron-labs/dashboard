@@ -771,7 +771,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 )
 
                 if (callback && response.result) {
-                    callback(false, response.result.materials?.length < 20 && response.result.materials?.length !==0)
+                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
                 }
             })
             .catch((errors: ServerErrors) => {

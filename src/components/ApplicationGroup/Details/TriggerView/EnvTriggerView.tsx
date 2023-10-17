@@ -875,7 +875,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 getWorkflowStatusData(_workflows)
                 setResourceFilters(response.result.resourceFilters)
                 if (callback && response.result) {
-                    callback(false, response.result.ci_artifacts?.length < 20 && response.result.ci_artifacts?.length !==0)
+                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
                 }
             })
             .catch((errors: ServerErrors) => {
