@@ -67,7 +67,6 @@ export const StyledFormBox = (props: StyledFieldPropsType) => {
 
 export const StyledInput = (props: StyledInputPropsType): JSX.Element => {
     const [inputValue, setInputValue] = useState(props.value ?? '')
-
     const onValueChange = (e) => {
         setInputValue(e.target.value)
 

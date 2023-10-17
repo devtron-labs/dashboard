@@ -19,6 +19,7 @@
         "fast-json-patch": "^3.1.1",
         "flexsearch": "^0.6.32",
         "http-proxy-middleware": "^2.0.4",
+        "loadsh": "^0.0.4",
         "marked": "^4.3.0",
         "moment": "^2.29.4",
         "monaco-editor": "^0.19.3",

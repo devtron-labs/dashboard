@@ -23,7 +23,8 @@ export interface StyledFieldPropsType {
     isRequired?: boolean
     errorMessage?: string
     showBox?: boolean
-    children: React.ReactNode
+    children: React.ReactNode,
+    key?:string
 }
 
 export interface StyledInputPropsType extends WidgetPropsType {

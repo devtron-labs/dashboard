@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment ,useEffect} from 'react'
 import {
     StyledInput,
     StyledSelect,
@@ -16,6 +16,8 @@ import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import _ from 'lodash';
+
 
 
 
@@ -97,37 +99,47 @@ const updateYamlDocument = (
     valuesYamlDocument: YAML.Document.Parsed,
     dispatch: React.Dispatch<ChartValuesViewAction>,
     type: string='',
+    arrayIndex?:string,
+    arrPath:string[]=[],
+    arraySchema?:Map<string,any>
 ): void => {
-    const index=type?property.key.split('-')[1]:null
-    const arraySchema = type ? schemaJson.get(type).items[index] : null
-    const originalSchemaJson=new Map<string, any>(schemaJson)
-    schemaJson = type ? arraySchema : schemaJson
-    schemaJson.set(property.key, {
-        ...property,
-        value: _newValue,
-    })
-    if(type)originalSchemaJson.set(type,schemaJson)
-
+    const index=type?arrayIndex:null
+    if(arraySchema){
+        arraySchema.set(property.key, {
+            ...property,
+            value: _newValue,
+        })
+    }
+    else{
+        schemaJson.set(property.key, {
+            ...property,
+            value: _newValue,
+        })
+    }
+    
     const pathKey = property.key.split('/')
-    if (valuesYamlDocument.hasIn(pathKey)) {
-        valuesYamlDocument.setIn(pathKey, property.type === 'select' ? _newValue.value : _newValue)
+    pathKey.unshift(...arrPath)
+    if(property.singleField)pathKey.pop()
+    const newArrPath=arrPath.join('/').split('/')
+    if (valuesYamlDocument.hasIn(newArrPath)) {
+        valuesYamlDocument.setIn(newArrPath, property.type === 'select' ? _newValue.value : _newValue)
     } else {
-        const { pathToSetIn, valueToSetIn } = getPathAndValueToSetIn(pathKey, valuesYamlDocument, _newValue)
+        const { pathToSetIn, valueToSetIn } = getPathAndValueToSetIn(newArrPath, valuesYamlDocument, _newValue,type,arrayIndex)
         if (typeof valueToSetIn !== 'undefined' && valueToSetIn !== null && valuesYamlDocument.contents) {
             valuesYamlDocument.setIn(pathToSetIn, valueToSetIn)
         }
     }
 
-    // dispatch({
-    //     type: ChartValuesViewActionTypes.multipleOptions,
-    //     payload: {
-    //         schemaJson: type === 'array' ? originalSchemaJson : schemaJson,
-    //         ...(valuesYamlDocument.contents && {
-    //             valuesYamlDocument,
-    //             modifiedValuesYaml: valuesYamlDocument.toString(),
-    //         }),
-    //     },
-    // })
+    dispatch({
+        type: ChartValuesViewActionTypes.multipleOptions,
+        payload: {
+            schemaJson,
+            ...(valuesYamlDocument.contents && {
+                valuesYamlDocument,
+                modifiedValuesYaml: valuesYamlDocument.toString(),
+            }),
+        },
+    })
 }
 
 const renderChildGUIWidget = (
@@ -137,16 +149,23 @@ const renderChildGUIWidget = (
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
-    type: string='',
+    arrayIndex?:string,
+    type?:string,
+    arrPath:string[]=[],
+    arrayScehma?:Map<string,any>
 ): JSX.Element | null => {
-    const index=type?_childKey.split('-')[1]:null
-    const arraySchema = type ? schemaJson.get(type).items[index] : null
+    const arraySchema = type ? schemaJson.get(type).items[arrayIndex] : null
     const originalSchemaJson=new Map<string, any>(schemaJson)
     schemaJson = type ? arraySchema : schemaJson
     const _childProps = schemaJson.get(_childKey)
     if (_childProps.type === 'formBox' && _childProps.children) {
-        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch,true,type)
-    } else {
+        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch,true,arrayIndex,type,arrPath,arrayScehma)
+    } 
+    else if(_childProps.type=='array')
+    {
+        return renderGUIWidget(_childProps, schemaJson, valuesYamlDocument, formValidationError, dispatch,true,arrayIndex,type,arrPath,arrayScehma)
+    }
+    else {
         if (isFieldHidden(_childProps, schemaJson)) {
             return null
         }
@@ -157,7 +176,7 @@ const renderChildGUIWidget = (
             return getGUIWidget(
                 _childProps,
                 (_newValue) => {
-                    updateYamlDocument(_newValue, _childProps, originalSchemaJson, valuesYamlDocument, dispatch,type)
+                    updateYamlDocument(_newValue, _childProps, originalSchemaJson, valuesYamlDocument, dispatch,type,arrayIndex,arrPath,arrayScehma)
                 },
                 formValidationError,
             )
@@ -198,41 +217,95 @@ const isFieldHidden = (props: any, schemaJson: Map<string, any>): boolean => {
 
     return props.parentRef && checkIfChildIsHidden(props, schemaJson)
 }
-const addRow=(props,dispatch: React.Dispatch<ChartValuesViewAction>,schemaJson:Map<string, any>,)=>{
-    // newItemSchema.key=`${props.title}/${props.title}-${(props.items.size() || 0) + 1}`
-    const newItemSchema=new Map<string, any>()
-    props.itemType.forEach((value,key)=>{
-        const newValue=structuredClone(value)
-        if(newValue.type==='formBox'){
-            newValue.children=newValue.children.map((childKey)=>`${childKey}-${props.items.length}`)
-            newValue.required=newValue.required.map((childKey)=>`${childKey}-${props.items.length}`)
-            newValue.showField=newValue.showField.map((childKey)=>`${childKey}-${props.items.length}`)
-        }
-        const newKey=`${key}-${props.items.length}`
-        newValue.key=`${value.key}-${props.items.length}`
-        newValue.parentRef=newValue.parentRef?`${newValue.parentRef}-${props.items.length}`:newValue.parentRef
-        newItemSchema.set(newKey,newValue)
-    })
-    const newArray=[...props.items,newItemSchema]
-    schemaJson.set(props.key, {
-        ...props,
-        items: newArray,
-    })
+const addRow=(props,dispatch: React.Dispatch<ChartValuesViewAction>,schemaJson:Map<string, any>,valuesYamlDocument: YAML.Document.Parsed,arrPath:string[])=>{
+    let childSchema
+    if (arrPath.length > 1) {
+        childSchema=schemaJson.get(arrPath[0]).items[arrPath[1]]
+    }
+    const parsedValuesYamlDocument=YAML.parseDocument(valuesYamlDocument.toString())
+    const newItemSchema=_.cloneDeep(props.itemType);
+    const newArray={...props.items,[Object.values(props.items).length]:newItemSchema}
+    if(childSchema){
+        childSchema.set(props.key, {
+            ...props,
+            items: newArray,
+        })
+    }
+    else{
+        schemaJson.set(props.key, {
+            ...props,
+            items: newArray,
+        })
+    }
+    
+    const newArrPath=arrPath.join('/').split('/')
+    
+    parsedValuesYamlDocument.setIn([...newArrPath,Object.values(props.items).length],props.defaultValue??"")
 
     dispatch({
         type: ChartValuesViewActionTypes.multipleOptions,
         payload: {
-            schemaJson
+            schemaJson,
+            valuesYamlDocument: parsedValuesYamlDocument,
+            modifiedValuesYaml: parsedValuesYamlDocument.toString()    
         },
     })
-    // props.set(title, (newArrayFieldCount.get(title) || 0) + 1)
-    // setArrayFieldCount(newArrayFieldCount)
 }
 
-const removeRow=(title:string,setArrayFieldCount,arrayFieldCount)=>{
-    const newArrayFieldCount=new Map<string, number>(arrayFieldCount)
-    newArrayFieldCount.set(title, (Math.max(newArrayFieldCount.get(title) - 1,0)))
-    setArrayFieldCount(newArrayFieldCount)
+const removeRow = (
+    props,
+    dispatch: React.Dispatch<ChartValuesViewAction>,
+    schemaJson: Map<string, any>,valuesYamlDocument: YAML.Document.Parsed,
+    arrPath:string[],
+) => {
+    const newSchemaJson = new Map<string, any>(schemaJson)
+    let childSchema
+    if(arrPath.length>2){
+        console.log(newSchemaJson.get(arrPath[0]).items[arrPath[1]])
+        childSchema=newSchemaJson.get(arrPath[0]).items[arrPath[1]]
+    }
+    const parsedValuesYamlDocument=YAML.parseDocument(valuesYamlDocument.toString())
+    const elementIndex=arrPath.slice(-1)[0]
+    const arrayElements = { ...props.items }
+    delete arrayElements[elementIndex]
+    
+
+    const newArrayElements = {}
+    let newIndex = 0
+    for (const key in arrayElements) {
+        newArrayElements[newIndex++] = arrayElements[key]
+    }
+    if(childSchema){
+        childSchema.set(props.key, {
+            ...props,
+            items: newArrayElements,
+        })
+    }
+    else{
+        newSchemaJson.set(props.key, {
+            ...props,
+            items: newArrayElements,
+        })
+    }
+    // newSchemaJson.set(props.key, {
+    //     ...props,
+    //     items: newArrayElements,
+    // })
+    const newArrPath=arrPath.join('/').split('/')
+    console.log('arrpath',newArrPath.slice(0,-1))
+    console.log('value',parsedValuesYamlDocument.getIn(newArrPath.slice(0,-1))['items'])
+    const remainingItems=parsedValuesYamlDocument.getIn(newArrPath.slice(0,-1))['items'].splice(elementIndex,1)
+    // console.log('remaing',remainingItems)
+    // parsedValuesYamlDocument.setIn(arrPath,remainingItems)
+    // console.log('ipdated yaml',parsedValuesYamlDocument.toString())
+    dispatch({
+        type: ChartValuesViewActionTypes.multipleOptions,
+        payload: {
+            schemaJson: newSchemaJson,
+            valuesYamlDocument: parsedValuesYamlDocument,
+            modifiedValuesYaml: parsedValuesYamlDocument.toString()      
+        },
+    })
 }
 
 const getArrayElements = (
@@ -241,33 +314,53 @@ const getArrayElements = (
     valuesYamlDocument: YAML.Document.Parsed,
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
-    setArrayFieldCount?: React.Dispatch<React.SetStateAction<Map<string, number>>>,
-    arrayFieldCount?: Map<string, number>,
+    arrPath:string[]
 ): JSX.Element[] => {
     const arrayElements = []
-    for (let i = 0; i < props.items.length; i++) {
-        arrayElements.push(
-            <div className="flexbox" key={props.items[i].key}>
-                {[...props.items[i].values()].map((value) => {
-                     return renderGUIWidget(
-                        value,
-                        schemaJson,
-                        valuesYamlDocument,
-                        formValidationError,
-                        dispatch,
-                        false,
-                        props.key,
-                    )
-                })}
-                {props.items.length >= 1 && (
-                    <Close
-                        className="option-close-icon icon-dim-16 pointer scr-5 bw-1 br-4 en-2"
-                        onClick={() => removeRow(props.title, setArrayFieldCount, arrayFieldCount)}
-                    />
-                )}
-            </div>,
-        )
-    }
+    
+        for (const key in props.items) {
+            console.log('key',props.items)
+            arrayElements.push(
+                <div key={Math.random()} className="flexbox">
+                    <div>
+                        {props.eachItemTitle && (
+                            <div className="fs-14 fw-6 p-0 mb-16 lh-20"> {props.eachItemTitle}</div>
+                        )}
+                        {props.eachItemTitle && <hr />}
+                        <div className="flexbox-col">
+                            {[...props.items[key].values()].map((value, index) => {
+                                return (
+                                    <div key={value.key}>
+                                        {renderGUIWidget(
+                                            value,
+                                            schemaJson,
+                                            valuesYamlDocument,
+                                            formValidationError,
+                                            dispatch,
+                                            false,
+                                            key,
+                                            props.key,
+                                            arrPath.concat(key),
+                                            props.items[key],
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                    <div>
+                        {Object.values(props.items).length >= 1 && (
+                            <Close
+                                className="option-close-icon icon-dim-16 pointer scr-5 bw-1 br-4 en-2 ml-4"
+                                onClick={() =>
+                                    removeRow(props, dispatch, schemaJson, valuesYamlDocument, arrPath.concat(key))
+                                }
+                            />
+                        )}
+                    </div>
+                </div>,
+            )
+        }
     return arrayElements
 }
 
@@ -278,27 +371,29 @@ const renderGUIWidget = (
     formValidationError: Record<string, boolean>,
     dispatch: React.Dispatch<ChartValuesViewAction>,
     fromParent?: boolean,
-    type: string='',
+    arrayIndex?:string,
+    type?:string,
+    arrPath:string[]=[],
+    arrayScehma?:Map<string,any>
     
-   
 ): JSX.Element | null => {
     if (!isFieldHidden(props, schemaJson) && (!props.parentRef || fromParent)) {
         if (props.type === 'formBox' && props.children) {
             return props.showField ? (
                 <StyledFormBox key={props.key} {...props}>
-                    {props.children.map((_childKey) =>{
-                        const x=renderChildGUIWidget(
+                    {props.children.map((_childKey) =>
+                        renderChildGUIWidget(
                             _childKey,
                             schemaJson,
                             valuesYamlDocument,
                             formValidationError,
                             dispatch,
                             false,
-                            type)
-                      
-                        return x
-                        },
-                        
+                            arrayIndex,
+                            type,
+                            arrPath,
+                            arrayScehma
+                        ),
                     )}
                 </StyledFormBox>
             ) : (
@@ -311,31 +406,67 @@ const renderGUIWidget = (
                             formValidationError,
                             dispatch,
                             false,
-                            type
+                            arrayIndex,
+                            type,
+                            arrPath,
+                            arrayScehma
                         ),
                     )}
                 </Fragment>
             )
         } else if (props.type == 'array') {
+            const newArrPath=[...arrPath,props.key]
+            props.defaultValue = props.defaultValue ?? valuesYamlDocument.getIn([props.key, 0])
 
-            return (
-                <StyledFormBox key={props.key} {...props}>
-                    {getArrayElements(props, schemaJson, valuesYamlDocument, formValidationError, dispatch)}
-                    <div
-                        className="flexbox flex-align-center pointer cb-5 fw-6 fs-13 lh-32 w-120"
-                        onClick={() => addRow(props,dispatch,schemaJson)}
-                    >
-                        <Add className="icon-dim-20 fcb-5 mr-6" />
-                        <div>Add Item</div>
-                    </div>
-                </StyledFormBox>
-            )
-        } else {
+            if (props.singleField) {
+                return (
+                    <Fragment key={props.key}>
+                        {getArrayElements(
+                            props,
+                            schemaJson,
+                            valuesYamlDocument,
+                            formValidationError,
+                            dispatch,
+                            newArrPath,
+                        )}
+                        <div
+                            className="flexbox flex-align-center pointer cb-5 fw-6 fs-13 lh-32 w-120"
+                            onClick={() => addRow(props, dispatch, schemaJson, valuesYamlDocument, newArrPath)}
+                        >
+                            <Add className="icon-dim-20 fcb-5 mr-6" />
+                            <div>Add Item</div>
+                        </div>
+                    </Fragment>
+                )
+            } else
+                return (
+                    <StyledFormBox {...props}>
+                        {getArrayElements(
+                            props,
+                            schemaJson,
+                            valuesYamlDocument,
+                            formValidationError,
+                            dispatch,
+                            newArrPath,
+                        )}
+                        <div
+                            className="flexbox flex-align-center pointer cb-5 fw-6 fs-13 lh-32 w-120"
+                            onClick={() => addRow(props, dispatch, schemaJson, valuesYamlDocument, newArrPath)}
+                        >
+                            <Add className="icon-dim-20 fcb-5 mr-6" />
+                            <div>Add Item</div>
+                        </div>
+                    </StyledFormBox>
+                )
+            
+            
+        } 
+        else {
             props['isRequired'] = isRequiredField(props, fromParent, schemaJson)
             return getGUIWidget(
                 props,
                 (_newValue) => {
-                    updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch)
+                    updateYamlDocument(_newValue, props, schemaJson, valuesYamlDocument, dispatch,type,arrayIndex,arrPath,arrayScehma)
                 },
                 formValidationError,
             )
@@ -343,6 +474,7 @@ const renderGUIWidget = (
     }
     return null
 }
+
 
 const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
     if (props.fetchingSchemaJson) {
@@ -356,6 +488,8 @@ const ChartValuesGUIForm = (props: ChaartValuesGUIFormType): JSX.Element => {
             />
         )
     }
+    console.log('here value',props.schemaJson)
+    // console.log('here value',props.schemaJson.get('migrations').items[0].value)
 
     return (
         <div

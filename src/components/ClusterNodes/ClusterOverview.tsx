@@ -180,7 +180,7 @@ function ClusterOverview({
                     additionalContent={metricsApiTippyContent()}
                     interactive={true}
                     documentationLinkText="View metrics-server helm chart"
-                    documentationLink={`/dashboard/${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
+                    documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
                 >
                     <TippyIcon className="icon-dim-20 ml-8 cursor fcn-5" />
                 </TippyCustomized>

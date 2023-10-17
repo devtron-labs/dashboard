@@ -8,6 +8,7 @@ import {
     getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { groupStyle } from '../../common/ReactSelect.utils'
+import _ from 'lodash';
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -224,7 +225,7 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
         const _parentValue = schemaJson.get(property.parentRef)
 
         if (_parentValue?.required) {
-            return _parentValue.required.includes(property.key.split('/').slice(1).join('/'))
+            return _parentValue.required.includes(property.key.split('/').slice(-1).join('/'))
         } else if (property.parentRef) {
             return isRequiredField(_parentValue, true, schemaJson)
         }
@@ -233,7 +234,7 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
     return !!property.required
 }
 
-const convertItemsToObj = (items) => {
+export const convertItemsToObj = (items) => {
     const itemsObj = {}
     for (let item of items) {
         itemsObj[item.key.value] = item.value.value
@@ -271,6 +272,8 @@ export const getPathAndValueToSetIn = (
     pathKey: string[],
     valuesYamlDocument: YAML.Document.Parsed,
     _newValue: any,
+    type?: string,
+    arrIndex?: string,
 ): {
     pathToSetIn: string[]
     valueToSetIn: any
@@ -279,6 +282,7 @@ export const getPathAndValueToSetIn = (
         valueToSetIn
     const parentPathKey = pathKey.slice(0, pathKey.length - 1)
     const parentValue = valuesYamlDocument.getIn(parentPathKey)
+    if(type)
     if (
         typeof parentValue === 'undefined' ||
         parentValue === null ||
@@ -303,20 +307,40 @@ export const getAndUpdateSchemaValue = (
     modifiedValuesYaml: string,
     schemaJson: Map<string, any>,
     dispatch: (action: ChartValuesViewAction) => void,
+    arrPath?: string[],
 ): void => {
     const parsedValuesYamlDocument = YAML.parseDocument(modifiedValuesYaml || '')
-    const updatedSchemaJson = schemaJson
-
+    let updatedSchemaJson = schemaJson
     if (updatedSchemaJson?.size && parsedValuesYamlDocument?.contents) {
         for (let [key, value] of updatedSchemaJson) {
-            const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
-            value.value =
-                value['type'] === 'select'
-                    ? value['enum']?.includes(_value)
+            const path=key.split('/')
+            if(arrPath)path.unshift(...arrPath)
+            // if(type)path.unshift(type,index)
+            if(value.type==='array')
+            {   
+                const noOfItems = parsedValuesYamlDocument.getIn(path).items.length
+                updateArrayElements(updatedSchemaJson, key, noOfItems, dispatch)
+                
+                let allItems=updatedSchemaJson.get(key).items
+               Object.keys(allItems).forEach((arrIndex)=>{
+                    //@ts-ignore
+                    const _path = [...path, arrIndex]
+                    getAndUpdateSchemaValue(modifiedValuesYaml,allItems[arrIndex],dispatch,_path)
+               })
+            }
+            if(value.singleField)
+            {
+                path.pop()
+            }
+            const _value = parsedValuesYamlDocument.getIn(path) ?? updatedSchemaJson[key].default
+            const updatedValue = updatedSchemaJson.get(key)
+            updatedValue.value =
+                updatedValue['type'] === 'select'
+                    ? updatedValue['enum']?.includes(_value)
                         ? { label: _value, value: _value }
                         : null
                     : _value
-            updatedSchemaJson.set(key, value)
+            updatedSchemaJson.set(key, updatedValue)
         }
     }
 
@@ -329,6 +353,28 @@ export const getAndUpdateSchemaValue = (
     })
 }
 
+const updateArrayElements=(schema:Map<string, any>,key:string,noOfItems:number,dispatch)=>
+{
+    if(Object.values(schema.get(key).items).length===noOfItems)return schema
+    // const newItemSchema=new Map<string, any>(schema)
+    const props=schema.get(key)
+    const newItems={}
+    if(Object.values(props.items).length!==noOfItems)
+    {
+        // let count=Object.values(props.items).length
+        for(let i=0;i<noOfItems;i++)
+        {
+            newItems[i]=_.cloneDeep(props.itemType);
+            // new Map<string, any>(JSON.parse(JSON.stringify([...props.itemType])))
+        }
+    }
+    const newArray={...newItems}
+    schema.set(key, {
+        ...props,
+        items: newArray,
+    })
+    
+}
 const getPathKeyAndPropsPair = (
     schema,
     parentRef = '',
@@ -348,12 +394,14 @@ const getPathKeyAndPropsPair = (
                     showField: true,
                     parentRef: parentRef,
                     value:property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
-                    itemType: arrayItemType(property.items, property.items?.title),
-                    items:[]
+                    itemType: arrayItemType(property.items,property.title),
+                    eachItemTitle:property.items.title,
+                    items:{}
                 }
                 pathKeyAndPropsPair.set(propertyPath, newProps)
                 
-            } else {
+            } else 
+            {
                 const haveChildren = property.type === 'object' && property.properties
                 
                 const newProps = {
@@ -374,25 +422,68 @@ const getPathKeyAndPropsPair = (
                 }
 
             }
-            
-
         })
     }
-
     return pathKeyAndPropsPair
 }
 
-const arrayItemType=(property,propertyKey)=>{
+const arrayItemType=(property,title)=>{
     const pathKeyAndPropsPair=new Map<string, any>()
-    const newSchema={}
-    newSchema['properties']={[propertyKey]:property}
-    getPathKeyAndPropsPair(newSchema, '', pathKeyAndPropsPair)
+    if(property.type==='object')
+    {
+        if(property.properties)
+        {
+            Object.keys(property.properties).forEach((key) =>{
+                getSchemaForArrayType(property.properties[key],key,pathKeyAndPropsPair)
+            })
+        }
+    }
+    else{
+        const singleField=property.type!== 'array' && property.type!== 'object'
+        getSchemaForArrayType(property,title,pathKeyAndPropsPair,singleField)
+    }
+    return pathKeyAndPropsPair
+}
+const getSchemaForArrayType = (property, propertyKey, pathKeyAndPropsPair,singleField=false) => {
+    if (property.type === 'array') {
+        const newProps={
+            ...property,
+            type: 'array',
+            key: propertyKey,
+            showBox: false,
+            showField: true,
+            parentRef: '',
+            value:property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
+            itemType: arrayItemType(property.items,property.title),
+            items:{}
+        }
+        pathKeyAndPropsPair.set(propertyKey, newProps)
+    } else {
+        const haveChildren = property.type === 'object' && property.properties
+        const newProps = {
+            ...property,
+            key: propertyKey,
+            type: getFieldType(property.type, property.render, !!property.enum),
+            showBox: property.type === 'object' && property.form,
+            value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
+            showField: true,
+            parentRef: '',
+            singleField:singleField,
+            children: haveChildren && Object.keys(property.properties).map((key) => `${propertyKey}/${key}`),
+        }
+        delete newProps['properties'] // Don't need properties as they're already being flatten
+        pathKeyAndPropsPair.set(propertyKey, newProps)
+        if (haveChildren) {
+            getPathKeyAndPropsPair(property, propertyKey, pathKeyAndPropsPair)
+        }
+    }
     return pathKeyAndPropsPair
 }
 
 export const convertSchemaJsonToMap = (valuesSchemaJson: string): Map<string, any> | null => {
     if (valuesSchemaJson?.trim()) {
         try {
+            console.log('schema',valuesSchemaJson)
             return getPathKeyAndPropsPair(JSON.parse(valuesSchemaJson))
         } catch (e) {
             showError(e)
