@@ -4,6 +4,7 @@ import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Var } from '../../assets/icons/ic-var-initial.svg'
 import Tippy from '@tippyjs/react'
+import { TIPPY_VAR_MSG } from './Constants'
 
 export const InputPluginSelection = ({
     selectedOutputVariable,
@@ -211,12 +212,7 @@ export const InputPluginSelection = ({
                     handleKeyDown={handleOnKeyDown}
                 />
                 {variableData?.variableType && variableData.variableType !== 'NEW' && (
-                    <Tippy
-                        content={'This is a variable. It will be replaced with the value during execution.'}
-                        placement="bottom-start"
-                        animation="shift-away"
-                        arrow={false}
-                    >
+                    <Tippy content={TIPPY_VAR_MSG} placement="bottom-start" animation="shift-away" arrow={false}>
                         <Var className="dc__position-abs dc__left-6 icon-dim-18 icon-n4" />
                     </Tippy>
                 )}
