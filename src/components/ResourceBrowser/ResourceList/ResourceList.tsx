@@ -365,9 +365,8 @@ export default function ResourceList() {
             .then((response) => {
                 if (response.result) {
                   response.result.sort((a, b) => a['name'].localeCompare(b['name']))
-                  const sortedResult = response.result.filter((item) => !item?.isVirtualCluster)
-                  setTerminalCluster(sortedResult)
-                  setClusterList(sortedResult)
+                  setTerminalCluster(response.result)
+                  setClusterList(response.result)
                 }
                 setTerminalLoader(false)
             })
@@ -390,7 +389,7 @@ export default function ResourceList() {
                 clusterNamespaceList(),
             ])
             if (clusterList.result) {
-                const _clusterList = clusterList.result.filter((resource) => !resource?.isVirtualCluster)
+                const _clusterList = clusterList.result
                 const _clusterOptions = convertToOptionsList(
                     sortObjectArrayAlphabetically(_clusterList, 'name'),
                     'name',
