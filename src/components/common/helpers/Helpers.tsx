@@ -19,11 +19,7 @@ import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 
-// import { createRequire } from 'node:module'
-
-// const require = createRequire(import.meta.url)
-
-
+let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
 export type IntersectionOptions = {
@@ -842,14 +838,24 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = async(componentName: string, defaultComponent?, type?: string) => {
-  //return defaultComponent
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
-       let module={} //= await import('@devtron-labs/devtron-fe-lib')
-        if (type === 'function') {
-            return module[componentName] || defaultComponent || null
+        let component = defaultComponent || null
+        if (!module) {
+            const path = '../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js'
+            const modules = import.meta.glob(`../../../../node_modules/@devtron-labs/devtron-fe-lib/dist/index.js`, {
+                eager: true,
+            })
+            module = modules[path]
         }
-        return module[componentName]?.default || defaultComponent || null
+        if (module) {
+            if (type === 'function') {
+                component = module[componentName]
+            } else {
+                component = module[componentName]?.default
+            }
+        }
+        return component
     } catch (e) {
         if (e['code'] !== 'MODULE_NOT_FOUND') {
             throw e
