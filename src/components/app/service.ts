@@ -381,12 +381,19 @@ function cdMaterialListModal(
 
     const markFirstSelected = offset===1
     const startIndex = offset-1
+    let isImageMarked = false
+
     const materials = artifacts.map((material, index) => {
         let artifactStatusValue = ''
         const filterState = material.filterState ?? FilterStates.ALLOWED
 
         if (artifactId && artifactStatus && material.id === artifactId) {
             artifactStatusValue = artifactStatus
+        }
+
+        const selectImage = !isImageMarked && markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable : false
+        if (selectImage) {
+            isImageMarked = true
         }
 
         return {
@@ -402,7 +409,7 @@ function cdMaterialListModal(
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
-            isSelected: markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable && index === 0 : false,
+            isSelected: selectImage,
             showSourceInfo: false,
             deployed: material.deployed || false,
             latest: material.latest || false,

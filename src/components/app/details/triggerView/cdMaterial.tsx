@@ -1630,7 +1630,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean, noEligibleImages?: boolean) => {
-        if (this.props.resourceFilters?.length && noEligibleImages && !this.state.searchApplied) {
+        if (
+            this.props.resourceFilters?.length &&
+            noEligibleImages &&
+            !this.state.searchApplied &&
+            this.props.material.length - Number(consumedImagePresent) > 0
+        ) {
             return (
                 <GenericEmptyState
                     image={noResults}
