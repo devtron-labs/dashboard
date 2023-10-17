@@ -439,7 +439,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
                             <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
                                 {portNumberPlaceHolder(node)}
-                                {(node.port && node.port[node.name]?.servicePorts?.length > 1) ? renderClipboardInteraction(nodeName) : null}
+                                {(node.port && node.port[node.name]?.servicePorts?.length > 1) ? null : renderClipboardInteraction(nodeName)}
                             </div>
                         )}
 
