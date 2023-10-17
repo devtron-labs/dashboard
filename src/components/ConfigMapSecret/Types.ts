@@ -191,6 +191,7 @@ export interface ConfigMapState {
     showProtectedDeleteModal: boolean
     showProtectedDeleteOverrideModal: boolean
     draftPayload: any
+    isValidateFormError: boolean
 }
 export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
 
@@ -224,6 +225,7 @@ export enum ConfigMapActionTypes {
     toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
     toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
+    setValidateFormError = 'setValidateFormError',
 }
 
 export interface ConfigMapAction {
