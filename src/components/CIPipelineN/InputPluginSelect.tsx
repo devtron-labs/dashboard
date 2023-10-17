@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -20,11 +20,7 @@ export const InputPluginSelection = ({
     const [filteredArray, setFilteredArray] = useState([])
 
     // total length of list.
-    const totalLength = useMemo(() => {
-        return filteredArray.reduce((acc, curr) => {
-            return acc + curr.options.length
-        }, 0)
-    }, [filteredArray])
+    const totalLength = useRef(0)
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -56,6 +52,7 @@ export const InputPluginSelection = ({
                     }
                 })
                 .filter((val) => val !== null) // remove empty categories
+            totalLength.current = _uniqueIdx // set total length of list
 
             setFilteredArray(filtered)
         } else {
@@ -75,10 +72,10 @@ export const InputPluginSelection = ({
         if (e.key === 'Backspace' && selectedValue.length === 1) {
             handleClear(e)
         } else if (e.key === 'ArrowDown') {
-            const nextIndex = (highlightedIndex + 1) % totalLength
+            const nextIndex = (highlightedIndex + 1) % totalLength.current
             setHighlightedIndex(nextIndex)
         } else if (e.key === 'ArrowUp') {
-            const prevIndex = (highlightedIndex - 1 + totalLength) % totalLength
+            const prevIndex = (highlightedIndex - 1 + totalLength.current) % totalLength.current
             setHighlightedIndex(prevIndex)
         } else if (e.key === 'Enter' && highlightedIndex !== -1) {
             const selectedOption = filteredArray.map((val) => val.options).flat()[highlightedIndex]
@@ -139,7 +136,14 @@ export const InputPluginSelection = ({
                 onClick={(e) => onSelectValue(e, tag)}
                 data-testid={`tag-label-value-${index}`}
             >
-                {tag?.label || ''}
+                <div className="flexbox dc__content-space dc__align-items-center">
+                    <span>{tag?.label || ''}</span>
+
+                    <span className=" font-roboto cn-5 fw-4">
+                        {/* @ts-ignore */}
+                        {tag?.refVariableTaskName}
+                    </span>
+                </div>
             </div>
         )
     }

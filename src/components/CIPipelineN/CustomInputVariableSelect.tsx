@@ -34,7 +34,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
         if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
             inputVariablesListFromPrevStep[activeStageName][selectedTaskIndex].forEach((element) => {
-                previousStepVariables.push({ ...element, label: element.name, value: element.name })
+                previousStepVariables.push({
+                    ...element,
+                    label: element.name,
+                    value: element.name,
+                    refVariableTaskName: formData[activeStageName]?.steps[element?.refVariableStepIndex - 1].name,
+                })
             })
         }
         if (activeStageName === BuildStageVariable.PostBuild) {
@@ -65,6 +70,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                             label: currentVariableDetails.name,
                             value: currentVariableDetails.name,
                             refVariableStepIndex: preBuildTaskLength,
+                            refVariableTaskName:
+                                formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1].name,
                             refVariableStage: RefVariableStageType.PRE_CI,
                         })
                     }
