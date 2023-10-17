@@ -207,7 +207,10 @@ export const InputPluginSelection = ({
             <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
                 <ResizableTagTextArea
                     className={`dc__position-rel ${
-                        variableData?.variableType && variableData.variableType !== 'NEW' ? 'pl-28' : ''
+                        variableData.refVariableStage ||
+                        (variableData?.variableType && variableData.variableType !== 'NEW')
+                            ? 'pl-28'
+                            : ''
                     } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
                     minHeight={30}
                     maxHeight={80}
@@ -220,7 +223,8 @@ export const InputPluginSelection = ({
                     tabIndex={selectedVariableIndex}
                     handleKeyDown={handleOnKeyDown}
                 />
-                {variableData?.variableType && variableData.variableType !== 'NEW' && (
+                {(variableData.refVariableStage ||
+                    (variableData?.variableType && variableData.variableType !== 'NEW')) && (
                     <Tippy content={TIPPY_VAR_MSG} placement="bottom-start" animation="shift-away" arrow={false}>
                         <Var className="dc__position-abs dc__left-6 icon-dim-18 icon-n4" />
                     </Tippy>

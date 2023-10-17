@@ -17,6 +17,7 @@ export interface OptionType {
 export interface ExtendedOptionType extends OptionType {
     format?: string
     variableType?: string
+    refVariableStage?: string
 }
 
 export interface NumberOptionType {
