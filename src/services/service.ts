@@ -47,6 +47,11 @@ export const getGitProviderListAuth = (appId: string) => {
     return get(URL)
 }
 
+export function getDisabledGitProvider(appId: number | string, providerId: number | string ) {
+    const URL = `${Routes.APP}/${appId}/autocomplete/disabled-git/${providerId}`
+    return get(URL)
+}
+
 export const getTeamList = (): Promise<TeamList> => {
     const URL = `${Routes.PROJECT_LIST}`
     return get(URL).then((response) => {
