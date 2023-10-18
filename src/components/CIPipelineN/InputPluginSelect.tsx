@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { InputPluginSelectionType, OptionsListType } from '../ConfigMapSecret/Types'
 import { PopupMenu, ResizableTagTextArea } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { ReactComponent as Var } from '../../assets/icons/ic-var-initial.svg'
 import Tippy from '@tippyjs/react'
+import { TIPPY_VAR_MSG } from './Constants'
 
 export const InputPluginSelection = ({
     selectedOutputVariable,
@@ -15,8 +17,12 @@ export const InputPluginSelection = ({
     selectedVariableIndex,
 }: InputPluginSelectionType) => {
     const [selectedValue, setSelectedValue] = useState('')
-    const [highlightedIndex, setHighlightedIndex] = useState(-1)
+    const [highlightedIndex, setHighlightedIndex] = useState(-1) // index of the selected option, regardless of category (global index), range: 0 to ListLength - 1
     const [filteredArray, setFilteredArray] = useState([])
+    const [activeElement, setActiveElement] = useState<string>('')
+
+    // total length of list.
+    const totalLength = useRef(0)
 
     useEffect(() => {
         setSelectedValue(selectedOutputVariable.value)
@@ -24,9 +30,32 @@ export const InputPluginSelection = ({
 
     useEffect(() => {
         if (variableOptions?.length) {
+            let _uniqueIdx = 0
             const filtered = variableOptions
-                .filter((tag) => tag.options.length > 0)[0]
-                .options.filter((tag) => tag.label.toLowerCase().indexOf(selectedValue.toLowerCase()) >= 0)
+                // iterate over each category
+                .map((variableType) => {
+                    const filteredOptions = variableType.options.filter(
+                        // filter options based on the input value
+                        (val) => val.label && val.label.toLowerCase().indexOf(selectedValue.toLowerCase()) >= 0,
+                    )
+                    if (filteredOptions.length > 0) {
+                        return {
+                            label: variableType.label,
+                            options: filteredOptions.map((option) => {
+                                const _option = {
+                                    ...option,
+                                    highlightIndex: _uniqueIdx++, // assign a unique index to each option for keyboard navigation and highlighting
+                                }
+                                return _option
+                            }),
+                        }
+                    } else {
+                        return null
+                    }
+                })
+                .filter((val) => val !== null) // remove empty categories
+            totalLength.current = _uniqueIdx // set total length of list
+
             setFilteredArray(filtered)
         } else {
             setFilteredArray([])
@@ -44,37 +73,34 @@ export const InputPluginSelection = ({
     const handleOnKeyDown = (e) => {
         if (e.key === 'Backspace' && selectedValue.length === 1) {
             handleClear(e)
-        }
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            setHighlightedIndex((prevIndex) => {
-                if (e.key === 'ArrowUp') {
-                    if(prevIndex === -1 || prevIndex === 0) return -1;
-                    return prevIndex <= 0 ? filteredArray.length - 1 : prevIndex - 1
-                } else if (e.key === 'ArrowDown') {
-                    return prevIndex === filteredArray.length - 1 ? 0 : prevIndex + 1
-                }
-            })
-            if (highlightedIndex != -1) {
-                const selectedVariable = filteredArray[highlightedIndex]
-                renderOutputOptions(selectedVariable, highlightedIndex)
-            }
+        } else if (e.key === 'ArrowDown') {
+            const nextIndex = (highlightedIndex + 1) % totalLength.current
+            setHighlightedIndex(nextIndex)
+        } else if (e.key === 'ArrowUp') {
+            const prevIndex = (highlightedIndex - 1 + totalLength.current) % totalLength.current
+            setHighlightedIndex(prevIndex)
         } else if (e.key === 'Enter' && highlightedIndex !== -1) {
-            const selectedOption = filteredArray[highlightedIndex]
+            const selectedOption = filteredArray.map((val) => val.options).flat()[highlightedIndex]
+
             if (selectedOption) {
-                setSelectedValue(selectedOption.value)
-            } else {
-                setSelectedValue(e.target.value)
+                e.preventDefault()
+                setVariableData({ ...selectedOption, label: selectedOption.label, value: selectedOption.value })
             }
             setHighlightedIndex(-1)
+            setActiveElement('')
         }
     }
 
-    const onSelectValue = (e): void => {
+    const onSelectValue = (e, tag): void => {
         let _tagData = variableData
-        _tagData.label = e.currentTarget.dataset.key
-        _tagData.value = e.currentTarget.dataset.key
-        setVariableData(_tagData)
+        const updatedTagData = {
+            ...tag,
+            label: e.currentTarget.dataset.key,
+            value: e.currentTarget.dataset.key,
+        }
+        setVariableData(updatedTagData)
         setSelectedValue(_tagData.value)
+        setActiveElement('')
     }
 
     const trimLines = (value: string) => {
@@ -89,14 +115,20 @@ export const InputPluginSelection = ({
         if (
             !e.relatedTarget ||
             !e?.relatedTarget?.classList?.value ||
-            !e?.relatedTarget?.classList?.value.includes(`tag-${selectedOutputVariable.format}-class`)
+            !e?.relatedTarget?.classList?.value.includes(`tag-${selectedVariableIndex}-class`)
         ) {
             setHighlightedIndex(-1)
+            setActiveElement('')
             let _tagData = { ...variableData }
             let trimmedValue = trimLines(selectedValue)
             _tagData.value = trimmedValue
+
             setVariableData(_tagData)
         }
+    }
+
+    const handleOnFocus = (e) => {
+        setActiveElement(`tag-${selectedVariableIndex}`)
     }
 
     const renderOutputOptions = (tag: OptionsListType, index: number): JSX.Element => {
@@ -104,16 +136,23 @@ export const InputPluginSelection = ({
         return (
             <div
                 key={index}
-                data-key={tag?.label || ""}
+                data-key={tag?.label || ''}
                 className={
                     isHighlighted
                         ? 'dc__bg-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8'
                         : 'dc__hover-n50 dc__ellipsis-right lh-20 fs-13 fw-4 pt-6 pr-8 pb-6 pl-8 cursor'
                 }
-                onClick={onSelectValue}
+                onClick={(e) => onSelectValue(e, tag)}
                 data-testid={`tag-label-value-${index}`}
             >
-                {tag?.label || ""}
+                <div className="flexbox dc__content-space dc__align-items-center">
+                    <span>{tag?.label || ''}</span>
+
+                    <span className=" font-roboto cn-5 fw-4">
+                        {/* @ts-ignore */}
+                        {tag?.refVariableTaskName}
+                    </span>
+                </div>
             </div>
         )
     }
@@ -121,27 +160,34 @@ export const InputPluginSelection = ({
     const renderSuggestions = () => {
         return (
             <>
-                {filteredArray.map((_tag, idx) => {
+                {filteredArray.map((_tag) => {
                     return (
-                        <div>
-                            {_tag.description ? (
-                                <Tippy
-                                    key={idx}
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="right"
-                                    content={
-                                        <span className="fs-12 fw-6 cn-0 dc__break-word">
-                                            <div className="mb-10">{_tag.description}</div>
-                                        </span>
-                                    }
-                                >
-                                    {renderOutputOptions(_tag, idx)}
-                                </Tippy>
-                            ) : (
-                                renderOutputOptions(_tag, idx)
-                            )}
-                        </div>
+                        <>
+                            <div className="bcn-1 h-28 flexbox dc__align-items-center pl-10 fw-6">
+                                <span>{_tag.label}</span>
+                            </div>
+                            <div>
+                                {_tag.options.map((option, idx) => {
+                                    return option?.description ? (
+                                        <Tippy
+                                            key={idx}
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="right"
+                                            content={
+                                                <span className="fs-12 fw-6 cn-0 dc__break-word">
+                                                    <div className="mb-10">{option.description}</div>
+                                                </span>
+                                            }
+                                        >
+                                            {renderOutputOptions(option, option.highlightIndex)}
+                                        </Tippy>
+                                    ) : (
+                                        renderOutputOptions(option, option.highlightIndex)
+                                    )
+                                })}
+                            </div>
+                        </>
                     )
                 })}
             </>
@@ -155,22 +201,34 @@ export const InputPluginSelection = ({
         })
         setSelectedValue('')
     }
-
+    const popupMenuBody = activeElement === `tag-${selectedVariableIndex}` ? renderSuggestions() : null
     return (
         <PopupMenu autoClose autoPosition>
-            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp">
+            <PopupMenu.Button rootClassName="dc__bg-n50 flex top dc__no-border-imp flexbox dc__align-items-center dc__content-start">
                 <ResizableTagTextArea
-                    className="form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable"
+                    className={`dc__position-rel ${
+                        variableData.refVariableStage ||
+                        (variableData?.variableType && variableData.variableType !== 'NEW')
+                            ? 'pl-28'
+                            : ''
+                    } form__input tag-input pt-4-imp pb-4-imp fs-13 scrollable`}
                     minHeight={30}
                     maxHeight={80}
                     value={selectedValue}
                     onChange={handleInputChange}
                     onBlur={handleOnBlur}
+                    onFocus={handleOnFocus}
                     placeholder={placeholder}
                     refVar={refVar}
                     tabIndex={selectedVariableIndex}
                     handleKeyDown={handleOnKeyDown}
                 />
+                {(variableData.refVariableStage ||
+                    (variableData?.variableType && variableData.variableType !== 'NEW')) && (
+                    <Tippy content={TIPPY_VAR_MSG} placement="bottom-start" animation="shift-away" arrow={false}>
+                        <Var className="dc__position-abs dc__left-6 icon-dim-18 icon-n4" />
+                    </Tippy>
+                )}
             </PopupMenu.Button>
             {selectedValue && (
                 <button
@@ -180,15 +238,18 @@ export const InputPluginSelection = ({
                     onClick={handleClear}
                 >
                     <Clear className="icon-dim-18 icon-n4" />
-                </button>)}
-            <PopupMenu.Body
-                rootClassName={`mxh-210 dc__overflow-auto tag-${selectedOutputVariable.format}-class`}
-                autoWidth={true}
-                preventWheelDisable={true}
-                noBackDrop={noBackDrop}
-            >
-                {renderSuggestions()}
-            </PopupMenu.Body>
+                </button>
+            )}
+            {popupMenuBody && (
+                <PopupMenu.Body
+                    rootClassName={`mxh-210 dc__overflow-auto tag-${selectedVariableIndex}-class`}
+                    autoWidth={true}
+                    preventWheelDisable={true}
+                    noBackDrop={noBackDrop}
+                >
+                    {popupMenuBody}
+                </PopupMenu.Body>
+            )}
         </PopupMenu>
     )
 }

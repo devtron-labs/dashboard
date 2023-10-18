@@ -1,16 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react'
-import {
-    RefVariableType,
-    PluginType,
-    RefVariableStageType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { RefVariableType, PluginType, RefVariableStageType } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildStageVariable } from '../../config'
 import { ExtendedOptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
 import { InputPluginSelection } from './InputPluginSelect'
 import { SuggestedTagOptionType } from '../ConfigMapSecret/Types'
-
 
 function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariableIndex: number }) {
     const refVar = useRef(null)
@@ -24,7 +19,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         formDataErrorObj,
         setFormDataErrorObj,
         validateTask,
-        isCdPipeline
+        isCdPipeline,
     } = useContext(pipelineContext)
     const [selectedOutputVariable, setSelectedOutputVariable] = useState<ExtendedOptionType>({
         label: '',
@@ -39,7 +34,12 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
 
         if (inputVariablesListFromPrevStep[activeStageName].length > 0) {
             inputVariablesListFromPrevStep[activeStageName][selectedTaskIndex].forEach((element) => {
-                previousStepVariables.push({ ...element, label: element.name, value: element.name })
+                previousStepVariables.push({
+                    ...element,
+                    label: element.name,
+                    value: element.name,
+                    refVariableTaskName: formData[activeStageName]?.steps[element?.refVariableStepIndex - 1].name,
+                })
             })
         }
         if (activeStageName === BuildStageVariable.PostBuild) {
@@ -49,7 +49,13 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 if (inputVariablesListFromPrevStep[BuildStageVariable.PreBuild].length > 0) {
                     inputVariablesListFromPrevStep[BuildStageVariable.PreBuild][preBuildTaskLength - 1].forEach(
                         (element) => {
-                            preBuildStageVariables.push({ ...element, label: element.name, value: element.name })
+                            preBuildStageVariables.push({
+                                ...element,
+                                label: element.name,
+                                value: element.name,
+                                refVariableTaskName:
+                                    formData[activeStageName]?.steps[element?.refVariableStepIndex - 1].name,
+                            })
                         },
                     )
                 }
@@ -70,25 +76,26 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                             label: currentVariableDetails.name,
                             value: currentVariableDetails.name,
                             refVariableStepIndex: preBuildTaskLength,
+                            refVariableTaskName:
+                                formData[BuildStageVariable.PreBuild].steps[preBuildTaskLength - 1].name,
                             refVariableStage: RefVariableStageType.PRE_CI,
                         })
                     }
                 }
             }
             setInputVariableOptions([
-            {
-                label: 'From Pre-build Stage',
-                options: preBuildStageVariables,
-            },
-            {
-                label: 'From Post-build Stage',
-                options: previousStepVariables,
-            },
-            {
-                label: 'System variables',
-                options: globalVariables,
-            },
-
+                {
+                    label: 'From Pre-build Stage',
+                    options: preBuildStageVariables,
+                },
+                {
+                    label: 'From Post-build Stage',
+                    options: previousStepVariables,
+                },
+                {
+                    label: 'System variables',
+                    options: globalVariables,
+                },
             ])
         } else {
             setInputVariableOptions([
@@ -98,13 +105,15 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                 },
                 {
                     label: 'System variables',
-                    options: globalVariables.filter((variable) => (isCdPipeline && variable.stageType !== 'post-cd') || (!excludeVariables.includes(variable.value))),
-
+                    options: globalVariables.filter(
+                        (variable) =>
+                            (isCdPipeline && variable.stageType !== 'post-cd') ||
+                            !excludeVariables.includes(variable.value),
+                    ),
                 },
             ])
         }
         setSelectedVariableValue()
-
     }, [inputVariablesListFromPrevStep, selectedTaskIndex, activeStageName])
 
     const handleOutputVariableSelector = (selectedValue: ExtendedOptionType) => {
@@ -174,18 +183,18 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
         const selectedValueLabel =
             (selectedVariable.variableType === RefVariableType.NEW
                 ? selectedVariable.value
-                : selectedVariable.refVariableName) || ''     
+                : selectedVariable.refVariableName) || ''
         setSelectedOutputVariable({ ...selectedVariable, label: selectedValueLabel, value: selectedValueLabel })
     }
 
     return (
         <InputPluginSelection
-            placeholder='Select source or input value'
+            placeholder="Select source or input value"
             selectedOutputVariable={selectedOutputVariable}
             setVariableData={handleOutputVariableSelector}
             variableData={selectedOutputVariable}
             refVar={refVar}
-            variableOptions={inputVariableOptions}        
+            variableOptions={inputVariableOptions}
             selectedVariableIndex={selectedVariableIndex}
         />
     )
