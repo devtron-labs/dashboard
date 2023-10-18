@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TableHeaderCell } from './TableHeaderCell'
 import { TableRow } from './TableRow'
 import { TableCell } from './TableCell'
 import { SortOrder, TableBodyConfig, TableProps } from './types'
-
 import './table.scss'
 
 /**
@@ -22,10 +23,35 @@ const getRequestedSortOrder = ({ clickedHeaderCellId, sortedHeaderCellId, curren
 }
 
 /**
- * TODO: Add documentation
+ * Generic table component with the support for following:
+ * - Config based headers and body
+ * - Empty state
+ * - Sorting
+ * - Action Buttons
+ * - Tooltips for header (with icon) and body cells
+ * - Custom component rendering support in the configuration
+ * - Sticky header
+ *
+ * @example Default usage
+ * ```tsx
+ * const tableData = {
+ *  headers: [...],
+ *  body: [...],
+ *  onRowClick: () => {},
+ *  sortConfig: {...},
+ *  actionButtons: [...],
+ *  emptyStateProps: {...},
+ * }
+ *
+ * <Table {...tableData} />
+ * ```
+ *
+ * Notes:
+ * - Override the `dc-table__header-cell--{size}` for customizing the column widths, where size can be 'xs', 'sm', 'md', 'lg' or 'xl'.
+ * - The component handles the sorting order but the state needs to handled using callback.
  */
 export const Table = (props: TableProps) => {
-    const { actionButtons, headers, body, onRowClick, sortConfig } = props
+    const { actionButtons, headers, body, onRowClick, sortConfig, emptyStateProps } = props
     const [currentHoveredRow, setCurrentHoveredRow] = useState<TableBodyConfig['id']>()
 
     const handleHover = (e, { id: rowId, eventType }: { id: TableBodyConfig['id']; eventType: 'enter' | 'leave' }) => {
@@ -60,44 +86,47 @@ export const Table = (props: TableProps) => {
                     </TableRow>
                 </thead>
                 <tbody className="dc-table__body">
-                    {body.length
-                        ? body.map((row) => {
-                              // Check for object based row configuration
-                              const isRowDataArray = Array.isArray(row.data)
-                              return (
-                                  <TableRow
-                                      key={`row-${row.id}`}
-                                      onMouseEnter={
-                                          isRowDataArray
-                                              ? undefined
-                                              : (e) => handleHover(e, { id: row.id, eventType: 'enter' })
-                                      }
-                                      onMouseLeave={
-                                          isRowDataArray
-                                              ? undefined
-                                              : (e) => handleHover(e, { id: row.id, eventType: 'leave' })
-                                      }
-                                      onClick={(e) => onRowClick(e, { rowId: row.id })}
-                                  >
-                                      {(Array.isArray(row.data)
-                                          ? row.data
-                                          : row.data({ rowId: row.id, isHovered: currentHoveredRow === row.id })
-                                      ).map((cellData, index) => (
-                                          <TableCell key={`row-${row.id}-cell-${index}`} cellData={cellData} />
-                                      ))}
-                                      {/* TODO: This is broken on displaying action buttons */}
-                                      {actionButtons?.length > 0 && (
-                                          <div className="dc-table__action-buttons">
-                                              {actionButtons.map((actionButton) =>
-                                                  actionButton.getActionButton({ rowId: row.id }),
-                                              )}
-                                          </div>
-                                      )}
-                                  </TableRow>
-                              )
-                          })
-                        : // TODO: Update the Null State
-                          'No Results Found!'}
+                    {body.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={headers.length} cellData={<GenericEmptyState {...emptyStateProps} />} />
+                        </TableRow>
+                    ) : (
+                        body.map((row) => {
+                            // Check for object based row configuration
+                            const isRowDataArray = Array.isArray(row.data)
+                            return (
+                                <TableRow
+                                    key={`row-${row.id}`}
+                                    onMouseEnter={
+                                        isRowDataArray
+                                            ? undefined
+                                            : (e) => handleHover(e, { id: row.id, eventType: 'enter' })
+                                    }
+                                    onMouseLeave={
+                                        isRowDataArray
+                                            ? undefined
+                                            : (e) => handleHover(e, { id: row.id, eventType: 'leave' })
+                                    }
+                                    onClick={(e) => onRowClick(e, { rowId: row.id })}
+                                >
+                                    {(Array.isArray(row.data)
+                                        ? row.data
+                                        : row.data({ rowId: row.id, isHovered: currentHoveredRow === row.id })
+                                    ).map((cellData, index) => (
+                                        <TableCell key={`row-${row.id}-cell-${index}`} cellData={cellData} />
+                                    ))}
+                                    {/* TODO: This is broken on displaying action buttons */}
+                                    {actionButtons?.length > 0 && (
+                                        <div className="dc-table__action-buttons">
+                                            {actionButtons.map((actionButton) =>
+                                                actionButton.getActionButton({ rowId: row.id }),
+                                            )}
+                                        </div>
+                                    )}
+                                </TableRow>
+                            )
+                        })
+                    )}
                 </tbody>
             </table>
         </div>

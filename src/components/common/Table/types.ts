@@ -1,12 +1,10 @@
 import { ReactNode, SyntheticEvent } from "react";
 import { TippyProps } from "@tippyjs/react";
+import { GenericEmptyStateType } from "@devtron-labs/devtron-fe-common-lib";
 
 // TODOs:
 // - Add fix for action buttons
-// - No Results Found
-//-  Documentation
-// - Table tags v/s grid
-// - Complete sticky header
+// - Complete sticky header?
 
 /**
  * Type for the ID
@@ -16,7 +14,7 @@ import { TippyProps } from "@tippyjs/react";
 type ID = string | number;
 
 /**
- * Available sort orders
+ * Available sort orders:
  * - ASC: Ascending
  * - DESC: Descending
  * - null: No sorting
@@ -53,7 +51,7 @@ export interface SortConfig {
 
 /**
  * Available table sizes
- * 
+ *
  * - xs: Extra small
  * - sm: Small
  * - md: Medium
@@ -69,7 +67,7 @@ interface TooltipConfig {
     content: TippyProps['content'];
     /**
      * Tooltip placement
-     * 
+     *
      * @default top
      */
     placement?: TippyProps['placement'];
@@ -143,6 +141,10 @@ type TableBodyData = ReactNode | TableBodyDataWithTooltipConfig;
 
 export interface TableCellProps {
     cellData: TableBodyData;
+    /**
+     * To make a cell span over multiple columns
+     */
+    colSpan?: number;
 }
 
 export interface TableBodyConfig {
@@ -190,4 +192,8 @@ export interface TableProps {
      * Action button configuration
      */
     actionButtons?: ActionButton[];
+    /**
+     * Empty state for the table
+     */
+    emptyStateProps?: GenericEmptyStateType;
 }
