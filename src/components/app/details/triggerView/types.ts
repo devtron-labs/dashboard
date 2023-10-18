@@ -172,6 +172,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     selectedEnv?: Environment
     setSelectedEnv?: (selectedEnv: Environment) => void;
     environmentLists?: any[]
+    isJobCI?: boolean
 }
 
 export interface RegexValueType {

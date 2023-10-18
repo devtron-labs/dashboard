@@ -24,6 +24,7 @@ import {
 } from '../../service'
 import {
     createGitCommitUrl,
+    getCIPipelineURL,
     importComponentFromFELibrary,
     ISTTimeModal,
     preventBodyScroll,
@@ -1014,7 +1015,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
     redirectToCIPipeline = () => {
         this.props.history.push(
-            `/job/${this.props.match.params.appId}/edit/workflow/${this.state.workflowId}/ci-pipeline/${this.state.ciNodeId}/build`,
+            getCIPipelineURL(this.props.match.params.appId, this.state.workflowId.toString(), true, this.state.ciNodeId, true, false),
         )
     }
     selectCommit = (materialId: string, hash: string): void => {
@@ -1349,6 +1350,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 selectedEnv={this.state.selectedEnv}
                                 setSelectedEnv={this.setSelectedEnv}
                                 environmentLists={this.state.environmentLists}
+                                isJobCI={!!nd.isJobCI}
                             />
                         )}
                     </div>

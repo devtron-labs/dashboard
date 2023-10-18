@@ -23,6 +23,7 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     isFirstTrigger: boolean
     isCacheAvailable: boolean
     isLinkedCI: boolean
+    isJobCI: boolean
     isWebhookCI: boolean
     parentAppId: number
     parentCIPipelineId: number
