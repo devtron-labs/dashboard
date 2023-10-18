@@ -3,29 +3,29 @@ import React, { useState } from 'react'
 import { TableHeaderCell } from './TableHeaderCell'
 import { TableRow } from './TableRow'
 import { TableCell } from './TableCell'
-import { TableBody } from './TableBody'
-import { TableHead } from './TableHead'
 import { SortOrder, TableBodyConfig, TableProps } from './types'
 
 import './table.scss'
 
+/**
+ * Returns the next sort order to be applied to the header cell
+ */
 const getRequestedSortOrder = ({ clickedHeaderCellId, sortedHeaderCellId, currentSortOrder }): SortOrder => {
     if (clickedHeaderCellId === sortedHeaderCellId) {
-        if (currentSortOrder === 'ASC') {
-            return 'DESC'
-        } else if (currentSortOrder === 'DESC') {
+        if (!currentSortOrder) {
             return 'ASC'
-        } else {
-            return null
         }
+        return currentSortOrder === 'ASC' ? 'DESC' : null
     } else {
         return 'ASC'
     }
 }
 
+/**
+ * TODO: Add documentation
+ */
 export const Table = (props: TableProps) => {
-    // TODO: Add support for action buttons
-    const { headers, body, onRowClick, sortConfig } = props
+    const { actionButtons, headers, body, onRowClick, sortConfig } = props
     const [currentHoveredRow, setCurrentHoveredRow] = useState<TableBodyConfig['id']>()
 
     const handleHover = (e, { id: rowId, eventType }: { id: TableBodyConfig['id']; eventType: 'enter' | 'leave' }) => {
@@ -33,9 +33,9 @@ export const Table = (props: TableProps) => {
     }
 
     return (
-        <div className="dc__overflow-scroll max-w-100">
+        <div className="dc__overflow-scroll max-w-100 max-h-100">
             <table className="dc-table">
-                <TableHead>
+                <thead className="dc-table__head">
                     <TableRow>
                         {headers.map((header) => (
                             <TableHeaderCell
@@ -46,7 +46,6 @@ export const Table = (props: TableProps) => {
                                         ? (e) =>
                                               sortConfig?.sortFunction?.(e, {
                                                   clickedHeaderCellId: header.id,
-                                                  // order: sortConfig.order,
                                                   requestedSortOrder: getRequestedSortOrder({
                                                       clickedHeaderCellId: header.id,
                                                       sortedHeaderCellId: sortConfig.sortedHeaderCellId,
@@ -59,10 +58,11 @@ export const Table = (props: TableProps) => {
                             />
                         ))}
                     </TableRow>
-                </TableHead>
-                <TableBody>
+                </thead>
+                <tbody className="dc-table__body">
                     {body.length
                         ? body.map((row) => {
+                              // Check for object based row configuration
                               const isRowDataArray = Array.isArray(row.data)
                               return (
                                   <TableRow
@@ -82,15 +82,23 @@ export const Table = (props: TableProps) => {
                                       {(Array.isArray(row.data)
                                           ? row.data
                                           : row.data({ rowId: row.id, isHovered: currentHoveredRow === row.id })
-                                      ).map((cell, index) => (
-                                          <TableCell key={`row-${row.id}-cell-${index}`}>{cell}</TableCell>
+                                      ).map((cellData, index) => (
+                                          <TableCell key={`row-${row.id}-cell-${index}`} cellData={cellData} />
                                       ))}
+                                      {/* TODO: This is broken on displaying action buttons */}
+                                      {actionButtons?.length > 0 && (
+                                          <div className="dc-table__action-buttons">
+                                              {actionButtons.map((actionButton) =>
+                                                  actionButton.getActionButton({ rowId: row.id }),
+                                              )}
+                                          </div>
+                                      )}
                                   </TableRow>
                               )
                           })
                         : // TODO: Update the Null State
                           'No Results Found!'}
-                </TableBody>
+                </tbody>
             </table>
         </div>
     )

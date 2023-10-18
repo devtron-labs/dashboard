@@ -1,4 +1,11 @@
+@mixin column-width($width) {
+    width: #{$width}px;
+    max-width: #{$width}px;
+}
+
 .dc-table {
+    $parent-selector: &;
+
     width: 100%;
     table-layout: fixed;
     position: relative;
@@ -6,35 +13,58 @@
     &__head {
         position: sticky;
         top: 0;
+        z-index: 1;
         // Table uses collapsed border which are not visible with position sticky hence using box-shadow as a border
         box-shadow: 0 0 0 1px var(--N200);
-        
+
         > tr {
-            // height: 36px;
             background: var(--N0);
             border-bottom: none;
 
             &:hover {
-                background-color: inherit;
+                background-color: var(--N0);
                 cursor: auto;
             }
         }
     }
 
     &__header-cell {
-        color: var(--N700, #3B444C);
+        color: var(--N700);
         font-size: 12px;
         font-weight: 600;
         line-height: 20px;
         text-transform: uppercase;
         padding-inline: 8px;
-    }
+        position: sticky;
 
-    &__body {
-        // TODO: Remove this
+        & .sort {
+            background-repeat: no-repeat;
+        }
+
+        &--xs {
+            @include column-width(50);
+        }
+
+        &--sm {
+            @include column-width(100);
+        }
+
+        &--md {
+            @include column-width(200);
+        }
+
+        &--lg {
+            @include column-width(300);
+        }
+
+        &--xl {
+            @include column-width(400);
+        }
+
     }
 
     &__row {
+
         > th, td {
             &:first-child {
                 padding-left: 20px;
@@ -56,6 +86,15 @@
         &:hover {
             background-color: var(--N50);
             cursor: pointer;
+            position: relative;
+
+            // TODO: Handle action buttons
+            // #{$parent-selector}__action-buttons {
+            //     display: block;
+            //     position: fixed;
+            //     right: 10px;
+            // }
+
         }
     }
 
@@ -65,5 +104,9 @@
         font-weight: 400;
         line-height: 20px;
         padding-inline: 8px;
+    }
+
+    &__action-buttons {
+        display: none;
     }
 }

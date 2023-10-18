@@ -1,14 +1,32 @@
-import React, { PropsWithChildren } from "react";
-import { TableCellProps } from "./types";
+import React from 'react'
 
-export const TableCell = (props: PropsWithChildren<TableCellProps>) => {
-  const { children } = props;
+import Tippy from '@tippyjs/react'
 
-  return (
-    <td
-      className="dc-table__cell dc__ellipsis-right"
-    >
-      {children}
-    </td>
-  );
-};
+import { TableBodyDataWithTooltipConfig, TableCellProps } from './types'
+
+/**
+ * For narrowing down the type
+ */
+function isDataWithTooltipConfig(data: TableCellProps['cellData']): data is TableBodyDataWithTooltipConfig {
+    return (data as TableBodyDataWithTooltipConfig).value !== undefined
+}
+
+export const TableCell = (props: TableCellProps) => {
+    const { cellData } = props
+
+    return (
+        <td className="dc-table__cell dc__ellipsis-right">
+            {isDataWithTooltipConfig(cellData) ? (
+                <Tippy
+                    content={cellData.tooltipConfig.content}
+                    placement={cellData.tooltipConfig.placement ?? 'top'}
+                    className="default-tt"
+                >
+                    <div>{cellData.value}</div>
+                </Tippy>
+            ) : (
+                cellData
+            )}
+        </td>
+    )
+}

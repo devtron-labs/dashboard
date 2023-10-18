@@ -1,65 +1,193 @@
-import { TippyProps } from "@tippyjs/react";
 import { ReactNode, SyntheticEvent } from "react";
+import { TippyProps } from "@tippyjs/react";
 
 // TODOs:
-// tooltips for cell
+// - Add fix for action buttons
+// - No Results Found
+//-  Documentation
+// - Table tags v/s grid
+// - Complete sticky header
 
+/**
+ * Type for the ID
+ *
+ * Note: These should be unique across.
+ */
 type ID = string | number;
 
+/**
+ * Available sort orders
+ * - ASC: Ascending
+ * - DESC: Descending
+ * - null: No sorting
+ *
+ * TODO: Reuse from existing sort order
+ */
 export type SortOrder = 'ASC' | 'DESC' | null;
 
-export interface SortConfig {
-    order: SortOrder;
-    sortedHeaderCellId?: ID;
-    sortFunction: (e: SyntheticEvent, {
-        requestedSortOrder,
-        clickedHeaderCellId
-    }: {
-        requestedSortOrder: SortOrder;
-        clickedHeaderCellId: ID;
-    }) => void;
+interface SortFunctionParams {
+    /**
+     * Sort order to be next applied to the column
+     */
+    requestedSortOrder: SortOrder;
+    /**
+     * ID of the clicked header as per the config
+     */
+    clickedHeaderCellId: ID;
 }
 
-export type TableSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'auto';
+export interface SortConfig {
+    /**
+     * Current active sort order
+     */
+    order: SortOrder;
+    /**
+     * Header ID on which sorting is applied
+     */
+    sortedHeaderCellId?: ID;
+    /**
+     * Function to handle the sorting logic
+     */
+    sortFunction: (event: SyntheticEvent, params: SortFunctionParams) => void;
+}
 
-export interface TableHeadProps { }
+/**
+ * Available table sizes
+ * 
+ * - xs: Extra small
+ * - sm: Small
+ * - md: Medium
+ * - lg: Large
+ * - xl: Extra large
+ */
+export type TableSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 interface TooltipConfig {
-    content: ReactNode;
+    /**
+     * Content for the tooltip
+     */
+    content: TippyProps['content'];
+    /**
+     * Tooltip placement
+     * 
+     * @default top
+     */
     placement?: TippyProps['placement'];
+    /**
+     * Helper icon to be used for displaying the tooltip
+     */
     showIcon?: boolean;
 }
 
 export interface TableHeaderCellProps {
+    /**
+     * Unique identifier for the header cell
+     */
     id: ID;
+    /**
+     * Content for the header cell. It can be string, number or a react component
+     */
     value: ReactNode;
+    /**
+     * Size of the header cell.
+     * 
+     * Note: It controls the size of the whole column
+     */
     size?: TableSize;
+    /**
+     * Configuration for the tooltip for the header cell
+     */
     tooltipConfig?: TooltipConfig;
+    /**
+     * onClick callback for the header cell
+     */
     onClick?: (event: SyntheticEvent) => void;
+    /**
+     * Denotes whether the header cell is sortable or not
+     */
     isSortable?: boolean;
+    /**
+     * Current sort order
+     */
     sortOrder?: SortOrder;
 }
 
 export interface TableRowProps {
+    /**
+     * Unique ID for the row
+     */
     id?: ID;
+    /**
+     * Mouse enter event for handling the hovering logic
+     */
     onMouseEnter?: (event: SyntheticEvent) => void;
+    /**
+     * Mouse leave event for handling the hovering logic
+     */
     onMouseLeave?: (event: SyntheticEvent) => void;
+    /**
+     * Row click callback function
+     */
     onClick?: (event: SyntheticEvent) => void;
 }
 
-export interface TableCellProps {
+/**
+ * Row cell with support for tooltip
+ */
+export type TableBodyDataWithTooltipConfig = { value: ReactNode; tooltipConfig: Omit<TooltipConfig, 'showIcon'> };
 
+/**
+ * Table body data configuration with or without tooltip
+ */
+type TableBodyData = ReactNode | TableBodyDataWithTooltipConfig;
+
+export interface TableCellProps {
+    cellData: TableBodyData;
 }
 
 export interface TableBodyConfig {
+    /**
+     * Unique identifier for the row
+     */
     id: ID;
-    data: ReactNode[] | ((config: { rowId: ID; isHovered?: boolean; }) => ReactNode[]);
+    /**
+     * Row data in order of header cells.
+     *
+     * Note: Use the function callback if some custom logic is to be applied
+     */
+    data: TableBodyData[] | ((config: { rowId: ID; isHovered?: boolean; }) => TableBodyData[]);
+}
+
+export interface ActionButton {
+    /**
+     * Unique identifier for the action button
+     */
+    id: ID;
+    /**
+     * Renderer for the action button
+     */
+    getActionButton: ({ rowId }: { rowId: ID; }) => ReactNode;
 }
 
 export interface TableProps {
+    /**
+     * Header configuration
+     */
     headers: (Omit<TableHeaderCellProps, 'onClick' | 'sortOrder'>)[];
+    /**
+     * Row / body configuration
+     */
     body: TableBodyConfig[];
-    // onHeaderCellClick?: (event: SyntheticEvent, { cellId } : {cellId: ID}) => void;
+    /**
+     * Click handler for the row
+     */
     onRowClick?: (event: SyntheticEvent, { rowId }: { rowId: ID }) => void;
+    /**
+     * Applied sorting configuration
+     */
     sortConfig?: SortConfig;
+    /**
+     * Action button configuration
+     */
+    actionButtons?: ActionButton[];
 }
