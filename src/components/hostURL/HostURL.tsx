@@ -32,6 +32,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             isHostUrlValid: true,
             saveLoading: false,
         })
+        this.onSave = this.onSave.bind(this);
     }
 
     componentDidMount() {
@@ -88,7 +89,8 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         })
     }
 
-    onSave(): void {
+    onSave(e: React.SyntheticEvent): void {
+        e.preventDefault();
         if (!this.state.form.value.length) {
             toast.error("Some required fields are missing");
             return;
@@ -174,7 +176,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     <p className="form__subtitle">
                         Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;{' '}
                     </p>
-                    <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url">
+                    <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url" onSubmit={this.onSave}>
                         <InfoColourBar
                             classname="hosturl__description m-20"
                             message={
@@ -195,7 +197,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                 <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Host URL</div>
                                 <input
                                     id="host"
-                                    value={this.state.form.value}
+                                    value={this.state.form.value || window.location.origin}
                                     autoFocus
                                     tabIndex={1}
                                     type="text"
@@ -204,6 +206,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                     onChange={(event) => this.handleChange(event)}
                                     autoComplete="off"
                                     data-testid="host-url-textbox"
+                                    name="host-url"
                                 />
                             </div>
                             {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
@@ -221,12 +224,9 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                             </div>
                             <div className="form__buttons pt-20">
                                 <button
-                                    type="button"
+                                    type="submit"
                                     tabIndex={2}
                                     disabled={this.state.saveLoading}
-                                    onClick={(e) => {
-                                        this.onSave()
-                                    }}
                                     className="cta"
                                     data-testid="host-url-update-button"
                                 >
