@@ -54,7 +54,8 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                                 label: element.name,
                                 value: element.name,
                                 refVariableTaskName:
-                                    formData[activeStageName]?.steps[element?.refVariableStepIndex - 1].name,
+                                    formData[BuildStageVariable.PreBuild]?.steps[element?.refVariableStepIndex - 1]
+                                        .name,
                             })
                         },
                     )
