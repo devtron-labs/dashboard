@@ -189,13 +189,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    // async handleConfigDetailsForRollback(appId, pipelineId){
-    //     const specificDeploymentConfigRes=await getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId())
-    //     return specificDeploymentConfigRes
-
-    // }
-    
-
     async getSecurityModuleStatus(): Promise<void> {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
@@ -1231,7 +1224,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
-            (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
+            (this.props.material.length > 0 && this.isImageApprover(this.state.selectedMaterial?.userApprovalMetadata))
         const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
