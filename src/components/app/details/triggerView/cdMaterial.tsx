@@ -119,7 +119,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.getSecurityModuleStatus()
         if (
             (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
-            this.state.selectedMaterial &&
             this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
@@ -162,7 +161,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         Promise.allSettled([
             getRecentDeploymentConfig(appId, pipelineId),
             getLatestDeploymentConfig(appId, pipelineId),
-            this.state.isRollbackTrigger ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId()) : noop,
+            this.state.selectedMaterial && this.state.isRollbackTrigger
+                ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId())
+                : noop,
         ]).then(
             ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
                 status: string
@@ -187,6 +188,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             },
         )
     }
+
+    // async handleConfigDetailsForRollback(appId, pipelineId){
+    //     const specificDeploymentConfigRes=await getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId())
+    //     return specificDeploymentConfigRes
+
+    // }
+    
 
     async getSecurityModuleStatus(): Promise<void> {
         try {
