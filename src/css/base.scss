@@ -325,7 +325,7 @@ a:focus {
     top: 22px;
 }
 
-.dc__top-119{
+.dc__top-119 {
     top: 119px;
 }
 
@@ -348,6 +348,10 @@ a:focus {
     left: 0;
 }
 
+.dc__left-6 {
+    left: 6px;
+}
+
 .dc__left-30 {
     left: 30px;
 }
@@ -360,7 +364,7 @@ a:focus {
     left: 150px;
 }
 
-.dc__left-405{
+.dc__left-405 {
     left: 405px;
 }
 
@@ -1911,7 +1915,7 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
-    &.dc__link_over{
+    &.dc__link_over {
         color: var(--N600);
     }
     &:hover {
@@ -2376,7 +2380,7 @@ textarea,
     background-color: var(--N50);
 }
 
-.c-n50{
+.c-n50 {
     color: var(--N50);
 }
 
@@ -2767,7 +2771,7 @@ textarea,
     width: 300px !important;
 }
 
-.w-320{
+.w-320 {
     width: 320px;
 }
 
@@ -3044,7 +3048,7 @@ textarea,
     height: 112px !important;
 }
 
-.h-128{
+.h-128 {
     height: 128px !important;
 }
 
@@ -3130,7 +3134,7 @@ textarea,
 }
 
 .mxh-390-imp {
-    max-height: 390px!important;
+    max-height: 390px !important;
 }
 
 // Height in percentage
@@ -3218,6 +3222,10 @@ textarea,
 
 .pl-16 {
     padding-left: 16px !important;
+}
+
+.pl-28 {
+    padding-left: 28px !important;
 }
 
 .pt-40 {
@@ -3384,7 +3392,7 @@ textarea,
     }
 }
 
-.dc__column-gap-8{
+.dc__column-gap-8 {
     column-gap: 8px;
 }
 
