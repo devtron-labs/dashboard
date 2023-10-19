@@ -8,6 +8,7 @@ import {
     OptionType,
     ToastBody,
     DeleteDialog,
+    toastAccessDenied,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import AppConfig from './appConfig/AppConfig'
@@ -20,7 +21,7 @@ import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
 import './app.scss'
 import { MultiValue } from 'react-select'
-import { AppFilterTabs } from '../../ApplicationGroup/Constants'
+import { AppFilterTabs, EMPTY_LIST_MESSAGING, NO_ACCESS_TOAST_MESSAGE } from '../../ApplicationGroup/Constants'
 import {
     CreateGroupAppListType,
     FilterParentType,
@@ -142,9 +143,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             }
         } catch (err) {
             if (err['code'] === 403) {
-                toast.error('User not authorized')
+                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT, NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
             }
-            showError(err)
+            else {
+                showError(err)
+            }
         }
     }
 
