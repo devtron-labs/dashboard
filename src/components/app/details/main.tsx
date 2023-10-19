@@ -8,7 +8,7 @@ import {
     OptionType,
     ToastBody,
     DeleteDialog,
-    toastAccessDenied,
+    ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import AppConfig from './appConfig/AppConfig'
@@ -21,7 +21,7 @@ import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
 import './app.scss'
 import { MultiValue } from 'react-select'
-import { AppFilterTabs, EMPTY_LIST_MESSAGING, NO_ACCESS_TOAST_MESSAGE } from '../../ApplicationGroup/Constants'
+import { AppFilterTabs } from '../../ApplicationGroup/Constants'
 import {
     CreateGroupAppListType,
     FilterParentType,
@@ -31,6 +31,7 @@ import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 import { toast } from 'react-toastify'
+import { styles } from './metrics/deploymentMetrics.util'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -61,6 +62,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [deleting, setDeleting] = useState<boolean>(false)
+    const [errorStatusCode, setErrorStatusCode] = useState(0)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -143,8 +145,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             }
         } catch (err) {
             if (err['code'] === 403) {
-                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT, NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
-                
+                setErrorStatusCode(403)
             }
             else {
                 showError(err)
@@ -297,6 +298,18 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     if (appListLoading) {
         return <Progressing pageLoader />
     }
+
+    if (errorStatusCode) {
+        return (
+            <div className="" style={{ height: '100vh' }}>
+                <ErrorScreenManager
+                    code={errorStatusCode}
+                    subtitle="You do not have access to view information on this page."
+                />
+            </div>
+        )
+    }
+    
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
         <div className="app-details-page">
@@ -336,7 +349,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 />
             )}
             <ErrorBoundary>
-                {/* <Suspense fallback={<Progressing pageLoader />}> */}
+                <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         {isV2 ? (
                             <Route
@@ -383,7 +396,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         /> */}
                         <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
                     </Switch>
-                {/* </Suspense> */}
+                </Suspense>
             </ErrorBoundary>
         </div>
     )
