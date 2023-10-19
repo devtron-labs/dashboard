@@ -43,6 +43,7 @@ interface customEnv {
     CLAIR_TOOL_VERSION?: string
     ENABLE_RESTART_WORKLOAD?: boolean
     ENABLE_SCOPED_VARIABLES?: boolean
+    HIDE_CLUSTER_TERMINAL?: boolean
 }
 declare global {
     interface Window {
@@ -144,6 +145,7 @@ if (!window || !window._env_) {
         CLAIR_TOOL_VERSION:'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
+        HIDE_CLUSTER_TERMINAL:false
     }
 }
 

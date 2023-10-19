@@ -440,7 +440,7 @@ export default function ResourceList() {
               showNameOnSelect: false,
           },
       ]
-      if (superAdminRef.current) {
+      if (!window._env_.HIDE_CLUSTER_TERMINAL && superAdminRef.current) {
           _tabs.push({
               idPrefix: AppDetailsTabsIdPrefix.terminal,
               name: AppDetailsTabs.terminal,

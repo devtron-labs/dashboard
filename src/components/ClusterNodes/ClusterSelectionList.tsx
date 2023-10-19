@@ -123,7 +123,9 @@ export default function ClusterSelectionList({
             <div
                 key={`cluster-${clusterData.id}`}
                 className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
-                    clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
+                    clusterData.nodeCount && !clusterListLoader && isSuperAdmin && !window._env_.HIDE_CLUSTER_TERMINAL
+                        ? 'dc__visible-hover--parent'
+                        : ''
                 } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
             >
                 <div
