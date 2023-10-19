@@ -127,7 +127,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.getSecurityModuleStatus()
         if (
             (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
-            this.state.selectedMaterial &&
             this.props.material.length > 0
         ) {
             this.getDeploymentConfigDetails()
@@ -201,7 +200,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         Promise.allSettled([
             getRecentDeploymentConfig(appId, pipelineId),
             getLatestDeploymentConfig(appId, pipelineId),
-            this.state.isRollbackTrigger ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId()) : noop,
+            this.state.selectedMaterial && this.state.isRollbackTrigger
+                ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId())
+                : noop,
         ]).then(
             ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
                 status: string
@@ -1341,7 +1342,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
         const disableDeployButton =
             this.isDeployButtonDisabled() ||
-            (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
+            (this.props.material.length > 0 && this.isImageApprover(this.state.selectedMaterial?.userApprovalMetadata))
         const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
