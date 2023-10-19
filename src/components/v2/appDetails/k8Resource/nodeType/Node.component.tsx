@@ -124,7 +124,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData.some((f) => f.name === el.name && f.isNew === podType),
+                    podMetaData?.some((f) => f.name === el.name && f.isNew === podType),
                 )
             }
 
