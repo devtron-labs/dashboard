@@ -1040,19 +1040,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
-                <SearchIcon className="search__icon icon-dim-18" />
+            <div className="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300 h-32 w-200">
+                <SearchIcon className="icon-dim-18" />
                 <input
                     data-testid="ci-trigger-search-by-commit-hash"
                     type="text"
                     placeholder="Search by image tag"
                     value={this.state.searchText}
-                    className="search__input dc__right-0"
+                    className="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
                     onChange={this.handleInputChange}
                     onKeyDown={this.handleFilterKeyPress}
+                    autoFocus
                 />
                 {this.state.searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={this.clearSearch}>
+                    <button className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex" type="button" onClick={this.clearSearch}>
                         <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                     </button>
                 )}
