@@ -144,6 +144,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         } catch (err) {
             if (err['code'] === 403) {
                 toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT, NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
+                
             }
             else {
                 showError(err)
@@ -335,7 +336,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 />
             )}
             <ErrorBoundary>
-                <Suspense fallback={<Progressing pageLoader />}>
+                {/* <Suspense fallback={<Progressing pageLoader />}> */}
                     <Switch>
                         {isV2 ? (
                             <Route
@@ -382,7 +383,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         /> */}
                         <Redirect to={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`} />
                     </Switch>
-                </Suspense>
+                {/* </Suspense> */}
             </ErrorBoundary>
         </div>
     )
