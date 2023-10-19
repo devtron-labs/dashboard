@@ -133,10 +133,6 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
         if (error) {
-            if(error.code === 403) {
-                toast.error("Not authorized user")
-                return
-            }
             showError(error)
             return
         }

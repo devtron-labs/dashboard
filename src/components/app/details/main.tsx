@@ -141,6 +141,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
+            if (err['code'] === 403) {
+                toast.error('User not authorized')
+            }
             showError(err)
         }
     }
