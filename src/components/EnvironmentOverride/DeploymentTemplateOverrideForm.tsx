@@ -51,6 +51,7 @@ export default function DeploymentTemplateOverrideForm({
     manifestDataLHS,
     setManifestDataRHS,
     setManifestDataLHS,
+    convertVariablesOverride,
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -81,6 +82,13 @@ export default function DeploymentTemplateOverrideForm({
     const setLoadingManifestOverride = (value: boolean) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loadingManifestOverride,
+            payload: value,
+        })
+    }
+
+    const setConvertVariables = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.convertVariablesOverride,
             payload: value,
         })
     }
@@ -217,7 +225,7 @@ export default function DeploymentTemplateOverrideForm({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        if (isValuesOverride) {
+        if (isValuesOverride && !convertVariablesOverride) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -493,10 +501,18 @@ export default function DeploymentTemplateOverrideForm({
                     }
                     editorOnChange={editorOnChange}
                     environmentName={environmentName}
-                    readOnly={!state.duplicate || isCompareAndApprovalState || !overridden || !isValuesOverride}
+                    readOnly={
+                        !state.duplicate ||
+                        isCompareAndApprovalState ||
+                        !overridden ||
+                        !isValuesOverride ||
+                        convertVariablesOverride
+                    }
                     globalChartRefId={state.data.globalChartRefId}
                     handleOverride={handleOverride}
                     isValues={isValuesOverride}
+                    convertVariables={convertVariablesOverride}
+                    setConvertVariables={setConvertVariables}
                     groupedData={groupedData}
                 />
             )
@@ -537,6 +553,7 @@ export default function DeploymentTemplateOverrideForm({
                 isPublishedMode={readOnlyPublishedMode}
                 reload={reload}
                 isValues={isValuesOverride}
+                convertVariables={convertVariablesOverride}
             />
         </form>
     )
@@ -572,6 +589,8 @@ export default function DeploymentTemplateOverrideForm({
                 reload={reload}
                 isValues={isValuesOverride}
                 setIsValues={setIsValuesOverride}
+                convertVariables={convertVariablesOverride}
+                setConvertVariables={setConvertVariables}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}

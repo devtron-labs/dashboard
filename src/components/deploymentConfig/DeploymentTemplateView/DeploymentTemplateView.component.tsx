@@ -126,6 +126,7 @@ export const CompareWithDropdown = ({
     globalChartRef,
     isValues,
     groupedData,
+    setConvertVariables,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -205,6 +206,7 @@ export const CompareWithDropdown = ({
     }
 
     const onChange = (selected: DeploymentChartOptionType) => {
+        setConvertVariables(false)
         setSelectedOption(selected)
     }
 

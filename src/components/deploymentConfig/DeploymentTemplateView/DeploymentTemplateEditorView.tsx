@@ -35,6 +35,8 @@ export default function DeploymentTemplateEditorView({
     editorOnChange,
     handleOverride,
     isValues,
+    convertVariables,
+    setConvertVariables,
     groupedData,
 }: DeploymentTemplateEditorViewProps) {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
@@ -47,12 +49,17 @@ export default function DeploymentTemplateEditorView({
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
     const baseDeploymentAbortController = useRef(null)
 
+    console.log(convertVariables, '__convertVariables')
+
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
     const [selectedOptionDraft, setSelectedOptionDraft] = useState<CompareApprovalAndDraftSelectedOption>(
         getApprovalPendingOption(state.selectedChart?.version),
     )
+    const [resolvedValuesLHS, setResolvedValuesLHS] = useState(null)
+    const [resolvedValuesRHS, setResolvedValuesRHS] = useState(null)
+    const [resolveLoading, setResolveLoading] = useState(false)
 
     const getLocalDaftManifest = async () => {
         const request = {
@@ -164,7 +171,7 @@ export default function DeploymentTemplateEditorView({
             _getDeploymentTemplate
                 .then(({ result }) => {
                     if (result) {
-                        if (isValues) {
+                        if (isValues && !convertVariables) {
                             const _fetchedValues = {
                                 ...state.fetchedValues,
                                 [state.selectedCompareOption.id]: YAML.stringify(
@@ -172,7 +179,7 @@ export default function DeploymentTemplateEditorView({
                                 ),
                             }
                             setFetchedValues(_fetchedValues)
-                        } else {
+                        } else if (!isValues) {
                             const _fetchedValuesManifest = {
                                 ...state.fetchedValuesManifest,
                                 [state.selectedCompareOption.id]: processFetchedValues(
@@ -252,16 +259,51 @@ export default function DeploymentTemplateEditorView({
         }
     }
 
+    const resolveVariables = async (value: string) => {
+        const request = {
+            appId: +appId,
+            chartRefId: state.selectedChartRefId,
+            values: value,
+            valuesAndManifestFlag: 1,
+        }
+        const response = await getDeploymentManisfest(request)
+        return response.result.resolvedData
+    }
+
+    useEffect(() => {
+        if (!convertVariables) return
+        setResolveLoading(true)
+        console.log('here')
+        Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
+            .then(([lhs, rhs]) => {
+                setResolvedValuesLHS(lhs)
+                setResolvedValuesRHS(rhs)
+                console.log('__RHS', rhs)
+            })
+            .catch((err) => {
+                showError(err)
+            })
+            .finally(() => {
+                setResolveLoading(false)
+            })
+    }, [convertVariables])
+
     // choose LHS value for comparison
     const selectedOptionId = state.selectedCompareOption?.id
     const isIdMatch = selectedOptionId === -1
     const source = isValues ? state.fetchedValues : state.fetchedValuesManifest
     const valueLHS = isIdMatch ? defaultValue : source[selectedOptionId] // fetch LHS data from respective cache store
 
+    const lhs = convertVariables ? resolvedValuesLHS : valueLHS
+
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
     const selectedData = isValues ? state.tempFormData || state.draftValues : draftManifestData
     const valueRHS = shouldUseDraftData ? selectedData : value
+
+    const rhs = convertVariables ? resolvedValuesRHS : valueRHS
+
+    console.log('__rhs', rhs)
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
@@ -303,6 +345,7 @@ export default function DeploymentTemplateEditorView({
                             globalChartRef={globalChartRef}
                             isValues={isValues}
                             groupedData={groupedData}
+                            setConvertVariables={setConvertVariables}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
@@ -371,13 +414,18 @@ export default function DeploymentTemplateEditorView({
             }`}
         >
             <CodeEditor
-                defaultValue={valueLHS}
-                value={valueRHS}
+                defaultValue={lhs}
+                value={rhs}
                 onChange={editorOnChange}
                 mode={MODES.YAML}
                 validatorSchema={state.schema}
                 loading={
-                    state.chartConfigLoading || value === undefined || value === null || fetchingValues || draftLoading
+                    state.chartConfigLoading ||
+                    value === undefined ||
+                    value === null ||
+                    fetchingValues ||
+                    draftLoading ||
+                    resolveLoading
                 }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}

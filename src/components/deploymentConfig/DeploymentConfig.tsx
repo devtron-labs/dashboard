@@ -106,6 +106,13 @@ export default function DeploymentConfig({
         })
     }
 
+    const setConvertVariables = (value: boolean) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.convertVariables,
+            payload: value,
+        })
+    }
+
     useEffect(() => {
         const fetchOptionsList = async () => {
             const res = await getOptions(+appId, -1) // -1 is for base deployment template
@@ -492,7 +499,7 @@ export default function DeploymentConfig({
     const editorOnChange = (str: string, fromBasic?: boolean): void => {
         if (isCompareAndApprovalState) return
 
-        if (state.isValues) {
+        if (state.isValues && !state.convertVariables) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -731,8 +738,10 @@ export default function DeploymentConfig({
                 value={state.isValues ? valuesDataRHS : state.manifestDataRHS}
                 globalChartRefId={state.selectedChartRefId}
                 editorOnChange={editorOnChange}
-                readOnly={isCompareAndApprovalState || !state.isValues}
+                readOnly={isCompareAndApprovalState || !state.isValues || state.convertVariables}
                 isValues={state.isValues}
+                convertVariables={state.convertVariables}
+                setConvertVariables={setConvertVariables}
                 groupedData={state.groupedOptionsData}
             />
         )
@@ -769,6 +778,7 @@ export default function DeploymentConfig({
                 isPublishedMode={readOnlyPublishedMode}
                 reload={initialise}
                 isValues={state.isValues}
+                convertVariables={state.convertVariables}
             />
         </form>
     )
@@ -810,6 +820,8 @@ export default function DeploymentConfig({
                         reload={initialise}
                         isValues={state.isValues}
                         setIsValues={setIsValues}
+                        convertVariables={state.convertVariables}
+                        setConvertVariables={setConvertVariables}
                     />
                     {renderValuesView()}
                     {SaveChangesModal && state.showSaveChangsModal && (

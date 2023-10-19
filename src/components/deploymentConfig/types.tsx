@@ -113,6 +113,7 @@ export interface DeploymentConfigFormCTAProps {
     isPublishedMode: boolean
     reload: () => void
     isValues?: boolean
+    convertVariables?: boolean
 }
 
 export interface CompareWithDropdownProps {
@@ -125,6 +126,7 @@ export interface CompareWithDropdownProps {
     setSelectedOption: any
     isValues: boolean
     groupedData: any
+    setConvertVariables: (convertVariables: boolean) => void
 }
 
 export interface CompareWithApprovalPendingAndDraftProps {
@@ -204,6 +206,8 @@ export interface DeploymentTemplateEditorViewProps {
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
     isValues?: boolean
+    convertVariables?: boolean
+    setConvertVariables?: (convertVariables: boolean) => void
     groupedData?: any
 }
 
@@ -304,6 +308,8 @@ export interface DeploymentConfigToolbarProps {
     handleReadMeClick: () => void
     isValues?: boolean
     setIsValues?: (isValues: boolean) => void
+    convertVariables?: boolean
+    setConvertVariables?: (convertVariables: boolean) => void
 }
 
 export interface DeploymentConfigStateType {
@@ -347,6 +353,8 @@ export interface DeploymentConfigStateType {
     manifestDataLHSOverride: string
     groupedOptionsDataOverride: Array<Object>
     loadingManifestOverride: boolean
+    convertVariables: boolean
+    convertVariablesOverride: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
@@ -413,6 +421,8 @@ export enum DeploymentConfigStateActionTypes {
     loadingManifestOverride = 'loadingManifestOverride',
     manifestDataRHSOverride = 'manifestDataRHSOverride',
     manifestDataLHSOverride = 'manifestDataLHSOverride',
+    convertVariables = 'convertVariables',
+    convertVariablesOverride = 'convertVariablesOverride',
 }
 
 export interface DeploymentConfigStateAction {

@@ -4,6 +4,7 @@ import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-l
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variables.svg'
 import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
 import { DropdownContainer, DropdownItem } from './DeploymentTemplateView.component'
@@ -16,10 +17,13 @@ export default function DeploymentConfigToolbar({
     handleReadMeClick,
     isValues,
     setIsValues,
+    convertVariables,
+    setConvertVariables,
 }: DeploymentConfigToolbarProps) {
     const [openDropdown, setOpenDropdown] = useState(false)
 
-    const getTabClassName = (index: number) => `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
+    const getTabClassName = (index: number) =>
+        `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
 
     const getTabIconClass = (index: number) => `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
 
@@ -27,11 +31,14 @@ export default function DeploymentConfigToolbar({
         handleTabSelection(Number(e.currentTarget.dataset.index))
     }
 
-
-
     const handleOptionClick = (newValue) => {
         setIsValues(newValue)
+        setConvertVariables(false)
         setOpenDropdown(false)
+    }
+
+    const handleViewVariablesClick = () => {
+        setConvertVariables(!convertVariables)
     }
 
     return (
@@ -61,7 +68,7 @@ export default function DeploymentConfigToolbar({
                             </span>
                             <Dropdown
                                 className="icon-dim-16 ml-4 cursor"
-                                style={{ transform: openDropdown ? "rotate(180deg)" : '' }}
+                                style={{ transform: openDropdown ? 'rotate(180deg)' : '' }}
                                 onClick={() => setOpenDropdown(true)}
                             />
                             <DropdownContainer isOpen={openDropdown} onClose={() => setOpenDropdown(false)}>
@@ -80,11 +87,18 @@ export default function DeploymentConfigToolbar({
                     </ol>
                 </div>
             )}
-            {!noReadme && !showReadme && (
-                <div className="flex right pb-8">
+            <div className="flexbox dc__content-space dc__align-items-center pb-8 dc__gap-14">
+                {!noReadme && !showReadme && (
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
-                </div>
-            )}
+                )}
+                {isValues && selectedTabIndex == 2 && (
+                    <ViewVariablesIcon
+                        className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 scn-7 cursor`}
+                        onClick={handleViewVariablesClick}
+                    />
+                )}
+            </div>
         </div>
     )
 }
+// reading this while i am making my coffee using the coffee i bought from home (office coffee sucks)
