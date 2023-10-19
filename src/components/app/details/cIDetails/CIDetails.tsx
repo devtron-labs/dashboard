@@ -23,6 +23,8 @@ import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { toast } from 'react-toastify'
+
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -131,6 +133,9 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
         if (error) {
+            if(error.code === 403) {
+                toast.error("Unauthorized user")
+            }
             showError(error)
             return
         }
