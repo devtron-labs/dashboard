@@ -514,6 +514,9 @@ export default function DeploymentTemplateOverrideForm({
                 state.showReadme ? 'readme-view' : ''
             }`}
             onSubmit={handleSubmit}
+            onKeyDown={(e) => {
+                e.key === 'Enter' && e.preventDefault()
+            }}
         >
             <div className="variables-widget-position">
                 <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
