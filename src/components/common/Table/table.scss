@@ -89,11 +89,11 @@
             position: relative;
 
             // TODO: Handle action buttons
-            // #{$parent-selector}__action-buttons {
-            //     display: block;
-            //     position: fixed;
-            //     right: 10px;
-            // }
+            #{$parent-selector}__action-buttons {
+                display: block;
+                position: absolute;
+                right: 10px;
+            }
 
         }
     }

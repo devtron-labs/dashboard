@@ -4,6 +4,7 @@ import { GenericEmptyStateType } from "@devtron-labs/devtron-fe-common-lib";
 
 // TODOs:
 // - Add fix for action buttons
+//  - We can add inside the last td element and adjust the padding of the last td element
 // - Complete sticky header?
 
 /**
@@ -145,6 +146,7 @@ export interface TableCellProps {
      * To make a cell span over multiple columns
      */
     colSpan?: number;
+    actionButtons?: ActionButton[];
 }
 
 export interface TableBodyConfig {

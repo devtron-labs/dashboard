@@ -83,13 +83,19 @@ export const Table = (props: TableProps) => {
                                 sortOrder={sortConfig.sortedHeaderCellId === header.id ? sortConfig.order : undefined}
                             />
                         ))}
+                        {/* {actionButtons?.length > 0 && (
+                            <th
+                                key="header-cell-action-buttons"
+                                className="dc-table__header-cell dc-table__header-cell--xs dc-table__action-buttons"
+                            ></th>
+                        )} */}
                     </TableRow>
                 </thead>
                 <tbody className="dc-table__body">
                     {body.length === 0 ? (
-                        <TableRow>
+                        <tr>
                             <TableCell colSpan={headers.length} cellData={<GenericEmptyState {...emptyStateProps} />} />
-                        </TableRow>
+                        </tr>
                     ) : (
                         body.map((row) => {
                             // Check for object based row configuration
