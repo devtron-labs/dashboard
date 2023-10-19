@@ -19,6 +19,8 @@ import {
     DeploymentAppTypes,
     useSearchString,
     FilterConditionsListType,
+    genericCDMaterialsService,
+    CDMaterialServiceEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
@@ -33,10 +35,8 @@ import {
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
-    getCDMaterialList,
     getCIMaterialList,
     getGitMaterialByCommitHash,
-    getRollbackMaterialList,
     refreshGitMaterial,
     triggerCDNode,
     triggerCINode,
@@ -772,13 +772,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCDLoading(true)
         setShowCDModal(!isApprovalNode)
         setShowApprovalModal(isApprovalNode)
+
         abortControllerRef.current = new AbortController()
-        getCDMaterialList(
+        const queryParams = {
+            search: searchText,
+        }
+
+        genericCDMaterialsService(
+            CDMaterialServiceEnum.CD_MATERIALS,
             cdNodeId,
-            isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
+            isApprovalNode? DeploymentNodeType.APPROVAL : nodeType,
             abortControllerRef.current.signal,
-            isApprovalNode,
-            searchText,
+            queryParams,
         )
             .then((data) => {
                 let _selectedNode
@@ -807,6 +812,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setAppReleaseTags(data.appReleaseTagNames)
                 setTagsEditable(data.tagsEditable)
                 setHideImageTaggingHardDelete(data.hideImageTaggingHardDelete)
+                setResourceFilters(data.resourceFilters)
+
                 setWorkflowID(_workflowId)
                 setSelectedAppID(_appID)
                 setFilteredWorkflows(_workflows)
@@ -815,7 +822,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setShowCDModal(!isApprovalNode)
                 setShowApprovalModal(isApprovalNode)
                 setCDLoading(false)
-                setResourceFilters(data.resourceFilters)
                 preventBodyScroll(true)
             })
             .catch((errors: ServerErrors) => {
@@ -843,26 +849,38 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _size = size || 20
 
         abortControllerRef.current = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, abortControllerRef.current.signal, searchText)
+        const queryParams = {
+            search: searchText,
+            offset: _offset,
+            size: _size,
+        }
+        
+        genericCDMaterialsService(
+            CDMaterialServiceEnum.ROLLBACK,
+            cdNodeId,
+            DeploymentNodeType.CD,
+            abortControllerRef.current.signal,
+            queryParams,
+        )
             .then((response) => {
                 let _selectedNode
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
-                        if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                        if (response && node.type === 'CD' && +node.id == cdNodeId) {
                             node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = response.result.requestedUserId
+                            node.requestedUserId = response.requestedUserId
                             _selectedNode = node
 
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result.materials
+                                node.rollbackMaterialList = response.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                                node.rollbackMaterialList = node.rollbackMaterialList ? node.rollbackMaterialList.concat(response.materials): response.materials
                             }
                         }
                         return node
                     })
-                    workflow.appReleaseTags = response.result.appReleaseTags
-                    workflow.tagsEditable = response.result.tagsEditable
+                    workflow.appReleaseTags = response.appReleaseTagNames
+                    workflow.tagsEditable = response.tagsEditable
                     workflow.nodes = nodes
                     return workflow
                 })
@@ -873,9 +891,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setCDLoading(false)
                 preventBodyScroll(true)
                 getWorkflowStatusData(_workflows)
-                setResourceFilters(response.result.resourceFilters)
-                if (callback && response.result) {
-                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
+
+                setResourceFilters(response.resourceFilters)
+                setAppReleaseTags(response.appReleaseTagNames)
+                setTagsEditable(response.tagsEditable)
+                setHideImageTaggingHardDelete(response.hideImageTaggingHardDelete)
+                if (callback && response) {
+                    callback(false, response.materials?.length < 20 || response.materials?.length === 0)
                 }
             })
             .catch((errors: ServerErrors) => {

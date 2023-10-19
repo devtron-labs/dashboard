@@ -10,6 +10,8 @@ import {
     ImageComment,
     showError,
     stopPropagation,
+    genericCDMaterialsService,
+    CDMaterialServiceEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
@@ -19,7 +21,6 @@ import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-lock
 import { ReactComponent as Tag } from '../../../../assets/icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
-import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
@@ -124,7 +125,13 @@ export default function BulkCDTrigger({
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
-                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
+                    // Not sending any query params since its not necessary on mount and filters and handled by other service
+                    genericCDMaterialsService(
+                        CDMaterialServiceEnum.CD_MATERIALS,
+                        Number(appDetails.cdPipelineId),
+                        appDetails.stageType,
+                        abortControllerRef.current.signal
+                    )
                         .then((data) => {
                             return { appId: appDetails.appId, ...data }
                         })
@@ -325,7 +332,14 @@ export default function BulkCDTrigger({
             setLoading(true)
             abortControllerRef.current = new AbortController()
             const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
-            getCDMaterialList(cdNodeId, nodeType, abortControllerRef.current.signal, isApprovalNode, searchText)
+            const queryParams = { search: searchText }
+            genericCDMaterialsService(
+                CDMaterialServiceEnum.CD_MATERIALS,
+                cdNodeId,
+                isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
+                abortControllerRef.current.signal,
+                queryParams,
+            )
                 .then((response) => {
                     if (response) {
                         _cdMaterialResponse[selectedApp.appId] = {

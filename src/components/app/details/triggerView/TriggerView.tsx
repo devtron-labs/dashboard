@@ -11,10 +11,10 @@ import {
     DeploymentAppTypes,
     ToastBodyWithButton,
     ToastBody,
+    genericCDMaterialsService,
+    CDMaterialServiceEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    getCDMaterialList,
-    getRollbackMaterialList,
     triggerCDNode,
     getCIMaterialList,
     triggerCINode,
@@ -661,12 +661,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode, isLoading: true })
         this.abortController = new AbortController()
 
-        getCDMaterialList(
+        const queryParams = { search: searchText }
+
+        genericCDMaterialsService(
+            CDMaterialServiceEnum.CD_MATERIALS,
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
-            isApprovalNode,
-            searchText,
+            queryParams,
         )
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -734,18 +736,31 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const _size = size || 20
         this.setState({ showCDModal: true })
         this.abortController = new AbortController()
-        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal, searchText)
+
+        const queryParams = {
+            offset: _offset,
+            size: _size,
+            searchText: searchText,
+        }
+
+        genericCDMaterialsService(
+            CDMaterialServiceEnum.ROLLBACK,
+            cdNodeId,
+            DeploymentNodeType.CD,
+            this.abortController.signal,
+            queryParams,
+        )
             .then((response) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
-                        if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                        if (response && node.type === 'CD' && +node.id == cdNodeId) {
                             node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = response.result.requestedUserId
+                            node.requestedUserId = response.requestedUserId
 
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result.materials
+                                node.rollbackMaterialList = response.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.materials)
                             }
                         }
                         return node
@@ -756,13 +771,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState(
                     {
                         workflows: workflows,
-                        // FIXME: Pending enum
                         materialType: 'rollbackMaterialList',
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
                         isLoading: false,
-                        resourceFilters: response.result.resourceFilters,
+                        
+                        appReleaseTags: response.appReleaseTagNames,
+                        tagsEditable: response.tagsEditable,
+                        hideImageTaggingHardDelete: response.hideImageTaggingHardDelete,
+                        resourceFilters: response.resourceFilters,
                     },
                     () => {
                         preventBodyScroll(true)
@@ -770,8 +788,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     },
                 )
 
-                if (callback && response.result) {
-                    callback(false, response.result.materials?.length < 20 || response.result.materials?.length ===0)
+                if (callback && response) {
+                    callback(false, response.materials?.length < 20 || response.materials?.length === 0)
                 }
             })
             .catch((errors: ServerErrors) => {
