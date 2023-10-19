@@ -295,13 +295,9 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
-    if (appListLoading) {
-        return <Progressing pageLoader />
-    }
-
     if (errorStatusCode) {
         return (
-            <div className="" style={{ height: '100vh' }}>
+            <div className="dc__loading-wrapper">
                 <ErrorScreenManager
                     code={errorStatusCode}
                     subtitle="You do not have access to view information on this page."
@@ -309,7 +305,11 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             </div>
         )
     }
-    
+
+    if (appListLoading) {
+        return <Progressing pageLoader />
+    }
+
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
     return (
         <div className="app-details-page">
