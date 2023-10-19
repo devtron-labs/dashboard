@@ -134,7 +134,8 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
         )
         if (error) {
             if(error.code === 403) {
-                toast.error("Unauthorized user")
+                toast.error("Not authorized user")
+                return
             }
             showError(error)
             return
