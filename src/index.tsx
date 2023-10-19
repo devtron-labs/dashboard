@@ -143,7 +143,7 @@ if (!window || !window._env_) {
         ENABLE_BUILD_CONTEXT: false,
         CLAIR_TOOL_VERSION:'V4',
         ENABLE_RESTART_WORKLOAD: false,
-        ENABLE_SCOPED_VARIABLES: false,
+        ENABLE_SCOPED_VARIABLES: true,
     }
 }
 

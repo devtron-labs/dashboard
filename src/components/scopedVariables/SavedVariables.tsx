@@ -19,6 +19,445 @@ import {
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
 import { FileReaderStatus } from '../common/hooks/types'
+import { Table } from '../common/Table'
+import { TableProps } from '../common/Table/types'
+
+const tableData: TableProps = {
+    headers: [
+        {
+            id: 'id-11',
+            value: 'ID',
+            size: 'xs',
+            tooltipConfig: {
+                content: 'ID of the variable',
+                placement: 'top',
+            },
+            isSortable: true,
+        },
+        {
+            id: '1',
+            value: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+            // size: 'auto',
+            tooltipConfig: {
+                content: 'Not a ID of the variable',
+                placement: 'auto',
+                showIcon: true,
+            },
+            isSortable: true,
+        },
+        {
+            id: '2',
+            value: 'Header 2',
+            size: 'sm',
+        },
+        {
+            id: '3',
+            value: 'Header 3',
+            size: 'lg',
+        },
+        {
+            id: '4',
+            value: 'Header 4',
+            size: 'sm',
+        },
+        {
+            id: '5',
+            value: 'Header 5',
+            size: 'lg',
+        },
+    ],
+    body: [
+        {
+            id: '1',
+            // renderRow: () => {}
+            data: [
+                '1',
+                'Hello World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: [
+                '2',
+                'Hello World',
+                'Lorem Isum Good Old Lorem Isum Good OldLorem Isum Good OldLorem Isum Good Old',
+                'Lorem Isum Good Old World',
+                'Lorem Isum Good Old',
+                'Lorem Isum Good Old World',
+            ],
+        },
+        {
+            id: '3',
+            data: (config) => {
+                return [
+                    config.isHovered ? "I'm hovered" : '3',
+                    'Hello World',
+                    'Lorem Isum Good Old',
+                    'Lorem Isum Good Old World',
+                    'Lorem Isum Good Old',
+                    'Lorem Isum Good Old World',
+                ]
+            },
+        },
+    ],
+    onRowClick: (e, config) => {
+        console.log('🚀 ~ file: SavedVariables.tsx:107 ~ config:', { config })
+    },
+    sortConfig: {
+        order: 'DESC',
+        sortedHeaderCellId: 'id-11',
+        sortFunction: (e, config) => {
+            console.log('🚀 ~ file: SavedVariables.tsx:345 ~ tableData: TableProps.sortConfig.config:', config)
+        },
+    },
+}
+
+const tableData1: TableProps = {
+    headers: [
+        {
+            id: 'id-11',
+            value: 'ID',
+            size: 'xs',
+            tooltipConfig: {
+                content: 'ID of the variable',
+                placement: 'top',
+            },
+            isSortable: true,
+        },
+        {
+            id: '1',
+            value: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+            // size: 'sm',
+            tooltipConfig: {
+                content: 'Not a ID of the variable',
+                placement: 'auto',
+                showIcon: true,
+            },
+            isSortable: true,
+        },
+        {
+            id: '1',
+            value: '',
+            size: 'xs',
+            tooltipConfig: {
+                content: 'Not a ID of the variable',
+                placement: 'auto',
+                showIcon: true,
+            },
+            isSortable: true,
+        },
+        // {
+        //     id: '1111',
+        //     value: '',
+        // },
+    ],
+    body: [
+        {
+            id: '1',
+            // renderRow: () => {}
+            data: ['1', { value: 'Hello World', tooltipConfig: { content: 'Hi there!' } }, 'Hello World'],
+            // data: ['1', 2],
+        },
+        {
+            id: '2',
+            // renderRow: () => {}
+            data: ['2', 'Hello World', 'ssd dcd'],
+        },
+    ],
+    onRowClick: (e, config) => {
+        console.log('🚀 ~ file: SavedVariables.tsx:107 ~ config:', { config })
+    },
+    sortConfig: {
+        order: 'DESC',
+        sortedHeaderCellId: 'id-11',
+        sortFunction: (e, config) => {
+            console.log('🚀 ~ file: SavedVariables.tsx:345 ~ tableData: TableProps.sortConfig.config:', config)
+        },
+    },
+    actionButtons: [
+        {
+            id: 'action-buttons',
+            getActionButton: (config) => {
+                console.log('config', { config })
+                return <div>A</div>
+            },
+        },
+    ],
+}
+
+const tableData2: TableProps = {
+    headers: [
+        {
+            id: 'id-11',
+            value: 'ID',
+            size: 'xs',
+            tooltipConfig: {
+                content: 'ID of the variable',
+                placement: 'top',
+            },
+            isSortable: true,
+        },
+        {
+            id: '1',
+            value: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+            // size: 'sm',
+            tooltipConfig: {
+                content: 'Not a ID of the variable',
+                placement: 'auto',
+                showIcon: true,
+            },
+            isSortable: true,
+        },
+    ],
+    body: [],
+    onRowClick: (e, config) => {
+        console.log('🚀 ~ file: SavedVariables.tsx:107 ~ config:', { config })
+    },
+    sortConfig: {
+        order: 'DESC',
+        sortedHeaderCellId: 'id-11',
+        sortFunction: (e, config) => {
+            console.log('🚀 ~ file: SavedVariables.tsx:345 ~ tableData: TableProps.sortConfig.config:', config)
+        },
+    },
+    emptyStateProps: {
+        title: 'No data',
+        subTitle: 'No data',
+    },
+}
 
 export default function SavedVariablesView({
     scopedVariablesData,
@@ -126,7 +565,8 @@ export default function SavedVariablesView({
         <div
             className="flex column h-100 dc__content-space bcn-0 saved-variables__default-view"
             style={{
-                overflowY: 'hidden',
+                // overflowY: 'hidden',
+                height: '100vh',
             }}
         >
             <Descriptor
@@ -157,7 +597,7 @@ export default function SavedVariablesView({
                 </div>
             </Descriptor>
 
-            {currentView === FileView.YAML ? (
+            {currentView !== FileView.YAML ? (
                 <div className="dc__window-bg flex-grow-1 dc__no-shrink p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
                     <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start">
                         <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bcn-0 dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
@@ -201,7 +641,45 @@ export default function SavedVariablesView({
                     </div>
                 </div>
             ) : (
-                <VariablesList variablesList={variablesList} />
+                // <VariablesList variablesList={variablesList} />
+                <>
+                    <div className="mxh-504">
+                        <Table {...tableData2} />
+                    </div>
+                    <Table {...tableData1} />
+
+                    {/* <div
+                        style={{
+                            fontSize: 24,
+                        }}
+                    >
+                        <div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo commodi voluptatibus, alias
+                            debitis, omnis fuga officiis vero nostrum beatae tempore iste delectus itaque ratione
+                            adipisci in, sit maxime unde mollitia!
+                        </div>
+                        <div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo commodi voluptatibus, alias
+                            debitis, omnis fuga officiis vero nostrum beatae tempore iste delectus itaque ratione
+                            adipisci in, sit maxime unde mollitia!
+                        </div>
+                        <div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo commodi voluptatibus, alias
+                            debitis, omnis fuga officiis vero nostrum beatae tempore iste delectus itaque ratione
+                            adipisci in, sit maxime unde mollitia!
+                        </div>
+                        <div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo commodi voluptatibus, alias
+                            debitis, omnis fuga officiis vero nostrum beatae tempore iste delectus itaque ratione
+                            adipisci in, sit maxime unde mollitia!
+                        </div>
+                        <div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo commodi voluptatibus, alias
+                            debitis, omnis fuga officiis vero nostrum beatae tempore iste delectus itaque ratione
+                            adipisci in, sit maxime unde mollitia!
+                        </div>
+                    </div> */}
+                </>
             )}
         </div>
     ) : (

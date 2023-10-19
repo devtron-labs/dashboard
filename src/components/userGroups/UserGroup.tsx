@@ -129,6 +129,7 @@ export function useUserGroupContext() {
     return context
 }
 
+// Header section
 function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
 
@@ -309,6 +310,7 @@ export default function UserGroupRoute() {
     )
 }
 
+// List of cards
 const UserGroupList: React.FC<{
     type: 'user' | 'group'
     reloadLists: () => void
@@ -538,6 +540,7 @@ const UserGroupList: React.FC<{
                 userOrGroup.email_id?.toLowerCase()?.includes(searchString?.toLowerCase()) ||
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
+        console.log("🚀 ~ file: UserGroup.tsx:541 ~ filteredAndSorted:", filteredAndSorted)
         return (
             <div
                 id="auth-page__body"
@@ -596,6 +599,7 @@ const UserGroupList: React.FC<{
     }
 }
 
+// Accordion Structure
 const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     index,
     email_id = null,
