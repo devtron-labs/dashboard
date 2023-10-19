@@ -205,22 +205,23 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             return (
                 <>
                     {portList.map((val, idx) => {
-                        if(idx>0) {
-                        return (
-                            <div className="flex left cn-9 m-0 dc__no-decore">
-                                <div className="" key={node.name}>
-                                    {node.name}:{node.namespace}:{val}
-                                <Clipboard
-                                    className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
-                                    onClick={(event) => {
-                                        toggleClipBoardPort(event, `${node.name}:${node.namespace}:${val}`)
-                                    }}
-                                />
+                        if (idx > 0) {
+                            return (
+                                <div className="flex left cn-9 m-0 dc__no-decore">
+                                    <div className="" key={node.name}>
+                                        {node.name}:{node.namespace}:{val}
+                                        <Clipboard
+                                            className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
+                                            onClick={(event) => {
+                                                toggleClipBoardPort(event, `${node.name}:${node.namespace}:${val}`)
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )
+                        }
                     })}
-            </>
+                </>
             )
         }
         const portNumberPlaceHolder = (node) => {
