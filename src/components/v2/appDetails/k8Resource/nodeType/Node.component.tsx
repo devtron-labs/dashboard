@@ -201,22 +201,24 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
+            const portList = [...new Set(node?.port)];
             return (
                 <>
-                    {node?.port.map((val) => {
+                    {portList.map((val, idx) => {
+                        if(idx>0) {
                         return (
                             <div className="flex left cn-9 m-0 dc__no-decore">
                                 <div className="" key={node.name}>
-                                    {node.name}:{val}
+                                    {node.name}:{node.namespace}:{val}
                                 <Clipboard
                                     className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
                                     onClick={(event) => {
-                                        toggleClipBoardPort(event, node.name.concat(":",val))
+                                        toggleClipBoardPort(event, `${node.name}:${node.namespace}:${val}`)
                                     }}
                                 />
                                 </div>
                             </div>
-                        )
+                        )}
                     })}
             </>
             )
@@ -234,7 +236,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             <Clipboard
                                 className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                                 onClick={(event) => {
-                                    toggleClipBoardPort(event, node.name.concat(":", node.port))
+                                    toggleClipBoardPort(event, `${node.name}:${node.namespace}:${node.port[0]}`)
                                 }}
                             />
                         </span>
