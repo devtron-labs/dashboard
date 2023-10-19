@@ -93,7 +93,7 @@ export default function DeploymentTemplateOverride({
         },100)
 
         return () => {
-            baseDeploymentAbortController.current.abort();
+            baseDeploymentAbortController.current?.abort();
         }
     }, [envId, appId])
 
