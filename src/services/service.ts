@@ -47,7 +47,7 @@ export const getGitProviderListAuth = (appId: string) => {
     return get(URL)
 }
 
-export function getDisabledGitProvider(appId: number | string, providerId: number | string ) {
+export function getDisabledGitProvider(appId: string, providerId: string ) {
     const URL = `${Routes.APP}/${appId}/autocomplete/disabled-git/${providerId}`
     return get(URL)
 }
