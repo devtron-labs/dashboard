@@ -1041,7 +1041,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderSearch = (): JSX.Element => {
         return (
-            <div className="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300 h-32 w-200">
+            <div className="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300 h-32 w-250">
                 <SearchIcon className="icon-dim-18" />
                 <input
                     data-testid="ci-trigger-search-by-commit-hash"
