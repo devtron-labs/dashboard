@@ -43,7 +43,7 @@ interface customEnv {
     CLAIR_TOOL_VERSION?: string
     ENABLE_RESTART_WORKLOAD?: boolean
     ENABLE_SCOPED_VARIABLES?: boolean
-    ENABLED_ENV_VARIABLES: boolean
+    CI_TRIGGER_DEFAULT_TYPE: boolean
 }
 declare global {
     interface Window {
@@ -145,7 +145,7 @@ if (!window || !window._env_) {
         CLAIR_TOOL_VERSION:'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
-        ENABLED_ENV_VARIABLES: false,
+        CI_TRIGGER_DEFAULT_TYPE: false,
     }
 }
 
