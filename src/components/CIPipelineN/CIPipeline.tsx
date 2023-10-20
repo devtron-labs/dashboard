@@ -114,7 +114,7 @@ export default function CIPipeline({
         name: '',
         args: [],
         materials: [],
-        triggerType: window._env_.CI_TRIGGER_DEFAULT_TYPE ? TriggerType.Manual : TriggerType.Auto,
+        triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
         scanEnabled: false,
         gitHost: undefined,
         webhookEvents: [],
