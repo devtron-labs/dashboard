@@ -54,6 +54,10 @@
     flex-grow: 1 !important;
 }
 
+.flex-justify-center {
+    justify-content: center;
+}
+
 .flex-justify {
     justify-content: space-between !important;
 }
@@ -72,6 +76,10 @@
 
 .display-grid {
     display: grid;
+}
+
+.grid-auto-flow-column {
+    grid-auto-flow: column;
 }
 
 // margins and paddings from 0-40
