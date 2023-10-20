@@ -745,9 +745,6 @@ export default function DeploymentConfig({
                 state.showReadme ? 'readme-view' : ''
             }`}
             onSubmit={handleSubmit}
-            onKeyDown={(e) => {
-                e.key === 'Enter' && e.preventDefault()
-            }}
         >
             <div className="variables-widget-position">
                 <FloatingVariablesSuggestions zIndex={100} appId={appId} />
