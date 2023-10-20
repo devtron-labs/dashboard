@@ -205,6 +205,7 @@ export default function AppOverview({
         const {
             appName,
             shortDescription = `Write a short description for this ${resourceName}`,
+            // TODO: Update the placeholder text when integrating
             codeSource = 'devtron-labs/devtron',
             createdOn,
             createdBy,
@@ -221,27 +222,21 @@ export default function AppOverview({
                             <AppIcon className="icon-dim-48" />
                         )}
                     </div>
-                    <div
-                        className="fs-16 fw-7 lh-24 cn-9"
-                        data-testid={`overview-${isJobOverview ? 'job' : 'app'}Name`}
-                    >
-                        {appName}
-                    </div>
-                    <div className="flexbox flex-justify dc__gap-10">
+                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break">{appName}</div>
+                    {/* TODO: Uncomment and integrate */}
+                    {/* <div className="flexbox flex-justify dc__gap-10">
                         <div className="fs-13 fw-4 lh-20 cn-9">{shortDescription}</div>
                         <EditIcon
                             className="icon-dim-16 cursor mw-16"
                             // TODO: Add onClick listener
                             onClick={() => alert('Please integrate me 🥹!')}
                         />
-                    </div>
+                    </div> */}
                 </div>
                 <div className="dc__border-top-n1" />
                 <div className="flexbox-col dc__gap-12">
                     <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4" data-testid="overview-project">
-                            Project
-                        </div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Project</div>
                         <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
                             {projectName}
                             <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleChangeProjectModal} />
@@ -265,13 +260,13 @@ export default function AppOverview({
                             {createdBy}
                         </div>
                     </div>
-                    {/* TODO: Update and Integrate. Also add the icon for the code source */}
-                    {!isJobOverview && (
+                    {/* TODO: Uncomment, update and integrate. Also add the icon for the code source */}
+                    {/* {!isJobOverview && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">{codeSource}</div>
                         </div>
-                    )}
+                    )} */}
                 </div>
                 <div className="dc__border-top-n1" />
                 {renderLabelTags()}
@@ -554,7 +549,7 @@ export default function AppOverview({
     }
 
     return (
-        // TODO: Fix the scroll
+        // TODO: Fix the scroll for two column layout
         <div className="app-overview-container display-grid bcn-0">
             {renderSideInfoColumn()}
             {!isLoading && renderOverviewContent(isJobOverview)}
