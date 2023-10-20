@@ -455,6 +455,7 @@ export default function DeploymentTemplateOverrideForm({
     const fetchManifestData = async (data) => {
         const request = {
             appId: +appId,
+            envId: +envId,
             chartRefId: state.selectedChartRefId,
             valuesAndManifestFlag: 2,
             values: data,
