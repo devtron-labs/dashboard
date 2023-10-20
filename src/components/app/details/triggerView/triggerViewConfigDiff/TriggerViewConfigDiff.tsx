@@ -36,12 +36,12 @@ export default function TriggerViewConfigDiff({
         Object.keys(currentConfiguration?.[activeSideNavOption]?.variableSnapshot || {}).length !== 0
 
     const editorValuesRHS = convertVariables
-        ? baseTemplateConfiguration[activeSideNavOption]?.resolvedTemplateData
-        : baseTemplateConfiguration[activeSideNavOption]?.codeEditorValue.value
+        ? baseTemplateConfiguration?.[activeSideNavOption]?.resolvedTemplateData
+        : baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue.value
 
     const editorValuesLHS = convertVariables
-        ? currentConfiguration[activeSideNavOption]?.resolvedTemplateData
-        : currentConfiguration[activeSideNavOption]?.codeEditorValue.value
+        ? currentConfiguration?.[activeSideNavOption]?.resolvedTemplateData
+        : currentConfiguration?.[activeSideNavOption]?.codeEditorValue.value
 
     const [editorValues, setEditorValues] = useState<{
         displayName: string
@@ -68,8 +68,8 @@ export default function TriggerViewConfigDiff({
     useEffect(() => {
         setEditorValues({
             displayName: editorValues.displayName,
-            value: YAML.stringify(JSON.parse(editorValuesRHS)),
-            defaultValue: YAML.stringify(JSON.parse(editorValuesLHS)),
+            value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
+            defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
         })
     }, [convertVariables, selectedConfigToDeploy])
 
