@@ -9,7 +9,7 @@ import {
     getOptions,
 } from './service'
 import { getChartReferences } from '../../services/service'
-import { useJsonYaml, importComponentFromFELibrary } from '../common'
+import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
 import { showError, useEffectAfterMount, useAsync, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentConfigContextType,
@@ -746,6 +746,9 @@ export default function DeploymentConfig({
             }`}
             onSubmit={handleSubmit}
         >
+            <div className="variables-widget-position">
+                <FloatingVariablesSuggestions zIndex={100} appId={appId} />
+            </div>
             <DeploymentTemplateOptionsTab
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}

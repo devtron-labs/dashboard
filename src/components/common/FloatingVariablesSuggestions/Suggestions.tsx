@@ -72,7 +72,14 @@ function Suggestions({ handleDeActivation, loading, variables, reloadVariables, 
             </div>
 
             {enableSearch && (
-                <div className="flexbox dc__align-self-stretch pt-8 pb-8 pl-12 pr-12 bcn-0">
+                <div
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault()
+                        }
+                    }}
+                    className="flexbox dc__align-self-stretch pt-8 pb-8 pl-12 pr-12 bcn-0"
+                >
                     <DebouncedSearch
                         onSearch={onSearch}
                         placeholder="Search variables"
