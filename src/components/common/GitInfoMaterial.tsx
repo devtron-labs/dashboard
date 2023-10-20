@@ -59,7 +59,8 @@ export default function GitInfoMaterial({
         if (!selectedMaterial || !selectedMaterial.searchText) {
             setSearchText('')
             setSearchApplied(false)
-        } else if (selectedMaterial.searchText !== searchText) {
+        } else if (selectedMaterial.searchText) {
+            setSearchText(selectedMaterial.searchText)
             setSearchApplied(true)
         }
         setShowAllCommits(selectedMaterial?.showAllCommits ?? false)
@@ -180,7 +181,7 @@ export default function GitInfoMaterial({
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
-            if (event.target.value && !searchApplied) {
+            if (event.target.value) {
                 handleFilterChanges(event.target.value)
                 setSearchApplied(true)
             } else if (searchApplied) {

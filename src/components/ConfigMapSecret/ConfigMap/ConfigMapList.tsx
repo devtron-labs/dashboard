@@ -43,7 +43,7 @@ export default function ConfigMapList({
             reloadEnvironments()
         }
         return () => {
-            configMapListAbortRef.current.abort();
+            configMapListAbortRef.current?.abort()
         }
     }, [appId, envId])
 

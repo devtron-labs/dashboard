@@ -274,6 +274,10 @@ export default function NodeListSearchFliter({
                         ...base,
                         zIndex: 6,
                     }),
+                    valueContainer: (base,state) => ({
+                        ...containerImageSelectStyles.valueContainer(base,state),
+                        display:'grid',
+                    }),
                 }}
             />
             <div className="dc__border-left h-20 mt-6"></div>

@@ -103,6 +103,7 @@ export default function EnvironmentOverride({
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
+                            key={`deployment-${params.appId}-${params.envId}`}
                             parentState={viewState}
                             setParentState={setViewState}
                             environments={environments}
@@ -113,6 +114,7 @@ export default function EnvironmentOverride({
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
                         <ConfigMapList
+                            key={`config-map-${params.appId}-${params.envId}`}
                             isOverrideView={true}
                             isProtected={isProtected}
                             parentState={viewState}
@@ -124,6 +126,7 @@ export default function EnvironmentOverride({
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
                         <SecretList
+                            key={`secret-${params.appId}-${params.envId}`}
                             isOverrideView={true}
                             parentState={viewState}
                             isProtected={isProtected}
