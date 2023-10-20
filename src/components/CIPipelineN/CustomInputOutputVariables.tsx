@@ -1,8 +1,5 @@
 import React, { useContext } from 'react'
-import {
-    ConditionType,
-    RefVariableType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionType, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
@@ -27,7 +24,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         calculateLastStepDetail,
         formDataErrorObj,
         setFormDataErrorObj,
-        validateTask
+        validateTask,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
 
@@ -43,9 +40,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                 {
                     id: 0,
                 },
-            ).id + 1
+            ).id ?? 0
+        const _id = id + 1
+
         const newVariable = {
-            id: id,
+            id: _id,
             name: '',
             value: '',
             format: formatOptions[0].label,
@@ -89,12 +88,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
     const handleBlur = () => {
         if (type === PluginVariableType.OUTPUT) {
             const _formData = { ...formData }
-            calculateLastStepDetail(
-                false,
-                _formData,
-                activeStageName,
-                selectedTaskIndex,
-            )
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
             setFormData(_formData)
         }
     }
@@ -103,12 +97,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].splice(index, 1)
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(
-                false,
-                _formData,
-                activeStageName,
-                selectedTaskIndex,
-            )
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
         }
         if (
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
@@ -143,12 +132,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]][index].format =
             selectedValue.label
         if (type === PluginVariableType.OUTPUT) {
-            calculateLastStepDetail(
-                false,
-                _formData,
-                activeStageName,
-                selectedTaskIndex,
-            )
+            calculateLastStepDetail(false, _formData, activeStageName, selectedTaskIndex)
         }
         setFormData(_formData)
     }
