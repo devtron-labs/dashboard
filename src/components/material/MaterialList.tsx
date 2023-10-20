@@ -20,50 +20,39 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             configStatus: AppConfigStatus.LOADING,
             materials: [],
             providers: [],
-            material_provider: [],
+            materialProviderMap: []
         }
         this.isGitProviderValid = this.isGitProviderValid.bind(this)
         this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this)
         this.refreshMaterials = this.refreshMaterials.bind(this)
     }
 
-    getDisabledProviders = async (materials, providersRes) => {
-        const tempProviderIds = providersRes.result.map(provider => provider.id)
-        let disabledProvidersIds = materials
-            .filter(mat => !tempProviderIds.includes(mat.gitProviderId))
-            .map(mat => mat.gitProviderId)
-
-        disabledProvidersIds = [...new Set(disabledProvidersIds)]
-        const disabledProviderPromises = disabledProvidersIds.map(providerId => {
-            return getDisabledGitProvider(this.props.match.params.appId, providerId)
-        })
-        const disabledProviderResults = await Promise.all(disabledProviderPromises)
-        const disabledProviders = disabledProviderResults.map(providerResults => providerResults.result)
-    
-        return disabledProviders
-    }
-
-    mapMaterialsToProviders = (materials, providers, disabledProviders) => {
-        return materials.map(mat => {
-            const disabledProvidersForMaterial = disabledProviders
-                .filter(provider => mat.gitProviderId === provider.id)
-    
-            const allProvidersForMaterial = [...providers, ...disabledProvidersForMaterial]
+    mapMaterialToProvidersList = async (materials, providers) => {
+        const mappedMaterails = Promise.all(materials.map(async mat => {
+            const presentInProviders = providers.some(p => p.id === mat.gitProviderId)
+            const disabledProvider = ((!presentInProviders) ? await getDisabledGitProvider(this.props.match.params.appId, mat.gitProviderId) : null)?.result
+            const allProvidersForMaterial = (disabledProvider) ? [...providers, disabledProvider] : [...providers]
             return {
                 materials: mat,
                 providers: allProvidersForMaterial,
             }
+        }))
+        .catch((error) => {
+            showError(error)
+            this.setState({ view: ViewType.ERROR })
         })
+        return mappedMaterails
     }
 
-    mapMaterials = (materials, providers) => {
-        return materials.map(mat => {
-            const gitProvider = providers.find(p => mat.gitProviderId === p.id)
+    mapMaterialToProvider = (materialProvider) => {
+        return materialProvider.map(mat => {
+            const gitProvider = mat.providers.find(p => mat.materials.gitProviderId === p.id)
             return {
                 ...mat,
-                includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
-                gitProvider,
-                isExcludeRepoChecked: !!mat.filterPattern?.length,
+                materials: {
+                    ...mat.materials,
+                    gitProvider
+                },
             }
         })
     }
@@ -72,28 +61,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         let materials = sourceConfigRes.result.material || []
         let providers = providersRes.result
         const initialProvidersList = providersRes.result
-
-        const disabledProviders = await this.getDisabledProviders(materials, providersRes)
-        const material_provider = this.mapMaterialsToProviders(materials, providers, disabledProviders)
-
-        providers = [...providers, ...disabledProviders]
-        materials = this.mapMaterials(materials, providers)
-
-        const updatedMaterialProvider = material_provider.map((providerMat) => {
-            const matchingMaterial = materials.find((mat) => mat.id === providerMat.materials.id)
-            if (matchingMaterial) {
-                return {
-                    ...providerMat,
-                    materials: {
-                        ...providerMat.materials,
-                        gitProvider: providers.find((p) => matchingMaterial.gitProviderId === p.id),
-                    },
-                    includeExcludeFilePath: matchingMaterial.filterPattern?.length ? matchingMaterial.filterPattern.join('\n') : '',
-                    isExcludeRepoChecked: !!matchingMaterial.filterPattern?.length
-                }
-            }
-        })
-        return { materials, initialProvidersList, updatedMaterialProvider }
+        const materialProvider = await this.mapMaterialToProvidersList(materials, providers)
+        const materialProviderMap = this.mapMaterialToProvider(materialProvider)
+        return { materials, initialProvidersList, materialProviderMap }
     }
 
     getGitProviderConfig = () => {
@@ -102,13 +72,12 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             getGitProviderListAuth(this.props.match.params.appId),
         ])
             .then(async ([sourceConfigRes, providersRes]) => {
-                const {materials, initialProvidersList, updatedMaterialProvider} = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
-
+                const {materials, initialProvidersList, materialProviderMap} = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
                 this.setState({
                     materials: materials.sort((a, b) => sortCallback('id', a, b)),
                     providers: initialProvidersList,
                     view: ViewType.FORM,
-                    material_provider: updatedMaterialProvider
+                    materialProviderMap: materialProviderMap
                 })
             })
             .catch((error) => {
@@ -139,12 +108,12 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             getSourceConfig(this.props.match.params.appId),
             getGitProviderListAuth(this.props.match.params.appId),
         ]).then(async ([sourceConfigRes, providersRes]) => {
-            const {materials, initialProvidersList, updatedMaterialProvider} = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
+            const {materials, initialProvidersList, materialProviderMap} = await this.buildMaterialProviderMap(sourceConfigRes, providersRes)
 
             this.setState({
                 materials: materials.sort((a, b) => sortCallback('id', a, b)),
                 providers: initialProvidersList,
-                material_provider: updatedMaterialProvider
+                materialProviderMap: materialProviderMap
             })
         })
     }
@@ -248,7 +217,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         reload={this.getGitProviderConfig}
                         isJobView={this.props.isJobView}
                     />
-                    {this.state.material_provider.map((mat, index) => {
+                    {this.state.materialProviderMap.map((mat, index) => {
                         return (
                             <UpdateMaterial
                                 key={mat.name}

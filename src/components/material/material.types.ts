@@ -28,7 +28,7 @@ export interface MaterialListState {
     materials: GitMaterialType[]
     providers: any[]
     configStatus: number
-    material_provider: any[]
+    materialProviderMap: any[]
 }
 
 export interface CreateMaterialState {
