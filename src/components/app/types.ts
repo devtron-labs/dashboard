@@ -91,6 +91,8 @@ export interface AppMetaInfo {
     projectId?: number
     projectName?: string
     labels?: TagType[]
+    shortDescription: string;
+    codeSource: string;
 }
 
 export interface ArtifactsCiJob {
@@ -488,7 +490,9 @@ export interface JobPipeline {
 }
 
 export interface TagChipsContainerType {
-  labelTags: TagType[]
+    labelTags: TagType[]
+    onAddTagButtonClick: (e) => void
+    resourceName: string;
 }
 export interface SourceInfoType {
   appDetails: AppDetails
@@ -520,4 +524,3 @@ export interface EnvironmentListMinType {
     namespace?: string
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
-

@@ -3,16 +3,20 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
-import { showError, Progressing, TagType, stopPropagation, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    handleUTCTime,
-    importComponentFromFELibrary,
-    processDeployedTime,
-    sortOptionsByValue,
-} from '../../common'
+    showError,
+    Progressing,
+    TagType,
+    stopPropagation,
+    useAsync,
+    getRandomColor,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { handleUTCTime, importComponentFromFELibrary, processDeployedTime, sortOptionsByValue } from '../../common'
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
+import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
@@ -33,7 +37,7 @@ import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
 import AppStatus from '../AppStatus'
-import { StatusConstants , DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
+import { StatusConstants, DefaultJobNote, DefaultAppNote } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import TagChipsContainer from './TagChipsContainer'
@@ -43,14 +47,19 @@ import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
-export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview, filteredEnvIds }: AppOverviewProps) {
+export default function AppOverview({
+    appMetaInfo,
+    getAppMetaInfoRes,
+    isJobOverview,
+    filteredEnvIds,
+}: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
-    const [descriptionId,setDescriptionId] = useState<number>(0)
+    const [descriptionId, setDescriptionId] = useState<number>(0)
     const [newDescription, setNewDescription] = useState<string>(isJobOverview ? DefaultJobNote : DefaultAppNote)
     const [newUpdatedOn, setNewUpdatedOn] = useState<string>()
     const [newUpdatedBy, setNewUpdatedBy] = useState<string>()
@@ -67,6 +76,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
+    const resourceName = isJobOverview ? 'job' : 'application'
+
     let _moment: moment.Moment
     let _date: string
 
@@ -75,8 +86,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             setCurrentLabelTags(appMetaInfo.labels)
             _moment = moment(appMetaInfo?.description?.updatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
             _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : appMetaInfo?.description?.updatedOn
-            const description = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? appMetaInfo.description.description : (isJobOverview ? DefaultJobNote : DefaultAppNote)
-            _date = (appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id) ? _date : ''
+            const description =
+                appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id
+                    ? appMetaInfo.description.description
+                    : isJobOverview
+                    ? DefaultJobNote
+                    : DefaultAppNote
+            _date = appMetaInfo?.description?.description !== '' && appMetaInfo?.description?.id ? _date : ''
             setNewUpdatedOn(_date)
             setNewUpdatedBy(appMetaInfo?.description?.updatedBy)
             setNewDescription(description)
@@ -186,82 +202,107 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderSideInfoColumn = () => {
+        const {
+            appName,
+            shortDescription = `Write a short description for this ${resourceName}`,
+            codeSource = 'devtron-labs/devtron',
+            createdOn,
+            createdBy,
+            projectName,
+        } = appMetaInfo
+
         return (
-            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
-                <div className="mb-16" data-testid={`overview-${isJobOverview ? 'job' : 'app'}`}>
-                    {isJobOverview ? 'Job name' : 'App name'}
+            <aside className="pt-20 pb-20 pl-20 pr-16 dc__border-right flexbox-col dc__gap-16">
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        {isJobOverview ? (
+                            <JobIcon className="icon-dim-48 dc__icon-bg-color br-4 p-8" />
+                        ) : (
+                            <AppIcon className="icon-dim-48" />
+                        )}
+                    </div>
                     <div
-                        className="fs-13 fw-4 lh-20 cn-9"
+                        className="fs-16 fw-7 lh-24 cn-9"
                         data-testid={`overview-${isJobOverview ? 'job' : 'app'}Name`}
                     >
-                        {appMetaInfo?.appName}
+                        {appName}
                     </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdon">
-                        Created on
-                    </div>
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdonName">
-                        {appMetaInfo?.createdOn ? moment(appMetaInfo.createdOn).format(Moment12HourFormat) : '-'}
-                    </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdby">
-                        Created by
-                    </div>
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdbyName">
-                        {appMetaInfo?.createdBy}
-                    </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-project">
-                        Project
-                    </div>
-                    <div
-                        className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9"
-                        data-testid="overview-projectName"
-                    >
-                        {appMetaInfo?.projectName}
+                    <div className="flexbox flex-justify dc__gap-10">
+                        <div className="fs-13 fw-4 lh-20 cn-9">{shortDescription}</div>
                         <EditIcon
-                            data-testid="overview-project-edit"
-                            className="icon-dim-20 cursor"
-                            onClick={toggleChangeProjectModal}
+                            className="icon-dim-16 cursor mw-16"
+                            // TODO: Add onClick listener
+                            onClick={() => alert('Please integrate me 🥹!')}
                         />
                     </div>
                 </div>
-            </div>
+                <div className="dc__border-top-n1" />
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4" data-testid="overview-project">
+                            Project
+                        </div>
+                        <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
+                            {projectName}
+                            <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleChangeProjectModal} />
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            {createdOn ? moment(createdOn).format(Moment12HourFormat) : '-'}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
+                            <div
+                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase"
+                                style={{ backgroundColor: getRandomColor(createdBy) }}
+                            >
+                                {createdBy[0]}
+                            </div>
+                            {createdBy}
+                        </div>
+                    </div>
+                    {/* TODO: Update and Integrate. Also add the icon for the code source */}
+                    {!isJobOverview && (
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">{codeSource}</div>
+                        </div>
+                    )}
+                </div>
+                <div className="dc__border-top-n1" />
+                {renderLabelTags()}
+            </aside>
         )
     }
 
-    const renderLabelTags = () => {
-        return (
-            <div className="p-16 dc__border-bottom-n1">
-                <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="overview-tags">
-                        <TagIcon className="tags-icon icon-dim-20 mr-8" />
-                        Tags
-                    </div>
-                    <div
-                        className="flex fs-14 fw-4 lh-16 cn-7 cursor"
-                        onClick={toggleTagsUpdateModal}
-                        data-testid="overview-tag-edit"
-                    >
-                        <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                        Edit
-                    </div>
+    const renderLabelTags = () => (
+        <div className="flexbox-col dc__gap-12">
+            <div className="flexbox flex-justify dc__gap-10">
+                <div className="flexbox flex-align-center dc__gap-8 fs-13 fw-6 lh-20 cn-9">
+                    <TagIcon className="tags-icon icon-dim-20" />
+                    Tags
                 </div>
-                <TagChipsContainer labelTags={currentLabelTags} />
-                {MandatoryTagWarning && (
-                    <MandatoryTagWarning
-                        labelTags={currentLabelTags}
-                        handleAddTag={toggleTagsUpdateModal}
-                        selectedProjectId={appMetaInfo.projectId}
-                        reloadProjectTags={reloadMandatoryProjects}
-                    />
-                )}
+                <EditIcon className="icon-dim-16 cursor mw-16" onClick={toggleTagsUpdateModal} />
             </div>
-        )
-    }
+            <TagChipsContainer
+                labelTags={currentLabelTags}
+                onAddTagButtonClick={toggleTagsUpdateModal}
+                resourceName={resourceName}
+            />
+            {MandatoryTagWarning && (
+                <MandatoryTagWarning
+                    labelTags={currentLabelTags}
+                    handleAddTag={toggleTagsUpdateModal}
+                    selectedProjectId={appMetaInfo.projectId}
+                    reloadProjectTags={reloadMandatoryProjects}
+                />
+            )}
+        </div>
+    )
 
     // Update once new API changes are introduced
     const renderAppLevelExternalLinks = () => {
@@ -299,7 +340,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderDeploymentComponent = () => {
-
         if (envList.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
@@ -444,7 +484,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                 className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
                             >
                                 {environmentName(jobPipeline)}
-                                {environmentName(jobPipeline) === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style" >{`(Default)`}</span>}
+                                {environmentName(jobPipeline) === DEFAULT_ENV && (
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">{`(Default)`}</span>
+                                )}
                             </div>
                             <div className="w-150 h-20 m-tb-8 fs-13">
                                 {jobPipeline.startedOn !== '0001-01-01T00:00:00Z'
@@ -472,7 +514,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     function renderAppDescription() {
         return (
-            <div className='pl-16 pr-16 pt-16 dc__border-bottom-n1' >
+            <div className="pl-16 pr-16 pt-16 dc__border-bottom-n1">
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin={true}
@@ -491,17 +533,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     function renderOverviewContent(isJobOverview) {
         if (isJobOverview) {
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
+                <div className="app-overview-wrapper dc__border-bottom-n1">
                     {renderAppDescription()}
-                    {renderLabelTags()}
                     {renderWorkflowsStatus()}
                 </div>
             )
         } else {
             return (
-                <div className="app-overview-wrapper dc__overflow-scroll dc__border-bottom-n1">
+                <div className="app-overview-wrapper dc__border-bottom-n1">
                     {renderAppDescription()}
-                    {renderLabelTags()}
                     {renderAppLevelExternalLinks()}
                     {renderEnvironmentDeploymentsStatus()}
                 </div>
@@ -514,7 +554,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     return (
-        <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
+        // TODO: Fix the scroll
+        <div className="app-overview-container display-grid bcn-0">
             {renderSideInfoColumn()}
             {!isLoading && renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
