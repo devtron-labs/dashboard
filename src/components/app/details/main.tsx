@@ -31,7 +31,6 @@ import { getAppOtherEnvironmentMin } from '../../../services/service'
 import { appGroupPermission, deleteEnvGroup, getEnvGroupList } from '../../ApplicationGroup/AppGroup.service'
 import CreateAppGroup from '../../ApplicationGroup/CreateAppGroup'
 import { toast } from 'react-toastify'
-import { styles } from './metrics/deploymentMetrics.util'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
