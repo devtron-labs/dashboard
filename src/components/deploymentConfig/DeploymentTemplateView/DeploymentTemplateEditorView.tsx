@@ -49,8 +49,6 @@ export default function DeploymentTemplateEditorView({
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
     const baseDeploymentAbortController = useRef(null)
 
-    console.log(convertVariables, '__convertVariables')
-
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
     const [draftLoading, setDraftLoading] = useState(false)
@@ -75,7 +73,7 @@ export default function DeploymentTemplateEditorView({
     }
 
     useEffect(() => {
-        if (!showDraftData) return
+        if (!showDraftData || isValues) return
         setDraftLoading(true)
         getLocalDaftManifest()
             .then((data) => {
@@ -273,12 +271,10 @@ export default function DeploymentTemplateEditorView({
     useEffect(() => {
         if (!convertVariables) return
         setResolveLoading(true)
-        console.log('here')
         Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
             .then(([lhs, rhs]) => {
                 setResolvedValuesLHS(lhs)
                 setResolvedValuesRHS(rhs)
-                console.log('__RHS', rhs)
             })
             .catch((err) => {
                 showError(err)
@@ -286,7 +282,7 @@ export default function DeploymentTemplateEditorView({
             .finally(() => {
                 setResolveLoading(false)
             })
-    }, [convertVariables])
+    }, [convertVariables, selectedOptionDraft])
 
     // choose LHS value for comparison
     const selectedOptionId = state.selectedCompareOption?.id
@@ -302,8 +298,6 @@ export default function DeploymentTemplateEditorView({
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     const rhs = convertVariables ? resolvedValuesRHS : valueRHS
-
-    console.log('__rhs', rhs)
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header
