@@ -31,7 +31,15 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIMaterialRouterProps, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
+import {
+    CIMaterialRouterProps,
+    MATERIAL_TYPE,
+    NodeAttr,
+    TriggerViewProps,
+    TriggerViewState,
+    WorkflowNodeType,
+    WorkflowType,
+} from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import {
@@ -86,6 +94,7 @@ function TriggerView({ isJobView, filteredEnvIds }: TriggerViewProps) {
     const history = useHistory()
     const match = useRouteMatch<CIMaterialRouterProps>()
     const location = useLocation()
+
     const [code, setCode] = useState(0)
     const [view, setView] = useState(ViewType.LOADING)
     const [workflows, setWorkflows] = useState([])
@@ -120,15 +129,23 @@ function TriggerView({ isJobView, filteredEnvIds }: TriggerViewProps) {
     const [selectedEnv, setSelectedEnv] = useState<Environment>(null)
 
     useEffect(() => {
-        clearInterval(timerRef)
-        inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-    }, [])
-
-    useEffect(() => {
         getHostURLConfig()
         getWorkflows(true)
         getEnvironments()
+
+        return () => {
+            // timerRef, inprogressStatusTimer in here is fired on component unmount.
+            clearInterval(timerRef)
+            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        }
     }, [])
+
+    useEffect(() => {
+        setShowCIModal(false)
+        setShowMaterialRegexModal(false)
+        setView(ViewType.LOADING)
+        getWorkflows()
+    }, [params.appId, filteredEnvIds])
 
     const getEnvironments = () => {
         getEnvironmentListMinPublic()
@@ -323,20 +340,6 @@ function TriggerView({ isJobView, filteredEnvIds }: TriggerViewProps) {
             })
             .catch((error) => {})
     }
-
-    // componentDidUpdate(prevProps) {
-    //     if (
-    //         this.props.match.params.appId !== prevProps.match.params.appId ||
-    //         prevProps.filteredEnvIds !== this.props.filteredEnvIds
-    //     ) {
-    //         this.setState({
-    //             showCIModal: false,
-    //             showMaterialRegexModal: false,
-    //             view: ViewType.LOADING,
-    //         })
-    //         getWorkflows()
-    //     }
-    // }
 
     const getCommitHistory = (
         ciPipelineMaterialId: number,
