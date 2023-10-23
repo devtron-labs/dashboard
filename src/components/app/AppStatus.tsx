@@ -50,7 +50,7 @@ export default function AppStatus({
         renderIcon()
     ) : (
         <div className="flex left">
-            <div className="mr-6">{renderIcon()}</div>
+            <div className="flex mr-6">{renderIcon()}</div>
             <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize cn-6 m-0">
                 {isNotDeployed ? notDeployed : statusMessage}
             </p>
