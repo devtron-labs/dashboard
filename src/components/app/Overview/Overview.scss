@@ -1,8 +1,8 @@
 .app-overview-container {
-    gap: 0;
+    grid-template-columns: 0 1fr;
     background: linear-gradient(249deg, #D4E6F7 0%, var(--N50) 50.58%);
     overflow: auto;
-    transition: all 3s ease-out;
+    transition: grid-template-columns 0.2s ease-out;
 
     &.sidebar-open {
         display: grid;
@@ -11,12 +11,6 @@
     }
 
     .app-overview-wrapper {
-        .app-level__external-links {
-            padding: 0;
-            margin-bottom: 0 !important;
-            min-height: 0;
-        }
-
         .env-deployments-info-wrapper {
             border-radius: 4px;
             border: 1px solid var(--N200);
