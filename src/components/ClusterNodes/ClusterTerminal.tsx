@@ -51,11 +51,11 @@ export default function ClusterTerminal({
     clusterImageList,
     isClusterDetailsPage,
     isNodeDetailsPage,
-    namespaceList=[],
+    namespaceList = [],
     node,
     taints,
     setSelectedNode,
-    showTerminal
+    showTerminal,
 }: ClusterTerminalType) {
     const location = useLocation()
     const history = useHistory()
@@ -626,8 +626,6 @@ export default function ClusterTerminal({
     const clearTerminal = () => {
         setTerminalCleared(!terminalCleared)
     }
-
-
 
     const renderRegisterLinkMatcher = (terminal) => {
         const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
