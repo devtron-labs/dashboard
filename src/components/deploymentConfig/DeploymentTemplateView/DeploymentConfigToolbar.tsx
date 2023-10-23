@@ -8,6 +8,7 @@ import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-vi
 import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
 import { DropdownContainer, DropdownItem } from './DeploymentTemplateView.component'
+import Tippy from '@tippyjs/react'
 
 export default function DeploymentConfigToolbar({
     selectedTabIndex,
@@ -40,6 +41,8 @@ export default function DeploymentConfigToolbar({
     const handleViewVariablesClick = () => {
         setConvertVariables(!convertVariables)
     }
+
+    const tippyMsg = convertVariables ? 'Hide variables values' : 'Show variables values'
 
     return (
         <div className="config-toolbar-container flex dc__content-space bcn-0 pt-8 pl-16 pr-16 dc__border-bottom">
@@ -92,13 +95,14 @@ export default function DeploymentConfigToolbar({
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
                 )}
                 {isValues && selectedTabIndex == 2 && (
-                    <ViewVariablesIcon
-                        className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 scn-7 cursor`}
-                        onClick={handleViewVariablesClick}
-                    />
+                    <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                        <ViewVariablesIcon
+                            className={`${convertVariables ? 'icon-selected' : ''} icon-dim-16 scn-7 cursor`}
+                            onClick={handleViewVariablesClick}
+                        />
+                    </Tippy>
                 )}
             </div>
         </div>
     )
 }
-// reading this while i am making my coffee using the coffee i bought from home (office coffee sucks)
