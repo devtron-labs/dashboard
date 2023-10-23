@@ -458,7 +458,6 @@ export default function AppOverview({
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
             return (
-                // TODO: Update the null state
                 <div className="fs-13 fw-4 cn-7" data-testid="overview-no-pipelines">
                     No job pipelines are configured
                 </div>
@@ -599,11 +598,7 @@ export default function AppOverview({
 
     return (
         // TODO: Fix the scroll for two column layout
-        <div
-            className={`app-overview-container p-20 ${
-                activeTab === OVERVIEW_TABS.ABOUT ? 'display-grid dc__gap-32' : ''
-            }`}
-        >
+        <div className={`app-overview-container p-20 ${activeTab === OVERVIEW_TABS.ABOUT ? 'sidebar-open' : ''}`}>
             {activeTab === OVERVIEW_TABS.ABOUT && renderSideInfoColumn()}
             {!isLoading && renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
