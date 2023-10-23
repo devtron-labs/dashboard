@@ -11,6 +11,7 @@ export default function AppStatus({
     isDeploymentStatus = false,
     isJobView = false,
     isVirtualEnv,
+    hideStatusMessage = false,
 }: AppStatusType) {
     let status = appStatus
     if (isDeploymentStatus) {
@@ -19,16 +20,16 @@ export default function AppStatus({
     const appStatusLowerCase = status?.toLowerCase()
     const isNotDeployed = appStatusLowerCase === StatusConstants.NOT_DEPLOYED.noSpaceLower
     const iconClass = isNotDeployed ? StatusConstants.NOT_DEPLOYED.lowerCase : appStatusLowerCase
-    const statusMessage = status || (isVirtualEnv ? StatusConstants.NOT_AVILABLE.normalCase :  '-')
+    const statusMessage = status || (isVirtualEnv ? StatusConstants.NOT_AVILABLE.normalCase : '-')
     const notDeployed = isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase
 
     const renderIcon = () => {
         if (iconClass) {
-            return <span className={`dc__app-summary__icon icon-dim-16 mr-6 ${iconClass} ${iconClass}--node`} />
+            return <span className={`dc__app-summary__icon icon-dim-16 ${iconClass} ${iconClass}--node`} />
         } else if (isVirtualEnv) {
             return (
                 <span
-                    className={`dc__app-summary__icon icon-dim-16 mr-6 ${StatusConstants.NOT_DEPLOYED.lowerCase} ${StatusConstants.NOT_DEPLOYED.lowerCase}--node`}
+                    className={`dc__app-summary__icon icon-dim-16 ${StatusConstants.NOT_DEPLOYED.lowerCase} ${StatusConstants.NOT_DEPLOYED.lowerCase}--node`}
                 />
             )
         } else {
@@ -39,21 +40,19 @@ export default function AppStatus({
                     placement="top"
                     content="To fetch app status for GitOps based deployments open the app detail page"
                 >
-                    <InfoIcon className="icon-dim-16 mr-6 fcn-6" />
+                    <InfoIcon className="icon-dim-16 fcn-6" />
                 </Tippy>
             )
         }
     }
 
-    return (
+    return hideStatusMessage ? (
+        renderIcon()
+    ) : (
         <div className="flex left">
-            {renderIcon()}
+            <div className="mr-6">{renderIcon()}</div>
             <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize cn-6 m-0">
-                {isNotDeployed ? (
-                    notDeployed
-                ) : (
-                    statusMessage
-                )}
+                {isNotDeployed ? notDeployed : statusMessage}
             </p>
         </div>
     )

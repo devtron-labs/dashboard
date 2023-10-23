@@ -2095,6 +2095,10 @@ button.anchor {
     border-bottom: solid 1px var(--N100);
 }
 
+.dc__border-bottom-n2 {
+    border-bottom: solid 1px var(--N200);
+}
+
 .dc__border-right-n1 {
     border-right: solid 1px var(--N100);
 }
@@ -3109,6 +3113,10 @@ textarea,
     min-height: 400px;
 }
 
+.mh-500 {
+    min-height: 500px;
+}
+
 .mh-600 {
     min-height: 600px;
 }
@@ -3361,6 +3369,10 @@ textarea,
 
 .dc__no-background {
     background: none;
+}
+
+.dc__no-background-imp {
+    background: none !important;
 }
 
 //Overflow
