@@ -823,6 +823,7 @@ export const convertToOptionsList = (
     customValue?: string,
     customFieldKey?: string,
 ): OptionType[] => {
+    if(!Array.isArray(arr) || !arr) return [];
     return arr.map((ele) => {
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
@@ -1024,8 +1025,9 @@ export const trackByGAEvent = (category: string, action: string): void => {
 }
 
 export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
+    if(!list) return []
     let emptyHeadingCount = 0
-    const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
+    const objList: Record<string, OptionType[]> = list?.reduce((acc, obj) => {
         if (obj.nodeGroup) {
             emptyHeadingCount++
         }

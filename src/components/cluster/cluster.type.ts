@@ -12,6 +12,13 @@ export const AuthenticationType = {
     IAM: 'IAM',
 }
 
+export const emptyClusterTerminalParamsData = {
+    selectedImage: null,
+    selectedNamespace: null,
+    selectedNode: null,
+    selectedShell: null
+}
+
 export interface UserDetails {
     userName: string
     errorInConnecting: string,
