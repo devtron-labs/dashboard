@@ -182,8 +182,10 @@ export const prepareHistoryData = (
     skipDecode?: boolean,
 ): DeploymentHistoryDetail => {
     let values
-    const historyData = { codeEditorValue: rawData.codeEditorValue, values: {} }
+    const historyData = { codeEditorValue: rawData.codeEditorValue, variableSnapshot: rawData.variableSnapshot,  resolvedTemplateData: rawData.resolvedTemplateData, values: {} }
     delete rawData.codeEditorValue
+    delete rawData.resolvedTemplate
+    delete rawData.variableSnapshot
     if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE) {
         values = prepareDeploymentTemplateData(rawData)
     } else if (historyComponent === DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.PIPELINE_STRATEGY.VALUE) {

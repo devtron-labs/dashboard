@@ -19,15 +19,14 @@ export default function DeploymentConfigToolbar({
 }: DeploymentConfigToolbarProps) {
     const [openDropdown, setOpenDropdown] = useState(false)
 
-    const getTabClassName = (index: number) => `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
+    const getTabClassName = (index: number) =>
+        `flex fs-12 lh-20 pb-8 cursor ${selectedTabIndex === index ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'}`
 
     const getTabIconClass = (index: number) => `icon-dim-16 mr-4 ${selectedTabIndex === index ? 'scb-5' : 'scn-6'}`
 
     const changeTab = (e) => {
         handleTabSelection(Number(e.currentTarget.dataset.index))
     }
-
-
 
     const handleOptionClick = (newValue) => {
         setIsValues(newValue)
@@ -61,7 +60,7 @@ export default function DeploymentConfigToolbar({
                             </span>
                             <Dropdown
                                 className="icon-dim-16 ml-4 cursor"
-                                style={{ transform: openDropdown ? "rotate(180deg)" : '' }}
+                                style={{ transform: openDropdown ? 'rotate(180deg)' : '' }}
                                 onClick={() => setOpenDropdown(true)}
                             />
                             <DropdownContainer isOpen={openDropdown} onClose={() => setOpenDropdown(false)}>
