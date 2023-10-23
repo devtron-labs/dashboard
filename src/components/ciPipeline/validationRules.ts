@@ -154,10 +154,15 @@ export class ValidationRules {
     customTag = (value: string): { message: string[] | []; isValid: boolean } => {
         let _message = []
         const regExp = new RegExp(PATTERNS.CUSTOM_TAG)
+        function checkIfOne(string) {
+            return string.split('{x}').length === 2;
+        }
+
         if (!value?.length) return { isValid: false, message: [REQUIRED_FIELD_MSG] }
         else {
             if (value.length >= 128) _message.push(CustomErrorMessage.CUSTOM_TAG_LIMIT)
-            if ( !(value.includes('{x}') || value.includes('{X}'))) _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
+            if (!(value.includes('{x}') || value.includes('{X}'))) _message.push(CustomErrorMessage.CUSTOM_TAG_MANDATORY_X)
+            else if (!checkIfOne(value)) _message.push(CustomErrorMessage.VARIABLE_X_ONLY_ONCE)
             if (!regExp.test(value)) _message.push(CustomErrorMessage.CUSTOM_TAG_ERROR_MSG)
         }
         if (_message.length) {

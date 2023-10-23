@@ -68,6 +68,7 @@ export const CustomErrorMessage = {
     CUSTOM_TAG_LIMIT: 'Max 128 characters.',
     INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
     REQUIRED_IMAGE_PATTERN: 'Image tag pattern is required to generate container images',
+    VARIABLE_X_ONLY_ONCE: 'Variable {x} can be used only once',
 }
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
