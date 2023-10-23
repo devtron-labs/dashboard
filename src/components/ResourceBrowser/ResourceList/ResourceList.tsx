@@ -320,6 +320,9 @@ export default function ResourceList() {
 
     useEffect(() => {
         toggleShowTerminal()
+    }, [location.search])
+
+    useEffect(() => {
         if (!superAdminRef.current) {
             return
         }
@@ -361,8 +364,10 @@ export default function ResourceList() {
 
    const toggleShowTerminal = () => {
         if(nodeType === AppDetailsTabs.terminal) {
+            setTerminalLoader(false)
             setShowTerminal(true)
         } else{
+            setTerminalLoader(true)
             setShowTerminal(false)
         }
    }
@@ -878,6 +883,23 @@ export default function ResourceList() {
         }
     }
 
+    const renderTerminalLoader = () => {
+        if (terminalLoader) {
+            return (
+                <div className="h-100 node-data-container bcn-0">
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
+            return (
+                <div className="bcn-0 node-data-container flex">
+                    {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
+                </div>
+            )
+        }
+        return null
+    }
+
     const renderClusterTerminal = (): JSX.Element => {
         const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
         const hideTerminal = nodeType !== AppDetailsTabs.terminal || !(selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]) || terminalLoader
@@ -1036,6 +1058,7 @@ export default function ResourceList() {
                     </div>
                 </div>
                 {renderResourceBrowser()}
+                {nodeType === AppDetailsTabs.terminal && renderTerminalLoader()}
                 {renderClusterTerminal()}
             </div>
         )
